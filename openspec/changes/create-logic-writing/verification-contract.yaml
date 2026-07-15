@@ -309,7 +309,7 @@ checks:
     args: [-m, pytest, -q, tests/unit/test_academic.py]
     timeout_seconds: 600
     required: true
-    covers: [req.academic.owner, req.academic.evidence-handoff, req.academic.structure, req.academic.deepening, req.academic.documents, req.academic.pdf, req.academic.citations, req.academic.provenance, req.academic.actual-artifact, req.academic.final-owner]
+    covers: [req.academic.owner, req.academic.evidence-handoff, req.academic.structure, req.academic.deepening, req.academic.documents, req.academic.pdf, req.academic.citations, req.academic.provenance, req.academic.actual-artifact, req.academic.final-owner, req.closure.minimum-content]
     expected: {exit_code: 0}
 
   - id: check.tests.reader
