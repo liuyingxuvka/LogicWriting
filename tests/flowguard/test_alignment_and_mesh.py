@@ -44,3 +44,30 @@ def test_test_mesh_has_complete_structure_and_expected_pending_receipts():
     broken = review_test_mesh(module.broken_missing_target_split_plan())
     assert not broken.ok
     assert "missing_target_split_derivation" in {finding.code for finding in broken.findings}
+
+
+def test_frozen_execution_boundary_covers_runtime_and_internal_record_misses():
+    path = FLOWGUARD_ROOT / "models" / "frozen_source_contract_exhaustion.py"
+    spec = importlib.util.spec_from_file_location(
+        "logic_writing_frozen_execution_boundary", path
+    )
+    assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+
+    report = module.review_frozen_execution_boundary()
+
+    assert report.ok
+    assert module.EXECUTION_BOUNDARY_MEMBERS == (
+        "runtime-prerequisite-declared-as-source",
+        "ignored-coordination-record-admitted",
+        "ignored-adoption-record-admitted",
+        "ignored-verification-output-admitted",
+        "check-input-selector-unbound",
+        "vcs-metadata-required-inside-frozen-root",
+    )
+    assert set(module.EXECUTION_CASE_IDS).issubset(
+        {case.case_id for case in report.generated_cases}
+    )
+    assert len(report.coverage_receipts) == 1

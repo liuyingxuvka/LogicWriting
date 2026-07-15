@@ -24,6 +24,8 @@ if str(FLOWGUARD_ROOT) not in sys.path:
 
 from models.frozen_source_contract_exhaustion import (  # noqa: E402
     CASE_IDS as FROZEN_SOURCE_CASE_IDS,
+    EXECUTION_CASE_IDS as FROZEN_EXECUTION_CASE_IDS,
+    review_frozen_execution_boundary,
     review_frozen_source_name_family,
 )
 
@@ -57,11 +59,19 @@ def inventory_revision(value: Mapping[str, Any] | None = None) -> str:
         )
         if case_id in FROZEN_SOURCE_CASE_IDS
     )
+    execution_boundary_case_ids = tuple(
+        case_id
+        for case_id in contract_exhaustion_to_test_mesh_cell_ids(
+            review_frozen_execution_boundary()
+        )
+        if case_id in FROZEN_EXECUTION_CASE_IDS
+    )
     payload = {
         "checks": contract["checks"],
         "version": contract.get("version"),
         "change_id": contract.get("change_id"),
         "frozen_source_case_ids": source_name_case_ids,
+        "frozen_execution_case_ids": execution_boundary_case_ids,
     }
     canonical = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
     return "sha256:" + hashlib.sha256(canonical).hexdigest()
@@ -141,6 +151,17 @@ def release_plan(receipts: Mapping[str, Mapping[str, Any]] | None = None) -> Tes
         )
         if case_id in FROZEN_SOURCE_CASE_IDS
     )
+    frozen_execution_case_ids = tuple(
+        case_id
+        for case_id in contract_exhaustion_to_test_mesh_cell_ids(
+            review_frozen_execution_boundary()
+        )
+        if case_id in FROZEN_EXECUTION_CASE_IDS
+    )
+    frozen_boundary_case_ids = (
+        *frozen_source_case_ids,
+        *frozen_execution_case_ids,
+    )
 
     check_items = tuple(
         TestPartitionItem(
@@ -157,7 +178,7 @@ def release_plan(receipts: Mapping[str, Mapping[str, Any]] | None = None) -> Tes
         )
         for check in checks
     )
-    case_items = tuple(
+    source_case_items = tuple(
         TestPartitionItem(
             case_id,
             item_type="validation_obligation",
@@ -171,7 +192,30 @@ def release_plan(receipts: Mapping[str, Mapping[str, Any]] | None = None) -> Tes
         )
         for case_id in frozen_source_case_ids
     )
-    items = check_items + case_items
+    execution_case_items = tuple(
+        TestPartitionItem(
+            case_id,
+            item_type="validation_obligation",
+            owner_suite_id="check.tests.full",
+            description=(
+                "OpenSpec frozen owner runtime preparation, admitted-source, "
+                "input-manifest, and repository-metadata boundary"
+            ),
+            touched_paths=(
+                "scripts/check_reader_judgment.py",
+                "scripts/prepare_reader_quality_receipt.py",
+                "scripts/check_privacy.py",
+                "scripts/check_public_docs.py",
+                "scripts/check_release_surface.py",
+                "scripts/run_frozen_validation.py",
+                "openspec/changes/create-logic-writing/verification-contract.yaml",
+                "tests/contract/test_release_wrappers.py",
+            ),
+            inventory_revision=revision,
+        )
+        for case_id in frozen_execution_case_ids
+    )
+    items = check_items + source_case_items + execution_case_items
     suites = tuple(
         _receipt_suite(
             check,
@@ -179,7 +223,7 @@ def release_plan(receipts: Mapping[str, Mapping[str, Any]] | None = None) -> Tes
             (
                 str(check["id"]),
                 *consumers.get(str(check["id"]), ()),
-                *(frozen_source_case_ids if str(check["id"]) == "check.tests.full" else ()),
+                *(frozen_boundary_case_ids if str(check["id"]) == "check.tests.full" else ()),
             ),
             receipt_map.get(str(check["id"])),
         )

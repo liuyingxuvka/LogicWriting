@@ -42,6 +42,7 @@ from models.common import (  # noqa: E402
 )
 from models.known_bad import run_known_bad_proofs  # noqa: E402
 from models.frozen_source_contract_exhaustion import (  # noqa: E402
+    review_frozen_execution_boundary,
     review_frozen_source_name_family,
 )
 from models.route_and_guard_model import build_plan as route_plan  # noqa: E402
@@ -281,6 +282,7 @@ def run(profile: str):
     graph_reports = _loop_and_progress_reports()
     field_lifecycle = review_retirement_visibility_fields()
     source_name_exhaustion = review_frozen_source_name_family()
+    execution_boundary_exhaustion = review_frozen_execution_boundary()
     if profile == "model-phase":
         model_ok = all(summary.overall_status in {"pass", "pass_with_gaps"} for summary in summaries.values())
     else:
@@ -351,6 +353,46 @@ def run(profile: str):
                 "unbounded verifier or filesystem behavior."
             ),
         },
+        "frozen_execution_contract_exhaustion": {
+            "ok": execution_boundary_exhaustion.ok,
+            "decision": execution_boundary_exhaustion.decision,
+            "confidence": execution_boundary_exhaustion.confidence,
+            "finding_count": len(execution_boundary_exhaustion.findings),
+            "generated_case_ids": [
+                case.case_id
+                for case in execution_boundary_exhaustion.generated_cases
+            ],
+            "coverage_receipt_ids": [
+                receipt.receipt_id
+                for receipt in execution_boundary_exhaustion.coverage_receipts
+            ],
+            "model_obligation_ids": [
+                obligation.obligation_id
+                for obligation in contract_exhaustion_to_model_obligations(
+                    execution_boundary_exhaustion
+                )
+            ],
+            "test_mesh_case_ids": list(
+                contract_exhaustion_to_test_mesh_cell_ids(
+                    execution_boundary_exhaustion
+                )
+            ),
+            "risk_gate_ids": list(
+                contract_exhaustion_to_risk_gate_ids(
+                    execution_boundary_exhaustion
+                )
+            ),
+            "composite_handoff_acceptance_ids": list(
+                contract_exhaustion_to_composite_handoff_acceptance_ids(
+                    execution_boundary_exhaustion
+                )
+            ),
+            "claim_boundary": (
+                "Finite frozen runtime-prerequisite, admitted-source, input-manifest, "
+                "and repository-metadata boundary only; it does not classify "
+                "unbounded verifier behavior."
+            ),
+        },
         "claim_boundary": (
             "model-phase evidence only; model-code-test alignment is inspected but not consumed as conformance"
             if profile == "model-phase"
@@ -360,7 +402,7 @@ def run(profile: str):
                 "terminal test execution remains a separate frozen validation owner"
             )
         ),
-        "status": "pass_with_gaps" if model_ok and bad_ok and graph_ok and field_lifecycle.ok and source_name_exhaustion.ok and profile == "model-phase" else ("pass" if model_ok and bad_ok and graph_ok and field_lifecycle.ok and source_name_exhaustion.ok else "failed"),
+        "status": "pass_with_gaps" if model_ok and bad_ok and graph_ok and field_lifecycle.ok and source_name_exhaustion.ok and execution_boundary_exhaustion.ok and profile == "model-phase" else ("pass" if model_ok and bad_ok and graph_ok and field_lifecycle.ok and source_name_exhaustion.ok and execution_boundary_exhaustion.ok else "failed"),
     }
     canonical = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
     payload["receipt_sha256"] = hashlib.sha256(canonical).hexdigest()

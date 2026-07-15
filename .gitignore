@@ -20,6 +20,7 @@ run-artifacts/
 run_artifacts/
 validation-receipts/
 openspec/**/verification-report.json
+openspec/**/verification-receipts/
 
 # Local tool and editor state.
 .DS_Store

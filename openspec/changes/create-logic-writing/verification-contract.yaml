@@ -243,7 +243,7 @@ obligations:
     evidence: [check.tests.freshness, check.models.full]
   - id: req.closure.frozen-materialization
     source: "specs/evidence-freshness-closure/spec.md#Requirement: Frozen validation materializes every governed source"
-    claim: Every declared authority input survives frozen materialization, including same-class generated-output basename collisions.
+    claim: Every check binds concrete admitted inputs that survive frozen materialization, ignored internal records stay out, each owner creates its own runtime prerequisites, and metadata-free frozen roots do not pretend to contain Git state.
     required: true
     evidence: [check.tests.routing, check.models.alignment, check.testmesh.plan, check.tests.full]
   - id: req.closure.no-progress
@@ -420,10 +420,10 @@ checks:
     validation_scope: full
     snapshot_policy: frozen
     toolchain_identity: logic-writing-judgment-validator-v1
-    input_selectors: [skills/logic-writing/references/shared/human-writing.md, skills/logic-writing/assets/schemas/reader-judgment.schema.json, tests/fixtures/forward/**, run-artifacts/reader-quality-judgment.json]
+    input_selectors: [scripts/check_reader_judgment.py, scripts/prepare_reader_quality_receipt.py, skills/logic-writing/references/shared/human-writing.md, skills/logic-writing/scripts/**, skills/logic-writing/assets/schemas/reader-judgment.schema.json, tests/support.py, tests/fixtures/forward/**]
     depends_on_receipts: [check.tests.reader, check.tests.e2e]
     command: python
-    args: [skills/logic-writing/scripts/validate_judgment_receipt.py, --input, run-artifacts/reader-quality-judgment.json, --receipt-root, run-artifacts/reader-receipts, --output, run-artifacts/reader-quality-judgment-result.json]
+    args: [scripts/check_reader_judgment.py, --root, ., --json]
     timeout_seconds: 300
     required: true
     covers: [req.reader.actual-text, req.reader.no-internal-language, req.reader.flow, req.reader.genre, req.reader.evidence-classes]
@@ -452,7 +452,41 @@ checks:
     validation_scope: full
     snapshot_policy: frozen
     toolchain_identity: python-public-docs-wrapper-v1
-    input_selectors: [.]
+    input_selectors:
+      - .codex/skills/**/*.md
+      - .flowguard/**/*.py
+      - .flowguard/**/*.json
+      - .flowguard/project.toml
+      - .gitattributes
+      - .gitignore
+      - .logicguard/**/*.yaml
+      - .skillguard/*.json
+      - AGENTS.md
+      - CHANGELOG.md
+      - CONTRIBUTING.md
+      - LICENSE
+      - MIGRATION.md
+      - README.md
+      - README.zh-CN.md
+      - VERSION
+      - assets/readme-hero/**/*
+      - docs/**/*.md
+      - openspec/config.yaml
+      - openspec/changes/create-logic-writing/.openspec.yaml
+      - openspec/changes/create-logic-writing/**/*.md
+      - openspec/changes/create-logic-writing/**/*.yaml
+      - pyproject.toml
+      - scripts/**/*.py
+      - skills/logic-writing/SKILL.md
+      - skills/logic-writing/agents/*.yaml
+      - skills/logic-writing/assets/schemas/*.json
+      - skills/logic-writing/references/**/*.md
+      - skills/logic-writing/scripts/**/*.py
+      - skills/logic-writing/.skillguard/*.json
+      - skills/logic-writing/.skillguard/**/*.py
+      - skills/logic-writing/.skillguard/**/*.json
+      - tests/**/*.py
+      - tests/fixtures/**/*
     depends_on_receipts: [check.tests.e2e]
     command: python
     args: [scripts/check_public_docs.py, --root, ., --json]
@@ -468,7 +502,41 @@ checks:
     validation_scope: full
     snapshot_policy: frozen
     toolchain_identity: python-privacy-wrapper-v1
-    input_selectors: [.]
+    input_selectors:
+      - .codex/skills/**/*.md
+      - .flowguard/**/*.py
+      - .flowguard/**/*.json
+      - .flowguard/project.toml
+      - .gitattributes
+      - .gitignore
+      - .logicguard/**/*.yaml
+      - .skillguard/*.json
+      - AGENTS.md
+      - CHANGELOG.md
+      - CONTRIBUTING.md
+      - LICENSE
+      - MIGRATION.md
+      - README.md
+      - README.zh-CN.md
+      - VERSION
+      - assets/readme-hero/**/*
+      - docs/**/*.md
+      - openspec/config.yaml
+      - openspec/changes/create-logic-writing/.openspec.yaml
+      - openspec/changes/create-logic-writing/**/*.md
+      - openspec/changes/create-logic-writing/**/*.yaml
+      - pyproject.toml
+      - scripts/**/*.py
+      - skills/logic-writing/SKILL.md
+      - skills/logic-writing/agents/*.yaml
+      - skills/logic-writing/assets/schemas/*.json
+      - skills/logic-writing/references/**/*.md
+      - skills/logic-writing/scripts/**/*.py
+      - skills/logic-writing/.skillguard/*.json
+      - skills/logic-writing/.skillguard/**/*.py
+      - skills/logic-writing/.skillguard/**/*.json
+      - tests/**/*.py
+      - tests/fixtures/**/*
     depends_on_receipts: [check.public.docs]
     command: python
     args: [scripts/check_privacy.py, --root, ., --json]
@@ -484,10 +552,44 @@ checks:
     validation_scope: full
     snapshot_policy: frozen
     toolchain_identity: python-release-surface-wrapper-v1
-    input_selectors: [.]
+    input_selectors:
+      - .codex/skills/**/*.md
+      - .flowguard/**/*.py
+      - .flowguard/**/*.json
+      - .flowguard/project.toml
+      - .gitattributes
+      - .gitignore
+      - .logicguard/**/*.yaml
+      - .skillguard/*.json
+      - AGENTS.md
+      - CHANGELOG.md
+      - CONTRIBUTING.md
+      - LICENSE
+      - MIGRATION.md
+      - README.md
+      - README.zh-CN.md
+      - VERSION
+      - assets/readme-hero/**/*
+      - docs/**/*.md
+      - openspec/config.yaml
+      - openspec/changes/create-logic-writing/.openspec.yaml
+      - openspec/changes/create-logic-writing/**/*.md
+      - openspec/changes/create-logic-writing/**/*.yaml
+      - pyproject.toml
+      - scripts/**/*.py
+      - skills/logic-writing/SKILL.md
+      - skills/logic-writing/agents/*.yaml
+      - skills/logic-writing/assets/schemas/*.json
+      - skills/logic-writing/references/**/*.md
+      - skills/logic-writing/scripts/**/*.py
+      - skills/logic-writing/.skillguard/*.json
+      - skills/logic-writing/.skillguard/**/*.py
+      - skills/logic-writing/.skillguard/**/*.json
+      - tests/**/*.py
+      - tests/fixtures/**/*
     depends_on_receipts: [check.privacy]
     command: python
-    args: [scripts/check_release_surface.py, --root, ., --mode, source, --require-clean, --require-head, --json]
+    args: [scripts/check_release_surface.py, --root, ., --mode, source, --json]
     timeout_seconds: 300
     required: true
     covers: [req.routing.one-owner, req.reader.no-internal-language, req.closure.identity]
@@ -651,31 +753,49 @@ checks:
 
 freshness:
   watch:
-    - openspec/changes/create-logic-writing/proposal.md
-    - openspec/changes/create-logic-writing/design.md
-    - openspec/changes/create-logic-writing/tasks.md
-    - openspec/changes/create-logic-writing/specs/**/*.md
-    - openspec/changes/create-logic-writing/verification-contract.yaml
-    - skills/logic-writing/SKILL.md
-    - skills/logic-writing/agents/openai.yaml
-    - skills/logic-writing/references/**/*.md
-    - skills/logic-writing/scripts/**/*.py
-    - skills/logic-writing/assets/schemas/**/*.json
-    - skills/logic-writing/.skillguard/*.json
+    - .codex/skills/**/*.md
     - .flowguard/**/*.py
     - .flowguard/**/*.json
-    - tests/**/*.py
-    - tests/fixtures/**/*
-    - docs/**/*.md
-    - scripts/**/*.py
+    - .flowguard/project.toml
+    - .gitattributes
+    - .gitignore
+    - .logicguard/**/*.yaml
+    - .skillguard/*.json
+    - AGENTS.md
+    - CHANGELOG.md
+    - CONTRIBUTING.md
+    - LICENSE
+    - MIGRATION.md
     - README.md
     - README.zh-CN.md
     - VERSION
+    - assets/readme-hero/**/*
+    - docs/**/*.md
+    - openspec/config.yaml
+    - openspec/changes/create-logic-writing/.openspec.yaml
+    - openspec/changes/create-logic-writing/**/*.md
+    - openspec/changes/create-logic-writing/**/*.yaml
+    - pyproject.toml
+    - scripts/**/*.py
+    - skills/logic-writing/SKILL.md
+    - skills/logic-writing/agents/*.yaml
+    - skills/logic-writing/assets/schemas/*.json
+    - skills/logic-writing/references/**/*.md
+    - skills/logic-writing/scripts/**/*.py
+    - skills/logic-writing/.skillguard/*.json
+    - skills/logic-writing/.skillguard/**/*.py
+    - skills/logic-writing/.skillguard/**/*.json
+    - tests/**/*.py
+    - tests/fixtures/**/*
   exclude:
     - "**/verification-report.json"
+    - "**/verification-receipts/**"
     - "**/.skillguard/runs/**"
     - "**/.flowguard/evidence/**"
     - "**/run-artifacts/**"
     - "**/run_artifacts/**"
     - "**/__pycache__/**"
     - "**/.pytest_cache/**"
+    - ".flowguard/adoption_log.jsonl"
+    - "docs/coordination.md"
+    - "docs/flowguard_adoption_log.md"

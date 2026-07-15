@@ -3,11 +3,14 @@
 from __future__ import annotations
 
 import argparse
+import fnmatch
 import hashlib
 import json
 import re
 import sys
 from pathlib import Path
+
+import yaml
 
 if str(Path(__file__).resolve().parent) not in sys.path:
     sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -35,6 +38,32 @@ SENSITIVE_NGRAM_HASHES = {
 WORD_TOKEN = re.compile(r"[A-Za-z0-9]+")
 
 
+def _fallback_source_paths(root: Path) -> list[Path]:
+    paths = [path for path in root.rglob("*") if path.is_file()]
+    contract_path = (
+        root
+        / "openspec"
+        / "changes"
+        / "create-logic-writing"
+        / "verification-contract.yaml"
+    )
+    if not contract_path.is_file():
+        return paths
+    contract = yaml.safe_load(contract_path.read_text(encoding="utf-8")) or {}
+    patterns = tuple(
+        str(item).replace("\\", "/")
+        for item in (contract.get("freshness") or {}).get("exclude", [])
+    )
+    return [
+        path
+        for path in paths
+        if not any(
+            fnmatch.fnmatchcase(path.relative_to(root).as_posix(), pattern)
+            for pattern in patterns
+        )
+    ]
+
+
 def _contains_sensitive_ngram(text: str) -> bool:
     tokens = [item.casefold() for item in WORD_TOKEN.findall(text)]
     for size, denied_digests in SENSITIVE_NGRAM_HASHES.items():
@@ -53,7 +82,7 @@ def scan(root: Path):
     paths = (
         [root / Path(*item.replace("\\", "/").split("/")) for item in admitted]
         if admitted
-        else list(root.rglob("*"))
+        else _fallback_source_paths(root)
     )
     for path in paths:
         if not path.is_file() or path.suffix.lower() not in TEXT_SUFFIXES:

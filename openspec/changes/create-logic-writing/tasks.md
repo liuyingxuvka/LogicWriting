@@ -121,7 +121,7 @@
 - [x] 10.4 Write `MIGRATION.md` with exact old-to-new route mapping, clean version line, no compatibility path, backup/recovery boundary, and residual-reference checklist.
 - [x] 10.5 Write `CHANGELOG.md`, `CONTRIBUTING.md`, architecture, responsibility-map, and release/retirement checklist documents.
 - [x] 10.6 Remove every placeholder, local path, secret, private case, internal coordination record, and unsupported release claim from tracked files.
-- [x] 10.7 Keep version, README status, changelog, tag, and release notes synchronized at `1.0.0`.
+- [x] 10.7 Keep the immutable initial `v1.0.0` identity and the repaired `v1.0.1` version, README status, changelog, tag, and release notes synchronized.
 
 ## 11. Frozen validation and repair
 
@@ -134,6 +134,10 @@
 - [x] 11.7 Prepare the reader-quality judgment owner and representative actual-artifact fixtures.
 - [x] 11.8 Define the final report fields for claim boundary, skipped checks, residual risk, accounting, and terminal receipt hashes.
 - [x] 11.9 Backpropagate the frozen-source filename collision into OpenSpec, FlowGuard Model-Miss Review, a finite ContractExhaustionMesh family, Model-Test Alignment, TestMesh, and an observed-plus-same-class regression.
+- [x] 11.10 Make the reader-judgment check self-contained under one frozen execution owner instead of depending on a pre-existing ignored runtime file.
+- [x] 11.11 Exclude ignored coordination, adoption, and verification-receipt records from frozen public-source materialization, and bind the observed failures into FlowGuard and regression tests.
+- [x] 11.12 Replace repository-dot check selectors with concrete admitted-source manifests and expand the frozen freshness inventory to every public source surface those checks observe.
+- [x] 11.13 Make privacy fallback honor the same admitted-source exclusions and keep Git cleanliness, branch, commit, tag, and hosted-release identity outside metadata-free frozen source checks.
 
 ## 12. Install and global route cutover
 

@@ -136,8 +136,8 @@ def _validate_plan(contract: Mapping[str, Any]) -> tuple[list[dict[str, Any]], d
 
 def _is_ignored(relative: Path, *, explicit: bool) -> bool:
     parts = relative.as_posix().split("/")
-    if explicit and relative.as_posix() == "run-artifacts/reader-quality-judgment.json":
-        return False
+    if relative.name == "verification-report.json":
+        return True
     if any(
         part
         in {
@@ -150,6 +150,9 @@ def _is_ignored(relative: Path, *, explicit: bool) -> bool:
             "scratch",
             "backups",
             "private",
+            "run-artifacts",
+            "run_artifacts",
+            "verification-receipts",
         }
         for part in parts
     ):

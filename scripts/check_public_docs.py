@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 import argparse
+import fnmatch
 import re
 from pathlib import Path
+
+import yaml
 
 from _release_common import emit, git_lines
 
@@ -75,10 +78,29 @@ def _public_inventory(root: Path) -> set[str]:
     admitted = git_lines(root, "ls-files", "--cached", "--others", "--exclude-standard")
     if admitted:
         return {item.replace("\\", "/") for item in admitted}
-    return {
+    inventory = {
         path.relative_to(root).as_posix()
         for path in root.rglob("*")
         if path.is_file() and ".git" not in path.parts
+    }
+    contract_path = (
+        root
+        / "openspec"
+        / "changes"
+        / "create-logic-writing"
+        / "verification-contract.yaml"
+    )
+    if not contract_path.is_file():
+        return inventory
+    contract = yaml.safe_load(contract_path.read_text(encoding="utf-8")) or {}
+    patterns = tuple(
+        str(item).replace("\\", "/")
+        for item in (contract.get("freshness") or {}).get("exclude", [])
+    )
+    return {
+        relative
+        for relative in inventory
+        if not any(fnmatch.fnmatchcase(relative, pattern) for pattern in patterns)
     }
 
 

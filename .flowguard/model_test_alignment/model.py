@@ -26,6 +26,8 @@ if str(FLOWGUARD_ROOT) not in sys.path:
 from models.retirement_field_lifecycle import review_retirement_visibility_fields
 from models.frozen_source_contract_exhaustion import (
     CASE_IDS as FROZEN_SOURCE_CASE_IDS,
+    EXECUTION_CASE_IDS as FROZEN_EXECUTION_CASE_IDS,
+    review_frozen_execution_boundary,
     review_frozen_source_name_family,
 )
 
@@ -53,6 +55,38 @@ _FROZEN_SOURCE_OBLIGATIONS = tuple(
 )
 _FROZEN_SOURCE_OBLIGATION_IDS = tuple(
     obligation.obligation_id for obligation in _FROZEN_SOURCE_OBLIGATIONS
+)
+
+_FROZEN_EXECUTION_REPORT = review_frozen_execution_boundary()
+_FROZEN_EXECUTION_OBLIGATIONS = tuple(
+    replace(
+        obligation,
+        model_miss_origin=True,
+        required_closure_evidence_roles=(
+            ("observed_regression", "same_class_generalized")
+            if FROZEN_EXECUTION_CASE_IDS[0] in obligation.obligation_id
+            else ("same_class_generalized",)
+        ),
+        behavior_plane="development_process",
+        business_intent_id="intent:freeze-one-validation-owner",
+        behavior_commitment_id="C07:freeze-one-validation-owner",
+        primary_path_id="logic_writing.release.validation",
+    )
+    for obligation in contract_exhaustion_to_model_obligations(
+        _FROZEN_EXECUTION_REPORT
+    )
+    if obligation.obligation_id
+    in {
+        f"contract_exhaustion:{case_id}"
+        for case_id in FROZEN_EXECUTION_CASE_IDS
+    }
+)
+_FROZEN_EXECUTION_OBLIGATION_IDS = tuple(
+    obligation.obligation_id for obligation in _FROZEN_EXECUTION_OBLIGATIONS
+)
+_FROZEN_BOUNDARY_OBLIGATION_IDS = (
+    *_FROZEN_SOURCE_OBLIGATION_IDS,
+    *_FROZEN_EXECUTION_OBLIGATION_IDS,
 )
 
 
@@ -269,7 +303,7 @@ def _obligation(spec: BindingSpec) -> ModelObligation:
 
 def _contract(spec: BindingSpec) -> CodeContract:
     extra_obligations = (
-        _FROZEN_SOURCE_OBLIGATION_IDS
+        _FROZEN_BOUNDARY_OBLIGATION_IDS
         if spec.contract_id == "contract:verification-owner-plan"
         else ()
     )
@@ -352,6 +386,44 @@ def _frozen_source_evidence() -> tuple[TestEvidence, ...]:
     return tuple(evidence)
 
 
+def _frozen_execution_evidence() -> tuple[TestEvidence, ...]:
+    evidence: list[TestEvidence] = []
+    for obligation in _FROZEN_EXECUTION_OBLIGATIONS:
+        manifest_or_metadata_case = any(
+            case_id in obligation.obligation_id
+            for case_id in FROZEN_EXECUTION_CASE_IDS[-2:]
+        )
+        test_name = (
+            "test_frozen_public_checks_bind_concrete_admitted_source_manifests"
+            if manifest_or_metadata_case
+            else "test_frozen_boundary_excludes_runtime_inputs_and_internal_records"
+        )
+        for role in obligation.required_closure_evidence_roles:
+            evidence.append(
+                TestEvidence(
+                    f"test:frozen-execution:{obligation.obligation_id}:{role}",
+                    test_name=test_name,
+                    path="tests/contract/test_release_wrappers.py",
+                    command=(
+                        "python -m pytest -q "
+                        "tests/contract/test_release_wrappers.py"
+                    ),
+                    result_status="passed",
+                    evidence_current=True,
+                    test_kind="replay",
+                    covered_obligations=(obligation.obligation_id,),
+                    covered_code_contracts=("contract:verification-owner-plan",),
+                    assertion_scope="external_contract",
+                    closure_evidence_role=role,
+                    behavior_plane="development_process",
+                    business_intent_id="intent:freeze-one-validation-owner",
+                    behavior_commitment_id="C07:freeze-one-validation-owner",
+                    primary_path_id="logic_writing.release.validation",
+                )
+            )
+    return tuple(evidence)
+
+
 def aligned_plan() -> ModelTestAlignmentPlan:
     field_lifecycle = review_retirement_visibility_fields()
     return ModelTestAlignmentPlan(
@@ -359,6 +431,7 @@ def aligned_plan() -> ModelTestAlignmentPlan:
         obligations=(
             *( _obligation(spec) for spec in BINDINGS),
             *_FROZEN_SOURCE_OBLIGATIONS,
+            *_FROZEN_EXECUTION_OBLIGATIONS,
         ),
         code_contracts=tuple(_contract(spec) for spec in BINDINGS),
         test_evidence=(
@@ -368,6 +441,7 @@ def aligned_plan() -> ModelTestAlignmentPlan:
                 for kind in spec.required_kinds
             ),
             *_frozen_source_evidence(),
+            *_frozen_execution_evidence(),
         ),
         field_lifecycle_reports=(field_lifecycle,),
         field_lifecycle_projections=field_lifecycle.projections,

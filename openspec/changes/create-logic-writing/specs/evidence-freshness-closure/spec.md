@@ -177,13 +177,33 @@ The system SHALL keep user-task artifacts in the `agent_operation` freshness pla
 - **THEN** only validation owners that consume the changed component and their installation or release projections SHALL become stale
 
 ### Requirement: Frozen validation materializes every governed source
-The development validation plane SHALL prove that every declared authority input is present byte-for-byte in the frozen execution root and SHALL block tracked source names that the verifier classifies as generated output.
+The development validation plane SHALL prove that every declared authority input is present byte-for-byte in the frozen execution root, SHALL bind every command to concrete admitted-source selectors, SHALL block tracked source names that the verifier classifies as generated output, SHALL exclude ignored internal records from public-source checks, SHALL require each execution owner to create its own runtime prerequisites, and SHALL NOT require repository metadata that the frozen root does not materialize.
 
 #### Scenario: Authority schema name collides with generated evidence
 - **WHEN** a tracked schema basename matches the verifier's receipt, cache, progress, or registry output family
 - **THEN** final validation SHALL block before release
 - **AND** the authority SHALL be renamed directly without a compatibility alias
 - **AND** the observed collision plus the finite same-class basename family SHALL be replayed before broad confidence is restored
+
+#### Scenario: Runtime prerequisite is not source authority
+- **WHEN** a frozen check needs a generated judgment request or another runtime artifact
+- **THEN** the owning command SHALL create and consume that artifact inside its own execution
+- **AND** the runtime artifact SHALL NOT be declared as an initial frozen-source input
+
+#### Scenario: Local internal records exist beside public source
+- **WHEN** ignored coordination, adoption, verification-report, or verification-receipt records are present in the working tree
+- **THEN** frozen materialization SHALL exclude them from the public-source snapshot
+- **AND** the public documentation and privacy checks SHALL inspect only admitted source
+
+#### Scenario: A directory shorthand produces no check identity
+- **WHEN** a check-level selector such as the repository dot would resolve to an empty input hash map
+- **THEN** the check SHALL declare concrete file and glob selectors for the full source surface it observes
+- **AND** the frozen receipt SHALL bind a non-empty admitted-source manifest
+
+#### Scenario: Frozen source has no Git metadata
+- **WHEN** a source-surface check runs in a frozen root without `.git`, a branch name, or a commit object
+- **THEN** the frozen check SHALL validate version and public-source content without claiming Git cleanliness or branch identity
+- **AND** clean `main`, commit, tag, and hosted-release identity SHALL remain separate live-repository publication gates
 
 ### Requirement: Repeated no-progress loops terminate visibly
 The system SHALL detect repeated identical failed packets, gap sets, or artifact hashes and SHALL stop with a bounded blocker instead of claiming progress.
