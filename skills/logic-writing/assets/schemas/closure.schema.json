@@ -1,0 +1,226 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/liuyingxuvka/LogicWriting/schemas/closure.schema.json",
+  "title": "Logic Writing verifier-derived closure",
+  "description": "The final-owner closure artifact derived from current evidence. It is not a caller request and it does not accept self-reported predecessor closure fields.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "closure_id",
+    "final_owner",
+    "artifact_fingerprint",
+    "obligation_contract_receipt_fingerprint",
+    "obligation_manifest_fingerprint",
+    "route_decision_fingerprint",
+    "status",
+    "matched_receipt_fingerprints",
+    "authority_projection_fingerprint",
+    "residual_risk",
+    "safe_claim",
+    "unsafe_claim_boundary",
+    "next_actions",
+    "broad_claim_allowed",
+    "attempt_fingerprint",
+    "closure_fingerprint",
+    "terminal"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "closure_id": { "$ref": "#/$defs/identifier" },
+    "final_owner": { "enum": ["investigation", "academic-writing"] },
+    "artifact_fingerprint": { "$ref": "#/$defs/fingerprint" },
+    "obligation_contract_receipt_fingerprint": { "$ref": "#/$defs/fingerprint" },
+    "obligation_manifest_fingerprint": { "$ref": "#/$defs/fingerprint" },
+    "route_decision_fingerprint": { "$ref": "#/$defs/fingerprint" },
+    "status": { "enum": ["passed", "partial", "downgraded", "blocked", "no_progress_blocked"] },
+    "matched_receipt_fingerprints": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/fingerprint" },
+      "uniqueItems": true
+    },
+    "authority_projection_fingerprint": { "$ref": "#/$defs/fingerprint" },
+    "residual_risk": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/residual" }
+    },
+    "safe_claim": { "type": "string", "minLength": 1 },
+    "unsafe_claim_boundary": { "type": "string", "minLength": 1 },
+    "next_actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["owner", "action", "obligation_ids"],
+        "properties": {
+          "owner": { "$ref": "#/$defs/nextOwner" },
+          "action": { "$ref": "#/$defs/action" },
+          "obligation_ids": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "$ref": "#/$defs/identifier" },
+            "uniqueItems": true
+          }
+        }
+      }
+    },
+    "broad_claim_allowed": { "type": "boolean" },
+    "attempt_fingerprint": { "$ref": "#/$defs/fingerprint" },
+    "closure_fingerprint": { "$ref": "#/$defs/fingerprint" },
+    "terminal": { "type": "boolean" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": ["status"],
+        "properties": { "status": { "const": "passed" } }
+      },
+      "then": {
+        "properties": {
+          "matched_receipt_fingerprints": { "minItems": 1 },
+          "residual_risk": { "maxItems": 0 },
+          "next_actions": { "maxItems": 0 },
+          "terminal": { "const": true }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["status"],
+        "properties": { "status": { "enum": ["partial", "downgraded", "blocked"] } }
+      },
+      "then": {
+        "properties": {
+          "residual_risk": { "minItems": 1 },
+          "next_actions": { "minItems": 1 },
+          "broad_claim_allowed": { "const": false },
+          "terminal": { "const": false }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["status"],
+        "properties": { "status": { "const": "no_progress_blocked" } }
+      },
+      "then": {
+        "properties": {
+          "residual_risk": { "minItems": 1 },
+          "next_actions": { "minItems": 1 },
+          "broad_claim_allowed": { "const": false },
+          "terminal": { "const": true }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "fingerprint": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "residualStatus": {
+      "enum": [
+        "partial",
+        "bounded",
+        "downgraded",
+        "blocked",
+        "failed",
+        "not_run",
+        "stale",
+        "provider_unavailable",
+        "dependency_unavailable",
+        "access_gap",
+        "render_not_run",
+        "planning_only",
+        "saved_but_modeling_incomplete"
+      ]
+    },
+    "evidenceDomain": {
+      "enum": [
+        "source_discovery",
+        "source_observation",
+        "source_depth",
+        "source_library",
+        "argument_model",
+        "structured_artifact",
+        "model_depth",
+        "artifact_synthesis",
+        "temporal_trace",
+        "causal_trace",
+        "competing_storyline",
+        "prediction_boundary",
+        "process_model",
+        "process_freshness",
+        "document_content",
+        "document_mutation",
+        "document_render",
+        "document_visual",
+        "pdf_content",
+        "pdf_render",
+        "pdf_visual",
+        "citation_semantics",
+        "revision_provenance",
+        "reader_brief",
+        "reader_deterministic",
+        "reader_judgment"
+      ]
+    },
+    "nextOwner": {
+      "enum": [
+        "investigation",
+        "academic-writing",
+        "sourceguard",
+        "logicguard",
+        "traceguard",
+        "flowguard",
+        "documents",
+        "pdf",
+        "source_access",
+        "human_review",
+        "user"
+      ]
+    },
+    "action": {
+      "enum": [
+        "rerun",
+        "rerun_or_human_review",
+        "repair",
+        "downgrade",
+        "omit",
+        "request_access",
+        "human_review",
+        "declare_required_obligations",
+        "provide_input"
+      ]
+    },
+    "residual": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "obligation_id",
+        "evidence_domain",
+        "status",
+        "critical",
+        "affected_scope",
+        "safe_claim",
+        "unsafe_claim_boundary",
+        "next_owner",
+        "action"
+      ],
+      "properties": {
+        "obligation_id": { "$ref": "#/$defs/identifier" },
+        "evidence_domain": { "$ref": "#/$defs/evidenceDomain" },
+        "status": { "$ref": "#/$defs/residualStatus" },
+        "critical": { "type": "boolean" },
+        "affected_scope": { "type": "string", "minLength": 1 },
+        "safe_claim": { "type": "string", "minLength": 1 },
+        "unsafe_claim_boundary": { "type": "string", "minLength": 1 },
+        "next_owner": { "$ref": "#/$defs/nextOwner" },
+        "action": { "$ref": "#/$defs/action" }
+      }
+    }
+  }
+}

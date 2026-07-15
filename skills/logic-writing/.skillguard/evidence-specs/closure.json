@@ -1,0 +1,47 @@
+{
+  "check_id": "check:logic-writing:depth-closure",
+  "native_owner_id": "logic-writing",
+  "universes": [
+    {
+      "covered_claim_scope": [
+        "logic-writing:monotonic-current-closure"
+      ],
+      "evaluated_item_ids": [
+        "item:monotonic-closure"
+      ],
+      "inventory_items": [
+        {
+          "critical": true,
+          "item_id": "item:monotonic-closure",
+          "object_id": "obligation:logic-writing:monotonic-closure",
+          "stratum_ids": [
+            "stratum:all"
+          ]
+        }
+      ],
+      "policy_fingerprint": "4D4B8159902CFB38579BBE42C7CF6523EC057E3B7FE6B71AEEDDFF7A03C8E643",
+      "requested_claim_scope": [
+        "logic-writing:monotonic-current-closure"
+      ],
+      "selected_item_ids": [
+        "item:monotonic-closure"
+      ],
+      "universe_id": "universe:logic-writing:closure",
+      "validated_item_ids": [
+        "item:monotonic-closure"
+      ]
+    }
+  ],
+  "depth_contribution_ranges": [
+    {
+      "end": 1,
+      "kind": "semantic",
+      "obligation_ids": [
+        "obligation:logic-writing:monotonic-closure"
+      ],
+      "range_id": "range:logic-writing:monotonic-closure",
+      "start": 0,
+      "universe_id": "universe:logic-writing:closure"
+    }
+  ]
+}

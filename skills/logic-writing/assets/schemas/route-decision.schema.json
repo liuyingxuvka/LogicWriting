@@ -1,0 +1,207 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/liuyingxuvka/LogicWriting/schemas/route-decision.schema.json",
+  "title": "Logic Writing route decision",
+  "description": "The sole current routing contract. It records one active final owner or a visible non-active decision; predecessor route shapes are not accepted.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "decision_id",
+    "request_fingerprint",
+    "terminal_deliverable",
+    "final_owner",
+    "child_routes",
+    "material_assumptions",
+    "status",
+    "reason",
+    "stale_because",
+    "decided_at",
+    "decision_fingerprint"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "decision_id": { "$ref": "#/$defs/identifier" },
+    "request_fingerprint": { "$ref": "#/$defs/fingerprint" },
+    "terminal_deliverable": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "description", "acceptance_criteria", "fingerprint"],
+      "properties": {
+        "kind": {
+          "enum": [
+            "research_report",
+            "briefing",
+            "evidence_package",
+            "decision_note",
+            "investigated_answer",
+            "memo",
+            "evidence_audit",
+            "policy_analysis",
+            "market_analysis",
+            "case_investigation",
+            "paper",
+            "thesis",
+            "thesis_chapter",
+            "dissertation",
+            "dissertation_section",
+            "academic_chapter",
+            "literature_review",
+            "formal_literature_review",
+            "research_proposal",
+            "proposal",
+            "academic_revision",
+            "quick_lookup",
+            "quick_fact",
+            "grammar_only",
+            "formatting_only",
+            "casual_copy",
+            "casual_summary",
+            "unresolved"
+          ]
+        },
+        "description": { "type": "string", "minLength": 1 },
+        "acceptance_criteria": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "fingerprint": { "$ref": "#/$defs/fingerprint" }
+      }
+    },
+    "final_owner": {
+      "type": ["string", "null"],
+      "enum": ["investigation", "academic-writing", null]
+    },
+    "child_routes": {
+      "type": "array",
+      "items": { "const": "investigation" },
+      "maxItems": 1,
+      "uniqueItems": true
+    },
+    "material_assumptions": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "status": { "enum": ["current", "skipped", "ambiguous", "blocked", "stale"] },
+    "reason": { "type": "string", "minLength": 1 },
+    "stale_because": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "decided_at": { "type": "string", "format": "date-time" },
+    "decision_fingerprint": { "$ref": "#/$defs/fingerprint" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": ["status"],
+        "properties": { "status": { "const": "current" } }
+      },
+      "then": {
+        "properties": {
+          "final_owner": { "enum": ["investigation", "academic-writing"] },
+          "stale_because": { "maxItems": 0 }
+        }
+      },
+      "else": {
+        "properties": {
+          "final_owner": { "type": "null" },
+          "child_routes": { "maxItems": 0 }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["status", "final_owner"],
+        "properties": {
+          "status": { "const": "current" },
+          "final_owner": { "const": "investigation" }
+        }
+      },
+      "then": {
+        "properties": {
+          "child_routes": { "maxItems": 0 },
+          "terminal_deliverable": {
+            "properties": {
+              "kind": {
+                "enum": [
+                  "research_report",
+                  "briefing",
+                  "evidence_package",
+                  "decision_note",
+                  "investigated_answer",
+                  "memo",
+                  "evidence_audit",
+                  "policy_analysis",
+                  "market_analysis",
+                  "case_investigation"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["status", "final_owner"],
+        "properties": {
+          "status": { "const": "current" },
+          "final_owner": { "const": "academic-writing" }
+        }
+      },
+      "then": {
+        "properties": {
+          "terminal_deliverable": {
+            "properties": {
+              "kind": {
+                "enum": [
+                  "paper",
+                  "thesis",
+                  "thesis_chapter",
+                  "dissertation",
+                  "dissertation_section",
+                  "academic_chapter",
+                  "literature_review",
+                  "formal_literature_review",
+                  "research_proposal",
+                  "proposal",
+                  "academic_revision"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["status"],
+        "properties": { "status": { "const": "stale" } }
+      },
+      "then": { "properties": { "stale_because": { "minItems": 1 } } }
+    },
+    {
+      "if": {
+        "required": ["status"],
+        "properties": { "status": { "enum": ["current", "skipped", "ambiguous", "blocked"] } }
+      },
+      "then": { "properties": { "stale_because": { "maxItems": 0 } } }
+    }
+  ],
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "fingerprint": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    }
+  }
+}

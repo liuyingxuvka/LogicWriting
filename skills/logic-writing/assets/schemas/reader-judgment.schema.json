@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/liuyingxuvka/LogicWriting/schemas/reader-judgment.schema.json",
+  "title": "Logic Writing reader-quality judgment",
+  "description": "A qualitative judgment derived from actual artifact excerpts and bound to current ReaderBrief and deterministic authority receipts.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "judgment_id",
+    "artifact_locator",
+    "artifact_fingerprint",
+    "reader_brief_fingerprint",
+    "reader_brief_receipt_fingerprint",
+    "deterministic_receipt_fingerprint",
+    "actual_text_inspected",
+    "genre",
+    "judge_id",
+    "judge_kind",
+    "judged_at",
+    "rubric",
+    "observations",
+    "status",
+    "judgment_fingerprint"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "judgment_id": { "$ref": "#/$defs/identifier" },
+    "artifact_locator": { "type": "string", "minLength": 1 },
+    "artifact_fingerprint": { "$ref": "#/$defs/fingerprint" },
+    "reader_brief_fingerprint": { "$ref": "#/$defs/fingerprint" },
+    "reader_brief_receipt_fingerprint": { "$ref": "#/$defs/fingerprint" },
+    "deterministic_receipt_fingerprint": { "$ref": "#/$defs/fingerprint" },
+    "actual_text_inspected": { "const": true },
+    "genre": { "type": "string", "minLength": 1 },
+    "judge_id": { "$ref": "#/$defs/identifier" },
+    "judge_kind": { "enum": ["human", "model", "panel"] },
+    "judged_at": { "type": "string", "format": "date-time" },
+    "rubric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["clarity", "coherence", "reader_fit", "evidence_fidelity", "genre_fit"],
+      "properties": {
+        "clarity": { "$ref": "#/$defs/rubricRow" },
+        "coherence": { "$ref": "#/$defs/rubricRow" },
+        "reader_fit": { "$ref": "#/$defs/rubricRow" },
+        "evidence_fidelity": { "$ref": "#/$defs/rubricRow" },
+        "genre_fit": { "$ref": "#/$defs/rubricRow" }
+      }
+    },
+    "observations": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/observation" }
+    },
+    "status": { "enum": ["passed", "partial", "failed"] },
+    "judgment_fingerprint": { "$ref": "#/$defs/fingerprint" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "passed" } } },
+      "then": { "$ref": "#/$defs/allScoresAtLeastFour" }
+    },
+    {
+      "if": { "properties": { "status": { "const": "partial" } } },
+      "then": {
+        "allOf": [
+          { "$ref": "#/$defs/allScoresAtLeastThree" },
+          { "$ref": "#/$defs/atLeastOneScoreAtMostThree" }
+        ]
+      }
+    },
+    {
+      "if": { "properties": { "status": { "const": "failed" } } },
+      "then": { "$ref": "#/$defs/atLeastOneScoreAtMostTwo" }
+    }
+  ],
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "fingerprint": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "dimension": { "enum": ["clarity", "coherence", "reader_fit", "evidence_fidelity", "genre_fit"] },
+    "rubricRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["score", "reason"],
+      "properties": {
+        "score": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "reason": { "type": "string", "minLength": 1 }
+      }
+    },
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["observation_id", "dimension", "locator", "excerpt", "assessment"],
+      "properties": {
+        "observation_id": { "$ref": "#/$defs/identifier" },
+        "dimension": { "$ref": "#/$defs/dimension" },
+        "locator": { "type": "string", "pattern": "^line:[1-9][0-9]*(?:-[1-9][0-9]*)?$" },
+        "excerpt": { "type": "string", "minLength": 1 },
+        "assessment": { "type": "string", "minLength": 1 }
+      }
+    },
+    "allScoresAtLeastFour": {
+      "properties": { "rubric": { "properties": {
+        "clarity": { "properties": { "score": { "minimum": 4 } } },
+        "coherence": { "properties": { "score": { "minimum": 4 } } },
+        "reader_fit": { "properties": { "score": { "minimum": 4 } } },
+        "evidence_fidelity": { "properties": { "score": { "minimum": 4 } } },
+        "genre_fit": { "properties": { "score": { "minimum": 4 } } }
+      } } }
+    },
+    "allScoresAtLeastThree": {
+      "properties": { "rubric": { "properties": {
+        "clarity": { "properties": { "score": { "minimum": 3 } } },
+        "coherence": { "properties": { "score": { "minimum": 3 } } },
+        "reader_fit": { "properties": { "score": { "minimum": 3 } } },
+        "evidence_fidelity": { "properties": { "score": { "minimum": 3 } } },
+        "genre_fit": { "properties": { "score": { "minimum": 3 } } }
+      } } }
+    },
+    "atLeastOneScoreAtMostThree": {
+      "anyOf": [
+        { "properties": { "rubric": { "properties": { "clarity": { "properties": { "score": { "maximum": 3 } } } } } } },
+        { "properties": { "rubric": { "properties": { "coherence": { "properties": { "score": { "maximum": 3 } } } } } } },
+        { "properties": { "rubric": { "properties": { "reader_fit": { "properties": { "score": { "maximum": 3 } } } } } } },
+        { "properties": { "rubric": { "properties": { "evidence_fidelity": { "properties": { "score": { "maximum": 3 } } } } } } },
+        { "properties": { "rubric": { "properties": { "genre_fit": { "properties": { "score": { "maximum": 3 } } } } } } }
+      ]
+    },
+    "atLeastOneScoreAtMostTwo": {
+      "anyOf": [
+        { "properties": { "rubric": { "properties": { "clarity": { "properties": { "score": { "maximum": 2 } } } } } } },
+        { "properties": { "rubric": { "properties": { "coherence": { "properties": { "score": { "maximum": 2 } } } } } } },
+        { "properties": { "rubric": { "properties": { "reader_fit": { "properties": { "score": { "maximum": 2 } } } } } } },
+        { "properties": { "rubric": { "properties": { "evidence_fidelity": { "properties": { "score": { "maximum": 2 } } } } } } },
+        { "properties": { "rubric": { "properties": { "genre_fit": { "properties": { "score": { "maximum": 2 } } } } } } }
+      ]
+    }
+  }
+}

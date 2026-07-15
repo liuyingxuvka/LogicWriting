@@ -1,0 +1,676 @@
+contract_version: 1
+change: create-logic-writing
+
+obligations:
+  - id: req.routing.one-owner
+    source: "specs/unified-routing/spec.md#Requirement: Exactly one final owner"
+    claim: Every non-trivial request has exactly one final owner.
+    required: true
+    evidence: [check.tests.routing, check.tests.e2e, check.models.full]
+  - id: req.routing.terminal-deliverable
+    source: "specs/unified-routing/spec.md#Requirement: Route by terminal deliverable"
+    claim: The terminal artifact, not the first action, determines ownership.
+    required: true
+    evidence: [check.tests.routing, check.tests.e2e]
+  - id: req.routing.bounded-child
+    source: "specs/unified-routing/spec.md#Requirement: Mixed-route work uses bounded child requests"
+    claim: Academic-owned work can use investigation only as a bounded child.
+    required: true
+    evidence: [check.tests.routing, check.tests.e2e, check.models.full]
+  - id: req.routing.fingerprint
+    source: "specs/unified-routing/spec.md#Requirement: Route decisions are fingerprinted"
+    claim: Material request changes stale the route decision.
+    required: true
+    evidence: [check.tests.routing, check.tests.freshness]
+  - id: req.routing.ambiguity
+    source: "specs/unified-routing/spec.md#Requirement: Ambiguity remains explicit"
+    claim: Material ambiguity does not activate two owners.
+    required: true
+    evidence: [check.tests.routing, check.models.full]
+  - id: req.routing.skip
+    source: "specs/unified-routing/spec.md#Requirement: Trivial and out-of-scope work does not activate"
+    claim: Trivial work exits with a visible reason.
+    required: true
+    evidence: [check.tests.routing]
+  - id: req.routing.provider-boundary
+    source: "specs/unified-routing/spec.md#Requirement: Required specialist absence blocks domain substitution"
+    claim: Missing specialist authority cannot be replaced by a local imitation.
+    required: true
+    evidence: [check.tests.adapters, check.tests.adversarial]
+
+  - id: req.investigation.contract
+    source: "specs/investigation-route/spec.md#Requirement: Investigation begins with a claim and evidence contract"
+    claim: Investigation scope and evidence roles are explicit before broad search.
+    required: true
+    evidence: [check.tests.investigation, check.tests.e2e]
+  - id: req.investigation.candidate-boundary
+    source: "specs/investigation-route/spec.md#Requirement: Candidate sources are not facts"
+    claim: Candidate sources cannot support final factual wording.
+    required: true
+    evidence: [check.tests.investigation, check.tests.adversarial]
+  - id: req.investigation.depth
+    source: "specs/investigation-route/spec.md#Requirement: Investigation depth is obligation-driven"
+    claim: Critical gaps, lineages, and source roles determine depth.
+    required: true
+    evidence: [check.tests.investigation, check.tests.adapters, check.tests.e2e]
+  - id: req.investigation.traceguard
+    source: "specs/investigation-route/spec.md#Requirement: Temporal and causal claims use TraceGuard conditionally"
+    claim: Chronology and causal claims use current TraceGuard evidence.
+    required: true
+    evidence: [check.tests.investigation, check.tests.adapters, check.tests.adversarial]
+  - id: req.investigation.adjudication
+    source: "specs/investigation-route/spec.md#Requirement: Investigation adjudicates important conclusions"
+    claim: Central conclusions face alternatives and opposition before strong wording.
+    required: true
+    evidence: [check.tests.investigation, check.tests.adapters, check.tests.e2e]
+  - id: req.investigation.packet
+    source: "specs/investigation-route/spec.md#Requirement: Investigation returns a typed ResearchPacket"
+    claim: ResearchPacket content and identity are complete and bounded.
+    required: true
+    evidence: [check.tests.investigation, check.tests.e2e, check.tests.freshness]
+  - id: req.investigation.failure-visibility
+    source: "specs/investigation-route/spec.md#Requirement: Provider and execution failures remain visible"
+    claim: Provider, execution, access, bounded, and stale states cannot become pass.
+    required: true
+    evidence: [check.tests.investigation, check.tests.adversarial]
+  - id: req.investigation.verifier-closure
+    source: "specs/investigation-route/spec.md#Requirement: Investigation completion is verifier-derived"
+    claim: Caller-authored completion fields have no closure authority.
+    required: true
+    evidence: [check.tests.investigation, check.tests.adversarial, check.models.full]
+
+  - id: req.academic.owner
+    source: "specs/academic-writing-route/spec.md#Requirement: Academic route owns academic final artifacts"
+    claim: Academic work remains academic-owned through final closure.
+    required: true
+    evidence: [check.tests.academic, check.tests.e2e, check.models.full]
+  - id: req.academic.evidence-handoff
+    source: "specs/academic-writing-route/spec.md#Requirement: Evidence gaps use bounded investigation handoffs"
+    claim: Missing academic evidence becomes a bounded child request, downgrade, or gap.
+    required: true
+    evidence: [check.tests.academic, check.tests.e2e]
+  - id: req.academic.structure
+    source: "specs/academic-writing-route/spec.md#Requirement: Academic structure is modeled before broad drafting or revision"
+    claim: Important artifact units have structural contribution and progression evidence.
+    required: true
+    evidence: [check.tests.academic, check.tests.adapters]
+  - id: req.academic.deepening
+    source: "specs/academic-writing-route/spec.md#Requirement: Important shallow units are deepened before final prose"
+    claim: Important shallow units are deepened or receive a terminal treatment.
+    required: true
+    evidence: [check.tests.academic, check.tests.adapters]
+  - id: req.academic.documents
+    source: "specs/academic-writing-route/spec.md#Requirement: Existing document work uses the Documents adapter"
+    claim: DOCX mutation and visual evidence remain Documents-owned.
+    required: true
+    evidence: [check.tests.academic, check.tests.adapters, check.tests.adversarial]
+  - id: req.academic.pdf
+    source: "specs/academic-writing-route/spec.md#Requirement: PDF work uses the PDF adapter"
+    claim: PDF content and layout evidence remain separate and PDF-owned.
+    required: true
+    evidence: [check.tests.academic, check.tests.adapters]
+  - id: req.academic.citations
+    source: "specs/academic-writing-route/spec.md#Requirement: Citations bind to actual academic claims"
+    claim: Important claims bind to a source role and semantic support boundary.
+    required: true
+    evidence: [check.tests.academic, check.tests.adversarial]
+  - id: req.academic.provenance
+    source: "specs/academic-writing-route/spec.md#Requirement: Revision provenance is preserved"
+    claim: Revision treatments remain visible and current.
+    required: true
+    evidence: [check.tests.academic, check.tests.freshness]
+  - id: req.academic.actual-artifact
+    source: "specs/academic-writing-route/spec.md#Requirement: Final academic closure binds the actual artifact"
+    claim: Final academic checks bind the exact latest artifact.
+    required: true
+    evidence: [check.tests.academic, check.tests.freshness, check.tests.e2e]
+  - id: req.academic.final-owner
+    source: "specs/academic-writing-route/spec.md#Requirement: Only academic writing issues academic final closure"
+    claim: No child or layout process can close the academic artifact.
+    required: true
+    evidence: [check.tests.academic, check.tests.e2e, check.models.full]
+
+  - id: req.reader.two-room
+    source: "specs/reader-facing-synthesis/spec.md#Requirement: Reader-facing synthesis uses a two-room boundary"
+    claim: The writer receives a sanitized ReaderBrief, not the raw ledger.
+    required: true
+    evidence: [check.tests.reader, check.tests.e2e]
+  - id: req.reader.brief
+    source: "specs/reader-facing-synthesis/spec.md#Requirement: ReaderBrief carries content and boundaries"
+    claim: ReaderBrief preserves evidence, alternatives, limits, and allowed wording.
+    required: true
+    evidence: [check.tests.reader, check.tests.adversarial]
+  - id: req.reader.actual-text
+    source: "specs/reader-facing-synthesis/spec.md#Requirement: Quality is checked on actual text"
+    claim: Metadata cannot substitute for current text inspection.
+    required: true
+    evidence: [check.tests.reader, check.tests.adversarial, check.reader.judgment]
+  - id: req.reader.semantic-scope
+    source: "specs/reader-facing-synthesis/spec.md#Requirement: Scope escalation is evaluated in context"
+    claim: Scope escalation distinguishes unsupported assertions from explicit negation and licensed qualification.
+    required: true
+    evidence: [check.tests.reader, check.tests.adversarial]
+  - id: req.reader.no-internal-language
+    source: "specs/reader-facing-synthesis/spec.md#Requirement: Internal language is prohibited by default"
+    claim: Default artifacts do not leak internal workflow language.
+    required: true
+    evidence: [check.tests.reader, check.reader.judgment]
+  - id: req.reader.flow
+    source: "specs/reader-facing-synthesis/spec.md#Requirement: Paragraph flow is derived from artifact units"
+    claim: Reverse outline and transition evidence come from the actual artifact.
+    required: true
+    evidence: [check.tests.reader, check.tests.adversarial, check.reader.judgment]
+  - id: req.reader.genre
+    source: "specs/reader-facing-synthesis/spec.md#Requirement: Output is genre-adaptive and artifact-first"
+    claim: Final output follows the requested genre instead of an internal diagnostic template.
+    required: true
+    evidence: [check.tests.reader, check.reader.judgment, check.tests.e2e]
+  - id: req.reader.boundaries
+    source: "specs/reader-facing-synthesis/spec.md#Requirement: Citations and limitations survive sanitization"
+    claim: Reader cleanup cannot strengthen or detach supported claims.
+    required: true
+    evidence: [check.tests.reader, check.tests.adversarial]
+  - id: req.reader.staleness
+    source: "specs/reader-facing-synthesis/spec.md#Requirement: Reader-facing edits invalidate affected audits"
+    claim: Meaningful prose edits stale affected audit evidence.
+    required: true
+    evidence: [check.tests.reader, check.tests.freshness]
+  - id: req.reader.evidence-classes
+    source: "specs/reader-facing-synthesis/spec.md#Requirement: Reader quality uses deterministic and judgment evidence separately"
+    claim: Deterministic and judged quality evidence remain distinct and both gate closure.
+    required: true
+    evidence: [check.tests.reader, check.reader.judgment]
+
+  - id: req.closure.verifier-derived
+    source: "specs/evidence-freshness-closure/spec.md#Requirement: Closure status is verifier-derived"
+    claim: Closure derives from current evidence, never self-report.
+    required: true
+    evidence: [check.tests.freshness, check.tests.adversarial, check.models.full]
+  - id: req.closure.minimum-content
+    source: "specs/evidence-freshness-closure/spec.md#Requirement: Every final closure has a minimum content baseline"
+    claim: Process-only green evidence cannot close content; each route supplies its minimum content and reader evidence.
+    required: true
+    evidence: [check.tests.freshness, check.tests.academic, check.tests.adversarial, check.models.full]
+  - id: req.closure.identity
+    source: "specs/evidence-freshness-closure/spec.md#Requirement: Every receipt has exact identity"
+    claim: Receipts bind exact producer, inputs, outputs, scope, and artifact.
+    required: true
+    evidence: [check.tests.freshness]
+  - id: req.closure.propagation
+    source: "specs/evidence-freshness-closure/spec.md#Requirement: Material changes invalidate dependent evidence"
+    claim: Dependency edges propagate staleness to every affected consumer.
+    required: true
+    evidence: [check.tests.freshness, check.models.full]
+  - id: req.closure.monotonic
+    source: "specs/evidence-freshness-closure/spec.md#Requirement: Failure states propagate monotonically"
+    claim: Non-pass states cannot become pass through aggregation.
+    required: true
+    evidence: [check.tests.freshness, check.tests.adversarial, check.models.full]
+  - id: req.closure.no-substitution
+    source: "specs/evidence-freshness-closure/spec.md#Requirement: Planning artifacts cannot satisfy proof obligations"
+    claim: Plans, candidates, and progress cannot satisfy terminal obligations.
+    required: true
+    evidence: [check.tests.freshness, check.tests.adversarial]
+  - id: req.closure.native-owners
+    source: "specs/evidence-freshness-closure/spec.md#Requirement: Native owners remain authoritative"
+    claim: Specialist domain ownership is preserved end to end.
+    required: true
+    evidence: [check.tests.adapters, check.models.full, check.tests.e2e]
+  - id: req.closure.final-owner
+    source: "specs/evidence-freshness-closure/spec.md#Requirement: Only the final owner issues final closure"
+    claim: Child receipts close only bounded obligations.
+    required: true
+    evidence: [check.tests.freshness, check.tests.e2e, check.models.full]
+  - id: req.closure.broad
+    source: "specs/evidence-freshness-closure/spec.md#Requirement: Broad claims require broad current receipts"
+    claim: Broad wording requires broad current native evidence in all applicable domains.
+    required: true
+    evidence: [check.tests.freshness, check.tests.adversarial]
+  - id: req.closure.render
+    source: "specs/evidence-freshness-closure/spec.md#Requirement: Render failures have explicit consequences"
+    claim: Content extraction and visual proof remain separate.
+    required: true
+    evidence: [check.tests.adapters, check.tests.adversarial]
+  - id: req.closure.residual-risk
+    source: "specs/evidence-freshness-closure/spec.md#Requirement: Closure names residual risk and next owner"
+    claim: Non-pass closure identifies affected scope, safe wording, and next owner.
+    required: true
+    evidence: [check.tests.freshness, check.tests.e2e]
+  - id: req.closure.planes
+    source: "specs/evidence-freshness-closure/spec.md#Requirement: Operation and release staleness remain separate"
+    claim: Operation changes do not stale development evidence and vice versa without an explicit edge.
+    required: true
+    evidence: [check.tests.freshness, check.models.full]
+  - id: req.closure.no-progress
+    source: "specs/evidence-freshness-closure/spec.md#Requirement: Repeated no-progress loops terminate visibly"
+    claim: Identical failed packets and artifacts cannot loop forever.
+    required: true
+    evidence: [check.tests.freshness, check.models.full, check.tests.adversarial]
+
+checks:
+  - id: check.tests.routing
+    kind: command
+    semantic_check_id: logic-writing.routing.focused
+    execution_id: create-logic-writing.routing.v1
+    validation_scope: focused
+    snapshot_policy: live
+    toolchain_identity: python-pytest
+    input_selectors: [skills/logic-writing/scripts/select_route.py, skills/logic-writing/assets/schemas/route-decision.schema.json, tests/unit/test_routing.py]
+    depends_on_receipts: []
+    command: python
+    args: [-m, pytest, -q, tests/unit/test_routing.py]
+    timeout_seconds: 300
+    required: true
+    covers: [req.routing.one-owner, req.routing.terminal-deliverable, req.routing.bounded-child, req.routing.fingerprint, req.routing.ambiguity, req.routing.skip]
+    expected: {exit_code: 0}
+
+  - id: check.tests.adapters
+    kind: command
+    semantic_check_id: logic-writing.adapters.contract
+    execution_id: create-logic-writing.adapters.v1
+    validation_scope: focused
+    snapshot_policy: live
+    toolchain_identity: python-pytest-and-current-providers
+    input_selectors: [skills/logic-writing/references/adapters/**, skills/logic-writing/scripts/provider_preflight.py, skills/logic-writing/scripts/validate_adapter_result.py, skills/logic-writing/assets/schemas/adapter-*.schema.json, tests/contract/test_adapters.py]
+    depends_on_receipts: []
+    command: python
+    args: [-m, pytest, -q, tests/contract/test_adapters.py]
+    timeout_seconds: 600
+    required: true
+    covers: [req.routing.provider-boundary, req.investigation.depth, req.investigation.traceguard, req.investigation.adjudication, req.academic.structure, req.academic.deepening, req.academic.documents, req.academic.pdf, req.closure.native-owners, req.closure.render]
+    expected: {exit_code: 0}
+
+  - id: check.tests.investigation
+    kind: command
+    semantic_check_id: logic-writing.investigation.focused
+    execution_id: create-logic-writing.investigation.v1
+    validation_scope: focused
+    snapshot_policy: live
+    toolchain_identity: python-pytest
+    input_selectors: [skills/logic-writing/references/routes/investigation.md, skills/logic-writing/scripts/validate_source_registry.py, skills/logic-writing/scripts/validate_claim_support.py, skills/logic-writing/scripts/validate_research_packet.py, skills/logic-writing/assets/schemas/research-packet.schema.json, tests/unit/test_investigation.py]
+    depends_on_receipts: [check.tests.adapters]
+    command: python
+    args: [-m, pytest, -q, tests/unit/test_investigation.py]
+    timeout_seconds: 600
+    required: true
+    covers: [req.investigation.contract, req.investigation.candidate-boundary, req.investigation.depth, req.investigation.traceguard, req.investigation.adjudication, req.investigation.packet, req.investigation.failure-visibility, req.investigation.verifier-closure]
+    expected: {exit_code: 0}
+
+  - id: check.tests.academic
+    kind: command
+    semantic_check_id: logic-writing.academic.focused
+    execution_id: create-logic-writing.academic.v1
+    validation_scope: focused
+    snapshot_policy: live
+    toolchain_identity: python-pytest
+    input_selectors: [skills/logic-writing/references/routes/academic-writing.md, skills/logic-writing/scripts/validate_revision_provenance.py, skills/logic-writing/scripts/validate_claim_support.py, tests/unit/test_academic.py]
+    depends_on_receipts: [check.tests.adapters]
+    command: python
+    args: [-m, pytest, -q, tests/unit/test_academic.py]
+    timeout_seconds: 600
+    required: true
+    covers: [req.academic.owner, req.academic.evidence-handoff, req.academic.structure, req.academic.deepening, req.academic.documents, req.academic.pdf, req.academic.citations, req.academic.provenance, req.academic.actual-artifact, req.academic.final-owner]
+    expected: {exit_code: 0}
+
+  - id: check.tests.reader
+    kind: command
+    semantic_check_id: logic-writing.reader.focused
+    execution_id: create-logic-writing.reader.v1
+    validation_scope: focused
+    snapshot_policy: live
+    toolchain_identity: python-pytest
+    input_selectors: [skills/logic-writing/references/shared/reader-brief.md, skills/logic-writing/references/shared/human-writing.md, skills/logic-writing/scripts/build_reader_brief.py, skills/logic-writing/scripts/audit_reader_output.py, skills/logic-writing/assets/schemas/reader-brief.schema.json, tests/unit/test_reader.py]
+    depends_on_receipts: []
+    command: python
+    args: [-m, pytest, -q, tests/unit/test_reader.py]
+    timeout_seconds: 600
+    required: true
+    covers: [req.reader.two-room, req.reader.brief, req.reader.actual-text, req.reader.semantic-scope, req.reader.no-internal-language, req.reader.flow, req.reader.genre, req.reader.boundaries, req.reader.staleness, req.reader.evidence-classes]
+    expected: {exit_code: 0}
+
+  - id: check.tests.freshness
+    kind: command
+    semantic_check_id: logic-writing.freshness-closure.focused
+    execution_id: create-logic-writing.freshness-closure.v1
+    validation_scope: focused
+    snapshot_policy: live
+    toolchain_identity: python-pytest
+    input_selectors: [skills/logic-writing/scripts/receipt_store.py, skills/logic-writing/scripts/derive_closure.py, skills/logic-writing/assets/schemas/receipt.schema.json, skills/logic-writing/assets/schemas/closure.schema.json, tests/unit/test_freshness_closure.py]
+    depends_on_receipts: []
+    command: python
+    args: [-m, pytest, -q, tests/unit/test_freshness_closure.py]
+    timeout_seconds: 600
+    required: true
+    covers: [req.routing.fingerprint, req.investigation.packet, req.academic.provenance, req.academic.actual-artifact, req.reader.staleness, req.closure.verifier-derived, req.closure.minimum-content, req.closure.identity, req.closure.propagation, req.closure.monotonic, req.closure.no-substitution, req.closure.final-owner, req.closure.broad, req.closure.residual-risk, req.closure.planes, req.closure.no-progress]
+    expected: {exit_code: 0}
+
+  - id: check.models.alignment
+    kind: command
+    semantic_check_id: logic-writing.flowguard.model-test-alignment
+    execution_id: create-logic-writing.model-test-alignment.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: flowguard-0.55.0-python
+    input_selectors: [.flowguard/model_test_alignment/**, .flowguard/models/**, skills/logic-writing/scripts/**, tests/**]
+    depends_on_receipts: [check.tests.routing, check.tests.adapters, check.tests.investigation, check.tests.academic, check.tests.reader, check.tests.freshness]
+    command: python
+    args: [.flowguard/model_test_alignment/run_checks.py, --json]
+    timeout_seconds: 600
+    required: true
+    covers: [req.routing.one-owner, req.investigation.packet, req.academic.actual-artifact, req.reader.actual-text, req.closure.verifier-derived, req.closure.minimum-content, req.closure.native-owners]
+    expected: {exit_code: 0}
+
+  - id: check.models.full
+    kind: command
+    semantic_check_id: logic-writing.flowguard.models-full
+    execution_id: create-logic-writing.models-full.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: flowguard-0.55.0-python
+    input_selectors: [.flowguard/models/**, .flowguard/behavior_commitment_ledger/**, .flowguard/run_models.py, skills/logic-writing/scripts/**, tests/**]
+    depends_on_receipts: [check.tests.routing, check.tests.freshness, check.models.alignment]
+    command: python
+    args: [.flowguard/run_models.py, --profile, full, --json]
+    timeout_seconds: 3600
+    required: true
+    covers: [req.routing.one-owner, req.routing.bounded-child, req.routing.ambiguity, req.investigation.verifier-closure, req.academic.owner, req.academic.final-owner, req.closure.verifier-derived, req.closure.minimum-content, req.closure.propagation, req.closure.monotonic, req.closure.native-owners, req.closure.final-owner, req.closure.planes, req.closure.no-progress]
+    expected: {exit_code: 0}
+
+  - id: check.tests.adversarial
+    kind: command
+    semantic_check_id: logic-writing.adversarial.full
+    execution_id: create-logic-writing.adversarial.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: python-pytest
+    input_selectors: [skills/logic-writing/scripts/**, skills/logic-writing/assets/schemas/**, tests/adversarial/**, tests/fixtures/**]
+    depends_on_receipts: [check.tests.routing, check.tests.adapters, check.tests.investigation, check.tests.academic, check.tests.reader, check.tests.freshness]
+    command: python
+    args: [-m, pytest, -q, tests/adversarial]
+    timeout_seconds: 1200
+    required: true
+    covers: [req.routing.provider-boundary, req.investigation.candidate-boundary, req.investigation.traceguard, req.investigation.failure-visibility, req.investigation.verifier-closure, req.academic.documents, req.academic.citations, req.reader.brief, req.reader.actual-text, req.reader.semantic-scope, req.reader.flow, req.reader.boundaries, req.closure.verifier-derived, req.closure.minimum-content, req.closure.monotonic, req.closure.no-substitution, req.closure.broad, req.closure.render, req.closure.no-progress]
+    expected: {exit_code: 0}
+
+  - id: check.tests.e2e
+    kind: command
+    semantic_check_id: logic-writing.routes.e2e
+    execution_id: create-logic-writing.e2e.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: python-pytest
+    input_selectors: [skills/logic-writing/**, tests/e2e/**, tests/fixtures/**]
+    depends_on_receipts: [check.tests.investigation, check.tests.academic, check.tests.reader, check.tests.freshness, check.models.full, check.tests.adversarial]
+    command: python
+    args: [-m, pytest, -q, tests/e2e]
+    timeout_seconds: 1800
+    required: true
+    covers: [req.routing.one-owner, req.routing.terminal-deliverable, req.routing.bounded-child, req.investigation.contract, req.investigation.depth, req.investigation.adjudication, req.investigation.packet, req.academic.owner, req.academic.evidence-handoff, req.academic.actual-artifact, req.academic.final-owner, req.reader.two-room, req.reader.genre, req.closure.native-owners, req.closure.final-owner, req.closure.residual-risk]
+    expected: {exit_code: 0}
+
+  - id: check.reader.judgment
+    kind: command
+    semantic_check_id: logic-writing.reader-judgment.current-artifact
+    execution_id: create-logic-writing.reader-judgment.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: logic-writing-judgment-validator-v1
+    input_selectors: [skills/logic-writing/references/shared/human-writing.md, skills/logic-writing/assets/schemas/reader-judgment.schema.json, tests/fixtures/forward/**, run-artifacts/reader-quality-judgment.json]
+    depends_on_receipts: [check.tests.reader, check.tests.e2e]
+    command: python
+    args: [skills/logic-writing/scripts/validate_judgment_receipt.py, --input, run-artifacts/reader-quality-judgment.json, --receipt-root, run-artifacts/reader-receipts, --output, run-artifacts/reader-quality-judgment-result.json]
+    timeout_seconds: 300
+    required: true
+    covers: [req.reader.actual-text, req.reader.no-internal-language, req.reader.flow, req.reader.genre, req.reader.evidence-classes]
+    expected: {exit_code: 0}
+
+  - id: check.testmesh.plan
+    kind: command
+    semantic_check_id: logic-writing.flowguard.testmesh-frozen-plan
+    execution_id: create-logic-writing.testmesh-plan.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: flowguard-0.55.0-python
+    input_selectors: [.flowguard/test_mesh/**, openspec/changes/create-logic-writing/verification-contract.yaml, tests/flowguard/test_alignment_and_mesh.py]
+    depends_on_receipts: [check.models.alignment]
+    command: python
+    args: [.flowguard/test_mesh/run_checks.py, --json]
+    timeout_seconds: 600
+    required: true
+    covers: [req.routing.one-owner, req.investigation.packet, req.academic.actual-artifact, req.reader.actual-text, req.closure.verifier-derived]
+    expected: {exit_code: 0}
+
+  - id: check.public.docs
+    kind: command
+    semantic_check_id: logic-writing.public-docs.bilingual-reader-facing
+    execution_id: create-logic-writing.public-docs.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: python-public-docs-wrapper-v1
+    input_selectors: [.]
+    depends_on_receipts: [check.tests.e2e]
+    command: python
+    args: [scripts/check_public_docs.py, --root, ., --json]
+    timeout_seconds: 300
+    required: true
+    covers: [req.routing.one-owner, req.reader.no-internal-language, req.reader.genre]
+    expected: {exit_code: 0}
+
+  - id: check.privacy
+    kind: command
+    semantic_check_id: logic-writing.public-source.privacy
+    execution_id: create-logic-writing.privacy.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: python-privacy-wrapper-v1
+    input_selectors: [.]
+    depends_on_receipts: [check.public.docs]
+    command: python
+    args: [scripts/check_privacy.py, --root, ., --json]
+    timeout_seconds: 300
+    required: true
+    covers: [req.reader.no-internal-language, req.closure.identity]
+    expected: {exit_code: 0}
+
+  - id: check.release.source
+    kind: command
+    semantic_check_id: logic-writing.release.source-surface
+    execution_id: create-logic-writing.release-source.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: python-release-surface-wrapper-v1
+    input_selectors: [.]
+    depends_on_receipts: [check.privacy]
+    command: python
+    args: [scripts/check_release_surface.py, --root, ., --mode, source, --require-clean, --require-head, --json]
+    timeout_seconds: 300
+    required: true
+    covers: [req.routing.one-owner, req.reader.no-internal-language, req.closure.identity]
+    expected: {exit_code: 0}
+
+  - id: check.tests.full
+    kind: command
+    semantic_check_id: logic-writing.pytest.full
+    execution_id: create-logic-writing.pytest-full.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: python-pytest
+    input_selectors: [skills/logic-writing/**, tests/**, .flowguard/**, openspec/**, docs/**, scripts/**]
+    depends_on_receipts: [check.models.full, check.tests.adversarial, check.tests.e2e, check.reader.judgment, check.testmesh.plan, check.release.source]
+    command: python
+    args: [-m, pytest, -q]
+    timeout_seconds: 3600
+    required: true
+    covers: [req.routing.one-owner, req.investigation.packet, req.academic.actual-artifact, req.reader.actual-text, req.closure.verifier-derived]
+    expected: {exit_code: 0}
+
+  - id: check.tests.full.consumer
+    kind: receipt
+    semantic_check_id: logic-writing.pytest.full.consumer.openspec
+    execution_id: create-logic-writing.pytest-full-consumer.v1
+    execution_owner: check.tests.full
+    consumer: openspec-create-logic-writing
+    validation_scope: full
+    snapshot_policy: frozen
+    required: true
+    covers: [req.routing.one-owner, req.investigation.packet, req.academic.actual-artifact, req.reader.actual-text, req.closure.verifier-derived]
+    expected: {exit_code: 0}
+
+  - id: check.skill.static
+    kind: command
+    semantic_check_id: logic-writing.skill.static
+    execution_id: create-logic-writing.skill-static.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: logic-writing-skill-static-wrapper-v1
+    input_selectors: [skills/logic-writing/**, scripts/validate_skill.py]
+    depends_on_receipts: [check.tests.full]
+    command: python
+    args: [scripts/validate_skill.py, --skill-root, skills/logic-writing]
+    timeout_seconds: 300
+    required: true
+    covers: [req.routing.provider-boundary, req.reader.no-internal-language]
+    expected: {exit_code: 0}
+
+  - id: check.skillguard.compile
+    kind: command
+    semantic_check_id: logic-writing.skillguard.compile-current
+    execution_id: create-logic-writing.skillguard-compile.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: installed-skillguard-current
+    input_selectors: [skills/logic-writing/**, scripts/check_skillguard_authority.py]
+    depends_on_receipts: [check.skill.static]
+    command: python
+    args: [scripts/check_skillguard_authority.py, --repository-root, ., --target, skills/logic-writing, --check, compile, --json]
+    timeout_seconds: 900
+    required: true
+    covers: [req.routing.one-owner, req.closure.native-owners]
+    expected: {exit_code: 0}
+
+  - id: check.skillguard.runtime
+    kind: command
+    semantic_check_id: logic-writing.skillguard.runtime-authority
+    execution_id: create-logic-writing.skillguard-runtime.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: installed-skillguard-current
+    input_selectors: [skills/logic-writing/**, scripts/check_skillguard_authority.py]
+    depends_on_receipts: [check.skillguard.compile]
+    command: python
+    args: [scripts/check_skillguard_authority.py, --repository-root, ., --target, skills/logic-writing, --check, runtime, --json]
+    timeout_seconds: 900
+    required: true
+    covers: [req.routing.one-owner, req.closure.native-owners]
+    expected: {exit_code: 0}
+
+  - id: check.skillguard.contract
+    kind: command
+    semantic_check_id: logic-writing.skillguard.contract
+    execution_id: create-logic-writing.skillguard-contract.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: installed-skillguard-current
+    input_selectors: [skills/logic-writing/**, scripts/check_skillguard_authority.py]
+    depends_on_receipts: [check.skillguard.runtime]
+    command: python
+    args: [scripts/check_skillguard_authority.py, --repository-root, ., --target, skills/logic-writing, --check, contract, --json]
+    timeout_seconds: 900
+    required: true
+    covers: [req.routing.one-owner, req.closure.native-owners, req.closure.minimum-content]
+    expected: {exit_code: 0}
+
+  - id: check.skillguard.depth
+    kind: command
+    semantic_check_id: logic-writing.skillguard.declared-check-depth
+    execution_id: create-logic-writing.skillguard-depth.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: installed-skillguard-current
+    input_selectors: [skills/logic-writing/**, scripts/check_skillguard_authority.py]
+    depends_on_receipts: [check.skillguard.contract]
+    command: python
+    args: [scripts/check_skillguard_authority.py, --repository-root, ., --target, skills/logic-writing, --check, depth, --json]
+    timeout_seconds: 900
+    required: true
+    covers: [req.investigation.packet, req.academic.actual-artifact, req.reader.actual-text, req.closure.minimum-content]
+    expected: {exit_code: 0}
+
+  - id: check.skillguard.static
+    kind: command
+    semantic_check_id: logic-writing.skillguard.static
+    execution_id: create-logic-writing.skillguard-static.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: installed-skillguard-current
+    input_selectors: [skills/logic-writing/**, scripts/check_skillguard_authority.py]
+    depends_on_receipts: [check.skillguard.depth]
+    command: python
+    args: [scripts/check_skillguard_authority.py, --repository-root, ., --target, skills/logic-writing, --check, static, --json]
+    timeout_seconds: 900
+    required: true
+    covers: [req.routing.one-owner, req.reader.no-internal-language, req.closure.native-owners]
+    expected: {exit_code: 0}
+
+  - id: check.skillguard.project
+    kind: command
+    semantic_check_id: logic-writing.skillguard.project-adoption
+    execution_id: create-logic-writing.skillguard-project.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: installed-skillguard-current
+    input_selectors: [AGENTS.md, .skillguard/project.json, skills/logic-writing/SKILL.md, skills/logic-writing/.skillguard/*.json, scripts/check_skillguard_authority.py]
+    depends_on_receipts: [check.skillguard.static]
+    command: python
+    args: [scripts/check_skillguard_authority.py, --repository-root, ., --target, skills/logic-writing, --check, project, --json]
+    timeout_seconds: 900
+    required: true
+    covers: [req.routing.one-owner, req.closure.native-owners]
+    expected: {exit_code: 0}
+
+  - id: check.openspec.strict
+    kind: command
+    semantic_check_id: logic-writing.openspec.strict
+    execution_id: create-logic-writing.openspec-strict.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: openspec-1.6.0
+    input_selectors: [openspec/changes/create-logic-writing/**]
+    depends_on_receipts: [check.tests.full, check.skillguard.project, check.release.source]
+    command: openspec
+    args: [validate, create-logic-writing, --strict]
+    timeout_seconds: 300
+    required: true
+    covers: [req.routing.one-owner, req.investigation.contract, req.academic.owner, req.reader.two-room, req.closure.identity]
+    expected: {exit_code: 0}
+
+freshness:
+  watch:
+    - openspec/changes/create-logic-writing/proposal.md
+    - openspec/changes/create-logic-writing/design.md
+    - openspec/changes/create-logic-writing/tasks.md
+    - openspec/changes/create-logic-writing/specs/**/*.md
+    - openspec/changes/create-logic-writing/verification-contract.yaml
+    - skills/logic-writing/SKILL.md
+    - skills/logic-writing/agents/openai.yaml
+    - skills/logic-writing/references/**/*.md
+    - skills/logic-writing/scripts/**/*.py
+    - skills/logic-writing/assets/schemas/**/*.json
+    - skills/logic-writing/.skillguard/*.json
+    - .flowguard/**/*.py
+    - .flowguard/**/*.json
+    - tests/**/*.py
+    - tests/fixtures/**/*
+    - docs/**/*.md
+    - scripts/**/*.py
+    - README.md
+    - README.zh-CN.md
+    - VERSION
+  exclude:
+    - "**/verification-report.json"
+    - "**/.skillguard/runs/**"
+    - "**/.flowguard/evidence/**"
+    - "**/run-artifacts/**"
+    - "**/run_artifacts/**"
+    - "**/__pycache__/**"
+    - "**/.pytest_cache/**"

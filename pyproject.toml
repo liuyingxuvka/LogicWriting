@@ -1,0 +1,23 @@
+[project]
+name = "logic-writing-skill"
+version = "1.0.0"
+description = "One Codex skill for deep investigation and reader-ready academic writing"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Yingxu Liu" }]
+keywords = ["codex", "research", "academic-writing", "logic", "evidence"]
+classifiers = [
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+]
+
+[project.urls]
+Homepage = "https://github.com/liuyingxuvka/LogicWriting"
+Repository = "https://github.com/liuyingxuvka/LogicWriting"
+Issues = "https://github.com/liuyingxuvka/LogicWriting/issues"
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+testpaths = ["tests"]
+python_files = ["test_*.py"]

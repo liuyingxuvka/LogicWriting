@@ -1,0 +1,19 @@
+{
+  "case_id": "case:logic-writing:intentionally-shallow-reader-gap",
+  "covered_obligation_ids": [
+    "obligation:logic-writing:routing",
+    "obligation:logic-writing:specialist-authority",
+    "obligation:logic-writing:investigation-evidence",
+    "obligation:logic-writing:academic-provenance",
+    "obligation:logic-writing:final-closure",
+    "obligation:logic-writing:release-integrity"
+  ],
+  "capability_ids": [
+    "capability:one-entry-two-routes",
+    "capability:typed-specialist-receipts",
+    "capability:reader-brief-boundary",
+    "capability:actual-artifact-audit",
+    "capability:minimum-content-closure"
+  ],
+  "evidence_note": "Intentionally omits only the important actual-reader-artifact obligation."
+}

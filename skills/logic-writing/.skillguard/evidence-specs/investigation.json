@@ -1,0 +1,68 @@
+{
+  "check_id": "check:logic-writing:depth-investigation",
+  "native_owner_id": "logic-writing",
+  "universes": [
+    {
+      "covered_claim_scope": [
+        "logic-writing:investigation-depth-and-packet"
+      ],
+      "evaluated_item_ids": [
+        "item:investigation-depth",
+        "item:research-packet"
+      ],
+      "inventory_items": [
+        {
+          "critical": true,
+          "item_id": "item:investigation-depth",
+          "object_id": "obligation:logic-writing:investigation-depth",
+          "stratum_ids": [
+            "stratum:all"
+          ]
+        },
+        {
+          "critical": true,
+          "item_id": "item:research-packet",
+          "object_id": "obligation:logic-writing:research-packet",
+          "stratum_ids": [
+            "stratum:all"
+          ]
+        }
+      ],
+      "policy_fingerprint": "667D123E17032D90F49D2FEEF89B260345E0BDBE0874B31BDA4B71AC9C4B5261",
+      "requested_claim_scope": [
+        "logic-writing:investigation-depth-and-packet"
+      ],
+      "selected_item_ids": [
+        "item:investigation-depth",
+        "item:research-packet"
+      ],
+      "universe_id": "universe:logic-writing:investigation",
+      "validated_item_ids": [
+        "item:investigation-depth",
+        "item:research-packet"
+      ]
+    }
+  ],
+  "depth_contribution_ranges": [
+    {
+      "end": 1,
+      "kind": "semantic",
+      "obligation_ids": [
+        "obligation:logic-writing:investigation-depth"
+      ],
+      "range_id": "range:logic-writing:investigation-depth",
+      "start": 0,
+      "universe_id": "universe:logic-writing:investigation"
+    },
+    {
+      "end": 2,
+      "kind": "semantic",
+      "obligation_ids": [
+        "obligation:logic-writing:research-packet"
+      ],
+      "range_id": "range:logic-writing:research-packet",
+      "start": 1,
+      "universe_id": "universe:logic-writing:investigation"
+    }
+  ]
+}

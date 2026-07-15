@@ -1,0 +1,64 @@
+{
+  "judge_id": "model:logic-writing-release-reader",
+  "judge_kind": "model",
+  "judged_at": "2026-07-15T05:15:00Z",
+  "rubric": {
+    "clarity": {
+      "score": 5,
+      "reason": "The paragraph defines its only specialist phrase before using it and states the observed result in a direct sentence."
+    },
+    "coherence": {
+      "score": 4,
+      "reason": "The paragraph moves from definition to finding to limitation without an unexplained jump."
+    },
+    "reader_fit": {
+      "score": 5,
+      "reason": "A non-specialist policy reader can understand what was observed and what remains unknown without seeing internal workflow vocabulary."
+    },
+    "evidence_fidelity": {
+      "score": 5,
+      "reason": "The cited observation is immediately bounded by a sentence that rejects an unsupported causal conclusion."
+    },
+    "genre_fit": {
+      "score": 4,
+      "reason": "The short report paragraph delivers a finding and its decision-relevant limitation instead of presenting an outline or audit log."
+    }
+  },
+  "observations": [
+    {
+      "observation_id": "observation:clarity",
+      "dimension": "clarity",
+      "locator": "line:3",
+      "excerpt": "Observation period means the period covered by the available records.",
+      "assessment": "The concept is introduced in ordinary language before the result depends on it."
+    },
+    {
+      "observation_id": "observation:coherence",
+      "dimension": "coherence",
+      "locator": "line:3",
+      "excerpt": "Average waiting time was lower during the observed intervention period.",
+      "assessment": "The result follows the scope definition and gives the limitation a clear object."
+    },
+    {
+      "observation_id": "observation:reader-fit",
+      "dimension": "reader_fit",
+      "locator": "line:3",
+      "excerpt": "The available records do not establish that the intervention alone caused the change.",
+      "assessment": "The limitation tells a decision reader exactly which stronger conclusion is not licensed."
+    },
+    {
+      "observation_id": "observation:evidence-fidelity",
+      "dimension": "evidence_fidelity",
+      "locator": "line:3",
+      "excerpt": "[S1]",
+      "assessment": "The citation marker sits directly beside the observed claim, and the causal boundary remains in the same paragraph."
+    },
+    {
+      "observation_id": "observation:genre-fit",
+      "dimension": "genre_fit",
+      "locator": "line:3",
+      "excerpt": "Average waiting time was lower during the observed intervention period.",
+      "assessment": "The sentence reads as report prose and not as a plan, checklist, or internal status message."
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+dist/
+build/
+*.egg-info/
+
+# Runtime evidence is reproducible and is not source authority.
+.flowguard/evidence/
+.flowguard/adoption_log.jsonl
+docs/flowguard_adoption_log.md
+.logicguard/evidence/
+.flowguard/**/__pycache__/
+.skillguard/runs/
+run-artifacts/
+run_artifacts/
+validation-receipts/
+
+# Local tool and editor state.
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+work/
+scratch/
+docs/coordination.md
+
+# Private or recovery material must remain outside the public repository.
+backups/
+private/
+*.bundle
+*.patch

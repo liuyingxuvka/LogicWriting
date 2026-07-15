@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/liuyingxuvka/LogicWriting/schemas/receipt.schema.json",
+  "title": "Logic Writing authoritative evidence receipt",
+  "description": "A content-addressed receipt built by a managed producer path. receipt_fingerprint is the sole receipt identity; authority metadata is part of the immutable original.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "producer_skill",
+    "semantic_owner_id",
+    "native_route",
+    "run_id",
+    "covered_obligation_ids",
+    "input_fingerprints",
+    "output_fingerprints",
+    "artifact_fingerprint",
+    "covered_scope",
+    "evidence_domain",
+    "status",
+    "safe_claim",
+    "unsafe_claim_boundary",
+    "sequence_id",
+    "dependency_receipt_fingerprints",
+    "builder_provenance",
+    "authority_key_fingerprint",
+    "authority_sequence",
+    "receipt_fingerprint"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "producer_skill": { "$ref": "#/$defs/identifier" },
+    "semantic_owner_id": { "$ref": "#/$defs/identifier" },
+    "native_route": { "$ref": "#/$defs/identifier" },
+    "run_id": { "$ref": "#/$defs/identifier" },
+    "covered_obligation_ids": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/identifier" },
+      "uniqueItems": true
+    },
+    "input_fingerprints": { "$ref": "#/$defs/fingerprintMap" },
+    "output_fingerprints": { "$ref": "#/$defs/fingerprintMap" },
+    "artifact_fingerprint": { "$ref": "#/$defs/fingerprint" },
+    "covered_scope": { "type": "string", "minLength": 1 },
+    "evidence_domain": { "$ref": "#/$defs/evidenceDomain" },
+    "status": { "$ref": "#/$defs/status" },
+    "safe_claim": { "type": "string", "minLength": 1 },
+    "unsafe_claim_boundary": { "type": "string", "minLength": 1 },
+    "sequence_id": { "$ref": "#/$defs/identifier" },
+    "dependency_receipt_fingerprints": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/fingerprint" },
+      "uniqueItems": true
+    },
+    "builder_provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["builder_id", "builder_version", "source_fingerprint"],
+      "properties": {
+        "builder_id": { "$ref": "#/$defs/builderId" },
+        "builder_version": { "const": "1.0" },
+        "source_fingerprint": { "$ref": "#/$defs/fingerprint" }
+      }
+    },
+    "authority_key_fingerprint": { "$ref": "#/$defs/fingerprint" },
+    "authority_sequence": { "type": "integer", "minimum": 1 },
+    "receipt_fingerprint": { "$ref": "#/$defs/fingerprint" }
+  },
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "fingerprint": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "fingerprintMap": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "$ref": "#/$defs/identifier" },
+      "additionalProperties": { "$ref": "#/$defs/fingerprint" }
+    },
+    "builderId": {
+      "enum": [
+        "logic-writing.adapter-result.v1",
+        "logic-writing.source-unit-manifest.v1",
+        "logic-writing.revision-provenance.v1",
+        "logic-writing.reader-brief.v1",
+        "logic-writing.reader-deterministic.v1",
+        "logic-writing.reader-judgment.v1",
+        "logic-writing.final-closure.v1"
+      ]
+    },
+    "status": {
+      "enum": [
+        "current_pass",
+        "partial",
+        "bounded",
+        "downgraded",
+        "blocked",
+        "failed",
+        "not_run",
+        "stale",
+        "provider_unavailable",
+        "dependency_unavailable",
+        "access_gap",
+        "render_not_run",
+        "planning_only",
+        "saved_but_modeling_incomplete"
+      ]
+    },
+    "evidenceDomain": {
+      "enum": [
+        "source_discovery",
+        "source_observation",
+        "source_depth",
+        "source_library",
+        "argument_model",
+        "structured_artifact",
+        "model_depth",
+        "artifact_synthesis",
+        "temporal_trace",
+        "causal_trace",
+        "competing_storyline",
+        "prediction_boundary",
+        "process_model",
+        "process_freshness",
+        "document_content",
+        "document_mutation",
+        "document_render",
+        "document_visual",
+        "pdf_content",
+        "pdf_render",
+        "pdf_visual",
+        "citation_semantics",
+        "revision_provenance",
+        "reader_brief",
+        "reader_deterministic",
+        "reader_judgment",
+        "final_closure",
+        "development_validation",
+        "installation",
+        "global_routing",
+        "release",
+        "retirement"
+      ]
+    }
+  }
+}

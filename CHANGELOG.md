@@ -1,0 +1,50 @@
+# Changelog
+
+This file records notable source-tree changes. It is not a registry of hosted
+releases, tags, package publications, installations, or predecessor deletions.
+
+The format follows the main ideas of Keep a Changelog, and the source version
+line follows semantic versioning.
+
+## [Unreleased]
+
+- Hosted release metadata is intentionally not asserted by this source file.
+
+## [1.0.0]
+
+`1.0.0` identifies the first Logic Writing source version line. It does not, by
+itself, state that a corresponding Git tag or hosted release exists.
+
+### Added
+
+- One public `$logic-writing` entrypoint.
+- Two internal final-owner routes: `investigation` and `academic-writing`.
+- A bounded academic-to-investigation evidence-gap request.
+- `ResearchPacket` as the default cross-route evidence handoff.
+- `ReaderBrief` as the clean-room contract between internal evidence work and
+  reader-facing prose.
+- Actual-artifact reader audit with deterministic diagnostics kept separate
+  from clarity and coherence judgment.
+- Bounded adapters for SourceGuard, LogicGuard, TraceGuard, FlowGuard,
+  Documents, and PDF.
+- Explicit freshness, degraded-state, no-progress, and closure rules.
+- Public architecture, responsibility, migration, contribution, and
+  release-retirement documentation.
+
+### Changed
+
+- Consolidated the intended public invocation of investigation and academic
+  writing under one named skill while preserving separate internal ownership.
+- Made the terminal deliverable, rather than the first activity, the route
+  selection rule.
+- Made reader-facing language a first-class contract rather than a final
+  cosmetic rewrite.
+
+### Migration boundary
+
+- The former `research-investigation-workflow` and
+  `academic-thesis-revision-workflow` ids are not compatibility aliases.
+- Predecessor runtime records are not accepted as current Logic Writing
+  evidence.
+- Remote-repository retirement remains a separate state-changing action and is
+  not implied by this changelog entry.

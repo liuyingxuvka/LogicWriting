@@ -1,0 +1,139 @@
+model:
+  id: logic_writing_readme_capability_model
+  title: "Logic Writing public capability and boundary model"
+  root_claim: C0
+  target_units:
+    - unit_id: "unit:public-readme"
+      node_ids: [C0, E1, E2, E3, E4, E5, W0, A1, L1, R1]
+  model_cards:
+    - card_id: "card:public-product-identity"
+      node_ids: [C0, E1, E2, E3, E4, E5, W0, A1, L1, R1]
+      importance: 1.0
+  role_dispositions:
+    competition: not_applicable
+    assumption: covered_elsewhere
+    opposition: covered_elsewhere
+  claim_role_dispositions:
+    C0:
+      assumption: covered_elsewhere
+      opposition: covered_elsewhere
+
+nodes:
+  D0:
+    type: Document
+    text: "Public README for Logic Writing."
+    level: document
+    importance: 0.3
+  S0:
+    type: Section
+    text: "Product identity, mechanism, value, and boundary"
+    level: section
+    importance: 0.4
+  B0:
+    type: ArgumentBlock
+    text: "Public product identity"
+    level: section
+    importance: 0.5
+  C0:
+    type: Claim
+    text: "Logic Writing is one governed entrypoint that routes either deep investigation or academic writing, preserves specialist authority, and turns current evidence into reader-facing artifacts."
+    level: document
+    scope: "public Logic Writing repository boundary"
+    confidence: 0.94
+    importance: 1.0
+  E1:
+    type: Evidence
+    text: "SKILL.md declares one public logic-writing entrypoint, two internal final-owner routes, and exactly one owner for the final artifact."
+    scope: "public Logic Writing repository boundary"
+    confidence: 0.98
+    importance: 0.9
+    provided: true
+  E2:
+    type: Evidence
+    text: "Typed adapter contracts preserve native producer, route, evidence domain, bounded scope, status, and content fingerprint for SourceGuard, LogicGuard, TraceGuard, FlowGuard, Documents, and PDF."
+    scope: "public Logic Writing repository boundary"
+    confidence: 0.92
+    importance: 0.9
+    provided: true
+  E3:
+    type: Evidence
+    text: "ResearchPacket, ReaderBrief, and actual-text audit contracts connect source boundaries, supported wording, citations, limitations, and paragraph flow to the delivered prose."
+    scope: "public Logic Writing repository boundary"
+    confidence: 0.92
+    importance: 0.92
+    provided: true
+  E4:
+    type: Evidence
+    text: "Content-addressed receipts, currentness resolution, staleness propagation, and verifier-derived closure are designed to reject stale, self-reported, or circular success claims."
+    scope: "public Logic Writing repository boundary"
+    confidence: 0.9
+    importance: 0.92
+    provided: true
+  E5:
+    type: Evidence
+    text: "Executable tests and FlowGuard lifecycle models cover route ownership, bounded child work, packet handoff, reader audit, no-progress termination, release gating, rollback, and sequential predecessor retirement."
+    scope: "public Logic Writing repository boundary"
+    confidence: 0.92
+    importance: 0.9
+    provided: true
+  W0:
+    type: Warrant
+    text: "When one shell owns routing and final delivery while typed receipts preserve each specialist's native authority, the workflows can share evidence without becoming one unbounded evaluator; checking the actual prose then makes reader quality an enforceable output condition."
+    scope: "public Logic Writing repository boundary"
+    confidence: 0.94
+    importance: 0.9
+  A1:
+    type: Assumption
+    text: "The specialist skills required by the selected route are installed, current, and available to run their native checks."
+    scope: "public Logic Writing repository boundary"
+    confidence: 0.9
+    importance: 0.5
+  L1:
+    type: Limitation
+    text: "Logic Writing coordinates work and validates declared evidence boundaries; it does not itself establish factual truth, replace specialist evaluators, guarantee source access, or render every document format without the corresponding provider."
+    scope: "public Logic Writing repository boundary"
+    confidence: 0.98
+    importance: 0.86
+  R1:
+    type: Rebuttal
+    text: "A combined skill could become a giant prompt or a superficial readability checker."
+    scope: "public Logic Writing repository boundary"
+    confidence: 0.88
+    importance: 0.5
+    active: false
+    resolution: "The public shell stays thin, has two internal routes, delegates native evaluation, resolves real receipts, and audits the actual artifact against a derived ReaderBrief."
+
+edges:
+  - {source: E1, target: C0, type: supports, weight: 0.92}
+  - {source: E2, target: C0, type: supports, weight: 0.9}
+  - {source: E3, target: C0, type: supports, weight: 0.92}
+  - {source: E4, target: C0, type: supports, weight: 0.9}
+  - {source: E5, target: C0, type: supports, weight: 0.92}
+  - {source: W0, target: C0, type: supports, weight: 0.98}
+  - {source: L1, target: C0, type: qualifies, weight: 1.0}
+
+acceptance:
+  C0:
+    all_of: [E1, E2, E3, E4, E5, W0]
+    threshold: 0.75
+    scope_match: true
+
+hierarchy:
+  D0: [S0]
+  S0: [B0]
+  B0: [E1, E2, E3, E4, E5, W0, A1, L1, R1, C0]
+
+blocks:
+  B0:
+    title: "Public product identity"
+    level: section
+    parent: S0
+    input_nodes: [E1, E2, E3, E4, E5, A1, L1, R1]
+    internal_nodes: [W0]
+    output_claims: [C0]
+    local_assumptions: [A1]
+    local_rebuttals: [R1]
+    acceptance_conditions:
+      C0:
+        all_of: [E1, E2, E3, E4, E5, W0]
+        threshold: 0.75

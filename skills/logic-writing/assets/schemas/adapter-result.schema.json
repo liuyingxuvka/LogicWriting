@@ -1,0 +1,203 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/liuyingxuvka/LogicWriting/schemas/adapter-result.schema.json",
+  "title": "Logic Writing specialist adapter result",
+  "description": "A typed, non-authoritative envelope around one native specialist result. A managed builder converts this envelope into the sole generic Receipt authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "request_id",
+    "native_owner",
+    "semantic_owner_id",
+    "native_route",
+    "run_id",
+    "status",
+    "covered_obligation_ids",
+    "input_fingerprints",
+    "output_fingerprints",
+    "artifact_fingerprint",
+    "artifact_refs",
+    "covered_scope",
+    "evidence_domain",
+    "unresolved_gaps",
+    "stale_inputs",
+    "safe_claim",
+    "unsafe_claim_boundary",
+    "native_receipt",
+    "next_route",
+    "dependency_receipt_fingerprints",
+    "adapter_result_fingerprint"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "request_id": { "$ref": "#/$defs/identifier" },
+    "native_owner": { "$ref": "#/$defs/nativeOwner" },
+    "semantic_owner_id": { "$ref": "#/$defs/identifier" },
+    "native_route": { "$ref": "#/$defs/identifier" },
+    "run_id": { "$ref": "#/$defs/identifier" },
+    "status": { "$ref": "#/$defs/status" },
+    "covered_obligation_ids": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/identifier" },
+      "uniqueItems": true
+    },
+    "input_fingerprints": { "$ref": "#/$defs/fingerprintMap" },
+    "output_fingerprints": { "$ref": "#/$defs/fingerprintMap" },
+    "artifact_fingerprint": { "$ref": "#/$defs/fingerprint" },
+    "artifact_refs": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "covered_scope": { "type": "string", "minLength": 1 },
+    "evidence_domain": { "$ref": "#/$defs/evidenceDomain" },
+    "unresolved_gaps": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "stale_inputs": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "safe_claim": { "type": "string", "minLength": 1 },
+    "unsafe_claim_boundary": { "type": "string", "minLength": 1 },
+    "native_receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["receipt_type", "schema_version", "payload", "fingerprint"],
+      "properties": {
+        "receipt_type": { "$ref": "#/$defs/identifier" },
+        "schema_version": { "type": "string", "minLength": 1 },
+        "payload": {
+          "description": "A provider-specific payload whose generic fields must exactly match the adapter envelope and whose evidence payload is checked by the domain verifier.",
+          "type": "object",
+          "minProperties": 1
+        },
+        "fingerprint": { "$ref": "#/$defs/fingerprint" }
+      }
+    },
+    "next_route": { "$ref": "#/$defs/nextRoute" },
+    "dependency_receipt_fingerprints": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/fingerprint" },
+      "uniqueItems": true
+    },
+    "adapter_result_fingerprint": { "$ref": "#/$defs/fingerprint" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": ["status"],
+        "properties": { "status": { "const": "current_pass" } }
+      },
+      "then": {
+        "properties": {
+          "unresolved_gaps": { "maxItems": 0 },
+          "stale_inputs": { "maxItems": 0 }
+        }
+      },
+      "else": {
+        "anyOf": [
+          { "properties": { "unresolved_gaps": { "minItems": 1 } } },
+          { "properties": { "stale_inputs": { "minItems": 1 } } }
+        ]
+      }
+    },
+    {
+      "if": {
+        "required": ["status"],
+        "properties": { "status": { "const": "stale" } }
+      },
+      "then": { "properties": { "stale_inputs": { "minItems": 1 } } }
+    }
+  ],
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "fingerprint": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "fingerprintMap": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "$ref": "#/$defs/identifier" },
+      "additionalProperties": { "$ref": "#/$defs/fingerprint" }
+    },
+    "nativeOwner": {
+      "enum": ["sourceguard", "logicguard", "traceguard", "flowguard", "documents", "pdf"]
+    },
+    "status": {
+      "enum": [
+        "current_pass",
+        "partial",
+        "bounded",
+        "downgraded",
+        "blocked",
+        "failed",
+        "not_run",
+        "stale",
+        "provider_unavailable",
+        "dependency_unavailable",
+        "access_gap",
+        "render_not_run",
+        "planning_only",
+        "saved_but_modeling_incomplete"
+      ]
+    },
+    "nextRoute": {
+      "enum": [
+        "investigation",
+        "academic-writing",
+        "sourceguard",
+        "logicguard",
+        "traceguard",
+        "flowguard",
+        "documents",
+        "pdf",
+        "human_review",
+        "none"
+      ]
+    },
+    "evidenceDomain": {
+      "enum": [
+        "source_discovery",
+        "source_observation",
+        "source_depth",
+        "source_library",
+        "argument_model",
+        "structured_artifact",
+        "model_depth",
+        "artifact_synthesis",
+        "temporal_trace",
+        "causal_trace",
+        "competing_storyline",
+        "prediction_boundary",
+        "process_model",
+        "process_freshness",
+        "document_content",
+        "document_mutation",
+        "document_render",
+        "document_visual",
+        "pdf_content",
+        "pdf_render",
+        "pdf_visual",
+        "citation_semantics",
+        "revision_provenance",
+        "reader_deterministic",
+        "reader_judgment",
+        "final_closure",
+        "development_validation",
+        "installation",
+        "global_routing",
+        "release",
+        "retirement"
+      ]
+    }
+  }
+}

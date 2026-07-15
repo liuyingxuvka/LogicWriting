@@ -1,0 +1,206 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/liuyingxuvka/LogicWriting/schemas/revision-provenance.schema.json",
+  "title": "Logic Writing revision provenance",
+  "description": "A complete source-to-target treatment ledger for substantive revision. Every source unit is preserved, changed, omitted with reason, or left visibly unresolved.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "revision_id",
+    "source_artifact_fingerprint",
+    "target_artifact_fingerprint",
+    "source_unit_manifest_fingerprint",
+    "source_unit_manifest_receipt_fingerprint",
+    "revision_policy",
+    "entries",
+    "provenance_fingerprint"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "revision_id": { "$ref": "#/$defs/identifier" },
+    "source_artifact_fingerprint": { "$ref": "#/$defs/fingerprint" },
+    "target_artifact_fingerprint": { "$ref": "#/$defs/fingerprint" },
+    "source_unit_manifest_fingerprint": { "$ref": "#/$defs/fingerprint" },
+    "source_unit_manifest_receipt_fingerprint": { "$ref": "#/$defs/fingerprint" },
+    "revision_policy": {
+      "enum": ["tracked_changes", "comments", "marked_changes", "clean_rewrite"]
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/entry" }
+    },
+    "provenance_fingerprint": { "$ref": "#/$defs/fingerprint" }
+  },
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "fingerprint": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "nextOwner": {
+      "type": ["string", "null"],
+      "enum": [
+        "academic-writing",
+        "investigation",
+        "sourceguard",
+        "logicguard",
+        "traceguard",
+        "documents",
+        "pdf",
+        "human_review",
+        "user",
+        null
+      ]
+    },
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_unit_id",
+        "target_unit_id",
+        "source_locator",
+        "target_locator",
+        "treatment",
+        "reason",
+        "evidence_receipt_fingerprints",
+        "next_owner"
+      ],
+      "properties": {
+        "source_unit_id": {
+          "anyOf": [
+            { "$ref": "#/$defs/identifier" },
+            { "type": "null" }
+          ]
+        },
+        "target_unit_id": {
+          "anyOf": [
+            { "$ref": "#/$defs/identifier" },
+            { "type": "null" }
+          ]
+        },
+        "source_locator": { "type": ["string", "null"], "minLength": 1 },
+        "target_locator": { "type": ["string", "null"], "minLength": 1 },
+        "treatment": {
+          "enum": [
+            "added",
+            "rewritten",
+            "moved",
+            "omitted",
+            "unresolved",
+            "preserved",
+            "source_gap",
+            "trace_gap",
+            "human_review"
+          ]
+        },
+        "reason": { "type": "string", "minLength": 1 },
+        "evidence_receipt_fingerprints": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/fingerprint" },
+          "uniqueItems": true
+        },
+        "next_owner": { "$ref": "#/$defs/nextOwner" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": ["treatment"],
+            "properties": { "treatment": { "const": "added" } }
+          },
+          "then": {
+            "properties": {
+              "source_unit_id": { "type": "null" },
+              "source_locator": { "type": "null" },
+              "target_unit_id": { "$ref": "#/$defs/identifier" },
+              "target_locator": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": ["treatment"],
+            "properties": { "treatment": { "enum": ["rewritten", "moved", "preserved"] } }
+          },
+          "then": {
+            "properties": {
+              "source_unit_id": { "$ref": "#/$defs/identifier" },
+              "source_locator": { "type": "string", "minLength": 1 },
+              "target_unit_id": { "$ref": "#/$defs/identifier" },
+              "target_locator": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": ["treatment"],
+            "properties": { "treatment": { "const": "omitted" } }
+          },
+          "then": {
+            "properties": {
+              "source_unit_id": { "$ref": "#/$defs/identifier" },
+              "source_locator": { "type": "string", "minLength": 1 },
+              "target_unit_id": { "type": "null" },
+              "target_locator": { "type": "null" },
+              "next_owner": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": ["treatment"],
+            "properties": { "treatment": { "const": "unresolved" } }
+          },
+          "then": {
+            "properties": {
+              "source_unit_id": { "$ref": "#/$defs/identifier" },
+              "source_locator": { "type": "string", "minLength": 1 },
+              "next_owner": {
+                "enum": [
+                  "academic-writing",
+                  "investigation",
+                  "sourceguard",
+                  "logicguard",
+                  "traceguard",
+                  "documents",
+                  "pdf",
+                  "human_review",
+                  "user"
+                ]
+              }
+            }
+          }
+        }
+        ,
+        {
+          "if": {
+            "required": ["treatment"],
+            "properties": {
+              "treatment": { "enum": ["source_gap", "trace_gap", "human_review"] }
+            }
+          },
+          "then": {
+            "properties": {
+              "source_unit_id": { "$ref": "#/$defs/identifier" },
+              "source_locator": { "type": "string", "minLength": 1 },
+              "next_owner": {
+                "enum": [
+                  "academic-writing",
+                  "investigation",
+                  "sourceguard",
+                  "traceguard",
+                  "human_review",
+                  "user"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

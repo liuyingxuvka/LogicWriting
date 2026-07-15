@@ -1,0 +1,68 @@
+{
+  "check_id": "check:logic-writing:depth-artifact",
+  "native_owner_id": "logic-writing",
+  "universes": [
+    {
+      "covered_claim_scope": [
+        "logic-writing:current-reader-artifact-and-audit"
+      ],
+      "evaluated_item_ids": [
+        "item:actual-artifact",
+        "item:actual-artifact-audit"
+      ],
+      "inventory_items": [
+        {
+          "critical": true,
+          "item_id": "item:actual-artifact",
+          "object_id": "obligation:logic-writing:actual-artifact",
+          "stratum_ids": [
+            "stratum:all"
+          ]
+        },
+        {
+          "critical": true,
+          "item_id": "item:actual-artifact-audit",
+          "object_id": "obligation:logic-writing:actual-artifact-audit",
+          "stratum_ids": [
+            "stratum:all"
+          ]
+        }
+      ],
+      "policy_fingerprint": "03ED299C7ADF00A5AA70B1F9BFD423984E0DB18DC82F673CB982AC9A5B107BE0",
+      "requested_claim_scope": [
+        "logic-writing:current-reader-artifact-and-audit"
+      ],
+      "selected_item_ids": [
+        "item:actual-artifact",
+        "item:actual-artifact-audit"
+      ],
+      "universe_id": "universe:logic-writing:artifact",
+      "validated_item_ids": [
+        "item:actual-artifact",
+        "item:actual-artifact-audit"
+      ]
+    }
+  ],
+  "depth_contribution_ranges": [
+    {
+      "end": 1,
+      "kind": "semantic",
+      "obligation_ids": [
+        "obligation:logic-writing:actual-artifact"
+      ],
+      "range_id": "range:logic-writing:actual-artifact",
+      "start": 0,
+      "universe_id": "universe:logic-writing:artifact"
+    },
+    {
+      "end": 2,
+      "kind": "semantic",
+      "obligation_ids": [
+        "obligation:logic-writing:actual-artifact-audit"
+      ],
+      "range_id": "range:logic-writing:actual-artifact-audit",
+      "start": 1,
+      "universe_id": "universe:logic-writing:artifact"
+    }
+  ]
+}

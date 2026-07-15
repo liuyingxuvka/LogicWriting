@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/liuyingxuvka/LogicWriting/schemas/adapter-request.schema.json",
+  "title": "Logic Writing specialist adapter request",
+  "description": "A bounded request to one native specialist owner. It carries exact inputs and never transfers final artifact ownership.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "request_id",
+    "task_id",
+    "parent_route",
+    "native_owner",
+    "native_route",
+    "requested_scope",
+    "input_artifact_refs",
+    "input_fingerprints",
+    "claim_scope",
+    "required_output_type",
+    "freshness_baseline",
+    "user_constraints",
+    "requested_at",
+    "request_fingerprint"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "request_id": { "$ref": "#/$defs/identifier" },
+    "task_id": { "$ref": "#/$defs/identifier" },
+    "parent_route": { "enum": ["investigation", "academic-writing"] },
+    "native_owner": { "$ref": "#/$defs/nativeOwner" },
+    "native_route": { "$ref": "#/$defs/identifier" },
+    "requested_scope": { "type": "string", "minLength": 1 },
+    "input_artifact_refs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/artifactRef" }
+    },
+    "input_fingerprints": { "$ref": "#/$defs/fingerprintMap" },
+    "claim_scope": { "type": "string", "minLength": 1 },
+    "required_output_type": { "$ref": "#/$defs/identifier" },
+    "freshness_baseline": { "$ref": "#/$defs/fingerprintMap" },
+    "user_constraints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["constraint_id", "kind", "value"],
+        "properties": {
+          "constraint_id": { "$ref": "#/$defs/identifier" },
+          "kind": {
+            "enum": [
+              "access_policy",
+              "privacy",
+              "language",
+              "output_format",
+              "length",
+              "deadline",
+              "provider",
+              "other"
+            ]
+          },
+          "value": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "gap_contract": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": [
+        "gap_id",
+        "affected_claim_ids",
+        "affected_artifact_units",
+        "required_evidence_roles",
+        "required_strength",
+        "access_policy",
+        "safe_interim_wording",
+        "unsafe_claim_boundary"
+      ],
+      "properties": {
+        "gap_id": { "$ref": "#/$defs/identifier" },
+        "affected_claim_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/identifier" },
+          "uniqueItems": true
+        },
+        "affected_artifact_units": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "required_evidence_roles": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/sourceRole" },
+          "uniqueItems": true
+        },
+        "required_strength": { "enum": ["tentative", "qualified", "supported", "strong"] },
+        "access_policy": {
+          "enum": ["public_only", "local_allowed", "internal_allowed", "permission_gated_allowed"]
+        },
+        "safe_interim_wording": { "type": "string", "minLength": 1 },
+        "unsafe_claim_boundary": { "type": "string", "minLength": 1 }
+      }
+    },
+    "requested_at": { "type": "string", "format": "date-time" },
+    "request_fingerprint": { "$ref": "#/$defs/fingerprint" }
+  },
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "fingerprint": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "nativeOwner": {
+      "enum": ["sourceguard", "logicguard", "traceguard", "flowguard", "documents", "pdf"]
+    },
+    "sourceRole": {
+      "enum": [
+        "primary",
+        "official",
+        "implementation",
+        "outcome",
+        "method",
+        "context",
+        "counterevidence",
+        "critique",
+        "data",
+        "secondary"
+      ]
+    },
+    "artifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_id", "artifact_kind", "fingerprint", "locator"],
+      "properties": {
+        "artifact_id": { "$ref": "#/$defs/identifier" },
+        "artifact_kind": { "$ref": "#/$defs/identifier" },
+        "fingerprint": { "$ref": "#/$defs/fingerprint" },
+        "locator": { "type": ["string", "null"], "minLength": 1 }
+      }
+    },
+    "fingerprintMap": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "$ref": "#/$defs/identifier" },
+      "additionalProperties": { "$ref": "#/$defs/fingerprint" }
+    }
+  }
+}

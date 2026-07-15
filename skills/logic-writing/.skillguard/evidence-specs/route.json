@@ -1,0 +1,68 @@
+{
+  "check_id": "check:logic-writing:depth-route",
+  "native_owner_id": "logic-writing",
+  "universes": [
+    {
+      "covered_claim_scope": [
+        "logic-writing:one-public-route-and-native-authority"
+      ],
+      "evaluated_item_ids": [
+        "item:one-public-owner",
+        "item:specialist-native-authority"
+      ],
+      "inventory_items": [
+        {
+          "critical": true,
+          "item_id": "item:one-public-owner",
+          "object_id": "obligation:logic-writing:one-public-owner",
+          "stratum_ids": [
+            "stratum:all"
+          ]
+        },
+        {
+          "critical": true,
+          "item_id": "item:specialist-native-authority",
+          "object_id": "obligation:logic-writing:specialist-native-authority",
+          "stratum_ids": [
+            "stratum:all"
+          ]
+        }
+      ],
+      "policy_fingerprint": "45AEB17A6C6CDDE47B621CF46479A1F014DA2B2D9FF51BE1E970BF78211BF303",
+      "requested_claim_scope": [
+        "logic-writing:one-public-route-and-native-authority"
+      ],
+      "selected_item_ids": [
+        "item:one-public-owner",
+        "item:specialist-native-authority"
+      ],
+      "universe_id": "universe:logic-writing:route",
+      "validated_item_ids": [
+        "item:one-public-owner",
+        "item:specialist-native-authority"
+      ]
+    }
+  ],
+  "depth_contribution_ranges": [
+    {
+      "end": 1,
+      "kind": "semantic",
+      "obligation_ids": [
+        "obligation:logic-writing:one-public-owner"
+      ],
+      "range_id": "range:logic-writing:one-public-owner",
+      "start": 0,
+      "universe_id": "universe:logic-writing:route"
+    },
+    {
+      "end": 2,
+      "kind": "semantic",
+      "obligation_ids": [
+        "obligation:logic-writing:specialist-native-authority"
+      ],
+      "range_id": "range:logic-writing:specialist-native-authority",
+      "start": 1,
+      "universe_id": "universe:logic-writing:route"
+    }
+  ]
+}

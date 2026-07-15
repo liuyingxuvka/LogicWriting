@@ -1,0 +1,4 @@
+interface:
+  display_name: "Logic Writing"
+  short_description: "Research deeply, reason clearly, and write for real readers"
+  default_prompt: "Use $logic-writing to investigate or build an evidence-backed academic document in clear, reader-facing language."

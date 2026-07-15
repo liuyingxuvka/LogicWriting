@@ -1,0 +1,47 @@
+{
+  "check_id": "check:logic-writing:depth-semantic",
+  "native_owner_id": "logic-writing",
+  "universes": [
+    {
+      "covered_claim_scope": [
+        "logic-writing:sanitized-reader-brief"
+      ],
+      "evaluated_item_ids": [
+        "item:reader-brief-boundary"
+      ],
+      "inventory_items": [
+        {
+          "critical": true,
+          "item_id": "item:reader-brief-boundary",
+          "object_id": "obligation:logic-writing:reader-brief-boundary",
+          "stratum_ids": [
+            "stratum:all"
+          ]
+        }
+      ],
+      "policy_fingerprint": "3BB5BEDBF31CF2CE63FCDD8E613A1CC8C21BFF8E95ED0DC65DEDBB2B1AD070D4",
+      "requested_claim_scope": [
+        "logic-writing:sanitized-reader-brief"
+      ],
+      "selected_item_ids": [
+        "item:reader-brief-boundary"
+      ],
+      "universe_id": "universe:logic-writing:semantic",
+      "validated_item_ids": [
+        "item:reader-brief-boundary"
+      ]
+    }
+  ],
+  "depth_contribution_ranges": [
+    {
+      "end": 1,
+      "kind": "semantic",
+      "obligation_ids": [
+        "obligation:logic-writing:reader-brief-boundary"
+      ],
+      "range_id": "range:logic-writing:reader-brief-boundary",
+      "start": 0,
+      "universe_id": "universe:logic-writing:semantic"
+    }
+  ]
+}

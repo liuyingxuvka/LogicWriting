@@ -1,0 +1,68 @@
+{
+  "check_id": "check:logic-writing:depth-academic",
+  "native_owner_id": "logic-writing",
+  "universes": [
+    {
+      "covered_claim_scope": [
+        "logic-writing:academic-structure-and-bounded-handoff"
+      ],
+      "evaluated_item_ids": [
+        "item:academic-structure-depth",
+        "item:bounded-research-handoff"
+      ],
+      "inventory_items": [
+        {
+          "critical": true,
+          "item_id": "item:academic-structure-depth",
+          "object_id": "obligation:logic-writing:academic-structure-depth",
+          "stratum_ids": [
+            "stratum:all"
+          ]
+        },
+        {
+          "critical": true,
+          "item_id": "item:bounded-research-handoff",
+          "object_id": "obligation:logic-writing:bounded-research-handoff",
+          "stratum_ids": [
+            "stratum:all"
+          ]
+        }
+      ],
+      "policy_fingerprint": "2BC771DD861CDFFB94F49DED6090D02CD6CB7DFF9BBACA30C7FF4EFEFD4090F2",
+      "requested_claim_scope": [
+        "logic-writing:academic-structure-and-bounded-handoff"
+      ],
+      "selected_item_ids": [
+        "item:academic-structure-depth",
+        "item:bounded-research-handoff"
+      ],
+      "universe_id": "universe:logic-writing:academic",
+      "validated_item_ids": [
+        "item:academic-structure-depth",
+        "item:bounded-research-handoff"
+      ]
+    }
+  ],
+  "depth_contribution_ranges": [
+    {
+      "end": 1,
+      "kind": "semantic",
+      "obligation_ids": [
+        "obligation:logic-writing:academic-structure-depth"
+      ],
+      "range_id": "range:logic-writing:academic-structure-depth",
+      "start": 0,
+      "universe_id": "universe:logic-writing:academic"
+    },
+    {
+      "end": 2,
+      "kind": "semantic",
+      "obligation_ids": [
+        "obligation:logic-writing:bounded-research-handoff"
+      ],
+      "range_id": "range:logic-writing:bounded-research-handoff",
+      "start": 1,
+      "universe_id": "universe:logic-writing:academic"
+    }
+  ]
+}

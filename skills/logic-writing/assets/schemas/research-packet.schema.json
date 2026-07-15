@@ -1,0 +1,249 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/liuyingxuvka/LogicWriting/schemas/research-packet.schema.json",
+  "title": "Logic Writing ResearchPacket",
+  "description": "The sole current cross-route research handoff. Its assembler resolves every receipt fingerprint to an authoritative original before projecting receipt metadata.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "packet_id",
+    "request_fingerprint",
+    "final_owner",
+    "source_registry",
+    "claim_support",
+    "native_receipts",
+    "member_fingerprints",
+    "unresolved_gaps",
+    "safe_wording",
+    "unsafe_wording",
+    "status",
+    "packet_fingerprint"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "packet_id": { "$ref": "#/$defs/identifier" },
+    "request_fingerprint": { "$ref": "#/$defs/fingerprint" },
+    "final_owner": { "enum": ["investigation", "academic-writing"] },
+    "gap_id": {
+      "anyOf": [
+        { "$ref": "#/$defs/identifier" },
+        { "type": "null" }
+      ]
+    },
+    "source_registry": { "$ref": "source-registry.schema.json" },
+    "claim_support": { "$ref": "claim-support.schema.json" },
+    "native_receipts": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/nativeReceiptRef" }
+    },
+    "member_fingerprints": {
+      "type": "object",
+      "minProperties": 2,
+      "required": ["source_registry", "claim_support"],
+      "propertyNames": { "pattern": "^(?:source_registry|claim_support|native_receipt:[0-9]+)$" },
+      "additionalProperties": { "$ref": "#/$defs/fingerprint" }
+    },
+    "unresolved_gaps": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/gap" },
+      "uniqueItems": true
+    },
+    "safe_wording": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "unsafe_wording": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "status": { "enum": ["current_pass", "partial", "blocked"] },
+    "packet_fingerprint": { "$ref": "#/$defs/fingerprint" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": ["status"],
+        "properties": { "status": { "const": "current_pass" } }
+      },
+      "then": {
+        "properties": {
+          "native_receipts": { "minItems": 1 },
+          "unresolved_gaps": { "maxItems": 0 }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "fingerprint": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "status": {
+      "enum": [
+        "current_pass",
+        "partial",
+        "bounded",
+        "downgraded",
+        "blocked",
+        "failed",
+        "not_run",
+        "stale",
+        "provider_unavailable",
+        "dependency_unavailable",
+        "access_gap",
+        "render_not_run",
+        "planning_only",
+        "saved_but_modeling_incomplete"
+      ]
+    },
+    "evidenceDomain": {
+      "enum": [
+        "source_discovery",
+        "source_observation",
+        "source_depth",
+        "source_library",
+        "argument_model",
+        "structured_artifact",
+        "model_depth",
+        "artifact_synthesis",
+        "temporal_trace",
+        "causal_trace",
+        "competing_storyline",
+        "prediction_boundary",
+        "process_model",
+        "process_freshness",
+        "document_content",
+        "document_mutation",
+        "document_render",
+        "document_visual",
+        "pdf_content",
+        "pdf_render",
+        "pdf_visual",
+        "citation_semantics",
+        "revision_provenance",
+        "reader_deterministic",
+        "reader_judgment"
+      ]
+    },
+    "gapCode": {
+      "enum": [
+        "registry_has_no_sources",
+        "source_not_claim_usable",
+        "observation_authority_not_resolved",
+        "observation_receipt_not_current",
+        "observation_receipt_not_in_packet",
+        "ledger_has_no_claims",
+        "claim_without_usable_source",
+        "cited_source_not_claim_usable",
+        "source_role_mismatch",
+        "principal_claim_without_support_link",
+        "insufficient_independent_lineages",
+        "safe_wording_not_in_claim_support_boundary",
+        "safe_wording_not_anchored_to_source",
+        "causal_mechanism_missing",
+        "execution_or_outcome_evidence_missing",
+        "forecast_validation_missing",
+        "semantic_fit_receipt_missing",
+        "semantic_fit_authority_not_resolved",
+        "semantic_fit_receipt_not_current",
+        "semantic_fit_receipt_not_in_packet",
+        "principal_dependency_not_eligible",
+        "missing_gap_id",
+        "missing_causal_trace",
+        "missing_prediction_boundary",
+        "native_receipt_not_current",
+        "missing_native_receipts",
+        "access_gap",
+        "scope_not_covered",
+        "source_conflict_unresolved",
+        "recency_not_verified",
+        "additional_evidence_gap"
+      ]
+    },
+    "gap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "gap_entry_id",
+        "code",
+        "affected_claim_ids",
+        "affected_source_ids",
+        "scope",
+        "safe_wording",
+        "unsafe_boundary",
+        "next_owner"
+      ],
+      "properties": {
+        "gap_entry_id": { "$ref": "#/$defs/identifier" },
+        "code": { "$ref": "#/$defs/gapCode" },
+        "affected_claim_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/identifier" },
+          "uniqueItems": true
+        },
+        "affected_source_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/identifier" },
+          "uniqueItems": true
+        },
+        "scope": {
+          "enum": ["source", "claim", "packet", "handoff", "causal", "forecast"]
+        },
+        "safe_wording": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?!.*\\b(?:SourceGuard|LogicGuard|TraceGuard|FlowGuard|SkillGuard)\\b)(?!.*\\b(?:current_pass|provider_unavailable|render_not_run|closure_status)\\b).+$"
+        },
+        "unsafe_boundary": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?!.*\\b(?:SourceGuard|LogicGuard|TraceGuard|FlowGuard|SkillGuard)\\b)(?!.*\\b(?:current_pass|provider_unavailable|render_not_run|closure_status)\\b).+$"
+        },
+        "next_owner": {
+          "enum": ["source-research", "argument-review", "trace-review", "research-owner", "writer"]
+        }
+      }
+    },
+    "nativeReceiptRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "receipt_fingerprint",
+        "producer_skill",
+        "native_route",
+        "evidence_domain",
+        "status",
+        "artifact_fingerprint",
+        "covered_scope",
+        "covered_obligation_ids",
+        "current"
+      ],
+      "properties": {
+        "receipt_fingerprint": { "$ref": "#/$defs/fingerprint" },
+        "producer_skill": {
+          "enum": ["sourceguard", "logicguard", "traceguard", "flowguard", "documents", "pdf"]
+        },
+        "native_route": { "$ref": "#/$defs/identifier" },
+        "evidence_domain": { "$ref": "#/$defs/evidenceDomain" },
+        "status": { "$ref": "#/$defs/status" },
+        "artifact_fingerprint": { "$ref": "#/$defs/fingerprint" },
+        "covered_scope": { "type": "string", "minLength": 1 },
+        "covered_obligation_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/identifier" },
+          "uniqueItems": true
+        },
+        "current": { "type": "boolean" }
+      }
+    }
+  }
+}
