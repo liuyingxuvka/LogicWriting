@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -28,7 +29,7 @@ EXPECTED = {
     "reader-audit.schema.json",
     "reader-brief.schema.json",
     "reader-judgment.schema.json",
-    "receipt.schema.json",
+    "evidence-receipt.schema.json",
     "research-packet.schema.json",
     "revision-provenance.schema.json",
     "route-decision.schema.json",
@@ -67,6 +68,28 @@ def test_runtime_inventory_is_exactly_the_fourteen_current_contracts():
 
     assert set(SUPPORTED_SCHEMA_NAMES) == EXPECTED
     assert {path.name for path in schema_root.glob("*.schema.json")} == EXPECTED
+
+
+def _openspec_v2_generated_json_name(name: str) -> bool:
+    return re.fullmatch(
+        r"(?:verification[-_.])?(?:receipts?|cache|progress|registry)"
+        r"(?:[-_.][^/]*)?\.jsonl?",
+        name.lower(),
+    ) is not None
+
+
+def test_schema_source_names_do_not_collide_with_openspec_generated_output_classifier():
+    # Preserve the exact observed counterexample while proving that every
+    # current schema source survives OpenSpec's frozen-root materialization.
+    assert _openspec_v2_generated_json_name("receipt.schema.json")
+    collisions = sorted(
+        name for name in EXPECTED if _openspec_v2_generated_json_name(name)
+    )
+    assert collisions == [], (
+        "tracked schema source names collide with OpenSpec's "
+        f"verification-generated-output-v2 classifier: {collisions}; "
+        "rename each authority source before final frozen validation"
+    )
 
 
 def test_all_schema_ids_are_canonical_and_offline():

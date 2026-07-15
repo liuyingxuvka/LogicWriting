@@ -241,6 +241,11 @@ obligations:
     claim: Operation changes do not stale development evidence and vice versa without an explicit edge.
     required: true
     evidence: [check.tests.freshness, check.models.full]
+  - id: req.closure.frozen-materialization
+    source: "specs/evidence-freshness-closure/spec.md#Requirement: Frozen validation materializes every governed source"
+    claim: Every declared authority input survives frozen materialization, including same-class generated-output basename collisions.
+    required: true
+    evidence: [check.tests.routing, check.models.alignment, check.testmesh.plan, check.tests.full]
   - id: req.closure.no-progress
     source: "specs/evidence-freshness-closure/spec.md#Requirement: Repeated no-progress loops terminate visibly"
     claim: Identical failed packets and artifacts cannot loop forever.
@@ -261,7 +266,7 @@ checks:
     args: [-m, pytest, -q, tests/unit/test_routing.py]
     timeout_seconds: 300
     required: true
-    covers: [req.routing.one-owner, req.routing.terminal-deliverable, req.routing.bounded-child, req.routing.fingerprint, req.routing.ambiguity, req.routing.skip]
+    covers: [req.routing.one-owner, req.routing.terminal-deliverable, req.routing.bounded-child, req.routing.fingerprint, req.routing.ambiguity, req.routing.skip, req.closure.frozen-materialization]
     expected: {exit_code: 0}
 
   - id: check.tests.adapters
@@ -335,7 +340,7 @@ checks:
     validation_scope: focused
     snapshot_policy: live
     toolchain_identity: python-pytest
-    input_selectors: [skills/logic-writing/scripts/receipt_store.py, skills/logic-writing/scripts/derive_closure.py, skills/logic-writing/assets/schemas/receipt.schema.json, skills/logic-writing/assets/schemas/closure.schema.json, tests/unit/test_freshness_closure.py]
+    input_selectors: [skills/logic-writing/scripts/receipt_store.py, skills/logic-writing/scripts/derive_closure.py, skills/logic-writing/assets/schemas/evidence-receipt.schema.json, skills/logic-writing/assets/schemas/closure.schema.json, tests/unit/test_freshness_closure.py]
     depends_on_receipts: []
     command: python
     args: [-m, pytest, -q, tests/unit/test_freshness_closure.py]
@@ -357,7 +362,7 @@ checks:
     args: [.flowguard/model_test_alignment/run_checks.py, --json]
     timeout_seconds: 600
     required: true
-    covers: [req.routing.one-owner, req.investigation.packet, req.academic.actual-artifact, req.reader.actual-text, req.closure.verifier-derived, req.closure.minimum-content, req.closure.native-owners]
+    covers: [req.routing.one-owner, req.investigation.packet, req.academic.actual-artifact, req.reader.actual-text, req.closure.verifier-derived, req.closure.minimum-content, req.closure.native-owners, req.closure.frozen-materialization]
     expected: {exit_code: 0}
 
   - id: check.models.full
@@ -431,13 +436,13 @@ checks:
     validation_scope: full
     snapshot_policy: frozen
     toolchain_identity: flowguard-0.55.0-python
-    input_selectors: [.flowguard/test_mesh/**, openspec/changes/create-logic-writing/verification-contract.yaml, tests/flowguard/test_alignment_and_mesh.py]
+    input_selectors: [.flowguard/test_mesh/**, .flowguard/models/frozen_source_contract_exhaustion.py, openspec/changes/create-logic-writing/verification-contract.yaml, tests/flowguard/test_alignment_and_mesh.py]
     depends_on_receipts: [check.models.alignment]
     command: python
     args: [.flowguard/test_mesh/run_checks.py, --json]
     timeout_seconds: 600
     required: true
-    covers: [req.routing.one-owner, req.investigation.packet, req.academic.actual-artifact, req.reader.actual-text, req.closure.verifier-derived]
+    covers: [req.routing.one-owner, req.investigation.packet, req.academic.actual-artifact, req.reader.actual-text, req.closure.verifier-derived, req.closure.frozen-materialization]
     expected: {exit_code: 0}
 
   - id: check.public.docs
@@ -501,7 +506,7 @@ checks:
     args: [-m, pytest, -q]
     timeout_seconds: 3600
     required: true
-    covers: [req.routing.one-owner, req.investigation.packet, req.academic.actual-artifact, req.reader.actual-text, req.closure.verifier-derived]
+    covers: [req.routing.one-owner, req.investigation.packet, req.academic.actual-artifact, req.reader.actual-text, req.closure.verifier-derived, req.closure.frozen-materialization]
     expected: {exit_code: 0}
 
   - id: check.tests.full.consumer

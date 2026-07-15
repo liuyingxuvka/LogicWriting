@@ -18,6 +18,10 @@ from models.common import (  # noqa: E402
     development_workflow,
     operation_workflow,
 )
+from models.frozen_source_contract_exhaustion import (  # noqa: E402
+    CASE_IDS,
+    review_frozen_source_name_family,
+)
 
 
 def _step(workflow, state, event):
@@ -305,3 +309,19 @@ def test_operation_artifact_change_does_not_stale_release_without_an_explicit_ed
         DevelopmentEvent("operation_artifact_changed", fingerprint="artifact:new"),
     )
     assert unchanged == state
+
+
+def test_frozen_source_name_family_covers_observed_and_same_class_collisions():
+    report = review_frozen_source_name_family()
+
+    assert report.ok, report.summary
+    assert report.confidence == "full"
+    assert set(CASE_IDS).issubset({case.case_id for case in report.generated_cases})
+    assert report.observed_problem_backfeed_report is not None
+    assert report.observed_problem_backfeed_report.ok
+    assert report.observed_problem_backfeed_report.mapped_problem_ids == (
+        "problem:frozen-source-schema-omitted",
+    )
+    assert {item.acceptance_id for item in report.composite_handoff_acceptances} >= {
+        f"composite_handoff:{case_id}" for case_id in CASE_IDS
+    }

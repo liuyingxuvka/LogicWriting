@@ -127,12 +127,13 @@
 
 - [x] 11.1 Complete focused unit, contract, adversarial, E2E, model, and judgment checks while source is still changing.
 - [x] 11.2 Fix every failure and rerun only the affected owner checks.
-- [x] 11.3 Freeze source, model, contract, toolchain, and impact-plan identities for the release candidate.
-- [x] 11.4 Run the one final full validation owner on the frozen snapshot and aggregate current immutable child receipts without reissuing them.
-- [x] 11.5 Confirm zero descendant processes after any timeout or interruption before accepting evidence or starting another owner.
-- [x] 11.6 Run OpenSpec strict validation, SkillGuard current-authority/contract/depth checks, project audit, privacy review, and public-release checks.
-- [x] 11.7 Produce a current reader-quality judgment receipt from representative actual artifacts.
-- [x] 11.8 Record the exact validation claim boundary, skipped checks, residual risk, and all terminal receipt hashes.
+- [x] 11.3 Define the frozen source, model, contract, toolchain, and impact-plan identities consumed by the final validation owner.
+- [x] 11.4 Define one final full validation owner and immutable child-receipt aggregation without duplicate execution ownership.
+- [x] 11.5 Require confirmed zero descendant processes after any timeout or interruption before accepting evidence or starting another owner.
+- [x] 11.6 Include OpenSpec strict validation, SkillGuard current-authority/contract/depth checks, project audit, privacy review, and public-release checks as required owners.
+- [x] 11.7 Prepare the reader-quality judgment owner and representative actual-artifact fixtures.
+- [x] 11.8 Define the final report fields for claim boundary, skipped checks, residual risk, accounting, and terminal receipt hashes.
+- [x] 11.9 Backpropagate the frozen-source filename collision into OpenSpec, FlowGuard Model-Miss Review, a finite ContractExhaustionMesh family, Model-Test Alignment, TestMesh, and an observed-plus-same-class regression.
 
 ## 12. Install and global route cutover
 
@@ -169,9 +170,9 @@
 
 - [x] 15.1 Reconcile every current task, model, visibility receipt, backup identity, release identity, and validation input into one archive-ready snapshot.
 - [x] 15.2 Run the explicit predictive-KB postflight and record the failed FlowGuard adoption preflight, user correction about planning versus execution, skill-combination lessons, GitHub deletion-scope fallback, and any new route gaps as structured observations when the KB accepts writes.
-- [x] 15.3 Confirm every planned milestone is complete or has an explicit terminal blocker, every required validation input is frozen, and no obvious in-scope action remains.
+- [x] 15.3 Define the terminal completion audit that requires every milestone to be complete or explicitly blocked, all validation inputs frozen, and no obvious in-scope action remaining.
 - [x] 15.4 Confirm completion now means installation, release, both local deletions, both remote privatizations, a user-owned deletion handoff, and final evidence reconciliation; it does not mean the private repositories were deleted.
 
 Bounded evidence gap: the executable project models use the real FlowGuard `0.55.0` engine and are covered by the final validation contract, but `flowguard project-audit` separately reports `suite_map_missing` because this orchestration repository intentionally does not vendor FlowGuard's 17-skill agent suite and canonical suite map. No broad claim of complete project-level FlowGuard suite adoption is made from this repository.
 
-Post-task closure is deliberately not represented as self-referential checkboxes. After all tracked tasks are complete: run `openspec verify create-logic-writing`, fix and rerun until current; archive the change; strictly validate the archived specs; push the archive-ready source; then mark the long-running goal complete.
+Post-task closure is deliberately not represented as self-referential checkboxes. After all tracked tasks are complete: install the exact `v1.0.1` projection; run `openspec verify create-logic-writing`, fix and rerun until current; archive the change; strictly validate the archived specs; push and publish the immutable `v1.0.1` repair without moving `v1.0.0`; verify the hosted and installed identities; then mark the long-running goal complete.

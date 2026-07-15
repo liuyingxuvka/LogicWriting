@@ -1,7 +1,7 @@
 # Logic Writing
 
 <p align="center">
-  <img src="https://img.shields.io/badge/source-1.0.0-6f42c1" alt="Source version 1.0.0" />
+  <img src="https://img.shields.io/badge/source-1.0.1-6f42c1" alt="Source version 1.0.1" />
   <img src="https://img.shields.io/badge/skill-logic--writing-2463eb" alt="Codex skill logic-writing" />
   <img src="https://img.shields.io/badge/license-MIT-2f855a" alt="MIT license" />
 </p>
@@ -24,7 +24,7 @@ skills. It selects one final owner from the deliverable the user actually
 wants, coordinates the required specialists, and keeps internal workflow
 language out of the finished artifact.
 
-> **Source status:** the repository metadata declares the `1.0.0` source
+> **Source status:** the repository metadata declares the `1.0.1` source
 > version line. That number alone does not claim a Git tag, hosted release,
 > package-registry publication, completed predecessor retirement, or a full
 > regression result.

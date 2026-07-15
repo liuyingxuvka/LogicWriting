@@ -10,7 +10,7 @@ The two predecessor skills split one real user journey across separate entrypoin
 - Add a typed `ResearchPacket` handoff so investigation results can feed academic writing without copying hidden state or promoting candidates into facts.
 - Add explicit reader-language gates that reject internal workflow labels, ledger dumps, unsupported certainty, unexplained acronyms, weak transitions, and paragraph sequences with no visible conceptual progression.
 - Add content-addressed source, artifact, adapter, and validation receipts with automatic staleness propagation and honest terminal states.
-- Add current OpenSpec, FlowGuard, and SkillGuard governance, adversarial fixtures, end-to-end route tests, installation verification, bilingual public documentation, and a source-only `v1.0.0` release.
+- Add current OpenSpec, FlowGuard, and SkillGuard governance, adversarial fixtures, end-to-end route tests, installation verification, bilingual public documentation, an immutable initial `v1.0.0`, and a source-only `v1.0.1` repair release.
 - **BREAKING**: replace `academic-thesis-revision-workflow` and `research-investigation-workflow` as user-facing entrypoints; after verified installation and release, remove both old installed skills and move both old GitHub repositories out of the public surface by changing them to private. The authenticated owner keeps access, anonymous API access must return 404, and the user owns any later irreversible deletion. Recoverable Git bundles and uncommitted patches remain outside the public repository.
 
 ## Capabilities

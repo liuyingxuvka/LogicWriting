@@ -10,6 +10,16 @@ line follows semantic versioning.
 
 - Hosted release metadata is intentionally not asserted by this source file.
 
+## [1.0.1]
+
+### Fixed
+
+- Renamed the authoritative evidence-receipt schema so OpenSpec's frozen
+  validation snapshot cannot mistake it for a generated receipt output.
+- Added finite same-class checks for tracked source names that collide with
+  OpenSpec's generated-output classifier, with FlowGuard model-miss,
+  Model-Test Alignment, and TestMesh projections.
+
 ## [1.0.0]
 
 `1.0.0` identifies the first Logic Writing source version line. It does not, by

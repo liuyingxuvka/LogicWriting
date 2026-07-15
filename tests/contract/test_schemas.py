@@ -90,7 +90,7 @@ def schema_examples(tmp_path_factory):
         "reader-audit.schema.json": reader["audit_result"]["audit"],
         "reader-brief.schema.json": reader["brief"],
         "reader-judgment.schema.json": reader["judgment_result"]["judgment"],
-        "receipt.schema.json": closure_result["receipt"],
+        "evidence-receipt.schema.json": closure_result["receipt"],
         "research-packet.schema.json": reader["packet"],
         "revision-provenance.schema.json": revision["provenance_result"]["provenance"],
         "route-decision.schema.json": contract["route_decision"],
@@ -115,11 +115,11 @@ def test_every_root_contract_rejects_unknown_fields(schema_examples, schema_name
 
 
 def test_receipt_requires_stable_semantic_owner(schema_examples):
-    value = copy.deepcopy(schema_examples["receipt.schema.json"])
+    value = copy.deepcopy(schema_examples["evidence-receipt.schema.json"])
     del value["semantic_owner_id"]
 
     with pytest.raises(SchemaValidationError, match="semantic_owner_id"):
-        assert_schema_valid("receipt.schema.json", value)
+        assert_schema_valid("evidence-receipt.schema.json", value)
 
 
 def test_reader_brief_has_no_self_attested_reader_native_flag(schema_examples):

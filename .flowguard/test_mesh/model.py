@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
+import sys
 from typing import Any, Mapping
 
 import yaml
@@ -14,6 +15,16 @@ from flowguard import (
     TestPartitionItem,
     TestSuiteEvidence,
     TestTargetSplitDerivation,
+    contract_exhaustion_to_test_mesh_cell_ids,
+)
+
+FLOWGUARD_ROOT = Path(__file__).resolve().parents[1]
+if str(FLOWGUARD_ROOT) not in sys.path:
+    sys.path.insert(0, str(FLOWGUARD_ROOT))
+
+from models.frozen_source_contract_exhaustion import (  # noqa: E402
+    CASE_IDS as FROZEN_SOURCE_CASE_IDS,
+    review_frozen_source_name_family,
 )
 
 
@@ -39,10 +50,18 @@ def _checks(value: Mapping[str, Any]) -> tuple[dict[str, Any], ...]:
 
 def inventory_revision(value: Mapping[str, Any] | None = None) -> str:
     contract = dict(value or _contract())
+    source_name_case_ids = tuple(
+        case_id
+        for case_id in contract_exhaustion_to_test_mesh_cell_ids(
+            review_frozen_source_name_family()
+        )
+        if case_id in FROZEN_SOURCE_CASE_IDS
+    )
     payload = {
         "checks": contract["checks"],
         "version": contract.get("version"),
         "change_id": contract.get("change_id"),
+        "frozen_source_case_ids": source_name_case_ids,
     }
     canonical = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
     return "sha256:" + hashlib.sha256(canonical).hexdigest()
@@ -115,8 +134,15 @@ def release_plan(receipts: Mapping[str, Mapping[str, Any]] | None = None) -> Tes
     command_checks = tuple(item for item in checks if item.get("kind") == "command")
     consumers = _consumer_owner_map(checks)
     receipt_map = dict(receipts or {})
+    frozen_source_case_ids = tuple(
+        case_id
+        for case_id in contract_exhaustion_to_test_mesh_cell_ids(
+            review_frozen_source_name_family()
+        )
+        if case_id in FROZEN_SOURCE_CASE_IDS
+    )
 
-    items = tuple(
+    check_items = tuple(
         TestPartitionItem(
             str(check["id"]),
             item_type="validation_obligation",
@@ -131,11 +157,30 @@ def release_plan(receipts: Mapping[str, Mapping[str, Any]] | None = None) -> Tes
         )
         for check in checks
     )
+    case_items = tuple(
+        TestPartitionItem(
+            case_id,
+            item_type="validation_obligation",
+            owner_suite_id="check.tests.full",
+            description="OpenSpec frozen-source generated-output name collision",
+            touched_paths=(
+                "skills/logic-writing/assets/schemas/**",
+                "tests/contract/test_schema_runtime_gate.py",
+            ),
+            inventory_revision=revision,
+        )
+        for case_id in frozen_source_case_ids
+    )
+    items = check_items + case_items
     suites = tuple(
         _receipt_suite(
             check,
             revision,
-            (str(check["id"]), *consumers.get(str(check["id"]), ())),
+            (
+                str(check["id"]),
+                *consumers.get(str(check["id"]), ()),
+                *(frozen_source_case_ids if str(check["id"]) == "check.tests.full" else ()),
+            ),
             receipt_map.get(str(check["id"])),
         )
         for check in command_checks
@@ -147,7 +192,7 @@ def release_plan(receipts: Mapping[str, Mapping[str, Any]] | None = None) -> Tes
         target_split_derivation=TestTargetSplitDerivation(
             "model:release-retirement",
             target_suite_ids=tuple(str(item["id"]) for item in command_checks),
-            covered_partition_item_ids=tuple(str(item["id"]) for item in checks),
+            covered_partition_item_ids=tuple(item.item_id for item in items),
             state_owner_fields=("validation_fingerprint", "validation_status", "validation_current"),
             side_effect_owner_fields=("validation_receipts",),
             source_model_path=".flowguard/models/release_retirement_model.py",
@@ -160,7 +205,7 @@ def release_plan(receipts: Mapping[str, Mapping[str, Any]] | None = None) -> Tes
         decision_scope="release",
         release_deferred_allowed=False,
         inventory_revision=revision,
-        required_inventory_item_ids=tuple(str(item["id"]) for item in checks),
+        required_inventory_item_ids=tuple(item.item_id for item in items),
         require_complete_inventory=True,
         require_final_receipts=True,
     )

@@ -7,17 +7,53 @@ the frozen validation owner supplies terminal execution receipts later.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 import sys
 
-from flowguard import CodeContract, ModelObligation, ModelTestAlignmentPlan, TestEvidence
+from flowguard import (
+    CodeContract,
+    ModelObligation,
+    ModelTestAlignmentPlan,
+    TestEvidence,
+    contract_exhaustion_to_model_obligations,
+)
 
 FLOWGUARD_ROOT = Path(__file__).resolve().parents[1]
 if str(FLOWGUARD_ROOT) not in sys.path:
     sys.path.insert(0, str(FLOWGUARD_ROOT))
 
 from models.retirement_field_lifecycle import review_retirement_visibility_fields
+from models.frozen_source_contract_exhaustion import (
+    CASE_IDS as FROZEN_SOURCE_CASE_IDS,
+    review_frozen_source_name_family,
+)
+
+
+_FROZEN_SOURCE_REPORT = review_frozen_source_name_family()
+_FROZEN_SOURCE_OBLIGATIONS = tuple(
+    replace(
+        obligation,
+        model_miss_origin=True,
+        required_closure_evidence_roles=(
+            ("observed_regression", "same_class_generalized")
+            if FROZEN_SOURCE_CASE_IDS[0] in obligation.obligation_id
+            else ("same_class_generalized",)
+        ),
+        behavior_plane="development_process",
+        business_intent_id="intent:freeze-one-validation-owner",
+        behavior_commitment_id="C07:freeze-one-validation-owner",
+        primary_path_id="logic_writing.release.validation",
+    )
+    for obligation in contract_exhaustion_to_model_obligations(
+        _FROZEN_SOURCE_REPORT
+    )
+    if obligation.obligation_id
+    in {f"contract_exhaustion:{case_id}" for case_id in FROZEN_SOURCE_CASE_IDS}
+)
+_FROZEN_SOURCE_OBLIGATION_IDS = tuple(
+    obligation.obligation_id for obligation in _FROZEN_SOURCE_OBLIGATIONS
+)
 
 
 @dataclass(frozen=True)
@@ -129,7 +165,7 @@ BINDINGS = (
     ),
     BindingSpec(
         "obligation:frozen-validation",
-        "one frozen validation identity owns final execution",
+        "one frozen validation identity owns final execution and materializes every governed source",
         "development_process",
         "intent:freeze-one-validation-owner",
         "C07:freeze-one-validation-owner",
@@ -137,9 +173,9 @@ BINDINGS = (
         "contract:verification-owner-plan",
         ".flowguard/models/common.py",
         "FreezeValidation",
-        "test:full-validation",
-        "test_release_requires_frozen_install_and_global_route",
-        "tests/flowguard/test_model_contracts.py",
+        "test:frozen-source-materialization",
+        "test_schema_source_names_do_not_collide_with_openspec_generated_output_classifier",
+        "tests/contract/test_schema_runtime_gate.py",
         ("happy_path", "negative_path"),
     ),
     BindingSpec(
@@ -232,12 +268,32 @@ def _obligation(spec: BindingSpec) -> ModelObligation:
 
 
 def _contract(spec: BindingSpec) -> CodeContract:
+    extra_obligations = (
+        _FROZEN_SOURCE_OBLIGATION_IDS
+        if spec.contract_id == "contract:verification-owner-plan"
+        else ()
+    )
     return CodeContract(
         spec.contract_id,
         path=spec.code_path,
         symbol=spec.symbol,
         role="owner",
-        implements_obligations=(spec.obligation_id,),
+        implements_obligations=(spec.obligation_id, *extra_obligations),
+        external_inputs=(
+            ("analogous_defect",)
+            if spec.contract_id == "contract:verification-owner-plan"
+            else ()
+        ),
+        external_outputs=(
+            ("blocked",)
+            if spec.contract_id == "contract:verification-owner-plan"
+            else ()
+        ),
+        error_paths=(
+            ("blocked",)
+            if spec.contract_id == "contract:verification-owner-plan"
+            else ()
+        ),
         behavior_plane=spec.plane,
         business_intent_id=spec.intent_id,
         behavior_commitment_id=spec.commitment_id,
@@ -264,16 +320,54 @@ def _evidence(spec: BindingSpec, kind: str) -> TestEvidence:
     )
 
 
+def _frozen_source_evidence() -> tuple[TestEvidence, ...]:
+    evidence: list[TestEvidence] = []
+    for obligation in _FROZEN_SOURCE_OBLIGATIONS:
+        for role in obligation.required_closure_evidence_roles:
+            evidence.append(
+                TestEvidence(
+                    f"test:frozen-source:{obligation.obligation_id}:{role}",
+                    test_name=(
+                        "test_schema_source_names_do_not_collide_with_"
+                        "openspec_generated_output_classifier"
+                    ),
+                    path="tests/contract/test_schema_runtime_gate.py",
+                    command=(
+                        "python -m pytest -q "
+                        "tests/contract/test_schema_runtime_gate.py"
+                    ),
+                    result_status="passed",
+                    evidence_current=True,
+                    test_kind="replay",
+                    covered_obligations=(obligation.obligation_id,),
+                    covered_code_contracts=("contract:verification-owner-plan",),
+                    assertion_scope="external_contract",
+                    closure_evidence_role=role,
+                    behavior_plane="development_process",
+                    business_intent_id="intent:freeze-one-validation-owner",
+                    behavior_commitment_id="C07:freeze-one-validation-owner",
+                    primary_path_id="logic_writing.release.validation",
+                )
+            )
+    return tuple(evidence)
+
+
 def aligned_plan() -> ModelTestAlignmentPlan:
     field_lifecycle = review_retirement_visibility_fields()
     return ModelTestAlignmentPlan(
         model_id="logic-writing-model-test-alignment",
-        obligations=tuple(_obligation(spec) for spec in BINDINGS),
+        obligations=(
+            *( _obligation(spec) for spec in BINDINGS),
+            *_FROZEN_SOURCE_OBLIGATIONS,
+        ),
         code_contracts=tuple(_contract(spec) for spec in BINDINGS),
-        test_evidence=tuple(
-            _evidence(spec, kind)
-            for spec in BINDINGS
-            for kind in spec.required_kinds
+        test_evidence=(
+            *(
+                _evidence(spec, kind)
+                for spec in BINDINGS
+                for kind in spec.required_kinds
+            ),
+            *_frozen_source_evidence(),
         ),
         field_lifecycle_reports=(field_lifecycle,),
         field_lifecycle_projections=field_lifecycle.projections,

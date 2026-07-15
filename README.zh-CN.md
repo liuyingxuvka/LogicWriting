@@ -1,7 +1,7 @@
 # Logic Writing
 
 <p align="center">
-  <img src="https://img.shields.io/badge/source-1.0.0-6f42c1" alt="源码版本 1.0.0" />
+  <img src="https://img.shields.io/badge/source-1.0.1-6f42c1" alt="源码版本 1.0.1" />
   <img src="https://img.shields.io/badge/skill-logic--writing-2463eb" alt="Codex 技能 logic-writing" />
   <img src="https://img.shields.io/badge/license-MIT-2f855a" alt="MIT 许可证" />
 </p>
@@ -20,7 +20,7 @@
 
 Logic Writing 为相互关联的调查和学术写作提供一个公开入口，但不会把这个入口变成取代所有专业技能的“万能技能”。它根据用户最终要拿到的东西选择唯一负责人，协调所需的专业技能，并阻止内部工作流语言混入最终成品。
 
-> **源码状态：**仓库元数据声明了 `1.0.0` 这条源码版本线。这个数字本身不代表已经存在 Git 标签、GitHub Release、包管理器发布、旧仓库退役完成或完整回归通过。
+> **源码状态：**仓库元数据声明了 `1.0.1` 这条源码版本线。这个数字本身不代表已经存在 Git 标签、GitHub Release、包管理器发布、旧仓库退役完成或完整回归通过。
 
 ## 为什么要统一入口？
 

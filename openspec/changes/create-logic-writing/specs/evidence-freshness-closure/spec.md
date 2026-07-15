@@ -176,6 +176,15 @@ The system SHALL keep user-task artifacts in the `agent_operation` freshness pla
 - **WHEN** a maintained skill, schema, model, adapter contract, or checker changes
 - **THEN** only validation owners that consume the changed component and their installation or release projections SHALL become stale
 
+### Requirement: Frozen validation materializes every governed source
+The development validation plane SHALL prove that every declared authority input is present byte-for-byte in the frozen execution root and SHALL block tracked source names that the verifier classifies as generated output.
+
+#### Scenario: Authority schema name collides with generated evidence
+- **WHEN** a tracked schema basename matches the verifier's receipt, cache, progress, or registry output family
+- **THEN** final validation SHALL block before release
+- **AND** the authority SHALL be renamed directly without a compatibility alias
+- **AND** the observed collision plus the finite same-class basename family SHALL be replayed before broad confidence is restored
+
 ### Requirement: Repeated no-progress loops terminate visibly
 The system SHALL detect repeated identical failed packets, gap sets, or artifact hashes and SHALL stop with a bounded blocker instead of claiming progress.
 

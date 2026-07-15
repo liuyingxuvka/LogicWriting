@@ -156,7 +156,7 @@ There is one script copy under the skill. Tests import that copy. Repository-roo
 
 ### 9. Validation has frozen single owners
 
-Before multi-check execution, the verification contract freezes each check id, covered obligations, exact inputs, dependency order, persistent receipt root, and one primary execution owner. TestMesh aggregates current immutable child receipts and never launches or reruns the child commands. Full validation runs once on a frozen integration snapshot. After a timeout, the launcher must confirm zero descendants before any result can be reused.
+Before multi-check execution, the verification contract freezes each check id, covered obligations, exact inputs, dependency order, persistent receipt root, and one primary execution owner. Every governed source input must materialize byte-for-byte in the frozen root; tracked authority names that match OpenSpec's generated-output classifier are blocked before release. TestMesh aggregates current immutable child receipts and never launches or reruns the child commands. Full validation runs once on a frozen integration snapshot. After a timeout, the launcher must confirm zero descendants before any result can be reused.
 
 Representative end-to-end cases cover investigation, academic revision, academic-from-zero with a bounded evidence child, metadata-false-positive prose, candidate-source promotion, chronology-to-causality overclaim, stale packet, stale postwrite audit, missing document renderer, installed route activation, and research-to-writing ownership.
 
@@ -177,6 +177,7 @@ Predecessor local skills are removed only after the new route is current and bac
 - **Deep workflows become unnecessarily expensive** -> activate specialist steps from claim type and remaining gaps; skip trivial tasks and reuse exact current receipts.
 - **Document providers are unavailable** -> allow explicitly bounded text or DOCX delivery only where the owning Documents/PDF contract permits it, disclose `render_not_run`, and prohibit visual-quality claims.
 - **Overbroad staleness causes repeated full regressions** -> maintain component-to-owner impact edges and run affected owners only, with one full validation on the final frozen snapshot.
+- **A tracked authority file is mistaken for generated evidence** -> reject the colliding basename through a finite same-class family check, rename the authority directly without an alias, and replay the frozen snapshot.
 - **Later deletion could destroy hosted history** -> preserve full bundles, tags, uncommitted patches, metadata, hashes, and restore receipts outside the public repository before privatization; never describe privacy evidence as deletion evidence.
 
 ## Migration Plan
@@ -186,7 +187,7 @@ Predecessor local skills are removed only after the new route is current and bac
 3. Port and rewrite the strongest predecessor behavior into the two route specifications; do not copy old runtime shells or private working data.
 4. Run model checks, unit/contract/adversarial/E2E tests, representative forward tests, SkillGuard contract/depth checks, privacy checks, and one final frozen full validation.
 5. Install through SkillGuard target installation, verify both routes and the bounded cross-route handoff from the active installation, then refresh the global router.
-6. Publish the clean repository and `v1.0.0`, protect `main`, and verify a fresh clone and installed projection.
+6. Preserve the immutable initial `v1.0.0`, publish the repaired `v1.0.1`, protect `main`, and verify a fresh clone and installed projection.
 7. Update active references to old skill ids, verify zero runtime residuals, remove both old installed skills, and recheck the new route.
 8. Change the research predecessor repository to private, verify authenticated visibility plus anonymous inaccessibility and new-repo health, then do the same for the academic predecessor repository.
 9. Record the user-owned deletion handoff, archive the OpenSpec change, and preserve public release receipts plus private backup/visibility-retirement receipts.

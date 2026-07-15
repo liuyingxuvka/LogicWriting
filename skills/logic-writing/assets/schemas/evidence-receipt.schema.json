@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/liuyingxuvka/LogicWriting/schemas/receipt.schema.json",
+  "$id": "https://github.com/liuyingxuvka/LogicWriting/schemas/evidence-receipt.schema.json",
   "title": "Logic Writing authoritative evidence receipt",
   "description": "A content-addressed receipt built by a managed producer path. receipt_fingerprint is the sole receipt identity; authority metadata is part of the immutable original.",
   "type": "object",

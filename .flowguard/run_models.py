@@ -19,6 +19,10 @@ from flowguard import (  # noqa: E402
     ProgressCheckConfig,
     check_loops,
     check_progress,
+    contract_exhaustion_to_composite_handoff_acceptance_ids,
+    contract_exhaustion_to_model_obligations,
+    contract_exhaustion_to_risk_gate_ids,
+    contract_exhaustion_to_test_mesh_cell_ids,
     run_model_first_checks,
     review_model_test_alignment,
 )
@@ -37,6 +41,9 @@ from models.common import (  # noqa: E402
     operation_workflow,
 )
 from models.known_bad import run_known_bad_proofs  # noqa: E402
+from models.frozen_source_contract_exhaustion import (  # noqa: E402
+    review_frozen_source_name_family,
+)
 from models.route_and_guard_model import build_plan as route_plan  # noqa: E402
 from models.research_packet_model import build_plan as packet_plan  # noqa: E402
 from models.reader_artifact_model import build_plan as reader_plan  # noqa: E402
@@ -273,6 +280,7 @@ def run(profile: str):
     known_bad = run_known_bad_proofs()
     graph_reports = _loop_and_progress_reports()
     field_lifecycle = review_retirement_visibility_fields()
+    source_name_exhaustion = review_frozen_source_name_family()
     if profile == "model-phase":
         model_ok = all(summary.overall_status in {"pass", "pass_with_gaps"} for summary in summaries.values())
     else:
@@ -309,6 +317,40 @@ def run(profile: str):
             "summary": field_lifecycle.summary,
             "claim_boundary": "Field inventory and replacement disposition; behavior proof remains model-test-validation owned.",
         },
+        "frozen_source_contract_exhaustion": {
+            "ok": source_name_exhaustion.ok,
+            "decision": source_name_exhaustion.decision,
+            "confidence": source_name_exhaustion.confidence,
+            "finding_count": len(source_name_exhaustion.findings),
+            "generated_case_ids": [
+                case.case_id for case in source_name_exhaustion.generated_cases
+            ],
+            "coverage_receipt_ids": [
+                receipt.receipt_id
+                for receipt in source_name_exhaustion.coverage_receipts
+            ],
+            "model_obligation_ids": [
+                obligation.obligation_id
+                for obligation in contract_exhaustion_to_model_obligations(
+                    source_name_exhaustion
+                )
+            ],
+            "test_mesh_case_ids": list(
+                contract_exhaustion_to_test_mesh_cell_ids(source_name_exhaustion)
+            ),
+            "risk_gate_ids": list(
+                contract_exhaustion_to_risk_gate_ids(source_name_exhaustion)
+            ),
+            "composite_handoff_acceptance_ids": list(
+                contract_exhaustion_to_composite_handoff_acceptance_ids(
+                    source_name_exhaustion
+                )
+            ),
+            "claim_boundary": (
+                "Finite tracked-source basename family only; it does not classify "
+                "unbounded verifier or filesystem behavior."
+            ),
+        },
         "claim_boundary": (
             "model-phase evidence only; model-code-test alignment is inspected but not consumed as conformance"
             if profile == "model-phase"
@@ -318,7 +360,7 @@ def run(profile: str):
                 "terminal test execution remains a separate frozen validation owner"
             )
         ),
-        "status": "pass_with_gaps" if model_ok and bad_ok and graph_ok and field_lifecycle.ok and profile == "model-phase" else ("pass" if model_ok and bad_ok and graph_ok and field_lifecycle.ok else "failed"),
+        "status": "pass_with_gaps" if model_ok and bad_ok and graph_ok and field_lifecycle.ok and source_name_exhaustion.ok and profile == "model-phase" else ("pass" if model_ok and bad_ok and graph_ok and field_lifecycle.ok and source_name_exhaustion.ok else "failed"),
     }
     canonical = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
     payload["receipt_sha256"] = hashlib.sha256(canonical).hexdigest()

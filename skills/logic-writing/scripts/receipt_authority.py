@@ -387,7 +387,7 @@ def validate_receipt(value: Any) -> dict[str, Any]:
         raise ValidationError("receipt cannot depend on its own receipt_fingerprint")
     if declared != fingerprint_without(receipt, "receipt_fingerprint"):
         raise ValidationError("receipt_fingerprint does not match canonical receipt content")
-    assert_schema_valid("receipt.schema.json", receipt)
+    assert_schema_valid("evidence-receipt.schema.json", receipt)
     return receipt
 
 

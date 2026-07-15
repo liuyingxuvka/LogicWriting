@@ -1,4 +1,4 @@
 schema: spec-driven
 created: 2026-07-14
-goal: Publish and install Logic Writing v1.0.0, verify both routes end to end,
+goal: Publish and install Logic Writing v1.0.1 while preserving v1.0.0, verify both routes end to end,
   then retire predecessor skills and repositories after recoverable backup.

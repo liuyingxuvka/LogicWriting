@@ -40,7 +40,7 @@ SUPPORTED_SCHEMA_NAMES = (
     "reader-audit.schema.json",
     "reader-brief.schema.json",
     "reader-judgment.schema.json",
-    "receipt.schema.json",
+    "evidence-receipt.schema.json",
     "research-packet.schema.json",
     "revision-provenance.schema.json",
     "route-decision.schema.json",

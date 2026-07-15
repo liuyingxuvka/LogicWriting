@@ -1,6 +1,6 @@
 [project]
 name = "logic-writing-skill"
-version = "1.0.0"
+version = "1.0.1"
 description = "One Codex skill for deep investigation and reader-ready academic writing"
 readme = "README.md"
 requires-python = ">=3.10"

@@ -10,7 +10,7 @@ from pathlib import Path
 from _release_common import emit, git_lines, run
 
 
-VERSION = "1.0.0"
+VERSION = "1.0.1"
 REPOSITORY = "liuyingxuvka/LogicWriting"
 
 
@@ -20,14 +20,14 @@ def _source_checks(root: Path, *, require_clean: bool, require_head: bool) -> li
     if not version_path.is_file() or version_path.read_text(encoding="utf-8").strip() != VERSION:
         findings.append("version_file_mismatch")
     pyproject = (root / "pyproject.toml").read_text(encoding="utf-8") if (root / "pyproject.toml").is_file() else ""
-    if not re.search(r'^version\s*=\s*"1\.0\.0"\s*$', pyproject, re.MULTILINE):
+    if not re.search(r'^version\s*=\s*"1\.0\.1"\s*$', pyproject, re.MULTILINE):
         findings.append("pyproject_version_mismatch")
     for name in ("README.md", "README.zh-CN.md"):
         text = (root / name).read_text(encoding="utf-8") if (root / name).is_file() else ""
-        if "source-1.0.0" not in text or "logic--writing" not in text:
+        if "source-1.0.1" not in text or "logic--writing" not in text:
             findings.append(f"readme_identity_mismatch:{name}")
     changelog = (root / "CHANGELOG.md").read_text(encoding="utf-8") if (root / "CHANGELOG.md").is_file() else ""
-    if "## [1.0.0]" not in changelog:
+    if "## [1.0.1]" not in changelog:
         findings.append("changelog_version_missing")
     tracked = git_lines(root, "ls-files")
     for path in tracked:
