@@ -19,6 +19,7 @@ docs/flowguard_adoption_log.md
 run-artifacts/
 run_artifacts/
 validation-receipts/
+openspec/**/verification-report.json
 
 # Local tool and editor state.
 .DS_Store
