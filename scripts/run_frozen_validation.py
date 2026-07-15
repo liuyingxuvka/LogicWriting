@@ -21,7 +21,7 @@ from typing import Any, Iterable, Mapping
 import yaml
 
 
-VERIFIER_VERSION = "logic-writing-frozen-validation.v1"
+VERIFIER_VERSION = "logic-writing-frozen-validation.v2"
 DEFAULT_CONTRACT = Path("openspec/changes/create-logic-writing/verification-contract.yaml")
 DEFAULT_RECEIPTS = Path("run-artifacts/validation-receipts")
 IGNORED_PARTS = {
@@ -216,11 +216,38 @@ def _tree_identity(root: Path, admitted_roots: Iterable[Path]) -> dict[str, Any]
 
 def _toolchain_observation(check: Mapping[str, Any]) -> dict[str, Any]:
     declared = str(check.get("toolchain_identity", ""))
-    executable = Path(_resolve_executable(str(check.get("command", ""))))
+    resolved_executable = _resolve_executable(str(check.get("command", "")))
+    executable = Path(resolved_executable)
+    try:
+        executable_hash = _file_hash(executable) if executable.is_file() else "unavailable"
+    except OSError:
+        # Microsoft Store app-execution aliases are runnable but are not always
+        # readable as ordinary files.  Bind their command path and version
+        # probe instead of treating a Windows alias as a validation failure.
+        executable_hash = "unavailable"
+    try:
+        completed = subprocess.run(
+            [resolved_executable, "--version"],
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            capture_output=True,
+            timeout=30,
+            check=False,
+        )
+        version_probe = {
+            "exit_code": completed.returncode,
+            "stdout": completed.stdout.strip(),
+            "stderr": completed.stderr.strip(),
+        }
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        version_probe = {"error_type": type(exc).__name__}
     observation: dict[str, Any] = {
         "declared_identity": declared,
         "executable_name": executable.name,
-        "executable_hash": _file_hash(executable) if executable.is_file() else "unavailable",
+        "executable_path_hash": _hash({"path": os.path.normcase(os.path.abspath(resolved_executable))}),
+        "executable_hash": executable_hash,
+        "executable_version_probe_hash": _hash(version_probe),
     }
     lowered = declared.casefold()
     if "pytest" in lowered:

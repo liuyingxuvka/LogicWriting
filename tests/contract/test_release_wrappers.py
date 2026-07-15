@@ -81,3 +81,24 @@ def test_retirement_residual_checker_rejects_active_reference(tmp_path):
         "Use academic-thesis-revision-workflow.\n", encoding="utf-8"
     )
     assert residuals.check(tmp_path)["status"] == "failed"
+
+
+def test_frozen_validation_observes_runnable_unreadable_executable(monkeypatch):
+    runner = _load("run_frozen_validation")
+    executable = Path(sys.executable)
+    original_file_hash = runner._file_hash
+
+    def unreadable_alias(path: Path):
+        if Path(path) == executable:
+            raise OSError(22, "simulated app-execution alias")
+        return original_file_hash(path)
+
+    monkeypatch.setattr(runner, "_resolve_executable", lambda _name: str(executable))
+    monkeypatch.setattr(runner, "_file_hash", unreadable_alias)
+    observation = runner._toolchain_observation(
+        {"command": "python", "toolchain_identity": "python-runtime"}
+    )
+
+    assert observation["executable_hash"] == "unavailable"
+    assert observation["executable_path_hash"].startswith("sha256:")
+    assert observation["executable_version_probe_hash"].startswith("sha256:")
