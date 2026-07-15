@@ -11,7 +11,7 @@ The two predecessor skills split one real user journey across separate entrypoin
 - Add explicit reader-language gates that reject internal workflow labels, ledger dumps, unsupported certainty, unexplained acronyms, weak transitions, and paragraph sequences with no visible conceptual progression.
 - Add content-addressed source, artifact, adapter, and validation receipts with automatic staleness propagation and honest terminal states.
 - Add current OpenSpec, FlowGuard, and SkillGuard governance, adversarial fixtures, end-to-end route tests, installation verification, bilingual public documentation, and a source-only `v1.0.0` release.
-- **BREAKING**: replace `academic-thesis-revision-workflow` and `research-investigation-workflow` as user-facing entrypoints; after verified installation and release, remove both old installed skills and delete both old GitHub repositories from the active surface. Recoverable Git bundles and uncommitted patches remain outside the public repository.
+- **BREAKING**: replace `academic-thesis-revision-workflow` and `research-investigation-workflow` as user-facing entrypoints; after verified installation and release, remove both old installed skills and move both old GitHub repositories out of the public surface by changing them to private. The authenticated owner keeps access, anonymous API access must return 404, and the user owns any later irreversible deletion. Recoverable Git bundles and uncommitted patches remain outside the public repository.
 
 ## Capabilities
 
@@ -34,4 +34,4 @@ None. This is a new repository with no prior OpenSpec capability authority.
 - Dependencies remain external and authoritative: SourceGuard, LogicGuard and its satellites, TraceGuard, FlowGuard, Documents, and PDF.
 - Global SkillGuard routing will move from two blocked predecessor entries to one current `logic-writing` entry.
 - Existing references in installed Guard skill documentation that point to the academic predecessor must be updated to the new upper route after installation.
-- GitHub retirement is destructive but authorized; it occurs only after backup verification, clean release publication, fresh-clone validation, installation parity, and route smoke tests succeed.
+- GitHub visibility retirement is state-changing but reversible before deletion; it occurs only after backup verification, clean release publication, fresh-clone validation, installation parity, and route smoke tests succeed. An anonymous 404 is recorded as privacy evidence, never as a deletion receipt. Final repository deletion is an explicit user-owned follow-up outside this change's execution scope.

@@ -76,8 +76,9 @@ DEVELOPMENT_ACTIONS = (
     "publish_release",
     "verify_backups",
     "quarantine_legacy_local",
-    "recheck_after_first_deletion",
-    "retire_legacy_remote",
+    "recheck_after_first_privatization",
+    "privatize_legacy_remote",
+    "record_remote_deletion_handoff",
 )
 ADAPTER_STATUSES = ("current_pass",) + NON_PASSING
 AUDIT_STATUSES = (
@@ -174,9 +175,10 @@ class DevelopmentState:
     release_fingerprint: str = ""
     backups_verified: bool = False
     retired_local: tuple[str, ...] = ()
-    retired_remote: tuple[str, ...] = ()
-    first_deletion_health_rechecked: bool = False
-    deletion_receipts: tuple[str, ...] = ()
+    privatized_remote: tuple[str, ...] = ()
+    first_privatization_health_rechecked: bool = False
+    visibility_receipts: tuple[str, ...] = ()
+    user_deletion_handoff_status: str = "not_run"
     errors: tuple[str, ...] = ()
     terminal: bool = False
 
@@ -731,14 +733,19 @@ class _DevelopmentBlock:
 
 
 class RejectUnknownDevelopmentEvent(_DevelopmentBlock):
-    """Block unknown development events before install or deletion effects."""
+    """Block unknown development events before install or visibility effects."""
 
     name = "RejectUnknownDevelopmentEvent"
     reads = ("terminal",)
     writes = ("errors", "terminal")
 
     def apply(self, event: DevelopmentEvent, state: DevelopmentState) -> Iterable[FunctionResult]:
-        status_actions = {"freeze_validation", "verify_backups", "recheck_after_first_deletion"}
+        status_actions = {
+            "freeze_validation",
+            "verify_backups",
+            "recheck_after_first_privatization",
+            "record_remote_deletion_handoff",
+        }
         invalid_status = (
             event.action in status_actions and event.status not in {"current_pass", "blocked", "failed"}
         ) or (event.action not in status_actions and bool(event.status))
@@ -899,39 +906,45 @@ class QuarantineLegacyLocal(_DevelopmentBlock):
         return (FunctionResult(event, replace(state, retired_local=retired), label="legacy_local_quarantined"),)
 
 
-class RecheckAfterFirstDeletion(_DevelopmentBlock):
-    name = "RecheckAfterFirstDeletion"
-    reads = ("retired_remote", "release_status", "install_status", "global_route_status")
-    writes = ("first_deletion_health_rechecked",)
+class RecheckAfterFirstPrivatization(_DevelopmentBlock):
+    name = "RecheckAfterFirstPrivatization"
+    reads = ("privatized_remote", "release_status", "install_status", "global_route_status")
+    writes = ("first_privatization_health_rechecked",)
 
     def apply(self, event: DevelopmentEvent, state: DevelopmentState) -> Iterable[FunctionResult]:
-        if event.action != "recheck_after_first_deletion":
+        if event.action != "recheck_after_first_privatization":
             return self._pass(event, state, "health_recheck_not_requested")
         ok = (
-            state.retired_remote == ("research",)
+            state.privatized_remote == ("research",)
             and state.release_status == "current_pass"
             and state.install_status == "current_pass"
             and state.global_route_status == "current_pass"
             and event.status == "current_pass"
         )
-        return (FunctionResult(event, replace(state, first_deletion_health_rechecked=ok), label="first_deletion_health_current" if ok else "health_recheck_blocked"),)
+        return (
+            FunctionResult(
+                event,
+                replace(state, first_privatization_health_rechecked=ok),
+                label="first_privatization_health_current" if ok else "health_recheck_blocked",
+            ),
+        )
 
 
-class RetireLegacyRemote(_DevelopmentBlock):
-    name = "RetireLegacyRemote"
+class PrivatizeLegacyRemote(_DevelopmentBlock):
+    name = "PrivatizeLegacyRemote"
     reads = (
         "release_status",
         "install_status",
         "global_route_status",
         "backups_verified",
         "retired_local",
-        "retired_remote",
-        "first_deletion_health_rechecked",
+        "privatized_remote",
+        "first_privatization_health_rechecked",
     )
-    writes = ("retired_remote", "deletion_receipts", "errors", "terminal")
+    writes = ("privatized_remote", "visibility_receipts", "errors")
 
     def apply(self, event: DevelopmentEvent, state: DevelopmentState) -> Iterable[FunctionResult]:
-        if event.action != "retire_legacy_remote":
+        if event.action != "privatize_legacy_remote":
             return self._pass(event, state, "remote_retirement_not_requested")
         common = (
             state.release_status == "current_pass"
@@ -941,21 +954,59 @@ class RetireLegacyRemote(_DevelopmentBlock):
             and set(state.retired_local) == {"research", "academic"}
         )
         order_ok = (
-            event.target == "research" and not state.retired_remote
+            event.target == "research" and not state.privatized_remote
         ) or (
             event.target == "academic"
-            and state.retired_remote == ("research",)
-            and state.first_deletion_health_rechecked
+            and state.privatized_remote == ("research",)
+            and state.first_privatization_health_rechecked
         )
         if not common or not order_ok:
             return (FunctionResult(event, replace(state, errors=state.errors + ("remote_retirement_gate_or_order_failed",)), label="remote_retirement_blocked"),)
-        retired = state.retired_remote + (event.target,)
-        receipt = f"deleted:{event.target}:{event.fingerprint}"
+        privatized = state.privatized_remote + (event.target,)
+        receipt = f"private:{event.target}:{event.fingerprint}"
         return (
             FunctionResult(
                 event,
-                replace(state, retired_remote=retired, deletion_receipts=state.deletion_receipts + (receipt,), terminal=retired == ("research", "academic")),
-                label="legacy_remote_retired",
+                replace(
+                    state,
+                    privatized_remote=privatized,
+                    visibility_receipts=state.visibility_receipts + (receipt,),
+                ),
+                label="legacy_remote_privatized",
+            ),
+        )
+
+
+class RecordRemoteDeletionHandoff(_DevelopmentBlock):
+    name = "RecordRemoteDeletionHandoff"
+    reads = ("privatized_remote", "visibility_receipts", "user_deletion_handoff_status")
+    writes = ("user_deletion_handoff_status", "errors", "terminal")
+
+    def apply(self, event: DevelopmentEvent, state: DevelopmentState) -> Iterable[FunctionResult]:
+        if event.action != "record_remote_deletion_handoff":
+            return self._pass(event, state, "deletion_handoff_not_requested")
+        ok = (
+            state.privatized_remote == ("research", "academic")
+            and len(state.visibility_receipts) == 2
+            and event.status == "current_pass"
+        )
+        if not ok:
+            return (
+                FunctionResult(
+                    event,
+                    replace(
+                        state,
+                        user_deletion_handoff_status="blocked",
+                        errors=state.errors + ("remote_deletion_handoff_gate_failed",),
+                    ),
+                    label="remote_deletion_handoff_blocked",
+                ),
+            )
+        return (
+            FunctionResult(
+                event,
+                replace(state, user_deletion_handoff_status="current_pass", terminal=True),
+                label="remote_deletion_handoff_recorded",
             ),
         )
 
@@ -985,8 +1036,9 @@ DEVELOPMENT_BLOCKS = (
     PublishRelease(),
     VerifyBackups(),
     QuarantineLegacyLocal(),
-    RecheckAfterFirstDeletion(),
-    RetireLegacyRemote(),
+    RecheckAfterFirstPrivatization(),
+    PrivatizeLegacyRemote(),
+    RecordRemoteDeletionHandoff(),
 )
 
 
@@ -1102,7 +1154,7 @@ def release_requires_frozen_validation(state: DevelopmentState, trace) -> Invari
 
 def retirement_requires_recoverable_cutover(state: DevelopmentState, trace) -> InvariantResult:
     del trace
-    if state.retired_remote and not (
+    if state.privatized_remote and not (
         state.backups_verified
         and state.release_status == "current_pass"
         and state.install_status == "current_pass"
@@ -1115,10 +1167,10 @@ def retirement_requires_recoverable_cutover(state: DevelopmentState, trace) -> I
 
 def retirement_order_is_sequential(state: DevelopmentState, trace) -> InvariantResult:
     del trace
-    if state.retired_remote not in {(), ("research",), ("research", "academic")}:
-        return _fail("retirement_order_is_sequential", f"invalid retirement order {state.retired_remote!r}")
-    if state.retired_remote == ("research", "academic") and not state.first_deletion_health_rechecked:
-        return _fail("retirement_order_is_sequential", "academic repository retired without post-research health recheck")
+    if state.privatized_remote not in {(), ("research",), ("research", "academic")}:
+        return _fail("retirement_order_is_sequential", f"invalid retirement order {state.privatized_remote!r}")
+    if state.privatized_remote == ("research", "academic") and not state.first_privatization_health_rechecked:
+        return _fail("retirement_order_is_sequential", "academic repository privatized without post-research health recheck")
     return InvariantResult.pass_()
 
 
@@ -1129,13 +1181,26 @@ def operation_changes_do_not_stale_release(state: DevelopmentState, trace) -> In
     return InvariantResult.pass_()
 
 
-def remote_side_effect_at_most_once(state: DevelopmentState, trace) -> InvariantResult:
+def remote_visibility_side_effect_at_most_once(state: DevelopmentState, trace) -> InvariantResult:
     del trace
-    if len(state.retired_remote) != len(set(state.retired_remote)):
-        return _fail("remote_side_effect_at_most_once", "a legacy remote was retired more than once")
-    targets = tuple(receipt.split(":", 2)[1] for receipt in state.deletion_receipts)
+    if len(state.privatized_remote) != len(set(state.privatized_remote)):
+        return _fail("remote_visibility_side_effect_at_most_once", "a legacy remote was privatized more than once")
+    targets = tuple(receipt.split(":", 2)[1] for receipt in state.visibility_receipts)
     if len(targets) != len(set(targets)):
-        return _fail("remote_side_effect_at_most_once", "duplicate remote-deletion receipts were recorded")
+        return _fail("remote_visibility_side_effect_at_most_once", "duplicate remote-visibility receipts were recorded")
+    return InvariantResult.pass_()
+
+
+def deletion_handoff_requires_private_remotes(state: DevelopmentState, trace) -> InvariantResult:
+    del trace
+    if state.user_deletion_handoff_status == "current_pass" and not (
+        state.privatized_remote == ("research", "academic")
+        and len(state.visibility_receipts) == 2
+        and state.terminal
+    ):
+        return _fail("deletion_handoff_requires_private_remotes", "deletion handoff passed before both private visibility receipts existed")
+    if state.terminal and not state.errors and state.user_deletion_handoff_status != "current_pass":
+        return _fail("deletion_handoff_requires_private_remotes", "development process terminated without a current deletion handoff")
     return InvariantResult.pass_()
 
 
@@ -1144,7 +1209,8 @@ DEVELOPMENT_INVARIANTS = (
     Invariant("retirement_requires_recoverable_cutover", "Remote retirement follows recoverable cutover", retirement_requires_recoverable_cutover),
     Invariant("retirement_order_is_sequential", "Research retires first, then health recheck, then academic", retirement_order_is_sequential),
     Invariant("operation_changes_do_not_stale_release", "User artifact changes do not stale release evidence", operation_changes_do_not_stale_release),
-    Invariant("remote_side_effect_at_most_once", "Each legacy remote deletion side effect occurs at most once", remote_side_effect_at_most_once),
+    Invariant("remote_visibility_side_effect_at_most_once", "Each legacy remote visibility change occurs at most once", remote_visibility_side_effect_at_most_once),
+    Invariant("deletion_handoff_requires_private_remotes", "User deletion handoff follows two verified privatizations", deletion_handoff_requires_private_remotes),
 )
 
 
@@ -1170,6 +1236,7 @@ FUNCTION_BLOCK_OWNERS = {
     "PublishRelease": ("release workflow", "GitHub commit/tag/release"),
     "VerifyBackups": ("retirement workflow", "predecessor recovery evidence"),
     "QuarantineLegacyLocal": ("retirement workflow", "old local installation removal"),
-    "RecheckAfterFirstDeletion": ("retirement workflow", "new route health after first deletion"),
-    "RetireLegacyRemote": ("retirement workflow", "irreversible GitHub repository deletion"),
+    "RecheckAfterFirstPrivatization": ("retirement workflow", "new route health after first privatization"),
+    "PrivatizeLegacyRemote": ("retirement workflow", "GitHub repository visibility change to private"),
+    "RecordRemoteDeletionHandoff": ("retirement workflow", "explicit user ownership of any later repository deletion"),
 }

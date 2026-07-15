@@ -8,8 +8,16 @@ the frozen validation owner supplies terminal execution receipts later.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from pathlib import Path
+import sys
 
 from flowguard import CodeContract, ModelObligation, ModelTestAlignmentPlan, TestEvidence
+
+FLOWGUARD_ROOT = Path(__file__).resolve().parents[1]
+if str(FLOWGUARD_ROOT) not in sys.path:
+    sys.path.insert(0, str(FLOWGUARD_ROOT))
+
+from models.retirement_field_lifecycle import review_retirement_visibility_fields
 
 
 @dataclass(frozen=True)
@@ -179,18 +187,33 @@ BINDINGS = (
     ),
     BindingSpec(
         "obligation:sequential-retirement",
-        "predecessors retire only after recovery gates and in research-then-academic order",
+        "predecessors become private only after recovery gates and in research-then-academic order, followed by a user deletion handoff",
         "development_process",
         "intent:retire-predecessors-safely",
         "C11:retire-predecessors-safely",
         "logic_writing.release.retirement",
         "contract:retirement-gate",
         ".flowguard/models/common.py",
-        "RetireLegacyRemote",
+        "PrivatizeLegacyRemote",
         "test:legacy-residual",
-        "test_retirement_is_recoverable_and_strictly_sequential",
+        "test_remote_retirement_privatizes_sequentially_and_records_handoff",
         "tests/flowguard/test_model_contracts.py",
         ("happy_path", "negative_path"),
+    ),
+    BindingSpec(
+        "obligation:no-deletion-state-aliases",
+        "deletion-named remote state and events are absent rather than preserved as compatibility aliases",
+        "development_process",
+        "intent:retire-predecessors-safely",
+        "C11:retire-predecessors-safely",
+        "logic_writing.release.retirement",
+        "contract:no-deletion-state-aliases",
+        ".flowguard/models/common.py",
+        "DevelopmentState",
+        "test:retirement-field-replacement",
+        "test_deleted_remote_fields_and_events_have_no_compatibility_alias",
+        "tests/flowguard/test_model_contracts.py",
+        ("happy_path", "failure_path", "negative_path", "replay"),
     ),
 )
 
@@ -242,6 +265,7 @@ def _evidence(spec: BindingSpec, kind: str) -> TestEvidence:
 
 
 def aligned_plan() -> ModelTestAlignmentPlan:
+    field_lifecycle = review_retirement_visibility_fields()
     return ModelTestAlignmentPlan(
         model_id="logic-writing-model-test-alignment",
         obligations=tuple(_obligation(spec) for spec in BINDINGS),
@@ -251,6 +275,8 @@ def aligned_plan() -> ModelTestAlignmentPlan:
             for spec in BINDINGS
             for kind in spec.required_kinds
         ),
+        field_lifecycle_reports=(field_lifecycle,),
+        field_lifecycle_projections=field_lifecycle.projections,
         require_stable_authority_ids=True,
         require_behavior_plane_binding=True,
     )
@@ -267,6 +293,8 @@ def broken_missing_actual_artifact_plan() -> ModelTestAlignmentPlan:
             for item in plan.test_evidence
             if "test:reader-quality" not in item.evidence_id
         ),
+        field_lifecycle_reports=plan.field_lifecycle_reports,
+        field_lifecycle_projections=plan.field_lifecycle_projections,
         require_stable_authority_ids=True,
         require_behavior_plane_binding=True,
     )

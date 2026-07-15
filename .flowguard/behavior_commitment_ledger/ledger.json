@@ -237,23 +237,23 @@
         "commitment_id": "C11:retire-predecessors-safely",
         "commitment_kind": "process",
         "evidence": {"current": false, "evidence_state": "missing", "model_obligation_ids": ["obligation:sequential-retirement"], "code_contract_ids": ["contract:retirement-gate"], "test_evidence_ids": ["test:legacy-residual"]},
-        "expected_result": "verified backups and healthy replacement precede local removal and research-then-academic GitHub deletion",
-        "expected_terminal": "both predecessors absent with deletion receipts and Logic Writing still healthy",
-        "failure_boundary": "never delete before recovery, release, install, routing, residual, and post-first-deletion health gates pass",
-        "label": "retire both predecessor skills and repositories sequentially",
-        "lookup_binding": {"path_patterns": ["MIGRATION.md", "docs/release-retirement-checklist.md"], "task_terms": ["delete old repositories", "retire predecessors"], "workflow_families": ["predecessor_retirement"]},
+        "expected_result": "verified backups and healthy replacement precede local removal, research-then-academic GitHub privatization, and a user-owned deletion handoff",
+        "expected_terminal": "both predecessors are private with authenticated visibility and anonymous-inaccessibility receipts, Logic Writing is healthy, and later deletion is handed to the user",
+        "failure_boundary": "never privatize before recovery, release, install, routing, residual, and post-first-privatization health gates pass; never label anonymous 404 as deletion",
+        "label": "retire both predecessor skills and public repository surfaces sequentially",
+        "lookup_binding": {"path_patterns": ["MIGRATION.md", "docs/release-retirement-checklist.md"], "task_terms": ["privatize old repositories", "retire predecessors", "handoff deletion"], "workflow_families": ["predecessor_retirement"]},
         "owner": "retirement workflow",
         "primary_owner_model_id": "model:release-retirement",
         "relations": [
           {"target_commitment_id": "C10:publish-logic-writing-release", "relation_type": "depends_on", "rationale": "the replacement release must exist before old authorities are removed"},
           {"target_commitment_id": "C06:issue-final-artifact-closure", "relation_type": "requires_evidence_from", "rationale": "installed representative operation evidence must remain healthy across retirement"}
         ],
-        "rationale": "irreversible deletion is safe only after an independently recoverable replacement exists",
+        "rationale": "public-surface retirement is safe only after an independently recoverable replacement exists, and irreversible deletion remains user-owned",
         "source_surface_ids": ["surface:openspec", "surface:release-process"],
-        "state_writes": ["retired_local", "retired_remote", "deletion_receipts"],
-        "side_effects": ["local_skill_removal", "github_repository_deletion"],
+        "state_writes": ["retired_local", "privatized_remote", "visibility_receipts", "user_deletion_handoff_status"],
+        "side_effects": ["local_skill_removal", "github_repository_visibility_private", "user_deletion_handoff"],
         "trigger": "the replacement release, installation, routing, backups, and residual audit are current",
-        "validation_boundary": "backup restore, zero active residuals, sequential 404 receipts, and replacement health rechecks"
+        "validation_boundary": "backup restore, zero active residuals, sequential authenticated PRIVATE plus anonymous 404 receipts, replacement health rechecks, and explicit deletion handoff"
       }
     ],
     "current_revision": "logic-writing-model-v1",

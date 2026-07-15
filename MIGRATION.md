@@ -55,7 +55,8 @@ evidence of a hosted release or successful installation.
    references. Resolve each remaining reference deliberately.
 7. Run the repository's current validation plan on a frozen source snapshot.
 8. Only after the new entrypoint and its recovery material have been verified,
-   remove predecessor installations and consider remote-repository retirement.
+   remove predecessor installations, move both predecessor repositories to
+   private visibility in sequence, and hand any later deletion to the user.
 
 The detailed sequence and evidence fields are in
 [docs/release-retirement-checklist.md](docs/release-retirement-checklist.md).
@@ -72,9 +73,16 @@ The detailed sequence and evidence fields are in
 
 ## Retirement boundary
 
-Removing an active local skill or deleting a hosted repository is a separate,
-state-changing operation. Do it only after the cutover checks have current
-evidence. Repository deletion has no automatic rollback.
+Removing an active local skill or changing a hosted repository to private is a
+separate, state-changing operation. Do it only after the cutover checks have
+current evidence. A private repository should remain visible to the
+authenticated owner while returning 404 to anonymous API requests; that 404
+is privacy evidence, not deletion evidence.
+
+Final repository deletion is a separate user-owned action and has no automatic
+rollback. Logic Writing's retirement workflow ends after both repositories are
+private, their Git identities remain recoverable, and the deletion handoff has
+been recorded.
 
 Maintainer recovery would require recreating the repository from separately
 verified backup material. That recovery material is not shipped in this public

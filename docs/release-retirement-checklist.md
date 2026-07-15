@@ -2,8 +2,8 @@
 
 > **This is a checklist, not a completion record.** An unchecked or listed
 > item does not mean it has been run. The document makes no claim that Logic
-> Writing has been published, installed, fully validated, or that either
-> predecessor repository has been deleted.
+> Writing has been published, installed, fully validated, made either
+> predecessor private, or deleted either predecessor.
 
 Use one evidence record for the exact source snapshot and external state being
 changed. Do not convert progress messages, plans, or still-running processes
@@ -122,42 +122,54 @@ Their presence is not evidence that they passed for a given snapshot.
 Historical names may remain in this migration guide and checklist because they
 identify what is being retired. They must not remain as callable authorities.
 
-## 8. Prepare irreversible retirement
+## 8. Prepare visibility retirement and later deletion
 
 - [ ] Capture a separately stored, verified recovery copy for each predecessor
-  repository before deletion.
+  repository before changing its visibility.
 - [ ] Verify each recovery copy can reconstruct the intended Git history and
   public repository content without credentials or private runtime material.
 - [ ] Record who owns recovery and where its verification evidence is kept;
   keep those details outside the public repository.
-- [ ] Confirm maintainers understand that hosted repository deletion has no
-  automatic rollback.
+- [ ] Confirm maintainers understand that privatization is reversible but any
+  later repository deletion has no automatic rollback.
 - [ ] Confirm LogicWriting remains healthy and reachable immediately before the
-  first deletion.
+  first privatization.
 
 ## 9. Retire predecessors in sequence
 
 - [ ] Remove the installed `research-investigation-workflow` skill after the
   clean cutover check.
-- [ ] Delete the hosted `research-investigation-workflow` repository only after
-  verifying the recovery copy and current LogicWriting health.
+- [ ] Change the hosted `research-investigation-workflow` repository to private
+  only after verifying the recovery copy and current LogicWriting health.
+- [ ] Verify authenticated visibility is `PRIVATE`, anonymous GitHub API access
+  returns 404, and the owner can still read the unchanged HEAD, tags, and
+  releases.
 - [ ] Recheck LogicWriting hosting, installation, both routes, and public docs.
 - [ ] Stop retirement if that health check fails.
 - [ ] Remove the installed `academic-thesis-revision-workflow` skill after the
   second clean cutover check.
-- [ ] Delete the hosted `academic-thesis-revision-workflow` repository only
-  after verifying its recovery copy and current LogicWriting health.
+- [ ] Change the hosted `academic-thesis-revision-workflow` repository to
+  private only after verifying its recovery copy and current LogicWriting
+  health.
+- [ ] Verify authenticated visibility is `PRIVATE`, anonymous GitHub API access
+  returns 404, and the owner can still read the unchanged HEAD, tags, and
+  releases.
 - [ ] Recheck LogicWriting hosting, installation, both routes, and public docs
   again.
+- [ ] Record that the user, not this retirement workflow, owns any later
+  irreversible deletion of the two private repositories.
 
-Do not describe either predecessor as deleted until the hosted state has been
-checked directly after the deletion operation.
+Do not describe an anonymous 404 as deletion. Describe a predecessor as private
+only after authenticated visibility and anonymous inaccessibility are both
+checked. Describe it as deleted only after the user performs deletion and the
+hosted state is checked directly afterward.
 
 ## 10. Close the release and retirement record
 
 - [ ] Record the exact LogicWriting commit, tag or release when applicable,
   installed projection identity, validation summary, and hosted verification.
-- [ ] Record the two predecessor deletion results separately.
+- [ ] Record the two predecessor privatization results separately and keep the
+  later deletion handoff distinct from completion evidence.
 - [ ] Record residual risks, unavailable external providers, and any checks
   that remain bounded.
 - [ ] Re-run the public privacy scan on the final tracked snapshot.

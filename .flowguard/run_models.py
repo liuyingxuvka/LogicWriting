@@ -42,6 +42,7 @@ from models.research_packet_model import build_plan as packet_plan  # noqa: E402
 from models.reader_artifact_model import build_plan as reader_plan  # noqa: E402
 from models.operation_freshness_closure_model import build_plan as freshness_plan  # noqa: E402
 from models.release_retirement_model import build_plan as retirement_plan  # noqa: E402
+from models.retirement_field_lifecycle import review_retirement_visibility_fields  # noqa: E402
 
 
 MODEL_FACTORIES = {
@@ -87,12 +88,14 @@ def _next_development_event(state: DevelopmentState):
         return DevelopmentEvent("quarantine_legacy_local", target="research")
     if "academic" not in state.retired_local:
         return DevelopmentEvent("quarantine_legacy_local", target="academic")
-    if not state.retired_remote:
-        return DevelopmentEvent("retire_legacy_remote", fingerprint="404:research", target="research")
-    if not state.first_deletion_health_rechecked:
-        return DevelopmentEvent("recheck_after_first_deletion", status="current_pass")
-    if state.retired_remote == ("research",):
-        return DevelopmentEvent("retire_legacy_remote", fingerprint="404:academic", target="academic")
+    if not state.privatized_remote:
+        return DevelopmentEvent("privatize_legacy_remote", fingerprint="private+anon404:research", target="research")
+    if not state.first_privatization_health_rechecked:
+        return DevelopmentEvent("recheck_after_first_privatization", status="current_pass")
+    if state.privatized_remote == ("research",):
+        return DevelopmentEvent("privatize_legacy_remote", fingerprint="private+anon404:academic", target="academic")
+    if state.user_deletion_handoff_status != "current_pass":
+        return DevelopmentEvent("record_remote_deletion_handoff", status="current_pass")
     return None
 
 
@@ -133,7 +136,7 @@ def _loop_and_progress_reports():
             initial_states=(DevelopmentState(),),
             transition_fn=_development_progress_transition,
             is_terminal=lambda state: state.terminal,
-            is_success=lambda state: state.retired_remote == ("research", "academic"),
+            is_success=lambda state: state.user_deletion_handoff_status == "current_pass",
             required_success=True,
             max_states=24,
             max_depth=24,
@@ -144,7 +147,7 @@ def _loop_and_progress_reports():
             initial_states=(DevelopmentState(),),
             transition_fn=_development_progress_transition,
             is_terminal=lambda state: state.terminal,
-            is_success=lambda state: state.retired_remote == ("research", "academic"),
+            is_success=lambda state: state.user_deletion_handoff_status == "current_pass",
             max_states=24,
             max_depth=24,
         )
@@ -269,6 +272,7 @@ def run(profile: str):
     }
     known_bad = run_known_bad_proofs()
     graph_reports = _loop_and_progress_reports()
+    field_lifecycle = review_retirement_visibility_fields()
     if profile == "model-phase":
         model_ok = all(summary.overall_status in {"pass", "pass_with_gaps"} for summary in summaries.values())
     else:
@@ -296,6 +300,15 @@ def run(profile: str):
                 "by the frozen validation plan."
             ),
         },
+        "field_lifecycle": {
+            "ok": field_lifecycle.ok,
+            "decision": field_lifecycle.decision,
+            "confidence": field_lifecycle.confidence,
+            "finding_count": len(field_lifecycle.findings),
+            "projection_count": len(field_lifecycle.projections),
+            "summary": field_lifecycle.summary,
+            "claim_boundary": "Field inventory and replacement disposition; behavior proof remains model-test-validation owned.",
+        },
         "claim_boundary": (
             "model-phase evidence only; model-code-test alignment is inspected but not consumed as conformance"
             if profile == "model-phase"
@@ -305,7 +318,7 @@ def run(profile: str):
                 "terminal test execution remains a separate frozen validation owner"
             )
         ),
-        "status": "pass_with_gaps" if model_ok and bad_ok and graph_ok and profile == "model-phase" else ("pass" if model_ok and bad_ok and graph_ok else "failed"),
+        "status": "pass_with_gaps" if model_ok and bad_ok and graph_ok and field_lifecycle.ok and profile == "model-phase" else ("pass" if model_ok and bad_ok and graph_ok and field_lifecycle.ok else "failed"),
     }
     canonical = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
     payload["receipt_sha256"] = hashlib.sha256(canonical).hexdigest()

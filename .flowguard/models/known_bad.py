@@ -56,12 +56,12 @@ class BrokenArtifactUpdate:
         )
 
 
-class BrokenRemoteRetirement:
-    name = "BrokenRemoteRetirement"
+class BrokenRemotePrivatization:
+    name = "BrokenRemotePrivatization"
     reads = ("release_status", "install_status", "backups_verified")
-    writes = ("retired_remote",)
-    input_description = "legacy repository deletion request and unvalidated development state"
-    output_description = "incorrectly retired remote before cutover gates"
+    writes = ("privatized_remote",)
+    input_description = "legacy repository privatization request and unvalidated development state"
+    output_description = "incorrectly privatized remote before cutover gates"
     idempotency = "deterministic broken behavior"
     accepted_input_type = DevelopmentEvent
 
@@ -69,8 +69,8 @@ class BrokenRemoteRetirement:
         return (
             FunctionResult(
                 event,
-                replace(state, retired_remote=(event.target,)),
-                label="retired_before_cutover",
+                replace(state, privatized_remote=(event.target,)),
+                label="privatized_before_cutover",
             ),
         )
 
@@ -117,10 +117,10 @@ def run_known_bad_proofs():
             max_sequence_length=1,
             progress_steps=0,
         ).explore(),
-        "retire_legacy_before_installed_validation": Explorer(
-            workflow=Workflow((BrokenRemoteRetirement(),), name="known_bad_early_retirement"),
+        "privatize_legacy_before_installed_validation": Explorer(
+            workflow=Workflow((BrokenRemotePrivatization(),), name="known_bad_early_privatization"),
             initial_states=(DevelopmentState(),),
-            external_inputs=(DevelopmentEvent("retire_legacy_remote", target="research"),),
+            external_inputs=(DevelopmentEvent("privatize_legacy_remote", target="research"),),
             invariants=DEVELOPMENT_INVARIANTS,
             max_sequence_length=1,
             progress_steps=0,

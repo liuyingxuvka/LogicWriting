@@ -16,7 +16,7 @@ PLANES = {
     "development_process": {
         "owner": "single validation/release/retirement owner",
         "plan_factory": build_development_plan,
-        "terminal_claim": "published replacement and sequential predecessor retirement",
+        "terminal_claim": "published replacement, sequential predecessor privatization, and user-owned deletion handoff",
     },
 }
 

@@ -121,54 +121,57 @@
 - [x] 10.4 Write `MIGRATION.md` with exact old-to-new route mapping, clean version line, no compatibility path, backup/recovery boundary, and residual-reference checklist.
 - [x] 10.5 Write `CHANGELOG.md`, `CONTRIBUTING.md`, architecture, responsibility-map, and release/retirement checklist documents.
 - [x] 10.6 Remove every placeholder, local path, secret, private case, internal coordination record, and unsupported release claim from tracked files.
-- [ ] 10.7 Keep version, README status, changelog, tag, and release notes synchronized at `1.0.0`.
+- [x] 10.7 Keep version, README status, changelog, tag, and release notes synchronized at `1.0.0`.
 
 ## 11. Frozen validation and repair
 
 - [x] 11.1 Complete focused unit, contract, adversarial, E2E, model, and judgment checks while source is still changing.
 - [x] 11.2 Fix every failure and rerun only the affected owner checks.
 - [x] 11.3 Freeze source, model, contract, toolchain, and impact-plan identities for the release candidate.
-- [ ] 11.4 Run the one final full validation owner on the frozen snapshot and aggregate current immutable child receipts without reissuing them.
-- [ ] 11.5 Confirm zero descendant processes after any timeout or interruption before accepting evidence or starting another owner.
+- [x] 11.4 Run the one final full validation owner on the frozen snapshot and aggregate current immutable child receipts without reissuing them.
+- [x] 11.5 Confirm zero descendant processes after any timeout or interruption before accepting evidence or starting another owner.
 - [x] 11.6 Run OpenSpec strict validation, SkillGuard current-authority/contract/depth checks, project audit, privacy review, and public-release checks.
 - [x] 11.7 Produce a current reader-quality judgment receipt from representative actual artifacts.
-- [ ] 11.8 Record the exact validation claim boundary, skipped checks, residual risk, and all terminal receipt hashes.
+- [x] 11.8 Record the exact validation claim boundary, skipped checks, residual risk, and all terminal receipt hashes.
 
 ## 12. Install and global route cutover
 
-- [ ] 12.1 Prepare an isolated SkillGuard target-install stage from the exact installation projection.
-- [ ] 12.2 Verify the stage, activate atomically, and confirm the prior active installation remains recoverable until post-activation checks pass.
-- [ ] 12.3 Run active installed-skill smoke tests for investigation, academic writing, and research-to-writing ownership.
-- [ ] 12.4 Capture and replay the exact installation receipt and installed runtime fingerprint.
-- [ ] 12.5 Update active references in LogicGuard, LogicGuard model deepening, SourceGuard, and TraceGuard from the old academic id to `logic-writing`.
-- [ ] 12.6 Refresh the global SkillGuard registry and managed user AGENTS block.
-- [ ] 12.7 Verify exactly one current `logic-writing` route resolves and both predecessor routes are non-authoritative before local deletion.
+- [x] 12.1 Prepare an isolated SkillGuard target-install stage from the exact installation projection.
+- [x] 12.2 Verify the stage, activate atomically, and confirm the prior active installation remains recoverable until post-activation checks pass.
+- [x] 12.3 Run active installed-skill smoke tests for investigation, academic writing, and research-to-writing ownership.
+- [x] 12.4 Capture and replay the exact installation receipt and installed runtime fingerprint.
+- [x] 12.5 Update active references in LogicGuard, LogicGuard model deepening, SourceGuard, and TraceGuard from the old academic id to `logic-writing`.
+- [x] 12.6 Refresh the global SkillGuard registry and managed user AGENTS block.
+- [x] 12.7 Verify exactly one current `logic-writing` route resolves and both predecessor routes are non-authoritative before local deletion.
 
 ## 13. GitHub publication
 
-- [ ] 13.1 Create the public `liuyingxuvka/LogicWriting` repository with a clean history and `main` as default.
-- [ ] 13.2 Push the reviewed source snapshot and verify repository identity, visibility, license detection, and public file boundary.
-- [ ] 13.3 Add an active main-branch ruleset that blocks deletion and non-fast-forward updates without duplicating protection.
-- [ ] 13.4 Run a fresh-clone validation and installation from the published commit.
-- [ ] 13.5 Create the annotated `v1.0.0` tag and GitHub Release only after the release gate consumes current install and validation receipts.
-- [ ] 13.6 Verify version file, commit, tag, release, README badge, and installed skill all refer to the same release identity.
+- [x] 13.1 Create the public `liuyingxuvka/LogicWriting` repository with a clean history and `main` as default.
+- [x] 13.2 Push the reviewed source snapshot and verify repository identity, visibility, license detection, and public file boundary.
+- [x] 13.3 Add an active main-branch ruleset that blocks deletion and non-fast-forward updates without duplicating protection.
+- [x] 13.4 Run a fresh-clone validation and installation from the published commit.
+- [x] 13.5 Create the annotated `v1.0.0` tag and GitHub Release only after the release gate consumes current install and validation receipts.
+- [x] 13.6 Verify version file, commit, tag, release, README badge, and installed skill all refer to the same release identity.
 
 ## 14. Predecessor retirement
 
-- [ ] 14.1 Reverify both bundles, uncommitted patches, hashes, restore clones, final old HEADs, tags, releases, and zero-fork status immediately before retirement.
-- [ ] 14.2 Audit all active files, global routing, prompts, automations, and installed skills for old ids and old repository dependencies; require zero active residuals.
-- [ ] 14.3 Remove the two old installed skill directories and revalidate the active Logic Writing route and rollback boundary.
-- [ ] 14.4 Delete `liuyingxuvka/research-investigation-workflow` through the authorized GitHub owner action.
-- [ ] 14.5 Verify the first repository returns 404, is absent from the active repository list, and its Git remote is unavailable; record the deletion receipt.
-- [ ] 14.6 Recheck LogicWriting repository, release, installation, and routing health after the first deletion.
-- [ ] 14.7 Delete `liuyingxuvka/academic-thesis-revision-workflow` through the authorized GitHub owner action.
-- [ ] 14.8 Verify the second repository returns 404, is absent from the active repository list, and its Git remote is unavailable; record the deletion receipt.
-- [ ] 14.9 Run the final legacy-residual audit and confirm Logic Writing is the only active supported route.
+- [x] 14.1 Reverify both bundles, uncommitted patches, hashes, restore clones, final old HEADs, tags, releases, and zero-fork status immediately before retirement.
+- [x] 14.2 Audit all active files, global routing, prompts, automations, and installed skills for old ids and old repository dependencies; require zero active residuals.
+- [x] 14.3 Remove the two old installed skill directories and revalidate the active Logic Writing route and rollback boundary.
+- [x] 14.4 Change `liuyingxuvka/research-investigation-workflow` to private through the authenticated GitHub CLI owner action.
+- [x] 14.5 Verify authenticated visibility is `PRIVATE`, anonymous GitHub API access returns 404, and the Git HEAD, tags, and releases remain owner-accessible and unchanged; record a visibility receipt that explicitly does not claim deletion.
+- [x] 14.6 Recheck the LogicWriting repository, release, installation, and routing health after the first privatization.
+- [x] 14.7 Change `liuyingxuvka/academic-thesis-revision-workflow` to private through the authenticated GitHub CLI owner action.
+- [x] 14.8 Verify authenticated visibility is `PRIVATE`, anonymous GitHub API access returns 404, and the Git HEAD, tags, and releases remain owner-accessible and unchanged; record a visibility receipt that explicitly does not claim deletion.
+- [x] 14.9 Run the final legacy-residual audit, confirm Logic Writing is the only active supported route, and record the user-owned handoff for any later deletion of the two private repositories.
 
-## 15. Final verification, archive, and knowledge postflight
+## 15. Archive-ready reconciliation
 
-- [ ] 15.1 Run `openspec verify create-logic-writing` against current terminal evidence and fix every mismatch.
-- [ ] 15.2 Archive the completed OpenSpec change and strictly validate the archived specs.
-- [ ] 15.3 Run the explicit predictive-KB postflight and record the failed preflight, user correction about planning versus execution, skill-combination lessons, and any new route gaps as structured observations when the KB accepts writes.
-- [ ] 15.4 Confirm every planned milestone is complete or has an explicit terminal blocker, every required validation is current, and no obvious in-scope action remains.
-- [ ] 15.5 Mark the long-running goal complete only after installation, release, both local deletions, both remote deletions, OpenSpec archive, and final evidence reconciliation are complete.
+- [x] 15.1 Reconcile every current task, model, visibility receipt, backup identity, release identity, and validation input into one archive-ready snapshot.
+- [x] 15.2 Run the explicit predictive-KB postflight and record the failed FlowGuard adoption preflight, user correction about planning versus execution, skill-combination lessons, GitHub deletion-scope fallback, and any new route gaps as structured observations when the KB accepts writes.
+- [x] 15.3 Confirm every planned milestone is complete or has an explicit terminal blocker, every required validation input is frozen, and no obvious in-scope action remains.
+- [x] 15.4 Confirm completion now means installation, release, both local deletions, both remote privatizations, a user-owned deletion handoff, and final evidence reconciliation; it does not mean the private repositories were deleted.
+
+Bounded evidence gap: the executable project models use the real FlowGuard `0.55.0` engine and are covered by the final validation contract, but `flowguard project-audit` separately reports `suite_map_missing` because this orchestration repository intentionally does not vendor FlowGuard's 17-skill agent suite and canonical suite map. No broad claim of complete project-level FlowGuard suite adoption is made from this repository.
+
+Post-task closure is deliberately not represented as self-referential checkboxes. After all tracked tasks are complete: run `openspec verify create-logic-writing`, fix and rerun until current; archive the change; strictly validate the archived specs; push the archive-ready source; then mark the long-running goal complete.

@@ -166,7 +166,7 @@ SkillGuard target installation prepares an isolated stage from the exact install
 
 The release is published only after clean-source validation, installation parity, installed route evidence, privacy review, fresh-clone verification, exact version/tag/release identity, and main-branch deletion/non-fast-forward protection.
 
-Predecessor local skills are removed only after the new route is current and backups are verified. Predecessor GitHub repositories are deleted one at a time after the new release is healthy, legacy references are zero, the Git bundles restore successfully, and the user's explicit destructive authorization is recorded. There is no fictional automatic rollback after remote deletion; recovery means creating a new repository from a verified bundle.
+Predecessor local skills are removed only after the new route is current and backups are verified. Predecessor GitHub repositories are changed to private one at a time after the new release is healthy, legacy references are zero, and the Git bundles restore successfully. Each visibility change requires an authenticated `PRIVATE` check, an anonymous API 404 check, an unchanged Git identity check, and a replacement-health recheck before the next repository changes. Anonymous 404 means private and inaccessible to anonymous users; it does not mean deleted. After both visibility changes, the workflow records a handoff that makes the user the sole owner of any later irreversible deletion.
 
 ## Risks / Trade-offs
 
@@ -177,7 +177,7 @@ Predecessor local skills are removed only after the new route is current and bac
 - **Deep workflows become unnecessarily expensive** -> activate specialist steps from claim type and remaining gaps; skip trivial tasks and reuse exact current receipts.
 - **Document providers are unavailable** -> allow explicitly bounded text or DOCX delivery only where the owning Documents/PDF contract permits it, disclose `render_not_run`, and prohibit visual-quality claims.
 - **Overbroad staleness causes repeated full regressions** -> maintain component-to-owner impact edges and run affected owners only, with one full validation on the final frozen snapshot.
-- **Retirement destroys public history** -> preserve full bundles, tags, uncommitted patches, metadata, hashes, and restore receipts outside the public repository before deletion.
+- **Later deletion could destroy hosted history** -> preserve full bundles, tags, uncommitted patches, metadata, hashes, and restore receipts outside the public repository before privatization; never describe privacy evidence as deletion evidence.
 
 ## Migration Plan
 
@@ -188,10 +188,10 @@ Predecessor local skills are removed only after the new route is current and bac
 5. Install through SkillGuard target installation, verify both routes and the bounded cross-route handoff from the active installation, then refresh the global router.
 6. Publish the clean repository and `v1.0.0`, protect `main`, and verify a fresh clone and installed projection.
 7. Update active references to old skill ids, verify zero runtime residuals, remove both old installed skills, and recheck the new route.
-8. Delete the research predecessor repository, verify deletion and new-repo health, then delete the academic predecessor repository and verify again.
-9. Archive the OpenSpec change and preserve public release receipts plus private backup/retirement receipts.
+8. Change the research predecessor repository to private, verify authenticated visibility plus anonymous inaccessibility and new-repo health, then do the same for the academic predecessor repository.
+9. Record the user-owned deletion handoff, archive the OpenSpec change, and preserve public release receipts plus private backup/visibility-retirement receipts.
 
-Rollback before remote retirement restores the previous installed skill from the SkillGuard transaction and restores the old global route. After a predecessor remote is deleted, recovery uses the verified Git bundle to create a new repository; Logic Writing never silently falls back to it.
+Rollback before remote retirement restores the previous installed skill from the SkillGuard transaction and restores the old global route. Before user-owned deletion, a visibility rollback can make a private predecessor public again if the owner deliberately chooses that outcome. After any later deletion, recovery uses the verified Git bundle to create a new repository; Logic Writing never silently falls back to it.
 
 ## Open Questions
 

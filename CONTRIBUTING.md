@@ -130,5 +130,7 @@ Describe:
 - privacy review result;
 - migration or retirement impact, if any.
 
-Do not describe publication, installation, or repository deletion as complete
-until the corresponding external state has been checked directly.
+Do not describe publication, installation, repository privatization, or
+repository deletion as complete until the corresponding external state has
+been checked directly. An anonymous 404 for a private repository is not a
+deletion receipt.

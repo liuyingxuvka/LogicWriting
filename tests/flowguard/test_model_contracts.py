@@ -216,7 +216,7 @@ def test_release_requires_frozen_install_and_global_route():
     assert state.release_fingerprint == "release:1"
 
 
-def test_retirement_is_recoverable_and_strictly_sequential():
+def test_remote_retirement_privatizes_sequentially_and_records_handoff():
     workflow = development_workflow("test_retirement_order")
     state = DevelopmentState(
         validation_fingerprint="release:1",
@@ -235,30 +235,54 @@ def test_retirement_is_recoverable_and_strictly_sequential():
     research = _step(
         workflow,
         state,
-        DevelopmentEvent("retire_legacy_remote", target="research", fingerprint="404:research"),
+        DevelopmentEvent("privatize_legacy_remote", target="research", fingerprint="private+anon404:research"),
     )
-    assert research.retired_remote == ("research",)
+    assert research.privatized_remote == ("research",)
+    assert research.visibility_receipts == ("private:research:private+anon404:research",)
+    assert not research.terminal
 
     premature = _step(
         workflow,
         research,
-        DevelopmentEvent("retire_legacy_remote", target="academic", fingerprint="404:academic"),
+        DevelopmentEvent("privatize_legacy_remote", target="academic", fingerprint="private+anon404:academic"),
     )
-    assert premature.retired_remote == ("research",)
+    assert premature.privatized_remote == ("research",)
     assert "remote_retirement_gate_or_order_failed" in premature.errors
 
     rechecked = _step(
         workflow,
         research,
-        DevelopmentEvent("recheck_after_first_deletion", status="current_pass"),
+        DevelopmentEvent("recheck_after_first_privatization", status="current_pass"),
     )
     academic = _step(
         workflow,
         rechecked,
-        DevelopmentEvent("retire_legacy_remote", target="academic", fingerprint="404:academic"),
+        DevelopmentEvent("privatize_legacy_remote", target="academic", fingerprint="private+anon404:academic"),
     )
-    assert academic.retired_remote == ("research", "academic")
-    assert academic.terminal
+    assert academic.privatized_remote == ("research", "academic")
+    assert not academic.terminal
+
+    handed_off = _step(
+        workflow,
+        academic,
+        DevelopmentEvent("record_remote_deletion_handoff", status="current_pass"),
+    )
+    assert handed_off.user_deletion_handoff_status == "current_pass"
+    assert handed_off.terminal
+
+
+def test_deleted_remote_fields_and_events_have_no_compatibility_alias():
+    state_fields = set(DevelopmentState.__dataclass_fields__)
+    assert {"retired_remote", "first_deletion_health_rechecked", "deletion_receipts"}.isdisjoint(state_fields)
+    from models.common import DEVELOPMENT_ACTIONS
+
+    assert {"retire_legacy_remote", "recheck_after_first_deletion"}.isdisjoint(DEVELOPMENT_ACTIONS)
+
+    from models.retirement_field_lifecycle import review_retirement_visibility_fields
+
+    review = review_retirement_visibility_fields()
+    assert review.ok, review.summary
+    assert len(review.projections) == 7
 
 
 def test_operation_artifact_change_does_not_stale_release_without_an_explicit_edge():

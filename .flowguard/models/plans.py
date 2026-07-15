@@ -55,13 +55,13 @@ KNOWN_BAD_PROOFS = (
         evidence_id="model:known-bad:stale-audit-after-edit",
     ),
     KnownBadProof(
-        "retire_legacy_before_installed_validation",
-        protected_error_class="irreversible_retirement_before_cutover",
+        "privatize_legacy_before_installed_validation",
+        protected_error_class="remote_visibility_retirement_before_cutover",
         method="broken_workflow",
         expected_failure="failed",
         observed_status="failed",
         observed_failure="retirement_requires_recoverable_cutover invariant failed",
-        evidence_id="model:known-bad:early-retirement",
+        evidence_id="model:known-bad:early-privatization",
     ),
     KnownBadProof(
         "process_green_content_not_run",
@@ -120,12 +120,14 @@ def _next_development_event(state):
         return DevelopmentEvent("quarantine_legacy_local", target="research")
     if "academic" not in state.retired_local:
         return DevelopmentEvent("quarantine_legacy_local", target="academic")
-    if not state.retired_remote:
-        return DevelopmentEvent("retire_legacy_remote", fingerprint="404:research", target="research")
-    if not state.first_deletion_health_rechecked:
-        return DevelopmentEvent("recheck_after_first_deletion", status="current_pass")
-    if state.retired_remote == ("research",):
-        return DevelopmentEvent("retire_legacy_remote", fingerprint="404:academic", target="academic")
+    if not state.privatized_remote:
+        return DevelopmentEvent("privatize_legacy_remote", fingerprint="private+anon404:research", target="research")
+    if not state.first_privatization_health_rechecked:
+        return DevelopmentEvent("recheck_after_first_privatization", status="current_pass")
+    if state.privatized_remote == ("research",):
+        return DevelopmentEvent("privatize_legacy_remote", fingerprint="private+anon404:academic", target="academic")
+    if state.user_deletion_handoff_status != "current_pass":
+        return DevelopmentEvent("record_remote_deletion_handoff", status="current_pass")
     return None
 
 
@@ -149,7 +151,7 @@ def _progress_config(workflow, initial_states):
         transition_fn=transition,
         is_terminal=lambda state: state.terminal,
         is_success=(
-            (lambda state: state.retired_remote == ("research", "academic"))
+            (lambda state: state.user_deletion_handoff_status == "current_pass")
             if is_development
             else (lambda state: state.terminal)
         ),
@@ -248,7 +250,7 @@ def _topology_hazard_plan(model_id, workflow, initial_states, external_inputs):
     )
     if model_id == "release_retirement_model":
         proof_ids += (
-            "model:known-bad:early-retirement",
+            "model:known-bad:early-privatization",
             "backup:outputs/logic-writing-backups/SHA256SUMS",
         )
     candidates = tuple(
