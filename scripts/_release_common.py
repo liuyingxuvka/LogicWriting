@@ -11,6 +11,9 @@ from pathlib import Path
 from typing import Any, Iterable
 
 
+RELEASE_CONTRACT_RELATIVE = Path("openspec/verification-contract.yaml")
+
+
 RUNTIME_PARTS = {
     ".git",
     "__pycache__",

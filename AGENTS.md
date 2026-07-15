@@ -17,7 +17,8 @@
 
 ## Validation
 
-- Follow `openspec/changes/create-logic-writing/verification-contract.yaml` while the change is active.
+- Follow `openspec/verification-contract.yaml` as the sole current repository release contract. Change-local contracts verify only their own active change and archived contracts are historical evidence, never live fallbacks.
+- After archiving any release-affecting OpenSpec change, rerun the complete stable release gate on the changed source snapshot before tagging.
 - Reuse only immutable terminal-success receipts whose exact inputs and execution identity remain current.
 - Run affected checks during development and one full validation owner after the release snapshot is frozen.
 - After any timeout or interruption, confirm the complete descendant process tree is gone before accepting evidence or starting another validation owner.

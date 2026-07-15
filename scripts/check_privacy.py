@@ -14,7 +14,7 @@ import yaml
 
 if str(Path(__file__).resolve().parent) not in sys.path:
     sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _release_common import git_lines
+from _release_common import RELEASE_CONTRACT_RELATIVE, git_lines
 
 
 TEXT_SUFFIXES = {".md", ".py", ".json", ".yaml", ".yml", ".toml", ".txt"}
@@ -40,13 +40,7 @@ WORD_TOKEN = re.compile(r"[A-Za-z0-9]+")
 
 def _fallback_source_paths(root: Path) -> list[Path]:
     paths = [path for path in root.rglob("*") if path.is_file()]
-    contract_path = (
-        root
-        / "openspec"
-        / "changes"
-        / "create-logic-writing"
-        / "verification-contract.yaml"
-    )
+    contract_path = root / RELEASE_CONTRACT_RELATIVE
     if not contract_path.is_file():
         return paths
     contract = yaml.safe_load(contract_path.read_text(encoding="utf-8")) or {}

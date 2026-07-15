@@ -194,9 +194,9 @@ def test_frozen_boundary_excludes_runtime_inputs_and_internal_records():
     ):
         assert runner._is_ignored(Path(relative), explicit=True)
 
+    assert runner.DEFAULT_CONTRACT == Path("openspec/verification-contract.yaml")
     contract = yaml.safe_load(
-        (ROOT / "openspec/changes/create-logic-writing/verification-contract.yaml")
-        .read_text(encoding="utf-8")
+        (ROOT / runner.DEFAULT_CONTRACT).read_text(encoding="utf-8")
     )
     judgment = next(
         item for item in contract["checks"] if item["id"] == "check.reader.judgment"
@@ -224,8 +224,7 @@ def test_frozen_boundary_excludes_runtime_inputs_and_internal_records():
 def test_frozen_public_checks_bind_concrete_admitted_source_manifests():
     runner = _load("run_frozen_validation")
     contract = yaml.safe_load(
-        (ROOT / "openspec/changes/create-logic-writing/verification-contract.yaml")
-        .read_text(encoding="utf-8")
+        (ROOT / runner.DEFAULT_CONTRACT).read_text(encoding="utf-8")
     )
     checks = {item["id"]: item for item in contract["checks"]}
     required = {
@@ -283,8 +282,6 @@ def test_public_docs_frozen_fallback_uses_contract_admission(tmp_path, monkeypat
     contract_path = (
         tmp_path
         / "openspec"
-        / "changes"
-        / "create-logic-writing"
         / "verification-contract.yaml"
     )
     contract_path.parent.mkdir(parents=True)
@@ -323,8 +320,6 @@ def test_privacy_frozen_fallback_uses_contract_admission(tmp_path, monkeypatch):
     contract_path = (
         tmp_path
         / "openspec"
-        / "changes"
-        / "create-logic-writing"
         / "verification-contract.yaml"
     )
     contract_path.parent.mkdir(parents=True)
@@ -359,3 +354,64 @@ def test_privacy_frozen_fallback_uses_contract_admission(tmp_path, monkeypatch):
 
     public.write_text(machine_path, encoding="utf-8")
     assert privacy.scan(tmp_path)["status"] == "failed"
+
+
+def test_live_release_consumers_do_not_depend_on_change_lifecycle_contracts():
+    stable = ROOT / "openspec" / "verification-contract.yaml"
+    assert stable.is_file()
+
+    live_roots = (
+        ROOT / "AGENTS.md",
+        ROOT / "scripts",
+        ROOT / "tests",
+        ROOT / ".flowguard",
+    )
+    forbidden = "/".join(
+        ("openspec", "changes", "create-logic-writing", "verification-contract.yaml")
+    )
+    findings = []
+    for root in live_roots:
+        paths = [root] if root.is_file() else root.rglob("*")
+        for path in paths:
+            if not path.is_file() or path.suffix.lower() not in {".md", ".py", ".json", ".yaml", ".yml"}:
+                continue
+            relative = path.relative_to(ROOT).as_posix()
+            if relative in {
+                ".flowguard/adoption_log.jsonl",
+                "docs/flowguard_adoption_log.md",
+            }:
+                continue
+            if forbidden in path.read_text(encoding="utf-8", errors="replace"):
+                findings.append(relative)
+
+    assert findings == []
+
+
+def test_stable_release_contract_requires_post_archive_complete_gate():
+    contract = yaml.safe_load(
+        (ROOT / "openspec" / "verification-contract.yaml").read_text(
+            encoding="utf-8"
+        )
+    )
+    checks = {item["id"]: item for item in contract["checks"]}
+
+    assert {
+        "check.models.alignment",
+        "check.models.full",
+        "check.testmesh.plan",
+        "check.public.docs",
+        "check.privacy",
+        "check.release.source",
+        "check.tests.full",
+        "check.skillguard.project",
+        "check.openspec.strict",
+    }.issubset(checks)
+    assert checks["check.tests.full"]["args"] == ["-m", "pytest", "-q"]
+    assert checks["check.openspec.strict"]["args"] == [
+        "validate",
+        "--all",
+        "--strict",
+    ]
+    assert "check.tests.full" in checks["check.openspec.strict"][
+        "depends_on_receipts"
+    ]

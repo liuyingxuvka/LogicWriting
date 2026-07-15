@@ -2,7 +2,7 @@
   "artifact_type": "flowguard_behavior_commitment_ledger",
   "format_version": "1",
   "ledger": {
-    "change_mode": "bootstrap_ledger",
+    "change_mode": "model_miss_check",
     "claim_scope": "routine",
     "commitments": [
       {
@@ -145,12 +145,12 @@
         "business_intent_id": "intent:freeze-one-validation-owner",
         "commitment_id": "C07:freeze-one-validation-owner",
         "commitment_kind": "process",
-        "evidence": {"current": false, "evidence_state": "missing", "model_obligation_ids": ["obligation:frozen-validation", "contract_exhaustion:case:source-name:receipt-schema-json"], "code_contract_ids": ["contract:verification-owner-plan"], "test_evidence_ids": ["test:frozen-source-materialization", "test:full-validation"]},
-        "expected_result": "one frozen validation owner materializes every governed source and aggregates exact current child receipts",
+        "evidence": {"current": false, "evidence_state": "missing", "model_obligation_ids": ["obligation:frozen-validation", "contract_exhaustion:case:source-name:receipt-schema-json", "contract_exhaustion:case:frozen-boundary:live-consumer-bound-to-change-lifecycle-contract", "contract_exhaustion:case:frozen-boundary:post-archive-full-regression-not-run"], "code_contract_ids": ["contract:verification-owner-plan"], "test_evidence_ids": ["test:frozen-source-materialization", "test:frozen-execution-boundary", "test:full-validation"]},
+        "expected_result": "one frozen validation owner materializes every governed source, every live consumer binds the archive-stable release contract, and the post-archive snapshot aggregates exact current child receipts",
         "expected_terminal": "immutable terminal success receipt or visible blocker",
-        "failure_boundary": "progress, duplicate owners, mutable inputs, generated-output basename collisions, and interrupted descendants never count as final evidence",
+        "failure_boundary": "progress, duplicate owners, mutable inputs, generated-output basename collisions, change-lifecycle contract paths, missing post-archive replay, and interrupted descendants never count as final evidence",
         "label": "freeze the final validation owner",
-        "lookup_binding": {"path_patterns": ["openspec/changes/create-logic-writing/verification-contract.yaml"], "task_terms": ["final validation", "frozen snapshot"], "workflow_families": ["development_validation"]},
+        "lookup_binding": {"path_patterns": ["openspec/verification-contract.yaml"], "task_terms": ["final validation", "frozen snapshot", "post-archive regression"], "workflow_families": ["development_validation"]},
         "owner": "single validation owner",
         "primary_owner_model_id": "model:release-retirement",
         "relations": [{"target_commitment_id": "C06:issue-final-artifact-closure", "relation_type": "validates", "rationale": "release validation covers the implementation that derives operation closure, not a user artifact instance"}],
@@ -158,7 +158,7 @@
         "source_surface_ids": ["surface:openspec", "surface:release-process"],
         "state_writes": ["validation_fingerprint", "validation_status"],
         "trigger": "the release candidate source and toolchain identities are frozen",
-        "validation_boundary": "exact verification contract, byte-identical frozen source materialization, finite generated-output basename family, and immutable terminal receipts"
+        "validation_boundary": "one stable current verification contract, byte-identical frozen source materialization, finite generated-output and archive-lifecycle bad-case families, post-archive full replay, and immutable terminal receipts"
       },
       {
         "actor": "SkillGuard installation owner",
@@ -215,10 +215,10 @@
         "commitment_kind": "release",
         "evidence": {"current": false, "evidence_state": "missing", "model_obligation_ids": ["obligation:publish-release"], "code_contract_ids": ["contract:release-gate"], "test_evidence_ids": ["test:fresh-clone"]},
         "expected_result": "commit, tag, release, docs, and active installation share one release identity",
-        "expected_terminal": "public v1.0.1 repair release with immutable v1.0.0 history or visible blocked publication",
+        "expected_terminal": "public v1.0.2 repair release with immutable v1.0.0 and v1.0.1 history or visible blocked publication",
         "failure_boundary": "no release while validation, installation, privacy, or fresh-clone evidence is stale or missing",
         "label": "publish the verified Logic Writing release",
-        "lookup_binding": {"path_patterns": ["VERSION", "CHANGELOG.md", "docs/release-retirement-checklist.md"], "task_terms": ["publish LogicWriting", "v1.0.1"], "workflow_families": ["github_release"]},
+        "lookup_binding": {"path_patterns": ["VERSION", "CHANGELOG.md", "docs/release-retirement-checklist.md"], "task_terms": ["publish LogicWriting", "v1.0.2", "post-archive release"], "workflow_families": ["github_release"]},
         "owner": "release workflow",
         "primary_owner_model_id": "model:release-retirement",
         "relations": [{"target_commitment_id": "C09:project-one-global-route", "relation_type": "depends_on", "rationale": "publication consumes current validation, install, and routing evidence"}],
@@ -256,7 +256,7 @@
         "validation_boundary": "backup restore, zero active residuals, sequential authenticated PRIVATE plus anonymous 404 receipts, replacement health rechecks, and explicit deletion handoff"
       }
     ],
-    "current_revision": "logic-writing-model-v1",
+    "current_revision": "logic-writing-model-v2",
     "expected_business_intent_ids": [
       "intent:select-one-final-owner", "intent:preserve-specialist-authority", "intent:build-current-research-packet", "intent:build-reader-brief", "intent:audit-actual-artifact", "intent:issue-final-artifact-closure", "intent:freeze-one-validation-owner", "intent:activate-recoverable-install", "intent:project-one-global-route", "intent:publish-logic-writing-release", "intent:retire-predecessors-safely"
     ],
@@ -278,7 +278,7 @@
         "label": "OpenSpec capability and verification contract",
         "owner": "Logic Writing maintainer",
         "rationale": "the approved change defines behavior before implementation",
-        "source_ref": "openspec/changes/create-logic-writing",
+        "source_ref": "openspec/specs and openspec/verification-contract.yaml",
         "surface_id": "surface:openspec",
         "surface_kind": "openspec",
         "validation_boundary": "strict OpenSpec validation and model-test alignment"
@@ -303,7 +303,7 @@
         "label": "release and retirement process contract",
         "owner": "release owner",
         "rationale": "the process surface defines irreversible side-effect gates",
-        "source_ref": "openspec/changes/create-logic-writing/tasks.md#12-15",
+        "source_ref": "openspec/verification-contract.yaml and docs/release-retirement-checklist.md",
         "surface_id": "surface:release-process",
         "surface_kind": "process",
         "validation_boundary": "DevelopmentProcessFlow plus release and retirement receipts"

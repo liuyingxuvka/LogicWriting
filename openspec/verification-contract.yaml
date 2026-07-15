@@ -1,0 +1,368 @@
+contract_version: 1
+change: logic-writing-release
+
+obligations:
+  - id: req.release.stable-contract
+    source: "specs/evidence-freshness-closure/spec.md#Requirement: Release validation survives change archival"
+    claim: Every live release consumer binds one stable contract outside change lifecycle directories.
+    required: true
+    evidence: [check.tests.archive-lifecycle, check.models.alignment, check.testmesh.plan]
+  - id: req.release.post-archive
+    source: "specs/evidence-freshness-closure/spec.md#Requirement: Archival changes release source identity"
+    claim: The exact post-archive source snapshot passes complete release validation before tagging.
+    required: true
+    evidence: [check.tests.full, check.models.full, check.openspec.strict]
+  - id: req.release.immutable-history
+    source: "specs/evidence-freshness-closure/spec.md#Requirement: Published release identities are immutable"
+    claim: Published releases remain immutable and corrections use a higher patch version.
+    required: true
+    evidence: [check.release.source]
+
+test_mesh:
+  frozen_source_case_ids:
+    - case:source-name:receipt-schema-json
+    - case:source-name:receipts-schema-json
+    - case:source-name:cache-schema-json
+    - case:source-name:progress-schema-json
+    - case:source-name:registry-schema-json
+    - case:source-name:verification-receipt-schema-json
+  frozen_execution_case_ids:
+    - case:frozen-boundary:runtime-prerequisite-declared-as-source
+    - case:frozen-boundary:ignored-coordination-record-admitted
+    - case:frozen-boundary:ignored-adoption-record-admitted
+    - case:frozen-boundary:ignored-verification-output-admitted
+    - case:frozen-boundary:check-input-selector-unbound
+    - case:frozen-boundary:vcs-metadata-required-inside-frozen-root
+    - case:frozen-boundary:project-identity-bound-to-random-frozen-directory
+    - case:frozen-boundary:live-consumer-bound-to-change-lifecycle-contract
+    - case:frozen-boundary:post-archive-full-regression-not-run
+
+checks:
+  - id: check.tests.archive-lifecycle
+    kind: command
+    semantic_check_id: logic-writing.archive-lifecycle.regression
+    execution_id: logic-writing-release.archive-lifecycle.v1
+    validation_scope: focused
+    snapshot_policy: frozen
+    toolchain_identity: python-pytest
+    input_selectors:
+      - AGENTS.md
+      - openspec/verification-contract.yaml
+      - scripts/run_frozen_validation.py
+      - scripts/check_public_docs.py
+      - scripts/check_privacy.py
+      - tests/contract/test_release_wrappers.py
+      - tests/flowguard/test_alignment_and_mesh.py
+      - .flowguard/models/frozen_source_contract_exhaustion.py
+      - .flowguard/test_mesh/model.py
+      - .flowguard/behavior_commitment_ledger/ledger.json
+    depends_on_receipts: []
+    command: python
+    args: [-m, pytest, -q, tests/contract/test_release_wrappers.py, tests/flowguard/test_alignment_and_mesh.py]
+    timeout_seconds: 900
+    required: true
+    covers: [req.release.stable-contract, req.release.post-archive]
+    expected: {exit_code: 0}
+
+  - id: check.models.alignment
+    kind: command
+    semantic_check_id: logic-writing.flowguard.model-test-alignment
+    execution_id: logic-writing-release.model-test-alignment.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: flowguard-0.55.0-python
+    input_selectors: [.flowguard/model_test_alignment/**, .flowguard/models/**, .flowguard/behavior_commitment_ledger/**, openspec/verification-contract.yaml, tests/**]
+    depends_on_receipts: [check.tests.archive-lifecycle]
+    command: python
+    args: [.flowguard/model_test_alignment/run_checks.py, --json]
+    timeout_seconds: 600
+    required: true
+    covers: [req.release.stable-contract, req.release.post-archive]
+    expected: {exit_code: 0}
+
+  - id: check.models.full
+    kind: command
+    semantic_check_id: logic-writing.flowguard.models-full
+    execution_id: logic-writing-release.models-full.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: flowguard-0.55.0-python
+    input_selectors: [.flowguard/**, skills/logic-writing/scripts/**, tests/**, openspec/verification-contract.yaml]
+    depends_on_receipts: [check.models.alignment]
+    command: python
+    args: [.flowguard/run_models.py, --profile, full, --json]
+    timeout_seconds: 3600
+    required: true
+    covers: [req.release.post-archive]
+    expected: {exit_code: 0}
+
+  - id: check.testmesh.plan
+    kind: command
+    semantic_check_id: logic-writing.flowguard.testmesh-stable-plan
+    execution_id: logic-writing-release.testmesh-plan.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: flowguard-0.55.0-python
+    input_selectors: [.flowguard/test_mesh/**, .flowguard/models/frozen_source_contract_exhaustion.py, openspec/verification-contract.yaml, scripts/_release_common.py, scripts/run_frozen_validation.py, tests/flowguard/test_alignment_and_mesh.py]
+    depends_on_receipts: [check.models.alignment]
+    command: python
+    args: [.flowguard/test_mesh/run_checks.py, --json]
+    timeout_seconds: 600
+    required: true
+    covers: [req.release.stable-contract, req.release.post-archive]
+    expected: {exit_code: 0}
+
+  - id: check.reader.judgment
+    kind: command
+    semantic_check_id: logic-writing.reader-judgment.current-artifact
+    execution_id: logic-writing-release.reader-judgment.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: logic-writing-judgment-validator-v1
+    input_selectors: [scripts/check_reader_judgment.py, scripts/prepare_reader_quality_receipt.py, skills/logic-writing/references/shared/human-writing.md, skills/logic-writing/scripts/**, skills/logic-writing/assets/schemas/reader-judgment.schema.json, tests/support.py, tests/fixtures/forward/**]
+    depends_on_receipts: [check.tests.archive-lifecycle]
+    command: python
+    args: [scripts/check_reader_judgment.py, --root, ., --json]
+    timeout_seconds: 300
+    required: true
+    covers: [req.release.post-archive]
+    expected: {exit_code: 0}
+
+  - id: check.public.docs
+    kind: command
+    semantic_check_id: logic-writing.public-docs.bilingual-reader-facing
+    execution_id: logic-writing-release.public-docs.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: python-public-docs-wrapper-v1
+    input_selectors: &public_source_inputs
+      - .codex/skills/**/*.md
+      - .flowguard/**/*.py
+      - .flowguard/**/*.json
+      - .flowguard/project.toml
+      - .gitattributes
+      - .gitignore
+      - .logicguard/**/*.yaml
+      - .skillguard/*.json
+      - AGENTS.md
+      - CHANGELOG.md
+      - CONTRIBUTING.md
+      - LICENSE
+      - MIGRATION.md
+      - README.md
+      - README.zh-CN.md
+      - VERSION
+      - assets/readme-hero/**/*
+      - docs/**/*.md
+      - openspec/**/*.md
+      - openspec/**/*.yaml
+      - pyproject.toml
+      - scripts/**/*.py
+      - skills/logic-writing/SKILL.md
+      - skills/logic-writing/agents/*.yaml
+      - skills/logic-writing/assets/schemas/*.json
+      - skills/logic-writing/references/**/*.md
+      - skills/logic-writing/scripts/**/*.py
+      - skills/logic-writing/.skillguard/*.json
+      - skills/logic-writing/.skillguard/**/*.py
+      - skills/logic-writing/.skillguard/**/*.json
+      - tests/**/*.py
+      - tests/fixtures/**/*
+    depends_on_receipts: [check.tests.archive-lifecycle]
+    command: python
+    args: [scripts/check_public_docs.py, --root, ., --json]
+    timeout_seconds: 300
+    required: true
+    covers: [req.release.stable-contract]
+    expected: {exit_code: 0}
+
+  - id: check.privacy
+    kind: command
+    semantic_check_id: logic-writing.public-source.privacy
+    execution_id: logic-writing-release.privacy.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: python-privacy-wrapper-v1
+    input_selectors: *public_source_inputs
+    depends_on_receipts: [check.public.docs]
+    command: python
+    args: [scripts/check_privacy.py, --root, ., --json]
+    timeout_seconds: 300
+    required: true
+    covers: [req.release.stable-contract, req.release.post-archive]
+    expected: {exit_code: 0}
+
+  - id: check.release.source
+    kind: command
+    semantic_check_id: logic-writing.release.source-surface
+    execution_id: logic-writing-release.source-surface.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: python-release-surface-wrapper-v1
+    input_selectors: *public_source_inputs
+    depends_on_receipts: [check.privacy]
+    command: python
+    args: [scripts/check_release_surface.py, --root, ., --mode, source, --json]
+    timeout_seconds: 300
+    required: true
+    covers: [req.release.immutable-history, req.release.post-archive]
+    expected: {exit_code: 0}
+
+  - id: check.tests.full
+    kind: command
+    semantic_check_id: logic-writing.pytest.full
+    execution_id: logic-writing-release.pytest-full.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: python-pytest
+    input_selectors: [skills/logic-writing/**, tests/**, .flowguard/**, openspec/**, docs/**, scripts/**, AGENTS.md, VERSION, pyproject.toml, README.md, README.zh-CN.md, CHANGELOG.md]
+    depends_on_receipts: [check.models.full, check.testmesh.plan, check.reader.judgment, check.release.source]
+    command: python
+    args: [-m, pytest, -q]
+    timeout_seconds: 3600
+    required: true
+    covers: [req.release.stable-contract, req.release.post-archive, req.release.immutable-history]
+    expected: {exit_code: 0}
+
+  - id: check.skill.static
+    kind: command
+    semantic_check_id: logic-writing.skill.static
+    execution_id: logic-writing-release.skill-static.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: logic-writing-skill-static-wrapper-v1
+    input_selectors: [skills/logic-writing/**, scripts/validate_skill.py]
+    depends_on_receipts: [check.tests.full]
+    command: python
+    args: [scripts/validate_skill.py, --skill-root, skills/logic-writing]
+    timeout_seconds: 300
+    required: true
+    covers: [req.release.post-archive]
+    expected: {exit_code: 0}
+
+  - id: check.skillguard.compile
+    kind: command
+    semantic_check_id: logic-writing.skillguard.compile-current
+    execution_id: logic-writing-release.skillguard-compile.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: installed-skillguard-current
+    input_selectors: [skills/logic-writing/**, scripts/check_skillguard_authority.py]
+    depends_on_receipts: [check.skill.static]
+    command: python
+    args: [scripts/check_skillguard_authority.py, --repository-root, ., --target, skills/logic-writing, --check, compile, --json]
+    timeout_seconds: 900
+    required: true
+    covers: [req.release.post-archive]
+    expected: {exit_code: 0}
+
+  - id: check.skillguard.runtime
+    kind: command
+    semantic_check_id: logic-writing.skillguard.runtime-authority
+    execution_id: logic-writing-release.skillguard-runtime.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: installed-skillguard-current
+    input_selectors: [skills/logic-writing/**, scripts/check_skillguard_authority.py]
+    depends_on_receipts: [check.skillguard.compile]
+    command: python
+    args: [scripts/check_skillguard_authority.py, --repository-root, ., --target, skills/logic-writing, --check, runtime, --json]
+    timeout_seconds: 900
+    required: true
+    covers: [req.release.post-archive]
+    expected: {exit_code: 0}
+
+  - id: check.skillguard.contract
+    kind: command
+    semantic_check_id: logic-writing.skillguard.contract
+    execution_id: logic-writing-release.skillguard-contract.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: installed-skillguard-current
+    input_selectors: [skills/logic-writing/**, scripts/check_skillguard_authority.py]
+    depends_on_receipts: [check.skillguard.runtime]
+    command: python
+    args: [scripts/check_skillguard_authority.py, --repository-root, ., --target, skills/logic-writing, --check, contract, --json]
+    timeout_seconds: 900
+    required: true
+    covers: [req.release.post-archive]
+    expected: {exit_code: 0}
+
+  - id: check.skillguard.depth
+    kind: command
+    semantic_check_id: logic-writing.skillguard.declared-check-depth
+    execution_id: logic-writing-release.skillguard-depth.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: installed-skillguard-current
+    input_selectors: [skills/logic-writing/**, scripts/check_skillguard_authority.py]
+    depends_on_receipts: [check.skillguard.contract]
+    command: python
+    args: [scripts/check_skillguard_authority.py, --repository-root, ., --target, skills/logic-writing, --check, depth, --json]
+    timeout_seconds: 900
+    required: true
+    covers: [req.release.post-archive]
+    expected: {exit_code: 0}
+
+  - id: check.skillguard.static
+    kind: command
+    semantic_check_id: logic-writing.skillguard.static
+    execution_id: logic-writing-release.skillguard-static.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: installed-skillguard-current
+    input_selectors: [skills/logic-writing/**, scripts/check_skillguard_authority.py]
+    depends_on_receipts: [check.skillguard.depth]
+    command: python
+    args: [scripts/check_skillguard_authority.py, --repository-root, ., --target, skills/logic-writing, --check, static, --json]
+    timeout_seconds: 900
+    required: true
+    covers: [req.release.post-archive]
+    expected: {exit_code: 0}
+
+  - id: check.skillguard.project
+    kind: command
+    semantic_check_id: logic-writing.skillguard.project-adoption
+    execution_id: logic-writing-release.skillguard-project.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: installed-skillguard-current
+    input_selectors: [AGENTS.md, .skillguard/project.json, skills/logic-writing/SKILL.md, skills/logic-writing/.skillguard/*.json, scripts/check_skillguard_authority.py]
+    depends_on_receipts: [check.skillguard.static]
+    command: python
+    args: [scripts/check_skillguard_authority.py, --repository-root, ., --target, skills/logic-writing, --check, project, --json]
+    timeout_seconds: 900
+    required: true
+    covers: [req.release.post-archive]
+    expected: {exit_code: 0}
+
+  - id: check.openspec.strict
+    kind: command
+    semantic_check_id: logic-writing.openspec.all-strict
+    execution_id: logic-writing-release.openspec-all-strict.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: openspec-1.6.0
+    input_selectors: [openspec/**]
+    depends_on_receipts: [check.tests.full, check.skillguard.project, check.release.source]
+    command: openspec
+    args: [validate, --all, --strict]
+    timeout_seconds: 300
+    required: true
+    covers: [req.release.stable-contract, req.release.post-archive, req.release.immutable-history]
+    expected: {exit_code: 0}
+
+freshness:
+  watch: *public_source_inputs
+  exclude:
+    - "**/verification-report.json"
+    - "**/verification-receipts/**"
+    - "**/.skillguard/runs/**"
+    - "**/.flowguard/evidence/**"
+    - "**/run-artifacts/**"
+    - "**/run_artifacts/**"
+    - "**/__pycache__/**"
+    - "**/.pytest_cache/**"
+    - ".flowguard/adoption_log.jsonl"
+    - "docs/coordination.md"
+    - "docs/flowguard_adoption_log.md"

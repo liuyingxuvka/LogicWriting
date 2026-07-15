@@ -20,9 +20,11 @@ from typing import Any, Iterable, Mapping
 
 import yaml
 
+from _release_common import RELEASE_CONTRACT_RELATIVE
+
 
 VERIFIER_VERSION = "logic-writing-frozen-validation.v2"
-DEFAULT_CONTRACT = Path("openspec/changes/create-logic-writing/verification-contract.yaml")
+DEFAULT_CONTRACT = RELEASE_CONTRACT_RELATIVE
 DEFAULT_RECEIPTS = Path("run-artifacts/validation-receipts")
 IGNORED_PARTS = {
     ".git",
@@ -80,8 +82,9 @@ def _load_contract(path: Path) -> dict[str, Any]:
 def _inventory_revision(contract: Mapping[str, Any]) -> str:
     payload = {
         "checks": contract["checks"],
-        "version": contract.get("version"),
-        "change_id": contract.get("change_id"),
+        "contract_version": contract.get("contract_version"),
+        "change": contract.get("change"),
+        "test_mesh": contract.get("test_mesh"),
     }
     compact = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
     return "sha256:" + hashlib.sha256(compact).hexdigest()

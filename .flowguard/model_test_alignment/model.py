@@ -27,6 +27,7 @@ from models.retirement_field_lifecycle import review_retirement_visibility_field
 from models.frozen_source_contract_exhaustion import (
     CASE_IDS as FROZEN_SOURCE_CASE_IDS,
     EXECUTION_CASE_IDS as FROZEN_EXECUTION_CASE_IDS,
+    OBSERVED_EXECUTION_CASE_IDS,
     review_frozen_execution_boundary,
     review_frozen_source_name_family,
 )
@@ -64,7 +65,10 @@ _FROZEN_EXECUTION_OBLIGATIONS = tuple(
         model_miss_origin=True,
         required_closure_evidence_roles=(
             ("observed_regression", "same_class_generalized")
-            if FROZEN_EXECUTION_CASE_IDS[0] in obligation.obligation_id
+            if any(
+                case_id in obligation.obligation_id
+                for case_id in OBSERVED_EXECUTION_CASE_IDS
+            )
             else ("same_class_generalized",)
         ),
         behavior_plane="development_process",
@@ -393,10 +397,16 @@ def _frozen_execution_evidence() -> tuple[TestEvidence, ...]:
             case_id in obligation.obligation_id
             for case_id in FROZEN_EXECUTION_CASE_IDS[4:6]
         )
-        project_identity_case = (
-            FROZEN_EXECUTION_CASE_IDS[-1] in obligation.obligation_id
-        )
-        if project_identity_case:
+        project_identity_case = FROZEN_EXECUTION_CASE_IDS[6] in obligation.obligation_id
+        archive_path_case = FROZEN_EXECUTION_CASE_IDS[-2] in obligation.obligation_id
+        post_archive_gate_case = FROZEN_EXECUTION_CASE_IDS[-1] in obligation.obligation_id
+        if archive_path_case:
+            test_name = (
+                "test_live_release_consumers_do_not_depend_on_change_lifecycle_contracts"
+            )
+        elif post_archive_gate_case:
+            test_name = "test_stable_release_contract_requires_post_archive_complete_gate"
+        elif project_identity_case:
             test_name = "test_skillguard_project_owner_stages_stable_project_identity"
         elif manifest_or_metadata_case:
             test_name = (

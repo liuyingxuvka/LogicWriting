@@ -31,7 +31,7 @@ from models.frozen_source_contract_exhaustion import (  # noqa: E402
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-CONTRACT_PATH = REPO_ROOT / "openspec" / "changes" / "create-logic-writing" / "verification-contract.yaml"
+CONTRACT_PATH = REPO_ROOT / "openspec" / "verification-contract.yaml"
 RECEIPT_ROOT = "run-artifacts/validation-receipts"
 
 
@@ -66,12 +66,22 @@ def inventory_revision(value: Mapping[str, Any] | None = None) -> str:
         )
         if case_id in FROZEN_EXECUTION_CASE_IDS
     )
+    declared = dict(contract.get("test_mesh") or {})
+    declared_source_case_ids = tuple(
+        str(item) for item in declared.get("frozen_source_case_ids", [])
+    )
+    declared_execution_case_ids = tuple(
+        str(item) for item in declared.get("frozen_execution_case_ids", [])
+    )
+    if declared_source_case_ids != source_name_case_ids:
+        raise ValueError("declared frozen source case inventory does not match FlowGuard")
+    if declared_execution_case_ids != execution_boundary_case_ids:
+        raise ValueError("declared frozen execution case inventory does not match FlowGuard")
     payload = {
         "checks": contract["checks"],
-        "version": contract.get("version"),
-        "change_id": contract.get("change_id"),
-        "frozen_source_case_ids": source_name_case_ids,
-        "frozen_execution_case_ids": execution_boundary_case_ids,
+        "contract_version": contract.get("contract_version"),
+        "change": contract.get("change"),
+        "test_mesh": declared,
     }
     canonical = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
     return "sha256:" + hashlib.sha256(canonical).hexdigest()
@@ -209,7 +219,7 @@ def release_plan(receipts: Mapping[str, Mapping[str, Any]] | None = None) -> Tes
                 "scripts/check_release_surface.py",
                 "scripts/check_skillguard_authority.py",
                 "scripts/run_frozen_validation.py",
-                "openspec/changes/create-logic-writing/verification-contract.yaml",
+                "openspec/verification-contract.yaml",
                 "tests/contract/test_release_wrappers.py",
             ),
             inventory_revision=revision,

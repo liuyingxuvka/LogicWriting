@@ -9,7 +9,7 @@ from pathlib import Path
 
 import yaml
 
-from _release_common import emit, git_lines
+from _release_common import RELEASE_CONTRACT_RELATIVE, emit, git_lines
 
 
 LINK = re.compile(r"!?\[[^]]*\]\(([^)]+)\)")
@@ -83,13 +83,7 @@ def _public_inventory(root: Path) -> set[str]:
         for path in root.rglob("*")
         if path.is_file() and ".git" not in path.parts
     }
-    contract_path = (
-        root
-        / "openspec"
-        / "changes"
-        / "create-logic-writing"
-        / "verification-contract.yaml"
-    )
+    contract_path = root / RELEASE_CONTRACT_RELATIVE
     if not contract_path.is_file():
         return inventory
     contract = yaml.safe_load(contract_path.read_text(encoding="utf-8")) or {}

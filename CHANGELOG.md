@@ -10,6 +10,19 @@ line follows semantic versioning.
 
 - Hosted release metadata is intentionally not asserted by this source file.
 
+## [1.0.2]
+
+### Fixed
+
+- Replaced the archived change-local verification path with one stable current
+  release contract at `openspec/verification-contract.yaml`.
+- Added FlowGuard model-miss, Model-Test Alignment, TestMesh, and regression
+  coverage for live consumers that retain a change-lifecycle contract path.
+- Added a mandatory full post-archive release gate so pre-archive evidence
+  cannot authorize a tag for source that changed during archival.
+- Preserved the published v1.0.0 and v1.0.1 identities; this correction uses a
+  higher patch version instead of rewriting release history.
+
 ## [1.0.1]
 
 ### Fixed

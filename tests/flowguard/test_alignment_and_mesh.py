@@ -10,6 +10,7 @@ from flowguard import review_model_test_alignment, review_test_mesh
 
 
 FLOWGUARD_ROOT = Path(__file__).resolve().parents[2] / ".flowguard"
+REPO_ROOT = FLOWGUARD_ROOT.parent
 
 
 def _load_model(name: str, child: str):
@@ -46,6 +47,23 @@ def test_test_mesh_has_complete_structure_and_expected_pending_receipts():
     assert "missing_target_split_derivation" in {finding.code for finding in broken.findings}
 
 
+def test_frozen_runner_and_test_mesh_share_one_exact_inventory_revision():
+    scripts = REPO_ROOT / "scripts"
+    if str(scripts) not in sys.path:
+        sys.path.insert(0, str(scripts))
+    runner_path = scripts / "run_frozen_validation.py"
+    spec = importlib.util.spec_from_file_location(
+        "logic_writing_frozen_validation_revision", runner_path
+    )
+    assert spec and spec.loader
+    runner = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(runner)
+
+    mesh = _load_model("logic_writing_test_mesh_revision", "test_mesh")
+    contract = mesh._contract()
+    assert runner._inventory_revision(contract) == mesh.inventory_revision(contract)
+
+
 def test_frozen_execution_boundary_covers_runtime_and_internal_record_misses():
     path = FLOWGUARD_ROOT / "models" / "frozen_source_contract_exhaustion.py"
     spec = importlib.util.spec_from_file_location(
@@ -67,6 +85,8 @@ def test_frozen_execution_boundary_covers_runtime_and_internal_record_misses():
         "check-input-selector-unbound",
         "vcs-metadata-required-inside-frozen-root",
         "project-identity-bound-to-random-frozen-directory",
+        "live-consumer-bound-to-change-lifecycle-contract",
+        "post-archive-full-regression-not-run",
     )
     assert set(module.EXECUTION_CASE_IDS).issubset(
         {case.case_id for case in report.generated_cases}
