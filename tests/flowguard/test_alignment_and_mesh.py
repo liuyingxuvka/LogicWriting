@@ -66,6 +66,7 @@ def test_frozen_execution_boundary_covers_runtime_and_internal_record_misses():
         "ignored-verification-output-admitted",
         "check-input-selector-unbound",
         "vcs-metadata-required-inside-frozen-root",
+        "project-identity-bound-to-random-frozen-directory",
     )
     assert set(module.EXECUTION_CASE_IDS).issubset(
         {case.case_id for case in report.generated_cases}

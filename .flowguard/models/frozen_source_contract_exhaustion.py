@@ -44,6 +44,7 @@ EXECUTION_BOUNDARY_MEMBERS = (
     "ignored-verification-output-admitted",
     "check-input-selector-unbound",
     "vcs-metadata-required-inside-frozen-root",
+    "project-identity-bound-to-random-frozen-directory",
 )
 EXECUTION_CASE_IDS = tuple(
     f"case:frozen-boundary:{member}" for member in EXECUTION_BOUNDARY_MEMBERS
@@ -176,12 +177,14 @@ def _execution_boundary_plan() -> ContractExhaustionPlan:
         consumer="OpenSpec frozen-root materializer",
         currentness_rule=(
             "changing runtime preparation, source exclusions, per-check selectors, "
-            "or frozen metadata requirements reruns every execution-boundary case"
+            "frozen metadata requirements, or project-identity projection reruns "
+            "every execution-boundary case"
         ),
         description=(
             "runtime prerequisites belong to their execution owner and ignored "
             "internal records do not become frozen public source; every check binds "
-            "concrete admitted inputs and asks only for metadata present in the root"
+            "concrete admitted inputs, asks only for metadata present in the root, "
+            "and projects stable logical identity without trusting a temporary path"
         ),
         metadata={"family_id": EXECUTION_FAMILY_ID},
     )
@@ -222,7 +225,8 @@ def _execution_boundary_plan() -> ContractExhaustionPlan:
         description=(
             "block release until runtime prerequisites are generated inside their "
             "owner, ignored internal records are excluded, check inputs are bound, "
-            "and repository metadata remains outside metadata-free frozen checks"
+            "repository metadata remains outside metadata-free frozen checks, and "
+            "logical project identity survives random snapshot directories"
         ),
     )
     universe = ContractCoverageUniverse(
@@ -245,6 +249,7 @@ def _execution_boundary_plan() -> ContractExhaustionPlan:
         source_model_ids=(MODEL_ID,),
         source_bug_refs=(
             "openspec-run:0487aec7-5efd-4388-8f78-72f1276bdbca",
+            "openspec-run:ec1fe313-48de-45f7-937e-06652e2f86d1",
         ),
         required_route_ids=REQUIRED_ROUTES,
         model_id=MODEL_ID,
@@ -253,7 +258,7 @@ def _execution_boundary_plan() -> ContractExhaustionPlan:
         coverage_universe=universe,
         require_coverage_universe=True,
         require_actionable_oracle_feedback=True,
-        inventory_revision="logic-writing-frozen-execution-boundary-v1",
+        inventory_revision="logic-writing-frozen-execution-boundary-v2",
         inventory_current=True,
     )
 
@@ -269,7 +274,8 @@ def review_frozen_execution_boundary():
             "the reader judgment expected an ignored runtime prerequisite while "
             "ignored coordination and adoption records entered the frozen public root; "
             "the same audit exposed empty dot-selector manifests and a later source "
-            "check that required unavailable Git metadata"
+            "check that required unavailable Git metadata, while a subsequent full "
+            "run bound SkillGuard project identity to a random snapshot directory"
         ),
         failure_mode="boundary_missing",
         affected_dimension_ids=(EXECUTION_DIMENSION_ID,),

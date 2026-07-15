@@ -4,6 +4,7 @@ import importlib.util
 import json
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 import yaml
 
@@ -125,6 +126,60 @@ def test_reader_judgment_owner_prepares_and_validates_runtime_inputs(tmp_path):
     assert report["judgment_status"] == "current_pass"
     assert (runtime_root / "reader-quality-judgment.json").is_file()
     assert (runtime_root / "reader-quality-judgment-result.json").is_file()
+
+
+def test_skillguard_project_owner_stages_stable_project_identity(tmp_path, monkeypatch):
+    authority = _load("check_skillguard_authority")
+    repository = tmp_path / "random-frozen-root"
+    target = repository / "skills" / "logic-writing"
+    codex_home = tmp_path / "codex-home"
+    scripts = codex_home / "skills" / "skillguard" / "scripts"
+    scripts.mkdir(parents=True)
+    (scripts / "skillguard.py").write_text("# provider\n", encoding="utf-8")
+    (scripts / "skillguard_compile.py").write_text(
+        "# provider\n", encoding="utf-8"
+    )
+    (repository / ".skillguard").mkdir(parents=True)
+    (repository / ".skillguard" / "project.json").write_text(
+        json.dumps({"project_id": "LogicWriting"}), encoding="utf-8"
+    )
+    (repository / "AGENTS.md").write_text("project contract\n", encoding="utf-8")
+    (target / ".skillguard").mkdir(parents=True)
+    (target / "SKILL.md").write_text("skill contract\n", encoding="utf-8")
+    for name in (
+        "contract-source.json",
+        "compiled-contract.json",
+        "check-manifest.json",
+    ):
+        (target / ".skillguard" / name).write_text("{}\n", encoding="utf-8")
+
+    observed = {}
+
+    def fake_run(command, *, cwd, timeout):
+        observed["root"] = cwd
+        assert timeout == 900
+        assert cwd.name == "LogicWriting"
+        assert not (cwd / ".git").exists()
+        assert (cwd / "AGENTS.md").is_file()
+        assert (cwd / ".skillguard" / "project.json").is_file()
+        assert (cwd / "skills" / "logic-writing" / "SKILL.md").is_file()
+        root_arg = Path(command[command.index("--root") + 1])
+        assert root_arg == cwd
+        return SimpleNamespace(
+            returncode=0,
+            stdout=json.dumps(
+                {"status": "pass", "decision": "pass", "findings": []}
+            ),
+            stderr="",
+        )
+
+    monkeypatch.setattr(authority, "run", fake_run)
+    report = authority.check(repository, target, codex_home, "project")
+
+    assert report["status"] == "passed"
+    assert report["execution_projection"] == "stable-project-id"
+    assert report["provider_result"]["status"] == "pass"
+    assert not observed["root"].exists()
 
 
 def test_frozen_boundary_excludes_runtime_inputs_and_internal_records():

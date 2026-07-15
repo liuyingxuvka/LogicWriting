@@ -207,6 +207,7 @@ def release_plan(receipts: Mapping[str, Mapping[str, Any]] | None = None) -> Tes
                 "scripts/check_privacy.py",
                 "scripts/check_public_docs.py",
                 "scripts/check_release_surface.py",
+                "scripts/check_skillguard_authority.py",
                 "scripts/run_frozen_validation.py",
                 "openspec/changes/create-logic-writing/verification-contract.yaml",
                 "tests/contract/test_release_wrappers.py",

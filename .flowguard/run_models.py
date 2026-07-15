@@ -389,8 +389,8 @@ def run(profile: str):
             ),
             "claim_boundary": (
                 "Finite frozen runtime-prerequisite, admitted-source, input-manifest, "
-                "and repository-metadata boundary only; it does not classify "
-                "unbounded verifier behavior."
+                "repository-metadata, and stable project-identity boundary only; it "
+                "does not classify unbounded verifier behavior."
             ),
         },
         "claim_boundary": (

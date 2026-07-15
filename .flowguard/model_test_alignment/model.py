@@ -391,13 +391,21 @@ def _frozen_execution_evidence() -> tuple[TestEvidence, ...]:
     for obligation in _FROZEN_EXECUTION_OBLIGATIONS:
         manifest_or_metadata_case = any(
             case_id in obligation.obligation_id
-            for case_id in FROZEN_EXECUTION_CASE_IDS[-2:]
+            for case_id in FROZEN_EXECUTION_CASE_IDS[4:6]
         )
-        test_name = (
-            "test_frozen_public_checks_bind_concrete_admitted_source_manifests"
-            if manifest_or_metadata_case
-            else "test_frozen_boundary_excludes_runtime_inputs_and_internal_records"
+        project_identity_case = (
+            FROZEN_EXECUTION_CASE_IDS[-1] in obligation.obligation_id
         )
+        if project_identity_case:
+            test_name = "test_skillguard_project_owner_stages_stable_project_identity"
+        elif manifest_or_metadata_case:
+            test_name = (
+                "test_frozen_public_checks_bind_concrete_admitted_source_manifests"
+            )
+        else:
+            test_name = (
+                "test_frozen_boundary_excludes_runtime_inputs_and_internal_records"
+            )
         for role in obligation.required_closure_evidence_roles:
             evidence.append(
                 TestEvidence(

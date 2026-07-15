@@ -177,7 +177,7 @@ The system SHALL keep user-task artifacts in the `agent_operation` freshness pla
 - **THEN** only validation owners that consume the changed component and their installation or release projections SHALL become stale
 
 ### Requirement: Frozen validation materializes every governed source
-The development validation plane SHALL prove that every declared authority input is present byte-for-byte in the frozen execution root, SHALL bind every command to concrete admitted-source selectors, SHALL block tracked source names that the verifier classifies as generated output, SHALL exclude ignored internal records from public-source checks, SHALL require each execution owner to create its own runtime prerequisites, and SHALL NOT require repository metadata that the frozen root does not materialize.
+The development validation plane SHALL prove that every declared authority input is present byte-for-byte in the frozen execution root, SHALL bind every command to concrete admitted-source selectors, SHALL block tracked source names that the verifier classifies as generated output, SHALL exclude ignored internal records from public-source checks, SHALL require each execution owner to create its own runtime prerequisites, SHALL NOT require repository metadata that the frozen root does not materialize, and SHALL preserve declared logical project identity without treating a random temporary directory name as authority.
 
 #### Scenario: Authority schema name collides with generated evidence
 - **WHEN** a tracked schema basename matches the verifier's receipt, cache, progress, or registry output family
@@ -204,6 +204,12 @@ The development validation plane SHALL prove that every declared authority input
 - **WHEN** a source-surface check runs in a frozen root without `.git`, a branch name, or a commit object
 - **THEN** the frozen check SHALL validate version and public-source content without claiming Git cleanliness or branch identity
 - **AND** clean `main`, commit, tag, and hosted-release identity SHALL remain separate live-repository publication gates
+
+#### Scenario: Frozen directory name differs from project identity
+- **WHEN** a native project audit requires the declared `project_id` but the verifier materializes source under a random temporary directory name
+- **THEN** the owning check SHALL create a temporary projection named by the unchanged declared project identity
+- **AND** the projection SHALL contain only that check's declared source inputs
+- **AND** the native project audit result SHALL remain the sole pass or fail authority
 
 ### Requirement: Repeated no-progress loops terminate visibly
 The system SHALL detect repeated identical failed packets, gap sets, or artifact hashes and SHALL stop with a bounded blocker instead of claiming progress.

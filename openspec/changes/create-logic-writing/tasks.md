@@ -138,6 +138,7 @@
 - [x] 11.11 Exclude ignored coordination, adoption, and verification-receipt records from frozen public-source materialization, and bind the observed failures into FlowGuard and regression tests.
 - [x] 11.12 Replace repository-dot check selectors with concrete admitted-source manifests and expand the frozen freshness inventory to every public source surface those checks observe.
 - [x] 11.13 Make privacy fallback honor the same admitted-source exclusions and keep Git cleanliness, branch, commit, tag, and hosted-release identity outside metadata-free frozen source checks.
+- [x] 11.14 Preserve native SkillGuard project-audit authority by staging its exact declared inputs under the stable `LogicWriting` project identity when OpenSpec uses a random frozen directory name.
 
 ## 12. Install and global route cutover
 

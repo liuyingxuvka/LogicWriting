@@ -243,7 +243,7 @@ obligations:
     evidence: [check.tests.freshness, check.models.full]
   - id: req.closure.frozen-materialization
     source: "specs/evidence-freshness-closure/spec.md#Requirement: Frozen validation materializes every governed source"
-    claim: Every check binds concrete admitted inputs that survive frozen materialization, ignored internal records stay out, each owner creates its own runtime prerequisites, and metadata-free frozen roots do not pretend to contain Git state.
+    claim: Every check binds concrete admitted inputs that survive frozen materialization, ignored internal records stay out, each owner creates its own runtime prerequisites, metadata-free frozen roots do not pretend to contain Git state, and logical project identity does not depend on a temporary directory name.
     required: true
     evidence: [check.tests.routing, check.models.alignment, check.testmesh.plan, check.tests.full]
   - id: req.closure.no-progress
