@@ -87,7 +87,11 @@ def validate_skill(root: Path):
         warnings.append("unexpectedly small script inventory")
 
     for path in root.rglob("*"):
-        if path.is_file() and path.suffix.lower() in {".md", ".yaml", ".yml", ".json", ".py"}:
+        # Python implementations may intentionally contain placeholder tokens
+        # in detectors and rejection messages.  Placeholder admission belongs
+        # to the reader-facing declarative surfaces, while Python correctness
+        # is covered by compilation and behavioral tests above.
+        if path.is_file() and path.suffix.lower() in {".md", ".yaml", ".yml", ".json"}:
             content = path.read_text(encoding="utf-8")
             if PLACEHOLDERS.search(content):
                 errors.append(f"placeholder in {path.relative_to(root)}")

@@ -102,3 +102,11 @@ def test_frozen_validation_observes_runnable_unreadable_executable(monkeypatch):
     assert observation["executable_hash"] == "unavailable"
     assert observation["executable_path_hash"].startswith("sha256:")
     assert observation["executable_version_probe_hash"].startswith("sha256:")
+
+
+def test_skill_static_validator_accepts_placeholder_detector_source():
+    validator = _load("validate_skill")
+    report = validator.validate_skill(ROOT / "skills" / "logic-writing")
+
+    assert report["status"] == "passed"
+    assert report["errors"] == []
