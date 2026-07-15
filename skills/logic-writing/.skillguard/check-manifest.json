@@ -1,5 +1,5 @@
 {
-  "check_declarations_hash": "C519C914D7D4292FA3570207D76841D9ECF08EFE29F4DC6248F9486E0C55289C",
+  "check_declarations_hash": "527DB3AF120B10C42B9BB091ECD91513759D41DD2393806D9E896A0C97890196",
   "checks": [
     {
       "args": [
@@ -256,7 +256,7 @@
       "kind": "model_assertion",
       "native_route_id": "route:logic-writing:router",
       "owner_declaration_hash": "sha256:aa96ede02509dceea95395988e704dd224449f6d9ba5febc4241c2d105a50cc2",
-      "owner_input_projection_hash": "sha256:78bb2526a85cf1480f37f9fed160d35c9659b9be02a7b1d4ace88264942abd6a",
+      "owner_input_projection_hash": "sha256:c401d9b737c843c74bbe336f37211e0e266fb8561cc1be74111a1e21e1979da9",
       "projection_declaration_hash": "sha256:4f263bd8258e528c181e943cc29f07dec3ae6ff75ff067436dab21258db2662b",
       "semantic_check_id": "semantic:logic-writing:reader-artifact",
       "timeout_seconds": 60
@@ -312,7 +312,7 @@
       "kind": "model_assertion",
       "native_route_id": "route:logic-writing:router",
       "owner_declaration_hash": "sha256:f48c38f90f04fe8c31ec614a6cbf957585f459a144bf5d4ee4de8f1b10819b66",
-      "owner_input_projection_hash": "sha256:9e2b7b84ca145e80dc96be54f527c89dd50dafc5be48595a767b3de71fb1586e",
+      "owner_input_projection_hash": "sha256:905b39002460f53a9604578434905db6611e302c7aecdf479cea1791022735f8",
       "projection_declaration_hash": "sha256:477e9500b11d9df305f7e6feb2db23f96a3cba77d8ae0e5983847b0eb911c8b2",
       "semantic_check_id": "semantic:logic-writing:final-closure",
       "timeout_seconds": 60
@@ -435,7 +435,7 @@
       "kind": "model_assertion",
       "native_route_id": "route:logic-writing:router",
       "owner_declaration_hash": "sha256:4dec71ff96ad4858c7502cc9ac1ea845c3ac1cb03638a65a13f4c48c1e45e098",
-      "owner_input_projection_hash": "sha256:a9b180005352199e69fb54c32f7476b1472a2613c81004dc9aa790ec7289f6dc",
+      "owner_input_projection_hash": "sha256:660838f4a563dfbe72b2a9411edb95022652577f95ecc8e844e96087c3a11ac7",
       "projection_declaration_hash": "sha256:e5c660753a719bb087a5d126a4e54f5168b5e8523a65ed72e4bad9cf60ae7703",
       "semantic_check_id": "semantic:logic-writing:release-integrity",
       "timeout_seconds": 60
@@ -600,7 +600,7 @@
         "classification_rule_ids": [
           "skillguard.content_role_classifier.current:documentation_model"
         ],
-        "component_hash": "sha256:80af3b59e5bdcb86c43b0235cd5a3fa668f6bb9370ebdb152bb7efce7e85277b",
+        "component_hash": "sha256:cddff4ab0ed4fbb8c90ca6ece0002b95aa4b885b1817c0bcfb6f976b16a16b9f",
         "component_id": "component:documentation_model:4ec34cbc74ad314b",
         "consumer_ids": [
           "owner:logic-writing:final-closure",
@@ -634,7 +634,7 @@
         "classification_rule_ids": [
           "skillguard.content_role_classifier.current:documentation_model"
         ],
-        "component_hash": "sha256:4d3801ac7b0fdc050c56921bf2d3d87135e0e64929b28f94a12c668b2d8bff25",
+        "component_hash": "sha256:5a0ec6985c5a57906f03fc3bfc745f5bbd5457b44a3f75f8c0a9e7f46670a44a",
         "component_id": "component:documentation_model:5b69783583632e05",
         "consumer_ids": [
           "owner:logic-writing:reader-artifact",
@@ -670,7 +670,7 @@
         "classification_rule_ids": [
           "skillguard.content_role_classifier.current:documentation_model"
         ],
-        "component_hash": "sha256:327154811d81f670c53e858927fd10c2afdfd36d20d005a7889325e61021c173",
+        "component_hash": "sha256:b81bfd26cd3aebc78e7f7503be6940046bd46a2e13307d0aa3d3defcb1db6fce",
         "component_id": "component:documentation_model:faad0c89e2257ec5",
         "consumer_ids": [
           "owner:logic-writing:release-integrity",
@@ -955,7 +955,7 @@
       "owner_cycles": [],
       "unmapped_paths": []
     },
-    "impact_graph_hash": "sha256:19720040e2c2a3325a23d3a1c24ce9634be7525c2fce6733d962dff0383940bb",
+    "impact_graph_hash": "sha256:4741399eda8e17a904a337a4c741b88e666c49415014c2bdb7c443f140deacb1",
     "inventory": [
       {
         "classification_rule_id": "skillguard.content_role_classifier.current:runtime_source",
@@ -1148,49 +1148,49 @@
       },
       {
         "classification_rule_id": "skillguard.content_role_classifier.current:documentation_model",
-        "content_hash": "sha256:66fdf08e37b98f192d627f83fa49a819f9c58ba5c1b425c57dd9c72918636224",
+        "content_hash": "sha256:f2907a82c5f14f39c89d1f1a197b968737e0753b74833b4b5e9d15d0de74887c",
         "install_disposition": "copy",
         "path": "skills/logic-writing/references/adapters/documents.md",
         "role": "documentation_model"
       },
       {
         "classification_rule_id": "skillguard.content_role_classifier.current:documentation_model",
-        "content_hash": "sha256:dc1f4f7448e98bd8f2ee9ae596b154e110ae950d84980540b08bc28eeb6ee35c",
+        "content_hash": "sha256:d58ea37beca1069b00d0e7a630555220b5a653ca00878d68d030963ae801a52e",
         "install_disposition": "copy",
         "path": "skills/logic-writing/references/adapters/flowguard.md",
         "role": "documentation_model"
       },
       {
         "classification_rule_id": "skillguard.content_role_classifier.current:documentation_model",
-        "content_hash": "sha256:7a70e8624626a4e0ca34a21ef9c92e9c8e0defdf780d560e2e3b25e23a8002ab",
+        "content_hash": "sha256:0a335f4aaa51036b94f5dcfd94e554f98efb5c45d21792f3f3b8ad5e4ad75c29",
         "install_disposition": "copy",
         "path": "skills/logic-writing/references/adapters/logicguard.md",
         "role": "documentation_model"
       },
       {
         "classification_rule_id": "skillguard.content_role_classifier.current:documentation_model",
-        "content_hash": "sha256:f9eb3dea058d7f5142ef75807441ed142e21b9232cc363ef505ca82320ab8d0e",
+        "content_hash": "sha256:fbb3baa9a63ab95a68088d2d9a71e9c61aa24b46317b88806362a9ca00cb9e81",
         "install_disposition": "copy",
         "path": "skills/logic-writing/references/adapters/pdf.md",
         "role": "documentation_model"
       },
       {
         "classification_rule_id": "skillguard.content_role_classifier.current:documentation_model",
-        "content_hash": "sha256:7434b97850380423bd17105c525d61f8805ad20ecf02ac684c43082bdae182d4",
+        "content_hash": "sha256:9cf324f71beaa860705617a7476877346a87fe8355463f8b56033315f9f090bc",
         "install_disposition": "copy",
         "path": "skills/logic-writing/references/adapters/sourceguard.md",
         "role": "documentation_model"
       },
       {
         "classification_rule_id": "skillguard.content_role_classifier.current:documentation_model",
-        "content_hash": "sha256:21947b784bd4721bd1bc4fb8db92cdabaa14eebb64ae698686a0ff182f078585",
+        "content_hash": "sha256:359d419b02b09e540f1132d6f2a4379fcf1c79f8f1d8dfc34f039ecfb75d4212",
         "install_disposition": "copy",
         "path": "skills/logic-writing/references/adapters/traceguard.md",
         "role": "documentation_model"
       },
       {
         "classification_rule_id": "skillguard.content_role_classifier.current:documentation_model",
-        "content_hash": "sha256:7913be28f51a54211f9c48b5c7d8b95f7d570faaa5f139e878aa2de358086c52",
+        "content_hash": "sha256:c96019f5d0bb4029aa85fbbbf86eb46ff313c1869efce211f888cd79943c6f67",
         "install_disposition": "copy",
         "path": "skills/logic-writing/references/router.md",
         "role": "documentation_model"
@@ -1211,28 +1211,28 @@
       },
       {
         "classification_rule_id": "skillguard.content_role_classifier.current:documentation_model",
-        "content_hash": "sha256:9b7d503eddcaf6d80fd04c7f613a80cfae34209c00369e1bf7b1cce63c25d11a",
+        "content_hash": "sha256:d6618bd324de7e293577171363a4892e754cc5121ebf2d601b68588bc83c7ee5",
         "install_disposition": "copy",
         "path": "skills/logic-writing/references/shared/closure.md",
         "role": "documentation_model"
       },
       {
         "classification_rule_id": "skillguard.content_role_classifier.current:documentation_model",
-        "content_hash": "sha256:3dfb1dc6f29818bed67a7e3719a7b891590248d1a72e85348e258d4d34fe2d73",
+        "content_hash": "sha256:83c3ba50c7b65c7bd345048c98e1f83920a0b0368c97c7634f38d34d3fc8a7c4",
         "install_disposition": "copy",
         "path": "skills/logic-writing/references/shared/human-writing.md",
         "role": "documentation_model"
       },
       {
         "classification_rule_id": "skillguard.content_role_classifier.current:documentation_model",
-        "content_hash": "sha256:afe048440b53b956750bd9b47bc7fc0abab626d43ab7f7140a5316da9a79c195",
+        "content_hash": "sha256:9e1e56912652c5aabbcb54fcaf5623fbcf1e9a4f7da592f946711cb95592ab20",
         "install_disposition": "copy",
         "path": "skills/logic-writing/references/shared/reader-brief.md",
         "role": "documentation_model"
       },
       {
         "classification_rule_id": "skillguard.content_role_classifier.current:documentation_model",
-        "content_hash": "sha256:342c8119519f2a4c03cdb3332fe35336098ecf6215c027bca1c8a7cfc1d154d1",
+        "content_hash": "sha256:0a9b21a5d3781da2a7031339602e75289707d68de0c6341e9c5abd9beac50bc1",
         "install_disposition": "copy",
         "path": "skills/logic-writing/references/shared/research-packet.md",
         "role": "documentation_model"
@@ -1378,7 +1378,7 @@
         "role": "runtime_source"
       }
     ],
-    "inventory_hash": "sha256:a7851d360db36f8f77380db19af2bbf50f5527f00c8ad3e2327c3f6b5dd35cd3",
+    "inventory_hash": "sha256:5a6324e127611bf7a091a635a6c38f100242101f88a8e6a65fbaea63714a094c",
     "member_root_path": "skills/logic-writing",
     "owner_receipt_root_ref": {
       "path_token": "owner_evidence_root",
@@ -1477,7 +1477,7 @@
           }
         ],
         "owner_declaration_hash": "sha256:f48c38f90f04fe8c31ec614a6cbf957585f459a144bf5d4ee4de8f1b10819b66",
-        "owner_input_projection_hash": "sha256:9e2b7b84ca145e80dc96be54f527c89dd50dafc5be48595a767b3de71fb1586e"
+        "owner_input_projection_hash": "sha256:905b39002460f53a9604578434905db6611e302c7aecdf479cea1791022735f8"
       },
       {
         "check_ids": [
@@ -1556,7 +1556,7 @@
           }
         ],
         "owner_declaration_hash": "sha256:aa96ede02509dceea95395988e704dd224449f6d9ba5febc4241c2d105a50cc2",
-        "owner_input_projection_hash": "sha256:78bb2526a85cf1480f37f9fed160d35c9659b9be02a7b1d4ace88264942abd6a"
+        "owner_input_projection_hash": "sha256:c401d9b737c843c74bbe336f37211e0e266fb8561cc1be74111a1e21e1979da9"
       },
       {
         "check_ids": [
@@ -1611,7 +1611,7 @@
           }
         ],
         "owner_declaration_hash": "sha256:4dec71ff96ad4858c7502cc9ac1ea845c3ac1cb03638a65a13f4c48c1e45e098",
-        "owner_input_projection_hash": "sha256:a9b180005352199e69fb54c32f7476b1472a2613c81004dc9aa790ec7289f6dc"
+        "owner_input_projection_hash": "sha256:660838f4a563dfbe72b2a9411edb95022652577f95ecc8e844e96087c3a11ac7"
       },
       {
         "check_ids": [
@@ -1700,7 +1700,7 @@
       },
       {
         "consumer_id": "projection:installation",
-        "consumer_projection_hash": "sha256:4190f13dc9acef026332b526e22e0c4aef0a12871d472cbba4866efa657bd34f",
+        "consumer_projection_hash": "sha256:4c30b1e6e941a3cddee262d042a85444aea17f84992d93d9d5dcc5f85ad62689",
         "impact_plan_schema_version": "skillguard.content_impact_plan.current",
         "impact_policy_id": "skillguard.content_impact_policy.current",
         "input_component_ids": [
@@ -1725,7 +1725,7 @@
           "component:runtime_source:d6079719e3fafdf2",
           "component:runtime_source:e715e7bfd9a6eb53"
         ],
-        "input_projection_hash": "sha256:1a6b5da024cb7438826a1a0054ddd4f46f649e3765dae474b5f6c57597d69e44",
+        "input_projection_hash": "sha256:702cd06f2223e97afbfb1f7357914eee7f327fcc0661b85e3901da76d482cc98",
         "kind": "installation",
         "projection_declaration_hash": "sha256:2b3f0788275544abe37fea1c254a7b41c9c5dd7c1cec89d0f38b0818db892c6a"
       },
@@ -1755,8 +1755,8 @@
     "schema_version": "skillguard.content_impact_plan.current",
     "unknown_mapping_disposition": "block"
   },
-  "contract_hash": "40F7463E562D2BF713509D3560D29B3416AD568AF8224E558B6A3B91A6EB105B",
-  "manifest_hash": "7671B99E8109947B03B9DBFDCF9CA3B919CAEA19BE18B680E6D1E8F62ABF627D",
+  "contract_hash": "942B126E5DF7086A4B09FC430331CB599924A294740565BCA0F9752004C67EB1",
+  "manifest_hash": "F437F5730A9BFD1548BB0FB9D2354DCDA5C084B953D62FAD1D5E2F3C36988349",
   "model_id": "logic-writing.skill-contract.v2",
   "schema_version": "skillguard.check_manifest.v2",
   "skill_id": "logic-writing",
@@ -1769,7 +1769,7 @@
     "implementation:skills/logic-writing/SKILL.md": "3AB846A92D9B9AA48A56E97218A7ACF13526CDE8D13F1824FF0CF62F88A94358",
     "implementation:skills/logic-writing/agents": "3DFBD40729380C7DD0C6F96A7DE57D9AA62107634EB982EB56CC27ACE1CB8D75",
     "implementation:skills/logic-writing/assets": "D2415057E0136CE2C341C1398F896AC49542D60687FB15ADB1F324CC4BB05A13",
-    "implementation:skills/logic-writing/references": "C61DF228123629E79E5D80604F2FF31AD253261B95B6F76890376F87773EECDF",
+    "implementation:skills/logic-writing/references": "3DDA56FE42BF123D6F6D0CED5D5A1F93B4A9DC376EB8FF9B33E55BD745D5A404",
     "implementation:skills/logic-writing/scripts": "D0DB41747C56B0E7D0E944950EC3F92A10F51B3E74641F11AE6BABD4E27EE400",
     "model": "E297F9CEA48D3EFC567456B75AE356A1E8B457DECDEAFAB17E4B3BA87904054B",
     "model_export": "245A4C519B09AE7FEC4701DE37943E4339EAAFBDBE8652A059D976A71AC73861"
