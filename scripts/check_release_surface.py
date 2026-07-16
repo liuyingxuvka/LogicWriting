@@ -10,7 +10,7 @@ from pathlib import Path
 from _release_common import emit, git_lines, run
 
 
-VERSION = "1.0.2"
+VERSION = "2.0.0"
 REPOSITORY = "liuyingxuvka/LogicWriting"
 
 

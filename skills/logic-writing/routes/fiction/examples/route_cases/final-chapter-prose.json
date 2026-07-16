@@ -1,0 +1,24 @@
+{
+  "case_id": "final-chapter-prose",
+  "request": {
+    "artifact_type": "chapter",
+    "prose_phase": "final_prose"
+  },
+  "expected": {
+    "status": "compiled",
+    "canonical_artifact": "chapter",
+    "alias_used": false,
+    "route_id": "route:longform",
+    "depth_tier": "final_manuscript",
+    "closure_level": "chapter",
+    "prose_phase": "final_prose",
+    "required_surfaces_include": [
+      "reverse_outline",
+      "source_requirements",
+      "final_artifact",
+      "artifact_bound_review",
+      "model_prose_binding"
+    ],
+    "required_surfaces_exclude": []
+  }
+}

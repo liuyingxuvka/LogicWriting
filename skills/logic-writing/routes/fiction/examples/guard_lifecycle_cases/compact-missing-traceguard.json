@@ -1,0 +1,21 @@
+{
+  "schema_version": "storyline-design.closure_evidence_bundle.v1",
+  "project_id": "compact-missing-traceguard",
+  "requested_artifact": "short_story",
+  "prose_phase": "pre_draft",
+  "claim_boundary": "This fixture intentionally omits TraceGuard storyline evidence.",
+  "checks": [
+    {"surface": "flowguard_process", "check_name": "story-development-flowgraph", "status": "passed", "required": true, "evidence_ref": "process-route:compact-note", "blocks_closure": false},
+    {"surface": "worldguard_story_claims", "check_name": "worldguard-story-adapter", "status": "passed", "required": true, "evidence_ref": "worldguard:compact-claims"},
+    {"surface": "logicguard_theme_support", "check_name": "logicguard-theme-contract", "status": "not_applicable_with_reason", "required": true, "evidence_ref": "reason: no material theme claim.", "blocks_closure": false, "next_action": "Run LogicGuard if theme appears."},
+    {"surface": "sourceguard_canon_support", "check_name": "sourceguard-canon-contract", "status": "not_applicable_with_reason", "required": true, "evidence_ref": "reason: no material source constraint.", "blocks_closure": false, "next_action": "Run SourceGuard if sources appear."},
+    {"surface": "ledger", "check_name": "story-ledger", "status": "passed", "required": true, "evidence_ref": "evidence/compact/story-ledger.json", "child_report": {"passed": true}},
+    {"surface": "turning_point", "check_name": "turning-point", "status": "passed", "required": true, "evidence_ref": "evidence/compact/turning-points.json", "child_report": {"passed": true}},
+    {"surface": "scene_contract", "check_name": "scene-contract", "status": "passed", "required": true, "evidence_ref": "evidence/compact/scene-contracts.json", "child_report": {"passed": true}},
+    {"surface": "promise_payoff", "check_name": "promise-payoff", "status": "passed", "required": true, "evidence_ref": "evidence/compact/promise-payoff.json", "child_report": {"passed": true}}
+  ],
+  "worldguard_claims": [{"id": "wg-compact-access", "worldguard_status": "pass", "closure_effect": "continue"}],
+  "unresolved_gaps": [],
+  "deferred_or_downgraded_work": [],
+  "next_actions": []
+}

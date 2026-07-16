@@ -1,0 +1,65 @@
+{
+  "schema_version": "storyline-design.longform_closure.v1",
+  "project_id": "markdown-substitution-case",
+  "closure_id": "closure-book-markdown-substitution",
+  "closure_level": "book",
+  "claim_boundary": "Book-level closure is incorrectly claimed from broad markdown reports. Final prose is not claimed.",
+  "required_surfaces": [
+    {
+      "surface": "novel_ledger",
+      "status": "passed",
+      "evidence_ref": "semantic-review.md#ledger",
+      "blocks_closure": true,
+      "next_action": "replace with valid novel ledger JSON"
+    },
+    {
+      "surface": "story_contribution",
+      "status": "passed",
+      "evidence_ref": "semantic-review.md#contribution",
+      "blocks_closure": true,
+      "next_action": "replace with valid story contribution rows"
+    },
+    {
+      "surface": "chapter_interface",
+      "status": "passed",
+      "evidence_ref": "semantic-review.md#interfaces",
+      "blocks_closure": true,
+      "next_action": "replace with valid chapter interface JSON"
+    },
+    {
+      "surface": "promise_payoff",
+      "status": "passed",
+      "evidence_ref": "semantic-review.md#promises",
+      "blocks_closure": true,
+      "next_action": "replace with valid promise/payoff JSON"
+    },
+    {
+      "surface": "voice_style",
+      "status": "passed",
+      "evidence_ref": "semantic-review.md#voice",
+      "blocks_closure": true,
+      "next_action": "replace with valid voice/style JSON"
+    },
+    {
+      "surface": "reverse_outline",
+      "status": "passed",
+      "evidence_ref": "semantic-review.md#reverse-outline",
+      "blocks_closure": true,
+      "next_action": "replace with reverse_outline JSON from actual prose"
+    }
+  ],
+  "child_reports": [
+    {
+      "id": "closure-ch01",
+      "level": "chapter",
+      "status": "passed",
+      "evidence_ref": "semantic-review.md#chapter-01",
+      "blocks_parent": false
+    }
+  ],
+  "deferred_items": [],
+  "blocking_items": [],
+  "stale_items": [],
+  "decision": "passed",
+  "next_actions": []
+}

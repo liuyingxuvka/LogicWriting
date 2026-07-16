@@ -36,6 +36,35 @@ def test_academic_product_keeps_academic_owner_when_research_happens_first():
     assert decision["child_routes"] == ["investigation"]
 
 
+def test_fiction_product_keeps_fiction_owner_when_historical_research_happens_first():
+    decision = select_route(request("novel", substantial_research_required=True))
+
+    assert decision["status"] == "current"
+    assert decision["final_owner"] == "fiction-writing"
+    assert decision["child_routes"] == ["investigation"]
+
+
+def test_story_shaped_itinerary_keeps_travel_owner():
+    decision = select_route(
+        request("itinerary", constraints={"presentation": "story-shaped journey"})
+    )
+
+    assert decision["final_owner"] == "travel-guide"
+    assert decision["child_routes"] == []
+
+
+def test_travel_subject_paper_keeps_academic_owner():
+    decision = select_route(request("paper", constraints={"subject": "travel"}))
+
+    assert decision["final_owner"] == "academic-writing"
+
+
+def test_novel_with_academic_notes_keeps_fiction_owner():
+    decision = select_route(request("fiction_chapter", constraints={"notes": "academic"}))
+
+    assert decision["final_owner"] == "fiction-writing"
+
+
 def test_polished_investigation_report_does_not_transfer_owner():
     decision = select_route(
         request(

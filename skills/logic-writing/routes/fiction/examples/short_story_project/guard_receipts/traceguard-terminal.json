@@ -1,0 +1,16 @@
+{
+  "schema_version": "traceguard.native_terminal_receipt.v1",
+  "receipt_id": "lantern-map-traceguard-terminal",
+  "guard_id": "traceguard",
+  "surface": "traceguard_storyline",
+  "native_owner": "traceguard",
+  "route_id": "traceguard",
+  "check_id": "traceguard.storyline_terminal",
+  "tool_version": "0.4.3",
+  "input_fingerprint": "sha256:9d69656be94f538157e409f350e305909b6b8ef0c5041c816cb41b55b8c382a4",
+  "terminal": true,
+  "immutable": true,
+  "freshness": "current",
+  "status": "passed",
+  "claim_boundary": "TraceGuard terminal receipt covers the Lantern Map chronology and reader-revelation input only."
+}

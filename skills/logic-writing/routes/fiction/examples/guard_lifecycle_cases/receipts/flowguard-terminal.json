@@ -1,0 +1,16 @@
+{
+  "schema_version": "flowguard.native_terminal_receipt.v1",
+  "receipt_id": "compact-guard-pass-flowguard-terminal",
+  "guard_id": "flowguard",
+  "surface": "flowguard_process",
+  "native_owner": "flowguard-development-process-flow",
+  "route_id": "development_process_flow",
+  "check_id": "flowguard.development_process_flow.terminal",
+  "tool_version": "0.55.0",
+  "input_fingerprint": "sha256:feae668c8ccba67a8f117f8ce81446e47a530adf999ebcf12406b9f123dbed33",
+  "terminal": true,
+  "immutable": true,
+  "freshness": "current",
+  "status": "passed",
+  "claim_boundary": "FlowGuard process route completed for the compact fixture input; literary quality is outside this receipt."
+}

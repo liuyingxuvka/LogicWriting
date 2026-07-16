@@ -1,0 +1,26 @@
+{
+  "case_id": "pre-draft-chapter-plan",
+  "request": {
+    "artifact_type": "chapter-plan",
+    "prose_phase": "pre_draft"
+  },
+  "expected": {
+    "status": "compiled",
+    "canonical_artifact": "chapter",
+    "alias_used": true,
+    "route_id": "route:longform",
+    "depth_tier": "intermediate",
+    "closure_level": "chapter",
+    "prose_phase": "pre_draft",
+    "required_surfaces_include": [
+      "chapter_interface",
+      "prose_blueprint"
+    ],
+    "required_surfaces_exclude": [
+      "reverse_outline",
+      "final_artifact",
+      "artifact_bound_review",
+      "model_prose_binding"
+    ]
+  }
+}

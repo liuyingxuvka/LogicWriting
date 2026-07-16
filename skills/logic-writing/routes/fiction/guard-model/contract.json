@@ -1,0 +1,246 @@
+{
+  "schema_version": "storyline-design.guard_model_contract.v1",
+  "target_skill_id": "storyline-design",
+  "native_owner_id": "storyline-design.guard-purpose",
+  "native_route_id": "route:storyline:guard-purpose-proof",
+  "prevented_failure_purpose": "Prevent a story artifact or completion claim from advancing when the current StorylineDesign-owned process, Guard applicability, structured story-state surfaces, model-to-prose bindings, or final-artifact evidence is missing, stale, substituted, or unresolved.",
+  "external_evidence_universe": [
+    {
+      "boundary_id": "boundary:storyline:guard-lifecycle",
+      "description": "Current FlowGuard process route and TraceGuard, WorldGuard, LogicGuard, and SourceGuard applicability evidence",
+      "authority_source": "StorylineDesign closure bundle and child-Guard evidence surfaces",
+      "required": true
+    },
+    {
+      "boundary_id": "boundary:storyline:longform-model-surfaces",
+      "description": "Current novel ledger, story contribution, chapter interface, promise, continuity, voice, and reverse-outline evidence",
+      "authority_source": "StorylineDesign structured longform surfaces and native validators",
+      "required": true
+    },
+    {
+      "boundary_id": "boundary:storyline:model-prose-binding",
+      "description": "Current bidirectional model-to-prose binding, reader-state, resistance, register, duplication, drift, and length-review evidence",
+      "authority_source": "StorylineDesign model-prose binding surface and validator",
+      "required": true
+    },
+    {
+      "boundary_id": "boundary:storyline:final-artifact",
+      "description": "Current final artifact identity, source requirements, and artifact-bound semantic review",
+      "authority_source": "StorylineDesign longform closure surface and native validator",
+      "required": true
+    }
+  ],
+  "protected_failure_count": 25,
+  "prevented_failure_classes": [
+    {
+      "failure_id": "failure:storyline:missing-flowguard-process",
+      "title": "FlowGuard process evidence is missing",
+      "block_when": "a substantive story closure omits the required FlowGuard process-route surface",
+      "expected_finding_code": "storyline_blocked:missing-flowguard-process",
+      "proof_strength": "target-native executable known-bad proof",
+      "known_limit": "Covers the declared current closure fixture and validator, not every possible process-evidence defect."
+    },
+    {
+      "failure_id": "failure:storyline:missing-traceguard-storyline",
+      "title": "TraceGuard storyline evidence is missing",
+      "block_when": "a substantive story closure omits required chronology, causality, or revelation applicability evidence",
+      "expected_finding_code": "storyline_blocked:missing-traceguard-storyline",
+      "proof_strength": "target-native executable known-bad proof",
+      "known_limit": "Covers the declared current closure fixture and validator, not all possible trace defects."
+    },
+    {
+      "failure_id": "failure:storyline:fictional-worldguard-auto-scopeout",
+      "title": "WorldGuard is scoped out merely because the story is fictional",
+      "block_when": "fiction is used as the sole reason to omit material world-claim validation",
+      "expected_finding_code": "storyline_blocked:fictional-worldguard-auto-scopeout",
+      "proof_strength": "target-native executable known-bad proof",
+      "known_limit": "Proves rejection of the declared fiction-only scope-out, not that every world claim is true."
+    },
+    {
+      "failure_id": "failure:storyline:missing-logicguard-theme",
+      "title": "LogicGuard theme support is missing",
+      "block_when": "a substantive closure omits theme-support applicability or evidence",
+      "expected_finding_code": "storyline_blocked:missing-logicguard-theme",
+      "proof_strength": "target-native executable known-bad proof",
+      "known_limit": "Covers the declared missing surface, not the truth of a theme interpretation."
+    },
+    {
+      "failure_id": "failure:storyline:missing-sourceguard-canon",
+      "title": "SourceGuard canon support is missing",
+      "block_when": "a substantive closure omits canon/source applicability or evidence",
+      "expected_finding_code": "storyline_blocked:missing-sourceguard-canon",
+      "proof_strength": "target-native executable known-bad proof",
+      "known_limit": "Covers the declared missing surface, not the completeness of every external source."
+    },
+    {
+      "failure_id": "failure:storyline:prose-only-evidence-substitution",
+      "title": "AI prose is substituted for required evidence",
+      "block_when": "AI self-report or prose-only review is used in place of a required structured surface",
+      "expected_finding_code": "storyline_blocked:prose-only-evidence-substitution",
+      "proof_strength": "target-native executable known-bad proof",
+      "known_limit": "Covers the declared prose-only evidence pattern, not every possible misleading narrative."
+    },
+    {
+      "failure_id": "failure:storyline:stale-flowguard-process",
+      "title": "FlowGuard process evidence is stale",
+      "block_when": "process-route evidence predates the current story model",
+      "expected_finding_code": "storyline_blocked:stale-flowguard-process",
+      "proof_strength": "target-native executable known-bad proof",
+      "known_limit": "Covers the declared stale-evidence signal and refresh action."
+    },
+    {
+      "failure_id": "failure:storyline:reverse-outline-as-ledger",
+      "title": "A reverse outline is substituted for the novel ledger",
+      "block_when": "one shallow artifact is presented as multiple required structured longform surfaces",
+      "expected_finding_code": "storyline_blocked:reverse-outline-as-ledger",
+      "proof_strength": "target-native executable known-bad proof",
+      "known_limit": "Covers the declared substitution fixture and current aggregate validator."
+    },
+    {
+      "failure_id": "failure:storyline:weak-reverse-outline-as-closure",
+      "title": "A weak reverse outline is submitted as closure",
+      "block_when": "reverse-outline rows without the closure contract are treated as aggregate closure evidence",
+      "expected_finding_code": "storyline_blocked:weak-reverse-outline-as-closure",
+      "proof_strength": "target-native executable known-bad proof",
+      "known_limit": "Covers the declared wrong-artifact fixture, not every weak reverse outline."
+    },
+    {
+      "failure_id": "failure:storyline:markdown-model-substitution",
+      "title": "Markdown is substituted for structured model surfaces",
+      "block_when": "a broad report is used where locally openable JSON model evidence is required",
+      "expected_finding_code": "storyline_blocked:markdown-model-substitution",
+      "proof_strength": "target-native executable known-bad proof",
+      "known_limit": "Covers the declared non-JSON substitution pattern."
+    },
+    {
+      "failure_id": "failure:storyline:review-not-artifact-bound",
+      "title": "Final-prose review is not artifact-bound",
+      "block_when": "semantic review evidence does not identify the reviewed final artifact hash",
+      "expected_finding_code": "storyline_blocked:review-not-artifact-bound",
+      "proof_strength": "target-native executable known-bad proof",
+      "known_limit": "Proves hash binding for the declared fixture, not semantic review quality."
+    },
+    {
+      "failure_id": "failure:storyline:artifact-review-hash-mismatch",
+      "title": "Final artifact and review hashes differ",
+      "block_when": "the semantic review is bound to a different artifact identity",
+      "expected_finding_code": "storyline_blocked:artifact-review-hash-mismatch",
+      "proof_strength": "target-native executable known-bad proof",
+      "known_limit": "Proves identity mismatch detection, not review correctness."
+    },
+    {
+      "failure_id": "failure:storyline:missing-final-artifact",
+      "title": "The final artifact surface is missing",
+      "block_when": "final-prose closure omits the final artifact identity",
+      "expected_finding_code": "storyline_blocked:missing-final-artifact",
+      "proof_strength": "target-native executable known-bad proof",
+      "known_limit": "Covers the declared missing final-artifact surface."
+    },
+    {
+      "failure_id": "failure:storyline:missing-source-requirements",
+      "title": "Final-prose source requirements are missing",
+      "block_when": "final-prose closure omits the source-requirements surface",
+      "expected_finding_code": "storyline_blocked:missing-source-requirements",
+      "proof_strength": "target-native executable known-bad proof",
+      "known_limit": "Covers presence of the declared source-requirements surface, not source truth."
+    },
+    {
+      "failure_id": "failure:storyline:generic-chapter-interface",
+      "title": "A chapter interface uses generic handoffs",
+      "block_when": "adjacent chapter inputs or outputs are placeholder text rather than concrete state",
+      "expected_finding_code": "storyline_blocked:generic-chapter-interface",
+      "proof_strength": "target-native executable known-bad proof",
+      "known_limit": "Covers the declared placeholder-handoff fixture."
+    },
+    {
+      "failure_id": "failure:storyline:unresolved-key-promise",
+      "title": "A key or major promise remains unresolved",
+      "block_when": "book or series closure leaves a key or major promise in a blocking state",
+      "expected_finding_code": "storyline_blocked:unresolved-key-promise",
+      "proof_strength": "target-native executable known-bad proof",
+      "known_limit": "Covers promise status and disposition, not reader satisfaction."
+    },
+    {
+      "failure_id": "failure:storyline:missing-material-continuity",
+      "title": "Material continuity rows are missing",
+      "block_when": "a longform ledger omits required continuity evidence",
+      "expected_finding_code": "storyline_blocked:missing-material-continuity",
+      "proof_strength": "target-native executable known-bad proof",
+      "known_limit": "Covers the declared continuity absence, not every continuity contradiction."
+    },
+    {
+      "failure_id": "failure:storyline:unbound-prose-span",
+      "title": "A material prose span is unbound",
+      "block_when": "important prose has no model references or remains listed as an unresolved binding gap",
+      "expected_finding_code": "storyline_blocked:unbound-prose-span",
+      "proof_strength": "target-native executable known-bad proof",
+      "known_limit": "Covers the declared unresolved span, not every possible prose-to-model mapping."
+    },
+    {
+      "failure_id": "failure:storyline:unrealized-model-reference",
+      "title": "A key model reference is unrealized in prose",
+      "block_when": "a key or major model row has no prose realization",
+      "expected_finding_code": "storyline_blocked:unrealized-model-reference",
+      "proof_strength": "target-native executable known-bad proof",
+      "known_limit": "Covers the declared unresolved model reference."
+    },
+    {
+      "failure_id": "failure:storyline:duplicate-binding-without-delta",
+      "title": "Duplicate binding adds no changed effect",
+      "block_when": "multiple prose spans bind the same model rows without a recorded changed reader effect",
+      "expected_finding_code": "storyline_blocked:duplicate-binding-without-delta",
+      "proof_strength": "target-native executable known-bad proof",
+      "known_limit": "Covers structural duplicate binding, not artistic repetition quality."
+    },
+    {
+      "failure_id": "failure:storyline:reveal-without-resistance",
+      "title": "A major reveal has no resistance or cost",
+      "block_when": "a material reveal advances without required resistance, cost, delay, or scoped reason",
+      "expected_finding_code": "storyline_blocked:reveal-without-resistance",
+      "proof_strength": "target-native executable known-bad proof",
+      "known_limit": "Covers the declared missing resistance field, not all pacing judgments."
+    },
+    {
+      "failure_id": "failure:storyline:premature-hypothesis-collapse",
+      "title": "Reader hypothesis collapses prematurely",
+      "block_when": "an unresolved reader-state drift finding remains while binding is marked passed",
+      "expected_finding_code": "storyline_blocked:premature-hypothesis-collapse",
+      "proof_strength": "target-native executable known-bad proof",
+      "known_limit": "Covers the declared unresolved drift fixture, not a universal reader-response prediction."
+    },
+    {
+      "failure_id": "failure:storyline:term-register-owner-drift",
+      "title": "Term register ownership drifts",
+      "block_when": "material prose lacks required register-owner evidence or retains unresolved register drift",
+      "expected_finding_code": "storyline_blocked:term-register-owner-drift",
+      "proof_strength": "target-native executable known-bad proof",
+      "known_limit": "Covers the declared register-evidence fixture, not every voice judgment."
+    },
+    {
+      "failure_id": "failure:storyline:length-outlier-without-review",
+      "title": "A length outlier lacks binding review",
+      "block_when": "a blocking length outlier has no binding-density review",
+      "expected_finding_code": "storyline_blocked:length-outlier-without-review",
+      "proof_strength": "target-native executable known-bad proof",
+      "known_limit": "Covers missing review for the declared outlier, not a fixed chapter-length rule."
+    },
+    {
+      "failure_id": "failure:storyline:missing-model-prose-binding",
+      "title": "Final prose lacks model-prose binding",
+      "block_when": "final-prose closure omits the model-prose binding surface",
+      "expected_finding_code": "storyline_blocked:missing-model-prose-binding",
+      "proof_strength": "target-native executable known-bad proof",
+      "known_limit": "Covers presence and current native validity of the declared surface, not literary quality."
+    }
+  ],
+  "claim_boundary": "A pass licenses only the 25 explicitly declared current failure classes against the current fixtures, validators, model, and source fingerprints. It does not prove literary quality, reader delight, factual truth, installation, release, or completeness against undeclared future failures.",
+  "authoring_order": [
+    "freeze_prevented_failure_contract",
+    "build_candidate",
+    "prove_known_good",
+    "prove_every_known_bad",
+    "issue_native_receipt"
+  ],
+  "candidate_requires_contract_fingerprint": true,
+  "selectable_modes": []
+}

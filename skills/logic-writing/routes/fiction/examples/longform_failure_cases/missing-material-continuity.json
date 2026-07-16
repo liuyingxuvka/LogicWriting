@@ -1,0 +1,197 @@
+{
+  "schema_version": "storyline-design.novel_ledger.v1",
+  "project_id": "missing-material-continuity",
+  "target_artifact": {
+    "artifact_type": "novel",
+    "closure_level": "book",
+    "reader_visibility": "planning",
+    "claim_boundary": "Book closure is incorrectly requested while material object and character-state continuity rows are missing.",
+    "prose_allowed": false
+  },
+  "longform_scope": {
+    "series_id": "series-negative",
+    "book_id": "book-01",
+    "volume_ids": ["volume-01"],
+    "chapter_ids": ["chapter-01", "chapter-02"],
+    "length_scope": "negative mini fixture",
+    "genre_promise": "time-loop mystery",
+    "pov_policy": "limited_third",
+    "continuity_policy": "material object, character knowledge, and timeline rows are required",
+    "deferred_scope": []
+  },
+  "hierarchy": {
+    "books": [
+      {
+        "id": "book-01",
+        "kind": "book",
+        "title": "Missing Continuity Book",
+        "parent_id": "series-negative",
+        "order": 1,
+        "status": "pass",
+        "summary": "A watch changes hands and knowledge changes, but no continuity rows record those facts.",
+        "entry_state": "The watch is missing and the protagonist does not know who moved it.",
+        "exit_state": "The watch is recovered and the protagonist knows the rival moved it.",
+        "depends_on": [],
+        "evidence_refs": ["negative"]
+      }
+    ],
+    "volumes": [
+      {
+        "id": "volume-01",
+        "kind": "volume",
+        "title": "Continuity Gap",
+        "parent_id": "book-01",
+        "order": 1,
+        "status": "pass",
+        "summary": "Two chapters depend on unmodeled object and knowledge state.",
+        "entry_state": "Watch state is unknown.",
+        "exit_state": "Watch state is asserted as resolved.",
+        "depends_on": ["book-01"],
+        "evidence_refs": ["negative"]
+      }
+    ],
+    "chapters": [
+      {
+        "id": "chapter-01",
+        "kind": "chapter",
+        "title": "Lost Watch",
+        "parent_id": "volume-01",
+        "order": 1,
+        "status": "pass",
+        "summary": "The watch disappears.",
+        "entry_state": "The watch is on the workbench.",
+        "exit_state": "The watch is gone.",
+        "depends_on": ["volume-01"],
+        "evidence_refs": ["negative"]
+      },
+      {
+        "id": "chapter-02",
+        "kind": "chapter",
+        "title": "Found Watch",
+        "parent_id": "volume-01",
+        "order": 2,
+        "status": "pass",
+        "summary": "The watch reappears without a continuity row.",
+        "entry_state": "The watch is gone.",
+        "exit_state": "The watch is recovered.",
+        "depends_on": ["chapter-01"],
+        "evidence_refs": ["negative"]
+      }
+    ],
+    "scenes": [
+      {
+        "id": "scene-01",
+        "kind": "scene",
+        "title": "Watch Gone",
+        "parent_id": "chapter-01",
+        "order": 1,
+        "status": "pass",
+        "summary": "The watch disappears.",
+        "entry_state": "Watch present.",
+        "exit_state": "Watch absent.",
+        "depends_on": ["chapter-01"],
+        "evidence_refs": []
+      }
+    ]
+  },
+  "story_units": [
+    {
+      "id": "unit-chapter-01",
+      "kind": "chapter",
+      "parent_id": "volume-01",
+      "importance": "major",
+      "status": "pass",
+      "contribution": "Creates the watch-state question.",
+      "downstream_use": ["chapter-02", "promise-watch-state"],
+      "terminal_treatment": "keep",
+      "repair_action": "not_applicable",
+      "evidence_refs": ["negative"]
+    },
+    {
+      "id": "unit-chapter-02",
+      "kind": "chapter",
+      "parent_id": "volume-01",
+      "importance": "major",
+      "status": "pass",
+      "contribution": "Asserts the watch is recovered.",
+      "downstream_use": ["promise-watch-state"],
+      "terminal_treatment": "keep",
+      "repair_action": "not_applicable",
+      "evidence_refs": ["negative"]
+    }
+  ],
+  "arcs": [
+    {
+      "id": "arc-knowledge",
+      "arc_type": "protagonist",
+      "owner": "Mira",
+      "scope": "book-01",
+      "start_state": "Does not know who moved the watch.",
+      "turning_points": ["chapter-01", "chapter-02"],
+      "end_state": "Claims to know who moved the watch.",
+      "linked_chapters": ["chapter-01", "chapter-02"],
+      "status": "pass"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-watch-state",
+      "thread_type": "mystery",
+      "introduced_by": "chapter-01",
+      "active_in": ["chapter-01", "chapter-02"],
+      "resolved_by": ["chapter-02"],
+      "deferred_to": "not_applicable",
+      "importance": "key",
+      "status": "pass"
+    }
+  ],
+  "promises": [
+    {
+      "id": "promise-watch-state",
+      "importance": "key",
+      "promise_type": "dramatic_question",
+      "introduced_by": ["chapter-01"],
+      "expected_payoff": "Where is the watch and who moved it?",
+      "status": "paid",
+      "payoff_rows": ["chapter-02"],
+      "deferral_level": "not_applicable",
+      "claim_boundary": "Book claims the watch state is resolved.",
+      "evidence_refs": ["negative"]
+    }
+  ],
+  "continuity": [],
+  "chapter_interfaces": [
+    {"id": "iface-ch01", "chapter_id": "chapter-01"},
+    {"id": "iface-ch02", "chapter_id": "chapter-02"}
+  ],
+  "draft_state": {
+    "chapters_planned": ["chapter-01", "chapter-02"],
+    "chapters_drafted": [],
+    "chapters_reverse_outlined": [],
+    "current_revision_round": 1,
+    "prose_claim_boundary": "No final prose claim.",
+    "latest_draft_refs": [],
+    "stale_after": []
+  },
+  "validation": [
+    {
+      "id": "val-negative",
+      "check_name": "negative fixture",
+      "surface": "novel_ledger",
+      "checked_ids": ["watch-state"],
+      "status": "pass",
+      "evidence_ref": "negative",
+      "rerun_required_when": ["continuity changes"]
+    }
+  ],
+  "closure": {
+    "closure_level": "book",
+    "decision": "pass",
+    "claim_boundary": "Incorrectly claims book closure.",
+    "blocking_rows": [],
+    "deferred_rows": [],
+    "stale_rows": [],
+    "latest_validation_refs": ["val-negative"],
+    "prose_allowed": false
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "schema_version": "storyline-design.semantic_review.v1",
+  "project_id": "aurora-key",
+  "review_id": "review-book-01-final",
+  "model_revision": "aurora-key-model-r1",
+  "reviewed_at": "2026-07-14T12:00:00+02:00",
+  "artifact_ref": "file:drafts/book-01-final.txt;sha256:668e9f1b0911b8fd0e63cd8c01cfc0615d96479317e1aed2b45b0808cc5168ee",
+  "artifact_sha256": "sha256:668e9f1b0911b8fd0e63cd8c01cfc0615d96479317e1aed2b45b0808cc5168ee",
+  "evaluator": {
+    "id": "fixture-evaluator-01",
+    "kind": "ai",
+    "identity": "Storyline Design regression evaluator",
+    "method": "Read the exact manuscript bytes and record rubric-specific observations without claiming literary truth."
+  },
+  "reviewed_units": [
+    "chapter-01",
+    "chapter-02",
+    "chapter-03",
+    "chapter-04",
+    "chapter-05"
+  ],
+  "rubric_dimensions": [
+    {
+      "dimension": "reader_room",
+      "status": "pass",
+      "findings": ["All five chapters stay in story-world prose without author-facing workflow commentary."],
+      "evidence_anchors": ["chapter-01", "chapter-05"],
+      "reviewer_notes": "Checked openings and endings as well as transitions between all five units."
+    },
+    {
+      "dimension": "explanation_pressure",
+      "status": "pass",
+      "findings": ["The manuscript presents contradictions through action and records instead of explaining chapter purpose."],
+      "evidence_anchors": ["chapter-02", "chapter-04"],
+      "reviewer_notes": "Compared explanatory sentences with the actions and documents that carry the same information."
+    },
+    {
+      "dimension": "variation",
+      "status": "pass",
+      "findings": ["The chapters move through discovery, comparison, public exposure, reinterpretation, and payoff."],
+      "evidence_anchors": ["chapter-01", "chapter-03", "chapter-05"],
+      "reviewer_notes": "Reviewed adjacent chapter functions for changed pressure rather than random variety."
+    },
+    {
+      "dimension": "story_contribution",
+      "status": "pass",
+      "findings": ["Each chapter changes evidence, risk, interpretation, or control."],
+      "evidence_anchors": ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05"],
+      "reviewer_notes": "Mapped each unit to one observable story-state contribution."
+    },
+    {
+      "dimension": "voice",
+      "status": "pass",
+      "findings": ["The restrained archive register remains consistent across the short fixture."],
+      "evidence_anchors": ["chapter-01", "chapter-03", "chapter-05"],
+      "reviewer_notes": "Sampled narration and institutional vocabulary across the fixture."
+    },
+    {
+      "dimension": "payoff",
+      "status": "pass",
+      "findings": ["Map control resolves while origin remains visibly deferred."],
+      "evidence_anchors": ["chapter-04", "chapter-05"],
+      "reviewer_notes": "Checked the ending against the declared control and origin promises."
+    },
+    {
+      "dimension": "model_prose_binding",
+      "status": "pass",
+      "findings": ["Key prose movements correspond to the current binding rows."],
+      "evidence_anchors": ["chapter-01", "chapter-03", "chapter-04", "chapter-05"],
+      "reviewer_notes": "Compared the exact manuscript units with the current model-prose binding artifact."
+    },
+    {
+      "dimension": "resistance_friction",
+      "status": "pass",
+      "findings": ["Public exposure and the coming inquiry make the successful action costly."],
+      "evidence_anchors": ["chapter-03", "chapter-05"],
+      "reviewer_notes": "Verified that progress creates visible exposure and consequence."
+    },
+    {
+      "dimension": "reader_state",
+      "status": "pass",
+      "findings": ["The likely reader interpretation moves from procedural breach to deliberate decoy and public consequence."],
+      "evidence_anchors": ["chapter-01", "chapter-04", "chapter-05"],
+      "reviewer_notes": "Recorded the expected interpretation shift without claiming an empirical reader test."
+    },
+    {
+      "dimension": "register_ownership",
+      "status": "pass",
+      "findings": ["Archive and ledger terms belong to the institution, records, and viewpoint context."],
+      "evidence_anchors": ["chapter-01", "chapter-02", "chapter-04"],
+      "reviewer_notes": "Checked specialized terms against narrator, record, and institutional ownership."
+    }
+  ],
+  "findings": [
+    {
+      "id": "finding-current-final-identity",
+      "dimension": "model_prose_binding",
+      "finding": "The reviewed manuscript identity is the same identity declared by the closure fixture.",
+      "status": "pass"
+    }
+  ],
+  "skipped_scope": [],
+  "limitations": [
+    "This fixture validates an inspectable review contract and current identity; it does not prove literary quality."
+  ],
+  "human_review_items": [],
+  "decision": "passed"
+}

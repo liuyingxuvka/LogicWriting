@@ -1,0 +1,65 @@
+{
+  "schema_version": "storyline-design.longform_closure.v1",
+  "project_id": "weak-longform-case",
+  "closure_id": "closure-book-weak-substitute",
+  "closure_level": "book",
+  "claim_boundary": "Book-level model closure is claimed, but a weak reverse outline is incorrectly reused as every model surface. Final prose is not claimed.",
+  "required_surfaces": [
+    {
+      "surface": "novel_ledger",
+      "status": "passed",
+      "evidence_ref": "weak-reverse-outline.json",
+      "blocks_closure": true,
+      "next_action": "replace with a valid novel ledger"
+    },
+    {
+      "surface": "story_contribution",
+      "status": "passed",
+      "evidence_ref": "weak-reverse-outline.json#story_units",
+      "blocks_closure": true,
+      "next_action": "replace with valid story contribution rows"
+    },
+    {
+      "surface": "chapter_interface",
+      "status": "passed",
+      "evidence_ref": "weak-reverse-outline.json",
+      "blocks_closure": true,
+      "next_action": "replace with valid chapter interfaces and prose blueprints"
+    },
+    {
+      "surface": "promise_payoff",
+      "status": "passed",
+      "evidence_ref": "weak-reverse-outline.json#promises",
+      "blocks_closure": true,
+      "next_action": "replace with valid promise/payoff rows"
+    },
+    {
+      "surface": "voice_style",
+      "status": "passed",
+      "evidence_ref": "../longform_novel_project/voice-style-report.json",
+      "blocks_closure": true,
+      "next_action": "rerun voice/style evidence after prose edits"
+    },
+    {
+      "surface": "reverse_outline",
+      "status": "passed",
+      "evidence_ref": "weak-reverse-outline.json",
+      "blocks_closure": true,
+      "next_action": "replace with canonical reverse_outlines rows from actual prose"
+    }
+  ],
+  "child_reports": [
+    {
+      "id": "closure-ch01",
+      "level": "chapter",
+      "status": "passed",
+      "evidence_ref": "weak-reverse-outline.json#reverse-ch01",
+      "blocks_parent": false
+    }
+  ],
+  "deferred_items": [],
+  "blocking_items": [],
+  "stale_items": [],
+  "decision": "passed",
+  "next_actions": []
+}

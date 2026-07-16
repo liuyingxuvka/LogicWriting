@@ -1,0 +1,10 @@
+{
+  "case_id": "missing-prose-phase",
+  "request": {
+    "artifact_type": "novel"
+  },
+  "expected": {
+    "status": "blocked",
+    "issue_code": "missing_route_field"
+  }
+}

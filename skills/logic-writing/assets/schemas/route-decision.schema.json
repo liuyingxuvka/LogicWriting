@@ -51,6 +51,22 @@
             "research_proposal",
             "proposal",
             "academic_revision",
+            "short_story",
+            "fiction_chapter",
+            "novel",
+            "novella",
+            "fiction_outline",
+            "story_plan",
+            "series_bible",
+            "story_audit",
+            "fiction_revision",
+            "itinerary",
+            "destination_guide",
+            "travel_guide",
+            "lodging_strategy",
+            "route_plan",
+            "traveler_fit_recommendation",
+            "travel_revision",
             "quick_lookup",
             "quick_fact",
             "grammar_only",
@@ -71,7 +87,7 @@
     },
     "final_owner": {
       "type": ["string", "null"],
-      "enum": ["investigation", "academic-writing", null]
+      "enum": ["investigation", "academic-writing", "fiction-writing", "travel-guide", null]
     },
     "child_routes": {
       "type": "array",
@@ -102,7 +118,7 @@
       },
       "then": {
         "properties": {
-          "final_owner": { "enum": ["investigation", "academic-writing"] },
+          "final_owner": { "enum": ["investigation", "academic-writing", "fiction-writing", "travel-guide"] },
           "stale_because": { "maxItems": 0 }
         }
       },
@@ -110,6 +126,53 @@
         "properties": {
           "final_owner": { "type": "null" },
           "child_routes": { "maxItems": 0 }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["status", "final_owner"],
+        "properties": {
+          "status": { "const": "current" },
+          "final_owner": { "const": "fiction-writing" }
+        }
+      },
+      "then": {
+        "properties": {
+          "terminal_deliverable": {
+            "properties": {
+              "kind": {
+                "enum": [
+                  "short_story", "fiction_chapter", "novel", "novella",
+                  "fiction_outline", "story_plan", "series_bible", "story_audit",
+                  "fiction_revision"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["status", "final_owner"],
+        "properties": {
+          "status": { "const": "current" },
+          "final_owner": { "const": "travel-guide" }
+        }
+      },
+      "then": {
+        "properties": {
+          "terminal_deliverable": {
+            "properties": {
+              "kind": {
+                "enum": [
+                  "itinerary", "destination_guide", "travel_guide", "lodging_strategy",
+                  "route_plan", "traveler_fit_recommendation", "travel_revision"
+                ]
+              }
+            }
+          }
         }
       }
     },

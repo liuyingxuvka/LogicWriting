@@ -1,0 +1,33 @@
+{
+  "check_id": "check:storyline:depth-route",
+  "native_owner_id": "storyline-design.native-route",
+  "universes": [
+    {
+      "covered_claim_scope": ["storyline:canonical-route-authority"],
+      "evaluated_item_ids": ["item:route-authority"],
+      "inventory_items": [
+        {
+          "critical": true,
+          "item_id": "item:route-authority",
+          "object_id": "obligation:storyline-design:route-authority",
+          "stratum_ids": ["stratum:all"]
+        }
+      ],
+      "policy_fingerprint": "43C82CAF88E6ACBD01B709F99488C2875EF5F8F4721258706B28F6A44201AD90",
+      "requested_claim_scope": ["storyline:canonical-route-authority"],
+      "selected_item_ids": ["item:route-authority"],
+      "universe_id": "universe:storyline-route",
+      "validated_item_ids": ["item:route-authority"]
+    }
+  ],
+  "depth_contribution_ranges": [
+    {
+      "end": 1,
+      "kind": "semantic",
+      "obligation_ids": ["obligation:storyline-design:route-authority"],
+      "range_id": "range:storyline-route-authority",
+      "start": 0,
+      "universe_id": "universe:storyline-route"
+    }
+  ]
+}

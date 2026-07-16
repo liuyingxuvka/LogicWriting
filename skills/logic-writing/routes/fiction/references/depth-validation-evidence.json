@@ -1,0 +1,33 @@
+{
+  "check_id": "check:storyline:depth-validation",
+  "native_owner_id": "storyline-design.native-route",
+  "universes": [
+    {
+      "covered_claim_scope": ["storyline:project-mesh-validation"],
+      "evaluated_item_ids": ["item:project-mesh"],
+      "inventory_items": [
+        {
+          "critical": true,
+          "item_id": "item:project-mesh",
+          "object_id": "obligation:storyline-design:project-mesh",
+          "stratum_ids": ["stratum:all"]
+        }
+      ],
+      "policy_fingerprint": "DE0B4C6BB7D32508C56211865979C575E2B5E2B13D819A74C6DA90CD415D486C",
+      "requested_claim_scope": ["storyline:project-mesh-validation"],
+      "selected_item_ids": ["item:project-mesh"],
+      "universe_id": "universe:storyline-validation",
+      "validated_item_ids": ["item:project-mesh"]
+    }
+  ],
+  "depth_contribution_ranges": [
+    {
+      "end": 1,
+      "kind": "semantic",
+      "obligation_ids": ["obligation:storyline-design:project-mesh"],
+      "range_id": "range:storyline-project-mesh",
+      "start": 0,
+      "universe_id": "universe:storyline-validation"
+    }
+  ]
+}

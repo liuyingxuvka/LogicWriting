@@ -1,0 +1,147 @@
+{
+  "schema_version": "storyline-design.closure_evidence_bundle.v1",
+  "project_id": "lantern-map-short-story",
+  "requested_artifact": "short_story",
+  "prose_phase": "pre_draft",
+  "claim_boundary": "The example project is structurally ready as a compact short-story design fixture; final prose quality is outside this closure claim.",
+  "checks": [
+    {
+      "surface": "flowguard_process",
+      "check_name": "story-development-flowgraph",
+      "status": "passed",
+      "required": true,
+      "evidence_ref": "file:guard_handoffs/flowguard.json;sha256:0aac8d541b0b56081e9262dcd79b1b60b9fbf13cb2eb0d61c8a6e68b475420e0",
+      "input_fingerprint": "sha256:4f2956ce5637fb77c759714900a488f68d65322cda95025cccf1879cbc6b9787",
+      "blocks_closure": false
+    },
+    {
+      "surface": "traceguard_storyline",
+      "check_name": "traceguard-storyline-contract",
+      "status": "passed",
+      "required": true,
+      "evidence_ref": "file:guard_handoffs/traceguard.json;sha256:50c3926a65fef9b3ecf4d435e0226a40e7732426065b303e7fd5ccafc5eb1eb8",
+      "input_fingerprint": "sha256:9d69656be94f538157e409f350e305909b6b8ef0c5041c816cb41b55b8c382a4"
+    },
+    {
+      "surface": "worldguard_story_claims",
+      "check_name": "worldguard_claim_reference_check",
+      "status": "passed",
+      "required": true,
+      "evidence_ref": "file:guard_handoffs/worldguard.json;sha256:480a4f06a4019ee04ad6317a01718ce4f887c0f6228dbe96d74d4600ff5be3bd",
+      "input_fingerprint": "sha256:ae975866ceceeb03cf9ba3bfd5138fb1d5436b521d7c50a92ef00cbbcab3f127"
+    },
+    {
+      "surface": "logicguard_theme_support",
+      "check_name": "logicguard-theme-contract",
+      "status": "not_applicable_with_reason",
+      "required": true,
+      "evidence_ref": "file:guard_handoffs/logicguard.json;sha256:95ff83f4d8bc46bf65d5cf3d897149db87f7b8ac0f3b712d06440b6f80dc6fe9",
+      "input_fingerprint": "sha256:644dd863244fd0e739c622abe2593e70685b551305088d3b8f7c15c922da737c",
+      "not_applicable_reason": "The fixture claims structural readiness, not a material theme, moral, or ending-interpretation result.",
+      "blocks_closure": false,
+      "next_action": "Run LogicGuard theme support if theme closure is claimed."
+    },
+    {
+      "surface": "sourceguard_canon_support",
+      "check_name": "sourceguard-canon-contract",
+      "status": "not_applicable_with_reason",
+      "required": true,
+      "evidence_ref": "file:guard_handoffs/sourceguard.json;sha256:0700f69fec6f90dce558149b3407ae24947133ea73ea78ae717f9b5dbbcb4335",
+      "input_fingerprint": "sha256:1dfbf8860323f1e4a557e5ef67fadf03c7d23807173cf3a008d3318a946f9be4",
+      "not_applicable_reason": "The fixture has no user canon, prior draft, adaptation source, historical fact, or external source constraint.",
+      "blocks_closure": false,
+      "next_action": "Run SourceGuard canon/source support if source constraints are added."
+    },
+    {
+      "surface": "ledger",
+      "check_name": "story_ledger_check.py",
+      "status": "passed",
+      "required": true,
+      "evidence_ref": "evidence/example/story_ledger_check_report.json",
+      "child_report": {
+        "schema_version": "storyline-design.story_ledger_check.report.v1",
+        "passed": true,
+        "summary": {"error_count": 0, "warning_count": 0, "issue_count": 0},
+        "source_path": "skills/storyline-design/examples/short_story_project/story-ledger.yaml"
+      }
+    },
+    {
+      "surface": "turning_point",
+      "check_name": "turning_point_check.py",
+      "status": "passed",
+      "required": true,
+      "evidence_ref": "evidence/example/turning_point_check_report.json",
+      "child_report": {
+        "schema_version": "storyline-design.turning_point_check.report.v1",
+        "passed": true,
+        "summary": {"error_count": 0, "warning_count": 0, "issue_count": 0, "turning_point_count": 8},
+        "source_path": "skills/storyline-design/examples/short_story_project/story-ledger.yaml",
+        "collection_path": "structure"
+      }
+    },
+    {
+      "surface": "scene_contract",
+      "check_name": "scene_contract_check.py",
+      "status": "passed",
+      "required": true,
+      "evidence_ref": "evidence/example/scene_contract_check_report.json",
+      "child_report": {
+        "schema_version": "storyline-design.scene_contract_check.report.v1",
+        "passed": true,
+        "summary": {"error_count": 0, "warning_count": 0, "issue_count": 0, "scene_count": 8, "worldguard_claim_count": 7},
+        "source_path": "skills/storyline-design/examples/short_story_project/scene-cards.yaml",
+        "collection_path": "scenes"
+      }
+    },
+    {
+      "surface": "promise_payoff",
+      "check_name": "promise_payoff_check.py",
+      "status": "passed",
+      "required": true,
+      "evidence_ref": "evidence/example/promise_payoff_check_report.json",
+      "child_report": {
+        "schema_version": "storyline-design.promise_payoff_check.report.v1",
+        "passed": true,
+        "summary": {"error_count": 0, "warning_count": 0, "issue_count": 0, "promise_count": 5},
+        "source_path": "skills/storyline-design/examples/short_story_project/story-ledger.yaml",
+        "collection_path": "promises"
+      }
+    }
+  ],
+  "worldguard_claims": [
+    {"id": "wg-claim-warning-schedule", "worldguard_status": "pass", "closure_effect": "continue"},
+    {"id": "wg-claim-lens-broadcast", "worldguard_status": "pass", "closure_effect": "continue"},
+    {"id": "wg-claim-service-tunnel", "worldguard_status": "pass", "closure_effect": "continue"},
+    {"id": "wg-claim-clerk-locks", "worldguard_status": "pass", "closure_effect": "continue"},
+    {"id": "wg-claim-lower-dock-map", "worldguard_status": "pass", "closure_effect": "continue"},
+    {"id": "wg-claim-skiff-capacity", "worldguard_status": "pass", "closure_effect": "continue"},
+    {"id": "wg-claim-lantern-authority", "worldguard_status": "pass", "closure_effect": "continue"}
+  ],
+  "checker_surfaces": {
+    "ledger": "story-ledger.yaml exercises premise, target artifact, stakes, structure, scenes, promises, WorldGuard rows, validation, and closure.",
+    "turning_point": "story-ledger.yaml#structure carries the eight required moments from setup through resolution.",
+    "scene_contract": "scene-cards.yaml carries eight scenes with resolver lists for structure, promises, and WorldGuard claims.",
+    "promise_payoff": "story-ledger.yaml#promises carries five paid promises with payoff rows and evidence refs.",
+    "flowguard_process": "compact process route records stage order, child Guard handoffs, and the narrowed final-prose boundary.",
+    "traceguard_storyline": "compact trace records story-world chronology and reader revelation order for the short story.",
+    "worldguard_story_claims": "worldguard-claims.yaml carries seven pass-status generic claims mapped from story rows.",
+    "logicguard_theme_support": "not_applicable_with_reason because the fixture does not claim theme closure.",
+    "sourceguard_canon_support": "not_applicable_with_reason because the fixture has no user/source/canon constraint.",
+    "closure": "expected-closure.json aggregates the child surfaces and preserves child report lineage."
+  },
+  "validation_commands": [
+    "python skills/storyline-design/scripts/story_ledger_check.py skills/storyline-design/examples/short_story_project/story-ledger.yaml --json",
+    "python skills/storyline-design/scripts/turning_point_check.py skills/storyline-design/examples/short_story_project/story-ledger.yaml --json",
+    "python skills/storyline-design/scripts/scene_contract_check.py skills/storyline-design/examples/short_story_project/scene-cards.yaml --json",
+    "python skills/storyline-design/scripts/promise_payoff_check.py skills/storyline-design/examples/short_story_project/story-ledger.yaml --json",
+    "python skills/storyline-design/scripts/storyline_closure_check.py skills/storyline-design/examples/short_story_project/expected-closure.json --json"
+  ],
+  "unresolved_gaps": [],
+  "deferred_or_downgraded_work": [],
+  "skipped_checks": [],
+  "stale_evidence": [],
+  "limitations": [
+    "The example validates story design and closure surfaces, not final prose style."
+  ],
+  "next_actions": []
+}

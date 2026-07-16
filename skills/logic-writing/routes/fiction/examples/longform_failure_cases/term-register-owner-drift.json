@@ -1,0 +1,34 @@
+{
+  "schema_version": "storyline-design.model_prose_binding.v1",
+  "project_id": "fixture",
+  "artifact_ref": "file:../longform_novel_project/drafts/book-01-final.txt;sha256:668e9f1b0911b8fd0e63cd8c01cfc0615d96479317e1aed2b45b0808cc5168ee",
+  "artifact_sha256": "sha256:668e9f1b0911b8fd0e63cd8c01cfc0615d96479317e1aed2b45b0808cc5168ee",
+  "binding_scope": "book",
+  "binding_rows": [
+    {
+      "id": "bind-term-drift",
+      "prose_ref": "chapter-06#dialogue",
+      "model_refs": ["voice:major-character"],
+      "observed_reader_delta": "The reader hears a character state the technical conclusion.",
+      "observed_state_delta": ["voice register drifts"],
+      "downstream_use": ["voice-style-review"],
+      "resistance_or_cost": "The line bypasses the character's knowledge boundary.",
+      "reader_hypothesis_delta": "The reader receives author certainty through dialogue.",
+      "register_notes": [],
+      "variation_purpose": "none",
+      "status": "pass"
+    }
+  ],
+  "drift_findings": [
+    {
+      "kind": "term_register_owner_drift",
+      "status": "drift",
+      "finding": "A character uses narrator/report terminology without story-world ownership."
+    }
+  ],
+  "length_outliers": [],
+  "unbound_prose_refs": [],
+  "unrealized_model_refs": [],
+  "duplicate_binding_refs": [],
+  "decision": "passed"
+}

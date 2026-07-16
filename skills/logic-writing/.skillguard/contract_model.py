@@ -134,12 +134,14 @@ def export_contract_model() -> dict[str, object]:
     functions: list[dict[str, object]] = [
         {
             "function_id": "logic_writing_orchestration",
-            "business_intent": "produce a reader-ready investigation or academic artifact through one final owner",
+            "business_intent": "produce a reader-ready investigation, academic, fiction, or travel artifact through one final owner",
             "owner_id": "logic-writing",
             "route_ids": [route_id],
             "composable_with": [
                 "logic_writing_investigation",
                 "logic_writing_academic_writing",
+                "logic_writing_fiction_writing",
+                "logic_writing_travel_guide",
             ],
         }
     ]
@@ -159,6 +161,8 @@ def export_contract_model() -> dict[str, object]:
     for child_route, label in (
         ("route:logic-writing:investigation", "investigation"),
         ("route:logic-writing:academic-writing", "academic-writing"),
+        ("route:logic-writing:fiction-writing", "fiction-writing"),
+        ("route:logic-writing:travel-guide", "travel-guide"),
     ):
         function, route, route_steps = _preserved_route(child_route, label)
         functions.append(function)
@@ -170,6 +174,9 @@ def export_contract_model() -> dict[str, object]:
         ("obligation:logic-writing:specialist-authority", "logic_writing_preserves_specialist_authority", ("step:logic-writing:route",)),
         ("obligation:logic-writing:investigation-evidence", "investigation_requires_current_content_evidence", ("step:logic-writing:evidence",)),
         ("obligation:logic-writing:academic-provenance", "academic_requires_current_revision_provenance", ("step:logic-writing:evidence",)),
+        ("obligation:logic-writing:fiction-native", "fiction_requires_story_continuity_and_actual_manuscript_binding", ("step:logic-writing:evidence",)),
+        ("obligation:logic-writing:travel-native", "travel_requires_current_feasibility_fit_fallback_and_reverse_guide", ("step:logic-writing:evidence",)),
+        ("obligation:logic-writing:shared-writing", "shared_writing_binds_reader_state_and_model_rows_to_current_artifact", ("step:logic-writing:reader-artifact",)),
         ("obligation:logic-writing:reader-actual-artifact", "reader_quality_binds_actual_artifact", ("step:logic-writing:reader-artifact",)),
         ("obligation:logic-writing:final-closure", "final_closure_requires_minimum_content_chain", ("step:logic-writing:closure",)),
         ("obligation:logic-writing:release-integrity", "release_requires_current_validation_and_installation", ("step:logic-writing:maintenance",)),
@@ -193,7 +200,7 @@ def export_contract_model() -> dict[str, object]:
         ],
         "invariant_ids": [invariant_id for _obligation_id, invariant_id, _owner_steps in rows],
         "claim_boundary": (
-            "The export preserves Logic Writing's native router and both final routes. "
+            "The export preserves Logic Writing's native router and four final routes. "
             "SkillGuard consumes their checks and does not execute research or writing."
         ),
     }

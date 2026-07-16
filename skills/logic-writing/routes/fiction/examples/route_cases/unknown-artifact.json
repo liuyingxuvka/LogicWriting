@@ -1,0 +1,11 @@
+{
+  "case_id": "unknown-artifact",
+  "request": {
+    "artifact_type": "interactive_dream_archive",
+    "prose_phase": "pre_draft"
+  },
+  "expected": {
+    "status": "blocked",
+    "issue_code": "unknown_artifact"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "schema_version": "flowguard.native_terminal_receipt.v1",
+  "receipt_id": "aurora-key-final-prose-flowguard-terminal",
+  "surface": "flowguard_process",
+  "guard_id": "flowguard",
+  "native_owner": "flowguard-development-process-flow",
+  "route_id": "development_process_flow",
+  "check_id": "flowguard.development_process_flow.terminal",
+  "tool_version": "0.55.0",
+  "input_fingerprint": "sha256:f72d4756d985004e07ddc6eb32bb45cf7e03e0a6f3c6c672e23fdd8b8e2f4efe",
+  "terminal": true,
+  "immutable": true,
+  "freshness": "current",
+  "status": "passed",
+  "claim_boundary": "The FlowGuard process receipt covers the current Aurora Key final-prose workflow input; it does not prove literary quality."
+}

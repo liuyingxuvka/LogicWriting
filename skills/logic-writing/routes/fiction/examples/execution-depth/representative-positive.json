@@ -1,0 +1,11 @@
+{
+  "schema_version": "storyline-design.depth_calibration_case.v1",
+  "case_id": "storyline-design:representative-positive",
+  "executed_surface_ids": [
+    "surface:route-compiled",
+    "surface:real-artifact-opened-and-hashed",
+    "surface:guard-terminal-receipt-consumed",
+    "surface:project-mesh-validated",
+    "surface:claim-boundary-preserved"
+  ]
+}

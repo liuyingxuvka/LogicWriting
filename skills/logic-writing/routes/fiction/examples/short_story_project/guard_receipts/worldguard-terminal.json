@@ -1,0 +1,16 @@
+{
+  "schema_version": "worldguard.native_terminal_receipt.v1",
+  "receipt_id": "lantern-map-worldguard-terminal",
+  "guard_id": "worldguard",
+  "surface": "worldguard_story_claims",
+  "native_owner": "worldguard",
+  "route_id": "worldguard",
+  "check_id": "worldguard.story_claims_terminal",
+  "tool_version": "0.1.2",
+  "input_fingerprint": "sha256:ae975866ceceeb03cf9ba3bfd5138fb1d5436b521d7c50a92ef00cbbcab3f127",
+  "terminal": true,
+  "immutable": true,
+  "freshness": "current",
+  "status": "passed",
+  "claim_boundary": "WorldGuard terminal receipt covers the seven Lantern Map access, resource, and causality claims only."
+}

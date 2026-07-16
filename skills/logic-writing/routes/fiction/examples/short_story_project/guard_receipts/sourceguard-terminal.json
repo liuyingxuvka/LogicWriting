@@ -1,0 +1,16 @@
+{
+  "schema_version": "sourceguard.native_terminal_receipt.v1",
+  "receipt_id": "lantern-map-sourceguard-terminal",
+  "guard_id": "sourceguard",
+  "surface": "sourceguard_canon_support",
+  "native_owner": "sourceguard",
+  "route_id": "sourceguard",
+  "check_id": "sourceguard.canon_support_applicability",
+  "tool_version": "0.4.2",
+  "input_fingerprint": "sha256:1dfbf8860323f1e4a557e5ef67fadf03c7d23807173cf3a008d3318a946f9be4",
+  "terminal": true,
+  "immutable": true,
+  "freshness": "current",
+  "status": "not_applicable_with_reason",
+  "claim_boundary": "No user canon, prior draft, adaptation source, historical fact, or external source constrains the Lantern Map fixture."
+}

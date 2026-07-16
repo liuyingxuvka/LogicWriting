@@ -17,6 +17,11 @@ obligations:
     claim: Published releases remain immutable and corrections use a higher patch version.
     required: true
     evidence: [check.release.source]
+  - id: req.release.four-routes
+    source: "docs/architecture.md#Four final-owner routes"
+    claim: The released skill has one public entrypoint, four final-owner routes, neutral shared writing kernels, preserved route-native semantics, and no sibling-owner cycle.
+    required: true
+    evidence: [check.source.reconciliation, check.routing.shared, check.routes.existing, check.fiction.native, check.travel.native, check.tests.full]
 
 test_mesh:
   frozen_source_case_ids:
@@ -38,6 +43,86 @@ test_mesh:
     - case:frozen-boundary:post-archive-full-regression-not-run
 
 checks:
+  - id: check.source.reconciliation
+    kind: command
+    semantic_check_id: logic-writing.source-reconciliation.current
+    execution_id: logic-writing-release.source-reconciliation.v2
+    validation_scope: focused
+    snapshot_policy: frozen
+    toolchain_identity: python-source-reconciliation-v1
+    input_selectors: [docs/source-reconciliation.json, scripts/check_source_reconciliation.py, skills/logic-writing/routes/fiction/**, skills/logic-writing/routes/travel/**]
+    depends_on_receipts: []
+    command: python
+    args: [scripts/check_source_reconciliation.py, --root, ., --json]
+    timeout_seconds: 300
+    required: true
+    covers: [req.release.four-routes]
+    expected: {exit_code: 0}
+
+  - id: check.routing.shared
+    kind: command
+    semantic_check_id: logic-writing.routing-shared.current
+    execution_id: logic-writing-release.routing-shared.v2
+    validation_scope: focused
+    snapshot_policy: frozen
+    toolchain_identity: python-pytest
+    input_selectors: [skills/logic-writing/scripts/select_route.py, skills/logic-writing/scripts/validate_shared_writing.py, skills/logic-writing/assets/schemas/shared-writing-contract.schema.json, skills/logic-writing/references/router.md, skills/logic-writing/references/shared/**, tests/unit/test_routing.py, tests/unit/test_shared_writing.py, tests/adversarial/test_boundaries.py, tests/e2e/test_routes.py]
+    depends_on_receipts: [check.source.reconciliation]
+    command: python
+    args: [-m, pytest, -q, tests/unit/test_routing.py, tests/unit/test_shared_writing.py, tests/adversarial/test_boundaries.py, tests/e2e/test_routes.py]
+    timeout_seconds: 1200
+    required: true
+    covers: [req.release.four-routes]
+    expected: {exit_code: 0}
+
+  - id: check.routes.existing
+    kind: command
+    semantic_check_id: logic-writing.existing-routes.current
+    execution_id: logic-writing-release.existing-routes.v2
+    validation_scope: focused
+    snapshot_policy: frozen
+    toolchain_identity: python-pytest
+    input_selectors: [skills/logic-writing/references/routes/investigation.md, skills/logic-writing/references/routes/academic-writing.md, skills/logic-writing/scripts/**, tests/unit/test_investigation.py, tests/unit/test_academic.py, tests/unit/test_shared_writing.py]
+    depends_on_receipts: [check.routing.shared]
+    command: python
+    args: [-m, pytest, -q, tests/unit/test_investigation.py, tests/unit/test_academic.py, tests/unit/test_shared_writing.py]
+    timeout_seconds: 1200
+    required: true
+    covers: [req.release.four-routes]
+    expected: {exit_code: 0}
+
+  - id: check.fiction.native
+    kind: command
+    semantic_check_id: logic-writing.fiction-native.current
+    execution_id: logic-writing-release.fiction-native.v2
+    validation_scope: focused
+    snapshot_policy: frozen
+    toolchain_identity: fiction-native-python
+    input_selectors: [skills/logic-writing/routes/fiction/**, skills/logic-writing/references/routes/fiction-writing.md, scripts/run_fiction_regression.py, tests/unit/test_fiction.py]
+    depends_on_receipts: [check.source.reconciliation]
+    command: python
+    args: [scripts/run_fiction_regression.py, --repository-root, ., --json]
+    timeout_seconds: 2400
+    required: true
+    covers: [req.release.four-routes]
+    expected: {exit_code: 0}
+
+  - id: check.travel.native
+    kind: command
+    semantic_check_id: logic-writing.travel-native.current
+    execution_id: logic-writing-release.travel-native.v2
+    validation_scope: focused
+    snapshot_policy: frozen
+    toolchain_identity: travel-native-python
+    input_selectors: [skills/logic-writing/routes/travel/**, skills/logic-writing/references/routes/travel-guide.md, scripts/run_travel_regression.py, tests/unit/test_travel.py]
+    depends_on_receipts: [check.source.reconciliation]
+    command: python
+    args: [scripts/run_travel_regression.py, --repository-root, ., --json]
+    timeout_seconds: 2400
+    required: true
+    covers: [req.release.four-routes]
+    expected: {exit_code: 0}
+
   - id: check.tests.archive-lifecycle
     kind: command
     semantic_check_id: logic-writing.archive-lifecycle.regression
@@ -56,7 +141,7 @@ checks:
       - .flowguard/models/frozen_source_contract_exhaustion.py
       - .flowguard/test_mesh/model.py
       - .flowguard/behavior_commitment_ledger/ledger.json
-    depends_on_receipts: []
+    depends_on_receipts: [check.routes.existing, check.fiction.native, check.travel.native]
     command: python
     args: [-m, pytest, -q, tests/contract/test_release_wrappers.py, tests/flowguard/test_alignment_and_mesh.py]
     timeout_seconds: 900
@@ -70,7 +155,7 @@ checks:
     execution_id: logic-writing-release.model-test-alignment.v1
     validation_scope: full
     snapshot_policy: frozen
-    toolchain_identity: flowguard-0.55.0-python
+    toolchain_identity: flowguard-0.56.0-python
     input_selectors: [.flowguard/model_test_alignment/**, .flowguard/models/**, .flowguard/behavior_commitment_ledger/**, openspec/verification-contract.yaml, tests/**]
     depends_on_receipts: [check.tests.archive-lifecycle]
     command: python
@@ -86,7 +171,7 @@ checks:
     execution_id: logic-writing-release.models-full.v1
     validation_scope: full
     snapshot_policy: frozen
-    toolchain_identity: flowguard-0.55.0-python
+    toolchain_identity: flowguard-0.56.0-python
     input_selectors: [.flowguard/**, skills/logic-writing/scripts/**, tests/**, openspec/verification-contract.yaml]
     depends_on_receipts: [check.models.alignment]
     command: python
@@ -102,7 +187,7 @@ checks:
     execution_id: logic-writing-release.testmesh-plan.v1
     validation_scope: full
     snapshot_policy: frozen
-    toolchain_identity: flowguard-0.55.0-python
+    toolchain_identity: flowguard-0.56.0-python
     input_selectors: [.flowguard/test_mesh/**, .flowguard/models/frozen_source_contract_exhaustion.py, openspec/verification-contract.yaml, scripts/_release_common.py, scripts/run_frozen_validation.py, tests/flowguard/test_alignment_and_mesh.py]
     depends_on_receipts: [check.models.alignment]
     command: python
@@ -153,7 +238,7 @@ checks:
       - README.zh-CN.md
       - VERSION
       - assets/readme-hero/**/*
-      - docs/**/*.md
+      - docs/**/*
       - openspec/**/*.md
       - openspec/**/*.yaml
       - pyproject.toml
@@ -162,6 +247,7 @@ checks:
       - skills/logic-writing/agents/*.yaml
       - skills/logic-writing/assets/schemas/*.json
       - skills/logic-writing/references/**/*.md
+      - skills/logic-writing/routes/**/*
       - skills/logic-writing/scripts/**/*.py
       - skills/logic-writing/.skillguard/*.json
       - skills/logic-writing/.skillguard/**/*.py

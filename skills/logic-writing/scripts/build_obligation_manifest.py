@@ -159,7 +159,9 @@ def build_obligation_manifest(
     ):
         raise ValidationError("contract route decision fingerprint is invalid")
     final_owner = route_decision.get("final_owner")
-    if final_owner not in {"investigation", "academic-writing"}:
+    if final_owner not in {
+        "investigation", "academic-writing", "fiction-writing", "travel-guide"
+    }:
         raise ValidationError("contract route decision has no active final owner")
     broad_claim_requested = evidence_payload.get("broad_claim_requested")
     if not isinstance(broad_claim_requested, bool):

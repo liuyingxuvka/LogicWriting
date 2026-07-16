@@ -1,0 +1,34 @@
+{
+  "schema_version": "storyline-design.model_prose_binding.v1",
+  "project_id": "fixture",
+  "artifact_ref": "file:../longform_novel_project/drafts/book-01-final.txt;sha256:668e9f1b0911b8fd0e63cd8c01cfc0615d96479317e1aed2b45b0808cc5168ee",
+  "artifact_sha256": "sha256:668e9f1b0911b8fd0e63cd8c01cfc0615d96479317e1aed2b45b0808cc5168ee",
+  "binding_scope": "book",
+  "binding_rows": [
+    {
+      "id": "bind-long-chapter",
+      "prose_ref": "chapter-09",
+      "model_refs": ["story_unit:chapter-09"],
+      "observed_reader_delta": "The reader sees the same pressure repeated.",
+      "observed_state_delta": ["pressure restated"],
+      "downstream_use": ["chapter-10"],
+      "resistance_or_cost": "The protagonist waits.",
+      "reader_hypothesis_delta": "The reader expectation does not change.",
+      "register_notes": ["No register drift."],
+      "variation_purpose": "none",
+      "status": "pass"
+    }
+  ],
+  "drift_findings": [],
+  "length_outliers": [
+    {
+      "unit_ref": "chapter-09",
+      "binding_density_review": "",
+      "status": "blocked"
+    }
+  ],
+  "unbound_prose_refs": [],
+  "unrealized_model_refs": [],
+  "duplicate_binding_refs": [],
+  "decision": "passed"
+}

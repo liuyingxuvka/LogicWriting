@@ -29,7 +29,10 @@ DEGRADED_STATUSES = {
     "saved_but_modeling_incomplete",
 }
 ALL_STATUSES = {PASS, *DEGRADED_STATUSES}
-NATIVE_OWNERS = {"sourceguard", "logicguard", "traceguard", "flowguard", "documents", "pdf"}
+NATIVE_OWNERS = {
+    "sourceguard", "logicguard", "traceguard", "worldguard",
+    "flowguard", "documents", "pdf",
+}
 EVIDENCE_DOMAINS = {
     "source_discovery",
     "source_observation",
@@ -43,6 +46,7 @@ EVIDENCE_DOMAINS = {
     "causal_trace",
     "competing_storyline",
     "prediction_boundary",
+    "world_consistency",
     "process_model",
     "process_freshness",
     "document_content",
@@ -57,6 +61,14 @@ EVIDENCE_DOMAINS = {
     "reader_brief",
     "reader_deterministic",
     "reader_judgment",
+    "shared_writing",
+    "story_model",
+    "story_continuity",
+    "model_artifact_binding",
+    "travel_evidence",
+    "travel_feasibility",
+    "traveler_fit",
+    "travel_fallback",
     "final_closure",
     "development_validation",
     "installation",

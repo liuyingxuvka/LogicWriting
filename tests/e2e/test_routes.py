@@ -176,3 +176,84 @@ def test_postwrite_material_edit_reopens_the_end_to_end_chain(tmp_path: Path):
     assert changed_audit["status"] == "failed"
     assert reopened["status"] == "blocked"
     assert reopened["closure"]["terminal"] is False
+
+
+def _new_route(kind: str, decision_id: str) -> dict:
+    return select_route({
+        "request_id": f"request:{decision_id}",
+        "decision_id": decision_id,
+        "decided_at": "2026-07-16T10:00:00Z",
+        "terminal_deliverable": {
+            "kind": kind,
+            "description": "A reader-ready current artifact",
+            "acceptance_criteria": ["Route-native and shared evidence are current."],
+        },
+        "scope_class": "substantive",
+        "substantial_research_required": True,
+        "constraints": {},
+        "material_assumptions": [],
+    })
+
+
+def _declared_shared_obligation(owner: str) -> dict:
+    return {
+        "obligation_id": "shared.writing.current",
+        "producer_skill": "logic-writing",
+        "semantic_owner_id": "shared-writing:current-artifact",
+        "native_route": "validate-shared-writing",
+        "evidence_domain": "shared_writing",
+        "required_input_fingerprints": {"artifact": "sha256:" + "3" * 64},
+        "required_output_fingerprints": {"shared_writing": "sha256:" + "4" * 64},
+        "critical": True,
+        "next_owner": owner,
+        "affected_scope": "the exact final artifact",
+        "safe_claim": "Shared writing remains not run.",
+        "unsafe_claim_boundary": "Do not issue final closure.",
+        "action": "repair",
+    }
+
+
+def test_fiction_closure_cannot_pass_on_shared_reader_checks_alone(tmp_path: Path):
+    root = tmp_path / "receipts"
+    route = _new_route("novel", "decision:e2e-fiction")
+    contract = make_closure_contract(
+        root,
+        [],
+        artifact_fingerprint="sha256:" + "1" * 64,
+        route_decision_override=route,
+        obligation_rows=[_declared_shared_obligation("fiction-writing")],
+    )
+
+    result = derive_closure(
+        {"contract_receipt_fingerprint": contract["contract_receipt"]["receipt_fingerprint"]},
+        receipt_root=root,
+    )
+
+    assert route["final_owner"] == "fiction-writing"
+    assert route["child_routes"] == ["investigation"]
+    assert result["status"] == "blocked"
+    domains = {row["evidence_domain"] for row in result["closure"]["residual_risk"]}
+    assert {"story_model", "story_continuity", "model_artifact_binding", "shared_writing"}.issubset(domains)
+
+
+def test_travel_closure_cannot_pass_on_story_shaped_projection_alone(tmp_path: Path):
+    root = tmp_path / "receipts"
+    route = _new_route("itinerary", "decision:e2e-travel")
+    contract = make_closure_contract(
+        root,
+        [],
+        artifact_fingerprint="sha256:" + "2" * 64,
+        route_decision_override=route,
+        obligation_rows=[_declared_shared_obligation("travel-guide")],
+    )
+
+    result = derive_closure(
+        {"contract_receipt_fingerprint": contract["contract_receipt"]["receipt_fingerprint"]},
+        receipt_root=root,
+    )
+
+    assert route["final_owner"] == "travel-guide"
+    assert "fiction-writing" not in route["child_routes"]
+    assert result["status"] == "blocked"
+    domains = {row["evidence_domain"] for row in result["closure"]["residual_risk"]}
+    assert {"travel_evidence", "travel_feasibility", "traveler_fit", "travel_fallback", "shared_writing"}.issubset(domains)

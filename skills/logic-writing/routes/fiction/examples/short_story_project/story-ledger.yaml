@@ -1,0 +1,1338 @@
+{
+  "schema_version": "storyline-design.ledger.v1",
+  "project_id": "lantern-map-short-story",
+  "ledger_version": "2026-06-23.example.v1",
+  "currentness": {
+    "created_at": "2026-06-23",
+    "updated_at": "2026-06-23",
+    "source_revision": "example-short-story-project-v1",
+    "stale_after": [
+      "premise changes",
+      "scene ids change",
+      "WorldGuard claim status changes",
+      "promise/payoff rows change"
+    ]
+  },
+  "target_artifact": {
+    "artifact_type": "short_story",
+    "reader_visibility": "reader_native",
+    "length_scope": "eight-scene short story design fixture",
+    "claim_boundary": "A compact story-design model for an eventual short story; this example validates structure and closure, not final prose quality.",
+    "prose_allowed": true
+  },
+  "premise": {
+    "logline": "A night ferry pilot finds a hidden evacuation map and must choose between preserving her license and warning the flood district before the warning tower is sealed.",
+    "dramatic_question": "Will Mara risk her ferry license and safety to broadcast the true evacuation routes before the river wall fails?",
+    "starting_state": "Mara earns a fragile living by keeping the lower-dock ferry running and staying invisible to the council.",
+    "disruption": "A brass lantern lens and coded flood map are dropped into her ferry minutes before the evacuation bell is scheduled.",
+    "success_condition": "Mara gets the lens into the warning tower and signals the lower-dock route in time.",
+    "failure_condition": "The council keeps the route hidden, the lower docks evacuate too late, and Mara preserves only her license.",
+    "source": "Generated example premise for the StorylineDesign skill."
+  },
+  "theme": {
+    "theme_statement": "A person becomes trustworthy by spending private safety on public truth.",
+    "counterforce": "Institutional secrecy rewards silence and punishes witnesses.",
+    "embodiment_rows": [
+      "arc-mara-public-trust",
+      "promise-mara-choice",
+      "promise-lantern-signal"
+    ],
+    "subtlety_policy": "implicit"
+  },
+  "protagonist": {
+    "name_or_role": "Mara, lower-dock ferry pilot",
+    "external_goal": "Keep the ferry route open long enough to survive the flood night.",
+    "internal_need": "Stop confusing caution with responsibility.",
+    "flaw_or_limit": "Mara protects her license first because every official favor has carried a cost.",
+    "agency_rule": "Mara must make the decisive public choice herself; helpers can supply access or evidence but not replace her decision.",
+    "arc_start": "She treats the map as a dangerous private burden.",
+    "arc_turn": "She realizes silence would make her an instrument of the council's coverup.",
+    "arc_end": "She accepts losing the ferry license after broadcasting the evacuation route.",
+    "linked_scenes": [
+      "scene-001",
+      "scene-002",
+      "scene-004",
+      "scene-006",
+      "scene-007",
+      "scene-008"
+    ]
+  },
+  "opposition": {
+    "opposition_type": "institution",
+    "pressure_method": "Council Clerk Venn uses the tower schedule, ferry license threats, and lock controls to keep the map private.",
+    "escalation_path": "Warning bell delay, archive route closure, arrest notice, tower lockout.",
+    "world_constraints": [
+      "The warning tower needs the brass lens to project district routes.",
+      "The lower docks depend on lantern route signals when sirens fail.",
+      "Council clerks can seal ferry locks during flood protocol."
+    ],
+    "linked_claims": [
+      "wg-claim-warning-schedule",
+      "wg-claim-lens-broadcast",
+      "wg-claim-clerk-locks"
+    ]
+  },
+  "stakes": [
+    {
+      "stake_id": "stake-lower-docks",
+      "stake_type": "physical",
+      "at_risk": "Hundreds of lower-dock residents evacuate too late if the hidden route stays private.",
+      "beneficiary_or_victim": "Lower-dock families",
+      "escalation_points": [
+        "scene-001",
+        "scene-004",
+        "scene-007"
+      ],
+      "payoff_link": "promise-flood-stakes",
+      "status": "pass"
+    },
+    {
+      "stake_id": "stake-mara-license",
+      "stake_type": "social",
+      "at_risk": "Mara loses the ferry license that keeps her housed and employed.",
+      "beneficiary_or_victim": "Mara",
+      "escalation_points": [
+        "scene-002",
+        "scene-005",
+        "scene-008"
+      ],
+      "payoff_link": "promise-mara-choice",
+      "status": "pass"
+    }
+  ],
+  "structure": [
+    {
+      "id": "tp-setup",
+      "kind": "turning_point",
+      "part": "part_1_setup",
+      "moment": "setup",
+      "role": "opening",
+      "entry_state": "Mara works a dangerous ferry shift while avoiding council notice.",
+      "structural_event": "The flood bell is announced for midnight as the lower docks keep working.",
+      "choice_or_reveal": "Mara notices the council route boards omit the lower-dock alleys.",
+      "exit_state": "Mara suspects the official warning plan is incomplete.",
+      "irreversible_change": "The story's public-safety stakes are established before Mara can stay neutral.",
+      "pressure_change": "introduces",
+      "tension_movement": "increases",
+      "child_scene_ids": [
+        "scene-001"
+      ],
+      "arc_links": [
+        "arc-mara-public-trust"
+      ],
+      "promise_links": [
+        "promise-map-truth",
+        "promise-mara-choice",
+        "promise-flood-stakes"
+      ],
+      "scene_links": [
+        "scene-001"
+      ],
+      "worldguard_claim_links": [
+        "wg-claim-warning-schedule"
+      ],
+      "status": "pass",
+      "closure_effect": "continue",
+      "evidence_refs": [
+        "story-ledger.yaml#structure.tp-setup"
+      ]
+    },
+    {
+      "id": "tp-first-plot-point",
+      "kind": "turning_point",
+      "part": "part_1_setup",
+      "moment": "first_plot_point",
+      "role": "disruption",
+      "entry_state": "Mara could hand the strange lens to the council and remain uninvolved.",
+      "structural_event": "An apprentice named Jin leaves Mara a coded map and brass lens.",
+      "choice_or_reveal": "Mara opens the map and hides the lens instead of surrendering it.",
+      "exit_state": "Mara becomes the only person outside the council with the route map and lens.",
+      "irreversible_change": "Mara crosses from witness to active holder of evidence.",
+      "pressure_change": "escalates",
+      "tension_movement": "complicates",
+      "child_scene_ids": [
+        "scene-002"
+      ],
+      "arc_links": [
+        "arc-mara-public-trust"
+      ],
+      "promise_links": [
+        "promise-map-truth",
+        "promise-lantern-signal",
+        "promise-niko-trust"
+      ],
+      "scene_links": [
+        "scene-002"
+      ],
+      "worldguard_claim_links": [
+        "wg-claim-lens-broadcast"
+      ],
+      "status": "pass",
+      "closure_effect": "continue",
+      "evidence_refs": [
+        "story-ledger.yaml#structure.tp-first-plot-point"
+      ]
+    },
+    {
+      "id": "tp-reaction",
+      "kind": "turning_point",
+      "part": "part_2_reaction",
+      "moment": "reaction",
+      "role": "escalation",
+      "entry_state": "Mara searches for proof while trying to keep the ferry route legal.",
+      "structural_event": "Venn closes the public archive route and orders ferry locks inspected.",
+      "choice_or_reveal": "Mara follows Niko's maintenance tunnel note rather than returning home.",
+      "exit_state": "Mara has an unofficial path toward the tower but is now being watched.",
+      "irreversible_change": "The opposition can identify Mara as the lens holder.",
+      "pressure_change": "redirects",
+      "tension_movement": "redirects",
+      "child_scene_ids": [
+        "scene-003"
+      ],
+      "arc_links": [
+        "arc-mara-public-trust"
+      ],
+      "promise_links": [
+        "promise-map-truth",
+        "promise-niko-trust"
+      ],
+      "scene_links": [
+        "scene-003"
+      ],
+      "worldguard_claim_links": [
+        "wg-claim-service-tunnel",
+        "wg-claim-clerk-locks"
+      ],
+      "status": "pass",
+      "closure_effect": "continue",
+      "evidence_refs": [
+        "story-ledger.yaml#structure.tp-reaction"
+      ]
+    },
+    {
+      "id": "tp-midpoint",
+      "kind": "turning_point",
+      "part": "part_2_reaction",
+      "moment": "midpoint",
+      "role": "midpoint",
+      "entry_state": "Mara believes the map is only evidence of council incompetence.",
+      "structural_event": "The map shows the lower-dock route was deliberately removed from public boards.",
+      "choice_or_reveal": "Mara decides the route must be broadcast, not delivered quietly to Venn.",
+      "exit_state": "Mara has a public mission and can no longer frame the problem as self-protection.",
+      "irreversible_change": "The dramatic question shifts from whether the map is true to whether Mara will reveal it.",
+      "pressure_change": "reverses",
+      "tension_movement": "complicates",
+      "child_scene_ids": [
+        "scene-004"
+      ],
+      "arc_links": [
+        "arc-mara-public-trust"
+      ],
+      "promise_links": [
+        "promise-map-truth",
+        "promise-mara-choice",
+        "promise-flood-stakes"
+      ],
+      "scene_links": [
+        "scene-004"
+      ],
+      "worldguard_claim_links": [
+        "wg-claim-lower-dock-map"
+      ],
+      "status": "pass",
+      "closure_effect": "continue",
+      "evidence_refs": [
+        "story-ledger.yaml#structure.tp-midpoint"
+      ]
+    },
+    {
+      "id": "tp-attack",
+      "kind": "turning_point",
+      "part": "part_3_attack",
+      "moment": "attack",
+      "role": "reversal",
+      "entry_state": "Mara moves toward the tower with the map and lens.",
+      "structural_event": "Venn issues an arrest notice and cuts the service lamps along the flood wall.",
+      "choice_or_reveal": "Mara trades the last legal proof of her ferry route for a keeper's tower key.",
+      "exit_state": "Mara can reach the tower but loses the easy way to defend her license afterward.",
+      "irreversible_change": "The cost of public truth becomes personal and immediate.",
+      "pressure_change": "concentrates",
+      "tension_movement": "increases",
+      "child_scene_ids": [
+        "scene-005"
+      ],
+      "arc_links": [
+        "arc-mara-public-trust"
+      ],
+      "promise_links": [
+        "promise-lantern-signal",
+        "promise-mara-choice"
+      ],
+      "scene_links": [
+        "scene-005"
+      ],
+      "worldguard_claim_links": [
+        "wg-claim-clerk-locks"
+      ],
+      "status": "pass",
+      "closure_effect": "continue",
+      "evidence_refs": [
+        "story-ledger.yaml#structure.tp-attack"
+      ]
+    },
+    {
+      "id": "tp-second-plot-point",
+      "kind": "turning_point",
+      "part": "part_3_attack",
+      "moment": "second_plot_point",
+      "role": "crisis",
+      "entry_state": "Mara has tower access but still hopes to save both Niko and her license.",
+      "structural_event": "Niko is hurt while holding the tunnel gate open.",
+      "choice_or_reveal": "Niko asks Mara to leave him with the keeper and carry the lens upward.",
+      "exit_state": "Mara chooses the public warning over the private rescue she can personally finish.",
+      "irreversible_change": "Mara commits to the signal path with no painless alternative left.",
+      "pressure_change": "escalates",
+      "tension_movement": "complicates",
+      "child_scene_ids": [
+        "scene-006"
+      ],
+      "arc_links": [
+        "arc-mara-public-trust"
+      ],
+      "promise_links": [
+        "promise-niko-trust",
+        "promise-mara-choice",
+        "promise-lantern-signal"
+      ],
+      "scene_links": [
+        "scene-006"
+      ],
+      "worldguard_claim_links": [
+        "wg-claim-skiff-capacity"
+      ],
+      "status": "pass",
+      "closure_effect": "continue",
+      "evidence_refs": [
+        "story-ledger.yaml#structure.tp-second-plot-point"
+      ]
+    },
+    {
+      "id": "tp-climax",
+      "kind": "turning_point",
+      "part": "part_4_resolution",
+      "moment": "climax",
+      "role": "climax",
+      "entry_state": "Mara reaches the tower while Venn orders the lens surrendered.",
+      "structural_event": "Mara mounts the lens and turns the lantern toward the lower docks.",
+      "choice_or_reveal": "She signs the broadcast with her ferry call number so residents trust the signal.",
+      "exit_state": "The true route is public, and Mara's violation is undeniable.",
+      "irreversible_change": "The route warning cannot be recalled, and the council can punish Mara only after the district is moving.",
+      "pressure_change": "releases",
+      "tension_movement": "resolves",
+      "child_scene_ids": [
+        "scene-007"
+      ],
+      "arc_links": [
+        "arc-mara-public-trust"
+      ],
+      "promise_links": [
+        "promise-lantern-signal",
+        "promise-mara-choice",
+        "promise-flood-stakes"
+      ],
+      "scene_links": [
+        "scene-007"
+      ],
+      "worldguard_claim_links": [
+        "wg-claim-lens-broadcast",
+        "wg-claim-lantern-authority"
+      ],
+      "status": "pass",
+      "closure_effect": "continue",
+      "evidence_refs": [
+        "story-ledger.yaml#structure.tp-climax"
+      ]
+    },
+    {
+      "id": "tp-resolution",
+      "kind": "turning_point",
+      "part": "part_4_resolution",
+      "moment": "resolution",
+      "role": "resolution",
+      "entry_state": "The district follows the lantern route while Mara waits for punishment.",
+      "structural_event": "Residents return the ferry bell to Mara after the water drops.",
+      "choice_or_reveal": "Mara accepts that trust can survive even when official permission does not.",
+      "exit_state": "Mara begins rebuilding as a public witness rather than a hidden ferry pilot.",
+      "irreversible_change": "The story closes with the external evacuation achieved and Mara's internal change visible.",
+      "pressure_change": "resolves",
+      "tension_movement": "resolves",
+      "child_scene_ids": [
+        "scene-008"
+      ],
+      "arc_links": [
+        "arc-mara-public-trust"
+      ],
+      "promise_links": [
+        "promise-niko-trust",
+        "promise-flood-stakes",
+        "promise-mara-choice"
+      ],
+      "scene_links": [
+        "scene-008"
+      ],
+      "worldguard_claim_links": [
+        "wg-claim-lantern-authority"
+      ],
+      "status": "pass",
+      "closure_effect": "continue",
+      "evidence_refs": [
+        "story-ledger.yaml#structure.tp-resolution"
+      ]
+    }
+  ],
+  "scenes": [
+    {
+      "id": "scene-001",
+      "kind": "scene",
+      "owner_stage": "scenes",
+      "parent_structure_id": "tp-setup",
+      "turning_point_links": [
+        "tp-setup"
+      ],
+      "scene_contract": "Establish Mara's ferry work, the flood-night pressure, and the missing lower-dock route.",
+      "entry_state": "Mara is a cautious ferry pilot trying to finish the shift unnoticed.",
+      "exit_state": "Mara suspects official route boards exclude the people she serves.",
+      "irreversible_change": "The flood warning becomes a moral problem for Mara, not just weather.",
+      "conflict_pressure": "The council bell schedule conflicts with what Mara sees on the lower docks.",
+      "character_desire": "Mara wants to keep her ferry legal and get through the night.",
+      "obstacle": "The route board and patrols make questioning the council risky.",
+      "turning_point": {
+        "turn_type": "discovery",
+        "turn_text": "Mara spots that lower-dock alleys are absent from the public evacuation board.",
+        "pressure_change": "introduces"
+      },
+      "promise_links": [
+        {
+          "promise_id": "promise-map-truth",
+          "role": "setup"
+        },
+        {
+          "promise_id": "promise-mara-choice",
+          "role": "setup"
+        },
+        {
+          "promise_id": "promise-flood-stakes",
+          "role": "setup"
+        }
+      ],
+      "arc_links": [
+        "arc-mara-public-trust"
+      ],
+      "stakes_links": [
+        "stake-lower-docks"
+      ],
+      "support_links": [
+        "support-flood-protocol"
+      ],
+      "worldguard_claim_links": [
+        "wg-claim-warning-schedule"
+      ],
+      "prose_status": "drafted",
+      "evidence_status": "pass",
+      "contract_outcome": "keep",
+      "closure_effect": "continue"
+    },
+    {
+      "id": "scene-002",
+      "kind": "scene",
+      "owner_stage": "scenes",
+      "parent_structure_id": "tp-first-plot-point",
+      "turning_point_links": [
+        "tp-first-plot-point"
+      ],
+      "scene_contract": "Force Mara to possess the coded map and brass lens instead of safely reporting them.",
+      "entry_state": "Mara can still treat the route omission as someone else's mistake.",
+      "exit_state": "Mara holds the only usable evidence and lens outside council control.",
+      "irreversible_change": "Mara hides the lens and becomes responsible for what happens next.",
+      "conflict_pressure": "Jin's warning makes official compliance look dangerous.",
+      "character_desire": "Mara wants to hand the problem to someone with authority.",
+      "obstacle": "The map proves authority is the source of the concealment.",
+      "turning_point": {
+        "turn_type": "commitment",
+        "turn_text": "Mara opens the map and pockets the lens rather than surrendering it.",
+        "pressure_change": "escalates"
+      },
+      "promise_links": [
+        {
+          "promise_id": "promise-map-truth",
+          "role": "escalation"
+        },
+        {
+          "promise_id": "promise-lantern-signal",
+          "role": "setup"
+        },
+        {
+          "promise_id": "promise-niko-trust",
+          "role": "setup"
+        }
+      ],
+      "arc_links": [
+        "arc-mara-public-trust"
+      ],
+      "stakes_links": [
+        "stake-mara-license"
+      ],
+      "support_links": [
+        "support-lantern-mechanism"
+      ],
+      "worldguard_claim_links": [
+        "wg-claim-lens-broadcast"
+      ],
+      "prose_status": "drafted",
+      "evidence_status": "pass",
+      "contract_outcome": "keep",
+      "closure_effect": "continue"
+    },
+    {
+      "id": "scene-003",
+      "kind": "scene",
+      "owner_stage": "scenes",
+      "parent_structure_id": "tp-reaction",
+      "turning_point_links": [
+        "tp-reaction"
+      ],
+      "scene_contract": "Show Mara using unofficial help after Venn shuts the public route.",
+      "entry_state": "Mara tries to verify the map without breaking more rules.",
+      "exit_state": "Mara chooses the maintenance tunnel and accepts being watched.",
+      "irreversible_change": "The investigation moves from public records to hidden infrastructure.",
+      "conflict_pressure": "Venn's archive closure blocks legal verification.",
+      "character_desire": "Mara wants a clean proof path before acting.",
+      "obstacle": "Official doors close faster than she can ask questions.",
+      "turning_point": {
+        "turn_type": "reveal",
+        "turn_text": "Niko's tunnel mark shows a path to the tower that the council board omits.",
+        "pressure_change": "redirects"
+      },
+      "promise_links": [
+        {
+          "promise_id": "promise-map-truth",
+          "role": "reminder"
+        },
+        {
+          "promise_id": "promise-niko-trust",
+          "role": "escalation"
+        }
+      ],
+      "arc_links": [
+        "arc-mara-public-trust"
+      ],
+      "stakes_links": [
+        "stake-lower-docks"
+      ],
+      "support_links": [
+        "support-service-tunnel"
+      ],
+      "worldguard_claim_links": [
+        "wg-claim-service-tunnel",
+        "wg-claim-clerk-locks"
+      ],
+      "prose_status": "drafted",
+      "evidence_status": "pass",
+      "contract_outcome": "keep",
+      "closure_effect": "continue"
+    },
+    {
+      "id": "scene-004",
+      "kind": "scene",
+      "owner_stage": "scenes",
+      "parent_structure_id": "tp-midpoint",
+      "turning_point_links": [
+        "tp-midpoint"
+      ],
+      "scene_contract": "Reveal that the lower-dock route was deliberately hidden and redirect Mara toward broadcast.",
+      "entry_state": "Mara thinks she is collecting evidence for later appeal.",
+      "exit_state": "Mara decides she must broadcast before the flood wall fails.",
+      "irreversible_change": "The map mystery pays off and becomes a public action demand.",
+      "conflict_pressure": "The discovered map shows time running out for a district the council omitted.",
+      "character_desire": "Mara wants proof strong enough to protect her if she acts.",
+      "obstacle": "Proof arrives too late to seek safe permission.",
+      "turning_point": {
+        "turn_type": "reversal",
+        "turn_text": "The hidden overlay shows the lower-dock route was removed intentionally.",
+        "pressure_change": "reverses"
+      },
+      "promise_links": [
+        {
+          "promise_id": "promise-map-truth",
+          "role": "payoff"
+        },
+        {
+          "promise_id": "promise-mara-choice",
+          "role": "escalation"
+        },
+        {
+          "promise_id": "promise-flood-stakes",
+          "role": "escalation"
+        }
+      ],
+      "arc_links": [
+        "arc-mara-public-trust"
+      ],
+      "stakes_links": [
+        "stake-lower-docks"
+      ],
+      "support_links": [
+        "support-flood-protocol"
+      ],
+      "worldguard_claim_links": [
+        "wg-claim-lower-dock-map"
+      ],
+      "prose_status": "drafted",
+      "evidence_status": "pass",
+      "contract_outcome": "keep",
+      "closure_effect": "continue"
+    },
+    {
+      "id": "scene-005",
+      "kind": "scene",
+      "owner_stage": "scenes",
+      "parent_structure_id": "tp-attack",
+      "turning_point_links": [
+        "tp-attack"
+      ],
+      "scene_contract": "Make Mara pay a personal cost for keeping the route public.",
+      "entry_state": "Mara heads toward the tower with a plan and still owns her license papers.",
+      "exit_state": "Mara has the tower key but has traded away her clean defense.",
+      "irreversible_change": "Mara's license is no longer a protected fallback.",
+      "conflict_pressure": "Venn uses arrest authority and lock controls to isolate Mara.",
+      "character_desire": "Mara wants to keep enough official proof to survive after the flood.",
+      "obstacle": "The keeper will only help if Mara gives up the papers proving her route rights.",
+      "turning_point": {
+        "turn_type": "consequence",
+        "turn_text": "Mara trades her ferry papers for the tower key.",
+        "pressure_change": "concentrates"
+      },
+      "promise_links": [
+        {
+          "promise_id": "promise-lantern-signal",
+          "role": "escalation"
+        },
+        {
+          "promise_id": "promise-mara-choice",
+          "role": "escalation"
+        }
+      ],
+      "arc_links": [
+        "arc-mara-public-trust"
+      ],
+      "stakes_links": [
+        "stake-mara-license"
+      ],
+      "support_links": [
+        "support-lantern-mechanism"
+      ],
+      "worldguard_claim_links": [
+        "wg-claim-clerk-locks"
+      ],
+      "prose_status": "drafted",
+      "evidence_status": "pass",
+      "contract_outcome": "keep",
+      "closure_effect": "continue"
+    },
+    {
+      "id": "scene-006",
+      "kind": "scene",
+      "owner_stage": "scenes",
+      "parent_structure_id": "tp-second-plot-point",
+      "turning_point_links": [
+        "tp-second-plot-point"
+      ],
+      "scene_contract": "Force the final private-versus-public choice through Niko's injury.",
+      "entry_state": "Mara believes she can still protect Niko while reaching the signal tower.",
+      "exit_state": "Mara leaves Niko with the keeper and carries the lens alone.",
+      "irreversible_change": "Mara commits to the public warning even when the private cost becomes visible.",
+      "conflict_pressure": "The skiff and tower stair cannot carry Niko, Mara, and the lens before the wall fails.",
+      "character_desire": "Mara wants to save the person who trusted her.",
+      "obstacle": "Niko's injury and the skiff capacity make the rescue path too slow.",
+      "turning_point": {
+        "turn_type": "decision",
+        "turn_text": "Mara accepts Niko's request and climbs with the lens.",
+        "pressure_change": "escalates"
+      },
+      "promise_links": [
+        {
+          "promise_id": "promise-niko-trust",
+          "role": "payoff"
+        },
+        {
+          "promise_id": "promise-mara-choice",
+          "role": "escalation"
+        },
+        {
+          "promise_id": "promise-lantern-signal",
+          "role": "reminder"
+        }
+      ],
+      "arc_links": [
+        "arc-mara-public-trust"
+      ],
+      "stakes_links": [
+        "stake-lower-docks",
+        "stake-mara-license"
+      ],
+      "support_links": [
+        "support-service-tunnel"
+      ],
+      "worldguard_claim_links": [
+        "wg-claim-skiff-capacity"
+      ],
+      "prose_status": "drafted",
+      "evidence_status": "pass",
+      "contract_outcome": "keep",
+      "closure_effect": "continue"
+    },
+    {
+      "id": "scene-007",
+      "kind": "scene",
+      "owner_stage": "scenes",
+      "parent_structure_id": "tp-climax",
+      "turning_point_links": [
+        "tp-climax"
+      ],
+      "scene_contract": "Pay off the lantern clue and Mara's public-trust choice in the tower.",
+      "entry_state": "Mara reaches the tower with the lens while Venn can still stop the official siren.",
+      "exit_state": "The lower-dock route is visible across the flood haze and signed with Mara's call number.",
+      "irreversible_change": "Mara saves the district warning at the cost of proving her own rule breach.",
+      "conflict_pressure": "Venn demands surrender as the final safe minute disappears.",
+      "character_desire": "Mara wants the lower docks to trust the warning immediately.",
+      "obstacle": "A signal without an accountable source could be dismissed as panic.",
+      "turning_point": {
+        "turn_type": "commitment",
+        "turn_text": "Mara uses her ferry call number as the signal signature.",
+        "pressure_change": "releases"
+      },
+      "promise_links": [
+        {
+          "promise_id": "promise-lantern-signal",
+          "role": "payoff"
+        },
+        {
+          "promise_id": "promise-mara-choice",
+          "role": "payoff"
+        },
+        {
+          "promise_id": "promise-flood-stakes",
+          "role": "payoff"
+        }
+      ],
+      "arc_links": [
+        "arc-mara-public-trust"
+      ],
+      "stakes_links": [
+        "stake-lower-docks",
+        "stake-mara-license"
+      ],
+      "support_links": [
+        "support-lantern-mechanism"
+      ],
+      "worldguard_claim_links": [
+        "wg-claim-lens-broadcast",
+        "wg-claim-lantern-authority"
+      ],
+      "prose_status": "drafted",
+      "evidence_status": "pass",
+      "contract_outcome": "keep",
+      "closure_effect": "continue"
+    },
+    {
+      "id": "scene-008",
+      "kind": "scene",
+      "owner_stage": "scenes",
+      "parent_structure_id": "tp-resolution",
+      "turning_point_links": [
+        "tp-resolution"
+      ],
+      "scene_contract": "Show evacuation success, Mara's loss, and the new trust she earns.",
+      "entry_state": "Mara waits for punishment after the district follows the lantern route.",
+      "exit_state": "Mara accepts public witness as a truer role than hidden compliance.",
+      "irreversible_change": "The story resolves with both external rescue and internal transformation.",
+      "conflict_pressure": "Mara's official loss contrasts with the residents' trust.",
+      "character_desire": "Mara wants to know whether the sacrifice mattered.",
+      "obstacle": "The council still revokes her license even after the evacuation succeeds.",
+      "turning_point": {
+        "turn_type": "reveal",
+        "turn_text": "Residents return the ferry bell and ask Mara to help rebuild the route.",
+        "pressure_change": "resolves"
+      },
+      "promise_links": [
+        {
+          "promise_id": "promise-niko-trust",
+          "role": "payoff"
+        },
+        {
+          "promise_id": "promise-flood-stakes",
+          "role": "payoff"
+        },
+        {
+          "promise_id": "promise-mara-choice",
+          "role": "payoff"
+        }
+      ],
+      "arc_links": [
+        "arc-mara-public-trust"
+      ],
+      "stakes_links": [
+        "stake-lower-docks",
+        "stake-mara-license"
+      ],
+      "support_links": [
+        "support-flood-protocol"
+      ],
+      "worldguard_claim_links": [
+        "wg-claim-lantern-authority"
+      ],
+      "prose_status": "drafted",
+      "evidence_status": "pass",
+      "contract_outcome": "keep",
+      "closure_effect": "continue"
+    }
+  ],
+  "character_arcs": [
+    {
+      "id": "arc-mara-public-trust",
+      "character": "Mara",
+      "start": "Protect private safety by staying unnoticed.",
+      "turn": "Choose public truth when evidence proves official silence is intentional.",
+      "end": "Accept public accountability and community trust after losing official permission.",
+      "linked_scenes": [
+        "scene-001",
+        "scene-004",
+        "scene-007",
+        "scene-008"
+      ],
+      "status": "pass"
+    }
+  ],
+  "promises": [
+    {
+      "id": "promise-map-truth",
+      "kind": "promise",
+      "promise_type": "mystery",
+      "source_row_id": "scene-001",
+      "source_row_kind": "scene",
+      "introduced_by": [
+        "scene-001",
+        "scene-002"
+      ],
+      "promise_text": "The hidden map means the public evacuation route is not the whole truth.",
+      "reader_expectation": "Readers expect the map's omission to be explained before Mara acts publicly.",
+      "importance": "key",
+      "expected_payoff": {
+        "payoff_type": "reveal",
+        "target_rows": [
+          "scene-004"
+        ],
+        "minimum_evidence": [
+          "scene-004 reveals deliberate route removal",
+          "wg-claim-lower-dock-map passes"
+        ]
+      },
+      "current_payoff": {
+        "status": "paid",
+        "payoff_rows": [
+          "scene-004"
+        ],
+        "payoff_text": "The overlay proves the lower-dock route was removed deliberately.",
+        "payoff_evidence_refs": [
+          "scene-004",
+          "wg-claim-lower-dock-map"
+        ]
+      },
+      "payoff_rows": [
+        "scene-004"
+      ],
+      "status": "paid",
+      "closure_effect": "continue",
+      "evidence_refs": [
+        "story-ledger.yaml#promises.promise-map-truth",
+        "scene-cards.yaml#scene-004"
+      ]
+    },
+    {
+      "id": "promise-mara-choice",
+      "kind": "promise",
+      "promise_type": "dramatic_question",
+      "source_row_id": "premise",
+      "source_row_kind": "premise",
+      "introduced_by": [
+        "scene-001"
+      ],
+      "promise_text": "Mara must choose between a safe license and a public warning.",
+      "reader_expectation": "Readers expect a decisive action, not a passive accident, to answer the premise.",
+      "importance": "key",
+      "expected_payoff": {
+        "payoff_type": "choice",
+        "target_rows": [
+          "scene-007",
+          "scene-008"
+        ],
+        "minimum_evidence": [
+          "Mara signs the signal with her ferry call number",
+          "License loss is visible in resolution"
+        ]
+      },
+      "current_payoff": {
+        "status": "paid",
+        "payoff_rows": [
+          "scene-007",
+          "scene-008"
+        ],
+        "payoff_text": "Mara publicly signs the evacuation signal and accepts the license loss afterward.",
+        "payoff_evidence_refs": [
+          "scene-007",
+          "scene-008"
+        ]
+      },
+      "payoff_rows": [
+        "scene-007",
+        "scene-008"
+      ],
+      "status": "paid",
+      "closure_effect": "continue",
+      "evidence_refs": [
+        "story-ledger.yaml#promises.promise-mara-choice",
+        "scene-cards.yaml#scene-007"
+      ]
+    },
+    {
+      "id": "promise-lantern-signal",
+      "kind": "promise",
+      "promise_type": "clue",
+      "source_row_id": "scene-002",
+      "source_row_kind": "scene",
+      "introduced_by": [
+        "scene-002"
+      ],
+      "promise_text": "The brass lens can make the tower show more than ordinary flood warnings.",
+      "reader_expectation": "Readers expect the lens to matter in the climax.",
+      "importance": "major",
+      "expected_payoff": {
+        "payoff_type": "answer_and_cost",
+        "target_rows": [
+          "scene-007"
+        ],
+        "minimum_evidence": [
+          "Lens is installed in the tower",
+          "Signal carries the lower-dock route",
+          "WorldGuard lens broadcast claim passes"
+        ]
+      },
+      "current_payoff": {
+        "status": "paid",
+        "payoff_rows": [
+          "scene-007"
+        ],
+        "payoff_text": "Mara installs the lens and broadcasts the hidden route from the tower.",
+        "payoff_evidence_refs": [
+          "scene-007",
+          "wg-claim-lens-broadcast"
+        ]
+      },
+      "payoff_rows": [
+        "scene-007"
+      ],
+      "status": "paid",
+      "closure_effect": "continue",
+      "evidence_refs": [
+        "story-ledger.yaml#promises.promise-lantern-signal",
+        "worldguard-claims.yaml#wg-claim-lens-broadcast"
+      ]
+    },
+    {
+      "id": "promise-niko-trust",
+      "kind": "promise",
+      "promise_type": "relationship",
+      "source_row_id": "scene-002",
+      "source_row_kind": "scene",
+      "introduced_by": [
+        "scene-002",
+        "scene-003"
+      ],
+      "promise_text": "Niko's risky help will test whether Mara can trust another person without controlling every cost.",
+      "reader_expectation": "Readers expect Niko's trust to affect Mara's crisis choice.",
+      "importance": "major",
+      "expected_payoff": {
+        "payoff_type": "emotional_release",
+        "target_rows": [
+          "scene-006",
+          "scene-008"
+        ],
+        "minimum_evidence": [
+          "Niko's injury creates the crisis",
+          "Niko survives and affirms Mara's choice"
+        ]
+      },
+      "current_payoff": {
+        "status": "paid",
+        "payoff_rows": [
+          "scene-006",
+          "scene-008"
+        ],
+        "payoff_text": "Mara trusts Niko's request in the crisis and later sees his trust returned in the rebuilt ferry bell.",
+        "payoff_evidence_refs": [
+          "scene-006",
+          "scene-008"
+        ]
+      },
+      "payoff_rows": [
+        "scene-006",
+        "scene-008"
+      ],
+      "status": "paid",
+      "closure_effect": "continue",
+      "evidence_refs": [
+        "story-ledger.yaml#promises.promise-niko-trust"
+      ]
+    },
+    {
+      "id": "promise-flood-stakes",
+      "kind": "promise",
+      "promise_type": "stakes",
+      "source_row_id": "stake-lower-docks",
+      "source_row_kind": "support",
+      "introduced_by": [
+        "scene-001"
+      ],
+      "promise_text": "If the true route is not shared, the lower docks will evacuate too late.",
+      "reader_expectation": "Readers expect the ending to show whether the warning mattered.",
+      "importance": "key",
+      "expected_payoff": {
+        "payoff_type": "consequence",
+        "target_rows": [
+          "scene-007",
+          "scene-008"
+        ],
+        "minimum_evidence": [
+          "The signal is public",
+          "The lower docks follow the route",
+          "The ending shows evacuation success"
+        ]
+      },
+      "current_payoff": {
+        "status": "paid",
+        "payoff_rows": [
+          "scene-007",
+          "scene-008"
+        ],
+        "payoff_text": "The route signal moves the lower docks before the flood wall fails.",
+        "payoff_evidence_refs": [
+          "scene-007",
+          "scene-008",
+          "wg-claim-lantern-authority"
+        ]
+      },
+      "payoff_rows": [
+        "scene-007",
+        "scene-008"
+      ],
+      "status": "paid",
+      "closure_effect": "continue",
+      "evidence_refs": [
+        "story-ledger.yaml#promises.promise-flood-stakes",
+        "worldguard-claims.yaml#wg-claim-lantern-authority"
+      ]
+    }
+  ],
+  "worldguard_claims": [
+    {
+      "id": "wg-claim-warning-schedule",
+      "source_row_id": "scene-001",
+      "source_row_kind": "scene",
+      "claim_type": "timeline",
+      "claim_text": "The council warning bell is scheduled before the river wall failure window.",
+      "worldguard_input": {
+        "event": "warning bell before wall failure",
+        "temporal_order": "bell before flood crest"
+      },
+      "authority_scope": "draft_current",
+      "worldguard_status": "pass",
+      "worldguard_evidence_refs": [
+        "support-flood-protocol"
+      ],
+      "adapter_status": "pass",
+      "closure_effect": "continue",
+      "adapter_note": "Generic timeline claim mapped from flood protocol support."
+    },
+    {
+      "id": "wg-claim-lens-broadcast",
+      "source_row_id": "scene-002",
+      "source_row_kind": "scene",
+      "claim_type": "causal",
+      "claim_text": "The brass lens lets the warning tower project a district route signal.",
+      "worldguard_input": {
+        "resource": "brass lens",
+        "causal_link": "lens changes tower signal from bell to route projection"
+      },
+      "authority_scope": "draft_current",
+      "worldguard_status": "pass",
+      "worldguard_evidence_refs": [
+        "support-lantern-mechanism"
+      ],
+      "adapter_status": "pass",
+      "closure_effect": "continue",
+      "adapter_note": "Generic resource and causality claim."
+    },
+    {
+      "id": "wg-claim-service-tunnel",
+      "source_row_id": "scene-003",
+      "source_row_kind": "scene",
+      "claim_type": "space",
+      "claim_text": "A maintenance tunnel connects the lower docks to the tower stair during the first tide.",
+      "worldguard_input": {
+        "space": "maintenance tunnel",
+        "access": "lower docks to tower stair",
+        "time_boundary": "first tide"
+      },
+      "authority_scope": "draft_current",
+      "worldguard_status": "pass",
+      "worldguard_evidence_refs": [
+        "support-service-tunnel"
+      ],
+      "adapter_status": "pass",
+      "closure_effect": "continue",
+      "adapter_note": "Generic space/access claim."
+    },
+    {
+      "id": "wg-claim-clerk-locks",
+      "source_row_id": "scene-005",
+      "source_row_kind": "scene",
+      "claim_type": "authority",
+      "claim_text": "A council clerk can seal ferry locks during flood protocol.",
+      "worldguard_input": {
+        "authority": "council clerk",
+        "action": "seal ferry locks",
+        "condition": "flood protocol"
+      },
+      "authority_scope": "draft_current",
+      "worldguard_status": "pass",
+      "worldguard_evidence_refs": [
+        "support-flood-protocol"
+      ],
+      "adapter_status": "pass",
+      "closure_effect": "continue",
+      "adapter_note": "Generic authority claim."
+    },
+    {
+      "id": "wg-claim-lower-dock-map",
+      "source_row_id": "scene-004",
+      "source_row_kind": "scene",
+      "claim_type": "resource",
+      "claim_text": "The hidden map contains a lower-dock evacuation route absent from public boards.",
+      "worldguard_input": {
+        "resource": "hidden evacuation map",
+        "state_difference": "route present on hidden map and absent from public board"
+      },
+      "authority_scope": "draft_current",
+      "worldguard_status": "pass",
+      "worldguard_evidence_refs": [
+        "support-hidden-map"
+      ],
+      "adapter_status": "pass",
+      "closure_effect": "continue",
+      "adapter_note": "Generic resource/record consistency claim."
+    },
+    {
+      "id": "wg-claim-skiff-capacity",
+      "source_row_id": "scene-006",
+      "source_row_kind": "scene",
+      "claim_type": "resource",
+      "claim_text": "Mara's skiff cannot carry Mara, Niko, and the brass lens to safety before the wall failure window.",
+      "worldguard_input": {
+        "resource": "skiff capacity",
+        "constraint": "one pilot plus one carried object or one injured passenger",
+        "time_boundary": "before wall failure"
+      },
+      "authority_scope": "draft_current",
+      "worldguard_status": "pass",
+      "worldguard_evidence_refs": [
+        "support-skiff-capacity"
+      ],
+      "adapter_status": "pass",
+      "closure_effect": "continue",
+      "adapter_note": "Generic capacity constraint."
+    },
+    {
+      "id": "wg-claim-lantern-authority",
+      "source_row_id": "scene-007",
+      "source_row_kind": "scene",
+      "claim_type": "norm",
+      "claim_text": "Lower-dock residents treat signed lantern route signals as actionable evacuation notice.",
+      "worldguard_input": {
+        "norm": "signed route lanterns are actionable evacuation notice",
+        "agents": "lower-dock residents",
+        "consequence": "residents follow the route"
+      },
+      "authority_scope": "draft_current",
+      "worldguard_status": "pass",
+      "worldguard_evidence_refs": [
+        "support-lantern-custom"
+      ],
+      "adapter_status": "pass",
+      "closure_effect": "continue",
+      "adapter_note": "Generic norm and consequence claim."
+    }
+  ],
+  "support": [
+    {
+      "id": "support-flood-protocol",
+      "support_type": "generated_assumption",
+      "content_summary": "Flood protocol lets council clerks schedule warning bells and seal ferry locks.",
+      "scope": [
+        "wg-claim-warning-schedule",
+        "wg-claim-clerk-locks"
+      ],
+      "authority": "generated",
+      "currentness": "current",
+      "required_before_prose": true
+    },
+    {
+      "id": "support-lantern-mechanism",
+      "support_type": "generated_assumption",
+      "content_summary": "The warning tower can project route marks when fitted with the brass lens.",
+      "scope": [
+        "wg-claim-lens-broadcast"
+      ],
+      "authority": "generated",
+      "currentness": "current",
+      "required_before_prose": true
+    },
+    {
+      "id": "support-service-tunnel",
+      "support_type": "generated_assumption",
+      "content_summary": "A maintenance tunnel remains usable from the lower docks to the tower stair during the first tide.",
+      "scope": [
+        "wg-claim-service-tunnel"
+      ],
+      "authority": "generated",
+      "currentness": "current",
+      "required_before_prose": true
+    },
+    {
+      "id": "support-hidden-map",
+      "support_type": "generated_assumption",
+      "content_summary": "The hidden map has a route absent from public boards.",
+      "scope": [
+        "wg-claim-lower-dock-map"
+      ],
+      "authority": "generated",
+      "currentness": "current",
+      "required_before_prose": true
+    },
+    {
+      "id": "support-skiff-capacity",
+      "support_type": "generated_assumption",
+      "content_summary": "Mara's skiff capacity creates the crisis choice in scene-006.",
+      "scope": [
+        "wg-claim-skiff-capacity"
+      ],
+      "authority": "generated",
+      "currentness": "current",
+      "required_before_prose": true
+    },
+    {
+      "id": "support-lantern-custom",
+      "support_type": "generated_assumption",
+      "content_summary": "Residents trust signed lantern route signals during siren failure.",
+      "scope": [
+        "wg-claim-lantern-authority"
+      ],
+      "authority": "generated",
+      "currentness": "current",
+      "required_before_prose": true
+    }
+  ],
+  "validation": [
+    {
+      "id": "validation-ledger",
+      "check_name": "story_ledger_check.py",
+      "checked_rows": [
+        "story-ledger.yaml"
+      ],
+      "status": "pass",
+      "evidence_ref": "evidence/example/story_ledger_check_report.json",
+      "invalidates": [],
+      "rerun_required_when": [
+        "ledger row shape changes",
+        "ids change"
+      ]
+    },
+    {
+      "id": "validation-turning-points",
+      "check_name": "turning_point_check.py",
+      "checked_rows": [
+        "story-ledger.yaml#structure"
+      ],
+      "status": "pass",
+      "evidence_ref": "evidence/example/turning_point_check_report.json",
+      "invalidates": [],
+      "rerun_required_when": [
+        "structure rows change"
+      ]
+    },
+    {
+      "id": "validation-scenes",
+      "check_name": "scene_contract_check.py",
+      "checked_rows": [
+        "scene-cards.yaml"
+      ],
+      "status": "pass",
+      "evidence_ref": "evidence/example/scene_contract_check_report.json",
+      "invalidates": [],
+      "rerun_required_when": [
+        "scene rows or resolver ids change"
+      ]
+    },
+    {
+      "id": "validation-promises",
+      "check_name": "promise_payoff_check.py",
+      "checked_rows": [
+        "story-ledger.yaml#promises"
+      ],
+      "status": "pass",
+      "evidence_ref": "evidence/example/promise_payoff_check_report.json",
+      "invalidates": [],
+      "rerun_required_when": [
+        "promise or payoff rows change"
+      ]
+    },
+    {
+      "id": "validation-closure",
+      "check_name": "storyline_closure_check.py",
+      "checked_rows": [
+        "expected-closure.json"
+      ],
+      "status": "pass",
+      "evidence_ref": "evidence/example/storyline_closure_check_report.json",
+      "invalidates": [],
+      "rerun_required_when": [
+        "any child validation row changes"
+      ]
+    }
+  ],
+  "closure": {
+    "decision": "pass",
+    "claim_boundary": "The example is structurally ready as a compact short-story design fixture. Final prose quality remains outside this closure claim.",
+    "blocking_rows": [],
+    "deferred_rows": [],
+    "stale_rows": [],
+    "latest_validation_refs": [
+      "validation-ledger",
+      "validation-turning-points",
+      "validation-scenes",
+      "validation-promises",
+      "validation-closure"
+    ],
+    "prose_allowed": true,
+    "reader_native_projection_allowed": true
+  }
+}

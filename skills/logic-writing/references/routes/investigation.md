@@ -107,3 +107,20 @@ trade-offs. Do not expose the research-stage numbering as the report's
 storyline. Put necessary limitations near the claims they change and reserve a
 technical appendix for provenance detail that would otherwise interrupt the
 main argument.
+
+Use the shared writing contract for every important finding and section. Name
+the reader's incoming state, the concrete contribution, the changed state, the
+remaining question, and the exact later consumer. Recover the original reader
+question at major turns and in the conclusion; do not let an interesting source
+silently replace the question being answered.
+
+Negative evidence is a result, not an empty box. Say what was checked, what was
+not found, how much the absence changes the conclusion, and when or by whom it
+should be rechecked. When a recommendation depends on access, execution, cost,
+timing, or another practical constraint, preserve the friction and provide the
+nearest evidence-licensed fallback instead of polishing the obstacle away.
+
+Bind the important rows in the claim/argument model to exact spans in the
+current delivered artifact. Important prose without a model row, or important
+model rows that never appear in the artifact, block closure until repaired or
+explicitly dispositioned.

@@ -18,12 +18,15 @@ IMPORTANT_OBLIGATIONS = (
     "obligation:logic-writing:specialist-authority",
     "obligation:logic-writing:investigation-evidence",
     "obligation:logic-writing:academic-provenance",
+    "obligation:logic-writing:fiction-native",
+    "obligation:logic-writing:travel-native",
+    "obligation:logic-writing:shared-writing",
     "obligation:logic-writing:reader-actual-artifact",
     "obligation:logic-writing:final-closure",
     "obligation:logic-writing:release-integrity",
 )
 REQUIRED_CAPABILITIES = (
-    "capability:one-entry-two-routes",
+    "capability:one-entry-four-routes",
     "capability:typed-specialist-receipts",
     "capability:reader-brief-boundary",
     "capability:actual-artifact-audit",

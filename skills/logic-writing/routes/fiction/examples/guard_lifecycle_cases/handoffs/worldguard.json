@@ -1,0 +1,15 @@
+{
+  "schema_version": "storyline-design.guard_handoff.v1",
+  "surface": "worldguard_story_claims",
+  "guard_id": "worldguard",
+  "native_owner": "worldguard",
+  "native_route_id": "worldguard",
+  "native_check_id": "worldguard.story_claims_terminal",
+  "tool_version": "0.1.2",
+  "receipt_schema_version": "worldguard.native_terminal_receipt.v1",
+  "input_fingerprint": "sha256:7331afac07867192987c445f2cd58e0c887d9088bb855a45979d6a595b27ccac",
+  "terminal_receipt_id": "compact-guard-pass-worldguard-terminal",
+  "terminal_receipt_ref": "file:../receipts/worldguard-terminal.json;sha256:36b982e0f52b3f20d9aeebf7705362f4b22f5a4be1827e688eb93eeb9cc138a9",
+  "terminal_status": "passed",
+  "claim_boundary": "WorldGuard terminal receipt covers the compact fixture access, resource, and causality claims only."
+}

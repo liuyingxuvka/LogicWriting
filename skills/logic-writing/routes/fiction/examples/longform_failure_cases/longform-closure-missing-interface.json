@@ -1,0 +1,52 @@
+{
+  "schema_version": "storyline-design.longform_closure.v1",
+  "project_id": "aurora-key",
+  "closure_id": "closure-book-missing-interface",
+  "closure_level": "book",
+  "claim_boundary": "Book closure is requested but the chapter interface surface is missing.",
+  "required_surfaces": [
+    {
+      "surface": "novel_ledger",
+      "status": "passed",
+      "evidence_ref": "novel-ledger.json",
+      "blocks_closure": true,
+      "next_action": "rerun novel ledger check"
+    },
+    {
+      "surface": "story_contribution",
+      "status": "passed",
+      "evidence_ref": "novel-ledger.json#story_units",
+      "blocks_closure": true,
+      "next_action": "rerun contribution check"
+    },
+    {
+      "surface": "promise_payoff",
+      "status": "passed",
+      "evidence_ref": "novel-ledger.json#promises",
+      "blocks_closure": true,
+      "next_action": "refresh promises"
+    },
+    {
+      "surface": "voice_style",
+      "status": "passed",
+      "evidence_ref": "voice-style-report.json",
+      "blocks_closure": true,
+      "next_action": "refresh voice report"
+    },
+    {
+      "surface": "reverse_outline",
+      "status": "passed",
+      "evidence_ref": "chapter-interfaces.json#reverse_outlines",
+      "blocks_closure": true,
+      "next_action": "refresh reverse outlines"
+    }
+  ],
+  "child_reports": [
+    {"id": "closure-ch01", "level": "chapter", "status": "passed", "evidence_ref": "chapter-interfaces.json#iface-ch01", "blocks_parent": false}
+  ],
+  "deferred_items": [],
+  "blocking_items": [],
+  "stale_items": [],
+  "decision": "passed",
+  "next_actions": []
+}

@@ -19,15 +19,25 @@ def build_plan(*, conformance_status="skipped_with_reason", conformance_evidence
         ),
     )
     blocked = (OperationEvent("select_route", fingerprint="request:r2", owner="ambiguous"),)
+    fiction = (
+        OperationEvent("select_route", fingerprint="request:r3", owner="fiction-writing", child_routes=("investigation",)),
+        OperationEvent("invoke_adapter", fingerprint="world:r3", native_owner="worldguard", evidence_domain="world_consistency", status="current_pass"),
+    )
+    travel = (
+        OperationEvent("select_route", fingerprint="request:r4", owner="travel-guide", child_routes=("investigation",)),
+        OperationEvent("invoke_adapter", fingerprint="trace:r4", native_owner="traceguard", evidence_domain="temporal_trace", status="current_pass"),
+    )
     return formal_plan(
         model_id="route_and_guard_model",
         workflow=workflow,
         initial_states=(OperationState(),),
-        external_inputs=good + blocked,
+        external_inputs=good + blocked + fiction + travel,
         invariants=OPERATION_INVARIANTS,
         scenarios=(
             scenario("academic_with_bounded_research_child", "Academic writing remains final owner", OperationState(), good, workflow, OPERATION_INVARIANTS),
             scenario("ambiguous_route_blocks", "Ambiguity remains explicit", OperationState(), blocked, workflow, OPERATION_INVARIANTS),
+            scenario("researched_fiction_keeps_owner", "Fiction remains final owner while WorldGuard preserves world consistency", OperationState(), fiction, workflow, OPERATION_INVARIANTS),
+            scenario("story_shaped_travel_keeps_owner", "Travel remains final owner and uses shared reader projection rather than fiction", OperationState(), travel, workflow, OPERATION_INVARIANTS),
         ),
         protected_error_classes=("duplicate_final_owner", "native_authority_substitution"),
         modeled_state=("route_owner", "child_routes", "adapter_receipts"),
@@ -37,7 +47,7 @@ def build_plan(*, conformance_status="skipped_with_reason", conformance_evidence
         failure_modes=("two routes both claim final ownership", "a missing specialist is silently reimplemented"),
         harms=("conflicting artifacts and false closure",),
         hard_invariants=("exactly one final owner", "specialist authority is preserved"),
-        adversarial_inputs=("ambiguous owner", "unknown adapter owner"),
+        adversarial_inputs=("ambiguous owner", "unknown adapter owner", "travel subject paper", "story-shaped itinerary", "fiction-only WorldGuard scopeout"),
         conformance_status=conformance_status,
         conformance_evidence=conformance_evidence,
     )

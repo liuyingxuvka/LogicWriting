@@ -10,6 +10,38 @@ line follows semantic versioning.
 
 - Hosted release metadata is intentionally not asserted by this source file.
 
+## [2.0.0]
+
+### Added
+
+- Four final-owner routes behind one `logic-writing` entrypoint:
+  `investigation`, `academic-writing`, `fiction-writing`, and `travel-guide`.
+- A neutral shared writing contract for contribution, reader-state movement,
+  specific handoffs, register ownership, effect-aware variation, actual
+  artifact identity, and model-span binding.
+- WorldGuard as a first-class native adapter.
+- Preserved fiction compact/short/long-form/final-manuscript models, Guard
+  lifecycle, semantic review, model mesh, and exact known-bad regression family.
+- Preserved travel source-time, weather/alert, feasibility, lodging, fit,
+  negative-evidence, reachable-fallback, traveler-native, and reverse-guide
+  regression families.
+
+### Changed
+
+- Travel consumes the shared reader-projection kernel instead of invoking
+  Storyline Design.
+- Investigation and academic writing gain reader-state, question-recovery,
+  explanation-pressure, register, variation, friction, and model-artifact
+  guidance without weakening existing evidence and provenance gates.
+- FlowGuard, SkillGuard, public docs, release validation, and installation now
+  describe one entrypoint and four routes.
+
+### Removed
+
+- Separately installable `storyline-design` and `travel-story-planner` runtime
+  authorities, aliases, and sibling-route dependencies. Historical schema
+  strings may remain only inside frozen regression implementation material.
+
 ## [1.0.2]
 
 ### Fixed

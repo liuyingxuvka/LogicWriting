@@ -1,0 +1,21 @@
+{
+  "schema_version": "storyline-design.longform_closure.v1",
+  "project_id": "aurora-key",
+  "closure_id": "closure-book-final-stale-model-binding",
+  "artifact_type": "novel",
+  "prose_phase": "final_prose",
+  "closure_level": "book",
+  "claim_boundary": "Book 1 final prose closure is attempted with a stale model binding.",
+  "required_surfaces": [
+    {"surface": "source_requirements", "status": "passed", "evidence_ref": "file:../longform_novel_project/source-requirements.json;sha256:506fd0f26b42f07121ba5f70d9b4c3342fb391bae872c65b05917dce97522aa2", "blocks_closure": true, "next_action": "refresh requirements"},
+    {"surface": "final_artifact", "status": "passed", "evidence_ref": "file:../longform_novel_project/drafts/book-01-final.txt;sha256:668e9f1b0911b8fd0e63cd8c01cfc0615d96479317e1aed2b45b0808cc5168ee", "blocks_closure": true, "next_action": "recompute artifact hash"},
+    {"surface": "artifact_bound_review", "status": "passed", "evidence_ref": "file:../longform_novel_project/semantic-review.json;sha256:5d79e7196fe9843b6465eabbe366d1530febb4ad15b20ddb0ace28cdbaadb476", "blocks_closure": true, "next_action": "rerun review"},
+    {"surface": "model_prose_binding", "status": "passed", "evidence_ref": "file:stale-model-prose-binding.json;sha256:2c166a01c7390dd1b790376cfd7a29308265bf7be88ab3abb5dc7a491c9463a7", "blocks_closure": true, "next_action": "rerun binding"}
+  ],
+  "child_reports": [{"id": "closure-ch01", "level": "chapter", "status": "passed", "evidence_ref": "../longform_novel_project/chapter-interfaces.json#iface-ch01", "blocks_parent": false}],
+  "deferred_items": [],
+  "blocking_items": [],
+  "stale_items": [],
+  "decision": "passed",
+  "next_actions": ["rerun model-prose binding against the current manuscript"]
+}

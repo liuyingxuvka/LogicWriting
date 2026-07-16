@@ -1,4 +1,4 @@
-"""Parent model exposing the two deliberately separate execution planes."""
+"""Parent mesh exposing disjoint operation children and the release plane."""
 
 from __future__ import annotations
 
@@ -19,6 +19,23 @@ PLANES = {
         "terminal_claim": "published replacement, sequential predecessor privatization, and user-owned deletion handoff",
     },
 }
+
+OPERATION_CHILDREN = {
+    "routing_and_guard": "route_and_guard_model",
+    "research_packet": "research_packet_model",
+    "shared_reader_artifact": "reader_artifact_model",
+    "fiction": "fiction_route_model",
+    "travel": "travel_route_model",
+    "freshness_and_closure": "operation_freshness_closure_model",
+}
+
+SHARED_KERNEL_STATE = (
+    "route_decision_identity",
+    "artifact_identity",
+    "reader_projection_identity",
+    "receipt_authority",
+    "freshness",
+)
 
 CROSS_PLANE_RELATIONS = (
     ("development_process.active_install", "governs", "agent_operation.entrypoint"),

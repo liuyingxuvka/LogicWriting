@@ -1,90 +1,86 @@
-# Migrating to Logic Writing
+# Migration to Logic Writing 2.0
 
-This document describes the intended cutover from the two former public skill
-entrypoints to Logic Writing. It is a migration guide, not a record that an
-installation, hosted repository, or predecessor retirement has already been
-completed.
+Version `2.0.0` keeps one public skill id, `logic-writing`, and expands the
+internal final-owner set from two routes to four. It directly replaces the
+separately installed Storyline Design and Travel Story Planner skills. There
+are no runtime compatibility aliases or fallback launchers.
 
-## What changes
+## Intent mapping
 
-Logic Writing provides one public invocation and keeps the former domains as
-two internal routes.
+| Previous public skill or route | New invocation | Final owner |
+| --- | --- | --- |
+| Logic Writing investigation | `$logic-writing` | `investigation` |
+| Logic Writing academic writing | `$logic-writing` | `academic-writing` |
+| `storyline-design` / Storyline Design | `$logic-writing` | `fiction-writing` |
+| `travel-story-planner` / Travel Story Planner | `$logic-writing` | `travel-guide` |
 
-| Former public skill or repository | New invocation | Internal route | Final responsibility |
-| --- | --- | --- | --- |
-| `research-investigation-workflow` | `$logic-writing` | `investigation` | Research report, briefing, evidence package, decision note, or investigated answer |
-| `academic-thesis-revision-workflow` | `$logic-writing` | `academic-writing` | Paper, thesis or dissertation unit, literature review, proposal, or substantive academic revision |
+The router chooses from the terminal deliverable. Research, source intake,
+world checks, traces, document mutation, or reader projection do not transfer
+final ownership.
 
-The final route is selected from the requested terminal deliverable. An
-academic route may open a bounded investigation child for one evidence gap; it
-does not transfer ownership of the academic artifact.
+## What was preserved
 
-## No compatibility layer
+Fiction preserves compact, short-story, long-form, and final-manuscript depth;
+story contribution, turning points, scene/chapter interfaces, promises,
+continuity, voice, Guard lifecycle, model mesh, real manuscript identity,
+semantic review, and model-prose binding.
 
-The predecessor ids are not aliases, forwarding shims, fallbacks, or alternate
-entrypoints for Logic Writing. A current installation should contain the new
-skill and update active instructions to invoke `$logic-writing` directly.
+Travel preserves traveler profile, source portfolio, dated weather/alert
+modes, candidates, WorldGuard feasibility, TraceGuard route mesh, lodging,
+traveler fit, recommendation support, negative evidence, reachable fallbacks,
+traveler-native guide compilation, actual-artifact hash, and reverse-guide
+closure.
 
-There is no automatic conversion of predecessor runtime ledgers or receipts.
-An existing paper, source file, or research note may still be supplied as
-ordinary user input, but Logic Writing must establish current source,
-fingerprint, route, and audit evidence for the new run. Historical status
-records do not become current authority merely because their content looks
-similar.
+Investigation and academic writing keep their existing evidence, citation,
+revision-provenance, Documents, PDF, and final-owner gates, while gaining the
+shared reader-state and model-artifact contract.
 
-## Version meaning
+## What changed
 
-Logic Writing begins a clean `1.0.0` source version line. It does not continue
-either predecessor's version sequence. The source version is not, by itself,
-evidence of a hosted release or successful installation.
+- Travel's former Storyline Design projection dependency is now the neutral
+  shared reader projection. Travel does not call the fiction route.
+- WorldGuard is a first-class native adapter for both real and fictional world
+  consistency.
+- The shared writing contract checks concrete contribution, reader-state
+  movement, explanation pressure, specific handoff, register ownership,
+  effect-aware variation, exact artifact identity, and model-span binding.
+- FlowGuard now has disjoint fiction and travel children plus Travel-first,
+  Storyline-second retirement order.
+- SkillGuard's sole current contract declares all four routes and their shared
+  kernel.
 
-## Recommended cutover sequence
+## Installation cutover
 
-1. Inventory active prompts, skill registries, documentation, automations, and
-   local installations that still name either predecessor.
-2. Install `skills/logic-writing` into a fresh target using the source-copy
-   method in [README.md](README.md).
-3. Confirm that the required specialist skills are separately available.
-4. Exercise one representative investigation request and one representative
-   academic-writing request. Inspect the selected final owner, bounded child
-   behavior, evidence handoff, plain-language output, and current failure
-   states; do not infer success from invocation alone.
-5. Update active instructions to call `$logic-writing`. Do not add an alias for
-   either predecessor.
-6. Search the active installation and public documentation for predecessor
-   references. Resolve each remaining reference deliberately.
-7. Run the repository's current validation plan on a frozen source snapshot.
-8. Only after the new entrypoint and its recovery material have been verified,
-   remove predecessor installations, move both predecessor repositories to
-   private visibility in sequence, and hand any later deletion to the user.
+1. Validate and release the exact `2.0.0` source snapshot.
+2. Stage and activate `skills/logic-writing` transactionally.
+3. Refresh the global router and confirm all four supported intent families
+   resolve to `logic-writing`.
+4. Move active `storyline-design` and `travel-story-planner` directories to a
+   recoverable quarantine outside the active skill root.
+5. Run installed behavior and content-parity checks.
+6. Verify a fresh anonymous clone and fresh installation of `LogicWriting`.
+7. Make `travel-story-planner` private and verify replacement health.
+8. Make `storyline-design-skill` private and verify replacement health again.
 
-The detailed sequence and evidence fields are in
-[docs/release-retirement-checklist.md](docs/release-retirement-checklist.md).
+Repository deletion is not part of the automated migration. The user may
+delete the private predecessor repositories later.
 
-## Existing work products
+## Existing user material
 
-| Existing item | Treatment after migration |
-| --- | --- |
-| Paper, thesis, report, or source document | Supply it as current user input and fingerprint it again |
-| Concrete source material | Preserve or re-import it through the current source-library route |
-| Old outline or plan | Treat it as editable material, not proof of current support or quality |
-| Old receipt, ledger, progress log, or self-reported pass | Historical context only; rebuild current evidence |
-| Machine-specific provider path or credential | Do not copy it into the repository; configure the provider locally |
+Papers, notes, story ledgers, manuscripts, travel plans, and guides may still be
+supplied as source material. Their old runtime receipts, completion flags,
+manifests, or installation identities do not count as current Logic Writing
+evidence. Import the material, recompute current artifact identities, and run
+the selected route's current contracts.
 
-## Retirement boundary
+Internal legacy schema strings retained inside frozen regression fixtures are
+historical test identities only. They are not installable skill ids, public
+routes, aliases, or alternate success paths.
 
-Removing an active local skill or changing a hosted repository to private is a
-separate, state-changing operation. Do it only after the cutover checks have
-current evidence. A private repository should remain visible to the
-authenticated owner while returning 404 to anonymous API requests; that 404
-is privacy evidence, not deletion evidence.
+## Rollback
 
-Final repository deletion is a separate user-owned action and has no automatic
-rollback. Logic Writing's retirement workflow ends after both repositories are
-private, their Git identities remain recoverable, and the deletion handoff has
-been recorded.
-
-Maintainer recovery would require recreating the repository from separately
-verified backup material. That recovery material is not shipped in this public
-repository and must not contain credentials, private user artifacts, or
-machine-specific configuration.
+Before each destructive-looking cutover step, preserve the prior active
+installation and predecessor source bundles. If installation, global routing,
+fresh-clone verification, privacy proof, or replacement health fails, stop the
+sequence and restore the last changed visibility or installation state. Never
+continue to the second repository after a failed first-repository health check.

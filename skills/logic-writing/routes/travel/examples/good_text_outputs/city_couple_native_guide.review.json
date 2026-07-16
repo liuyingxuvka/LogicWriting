@@ -1,0 +1,23 @@
+{
+  "final_artifact_ref": "city_couple_native_guide.txt",
+  "final_artifact_path": "city_couple_native_guide.txt",
+  "final_artifact_sha256": "0265FA6F2E4F1934B0FF355DA912614B12DD6EB017651E78C2A685EB66464BAD",
+  "observed_days": ["arrival afternoon", "full city day", "departure morning"],
+  "observed_day_headings": ["Day 1 - Arrival afternoon", "Day 2 - Full city day", "Day 3 - Departure morning"],
+  "observed_local_food_details": ["local bistro dinner", "cafe rest stop", "market snack"],
+  "observed_shopping_details": ["design shop street", "souvenir shelves"],
+  "observed_rest_nodes": ["central hotel", "quiet cafe"],
+  "observed_weather_evidence": ["climate-level planning note with pre-travel forecast recheck"],
+  "observed_weather_source_type": ["weather_climate"],
+  "observed_weather_source_mode": "climate",
+  "observed_weather_checked_hazards": ["precipitation", "wind"],
+  "observed_weather_missing_or_downgraded_hazards": ["hourly forecast unavailable in static fixture", "alerts require pre-travel recheck"],
+  "weather_claim_status": "partial",
+  "weather_route_adjustments": ["clear weather keeps riverside view", "rain or wind switches to indoor gallery"],
+  "observed_risks": ["arrival fatigue", "rain or wind", "overloading a travel day"],
+  "observed_fallbacks": ["indoor gallery", "hotel buffer"],
+  "internal_label_leakage": false,
+  "promise_alignment_status": "pass",
+  "continuity_status": "pass",
+  "status": "pass"
+}

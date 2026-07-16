@@ -1,7 +1,7 @@
 """Current JSON Schema runtime gate for Logic Writing artifacts.
 
 The skill ships its contracts with the runtime, so validation must remain
-deterministic and offline.  This module loads the exact fourteen Draft 2020-12
+deterministic and offline.  This module loads the exact current Draft 2020-12
 schemas relative to this file, resolves their local cross-schema references,
 and exposes the only two artifact-validation entry points:
 
@@ -44,6 +44,7 @@ SUPPORTED_SCHEMA_NAMES = (
     "research-packet.schema.json",
     "revision-provenance.schema.json",
     "route-decision.schema.json",
+    "shared-writing-contract.schema.json",
     "source-registry.schema.json",
     "source-unit-manifest.schema.json",
 )

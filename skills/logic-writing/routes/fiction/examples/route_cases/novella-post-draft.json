@@ -1,0 +1,26 @@
+{
+  "case_id": "novella-post-draft",
+  "request": {
+    "artifact_type": "novella",
+    "prose_phase": "post_draft"
+  },
+  "expected": {
+    "status": "compiled",
+    "canonical_artifact": "novella",
+    "alias_used": false,
+    "route_id": "route:longform",
+    "depth_tier": "longform",
+    "closure_level": "book",
+    "prose_phase": "post_draft",
+    "required_surfaces_include": [
+      "novel_ledger",
+      "chapter_interface",
+      "reverse_outline"
+    ],
+    "required_surfaces_exclude": [
+      "final_artifact",
+      "artifact_bound_review",
+      "model_prose_binding"
+    ]
+  }
+}

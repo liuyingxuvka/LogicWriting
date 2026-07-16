@@ -1,0 +1,17 @@
+{
+  "schema_version": "travel-story-planner.text-failure-case.v3",
+  "case_id": "bullet-list-only",
+  "base_text": "skills/logic-writing/routes/travel/examples/good_text_outputs/city_couple_native_guide.txt",
+  "base_review": "skills/logic-writing/routes/travel/examples/good_text_outputs/city_couple_native_guide.review.json",
+  "text_mutations": [
+    {
+      "op": "set",
+      "value": "City couple native guide\n\nDay 1 - Arrival afternoon\n- Central hotel buffer and main station.\n- Design shop street and souvenir shelves.\n- Local bistro dinner, cafe rest stop, and market snack.\n- Arrival fatigue uses the hotel buffer fallback.\n\nDay 2 - Full city day\n- Climate-level planning note with forecast recheck.\n- Rain or wind switches to the indoor gallery.\n- Food, shopping, rest, quiet cafe, and restaurant remain nearby.\n\nDay 3 - Departure morning\n- Overloading a travel day returns to the hotel.\n- One final souvenir shelf and short market walk.\n"
+    }
+  ],
+  "review_mutations": [],
+  "expected_issue_codes": [
+    "text.bullet_list_only",
+    "text.reverse_review.artifact_hash_mismatch"
+  ]
+}

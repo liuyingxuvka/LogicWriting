@@ -1,0 +1,34 @@
+{
+  "schema_version": "storyline-design.model_prose_binding.v1",
+  "project_id": "fixture",
+  "artifact_ref": "file:../longform_novel_project/drafts/book-01-final.txt;sha256:668e9f1b0911b8fd0e63cd8c01cfc0615d96479317e1aed2b45b0808cc5168ee",
+  "artifact_sha256": "sha256:668e9f1b0911b8fd0e63cd8c01cfc0615d96479317e1aed2b45b0808cc5168ee",
+  "binding_scope": "book",
+  "binding_rows": [
+    {
+      "id": "bind-early-answer",
+      "prose_ref": "chapter-01#answer",
+      "model_refs": ["promise:central-question"],
+      "observed_reader_delta": "The reader receives the central answer before alternative pressure develops.",
+      "observed_state_delta": ["central question collapses"],
+      "downstream_use": ["chapter-02"],
+      "resistance_or_cost": "The model does not replace the lost uncertainty.",
+      "reader_hypothesis_delta": "The reader has no live competing interpretation.",
+      "register_notes": ["No register drift."],
+      "variation_purpose": "none",
+      "status": "pass"
+    }
+  ],
+  "drift_findings": [
+    {
+      "kind": "premature_hypothesis_collapse",
+      "status": "drift",
+      "finding": "Reader expectation collapses before replacement pressure is modeled."
+    }
+  ],
+  "length_outliers": [],
+  "unbound_prose_refs": [],
+  "unrealized_model_refs": [],
+  "duplicate_binding_refs": [],
+  "decision": "passed"
+}

@@ -53,37 +53,37 @@ def design_plan():
         ),
         fallback_candidates=(
             FallbackPathCandidate(
-                "legacy.research-investigation-workflow",
+                "legacy.travel-story-planner-workflow",
                 fallback_for_path_id=PRIMARY_PATH_ID,
                 business_intent=BUSINESS_INTENT,
                 business_intent_id=BUSINESS_INTENT_ID,
                 behavior_commitment_id=BEHAVIOR_COMMITMENT_ID,
-                source_surface_id="surface:legacy-research-skill",
+                source_surface_id="surface:legacy-travel-skill",
                 candidate_surface=PPA_CANDIDATE_LEGACY_PATH,
                 candidate_trigger=PPA_TRIGGER_NEVER,
                 candidate_behavior=PPA_BEHAVIOR_NO_OP,
                 classification=PPA_AUTHORITY_MIGRATION_ONLY,
                 disposition=PPA_DISPOSITION_DELETE,
-                evidence_refs=("backup:research-bundle", "openspec:retirement-task"),
+                evidence_refs=("backup:travel-bundle", "openspec:retirement-task"),
             ),
             FallbackPathCandidate(
-                "legacy.academic-thesis-revision-workflow",
+                "legacy.storyline-design-workflow",
                 fallback_for_path_id=PRIMARY_PATH_ID,
                 business_intent=BUSINESS_INTENT,
                 business_intent_id=BUSINESS_INTENT_ID,
                 behavior_commitment_id=BEHAVIOR_COMMITMENT_ID,
-                source_surface_id="surface:legacy-academic-skill",
+                source_surface_id="surface:legacy-storyline-skill",
                 candidate_surface=PPA_CANDIDATE_LEGACY_PATH,
                 candidate_trigger=PPA_TRIGGER_NEVER,
                 candidate_behavior=PPA_BEHAVIOR_NO_OP,
                 classification=PPA_AUTHORITY_MIGRATION_ONLY,
                 disposition=PPA_DISPOSITION_DELETE,
-                evidence_refs=("backup:academic-bundle", "openspec:retirement-task"),
+                evidence_refs=("backup:storyline-bundle", "openspec:retirement-task"),
             ),
         ),
         metadata={
             "claim_boundary": "design topology only; installed runtime evidence is not yet available",
-            "internal_route_boundary": "investigation and academic-writing are selected children of the primary entry, not alternate public entrypoints",
+            "internal_route_boundary": "investigation, academic-writing, fiction-writing, and travel-guide are selected children of the primary entry, not alternate public entrypoints",
         },
     )
 
@@ -94,7 +94,7 @@ def broken_old_skill_masks_primary_failure():
         primary_paths=design_plan().primary_paths,
         fallback_candidates=(
             FallbackPathCandidate(
-                "legacy.research-investigation-workflow",
+                "legacy.travel-story-planner-workflow",
                 fallback_for_path_id=PRIMARY_PATH_ID,
                 business_intent=BUSINESS_INTENT,
                 candidate_surface=PPA_CANDIDATE_LEGACY_PATH,

@@ -22,7 +22,7 @@ EXCLUDED_PARTS = {".git", "__pycache__", ".pytest_cache", "run-artifacts", "run_
 PATTERNS = {
     "windows_home": re.compile(r"[A-Za-z]:\\Users\\[^\\\s]+", re.IGNORECASE),
     "unix_home": re.compile(r"/(?:Users|home)/[^/\s]+/"),
-    "openai_key": re.compile(r"sk-[A-Za-z0-9_-]{20,}"),
+    "openai_key": re.compile(r"(?<![A-Za-z0-9])sk-[A-Za-z0-9_-]{20,}"),
     "github_token": re.compile(r"gh[opusr]_[A-Za-z0-9]{20,}"),
     "private_key": re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"),
 }

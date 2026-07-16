@@ -1,0 +1,85 @@
+{
+  "project_id": "aurora-key",
+  "model_revision": "aurora-key-model-r1",
+  "promises": [
+    {
+      "id": "promise-map-control",
+      "kind": "promise",
+      "promise_type": "dramatic_question",
+      "source_row_id": "chapter-01",
+      "source_row_kind": "scene",
+      "introduced_by": ["chapter-01"],
+      "promise_text": "Who controls the map and at what cost?",
+      "reader_expectation": "The book will answer who controls the map and show the cost of securing it.",
+      "importance": "key",
+      "expected_payoff": {
+        "payoff_type": "answer_and_cost",
+        "target_rows": ["chapter-05"],
+        "minimum_evidence": ["chapter_interface", "reverse_outline", "closure"]
+      },
+      "current_payoff": {
+        "status": "paid",
+        "payoff_rows": ["chapter-05"],
+        "payoff_text": "Mira secures the true map in the glass case and accepts public consequence.",
+        "payoff_evidence_refs": ["chapter-interfaces.json#iface-ch05", "chapter-interfaces.json#reverse-ch05"]
+      },
+      "status": "paid",
+      "closure_effect": "continue",
+      "evidence_refs": ["chapter-interfaces.json#iface-ch05", "longform-final-prose-closure.json#closure-book-01-final-prose"]
+    },
+    {
+      "id": "promise-rival-trap",
+      "kind": "promise",
+      "promise_type": "mystery",
+      "source_row_id": "chapter-02",
+      "source_row_kind": "scene",
+      "introduced_by": ["chapter-02"],
+      "promise_text": "Why was Mira baited toward the map room?",
+      "reader_expectation": "The book will reveal the rival's trap and why Mira was directed toward the decoy.",
+      "importance": "major",
+      "expected_payoff": {
+        "payoff_type": "reveal",
+        "target_rows": ["chapter-04", "chapter-05"],
+        "minimum_evidence": ["chapter_interface", "reverse_outline"]
+      },
+      "current_payoff": {
+        "status": "paid",
+        "payoff_rows": ["chapter-04", "chapter-05"],
+        "payoff_text": "The rival's ledger reveals that the map room was a decoy and the glass case carries the true risk.",
+        "payoff_evidence_refs": ["chapter-interfaces.json#iface-ch04", "chapter-interfaces.json#reverse-ch04"]
+      },
+      "status": "paid",
+      "closure_effect": "continue",
+      "evidence_refs": ["chapter-interfaces.json#iface-ch04", "chapter-interfaces.json#iface-ch05"]
+    },
+    {
+      "id": "promise-series-map-origin",
+      "kind": "promise",
+      "promise_type": "mystery",
+      "source_row_id": "chapter-05",
+      "source_row_kind": "scene",
+      "introduced_by": ["chapter-05"],
+      "promise_text": "Where did the true map come from?",
+      "reader_expectation": "The series will eventually answer the true map's origin, while Book 1 only closes control of it.",
+      "importance": "major",
+      "expected_payoff": {
+        "payoff_type": "deferral",
+        "target_rows": ["book-02"],
+        "minimum_evidence": ["claim_boundary", "deferred_item"]
+      },
+      "current_payoff": {
+        "status": "series_deferred",
+        "payoff_rows": [],
+        "payoff_text": "Book 1 fairly defers the origin to the series while closing the immediate control conflict.",
+        "payoff_evidence_refs": ["longform-final-prose-closure.json#deferred-series-origin"]
+      },
+      "status": "series_deferred",
+      "closure_effect": "continue",
+      "deferral_level": "series",
+      "claim_boundary": "Book 1 may defer the map origin to the series while closing map control.",
+      "next_expected_surface": "book-02",
+      "reader_fairness_note": "The origin question appears as a series hook only after the book-level control promise is paid.",
+      "evidence_refs": ["longform-final-prose-closure.json#deferred-series-origin"]
+    }
+  ]
+}

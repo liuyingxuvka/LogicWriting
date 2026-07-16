@@ -1,0 +1,283 @@
+{
+  "schema_version": "storyline-design.guard_oracle_set.v1",
+  "target_skill_id": "storyline-design",
+  "required_obligation_ids": [
+    "guard_surface.flowguard_process",
+    "guard_surface.traceguard_storyline",
+    "guard_surface.worldguard_scope",
+    "guard_surface.logicguard_theme",
+    "guard_surface.sourceguard_canon",
+    "evidence.structured_not_self_reported",
+    "evidence.flowguard_freshness",
+    "longform.novel_ledger_identity",
+    "longform.closure_artifact_identity",
+    "longform.structured_surface_identity",
+    "final_prose.artifact_bound_review",
+    "final_prose.hash_alignment",
+    "final_prose.final_artifact",
+    "final_prose.source_requirements",
+    "chapter.concrete_handoff",
+    "promise.key_resolution",
+    "continuity.material_rows",
+    "binding.prose_span_coverage",
+    "binding.model_ref_realization",
+    "binding.duplicate_delta",
+    "binding.resistance_or_cost",
+    "binding.reader_hypothesis_drift",
+    "binding.register_ownership",
+    "binding.length_outlier_review",
+    "final_prose.model_prose_binding"
+  ],
+  "oracles": [
+    {
+      "oracle_id": "oracle:storyline:missing-flowguard-process",
+      "obligation_id": "guard_surface.flowguard_process",
+      "failure_id": "failure:storyline:missing-flowguard-process",
+      "predicate_kind": "target_native_json_reaction_must_block",
+      "native_validator": "scripts/storyline_closure_check.py",
+      "predicate": "The current closure must include FlowGuard process-route evidence.",
+      "expected_finding_code": "storyline_blocked:missing-flowguard-process",
+      "expected_reaction": {"source": "issues", "code": "missing_required_surface", "path": "checks.flowguard_process", "message_contains": "flowguard_process"}
+    },
+    {
+      "oracle_id": "oracle:storyline:missing-traceguard-storyline",
+      "obligation_id": "guard_surface.traceguard_storyline",
+      "failure_id": "failure:storyline:missing-traceguard-storyline",
+      "predicate_kind": "target_native_json_reaction_must_block",
+      "native_validator": "scripts/storyline_closure_check.py",
+      "predicate": "The current closure must include TraceGuard storyline applicability or evidence.",
+      "expected_finding_code": "storyline_blocked:missing-traceguard-storyline",
+      "expected_reaction": {"source": "issues", "code": "missing_required_surface", "path": "checks.traceguard_storyline", "message_contains": "traceguard_storyline"}
+    },
+    {
+      "oracle_id": "oracle:storyline:fictional-worldguard-auto-scopeout",
+      "obligation_id": "guard_surface.worldguard_scope",
+      "failure_id": "failure:storyline:fictional-worldguard-auto-scopeout",
+      "predicate_kind": "target_native_json_reaction_must_block",
+      "native_validator": "scripts/storyline_closure_check.py",
+      "predicate": "Fiction alone cannot scope out material WorldGuard claims.",
+      "expected_finding_code": "storyline_blocked:fictional-worldguard-auto-scopeout",
+      "expected_reaction": {"source": "issues", "code": "fictional_world_auto_scopeout", "path": "checks[2]", "message_contains": "fictional"}
+    },
+    {
+      "oracle_id": "oracle:storyline:missing-logicguard-theme",
+      "obligation_id": "guard_surface.logicguard_theme",
+      "failure_id": "failure:storyline:missing-logicguard-theme",
+      "predicate_kind": "target_native_json_reaction_must_block",
+      "native_validator": "scripts/storyline_closure_check.py",
+      "predicate": "The current closure must include LogicGuard theme applicability or evidence.",
+      "expected_finding_code": "storyline_blocked:missing-logicguard-theme",
+      "expected_reaction": {"source": "issues", "code": "missing_required_surface", "path": "checks.logicguard_theme_support", "message_contains": "logicguard_theme_support"}
+    },
+    {
+      "oracle_id": "oracle:storyline:missing-sourceguard-canon",
+      "obligation_id": "guard_surface.sourceguard_canon",
+      "failure_id": "failure:storyline:missing-sourceguard-canon",
+      "predicate_kind": "target_native_json_reaction_must_block",
+      "native_validator": "scripts/storyline_closure_check.py",
+      "predicate": "The current closure must include SourceGuard canon applicability or evidence.",
+      "expected_finding_code": "storyline_blocked:missing-sourceguard-canon",
+      "expected_reaction": {"source": "issues", "code": "missing_required_surface", "path": "checks.sourceguard_canon_support", "message_contains": "sourceguard_canon_support"}
+    },
+    {
+      "oracle_id": "oracle:storyline:prose-only-evidence-substitution",
+      "obligation_id": "evidence.structured_not_self_reported",
+      "failure_id": "failure:storyline:prose-only-evidence-substitution",
+      "predicate_kind": "target_native_json_reaction_must_block",
+      "native_validator": "scripts/storyline_closure_check.py",
+      "predicate": "AI self-report cannot substitute for structured required evidence.",
+      "expected_finding_code": "storyline_blocked:prose-only-evidence-substitution",
+      "expected_reaction": {"source": "issues", "code": "prose_only_evidence", "path": "checks[0].evidence_ref", "message_contains": "prose-only"}
+    },
+    {
+      "oracle_id": "oracle:storyline:stale-flowguard-process",
+      "obligation_id": "evidence.flowguard_freshness",
+      "failure_id": "failure:storyline:stale-flowguard-process",
+      "predicate_kind": "target_native_json_reaction_must_block",
+      "native_validator": "scripts/storyline_closure_check.py",
+      "predicate": "FlowGuard process evidence must be current for the story model.",
+      "expected_finding_code": "storyline_blocked:stale-flowguard-process",
+      "expected_reaction": {"source": "stale_evidence", "surface": "flowguard_process", "next_action": "refresh_flowguard_process_evidence"}
+    },
+    {
+      "oracle_id": "oracle:storyline:reverse-outline-as-ledger",
+      "obligation_id": "longform.novel_ledger_identity",
+      "failure_id": "failure:storyline:reverse-outline-as-ledger",
+      "predicate_kind": "target_native_json_reaction_must_block",
+      "native_validator": "scripts/longform_closure_check.py",
+      "predicate": "A reverse outline cannot stand in for the novel ledger.",
+      "expected_finding_code": "storyline_blocked:reverse-outline-as-ledger",
+      "expected_reaction": {"source": "issues", "code": "surface_evidence_invalid", "path": "required_surfaces[0].evidence_ref", "message_contains": "novel_ledger_check"}
+    },
+    {
+      "oracle_id": "oracle:storyline:weak-reverse-outline-as-closure",
+      "obligation_id": "longform.closure_artifact_identity",
+      "failure_id": "failure:storyline:weak-reverse-outline-as-closure",
+      "predicate_kind": "target_native_json_reaction_must_block",
+      "native_validator": "scripts/longform_closure_check.py",
+      "predicate": "Reverse-outline rows without the aggregate closure contract cannot close a book.",
+      "expected_finding_code": "storyline_blocked:weak-reverse-outline-as-closure",
+      "expected_reaction": {"source": "issues", "code": "invalid_schema_version", "path": "schema_version", "message_contains": "longform_closure"}
+    },
+    {
+      "oracle_id": "oracle:storyline:markdown-model-substitution",
+      "obligation_id": "longform.structured_surface_identity",
+      "failure_id": "failure:storyline:markdown-model-substitution",
+      "predicate_kind": "target_native_json_reaction_must_block",
+      "native_validator": "scripts/longform_closure_check.py",
+      "predicate": "Passed model surfaces must be locally openable structured JSON evidence.",
+      "expected_finding_code": "storyline_blocked:markdown-model-substitution",
+      "expected_reaction": {"source": "issues", "code": "surface_evidence_not_local_json", "path": "required_surfaces[0].evidence_ref", "message_contains": "local JSON"}
+    },
+    {
+      "oracle_id": "oracle:storyline:review-not-artifact-bound",
+      "obligation_id": "final_prose.artifact_bound_review",
+      "failure_id": "failure:storyline:review-not-artifact-bound",
+      "predicate_kind": "target_native_json_reaction_must_block",
+      "native_validator": "scripts/longform_closure_check.py",
+      "predicate": "Final-prose semantic review must include the reviewed artifact hash.",
+      "expected_finding_code": "storyline_blocked:review-not-artifact-bound",
+      "expected_reaction": {"source": "issues", "code": "missing_artifact_bound_review_hash", "path": "required_surfaces[8].evidence_ref", "message_contains": "sha256"}
+    },
+    {
+      "oracle_id": "oracle:storyline:artifact-review-hash-mismatch",
+      "obligation_id": "final_prose.hash_alignment",
+      "failure_id": "failure:storyline:artifact-review-hash-mismatch",
+      "predicate_kind": "target_native_json_reaction_must_block",
+      "native_validator": "scripts/longform_closure_check.py",
+      "predicate": "Final artifact and artifact-bound review hashes must match.",
+      "expected_finding_code": "storyline_blocked:artifact-review-hash-mismatch",
+      "expected_reaction": {"source": "issues", "code": "artifact_review_hash_mismatch", "path": "required_surfaces", "message_contains": "do not match"}
+    },
+    {
+      "oracle_id": "oracle:storyline:missing-final-artifact",
+      "obligation_id": "final_prose.final_artifact",
+      "failure_id": "failure:storyline:missing-final-artifact",
+      "predicate_kind": "target_native_json_reaction_must_block",
+      "native_validator": "scripts/longform_closure_check.py",
+      "predicate": "Final-prose closure must name the final artifact surface.",
+      "expected_finding_code": "storyline_blocked:missing-final-artifact",
+      "expected_reaction": {"source": "issues", "code": "missing_final_prose_surface", "path": "required_surfaces", "message_contains": "final_artifact"}
+    },
+    {
+      "oracle_id": "oracle:storyline:missing-source-requirements",
+      "obligation_id": "final_prose.source_requirements",
+      "failure_id": "failure:storyline:missing-source-requirements",
+      "predicate_kind": "target_native_json_reaction_must_block",
+      "native_validator": "scripts/longform_closure_check.py",
+      "predicate": "Final-prose closure must include the source-requirements surface.",
+      "expected_finding_code": "storyline_blocked:missing-source-requirements",
+      "expected_reaction": {"source": "issues", "code": "missing_final_prose_surface", "path": "required_surfaces", "message_contains": "source_requirements"}
+    },
+    {
+      "oracle_id": "oracle:storyline:generic-chapter-interface",
+      "obligation_id": "chapter.concrete_handoff",
+      "failure_id": "failure:storyline:generic-chapter-interface",
+      "predicate_kind": "target_native_json_reaction_must_block",
+      "native_validator": "scripts/chapter_interface_check.py",
+      "predicate": "Adjacent chapter handoffs must be concrete, not placeholders.",
+      "expected_finding_code": "storyline_blocked:generic-chapter-interface",
+      "expected_reaction": {"source": "issues", "code": "fake_or_missing_handoff", "path": "chapter_interfaces[0].previous_output", "message_contains": "concrete"}
+    },
+    {
+      "oracle_id": "oracle:storyline:unresolved-key-promise",
+      "obligation_id": "promise.key_resolution",
+      "failure_id": "failure:storyline:unresolved-key-promise",
+      "predicate_kind": "target_native_json_reaction_must_block",
+      "native_validator": "scripts/novel_ledger_check.py",
+      "predicate": "Key and major promises require a non-blocking closure disposition.",
+      "expected_finding_code": "storyline_blocked:unresolved-key-promise",
+      "expected_reaction": {"source": "issues", "code": "unresolved_key_or_major_promise", "path": "promises[0].status", "message_contains": "unresolved"}
+    },
+    {
+      "oracle_id": "oracle:storyline:missing-material-continuity",
+      "obligation_id": "continuity.material_rows",
+      "failure_id": "failure:storyline:missing-material-continuity",
+      "predicate_kind": "target_native_json_reaction_must_block",
+      "native_validator": "scripts/novel_ledger_check.py",
+      "predicate": "Longform ledgers must include material continuity rows.",
+      "expected_finding_code": "storyline_blocked:missing-material-continuity",
+      "expected_reaction": {"source": "issues", "code": "missing_continuity", "path": "continuity", "message_contains": "continuity"}
+    },
+    {
+      "oracle_id": "oracle:storyline:unbound-prose-span",
+      "obligation_id": "binding.prose_span_coverage",
+      "failure_id": "failure:storyline:unbound-prose-span",
+      "predicate_kind": "target_native_json_reaction_must_block",
+      "native_validator": "scripts/model_prose_binding_check.py",
+      "predicate": "Material prose spans must bind to model evidence or remain visible as blocking gaps.",
+      "expected_finding_code": "storyline_blocked:unbound-prose-span",
+      "expected_reaction": {"source": "issues", "code": "unresolved_binding_gap", "path": "unbound_prose_refs", "message_contains": "unbound_prose_refs"}
+    },
+    {
+      "oracle_id": "oracle:storyline:unrealized-model-reference",
+      "obligation_id": "binding.model_ref_realization",
+      "failure_id": "failure:storyline:unrealized-model-reference",
+      "predicate_kind": "target_native_json_reaction_must_block",
+      "native_validator": "scripts/model_prose_binding_check.py",
+      "predicate": "Key and major model references must have prose realization or remain blocking gaps.",
+      "expected_finding_code": "storyline_blocked:unrealized-model-reference",
+      "expected_reaction": {"source": "issues", "code": "unresolved_binding_gap", "path": "unrealized_model_refs", "message_contains": "unrealized_model_refs"}
+    },
+    {
+      "oracle_id": "oracle:storyline:duplicate-binding-without-delta",
+      "obligation_id": "binding.duplicate_delta",
+      "failure_id": "failure:storyline:duplicate-binding-without-delta",
+      "predicate_kind": "target_native_json_reaction_must_block",
+      "native_validator": "scripts/model_prose_binding_check.py",
+      "predicate": "Duplicate model bindings require a recorded changed effect.",
+      "expected_finding_code": "storyline_blocked:duplicate-binding-without-delta",
+      "expected_reaction": {"source": "issues", "code": "duplicate_binding_without_delta", "path": "binding_rows[1].model_refs", "message_contains": "same model refs"}
+    },
+    {
+      "oracle_id": "oracle:storyline:reveal-without-resistance",
+      "obligation_id": "binding.resistance_or_cost",
+      "failure_id": "failure:storyline:reveal-without-resistance",
+      "predicate_kind": "target_native_json_reaction_must_block",
+      "native_validator": "scripts/model_prose_binding_check.py",
+      "predicate": "Material reveals require resistance, cost, delay, consequence, or a scoped reason.",
+      "expected_finding_code": "storyline_blocked:reveal-without-resistance",
+      "expected_reaction": {"source": "issues", "code": "missing_required_field", "path": "binding_rows[0].resistance_or_cost", "message_contains": "resistance_or_cost"}
+    },
+    {
+      "oracle_id": "oracle:storyline:premature-hypothesis-collapse",
+      "obligation_id": "binding.reader_hypothesis_drift",
+      "failure_id": "failure:storyline:premature-hypothesis-collapse",
+      "predicate_kind": "target_native_json_reaction_must_block",
+      "native_validator": "scripts/model_prose_binding_check.py",
+      "predicate": "Unresolved reader-hypothesis drift cannot pass binding closure.",
+      "expected_finding_code": "storyline_blocked:premature-hypothesis-collapse",
+      "expected_reaction": {"source": "issues", "code": "unresolved_drift_finding", "path": "drift_findings[0].status", "message_contains": "resolved"}
+    },
+    {
+      "oracle_id": "oracle:storyline:term-register-owner-drift",
+      "obligation_id": "binding.register_ownership",
+      "failure_id": "failure:storyline:term-register-owner-drift",
+      "predicate_kind": "target_native_json_reaction_must_block",
+      "native_validator": "scripts/model_prose_binding_check.py",
+      "predicate": "Material bindings require register-owner notes and resolved register drift.",
+      "expected_finding_code": "storyline_blocked:term-register-owner-drift",
+      "expected_reaction": {"source": "issues", "code": "missing_required_list", "path": "binding_rows[0].register_notes", "message_contains": "register_notes"}
+    },
+    {
+      "oracle_id": "oracle:storyline:length-outlier-without-review",
+      "obligation_id": "binding.length_outlier_review",
+      "failure_id": "failure:storyline:length-outlier-without-review",
+      "predicate_kind": "target_native_json_reaction_must_block",
+      "native_validator": "scripts/model_prose_binding_check.py",
+      "predicate": "Blocking length outliers require binding-density review.",
+      "expected_finding_code": "storyline_blocked:length-outlier-without-review",
+      "expected_reaction": {"source": "issues", "code": "missing_binding_density_review", "path": "length_outliers[0].binding_density_review", "message_contains": "binding-density"}
+    },
+    {
+      "oracle_id": "oracle:storyline:missing-model-prose-binding",
+      "obligation_id": "final_prose.model_prose_binding",
+      "failure_id": "failure:storyline:missing-model-prose-binding",
+      "predicate_kind": "target_native_json_reaction_must_block",
+      "native_validator": "scripts/longform_closure_check.py",
+      "predicate": "Final-prose closure must include current model-prose binding evidence.",
+      "expected_finding_code": "storyline_blocked:missing-model-prose-binding",
+      "expected_reaction": {"source": "issues", "code": "missing_final_prose_surface", "path": "required_surfaces", "message_contains": "model_prose_binding"}
+    }
+  ]
+}

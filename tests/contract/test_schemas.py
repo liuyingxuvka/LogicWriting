@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import hashlib
 import json
 from pathlib import Path
 
@@ -81,6 +82,38 @@ def schema_examples(tmp_path_factory):
         },
         receipt_root=receipt_root,
     )
+    shared_path = workdir / "shared-writing.md"
+    shared_path.write_text("The observed result narrows the decision boundary.", encoding="utf-8")
+    shared_contract = {
+        "schema_version": "1.0",
+        "contract_id": "contract:schema-shared-writing",
+        "final_owner": "investigation",
+        "artifact_path": str(shared_path),
+        "artifact_fingerprint": "sha256:" + hashlib.sha256(shared_path.read_bytes()).hexdigest(),
+        "audience": "A decision maker",
+        "purpose": "Explain the supported boundary",
+        "incoming_reader_state": "The reader knows the question but not the evidence",
+        "artifact_form": "report",
+        "units": [{
+            "unit_id": "unit:schema",
+            "important": True,
+            "contribution": "The evidence narrows the decision boundary",
+            "incoming_reader_state": "The outcome is still open",
+            "outgoing_reader_state": "One unsupported option is excluded",
+            "unresolved_or_terminal": "The remaining option needs a later check",
+            "downstream_consumer": "unit:decision compares the remaining option",
+            "register_owner": "The observed source owns the result wording",
+            "variation_effect": "This is the first contribution",
+            "model_row_ids": ["row:schema"],
+            "artifact_span": shared_path.read_text(encoding="utf-8"),
+        }],
+        "route_extension": {
+            "owner": "investigation",
+            "profile": "evidence",
+            "required_surface_ids": ["surface:source-support"],
+        },
+    }
+    shared_contract["contract_fingerprint"] = fingerprint(shared_contract)
     return {
         "adapter-request.schema.json": _adapter_request(),
         "adapter-result.schema.json": reader["observation_adapter_result"],
@@ -94,6 +127,7 @@ def schema_examples(tmp_path_factory):
         "research-packet.schema.json": reader["packet"],
         "revision-provenance.schema.json": revision["provenance_result"]["provenance"],
         "route-decision.schema.json": contract["route_decision"],
+        "shared-writing-contract.schema.json": shared_contract,
         "source-registry.schema.json": reader["registry"],
         "source-unit-manifest.schema.json": revision["manifest"],
     }

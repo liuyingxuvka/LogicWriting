@@ -1,0 +1,21 @@
+{
+  "schema_version": "travel-story-planner.positive-case.v1",
+  "case_id": "step-free-accessibility-binding",
+  "base_plan": "skills/logic-writing/routes/travel/examples/good_city_couple_trip/plan.json",
+  "mutations": [
+    {"op": "set", "path": ["trip_context", "trip_id"], "value": "fixture-city-step-free"},
+    {"op": "set", "path": ["traveler_profile", "accessibility_needs"], "value": ["step-free transfers"]},
+    {"op": "append", "path": ["trip_fit_review", "dimension_rows"], "value": {"dimension": "accessibility", "status": "pass", "affected_trace_ids": ["trace-primary", "trace-comfort"], "evidence_ids": ["step-free-route", "lift-check"], "mitigation_ids": ["fb-gallery", "fb-rest"], "input_field": "traveler_profile.accessibility_needs", "input_values": ["step-free transfers"]}},
+    {"op": "set", "path": ["traveler_native_guide", "final_artifact", "path"], "value": "skills/logic-writing/routes/travel/examples/positive_cases/accessibility-guide.md"},
+    {"op": "set", "path": ["traveler_native_guide", "final_artifact", "sha256"], "value": "6DFBE48C4F1C1B5C26AF4A33E2EFDA9AFF112807C1C219E2B5ED75ED160D3528"},
+    {"op": "set", "path": ["traveler_native_guide", "final_artifact", "generated_from_plan_id"], "value": "fixture-city-step-free"},
+    {"op": "set", "path": ["traveler_native_guide", "reverse_guide_review", "final_artifact_ref"], "value": "skills/logic-writing/routes/travel/examples/positive_cases/accessibility-guide.md"},
+    {"op": "set", "path": ["traveler_native_guide", "reverse_guide_review", "final_artifact_path"], "value": "skills/logic-writing/routes/travel/examples/positive_cases/accessibility-guide.md"},
+    {"op": "set", "path": ["traveler_native_guide", "reverse_guide_review", "final_artifact_sha256"], "value": "6DFBE48C4F1C1B5C26AF4A33E2EFDA9AFF112807C1C219E2B5ED75ED160D3528"},
+    {"op": "set", "path": ["traveler_native_guide", "reverse_guide_review", "observed_local_food_details"], "value": ["local bistro dinner"]},
+    {"op": "set", "path": ["traveler_native_guide", "reverse_guide_review", "observed_shopping_details"], "value": ["design shop street", "souvenir stop"]},
+    {"op": "set", "path": ["traveler_native_guide", "reverse_guide_review", "observed_rest_nodes"], "value": ["central hotel", "quiet cafe rest"]},
+    {"op": "set", "path": ["traveler_native_guide", "reverse_guide_review", "observed_risks"], "value": ["lift outage", "fatigue"]},
+    {"op": "set", "path": ["traveler_native_guide", "reverse_guide_review", "observed_fallbacks"], "value": ["indoor gallery", "hotel-area cafe"]}
+  ]
+}

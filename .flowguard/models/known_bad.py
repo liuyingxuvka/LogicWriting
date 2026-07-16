@@ -120,7 +120,7 @@ def run_known_bad_proofs():
         "privatize_legacy_before_installed_validation": Explorer(
             workflow=Workflow((BrokenRemotePrivatization(),), name="known_bad_early_privatization"),
             initial_states=(DevelopmentState(),),
-            external_inputs=(DevelopmentEvent("privatize_legacy_remote", target="research"),),
+            external_inputs=(DevelopmentEvent("privatize_legacy_remote", target="travel"),),
             invariants=DEVELOPMENT_INVARIANTS,
             max_sequence_length=1,
             progress_steps=0,

@@ -48,9 +48,12 @@ DOWNGRADED = {
 NEXT_OWNERS = {
     "investigation",
     "academic-writing",
+    "fiction-writing",
+    "travel-guide",
     "sourceguard",
     "logicguard",
     "traceguard",
+    "worldguard",
     "flowguard",
     "documents",
     "pdf",
@@ -90,6 +93,24 @@ BROAD_BASELINE_DOMAINS = {
         "reader_deterministic",
         "reader_judgment",
     },
+    "fiction-writing": {
+        "story_model",
+        "story_continuity",
+        "model_artifact_binding",
+        "shared_writing",
+        "reader_deterministic",
+        "reader_judgment",
+    },
+    "travel-guide": {
+        "travel_evidence",
+        "travel_feasibility",
+        "traveler_fit",
+        "travel_fallback",
+        "model_artifact_binding",
+        "shared_writing",
+        "reader_deterministic",
+        "reader_judgment",
+    },
 }
 FINAL_BASELINE_DOMAINS = {
     "investigation": {
@@ -106,6 +127,24 @@ FINAL_BASELINE_DOMAINS = {
         "reader_deterministic",
         "reader_judgment",
     },
+    "fiction-writing": {
+        "story_model",
+        "story_continuity",
+        "model_artifact_binding",
+        "shared_writing",
+        "reader_deterministic",
+        "reader_judgment",
+    },
+    "travel-guide": {
+        "travel_evidence",
+        "travel_feasibility",
+        "traveler_fit",
+        "travel_fallback",
+        "model_artifact_binding",
+        "shared_writing",
+        "reader_deterministic",
+        "reader_judgment",
+    },
 }
 DOMAIN_OWNER = {
     "source_observation": "sourceguard",
@@ -119,6 +158,14 @@ DOMAIN_OWNER = {
     "reader_brief": "academic-writing",
     "reader_deterministic": "academic-writing",
     "reader_judgment": "human_review",
+    "shared_writing": "academic-writing",
+    "story_model": "fiction-writing",
+    "story_continuity": "fiction-writing",
+    "model_artifact_binding": "academic-writing",
+    "travel_evidence": "travel-guide",
+    "travel_feasibility": "travel-guide",
+    "traveler_fit": "travel-guide",
+    "travel_fallback": "travel-guide",
 }
 
 
@@ -157,7 +204,19 @@ def _missing_baseline_residual(
         "human_review"
         if domain == "reader_judgment"
         else final_owner
-        if domain in {"reader_brief", "reader_deterministic", "revision_provenance"}
+        if domain in {
+            "reader_brief",
+            "reader_deterministic",
+            "revision_provenance",
+            "shared_writing",
+            "story_model",
+            "story_continuity",
+            "model_artifact_binding",
+            "travel_evidence",
+            "travel_feasibility",
+            "traveler_fit",
+            "travel_fallback",
+        }
         else DOMAIN_OWNER[domain]
     )
     return {

@@ -1,0 +1,16 @@
+{
+  "schema_version": "traceguard.native_terminal_receipt.v1",
+  "receipt_id": "compact-guard-pass-traceguard-terminal",
+  "guard_id": "traceguard",
+  "surface": "traceguard_storyline",
+  "native_owner": "traceguard",
+  "route_id": "traceguard",
+  "check_id": "traceguard.storyline_terminal",
+  "tool_version": "0.4.3",
+  "input_fingerprint": "sha256:4033424e51858c783e89acb8b5eb760a7b698757caf86bf000fefcb8b312c216",
+  "terminal": true,
+  "immutable": true,
+  "freshness": "current",
+  "status": "passed",
+  "claim_boundary": "TraceGuard terminal receipt covers the compact fixture chronology and reader-revelation input only."
+}

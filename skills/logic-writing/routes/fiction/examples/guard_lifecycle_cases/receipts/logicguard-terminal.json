@@ -1,0 +1,16 @@
+{
+  "schema_version": "logicguard.native_terminal_receipt.v1",
+  "receipt_id": "compact-guard-pass-logicguard-terminal",
+  "guard_id": "logicguard",
+  "surface": "logicguard_theme_support",
+  "native_owner": "logicguard",
+  "route_id": "logicguard",
+  "check_id": "logicguard.theme_support_applicability",
+  "tool_version": "0.17.4",
+  "input_fingerprint": "sha256:b8a700a5c74b3793451391acc76d2fc7153e389e752c8285ec42a51c7b93a07b",
+  "terminal": true,
+  "immutable": true,
+  "freshness": "current",
+  "status": "not_applicable_with_reason",
+  "claim_boundary": "No material theme, moral, or ending-interpretation claim exists in the compact fixture input."
+}

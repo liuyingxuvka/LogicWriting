@@ -1,0 +1,22 @@
+{
+  "schema_version": "storyline-design.project_mesh.v1",
+  "project_id": "aurora-key",
+  "model_revision": "aurora-key-model-r1",
+  "external_nodes": [
+    "series-aurora",
+    "book-02",
+    "book-open",
+    "book-close",
+    "voice-contract",
+    "not_applicable"
+  ],
+  "surfaces": {
+    "novel_ledger": "novel-ledger.json",
+    "chapter_interfaces": "chapter-interfaces.json",
+    "promise_payoff": "promise-payoff.json",
+    "model_prose_binding": "model-prose-binding.json",
+    "voice_style": "voice-style-report.json",
+    "semantic_review": "semantic-review.json",
+    "longform_closure": "longform-final-prose-closure.json"
+  }
+}

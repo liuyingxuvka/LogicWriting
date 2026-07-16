@@ -1,0 +1,140 @@
+{
+  "schema_version": "storyline-design.longform_closure.v1",
+  "project_id": "aurora-key",
+  "model_revision": "aurora-key-model-r1",
+  "closure_id": "closure-book-01-final-prose",
+  "artifact_type": "novel",
+  "prose_phase": "final_prose",
+  "closure_level": "book",
+  "claim_boundary": "Book 1 final prose closure passes for the current manuscript artifact.",
+  "required_surfaces": [
+    {
+      "surface": "flowguard_process",
+      "status": "passed",
+      "evidence_ref": "file:guard_handoffs/flowguard.json;sha256:cf74378a87b851ac769cd1f95144b95bca3031df2b6861bec1bf7aa9cf6b0a00",
+      "input_fingerprint": "sha256:f72d4756d985004e07ddc6eb32bb45cf7e03e0a6f3c6c672e23fdd8b8e2f4efe",
+      "blocks_closure": false,
+      "next_action": "Refresh FlowGuard process evidence after model, validator, fixture, prose, or installed-copy changes"
+    },
+    {
+      "surface": "traceguard_storyline",
+      "status": "passed",
+      "evidence_ref": "file:guard_handoffs/traceguard.json;sha256:a4873020563ba24e510ac53fb5e4556153d4113bdae8085e2e8368bd4d6fc11b",
+      "input_fingerprint": "sha256:2a3a904d5c2afb9d13372982b8319a3c6137f2ff7e1fe05972f3407db6aa8577",
+      "blocks_closure": false,
+      "next_action": "Refresh TraceGuard storyline evidence after chronology, clue, or reveal changes"
+    },
+    {
+      "surface": "worldguard_story_claims",
+      "status": "passed",
+      "evidence_ref": "file:guard_handoffs/worldguard.json;sha256:0d38b267895206f82da86955e7b28ed176cf451040444c670af8e8861e7e4c94",
+      "input_fingerprint": "sha256:6ddbdb1b2238b5e52d7abf0cd1dc7c846f224ff151ffbcecc683d4b1d151dd67",
+      "blocks_closure": false,
+      "next_action": "Refresh WorldGuard story-claim evidence after world rule, access, resource, or causality edits"
+    },
+    {
+      "surface": "logicguard_theme_support",
+      "status": "passed",
+      "evidence_ref": "file:guard_handoffs/logicguard.json;sha256:08f97afa587c82ceeea60d9eac9253ec0cb114142f395ae3ef5a1f3c2b4535d8",
+      "input_fingerprint": "sha256:3a85fcd7149479214cf661ef2ba96e681cc326dc097c7f11be43f8b3c45cc0b3",
+      "blocks_closure": false,
+      "next_action": "Refresh LogicGuard theme support after ending, arc, or final-prose changes"
+    },
+    {
+      "surface": "sourceguard_canon_support",
+      "status": "passed",
+      "evidence_ref": "file:guard_handoffs/sourceguard.json;sha256:e62c2ac71de55faac73abbbe95d2832231ab585744448422af2a908f2541e4ea",
+      "input_fingerprint": "sha256:8a2a9448e059aaf4bd5baa1eb12e10ee2b17ac90f4b37382c38508995d710e69",
+      "blocks_closure": false,
+      "next_action": "Refresh SourceGuard source support after source requirement or final artifact changes"
+    },
+    {
+      "surface": "novel_ledger",
+      "status": "passed",
+      "evidence_ref": "novel-ledger.json",
+      "blocks_closure": true,
+      "next_action": "rerun novel_ledger_check.py after ledger edits"
+    },
+    {
+      "surface": "story_contribution",
+      "status": "passed",
+      "evidence_ref": "novel-ledger.json#story_units",
+      "blocks_closure": true,
+      "next_action": "rerun story_contribution_check.py after unit edits"
+    },
+    {
+      "surface": "chapter_interface",
+      "status": "passed",
+      "evidence_ref": "chapter-interfaces.json",
+      "blocks_closure": true,
+      "next_action": "rerun chapter_interface_check.py after chapter handoff edits"
+    },
+    {
+      "surface": "promise_payoff",
+      "status": "passed",
+      "evidence_ref": "promise-payoff.json",
+      "blocks_closure": true,
+      "next_action": "refresh promises after chapter or ending edits"
+    },
+    {
+      "surface": "voice_style",
+      "status": "passed",
+      "evidence_ref": "voice-style-report.json",
+      "blocks_closure": true,
+      "next_action": "rerun voice_style_continuity_check.py after prose edits"
+    },
+    {
+      "surface": "reverse_outline",
+      "status": "passed",
+      "evidence_ref": "chapter-interfaces.json#reverse_outlines",
+      "blocks_closure": true,
+      "next_action": "refresh reverse outlines after draft edits"
+    },
+    {
+      "surface": "model_prose_binding",
+      "status": "passed",
+      "evidence_ref": "file:model-prose-binding.json;sha256:200028ed513c5e138a392e167dda64efea99f7df0312eafe89340f44a66c46f9",
+      "blocks_closure": true,
+      "next_action": "refresh model-prose binding after manuscript, model, or reverse-outline edits"
+    },
+    {
+      "surface": "source_requirements",
+      "status": "passed",
+      "evidence_ref": "file:source-requirements.json;sha256:7ef47de6415d2069e6ecceee861179a03df375520476d1cde93fae1b394e4307",
+      "blocks_closure": true,
+      "next_action": "refresh source requirement coverage after scope or manuscript edits"
+    },
+    {
+      "surface": "final_artifact",
+      "status": "passed",
+      "evidence_ref": "file:drafts/book-01-final.txt;sha256:668e9f1b0911b8fd0e63cd8c01cfc0615d96479317e1aed2b45b0808cc5168ee",
+      "blocks_closure": true,
+      "next_action": "recompute artifact hash after manuscript edits"
+    },
+    {
+      "surface": "artifact_bound_review",
+      "status": "passed",
+      "evidence_ref": "file:semantic-review.json;sha256:5d79e7196fe9843b6465eabbe366d1530febb4ad15b20ddb0ace28cdbaadb476",
+      "blocks_closure": true,
+      "next_action": "rerun semantic story review after final artifact hash changes"
+    }
+  ],
+  "child_reports": [
+    {"id": "closure-ch01", "level": "chapter", "status": "passed", "evidence_ref": "chapter-interfaces.json#iface-ch01", "blocks_parent": false},
+    {"id": "closure-ch02", "level": "chapter", "status": "passed", "evidence_ref": "chapter-interfaces.json#iface-ch02", "blocks_parent": false},
+    {"id": "closure-ch03", "level": "chapter", "status": "passed", "evidence_ref": "chapter-interfaces.json#iface-ch03", "blocks_parent": false},
+    {"id": "closure-ch04", "level": "chapter", "status": "passed", "evidence_ref": "chapter-interfaces.json#iface-ch04", "blocks_parent": false},
+    {"id": "closure-ch05", "level": "chapter", "status": "passed", "evidence_ref": "chapter-interfaces.json#iface-ch05", "blocks_parent": false}
+  ],
+  "deferred_items": [
+    {
+      "id": "promise-series-map-origin",
+      "deferral_level": "series",
+      "claim_boundary": "Book 1 defers origin but closes control of the map."
+    }
+  ],
+  "blocking_items": [],
+  "stale_items": [],
+  "decision": "passed",
+  "next_actions": []
+}

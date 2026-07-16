@@ -1,0 +1,33 @@
+{
+  "check_id": "check:storyline:depth-workflow",
+  "native_owner_id": "storyline-design.native-route",
+  "universes": [
+    {
+      "covered_claim_scope": ["storyline:real-artifact-workflow"],
+      "evaluated_item_ids": ["item:real-artifact"],
+      "inventory_items": [
+        {
+          "critical": true,
+          "item_id": "item:real-artifact",
+          "object_id": "obligation:storyline-design:real-artifact",
+          "stratum_ids": ["stratum:all"]
+        }
+      ],
+      "policy_fingerprint": "335F057186E58F767F453DDBDADCB2E99EB335FC4C29B0C521DEEAFF2C5AA293",
+      "requested_claim_scope": ["storyline:real-artifact-workflow"],
+      "selected_item_ids": ["item:real-artifact"],
+      "universe_id": "universe:storyline-workflow",
+      "validated_item_ids": ["item:real-artifact"]
+    }
+  ],
+  "depth_contribution_ranges": [
+    {
+      "end": 1,
+      "kind": "semantic",
+      "obligation_ids": ["obligation:storyline-design:real-artifact"],
+      "range_id": "range:storyline-real-artifact",
+      "start": 0,
+      "universe_id": "universe:storyline-workflow"
+    }
+  ]
+}

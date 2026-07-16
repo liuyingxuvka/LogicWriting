@@ -1,0 +1,15 @@
+{
+  "schema_version": "storyline-design.guard_handoff.v1",
+  "surface": "flowguard_process",
+  "guard_id": "flowguard",
+  "native_owner": "flowguard-development-process-flow",
+  "native_route_id": "development_process_flow",
+  "native_check_id": "flowguard.development_process_flow.terminal",
+  "tool_version": "0.55.0",
+  "receipt_schema_version": "flowguard.native_terminal_receipt.v1",
+  "input_fingerprint": "sha256:4f2956ce5637fb77c759714900a488f68d65322cda95025cccf1879cbc6b9787",
+  "terminal_receipt_id": "lantern-map-flowguard-terminal",
+  "terminal_receipt_ref": "file:../guard_receipts/flowguard-terminal.json;sha256:410d6b7b22b2a0010a44baa06acf6742806b470138685e99830dbd08d00cb9c3",
+  "terminal_status": "passed",
+  "claim_boundary": "FlowGuard process route completed for the Lantern Map structural-design input; final prose quality is outside this receipt."
+}

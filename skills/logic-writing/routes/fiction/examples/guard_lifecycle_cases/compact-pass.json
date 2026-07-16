@@ -1,0 +1,94 @@
+{
+  "schema_version": "storyline-design.closure_evidence_bundle.v1",
+  "project_id": "compact-guard-pass",
+  "requested_artifact": "short_story",
+  "prose_phase": "pre_draft",
+  "claim_boundary": "Compact short-story design closure is supported; final prose polish is outside this fixture.",
+  "checks": [
+    {
+      "surface": "flowguard_process",
+      "check_name": "story-development-flowgraph",
+      "status": "passed",
+      "required": true,
+      "evidence_ref": "file:handoffs/flowguard.json;sha256:0f44ceeac57c7b80bfb2428abd04f6e550f009e15d4ca7c1b4451cac38e4bc40",
+      "input_fingerprint": "sha256:feae668c8ccba67a8f117f8ce81446e47a530adf999ebcf12406b9f123dbed33",
+      "blocks_closure": false
+    },
+    {
+      "surface": "traceguard_storyline",
+      "check_name": "traceguard-storyline-contract",
+      "status": "passed",
+      "required": true,
+      "evidence_ref": "file:handoffs/traceguard.json;sha256:5643a7575e126e4c467461f9b357c7018648f222ee55901eedc64fa1e9955842",
+      "input_fingerprint": "sha256:4033424e51858c783e89acb8b5eb760a7b698757caf86bf000fefcb8b312c216"
+    },
+    {
+      "surface": "worldguard_story_claims",
+      "check_name": "worldguard-story-adapter",
+      "status": "passed",
+      "required": true,
+      "evidence_ref": "file:handoffs/worldguard.json;sha256:c1495d5e8cb0de279feea02601c6651ecaaa7bf51a816ecd633efc2e3fe5cd63",
+      "input_fingerprint": "sha256:7331afac07867192987c445f2cd58e0c887d9088bb855a45979d6a595b27ccac"
+    },
+    {
+      "surface": "logicguard_theme_support",
+      "check_name": "logicguard-theme-contract",
+      "status": "not_applicable_with_reason",
+      "required": true,
+      "evidence_ref": "file:handoffs/logicguard.json;sha256:3645f0880323d4b07c547259fb9e0e26e9650eb767c79e2ead11de4f617ca6b9",
+      "input_fingerprint": "sha256:b8a700a5c74b3793451391acc76d2fc7153e389e752c8285ec42a51c7b93a07b",
+      "not_applicable_reason": "No material theme, moral, or ending-interpretation claim is made by this fixture.",
+      "blocks_closure": false,
+      "next_action": "If a theme claim is added, run LogicGuard theme support before closure."
+    },
+    {
+      "surface": "sourceguard_canon_support",
+      "check_name": "sourceguard-canon-contract",
+      "status": "not_applicable_with_reason",
+      "required": true,
+      "evidence_ref": "file:handoffs/sourceguard.json;sha256:4c398e756b3927f36caddf3bf62b2b11d431f84aa4b6d5a728e09fe7a8103122",
+      "input_fingerprint": "sha256:d46f9afebfa242ba7991beabcfe78ba3fcbffdf920f106313b72f08ae887f901",
+      "not_applicable_reason": "No user canon, prior draft, adaptation source, historical fact, or external source constrains this fixture.",
+      "blocks_closure": false,
+      "next_action": "If source material is added, run SourceGuard canon/source support before closure."
+    },
+    {
+      "surface": "ledger",
+      "check_name": "story-ledger",
+      "status": "passed",
+      "required": true,
+      "evidence_ref": "evidence/compact/story-ledger.json",
+      "child_report": {"passed": true, "schema_version": "fixture.child.v1", "summary": {"error_count": 0}}
+    },
+    {
+      "surface": "turning_point",
+      "check_name": "turning-point",
+      "status": "passed",
+      "required": true,
+      "evidence_ref": "evidence/compact/turning-points.json",
+      "child_report": {"passed": true, "schema_version": "fixture.child.v1", "summary": {"error_count": 0}}
+    },
+    {
+      "surface": "scene_contract",
+      "check_name": "scene-contract",
+      "status": "passed",
+      "required": true,
+      "evidence_ref": "evidence/compact/scene-contracts.json",
+      "child_report": {"passed": true, "schema_version": "fixture.child.v1", "summary": {"error_count": 0}}
+    },
+    {
+      "surface": "promise_payoff",
+      "check_name": "promise-payoff",
+      "status": "passed",
+      "required": true,
+      "evidence_ref": "evidence/compact/promise-payoff.json",
+      "child_report": {"passed": true, "schema_version": "fixture.child.v1", "summary": {"error_count": 0}}
+    }
+  ],
+  "worldguard_claims": [
+    {"id": "wg-compact-access", "worldguard_status": "pass", "closure_effect": "continue"}
+  ],
+  "unresolved_gaps": [],
+  "deferred_or_downgraded_work": [],
+  "next_actions": []
+}

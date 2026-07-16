@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/liuyingxuvka/LogicWriting/schemas/shared-writing-contract.schema.json",
+  "title": "Logic Writing route-neutral writing contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "contract_id", "final_owner", "artifact_path",
+    "artifact_fingerprint", "audience", "purpose", "incoming_reader_state",
+    "artifact_form", "units", "route_extension", "contract_fingerprint"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "contract_id": { "$ref": "#/$defs/identifier" },
+    "final_owner": { "enum": ["investigation", "academic-writing", "fiction-writing", "travel-guide"] },
+    "artifact_path": { "type": "string", "minLength": 1 },
+    "artifact_fingerprint": { "$ref": "#/$defs/fingerprint" },
+    "audience": { "$ref": "#/$defs/text" },
+    "purpose": { "$ref": "#/$defs/text" },
+    "incoming_reader_state": { "$ref": "#/$defs/text" },
+    "artifact_form": { "$ref": "#/$defs/text" },
+    "units": {
+      "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/unit" }
+    },
+    "route_extension": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["owner", "profile", "required_surface_ids"],
+      "properties": {
+        "owner": { "enum": ["investigation", "academic-writing", "fiction-writing", "travel-guide"] },
+        "profile": { "enum": ["evidence", "academic", "fiction", "travel"] },
+        "required_surface_ids": {
+          "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true
+        }
+      }
+    },
+    "contract_fingerprint": { "$ref": "#/$defs/fingerprint" }
+  },
+  "$defs": {
+    "identifier": {
+      "type": "string", "minLength": 2, "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "fingerprint": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "text": { "type": "string", "minLength": 1 },
+    "unit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "unit_id", "important", "contribution", "incoming_reader_state",
+        "outgoing_reader_state", "unresolved_or_terminal", "downstream_consumer",
+        "register_owner", "variation_effect", "model_row_ids", "artifact_span"
+      ],
+      "properties": {
+        "unit_id": { "$ref": "#/$defs/identifier" },
+        "important": { "type": "boolean" },
+        "contribution": { "$ref": "#/$defs/text" },
+        "incoming_reader_state": { "$ref": "#/$defs/text" },
+        "outgoing_reader_state": { "$ref": "#/$defs/text" },
+        "unresolved_or_terminal": { "$ref": "#/$defs/text" },
+        "downstream_consumer": { "$ref": "#/$defs/text" },
+        "register_owner": { "$ref": "#/$defs/text" },
+        "variation_effect": { "$ref": "#/$defs/text" },
+        "model_row_ids": {
+          "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true
+        },
+        "artifact_span": { "$ref": "#/$defs/text" }
+      }
+    }
+  }
+}

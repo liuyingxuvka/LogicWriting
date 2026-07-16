@@ -1,0 +1,27 @@
+{
+  "case_id": "compact-micro-story",
+  "request": {
+    "artifact_type": "micro_story",
+    "prose_phase": "post_draft"
+  },
+  "expected": {
+    "status": "compiled",
+    "canonical_artifact": "micro_story",
+    "alias_used": false,
+    "route_id": "route:compact",
+    "depth_tier": "compact",
+    "closure_level": "story",
+    "prose_phase": "post_draft",
+    "required_surfaces_include": [
+      "compact_story_movement",
+      "main_promise_boundary",
+      "compact_closure",
+      "postwrite_observation"
+    ],
+    "required_surfaces_exclude": [
+      "story_ledger",
+      "novel_ledger",
+      "reverse_outline"
+    ]
+  }
+}

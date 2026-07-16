@@ -1,0 +1,16 @@
+{
+  "schema_version": "flowguard.native_terminal_receipt.v1",
+  "receipt_id": "aurora-key-pre-draft-flowguard-terminal",
+  "surface": "flowguard_process",
+  "guard_id": "flowguard",
+  "native_owner": "flowguard-development-process-flow",
+  "route_id": "development_process_flow",
+  "check_id": "flowguard.development_process_flow.terminal",
+  "tool_version": "0.55.0",
+  "input_fingerprint": "sha256:7e8cf42912b12ec51e9b1d97fecbd6413fd6579b616ade34c83110d7474507b3",
+  "terminal": true,
+  "immutable": true,
+  "freshness": "current",
+  "status": "passed",
+  "claim_boundary": "The FlowGuard receipt covers the current Aurora Key pre-draft model workflow; final prose and literary quality are outside this claim."
+}

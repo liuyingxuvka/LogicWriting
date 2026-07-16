@@ -28,7 +28,7 @@
   "properties": {
     "schema_version": { "const": "1.0" },
     "closure_id": { "$ref": "#/$defs/identifier" },
-    "final_owner": { "enum": ["investigation", "academic-writing"] },
+    "final_owner": { "enum": ["investigation", "academic-writing", "fiction-writing", "travel-guide"] },
     "artifact_fingerprint": { "$ref": "#/$defs/fingerprint" },
     "obligation_contract_receipt_fingerprint": { "$ref": "#/$defs/fingerprint" },
     "obligation_manifest_fingerprint": { "$ref": "#/$defs/fingerprint" },
@@ -152,6 +152,7 @@
         "causal_trace",
         "competing_storyline",
         "prediction_boundary",
+        "world_consistency",
         "process_model",
         "process_freshness",
         "document_content",
@@ -165,16 +166,27 @@
         "revision_provenance",
         "reader_brief",
         "reader_deterministic",
-        "reader_judgment"
+        "reader_judgment",
+        "shared_writing",
+        "story_model",
+        "story_continuity",
+        "model_artifact_binding",
+        "travel_evidence",
+        "travel_feasibility",
+        "traveler_fit",
+        "travel_fallback"
       ]
     },
     "nextOwner": {
       "enum": [
         "investigation",
         "academic-writing",
+        "fiction-writing",
+        "travel-guide",
         "sourceguard",
         "logicguard",
         "traceguard",
+        "worldguard",
         "flowguard",
         "documents",
         "pdf",

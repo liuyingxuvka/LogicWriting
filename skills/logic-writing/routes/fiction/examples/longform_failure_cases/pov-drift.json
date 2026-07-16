@@ -1,0 +1,35 @@
+{
+  "voice_contract": {
+    "id": "voice-contract",
+    "pov_policy": "limited_third",
+    "tense_policy": "past",
+    "narration_distance": "close",
+    "diction": "precise, tactile, low ornament",
+    "sentence_rhythm": "varied but controlled",
+    "dialogue_policy": "subtext over exposition",
+    "exposition_policy": "embed through action and consequence",
+    "pacing_policy": "chapter endings carry unresolved pressure",
+    "allowed_variation": [],
+    "blocked_variation": ["no sudden omniscient explanation"],
+    "status": "pass"
+  },
+  "reports": [
+    {
+      "id": "voice-report-drift",
+      "chapter_id": "chapter-04",
+      "contract_ref": "voice-contract",
+      "checks": [
+        {"field": "pov", "status": "drift", "finding": "Chapter enters the rival's thoughts without a declared POV change."}
+      ],
+      "drift": [
+        {
+          "classification": "blocking_drift",
+          "field": "pov",
+          "affected_chapters": ["chapter-04"]
+        }
+      ],
+      "repair_actions": [],
+      "overall_status": "blocked"
+    }
+  ]
+}

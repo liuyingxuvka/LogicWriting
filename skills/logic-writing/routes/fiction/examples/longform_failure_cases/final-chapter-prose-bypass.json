@@ -1,0 +1,16 @@
+{
+  "schema_version": "storyline-design.longform_closure.v1",
+  "project_id": "aurora-key",
+  "closure_id": "closure-chapter-final-bypass",
+  "artifact_type": "chapter",
+  "prose_phase": "final_prose",
+  "closure_level": "chapter",
+  "claim_boundary": "A final chapter prose claim attempts to bypass executable evidence.",
+  "required_surfaces": [],
+  "child_reports": [],
+  "deferred_items": [],
+  "blocking_items": [],
+  "stale_items": [],
+  "decision": "passed",
+  "next_actions": ["provide all final prose evidence surfaces"]
+}

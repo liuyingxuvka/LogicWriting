@@ -1,0 +1,407 @@
+contract_version: 1
+change: expand-logic-writing-four-routes
+
+obligations:
+  - id: req.routing.four-final-owners
+    source: "specs/unified-routing/spec.md#Requirement: Exactly one final owner"
+    claim: Exactly one of the four supported final owners is selected and mixed subjects route by terminal deliverable.
+    required: true
+    evidence: [check.routing.shared]
+  - id: req.routing.no-sibling-cycle
+    source: "specs/unified-routing/spec.md#Requirement: Shared kernels never become final routes"
+    claim: Travel consumes neutral reader projection and no sibling final route invokes another as an owner.
+    required: true
+    evidence: [check.routing.shared, check.flowguard.models]
+  - id: req.shared.reader-kernel
+    source: "specs/reader-facing-synthesis/spec.md#Requirement: ReaderBrief has a route-neutral base and route extensions"
+    claim: Shared reader projection, reader state, contribution, register, variation, explanation-pressure, binding, and actual-byte freshness behavior are executable.
+    required: true
+    evidence: [check.routing.shared, check.reader.semantic]
+  - id: req.investigation.cross-upgrade
+    source: "specs/investigation-route/spec.md#Requirement: Investigation binds model rows to actual prose"
+    claim: Investigation preserves evidence depth while adding reader-state, alternatives, fallback/recheck, and actual-artifact binding.
+    required: true
+    evidence: [check.routes.existing]
+  - id: req.academic.cross-upgrade
+    source: "specs/academic-writing-route/spec.md#Requirement: Academic prose is bound to modeled contribution"
+    claim: Academic writing adds reader-state, question recovery, binding, register, variation, and execution-friction review without losing provenance.
+    required: true
+    evidence: [check.routes.existing]
+  - id: req.fiction.route
+    source: "specs/fiction-writing-route/spec.md#Requirement: Fiction final prose binds model and manuscript"
+    claim: Fiction planning and final prose preserve story contribution, promises, continuity, voice, real-manuscript identity, semantic review, and model-prose binding.
+    required: true
+    evidence: [check.fiction.native]
+  - id: req.fiction.known-bad
+    source: "specs/fiction-writing-route/spec.md#Requirement: Promises and payoffs remain explicit"
+    claim: The frozen fiction negative family rejects missing Guard handoffs, stale or forged artifacts, generic interfaces, unresolved promises, continuity drift, binding gaps, resistance gaps, premature collapse, register drift, and unreviewed length outliers.
+    required: true
+    evidence: [check.fiction.native]
+  - id: req.travel.route
+    source: "specs/travel-guide-route/spec.md#Requirement: Final travel closure binds the actual guide"
+    claim: Travel preserves source-time, weather/alert, feasibility, lodging, fit, negative evidence, reachable fallback, traveler projection, and actual-guide closure.
+    required: true
+    evidence: [check.travel.native]
+  - id: req.travel.no-storyline-dependency
+    source: "specs/travel-guide-route/spec.md#Requirement: Traveler-native projection uses the shared kernel"
+    claim: Travel native validation and installed behavior complete without the old Storyline Design skill id.
+    required: true
+    evidence: [check.travel.native, check.routing.shared, check.skill.static]
+  - id: req.source.reconciliation
+    source: "design.md#5. Storyline source authority is reconciled feature by feature"
+    claim: Public, installed, and dirty candidate source identities have explicit keep, shared, route, reject, or historical dispositions and no unexplained imported file remains.
+    required: true
+    evidence: [check.source.reconciliation]
+  - id: req.flowguard.mesh
+    source: "specs/evidence-freshness-closure/spec.md#Requirement: Parent closure consumes current child-model evidence"
+    claim: The four-route parent/child FlowGuard model mesh, BCL, alignment, TestMesh inventory, and retirement order are current and reject known-bad variants.
+    required: true
+    evidence: [check.flowguard.models, check.flowguard.alignment, check.flowguard.testmesh]
+  - id: req.skillguard.current
+    source: "specs/evidence-freshness-closure/spec.md#Requirement: Every route has a route-native minimum closure baseline"
+    claim: The sole current SkillGuard trio exactly preserves the target-declared check inventory and installation projection.
+    required: true
+    evidence: [check.skill.static, check.skillguard.current]
+  - id: req.retirement.ready
+    source: "specs/predecessor-retirement/spec.md#Requirement: Replacement is recoverable before predecessor retirement"
+    claim: Executable release/retirement models and tests block early, wrong-order, unverified, destructive, and non-recoverable predecessor retirement.
+    required: true
+    evidence: [check.flowguard.models, check.retirement.workflow]
+  - id: req.release.public-boundary
+    source: "specs/predecessor-retirement/spec.md#Requirement: Repository deletion remains user-owned"
+    claim: Public source, bilingual documentation, version metadata, migration wording, privacy boundary, and deletion prohibition are release-ready.
+    required: true
+    evidence: [check.public.docs, check.privacy, check.tests.full]
+
+checks:
+  - id: check.source.reconciliation
+    kind: command
+    semantic_check_id: logic-writing.v2.source-reconciliation
+    execution_id: logic-writing-v2.source-reconciliation.v1
+    validation_scope: focused
+    snapshot_policy: frozen
+    toolchain_identity: python-source-reconciliation-v1
+    input_selectors:
+      - docs/source-reconciliation.json
+      - scripts/check_source_reconciliation.py
+      - skills/logic-writing/routes/fiction/**
+      - skills/logic-writing/routes/travel/**
+    depends_on_receipts: []
+    command: python
+    args: [scripts/check_source_reconciliation.py, --root, ., --json]
+    timeout_seconds: 300
+    required: true
+    covers: [req.source.reconciliation]
+    expected: {exit_code: 0}
+
+  - id: check.routing.shared
+    kind: command
+    semantic_check_id: logic-writing.v2.routing-and-shared-reader
+    execution_id: logic-writing-v2.routing-shared.v1
+    validation_scope: focused
+    snapshot_policy: frozen
+    toolchain_identity: python-pytest
+    input_selectors:
+      - skills/logic-writing/scripts/select_route.py
+      - skills/logic-writing/scripts/build_reader_brief.py
+      - skills/logic-writing/scripts/audit_reader_output.py
+      - skills/logic-writing/references/router.md
+      - skills/logic-writing/references/shared/**
+      - tests/unit/test_routing.py
+      - tests/unit/test_reader.py
+      - tests/unit/test_shared_writing.py
+      - tests/adversarial/test_boundaries.py
+      - tests/e2e/test_routes.py
+    depends_on_receipts: [check.source.reconciliation]
+    command: python
+    args: [-m, pytest, -q, tests/unit/test_routing.py, tests/unit/test_reader.py, tests/unit/test_shared_writing.py, tests/adversarial/test_boundaries.py, tests/e2e/test_routes.py]
+    timeout_seconds: 1200
+    required: true
+    covers: [req.routing.four-final-owners, req.routing.no-sibling-cycle, req.shared.reader-kernel, req.travel.no-storyline-dependency]
+    expected: {exit_code: 0}
+
+  - id: check.routes.existing
+    kind: command
+    semantic_check_id: logic-writing.v2.existing-route-upgrade
+    execution_id: logic-writing-v2.existing-routes.v1
+    validation_scope: focused
+    snapshot_policy: frozen
+    toolchain_identity: python-pytest
+    input_selectors:
+      - skills/logic-writing/references/routes/investigation.md
+      - skills/logic-writing/references/routes/academic-writing.md
+      - skills/logic-writing/scripts/**
+      - tests/unit/test_investigation.py
+      - tests/unit/test_academic.py
+      - tests/unit/test_shared_writing.py
+    depends_on_receipts: [check.routing.shared]
+    command: python
+    args: [-m, pytest, -q, tests/unit/test_investigation.py, tests/unit/test_academic.py, tests/unit/test_shared_writing.py]
+    timeout_seconds: 1200
+    required: true
+    covers: [req.investigation.cross-upgrade, req.academic.cross-upgrade]
+    expected: {exit_code: 0}
+
+  - id: check.fiction.native
+    kind: command
+    semantic_check_id: logic-writing.v2.fiction-native-regression
+    execution_id: logic-writing-v2.fiction-native.v1
+    validation_scope: focused
+    snapshot_policy: frozen
+    toolchain_identity: storyline-native-python
+    input_selectors:
+      - skills/logic-writing/routes/fiction/**
+      - skills/logic-writing/references/routes/fiction-writing.md
+      - scripts/run_fiction_regression.py
+      - tests/unit/test_fiction.py
+    depends_on_receipts: [check.source.reconciliation]
+    command: python
+    args: [scripts/run_fiction_regression.py, --repository-root, ., --json]
+    timeout_seconds: 2400
+    required: true
+    covers: [req.fiction.route, req.fiction.known-bad]
+    expected: {exit_code: 0}
+
+  - id: check.travel.native
+    kind: command
+    semantic_check_id: logic-writing.v2.travel-native-regression
+    execution_id: logic-writing-v2.travel-native.v1
+    validation_scope: focused
+    snapshot_policy: frozen
+    toolchain_identity: travel-native-python
+    input_selectors:
+      - skills/logic-writing/routes/travel/**
+      - skills/logic-writing/references/routes/travel-guide.md
+      - scripts/run_travel_regression.py
+      - tests/unit/test_travel.py
+    depends_on_receipts: [check.source.reconciliation]
+    command: python
+    args: [scripts/run_travel_regression.py, --repository-root, ., --json]
+    timeout_seconds: 2400
+    required: true
+    covers: [req.travel.route, req.travel.no-storyline-dependency]
+    expected: {exit_code: 0}
+
+  - id: check.reader.semantic
+    kind: command
+    semantic_check_id: logic-writing.v2.reader-semantic-review
+    execution_id: logic-writing-v2.reader-semantic.v1
+    validation_scope: focused
+    snapshot_policy: frozen
+    toolchain_identity: logic-writing-reader-judgment-v2
+    input_selectors:
+      - skills/logic-writing/references/shared/human-writing.md
+      - skills/logic-writing/scripts/audit_reader_output.py
+      - scripts/check_reader_judgment.py
+      - scripts/prepare_reader_quality_receipt.py
+      - tests/fixtures/forward/**
+    depends_on_receipts: [check.routing.shared, check.fiction.native, check.travel.native]
+    command: python
+    args: [scripts/check_reader_judgment.py, --root, ., --json]
+    timeout_seconds: 600
+    required: true
+    covers: [req.shared.reader-kernel]
+    expected: {exit_code: 0}
+
+  - id: check.flowguard.models
+    kind: command
+    semantic_check_id: logic-writing.v2.flowguard-models
+    execution_id: logic-writing-v2.flowguard-models.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: flowguard-0.56.0-python
+    input_selectors:
+      - .flowguard/**
+      - skills/logic-writing/**
+      - tests/**
+      - openspec/changes/expand-logic-writing-four-routes/**
+    depends_on_receipts: [check.routes.existing, check.fiction.native, check.travel.native]
+    command: python
+    args: [.flowguard/run_models.py, --profile, full, --json]
+    timeout_seconds: 3600
+    required: true
+    covers: [req.routing.no-sibling-cycle, req.flowguard.mesh, req.retirement.ready]
+    expected: {exit_code: 0}
+
+  - id: check.flowguard.alignment
+    kind: command
+    semantic_check_id: logic-writing.v2.model-test-alignment
+    execution_id: logic-writing-v2.model-test-alignment.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: flowguard-0.56.0-python
+    input_selectors:
+      - .flowguard/model_test_alignment/**
+      - .flowguard/behavior_commitment_ledger/**
+      - .flowguard/models/**
+      - tests/**
+      - openspec/changes/expand-logic-writing-four-routes/verification-contract.yaml
+    depends_on_receipts: [check.flowguard.models]
+    command: python
+    args: [.flowguard/model_test_alignment/run_checks.py, --json]
+    timeout_seconds: 900
+    required: true
+    covers: [req.flowguard.mesh]
+    expected: {exit_code: 0}
+
+  - id: check.flowguard.testmesh
+    kind: command
+    semantic_check_id: logic-writing.v2.testmesh-plan
+    execution_id: logic-writing-v2.testmesh.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: flowguard-0.56.0-python
+    input_selectors:
+      - .flowguard/test_mesh/**
+      - .flowguard/models/**
+      - openspec/changes/expand-logic-writing-four-routes/verification-contract.yaml
+      - tests/**
+    depends_on_receipts: [check.flowguard.alignment]
+    command: python
+    args: [.flowguard/test_mesh/run_checks.py, --json]
+    timeout_seconds: 900
+    required: true
+    covers: [req.flowguard.mesh]
+    expected: {exit_code: 0}
+
+  - id: check.retirement.workflow
+    kind: command
+    semantic_check_id: logic-writing.v2.retirement-workflow
+    execution_id: logic-writing-v2.retirement-workflow.v1
+    validation_scope: focused
+    snapshot_policy: frozen
+    toolchain_identity: python-pytest
+    input_selectors:
+      - .flowguard/models/release_retirement_model.py
+      - .flowguard/models/retirement_field_lifecycle.py
+      - scripts/check_retirement_readiness.py
+      - tests/contract/test_release_wrappers.py
+      - tests/flowguard/test_alignment_and_mesh.py
+    depends_on_receipts: [check.flowguard.models]
+    command: python
+    args: [-m, pytest, -q, tests/contract/test_release_wrappers.py, tests/flowguard/test_alignment_and_mesh.py]
+    timeout_seconds: 1200
+    required: true
+    covers: [req.retirement.ready]
+    expected: {exit_code: 0}
+
+  - id: check.skill.static
+    kind: command
+    semantic_check_id: logic-writing.v2.skill-static
+    execution_id: logic-writing-v2.skill-static.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: logic-writing-skill-static-v2
+    input_selectors:
+      - skills/logic-writing/**
+      - scripts/validate_skill.py
+    depends_on_receipts: [check.routing.shared, check.fiction.native, check.travel.native]
+    command: python
+    args: [scripts/validate_skill.py, --skill-root, skills/logic-writing]
+    timeout_seconds: 600
+    required: true
+    covers: [req.travel.no-storyline-dependency, req.skillguard.current]
+    expected: {exit_code: 0}
+
+  - id: check.skillguard.current
+    kind: command
+    semantic_check_id: logic-writing.v2.skillguard-current
+    execution_id: logic-writing-v2.skillguard-current.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: installed-skillguard-current
+    input_selectors:
+      - skills/logic-writing/**
+      - scripts/check_skillguard_authority.py
+      - .skillguard/project.json
+      - AGENTS.md
+    depends_on_receipts: [check.skill.static, check.flowguard.testmesh]
+    command: python
+    args: [scripts/check_skillguard_authority.py, --repository-root, ., --target, skills/logic-writing, --check, contract, --json]
+    timeout_seconds: 3600
+    required: true
+    covers: [req.skillguard.current]
+    expected: {exit_code: 0}
+
+  - id: check.public.docs
+    kind: command
+    semantic_check_id: logic-writing.v2.public-docs
+    execution_id: logic-writing-v2.public-docs.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: python-public-docs-v2
+    input_selectors: &public_inputs
+      - .agents/skills/**
+      - .codex/skills/**
+      - .flowguard/**
+      - .logicguard/**
+      - .skillguard/*.json
+      - AGENTS.md
+      - CHANGELOG.md
+      - CONTRIBUTING.md
+      - LICENSE
+      - MIGRATION.md
+      - README.md
+      - README.zh-CN.md
+      - VERSION
+      - assets/readme-hero/**
+      - docs/**
+      - openspec/**
+      - pyproject.toml
+      - scripts/**
+      - skills/logic-writing/**
+      - tests/**
+    depends_on_receipts: [check.skill.static]
+    command: python
+    args: [scripts/check_public_docs.py, --root, ., --json]
+    timeout_seconds: 600
+    required: true
+    covers: [req.release.public-boundary]
+    expected: {exit_code: 0}
+
+  - id: check.privacy
+    kind: command
+    semantic_check_id: logic-writing.v2.privacy
+    execution_id: logic-writing-v2.privacy.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: python-privacy-v2
+    input_selectors: *public_inputs
+    depends_on_receipts: [check.public.docs]
+    command: python
+    args: [scripts/check_privacy.py, --root, ., --json]
+    timeout_seconds: 600
+    required: true
+    covers: [req.release.public-boundary]
+    expected: {exit_code: 0}
+
+  - id: check.tests.full
+    kind: command
+    semantic_check_id: logic-writing.v2.pytest-full
+    execution_id: logic-writing-v2.pytest-full.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: python-pytest
+    input_selectors: *public_inputs
+    depends_on_receipts: [check.reader.semantic, check.flowguard.testmesh, check.retirement.workflow, check.skillguard.current, check.privacy]
+    command: python
+    args: [-m, pytest, -q]
+    timeout_seconds: 3600
+    required: true
+    covers: [req.routing.four-final-owners, req.shared.reader-kernel, req.investigation.cross-upgrade, req.academic.cross-upgrade, req.fiction.route, req.fiction.known-bad, req.travel.route, req.travel.no-storyline-dependency, req.source.reconciliation, req.flowguard.mesh, req.skillguard.current, req.retirement.ready, req.release.public-boundary]
+    expected: {exit_code: 0}
+
+freshness:
+  watch: *public_inputs
+  exclude:
+    - "**/verification-report.json"
+    - "**/verification-receipts/**"
+    - "**/.skillguard/runs/**"
+    - "**/.flowguard/evidence/**"
+    - "**/run-artifacts/**"
+    - "**/run_artifacts/**"
+    - "**/__pycache__/**"
+    - "**/.pytest_cache/**"
+    - ".flowguard/adoption_log.jsonl"
+    - "docs/coordination.md"
+    - "docs/flowguard_adoption_log.md"

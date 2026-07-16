@@ -1,0 +1,182 @@
+{
+  "schema_version": "storyline-design.novel_ledger.v1",
+  "project_id": "aurora-key-negative",
+  "target_artifact": {
+    "artifact_type": "novel",
+    "closure_level": "book",
+    "reader_visibility": "planning",
+    "claim_boundary": "Book closure is incorrectly requested while a key promise is open.",
+    "prose_allowed": false
+  },
+  "longform_scope": {
+    "series_id": "series-negative",
+    "book_id": "book-01",
+    "volume_ids": ["volume-01"],
+    "chapter_ids": ["chapter-01"],
+    "length_scope": "negative mini fixture",
+    "genre_promise": "mystery",
+    "pov_policy": "limited_third",
+    "continuity_policy": "chapter interface required",
+    "deferred_scope": []
+  },
+  "hierarchy": {
+    "books": [
+      {
+        "id": "book-01",
+        "kind": "book",
+        "title": "Negative Book",
+        "parent_id": "series-negative",
+        "order": 1,
+        "status": "pass",
+        "summary": "A book that wrongly leaves its key promise open.",
+        "entry_state": "The key is missing.",
+        "exit_state": "The key is still missing.",
+        "depends_on": [],
+        "evidence_refs": ["negative"]
+      }
+    ],
+    "volumes": [
+      {
+        "id": "volume-01",
+        "kind": "volume",
+        "title": "Negative Volume",
+        "parent_id": "book-01",
+        "order": 1,
+        "status": "pass",
+        "summary": "Contains one unresolved chapter.",
+        "entry_state": "Question opens.",
+        "exit_state": "Question remains open.",
+        "depends_on": ["book-01"],
+        "evidence_refs": ["negative"]
+      }
+    ],
+    "chapters": [
+      {
+        "id": "chapter-01",
+        "kind": "chapter",
+        "title": "Open Question",
+        "parent_id": "volume-01",
+        "order": 1,
+        "status": "pass",
+        "summary": "Introduces a key question.",
+        "entry_state": "No promise.",
+        "exit_state": "Key promise is open.",
+        "depends_on": ["volume-01"],
+        "evidence_refs": ["negative"]
+      }
+    ],
+    "scenes": [
+      {
+        "id": "scene-01",
+        "kind": "scene",
+        "title": "Missing Key",
+        "parent_id": "chapter-01",
+        "order": 1,
+        "status": "pass",
+        "summary": "The missing key is introduced.",
+        "entry_state": "No mystery.",
+        "exit_state": "Mystery exists.",
+        "depends_on": ["chapter-01"],
+        "evidence_refs": []
+      }
+    ]
+  },
+  "story_units": [
+    {
+      "id": "unit-chapter-01",
+      "kind": "chapter",
+      "parent_id": "volume-01",
+      "importance": "key",
+      "status": "pass",
+      "contribution": "Introduces the unresolved key promise.",
+      "downstream_use": ["promise-open-key"],
+      "terminal_treatment": "keep",
+      "repair_action": "not_applicable",
+      "evidence_refs": ["negative"]
+    }
+  ],
+  "arcs": [
+    {
+      "id": "arc-negative",
+      "arc_type": "protagonist",
+      "owner": "Mira",
+      "scope": "book-01",
+      "start_state": "Uncertain.",
+      "turning_points": ["chapter-01"],
+      "end_state": "Still uncertain.",
+      "linked_chapters": ["chapter-01"],
+      "status": "pass"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-open-key",
+      "thread_type": "mystery",
+      "introduced_by": "chapter-01",
+      "active_in": ["chapter-01"],
+      "resolved_by": [],
+      "deferred_to": "not_applicable",
+      "importance": "key",
+      "status": "pass"
+    }
+  ],
+  "promises": [
+    {
+      "id": "promise-open-key",
+      "importance": "key",
+      "promise_type": "dramatic_question",
+      "introduced_by": ["chapter-01"],
+      "expected_payoff": "Who has the key?",
+      "status": "open",
+      "payoff_rows": [],
+      "deferral_level": "not_applicable",
+      "claim_boundary": "No valid boundary; this should block book closure.",
+      "evidence_refs": []
+    }
+  ],
+  "continuity": [
+    {
+      "id": "cont-negative",
+      "continuity_type": "object",
+      "fact": "The key remains missing.",
+      "scope": "book-01",
+      "first_seen": "chapter-01",
+      "last_checked": "chapter-01",
+      "affected_units": ["chapter-01"],
+      "status": "pass",
+      "repair_action": "not_applicable",
+      "evidence_refs": ["negative"]
+    }
+  ],
+  "chapter_interfaces": [{"id": "iface-ch01", "chapter_id": "chapter-01"}],
+  "draft_state": {
+    "chapters_planned": ["chapter-01"],
+    "chapters_drafted": [],
+    "chapters_reverse_outlined": [],
+    "current_revision_round": 1,
+    "prose_claim_boundary": "No final prose claim.",
+    "latest_draft_refs": [],
+    "stale_after": []
+  },
+  "validation": [
+    {
+      "id": "val-negative",
+      "check_name": "negative fixture",
+      "surface": "novel_ledger",
+      "checked_ids": ["promise-open-key"],
+      "status": "pass",
+      "evidence_ref": "negative",
+      "rerun_required_when": ["promise changes"]
+    }
+  ],
+  "closure": {
+    "closure_level": "book",
+    "decision": "pass",
+    "claim_boundary": "Incorrectly claims book closure.",
+    "blocking_rows": [],
+    "deferred_rows": [],
+    "stale_rows": [],
+    "latest_validation_refs": ["val-negative"],
+    "prose_allowed": false
+  }
+}

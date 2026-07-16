@@ -78,11 +78,68 @@
       "timeout_seconds": 60
     },
     {
+      "check_id": "check:logic-writing:fiction",
+      "coverage_rationale": "The fiction route retains story contribution, continuity, Guard lifecycle, semantic review, real-manuscript identity, and model-prose binding.",
+      "coverage_scope": "declared_obligations",
+      "covers_obligation_ids": ["obligation:logic-writing:fiction-native"],
+      "depends_on_check_ids": ["check:logic-writing:specialist-authority"],
+      "evidence_class": "hard",
+      "evidence_domain_id": "evidence-domain:logic-writing:fiction",
+      "execution_owner_id": "owner:logic-writing:fiction",
+      "input_selectors": [
+        {"kind": "path", "path": "skills/logic-writing/references/routes/fiction-writing.md"},
+        {"kind": "path", "path": "skills/logic-writing/routes/fiction"},
+        {"kind": "path", "path": "scripts/run_fiction_regression.py"}
+      ],
+      "kind": "model_assertion",
+      "native_route_id": "route:logic-writing:fiction-writing",
+      "semantic_check_id": "semantic:logic-writing:fiction",
+      "timeout_seconds": 180
+    },
+    {
+      "check_id": "check:logic-writing:travel",
+      "coverage_rationale": "The travel route retains source-time, feasibility, fit, reachable fallback, shared reader projection, and actual-guide closure.",
+      "coverage_scope": "declared_obligations",
+      "covers_obligation_ids": ["obligation:logic-writing:travel-native"],
+      "depends_on_check_ids": ["check:logic-writing:specialist-authority"],
+      "evidence_class": "hard",
+      "evidence_domain_id": "evidence-domain:logic-writing:travel",
+      "execution_owner_id": "owner:logic-writing:travel",
+      "input_selectors": [
+        {"kind": "path", "path": "skills/logic-writing/references/routes/travel-guide.md"},
+        {"kind": "path", "path": "skills/logic-writing/routes/travel"},
+        {"kind": "path", "path": "scripts/run_travel_regression.py"}
+      ],
+      "kind": "model_assertion",
+      "native_route_id": "route:logic-writing:travel-guide",
+      "semantic_check_id": "semantic:logic-writing:travel",
+      "timeout_seconds": 180
+    },
+    {
+      "check_id": "check:logic-writing:shared-writing",
+      "coverage_rationale": "The neutral writing contract binds unit contribution, reader state, register, variation, model rows, and exact current artifact bytes without sibling ownership.",
+      "coverage_scope": "declared_obligations",
+      "covers_obligation_ids": ["obligation:logic-writing:shared-writing"],
+      "depends_on_check_ids": ["check:logic-writing:routing"],
+      "evidence_class": "hard",
+      "evidence_domain_id": "evidence-domain:logic-writing:shared-writing",
+      "execution_owner_id": "owner:logic-writing:shared-writing",
+      "input_selectors": [
+        {"kind": "path", "path": "skills/logic-writing/references/shared/writing-contract.md"},
+        {"kind": "path", "path": "skills/logic-writing/assets/schemas/shared-writing-contract.schema.json"},
+        {"kind": "path", "path": "skills/logic-writing/scripts/validate_shared_writing.py"}
+      ],
+      "kind": "model_assertion",
+      "native_route_id": "route:logic-writing:router",
+      "semantic_check_id": "semantic:logic-writing:shared-writing",
+      "timeout_seconds": 60
+    },
+    {
       "check_id": "check:logic-writing:reader-artifact",
       "coverage_rationale": "The reader boundary is tied to the sanitized brief and actual current artifact, not caller metadata.",
       "coverage_scope": "declared_obligations",
       "covers_obligation_ids": ["obligation:logic-writing:reader-actual-artifact"],
-      "depends_on_check_ids": ["check:logic-writing:investigation", "check:logic-writing:academic"],
+      "depends_on_check_ids": ["check:logic-writing:investigation", "check:logic-writing:academic", "check:logic-writing:fiction", "check:logic-writing:travel", "check:logic-writing:shared-writing"],
       "evidence_class": "hard",
       "evidence_domain_id": "evidence-domain:logic-writing:reader-artifact",
       "execution_owner_id": "owner:logic-writing:reader-artifact",
@@ -135,6 +192,9 @@
         "obligation:logic-writing:specialist-authority",
         "obligation:logic-writing:investigation-evidence",
         "obligation:logic-writing:academic-provenance",
+        "obligation:logic-writing:fiction-native",
+        "obligation:logic-writing:travel-native",
+        "obligation:logic-writing:shared-writing",
         "obligation:logic-writing:reader-actual-artifact",
         "obligation:logic-writing:final-closure",
         "obligation:logic-writing:release-integrity"
@@ -185,6 +245,9 @@
         "obligation:logic-writing:specialist-authority",
         "obligation:logic-writing:investigation-evidence",
         "obligation:logic-writing:academic-provenance",
+        "obligation:logic-writing:fiction-native",
+        "obligation:logic-writing:travel-native",
+        "obligation:logic-writing:shared-writing",
         "obligation:logic-writing:reader-actual-artifact",
         "obligation:logic-writing:final-closure",
         "obligation:logic-writing:release-integrity"
@@ -209,7 +272,7 @@
   },
   "default_route_id": "route:logic-writing:router",
   "depth_profile": {
-    "claim_boundary": "SkillGuard supervises the exact current receipts for Logic Writing's declared checks. It does not replace investigation, academic writing, specialist judgment, or the frozen repository validation owners.",
+    "claim_boundary": "SkillGuard supervises the exact current receipts for Logic Writing's declared checks. It does not replace investigation, academic, fiction, travel, specialist judgment, or the frozen repository validation owners.",
     "enforcement_level": "enforced",
     "integration_mode": "native-integrated",
     "native_check_ids": [
@@ -217,6 +280,9 @@
       "check:logic-writing:specialist-authority",
       "check:logic-writing:investigation",
       "check:logic-writing:academic",
+      "check:logic-writing:fiction",
+      "check:logic-writing:travel",
+      "check:logic-writing:shared-writing",
       "check:logic-writing:reader-artifact",
       "check:logic-writing:final-closure",
       "check:logic-writing:contract-calibration",
@@ -227,6 +293,8 @@
       "route:logic-writing:router",
       "route:logic-writing:investigation",
       "route:logic-writing:academic-writing"
+      ,"route:logic-writing:fiction-writing"
+      ,"route:logic-writing:travel-guide"
     ],
     "profile_id": "profile:logic-writing:declared-check-supervision",
     "provider_runtime": {
@@ -255,6 +323,7 @@
     "skills/logic-writing/SKILL.md",
     "skills/logic-writing/agents",
     "skills/logic-writing/references",
+    "skills/logic-writing/routes",
     "skills/logic-writing/scripts",
     "skills/logic-writing/assets",
     "skills/logic-writing/.skillguard/contract_model.py",
@@ -272,6 +341,9 @@
     {"authority": "target-native", "check_id": "check:logic-writing:specialist-authority", "owner_id": "logic-writing"},
     {"authority": "target-native", "check_id": "check:logic-writing:investigation", "owner_id": "logic-writing"},
     {"authority": "target-native", "check_id": "check:logic-writing:academic", "owner_id": "logic-writing"},
+    {"authority": "target-native", "check_id": "check:logic-writing:fiction", "owner_id": "logic-writing"},
+    {"authority": "target-native", "check_id": "check:logic-writing:travel", "owner_id": "logic-writing"},
+    {"authority": "target-native", "check_id": "check:logic-writing:shared-writing", "owner_id": "logic-writing"},
     {"authority": "target-native", "check_id": "check:logic-writing:reader-artifact", "owner_id": "logic-writing"},
     {"authority": "target-native", "check_id": "check:logic-writing:final-closure", "owner_id": "logic-writing"},
     {"authority": "target-native", "check_id": "check:logic-writing:contract-calibration", "owner_id": "logic-writing"},
@@ -281,6 +353,8 @@
     {"authority": "target-native", "owner_id": "logic-writing", "route_id": "route:logic-writing:router"},
     {"authority": "target-native", "owner_id": "logic-writing", "route_id": "route:logic-writing:investigation"},
     {"authority": "target-native", "owner_id": "logic-writing", "route_id": "route:logic-writing:academic-writing"}
+    ,{"authority": "target-native", "owner_id": "logic-writing", "route_id": "route:logic-writing:fiction-writing"}
+    ,{"authority": "target-native", "owner_id": "logic-writing", "route_id": "route:logic-writing:travel-guide"}
   ],
   "native_route_owner": "logic-writing",
   "release_eligible": true,
@@ -294,14 +368,14 @@
       "step_id": "step:logic-writing:route"
     },
     {
-      "action": {"kind": "native", "summary": "Build current investigation evidence or academic revision provenance under the selected owner."},
-      "check_ids": ["check:logic-writing:investigation", "check:logic-writing:academic"],
+      "action": {"kind": "native", "summary": "Build current route-native evidence under the selected investigation, academic, fiction, or travel owner."},
+      "check_ids": ["check:logic-writing:investigation", "check:logic-writing:academic", "check:logic-writing:fiction", "check:logic-writing:travel"],
       "output_artifact_ids": [],
       "step_id": "step:logic-writing:evidence"
     },
     {
       "action": {"kind": "native", "summary": "Translate current evidence into a ReaderBrief and inspect the actual reader artifact."},
-      "check_ids": ["check:logic-writing:reader-artifact"],
+      "check_ids": ["check:logic-writing:shared-writing", "check:logic-writing:reader-artifact"],
       "output_artifact_ids": [],
       "step_id": "step:logic-writing:reader-artifact"
     },
@@ -328,6 +402,18 @@
       "check_ids": ["check:logic-writing:academic"],
       "output_artifact_ids": [],
       "step_id": "step:logic-writing:academic-writing:execute"
+    },
+    {
+      "action": {"kind": "native", "summary": "Preserve the fiction-writing route as a native final-owner route."},
+      "check_ids": ["check:logic-writing:fiction"],
+      "output_artifact_ids": [],
+      "step_id": "step:logic-writing:fiction-writing:execute"
+    },
+    {
+      "action": {"kind": "native", "summary": "Preserve the travel-guide route as a native final-owner route."},
+      "check_ids": ["check:logic-writing:travel"],
+      "output_artifact_ids": [],
+      "step_id": "step:logic-writing:travel-guide:execute"
     }
   ]
 }

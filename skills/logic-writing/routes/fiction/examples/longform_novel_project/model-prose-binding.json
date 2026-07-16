@@ -1,0 +1,74 @@
+{
+  "schema_version": "storyline-design.model_prose_binding.v1",
+  "project_id": "aurora-key",
+  "model_revision": "aurora-key-model-r1",
+  "artifact_ref": "file:drafts/book-01-final.txt;sha256:668e9f1b0911b8fd0e63cd8c01cfc0615d96479317e1aed2b45b0808cc5168ee",
+  "artifact_sha256": "sha256:668e9f1b0911b8fd0e63cd8c01cfc0615d96479317e1aed2b45b0808cc5168ee",
+  "binding_scope": "book",
+  "binding_rows": [
+    {
+      "id": "bind-ch01-key-breach",
+      "prose_ref": "chapter-01#scene-01a",
+      "model_refs": ["story_unit:chapter-01", "promise:promise-map-control"],
+      "observed_reader_delta": "The reader moves from trusting archive order to seeing that the rules have been breached.",
+      "observed_state_delta": ["object state changes: archive key has moved", "promise-map-control is set up"],
+      "downstream_use": ["chapter-02", "promise-map-control"],
+      "resistance_or_cost": "Mira cannot accuse anyone because the procedure she trusts is the thing now in doubt.",
+      "reader_hypothesis_delta": "The reader opens several access explanations instead of receiving one answer.",
+      "register_notes": ["Archive procedure language belongs to narration and institutional records."],
+      "variation_purpose": "setup",
+      "status": "pass"
+    },
+    {
+      "id": "bind-ch03-public-witness",
+      "prose_ref": "chapter-03#scene-03a",
+      "model_refs": ["story_unit:chapter-03", "arc:arc-mira-agency"],
+      "observed_reader_delta": "The reader understands Mira chooses exposure over private delay.",
+      "observed_state_delta": ["relationship pressure escalates", "Mira's agency arc changes"],
+      "downstream_use": ["chapter-04", "arc-mira-agency"],
+      "resistance_or_cost": "The public witness protects the evidence but makes Mira easier to attack.",
+      "reader_hypothesis_delta": "The reader stops expecting a private solution and expects public consequence.",
+      "register_notes": ["Witness language belongs to the public desk scene, not to abstract review narration."],
+      "variation_purpose": "cost",
+      "status": "pass"
+    },
+    {
+      "id": "bind-ch04-ledger-reframe",
+      "prose_ref": "chapter-04#scene-04a",
+      "model_refs": ["story_unit:chapter-04", "promise:promise-rival-trap"],
+      "observed_reader_delta": "The reader reinterprets the map room as a decoy rather than the destination.",
+      "observed_state_delta": ["promise-rival-trap is paid", "true map location remains open"],
+      "downstream_use": ["chapter-05", "promise-map-control"],
+      "resistance_or_cost": "The ledger helps Mira but also proves the rival has been reading her moves.",
+      "reader_hypothesis_delta": "One answer closes while the stronger question shifts to the glass case.",
+      "register_notes": ["Ledger language can be more formal because it appears as a document."],
+      "variation_purpose": "changed_interpretation",
+      "status": "pass"
+    },
+    {
+      "id": "bind-ch05-map-payoff",
+      "prose_ref": "chapter-05#scene-05a",
+      "model_refs": ["story_unit:chapter-05", "promise:promise-map-control"],
+      "observed_reader_delta": "The reader sees map control paid while map origin remains deliberately deferred.",
+      "observed_state_delta": ["map is secured", "series promise remains open with boundary"],
+      "downstream_use": ["closure-book-01-final-prose", "promise-series-map-origin"],
+      "resistance_or_cost": "Mira secures the map by accepting public consequence instead of erasing exposure.",
+      "reader_hypothesis_delta": "The reader's control question resolves and the origin question becomes the series hook.",
+      "register_notes": ["Final public consequence language stays in action and choice rather than chapter-purpose summary."],
+      "variation_purpose": "payoff",
+      "status": "pass"
+    }
+  ],
+  "drift_findings": [],
+  "length_outliers": [
+    {
+      "unit_ref": "chapter-03",
+      "binding_density_review": "Chapter 3 is longer because it carries public witness, agency cost, and downstream exposure pressure rather than repeating one function.",
+      "status": "pass"
+    }
+  ],
+  "unbound_prose_refs": [],
+  "unrealized_model_refs": [],
+  "duplicate_binding_refs": [],
+  "decision": "passed"
+}

@@ -25,9 +25,9 @@ def _commands(repository: Path, target: Path, scripts: Path) -> dict[str, list[s
     return {
         "compile": [sys.executable, str(compiler), str(target), "--repository-root", str(repository), "--check"],
         "runtime": [sys.executable, str(cli), "check-runtime-authority", "--target", str(target), "--target-root", str(repository), "--require-authority", "current", "--output", "-"],
-        "contract": [sys.executable, str(cli), "check-contract", "--target", str(target), "--target-root", str(repository), "--output", "-"],
+        "contract": [sys.executable, str(cli), "check-contract", "--target", str(target), "--repository-root", str(repository), "--output", "-"],
         "depth": [sys.executable, str(cli), "check-depth", "--target", str(target), "--target-root", str(repository), "--output", "-"],
-        "static": [sys.executable, str(cli), "check-skill", "--target", str(target), "--output", "-"],
+        "static": [sys.executable, str(cli), "check-skill", "--target", str(target), "--repository-root", str(repository), "--output", "-"],
         "project": [sys.executable, str(cli), "project-audit", "--root", str(repository)],
     }
 

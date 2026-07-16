@@ -13,6 +13,13 @@ Write as a knowledgeable person explaining the subject to the declared reader.
 - Explain why evidence matters instead of listing sources or methods.
 - Preserve real uncertainty, counterevidence, and limits near the affected claim.
 - Follow the requested genre rather than a fixed audit template.
+- Name what changes for the reader in each important unit and hand off that
+  concrete change to an exact later consumer or terminal disposition.
+- Give technical, institutional, local, quoted, narrator, and character
+  language an identifiable owner; do not flatten every voice into one abstract
+  summary register.
+- Allow repetition only when it creates a changed effect such as escalation,
+  contrast, inversion, cost, rhythm, or a new interpretation.
 
 ## Default prohibitions
 
@@ -29,3 +36,6 @@ internal-term leakage, unexplained concepts, mechanical enumeration, vague
 referents, unsupported jumps, repeated conclusions, citation detachment, genre,
 and limitation placement. Deterministic checks find observable defects; a
 separate judgment receipt evaluates clarity, coherence, and reader fit.
+Also check explanation pressure, generic handoffs, register-owner drift,
+variation without effect, unbound prose, unrealized model rows, and whether all
+judgments still bind the exact delivered bytes.

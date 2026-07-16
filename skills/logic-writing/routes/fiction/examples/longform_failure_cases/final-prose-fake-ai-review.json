@@ -1,0 +1,28 @@
+{
+  "schema_version": "storyline-design.longform_closure.v1",
+  "project_id": "aurora-key",
+  "closure_id": "closure-book-final-fake-ai-review",
+  "artifact_type": "novel",
+  "prose_phase": "final_prose",
+  "closure_level": "book",
+  "claim_boundary": "Book 1 final prose closure passes for the current manuscript artifact.",
+  "required_surfaces": [
+    {"surface": "novel_ledger", "status": "passed", "evidence_ref": "novel-ledger.json", "blocks_closure": true, "next_action": "rerun ledger"},
+    {"surface": "story_contribution", "status": "passed", "evidence_ref": "novel-ledger.json#story_units", "blocks_closure": true, "next_action": "rerun contribution"},
+    {"surface": "chapter_interface", "status": "passed", "evidence_ref": "chapter-interfaces.json", "blocks_closure": true, "next_action": "rerun interfaces"},
+    {"surface": "promise_payoff", "status": "passed", "evidence_ref": "novel-ledger.json#promises", "blocks_closure": true, "next_action": "rerun promises"},
+    {"surface": "voice_style", "status": "passed", "evidence_ref": "voice-style-report.json", "blocks_closure": true, "next_action": "rerun voice"},
+    {"surface": "reverse_outline", "status": "passed", "evidence_ref": "chapter-interfaces.json#reverse_outlines", "blocks_closure": true, "next_action": "rerun reverse outlines"},
+    {"surface": "source_requirements", "status": "passed", "evidence_ref": "file:../longform_novel_project/source-requirements.json;sha256:506fd0f26b42f07121ba5f70d9b4c3342fb391bae872c65b05917dce97522aa2", "blocks_closure": true, "next_action": "refresh requirements"},
+    {"surface": "final_artifact", "status": "passed", "evidence_ref": "file:../longform_novel_project/drafts/book-01-final.txt;sha256:668e9f1b0911b8fd0e63cd8c01cfc0615d96479317e1aed2b45b0808cc5168ee", "blocks_closure": true, "next_action": "recompute artifact hash"},
+    {"surface": "artifact_bound_review", "status": "passed", "evidence_ref": "review:ai-summary-says-the-manuscript-was-read", "blocks_closure": true, "next_action": "rerun semantic review with final artifact hash"}
+  ],
+  "child_reports": [
+    {"id": "closure-ch01", "level": "chapter", "status": "passed", "evidence_ref": "chapter-interfaces.json#iface-ch01", "blocks_parent": false}
+  ],
+  "deferred_items": [],
+  "blocking_items": [],
+  "stale_items": [],
+  "decision": "passed",
+  "next_actions": ["replace report-only AI review with artifact-bound semantic review"]
+}

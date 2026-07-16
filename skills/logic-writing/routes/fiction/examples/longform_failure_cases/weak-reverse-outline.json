@@ -1,0 +1,40 @@
+{
+  "schema_version": "storyline-design.reverse_outline.v1",
+  "project_id": "weak-longform-case",
+  "source_draft_ref": "drafts/book-01.txt",
+  "claim_boundary": "This fixture intentionally records only prose observations and must not substitute for long-form model evidence.",
+  "chapters": [
+    {
+      "id": "reverse-ch01",
+      "chapter_id": "chapter-01",
+      "source_draft_ref": "drafts/book-01.txt#chapter-01",
+      "observed_opening": "The protagonist finds a watch on the desk.",
+      "observed_closing": "A voice says this has happened before.",
+      "observed_motif_counts": {
+        "watch": 4,
+        "station": 2
+      },
+      "model_alignment": "pass",
+      "drift": [],
+      "status": "pass"
+    },
+    {
+      "id": "reverse-ch02",
+      "chapter_id": "chapter-02",
+      "source_draft_ref": "drafts/book-01.txt#chapter-02",
+      "observed_opening": "The watch ticks again.",
+      "observed_closing": "The station clock stops.",
+      "observed_motif_counts": {
+        "watch": 3,
+        "station": 5
+      },
+      "model_alignment": "pass",
+      "drift": [],
+      "status": "pass"
+    }
+  ],
+  "summary": {
+    "chapter_count": 2,
+    "chapters_with_pass_status": 2
+  }
+}

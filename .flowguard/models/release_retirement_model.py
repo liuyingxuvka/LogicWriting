@@ -15,14 +15,14 @@ def build_plan(*, conformance_status="skipped_with_reason", conformance_evidence
         DevelopmentEvent("project_global_route", fingerprint="release:abc"),
         DevelopmentEvent("publish_release", fingerprint="release:abc"),
         DevelopmentEvent("verify_backups", status="current_pass"),
-        DevelopmentEvent("quarantine_legacy_local", target="research"),
-        DevelopmentEvent("quarantine_legacy_local", target="academic"),
-        DevelopmentEvent("privatize_legacy_remote", fingerprint="private+anon404:research", target="research"),
+        DevelopmentEvent("quarantine_legacy_local", target="travel"),
+        DevelopmentEvent("quarantine_legacy_local", target="storyline"),
+        DevelopmentEvent("privatize_legacy_remote", fingerprint="private+anon404:travel", target="travel"),
         DevelopmentEvent("recheck_after_first_privatization", status="current_pass"),
-        DevelopmentEvent("privatize_legacy_remote", fingerprint="private+anon404:academic", target="academic"),
+        DevelopmentEvent("privatize_legacy_remote", fingerprint="private+anon404:storyline", target="storyline"),
         DevelopmentEvent("record_remote_deletion_handoff", status="current_pass"),
     )
-    early = (DevelopmentEvent("privatize_legacy_remote", fingerprint="bad", target="research"),)
+    early = (DevelopmentEvent("privatize_legacy_remote", fingerprint="bad", target="travel"),)
     plane_separation = (DevelopmentEvent("operation_artifact_changed", fingerprint="operation-artifact"),)
     return formal_plan(
         model_id="release_retirement_model",
@@ -43,7 +43,7 @@ def build_plan(*, conformance_status="skipped_with_reason", conformance_evidence
         failure_modes=("legacy repository privatized before the replacement is recoverable", "anonymous 404 mislabeled as deletion", "operation edits invalidate release receipts"),
         harms=("both old and new routes become unavailable",),
         hard_invariants=("release consumes frozen validation", "retirement is sequential and recoverable"),
-        adversarial_inputs=("privatize first", "academic privatization before health recheck", "claim deletion from anonymous 404"),
+        adversarial_inputs=("privatize first", "Storyline privatization before Travel health recheck", "claim deletion from anonymous 404"),
         conformance_status=conformance_status,
         conformance_evidence=conformance_evidence,
     )

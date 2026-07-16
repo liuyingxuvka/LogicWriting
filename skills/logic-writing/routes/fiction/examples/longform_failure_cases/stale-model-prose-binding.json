@@ -1,0 +1,28 @@
+{
+  "schema_version": "storyline-design.model_prose_binding.v1",
+  "project_id": "aurora-key",
+  "artifact_ref": "file:../longform_novel_project/drafts/book-01-final.txt;sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "artifact_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "binding_scope": "book",
+  "binding_rows": [
+    {
+      "id": "bind-stale-artifact",
+      "prose_ref": "chapter-01#scene-01a",
+      "model_refs": ["story_unit:chapter-01"],
+      "observed_reader_delta": "The reader notices the procedure breach.",
+      "observed_state_delta": ["archive key state changes"],
+      "downstream_use": ["chapter-02"],
+      "resistance_or_cost": "Mira cannot accuse anyone yet.",
+      "reader_hypothesis_delta": "Several access explanations remain open.",
+      "register_notes": ["Archive language belongs to the institution."],
+      "variation_purpose": "setup",
+      "status": "pass"
+    }
+  ],
+  "drift_findings": [],
+  "length_outliers": [],
+  "unbound_prose_refs": [],
+  "unrealized_model_refs": [],
+  "duplicate_binding_refs": [],
+  "decision": "passed"
+}

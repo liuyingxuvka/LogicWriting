@@ -1,0 +1,46 @@
+{
+  "project_id": "aurora-key",
+  "model_revision": "aurora-key-model-r1",
+  "voice_contract": {
+    "id": "voice-contract",
+    "pov_policy": "limited_third",
+    "tense_policy": "past",
+    "narration_distance": "close",
+    "diction": "precise, tactile, low ornament",
+    "sentence_rhythm": "varied but controlled",
+    "dialogue_policy": "subtext over exposition",
+    "exposition_policy": "embed through action and consequence",
+    "pacing_policy": "chapter endings carry unresolved pressure",
+    "allowed_variation": ["ledger quotations may become more formal"],
+    "blocked_variation": ["no sudden omniscient explanation", "no unmarked tense shift"],
+    "status": "pass"
+  },
+  "reports": [
+    {
+      "id": "voice-report-ch01-ch03",
+      "chapter_id": "chapter-03",
+      "contract_ref": "voice-contract",
+      "checks": [
+        {"field": "pov", "status": "pass", "finding": "No head-hop outside Mira."},
+        {"field": "tense", "status": "pass", "finding": "Past tense remains stable."},
+        {"field": "dialogue", "status": "pass", "finding": "Dialogue implies pressure without explaining the model."}
+      ],
+      "drift": [],
+      "repair_actions": [],
+      "overall_status": "pass"
+    },
+    {
+      "id": "voice-report-book-01",
+      "chapter_id": "book-01",
+      "contract_ref": "voice-contract",
+      "checks": [
+        {"field": "narration_distance", "status": "pass", "finding": "Narration remains close to Mira's perception."},
+        {"field": "exposition", "status": "pass", "finding": "Archive rules appear through action and consequence."},
+        {"field": "pacing", "status": "pass", "finding": "Each chapter carries a concrete unresolved pressure forward."}
+      ],
+      "drift": [],
+      "repair_actions": [],
+      "overall_status": "pass"
+    }
+  ]
+}

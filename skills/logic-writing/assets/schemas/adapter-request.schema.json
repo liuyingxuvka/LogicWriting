@@ -26,7 +26,7 @@
     "schema_version": { "const": "1.0" },
     "request_id": { "$ref": "#/$defs/identifier" },
     "task_id": { "$ref": "#/$defs/identifier" },
-    "parent_route": { "enum": ["investigation", "academic-writing"] },
+    "parent_route": { "enum": ["investigation", "academic-writing", "fiction-writing", "travel-guide"] },
     "native_owner": { "$ref": "#/$defs/nativeOwner" },
     "native_route": { "$ref": "#/$defs/identifier" },
     "requested_scope": { "type": "string", "minLength": 1 },
@@ -113,7 +113,7 @@
     },
     "fingerprint": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
     "nativeOwner": {
-      "enum": ["sourceguard", "logicguard", "traceguard", "flowguard", "documents", "pdf"]
+      "enum": ["sourceguard", "logicguard", "traceguard", "worldguard", "flowguard", "documents", "pdf"]
     },
     "sourceRole": {
       "enum": [

@@ -1,0 +1,420 @@
+{
+  "schema_version": "storyline-design.novel_ledger.v2",
+  "project_id": "aurora-key",
+  "model_revision": "aurora-key-model-r1",
+  "target_artifact": {
+    "artifact_type": "novel",
+    "prose_phase": "final_prose",
+    "closure_level": "book",
+    "reader_visibility": "final_prose",
+    "claim_boundary": "Book 1 model and final-prose evidence are bound to the current manuscript while the series-origin promise remains explicitly deferred.",
+    "prose_allowed": true
+  },
+  "longform_scope": {
+    "series_id": "series-aurora",
+    "book_id": "book-01",
+    "volume_ids": ["volume-01"],
+    "chapter_ids": ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05"],
+    "length_scope": "mini fixture with five chapters",
+    "genre_promise": "literary mystery with controlled speculative rules",
+    "pov_policy": "limited_third",
+    "continuity_policy": "chapter interfaces and voice/style reports must stay current",
+    "deferred_scope": ["promise-series-map-origin"]
+  },
+  "hierarchy": {
+    "books": [
+      {
+        "id": "book-01",
+        "kind": "book",
+        "title": "The Aurora Key",
+        "parent_id": "series-aurora",
+        "order": 1,
+        "status": "pass",
+        "summary": "A junior archivist exposes a rival's trap and chooses public risk to protect a dangerous map.",
+        "entry_state": "The map is rumor and the protagonist avoids public conflict.",
+        "exit_state": "The map is secured, the rival is exposed, and the origin mystery remains for the series.",
+        "depends_on": [],
+        "evidence_refs": ["longform-closure.json#closure-book-01"]
+      }
+    ],
+    "volumes": [
+      {
+        "id": "volume-01",
+        "kind": "volume",
+        "title": "Archive Pressure",
+        "parent_id": "book-01",
+        "order": 1,
+        "status": "pass",
+        "summary": "The protagonist moves from private suspicion to public exposure.",
+        "entry_state": "The archive seems sealed and safe.",
+        "exit_state": "The archive has become evidence in public.",
+        "depends_on": ["book-01"],
+        "evidence_refs": ["longform-closure.json#volume-01"]
+      }
+    ],
+    "chapters": [
+      {
+        "id": "chapter-01",
+        "kind": "chapter",
+        "title": "The Quiet Key",
+        "parent_id": "volume-01",
+        "order": 1,
+        "status": "pass",
+        "summary": "Mira finds that the archive key has been moved.",
+        "entry_state": "Mira trusts the archive rules.",
+        "exit_state": "Mira suspects the rival can enter after hours.",
+        "depends_on": ["volume-01"],
+        "evidence_refs": ["chapter-interfaces.json#iface-ch01"]
+      },
+      {
+        "id": "chapter-02",
+        "kind": "chapter",
+        "title": "False Ink",
+        "parent_id": "volume-01",
+        "order": 2,
+        "status": "pass",
+        "summary": "A false note points Mira toward the map room.",
+        "entry_state": "Mira thinks the key movement is an accident.",
+        "exit_state": "Mira knows someone is baiting her.",
+        "depends_on": ["chapter-01"],
+        "evidence_refs": ["chapter-interfaces.json#iface-ch02"]
+      },
+      {
+        "id": "chapter-03",
+        "kind": "chapter",
+        "title": "Public Door",
+        "parent_id": "volume-01",
+        "order": 3,
+        "status": "pass",
+        "summary": "Mira chooses exposure to force the archive door open.",
+        "entry_state": "Mira has proof but no safe witness.",
+        "exit_state": "Mira is exposed and the rival knows she saw the bait.",
+        "depends_on": ["chapter-02"],
+        "evidence_refs": ["chapter-interfaces.json#iface-ch03"]
+      },
+      {
+        "id": "chapter-04",
+        "kind": "chapter",
+        "title": "The Rival's Ledger",
+        "parent_id": "volume-01",
+        "order": 4,
+        "status": "pass",
+        "summary": "Mira reads the rival's ledger and learns the map is a decoy.",
+        "entry_state": "Mira believes the map itself is the prize.",
+        "exit_state": "Mira understands that the rival wants her to move the decoy.",
+        "depends_on": ["chapter-03"],
+        "evidence_refs": ["chapter-interfaces.json#iface-ch04"]
+      },
+      {
+        "id": "chapter-05",
+        "kind": "chapter",
+        "title": "Glass Case",
+        "parent_id": "volume-01",
+        "order": 5,
+        "status": "pass",
+        "summary": "Mira secures the true map and leaves its origin unresolved.",
+        "entry_state": "Mira knows the rival's trap but not the true map's origin.",
+        "exit_state": "Mira protects the map, exposes the rival, and defers the origin mystery.",
+        "depends_on": ["chapter-04"],
+        "evidence_refs": ["chapter-interfaces.json#iface-ch05"]
+      }
+    ],
+    "scenes": [
+      {
+        "id": "scene-01a",
+        "kind": "scene",
+        "title": "Missing Key",
+        "parent_id": "chapter-01",
+        "order": 1,
+        "status": "pass",
+        "summary": "Mira notices the moved key.",
+        "entry_state": "Archive order feels stable.",
+        "exit_state": "Archive order is suspect.",
+        "depends_on": ["chapter-01"],
+        "evidence_refs": []
+      },
+      {
+        "id": "scene-02a",
+        "kind": "scene",
+        "title": "False Note",
+        "parent_id": "chapter-02",
+        "order": 1,
+        "status": "pass",
+        "summary": "The false note redirects Mira.",
+        "entry_state": "Mira follows procedure.",
+        "exit_state": "Mira follows a baited trail.",
+        "depends_on": ["chapter-02"],
+        "evidence_refs": []
+      },
+      {
+        "id": "scene-03a",
+        "kind": "scene",
+        "title": "Witness Desk",
+        "parent_id": "chapter-03",
+        "order": 1,
+        "status": "pass",
+        "summary": "Mira chooses a public witness.",
+        "entry_state": "Mira is private.",
+        "exit_state": "Mira is visible.",
+        "depends_on": ["chapter-03"],
+        "evidence_refs": []
+      },
+      {
+        "id": "scene-04a",
+        "kind": "scene",
+        "title": "Rival Ledger",
+        "parent_id": "chapter-04",
+        "order": 1,
+        "status": "pass",
+        "summary": "Mira reads the rival's ledger.",
+        "entry_state": "Mira misidentifies the prize.",
+        "exit_state": "Mira identifies the decoy.",
+        "depends_on": ["chapter-04"],
+        "evidence_refs": []
+      },
+      {
+        "id": "scene-05a",
+        "kind": "scene",
+        "title": "Glass Case",
+        "parent_id": "chapter-05",
+        "order": 1,
+        "status": "pass",
+        "summary": "Mira secures the true map.",
+        "entry_state": "The true map is vulnerable.",
+        "exit_state": "The true map is protected.",
+        "depends_on": ["chapter-05"],
+        "evidence_refs": []
+      }
+    ]
+  },
+  "story_units": [
+    {
+      "id": "unit-book-01",
+      "kind": "book",
+      "parent_id": "series-aurora",
+      "importance": "key",
+      "status": "pass",
+      "contribution": "Establishes the map conflict and leaves the origin mystery for the series.",
+      "downstream_use": ["promise-series-map-origin", "book-02"],
+      "terminal_treatment": "keep",
+      "repair_action": "not_applicable",
+      "evidence_refs": ["longform-closure.json#closure-book-01"]
+    },
+    {
+      "id": "unit-chapter-01",
+      "kind": "chapter",
+      "parent_id": "volume-01",
+      "importance": "major",
+      "status": "pass",
+      "contribution": "Introduces the archive breach and Mira's suspicion.",
+      "downstream_use": ["chapter-02", "promise-map-control"],
+      "terminal_treatment": "keep",
+      "repair_action": "not_applicable",
+      "evidence_refs": ["chapter-interfaces.json#iface-ch01"]
+    },
+    {
+      "id": "unit-chapter-02",
+      "kind": "chapter",
+      "parent_id": "volume-01",
+      "importance": "major",
+      "status": "pass",
+      "contribution": "Turns suspicion into a baited trail.",
+      "downstream_use": ["chapter-03", "promise-rival-trap"],
+      "terminal_treatment": "keep",
+      "repair_action": "not_applicable",
+      "evidence_refs": ["chapter-interfaces.json#iface-ch02"]
+    },
+    {
+      "id": "unit-chapter-03",
+      "kind": "chapter",
+      "parent_id": "volume-01",
+      "importance": "major",
+      "status": "pass",
+      "contribution": "Forces Mira to choose public risk over private caution.",
+      "downstream_use": ["chapter-04", "arc-mira-agency"],
+      "terminal_treatment": "keep",
+      "repair_action": "not_applicable",
+      "evidence_refs": ["chapter-interfaces.json#iface-ch03"]
+    },
+    {
+      "id": "unit-chapter-04",
+      "kind": "chapter",
+      "parent_id": "volume-01",
+      "importance": "major",
+      "status": "pass",
+      "contribution": "Reframes the map as decoy and prepares the final choice.",
+      "downstream_use": ["chapter-05", "promise-rival-trap"],
+      "terminal_treatment": "keep",
+      "repair_action": "not_applicable",
+      "evidence_refs": ["chapter-interfaces.json#iface-ch04"]
+    },
+    {
+      "id": "unit-chapter-05",
+      "kind": "chapter",
+      "parent_id": "volume-01",
+      "importance": "key",
+      "status": "pass",
+      "contribution": "Pays the book conflict while deferring the series origin mystery.",
+      "downstream_use": ["promise-map-control", "promise-series-map-origin"],
+      "terminal_treatment": "keep",
+      "repair_action": "not_applicable",
+      "evidence_refs": ["chapter-interfaces.json#iface-ch05"]
+    }
+  ],
+  "arcs": [
+    {
+      "id": "arc-mira-agency",
+      "arc_type": "protagonist",
+      "owner": "Mira",
+      "scope": "book-01",
+      "start_state": "Avoids public conflict.",
+      "turning_points": ["chapter-03", "chapter-05"],
+      "end_state": "Accepts public consequence to protect the archive.",
+      "linked_chapters": ["chapter-01", "chapter-03", "chapter-05"],
+      "status": "pass"
+    },
+    {
+      "id": "arc-rival-exposure",
+      "arc_type": "opposition",
+      "owner": "Rival Archivist",
+      "scope": "book-01",
+      "start_state": "Acts through hidden access.",
+      "turning_points": ["chapter-02", "chapter-04"],
+      "end_state": "Exposed through his own ledger.",
+      "linked_chapters": ["chapter-02", "chapter-04", "chapter-05"],
+      "status": "pass"
+    }
+  ],
+  "threads": [
+    {
+      "id": "thread-archive-breach",
+      "thread_type": "mystery",
+      "introduced_by": "chapter-01",
+      "active_in": ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05"],
+      "resolved_by": ["chapter-05"],
+      "deferred_to": "not_applicable",
+      "importance": "key",
+      "status": "pass"
+    },
+    {
+      "id": "thread-map-origin",
+      "thread_type": "series_mystery",
+      "introduced_by": "chapter-05",
+      "active_in": ["chapter-05"],
+      "resolved_by": [],
+      "deferred_to": "book-02",
+      "importance": "major",
+      "status": "series_deferred"
+    }
+  ],
+  "promises": [
+    {
+      "id": "promise-map-control",
+      "importance": "key",
+      "promise_type": "dramatic_question",
+      "introduced_by": ["chapter-01"],
+      "expected_payoff": "Who controls the map and at what cost?",
+      "status": "paid",
+      "payoff_rows": ["chapter-05"],
+      "deferral_level": "not_applicable",
+      "claim_boundary": "Book 1 answers map control.",
+      "evidence_refs": ["chapter-interfaces.json#iface-ch05", "longform-closure.json#closure-book-01"]
+    },
+    {
+      "id": "promise-rival-trap",
+      "importance": "major",
+      "promise_type": "mystery",
+      "introduced_by": ["chapter-02"],
+      "expected_payoff": "Why was Mira baited toward the map room?",
+      "status": "paid",
+      "payoff_rows": ["chapter-04", "chapter-05"],
+      "deferral_level": "not_applicable",
+      "claim_boundary": "Book 1 exposes the rival's trap.",
+      "evidence_refs": ["chapter-interfaces.json#iface-ch04"]
+    },
+    {
+      "id": "promise-series-map-origin",
+      "importance": "major",
+      "promise_type": "mystery",
+      "introduced_by": ["chapter-05"],
+      "expected_payoff": "Where did the true map come from?",
+      "status": "series_deferred",
+      "payoff_rows": [],
+      "deferral_level": "series",
+      "claim_boundary": "Book 1 may defer the map origin to the series while closing map control.",
+      "evidence_refs": ["longform-closure.json#deferred-series-origin"]
+    }
+  ],
+  "continuity": [
+    {
+      "id": "cont-archive-key",
+      "continuity_type": "object",
+      "fact": "The archive key is missing before Mira can lawfully enter after hours.",
+      "scope": "book-01",
+      "first_seen": "chapter-01",
+      "last_checked": "chapter-05",
+      "affected_units": ["chapter-01", "chapter-03", "chapter-05"],
+      "status": "pass",
+      "repair_action": "not_applicable",
+      "evidence_refs": ["chapter-interfaces.json"]
+    },
+    {
+      "id": "cont-pov",
+      "continuity_type": "POV",
+      "fact": "The book stays in limited third around Mira.",
+      "scope": "book-01",
+      "first_seen": "chapter-01",
+      "last_checked": "chapter-05",
+      "affected_units": ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05"],
+      "status": "pass",
+      "repair_action": "not_applicable",
+      "evidence_refs": ["voice-style-report.json"]
+    }
+  ],
+  "chapter_interfaces": [
+    {"id": "iface-ch01", "chapter_id": "chapter-01"},
+    {"id": "iface-ch02", "chapter_id": "chapter-02"},
+    {"id": "iface-ch03", "chapter_id": "chapter-03"},
+    {"id": "iface-ch04", "chapter_id": "chapter-04"},
+    {"id": "iface-ch05", "chapter_id": "chapter-05"}
+  ],
+  "draft_state": {
+    "chapters_planned": ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05"],
+    "chapters_drafted": ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05"],
+    "chapters_reverse_outlined": ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05"],
+    "current_revision_round": 1,
+    "prose_claim_boundary": "Book 1 final prose is claimed only through the content-addressed final manuscript closure.",
+    "latest_draft_refs": ["drafts/book-01-final.txt"],
+    "stale_after": []
+  },
+  "validation": [
+    {
+      "id": "val-novel-ledger",
+      "check_name": "novel_ledger_check",
+      "surface": "novel_ledger",
+      "checked_ids": ["book-01"],
+      "status": "pass",
+      "evidence_ref": "novel_ledger_check.py",
+      "rerun_required_when": ["novel-ledger.json changes"]
+    },
+    {
+      "id": "val-contribution",
+      "check_name": "story_contribution_check",
+      "surface": "story_contribution",
+      "checked_ids": ["story_units"],
+      "status": "pass",
+      "evidence_ref": "story_contribution_check.py",
+      "rerun_required_when": ["story_units change"]
+    }
+  ],
+  "closure": {
+    "closure_level": "book",
+    "decision": "pass",
+    "claim_boundary": "Book 1 model closure supports the separately content-addressed final-prose closure.",
+    "blocking_rows": [],
+    "deferred_rows": ["promise-series-map-origin"],
+    "stale_rows": [],
+    "latest_validation_refs": ["val-novel-ledger", "val-contribution"],
+    "prose_allowed": true
+  }
+}

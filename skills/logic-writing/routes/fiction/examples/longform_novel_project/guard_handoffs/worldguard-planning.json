@@ -1,0 +1,15 @@
+{
+  "schema_version": "storyline-design.guard_handoff.v1",
+  "surface": "worldguard_story_claims",
+  "guard_id": "worldguard",
+  "native_owner": "worldguard",
+  "native_route_id": "worldguard",
+  "native_check_id": "worldguard.story_claims_terminal",
+  "tool_version": "0.1.2",
+  "receipt_schema_version": "worldguard.native_terminal_receipt.v1",
+  "input_fingerprint": "sha256:fec08d79452f1600e3d9252c77dbdbfb52ada31f9f47c0e23e35a2e71cdd3a8b",
+  "terminal_receipt_id": "aurora-key-pre-draft-worldguard-terminal",
+  "terminal_receipt_ref": "file:../guard_receipts/worldguard-planning.json;sha256:0c8a6a29f7d17ee93effca2ddecd3d9d4d79a5dfd95afac810350b7d4cc9d18c",
+  "terminal_status": "passed",
+  "claim_boundary": "The WorldGuard receipt covers access, resource, authority, and causality claims in the current Aurora Key pre-draft model only."
+}

@@ -33,6 +33,7 @@ EXPECTED = {
     "research-packet.schema.json",
     "revision-provenance.schema.json",
     "route-decision.schema.json",
+    "shared-writing-contract.schema.json",
     "source-registry.schema.json",
     "source-unit-manifest.schema.json",
 }
@@ -57,7 +58,7 @@ def _decision() -> dict:
     )
 
 
-def test_runtime_inventory_is_exactly_the_fourteen_current_contracts():
+def test_runtime_inventory_is_exactly_the_current_contracts():
     schema_root = (
         Path(__file__).resolve().parents[2]
         / "skills"
@@ -176,7 +177,7 @@ def test_runtime_does_not_depend_on_site_packages():
     )
 
     assert completed.returncode == 0, completed.stderr
-    assert completed.stdout.strip() == "14"
+    assert completed.stdout.strip() == "15"
 
 
 def test_schema_runtime_source_has_no_secondary_validator_import():

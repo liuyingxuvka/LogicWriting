@@ -1,186 +1,122 @@
-# Logic Writing Architecture
+# Architecture
 
-## Purpose
+Logic Writing is a thin public shell around four route-native owners and a
+small neutral writing kernel. “Thin” means routing, handoff, artifact identity,
+reader projection, freshness, and closure are shared; domain judgment stays
+with the route or specialist that owns it.
 
-Logic Writing is a thin orchestration skill for two closely related outcomes:
-source-backed investigation and substantive academic writing. “Thin” means it
-owns routing, bounded handoffs, reader translation, and final evidence
-aggregation while leaving specialist decisions with the specialist that can
-actually justify them.
+## Four final-owner routes
 
-The architecture addresses two recurring failures:
+Exactly one route owns every substantive terminal artifact:
 
-1. investigation and academic writing duplicate the same evidence machinery
-   but disagree about who owns the final artifact; and
-2. internal reasoning records leak into prose, producing text that sounds like
-   an AI describing its workflow rather than a person explaining the subject.
-
-## Control shape: one public entrypoint, one final owner
-
-```mermaid
-flowchart LR
-    U["User request"] --> E["$logic-writing"]
-    E --> D{"Terminal deliverable"}
-    D -->|"Research report or investigated answer"| I["investigation"]
-    D -->|"Academic artifact or substantive revision"| A["academic-writing"]
-    A -. "bounded gap contract" .-> C["investigation child"]
-    C -. "ResearchPacket slice" .-> A
-    I --> F["Final route closure"]
-    A --> F
-```
-
-Route selection asks what the user must receive at the end. It does not run
-both routes as peers and choose a winner later. If the final genre is materially
-ambiguous, routing stops for one focused clarification.
-
-The investigation route owns research reports, briefings, evidence packages,
-decision notes, and investigated answers. The academic-writing route owns
-papers, thesis and dissertation units, literature reviews, proposals, and
-substantive revisions. A child investigation may close only its exact gap; it
-cannot close the parent academic artifact.
-
-## Specialist adapter layer
-
-Logic Writing sends a bounded request to the real provider, checks the returned
-scope and identity, and preserves the provider's native status. The adapter is
-an envelope, not a second implementation of the specialist.
-
-```mermaid
-flowchart TB
-    LW["Logic Writing"] --> SG["SourceGuard\nsearch policy and depth"]
-    LW --> LG["LogicGuard\nsources, arguments, structure, citations"]
-    LW --> TG["TraceGuard\ntime, implementation, causality, prediction"]
-    LW --> FG["FlowGuard\nstate, freshness, closure constraints"]
-    LW --> DOC["Documents\nfile mutation and page evidence"]
-    LW --> PDF["PDF\nextraction, render, visual inspection"]
-```
-
-Before a required adapter call, provider availability must be checked. Missing
-or inaccessible providers remain typed degraded states. The shell must not
-substitute a local imitation, reinterpret a native result, or strengthen a
-bounded result into a pass.
-
-## Evidence path
-
-The main dependency chain is:
-
-```text
-observed source
-  -> claim support
-  -> ResearchPacket
-  -> ReaderBrief
-  -> reader-facing artifact
-  -> actual-artifact audit
-  -> final closure
-```
-
-Each downstream step depends on the exact current identity of the relevant
-upstream material. A material change makes affected downstream evidence stale.
-Logs and progress messages are not source evidence.
-
-### ResearchPacket
-
-`ResearchPacket` is the default cross-route evidence handoff. It binds observed
-sources and their lineages to claims, important numbers, counterevidence,
-alternatives, unresolved gaps, allowed wording, prohibited overclaims, and the
-native evidence that supports those boundaries.
-
-It excludes search candidates treated as facts, unresolved citation anchors,
-and caller-authored completion labels. A bounded child request returns only the
-requested packet slice.
-
-### ReaderBrief
-
-`ReaderBrief` is the clean-room writing contract. It keeps what a writer needs:
-the reader's question, audience, genre, concepts, findings, evidence anchors,
-alternatives, limitations, sequence, citations, and safe wording.
-
-It excludes Guard names, route and model ids, raw ledgers, status-field names,
-tool instructions, and agent work plans. Provider failures are translated into
-the factual limitation the reader needs, while the raw operational state stays
-in internal evidence.
-
-### Actual-artifact audit
-
-The audit reads the current delivered text or file. It rebuilds the structure
-and checks whether concepts are introduced before use, references are clear,
-claims move through reasons and evidence, paragraphs and sections hand off
-coherently, citations attach to the supported claim, material limitations are
-placed where they matter, and the artifact fits its genre and reader.
-
-Deterministic diagnostics and reader-quality judgment are separate evidence
-classes. Neither metadata nor a story plan can stand in for inspecting the
-actual artifact.
-
-## Investigation route
-
-The investigation route:
-
-1. defines the reader question, critical claims, scope, source roles, and an
-   evidence-based stopping rule;
-2. uses SourceGuard to choose discovery actions and LogicGuard to preserve
-   observed sources;
-3. uses LogicGuard for warrants, alternatives, rebuttals, and scope, and calls
-   TraceGuard only when a material conclusion depends on a trace;
-4. distinguishes chronology, mechanism, implementation, exposure, outcome,
-   competing explanations, and forecast evidence where relevant;
-5. assembles a current ResearchPacket; and
-6. writes and audits the requested report or bounded handoff.
-
-More links do not automatically mean more depth. Repeated lineage counts as
-repeated lineage, and inaccessible material remains an access gap.
-
-## Academic-writing route
-
-The academic-writing route:
-
-1. defines the artifact, audience, contribution, revision constraints,
-   citation style, format, and final deliverable;
-2. maps real sections, paragraphs, figures, tables, notes, and appendices before
-   broad revision;
-3. checks how important units contribute and what later unit consumes them;
-4. deepens shallow literature, method, argument, figure, and table units;
-5. requests a bounded investigation packet when evidence is missing;
-6. integrates evidence into academic prose and delegates real file mutation or
-   visual inspection to Documents or PDF; and
-7. audits the final current artifact and reconciles revision provenance.
-
-The default for supplied material is preservation until omission, movement, or
-rewriting is explicitly accounted for.
-
-## Operational evidence and development evidence
-
-Two planes must remain separate:
-
-| Plane | Question it answers | It does not answer |
+| Route | Owns | May request |
 | --- | --- | --- |
-| User operation | Is this request correctly routed, supported, written, rendered when needed, and audited now? | Is the repository ready to publish? |
-| Repository development | Are current source, contracts, models, tests, packaging, and retirement steps validated for this snapshot? | Is a particular user's prose clear or factually supported? |
+| `investigation` | Reports, briefings, evidence packages, decision notes, investigated answers | Specialist source, logic, trace, world, document, and PDF work |
+| `academic-writing` | Papers, thesis/dissertation units, literature reviews, proposals, substantive revisions | A bounded investigation packet plus specialist work |
+| `fiction-writing` | Story plans, short stories, chapters, novels, series structures, story audits and revisions | Bounded factual/canon research plus specialist work |
+| `travel-guide` | Deep itineraries, destination guides, routes, lodging strategies, traveler-fit recommendations | Bounded investigation plus specialist work |
 
-An edit to a user artifact stales the dependent user-artifact audits. It does
-not automatically stale repository release evidence. A successful repository
-check likewise does not validate unseen reader-facing prose.
+The router uses terminal deliverable, not topic or presentation style. Shared
+projection never becomes a fifth owner. A sibling route cannot invoke another
+sibling route as its final owner.
 
-## Closure rules
+```mermaid
+flowchart TD
+    Q["Request"] --> D{"Terminal deliverable"}
+    D --> I["investigation"]
+    D --> A["academic-writing"]
+    D --> F["fiction-writing"]
+    D --> T["travel-guide"]
+    A -. "bounded evidence gap" .-> I
+    F -. "bounded evidence gap" .-> I
+    T -. "bounded evidence gap" .-> I
+    I & A & F & T --> S["Shared reader/artifact kernel"]
+    S --> X["Current delivered bytes"]
+    X --> C["Route-native audit + verifier-derived closure"]
+```
 
-- Only the selected final route may close the requested artifact.
-- Final wording is no stronger than the weakest unresolved important
-  obligation.
-- `not_run`, `stale`, `provider_unavailable`, `dependency_unavailable`,
-  `access_gap`, `render_not_run`, `bounded`, `partial`, `blocked`, and `failed`
-  remain non-pass states.
-- A non-pass result identifies the affected claim or unit, safe wording,
-  prohibited wording, next owner, and required repair.
-- Two identical failed repairs without new evidence terminate visibly instead
-  of looping.
+## Neutral shared kernel
 
-## Public boundary
+The shared layer owns only behavior that means the same thing in every genre:
 
-The public architecture includes reusable skill source, schemas, neutral tests,
-and documentation. User artifacts, private source libraries, credentials,
-machine-specific provider paths, and recovery archives are outside the public
-repository boundary.
+- one route-decision identity;
+- audience, purpose, incoming reader state, and artifact form;
+- unit contribution and concrete incoming/outgoing reader-state interfaces;
+- specific downstream consumer or terminal disposition;
+- register ownership and effect-aware variation;
+- model-row to exact artifact-span binding;
+- internal-language and explanation-pressure review;
+- actual-artifact identity, receipt authority, freshness, and closure
+  composition.
 
-This document describes the intended source architecture. It does not assert
-that a hosted release exists or that every regression and external provider has
-been validated in a particular checkout.
+It deliberately does not define a universal packet. Investigation retains
+ResearchPacket and claim/source semantics. Fiction retains story models,
+promises, continuity, voice, and semantic review. Travel retains trip context,
+source-time modes, feasibility, fit, fallback, and reverse-guide semantics.
+
+## Route-native layers
+
+### Investigation
+
+Investigation moves from question and claim contract to source portfolio,
+belief updates, competing conclusions, key-number discipline, ResearchPacket,
+reader prose, actual-artifact audit, and bounded closure. Source candidates and
+snippets never become observed evidence by wording alone.
+
+### Academic writing
+
+Academic writing inventories the real source artifact, models chapters,
+sections, paragraphs, figures and tables, deepens important shallow units,
+requests bounded evidence gaps, integrates citations, preserves revision
+provenance, uses Documents/PDF for real files, and audits the final artifact.
+
+### Fiction writing
+
+Fiction selects compact, short-story, long-form, or final-manuscript depth.
+It preserves contribution, turning points, scenes, promises, arcs, chapter
+interfaces, continuity, voice/style, Guard handoffs, project model mesh,
+real-manuscript identity, structured semantic review, and model-prose binding.
+WorldGuard owns material world consistency even when the setting is fictional.
+
+### Travel guide
+
+Travel starts from the traveler profile and time boundary; builds a role-based
+source portfolio; checks candidates and routes with WorldGuard and TraceGuard;
+validates transport, access, weather, cost, pace, stamina, companions, lodging,
+fit, safety and accessibility; preserves negative evidence and reachable
+fallbacks; then projects checked route cards through the shared reader kernel.
+It never calls the fiction route.
+
+## Specialist boundary
+
+SourceGuard, LogicGuard, TraceGuard, WorldGuard, FlowGuard, Documents, and PDF
+remain native owners. Logic Writing validates bounded request/result envelopes
+and consumes their current receipts. Provider absence, access gaps, partial
+results, stale identities, failed rendering, or human-review boundaries remain
+typed non-pass states.
+
+## FlowGuard mesh
+
+The parent lifecycle keeps the operation plane separate from the development
+plane. Its operation children are routing/Guard authority, research packet,
+shared reader artifact, fiction, travel, and freshness/closure. The development
+child owns frozen validation, staged installation, global route projection,
+GitHub release, local predecessor quarantine, Travel-first privatization,
+replacement health recheck, Storyline privatization, and the user's later
+deletion handoff.
+
+Shared kernel state is limited to route decision, artifact identity, reader
+projection identity, receipt authority, and freshness. Fiction and travel own
+disjoint domain state and side effects.
+
+## Validation ownership
+
+OpenSpec records product obligations and acceptance checks. FlowGuard models
+state, ordering, ownership, known-bad behavior, and dependency-sensitive
+closure. SkillGuard compiles the target skill's exact declared-check inventory
+and installation projection. TestMesh freezes one final owner plan; receipt
+consumers never rerun the owner command.
+
+Final release validation runs only after source, toolchain, and inventory
+identities are frozen. Runtime outputs and progress logs are evidence, not
+source authority.

@@ -102,6 +102,19 @@ def test_academic_gap_request_preserves_parent_ownership():
     assert result["parent_route"] == "academic-writing"
 
 
+@pytest.mark.parametrize("parent", ["fiction-writing", "travel-guide"])
+def test_worldguard_request_preserves_new_parent_ownership(parent: str):
+    value = _request(owner="worldguard", parent=parent)
+    value["native_route"] = "review-world-consistency"
+    value["required_output_type"] = "world_consistency"
+    value["request_fingerprint"] = fingerprint_without(value, "request_fingerprint")
+
+    result = validate_adapter_request(value)
+
+    assert result["parent_route"] == parent
+    assert result["native_owner"] == "worldguard"
+
+
 def test_adapter_request_rejects_unknown_owner():
     value = _request(owner="invented-guard")
     value["request_fingerprint"] = fingerprint_without(value, "request_fingerprint")
@@ -116,6 +129,7 @@ def test_adapter_request_rejects_unknown_owner():
         ("sourceguard", "source_depth"),
         ("logicguard", "structured_artifact"),
         ("traceguard", "temporal_trace"),
+        ("worldguard", "world_consistency"),
         ("flowguard", "process_freshness"),
     ],
 )

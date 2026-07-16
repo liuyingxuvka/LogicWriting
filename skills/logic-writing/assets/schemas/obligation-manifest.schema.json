@@ -24,7 +24,7 @@
     "contract_semantic_owner_id": { "$ref": "#/$defs/identifier" },
     "artifact_fingerprint": { "$ref": "#/$defs/fingerprint" },
     "route_decision": { "$ref": "route-decision.schema.json" },
-    "final_owner": { "enum": ["investigation", "academic-writing"] },
+    "final_owner": { "enum": ["investigation", "academic-writing", "fiction-writing", "travel-guide"] },
     "broad_claim_requested": { "type": "boolean" },
     "obligations": {
       "type": "array",

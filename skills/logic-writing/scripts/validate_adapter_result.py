@@ -79,9 +79,12 @@ NEXT_ROUTES = {
     "sourceguard",
     "logicguard",
     "traceguard",
+    "worldguard",
     "flowguard",
     "documents",
     "pdf",
+    "fiction-writing",
+    "travel-guide",
     "human_review",
     "none",
 }
@@ -105,6 +108,7 @@ OWNER_DOMAINS = {
         "competing_storyline",
         "prediction_boundary",
     },
+    "worldguard": {"world_consistency"},
     "flowguard": {"process_model", "process_freshness", "development_validation"},
     "documents": {
         "document_content",
@@ -261,7 +265,9 @@ def _validate_domain_payload(
         if route_decision.get("status") != "current":
             raise ValidationError("closure contract requires a current route decision")
         final_owner = route_decision.get("final_owner")
-        if final_owner not in {"investigation", "academic-writing"}:
+        if final_owner not in {
+            "investigation", "academic-writing", "fiction-writing", "travel-guide"
+        }:
             raise ValidationError("closure obligation contract final owner is invalid")
         if not isinstance(evidence_payload.get("broad_claim_requested"), bool):
             raise ValidationError("closure broad-claim class must be boolean")

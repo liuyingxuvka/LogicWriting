@@ -105,8 +105,10 @@ def validate_adapter_request(value):
     for field in ("request_id", "task_id", "native_route", "requested_scope", "claim_scope", "required_output_type"):
         require_string(value, field)
     parent_route = require_string(value, "parent_route")
-    if parent_route not in {"investigation", "academic-writing"}:
-        raise ValidationError("parent_route must be investigation or academic-writing")
+    if parent_route not in {
+        "investigation", "academic-writing", "fiction-writing", "travel-guide"
+    }:
+        raise ValidationError("parent_route must be one of the four Logic Writing routes")
     native_owner = require_string(value, "native_owner")
     if native_owner not in NATIVE_OWNERS:
         raise ValidationError(f"unsupported native_owner: {native_owner}")

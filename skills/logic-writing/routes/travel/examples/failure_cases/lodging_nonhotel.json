@@ -1,0 +1,1 @@
+{"schema_version":"travel-story-planner.failure-case.v2","case_id":"lodging-nonhotel","base_plan":"skills/logic-writing/routes/travel/examples/good_city_couple_trip/plan.json","mutations":[{"op":"set","path":["lodging_strategy","hotel_candidate_ids"],"value":["cand-food"]}],"expected_issue_codes":["closure_report.status.mismatch","lodging_strategy.hotel_candidate.invalid"]}

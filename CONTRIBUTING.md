@@ -9,12 +9,14 @@ Every change should preserve these boundaries:
 
 1. `$logic-writing` remains the only public skill invocation.
 2. Route selection produces exactly one final owner from the terminal
-   deliverable: `investigation` or `academic-writing`.
-3. An academic route may request bounded investigation work but keeps final
-   ownership of the academic artifact.
-4. SourceGuard, LogicGuard, TraceGuard, FlowGuard, Documents, and PDF retain
+   deliverable: `investigation`, `academic-writing`, `fiction-writing`, or
+   `travel-guide`.
+3. Academic, fiction, and travel routes may request bounded investigation work
+   but keep final ownership. A sibling final route is never a child owner.
+4. SourceGuard, LogicGuard, TraceGuard, WorldGuard, FlowGuard, Documents, and PDF retain
    their native domain decisions and native evidence.
-5. `ResearchPacket` remains the default evidence handoff between routes.
+5. `ResearchPacket` remains the investigation evidence handoff; fiction and
+   travel keep their route-native models.
 6. `ReaderBrief` contains reader needs and safe content, not internal workflow
    vocabulary or agent instructions.
 7. Closure is based on the current delivered artifact and current evidence,

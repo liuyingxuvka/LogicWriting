@@ -1,0 +1,108 @@
+{
+  "schema_version": "logic-writing.source-reconciliation.v1",
+  "target_version": "2.0.0",
+  "sources": [
+    {
+      "source_id": "logic-writing-public-v1.0.2",
+      "kind": "public_release",
+      "repository": "liuyingxuvka/LogicWriting",
+      "commit": "3b3eabfe8b07a6abbf156fe8164207e13fb2fd1c",
+      "tag": "v1.0.2",
+      "tree_sha256": "79303E0A89867C69F3A55ACBF7EC5A094C22275DA6631A7654C46728FBFCEC1C",
+      "file_count": 60,
+      "authority": "current_predecessor_baseline"
+    },
+    {
+      "source_id": "storyline-public-v0.4.0",
+      "kind": "public_release",
+      "repository": "liuyingxuvka/storyline-design-skill",
+      "commit": "64bc8858ef4666a8aecb99e176e7d71b356659f7",
+      "tag": "v0.4.0",
+      "authority": "public_preservation_baseline"
+    },
+    {
+      "source_id": "storyline-installed-premerge",
+      "kind": "installed_projection",
+      "tree_sha256": "E5F8C90380D54FB59B085CEBCA8149242C778DA9B099C892971CD94127C864F8",
+      "file_count": 102,
+      "authority": "installed_behavior_baseline"
+    },
+    {
+      "source_id": "storyline-executable-closure-candidate",
+      "kind": "frozen_candidate_worktree",
+      "base_commit": "64bc8858ef4666a8aecb99e176e7d71b356659f7",
+      "tree_sha256": "B617F74EE1AFD6584F40B54D2F6668DA0160DDD518AC6E80388D81A9C6F38182",
+      "file_count": 178,
+      "native_regression": "passed_current_session",
+      "authority": "candidate_only_until_logic_writing_native_validation"
+    },
+    {
+      "source_id": "travel-public-v0.2.0",
+      "kind": "public_release",
+      "repository": "liuyingxuvka/travel-story-planner",
+      "commit": "bb99331bc4e5c31b0f77a045df2f6201b50eb154",
+      "tag": "v0.2.0",
+      "tree_sha256": "D9E750E1AF21BF41C5FA0B3B31BB463018D8E045FBF9FD35886369E201B04878",
+      "file_count": 77,
+      "authority": "public_preservation_baseline"
+    },
+    {
+      "source_id": "travel-installed-premerge",
+      "kind": "installed_projection",
+      "tree_sha256": "57259EA39337E407812C5C573FEE988E81EBD22CDE0C3590B3BCCE99F161747E",
+      "file_count": 27,
+      "authority": "installed_behavior_baseline"
+    }
+  ],
+  "imports": [
+    {
+      "route": "fiction-writing",
+      "target_root": "skills/logic-writing/routes/fiction",
+      "source_ids": [
+        "storyline-public-v0.4.0",
+        "storyline-installed-premerge",
+        "storyline-executable-closure-candidate"
+      ],
+      "initial_tree_sha256": "95EF3E6635910DE931A094920BE4147ABC48425A9D8F1554EA1AA6B39C61EFF6",
+      "target_mutation_allowed": true,
+      "forbidden_active_surfaces": ["SKILL.md", "agents", ".skillguard"]
+    },
+    {
+      "route": "travel-guide",
+      "target_root": "skills/logic-writing/routes/travel",
+      "source_ids": ["travel-public-v0.2.0", "travel-installed-premerge"],
+      "initial_tree_sha256": "015608A31E41C6F09516D098EFA13411CEAC23AC7C3CF5519CF3EA7C627CC938",
+      "target_mutation_allowed": true,
+      "forbidden_active_surfaces": ["SKILL.md", "agents", ".skillguard"]
+    }
+  ],
+  "capability_dispositions": [
+    {"capability": "one-final-owner-routing", "source": "logic-writing-public-v1.0.2", "disposition": "extend_existing"},
+    {"capability": "research-packet", "source": "logic-writing-public-v1.0.2", "disposition": "keep_route_specific"},
+    {"capability": "reader-brief", "source": "logic-writing-public-v1.0.2", "disposition": "move_to_shared_kernel"},
+    {"capability": "receipt-authority-and-freshness", "source": "logic-writing-public-v1.0.2", "disposition": "keep_shared_kernel"},
+    {"capability": "actual-artifact-audit", "source": "logic-writing-public-v1.0.2", "disposition": "extend_shared_kernel"},
+    {"capability": "story-contribution", "source": "storyline-executable-closure-candidate", "disposition": "keep_fiction_route"},
+    {"capability": "turning-points-and-scene-contracts", "source": "storyline-public-v0.4.0", "disposition": "keep_fiction_route"},
+    {"capability": "promise-payoff", "source": "storyline-installed-premerge", "disposition": "keep_fiction_route"},
+    {"capability": "novel-ledger-and-chapter-interface", "source": "storyline-installed-premerge", "disposition": "keep_fiction_route"},
+    {"capability": "voice-style-and-register", "source": "storyline-installed-premerge", "disposition": "keep_fiction_and_share_common_findings"},
+    {"capability": "reader-state-and-variation", "source": "storyline-installed-premerge", "disposition": "move_common_base_to_shared_kernel"},
+    {"capability": "real-manuscript-identity", "source": "storyline-executable-closure-candidate", "disposition": "move_identity_to_shared_keep_semantics_in_fiction"},
+    {"capability": "guard-receipt-handoff", "source": "storyline-executable-closure-candidate", "disposition": "move_envelope_to_shared_keep_guard_meaning_native"},
+    {"capability": "semantic-review", "source": "storyline-executable-closure-candidate", "disposition": "move_envelope_to_shared_keep_rubric_route_specific"},
+    {"capability": "story-project-model-mesh", "source": "storyline-executable-closure-candidate", "disposition": "keep_fiction_route_and_reattach_parent"},
+    {"capability": "storyline-skill-entrypoint", "source": "storyline-public-v0.4.0", "disposition": "retire_no_alias"},
+    {"capability": "storyline-skillguard-authority", "source": "storyline-installed-premerge", "disposition": "retire_replace_with_logic_writing_authority"},
+    {"capability": "traveler-profile", "source": "travel-public-v0.2.0", "disposition": "keep_travel_route"},
+    {"capability": "source-time-weather-alert-modes", "source": "travel-public-v0.2.0", "disposition": "keep_travel_route_and_share_recheck_pattern"},
+    {"capability": "experience-candidates-and-feasibility", "source": "travel-public-v0.2.0", "disposition": "keep_travel_route"},
+    {"capability": "route-mesh-lodging-and-fit", "source": "travel-public-v0.2.0", "disposition": "keep_travel_route"},
+    {"capability": "negative-evidence-and-reachable-fallback", "source": "travel-public-v0.2.0", "disposition": "keep_travel_and_share_common_pattern"},
+    {"capability": "traveler-native-guide-and-reverse-review", "source": "travel-public-v0.2.0", "disposition": "keep_travel_semantics_use_shared_projection"},
+    {"capability": "travel-to-storyline-call", "source": "travel-public-v0.2.0", "disposition": "replace_with_shared_reader_projection"},
+    {"capability": "travel-skill-entrypoint", "source": "travel-public-v0.2.0", "disposition": "retire_no_alias"},
+    {"capability": "travel-skillguard-authority", "source": "travel-public-v0.2.0", "disposition": "retire_replace_with_logic_writing_authority"}
+  ],
+  "claim_boundary": "This record identifies migration sources and dispositions. It does not make a candidate feature current; target-owned Logic Writing checks and final release evidence remain required."
+}

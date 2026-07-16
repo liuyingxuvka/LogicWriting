@@ -1,0 +1,1 @@
+{"schema_version":"travel-story-planner.failure-case.v2","case_id":"claim-level-overreach","base_plan":"skills/logic-writing/routes/travel/examples/good_city_couple_trip/plan.json","mutations":[{"op":"set","path":["trip_context","allowed_claim_level"],"value":"bookable"}],"expected_issue_codes":["closure_report.allowed_claim_level.context_mismatch"]}

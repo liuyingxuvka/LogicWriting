@@ -1,0 +1,22 @@
+{
+  "schema_version": "storyline-design.source_requirements.v1",
+  "project_id": "aurora-key",
+  "model_revision": "aurora-key-model-r1",
+  "requirements_id": "book-01-user-request",
+  "artifact_ref": "file:drafts/book-01-final.txt;sha256:668e9f1b0911b8fd0e63cd8c01cfc0615d96479317e1aed2b45b0808cc5168ee",
+  "artifact_sha256": "sha256:668e9f1b0911b8fd0e63cd8c01cfc0615d96479317e1aed2b45b0808cc5168ee",
+  "requirements": [
+    {
+      "id": "req-five-chapter-arc",
+      "requirement": "Deliver the five-chapter Book 1 arc from key breach through public map control.",
+      "status": "satisfied"
+    },
+    {
+      "id": "req-origin-deferral",
+      "requirement": "Resolve control of the map while leaving its origin as an explicit series-level deferral.",
+      "status": "satisfied"
+    }
+  ],
+  "unmet_requirements": [],
+  "decision": "passed"
+}

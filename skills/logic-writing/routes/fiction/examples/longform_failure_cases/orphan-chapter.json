@@ -1,0 +1,16 @@
+{
+  "story_units": [
+    {
+      "id": "chapter-orphan",
+      "kind": "chapter",
+      "parent_id": "",
+      "importance": "major",
+      "status": "orphan",
+      "contribution": "",
+      "downstream_use": [],
+      "terminal_treatment": "keep",
+      "repair_action": "",
+      "evidence_refs": []
+    }
+  ]
+}

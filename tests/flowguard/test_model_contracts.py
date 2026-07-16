@@ -234,41 +234,41 @@ def test_remote_retirement_privatizes_sequentially_and_records_handoff():
         release_status="current_pass",
         release_fingerprint="release:1",
         backups_verified=True,
-        retired_local=("research", "academic"),
+        retired_local=("travel", "storyline"),
     )
-    research = _step(
+    travel = _step(
         workflow,
         state,
-        DevelopmentEvent("privatize_legacy_remote", target="research", fingerprint="private+anon404:research"),
+        DevelopmentEvent("privatize_legacy_remote", target="travel", fingerprint="private+anon404:travel"),
     )
-    assert research.privatized_remote == ("research",)
-    assert research.visibility_receipts == ("private:research:private+anon404:research",)
-    assert not research.terminal
+    assert travel.privatized_remote == ("travel",)
+    assert travel.visibility_receipts == ("private:travel:private+anon404:travel",)
+    assert not travel.terminal
 
     premature = _step(
         workflow,
-        research,
-        DevelopmentEvent("privatize_legacy_remote", target="academic", fingerprint="private+anon404:academic"),
+        travel,
+        DevelopmentEvent("privatize_legacy_remote", target="storyline", fingerprint="private+anon404:storyline"),
     )
-    assert premature.privatized_remote == ("research",)
+    assert premature.privatized_remote == ("travel",)
     assert "remote_retirement_gate_or_order_failed" in premature.errors
 
     rechecked = _step(
         workflow,
-        research,
+        travel,
         DevelopmentEvent("recheck_after_first_privatization", status="current_pass"),
     )
-    academic = _step(
+    storyline = _step(
         workflow,
         rechecked,
-        DevelopmentEvent("privatize_legacy_remote", target="academic", fingerprint="private+anon404:academic"),
+        DevelopmentEvent("privatize_legacy_remote", target="storyline", fingerprint="private+anon404:storyline"),
     )
-    assert academic.privatized_remote == ("research", "academic")
-    assert not academic.terminal
+    assert storyline.privatized_remote == ("travel", "storyline")
+    assert not storyline.terminal
 
     handed_off = _step(
         workflow,
-        academic,
+        storyline,
         DevelopmentEvent("record_remote_deletion_handoff", status="current_pass"),
     )
     assert handed_off.user_deletion_handoff_status == "current_pass"

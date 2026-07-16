@@ -1,15 +1,16 @@
 ---
 name: logic-writing
-description: Use for deep, source-backed investigation and for creating or substantively revising academic papers, theses, literature reviews, proposals, reports, and other evidence-heavy writing. Routes each task to one final owner, coordinates SourceGuard, LogicGuard, TraceGuard, FlowGuard, Documents, and PDF without replacing them, and turns internal evidence work into clear prose for real readers. Skip for quick factual lookups, grammar-only edits, and casual low-stakes copy.
+description: Use for deep source-backed investigation, academic writing, fiction planning or revision, and evidence-heavy travel guides. Routes each task to exactly one of four final owners, coordinates SourceGuard, LogicGuard, TraceGuard, WorldGuard, FlowGuard, Documents, and PDF without replacing them, and turns internal models into clear prose for real readers. Skip quick lookups, grammar-only edits, casual copy, and lightweight attraction lists.
 ---
 
 # Logic Writing
 
 ## Purpose
 
-Logic Writing has one entrypoint and two focused routes. It investigates hard
-questions, builds defensible academic artifacts, and translates internal
-analysis into language a reader can follow.
+Logic Writing has one entrypoint and four focused routes. It investigates hard
+questions, builds defensible academic artifacts, plans and repairs fiction,
+builds operational travel guides, and translates internal analysis into
+language a reader can follow.
 
 ## Entrypoint Scope
 
@@ -19,15 +20,15 @@ judgment or evidence authority.
 
 ## Use When
 
-Use this skill for a deep source-backed investigation or for creating or
-substantively revising an academic paper, thesis, literature review, proposal,
-or other evidence-heavy artifact.
+- Use for deep research, source-backed investigation, evidence synthesis, disputed claims, technical briefings, decision reports, and research reports.
+- Use for academic papers, theses, dissertations, literature reviews, proposals, scholarly reports, and substantive academic revision.
+- Use for fiction, story, short-story, chapter, novel, series, continuity, promise-payoff, manuscript planning, writing, auditing, or revision.
+- Use for evidence-heavy travel guides, itineraries, destination guides, route plans, lodging strategy, weather or hazard planning, fallbacks, and traveler-fit recommendations.
 
 ## Do Not Use When
 
-Do not use it for a quick factual lookup, grammar-only edit, casual low-stakes
-copy, or a task whose final deliverable is owned entirely by one specialist
-without a Logic Writing artifact.
+- Do not use for a quick factual lookup, grammar-only edit, casual low-stakes copy, or lightweight attraction list.
+- Do not use when the final deliverable is owned entirely by one specialist and no investigation, academic, fiction, or travel writing artifact is required.
 
 ## Entrypoint Acceptance Map
 
@@ -38,8 +39,15 @@ action:
   evidence package, decision note, or answer to a contested question.
 - Use `academic-writing` when the final product is a paper, thesis chapter,
   dissertation section, literature review, proposal, or substantive revision.
-- Academic writing may send a bounded evidence-gap request to investigation.
-  The academic route remains the final owner.
+- Use `fiction-writing` when the final product is a story plan, short story,
+  fiction chapter, novel, series bible, story audit, or substantive revision.
+- Use `travel-guide` when the final product is an itinerary, destination guide,
+  route plan, lodging strategy, or traveler-fit recommendation.
+- Academic, fiction, and travel work may send a bounded evidence-gap request to
+  investigation. The parent route remains the final owner.
+- A travel paper is academic, a researched novel is fiction, and a story-shaped
+  itinerary is travel. Subject and presentation technique do not transfer
+  ownership.
 - If the terminal deliverable is materially ambiguous, ask one focused
   question. Never activate two final owners.
 - Exit visibly for grammar-only edits, quick lookups, and out-of-scope work.
@@ -65,6 +73,8 @@ consumes their native receipts; it does not recreate their domain decisions:
   semantics, model depth, and synthesis plans.
 - TraceGuard owns material temporal, causal, implementation, competing-story,
   counterfactual, and prediction-boundary analysis.
+- WorldGuard owns material event, agent, space, resource, access, capability,
+  conflict, authority, and norm consistency in real and fictional worlds.
 - FlowGuard owns process order, state, freshness, and closure behavior.
 - Documents owns DOCX/Word/Google Docs mutation, tracked changes, comments,
   rendering, and page-level document QA.
@@ -99,6 +109,22 @@ important shallow units, keep a revision-provenance record, and use bounded
 investigation requests for missing evidence. The academic route integrates the
 evidence and owns the final artifact.
 
+### Fiction writing
+
+Read [references/routes/fiction-writing.md](references/routes/fiction-writing.md).
+Choose compact, short-story, long-form, or final-manuscript depth from the
+terminal artifact. Preserve story contribution, turning points, scene/chapter
+interfaces, promises, continuity, voice, Guard handoffs, reader-state movement,
+actual-manuscript identity, semantic review, and model-prose binding.
+
+### Travel guide
+
+Read [references/routes/travel-guide.md](references/routes/travel-guide.md).
+Bind the traveler profile, time/weather mode, source roles, candidates,
+WorldGuard feasibility, TraceGuard route mesh, lodging, fit, negative evidence,
+reachable fallbacks, traveler-native projection, and reverse review of the
+actual guide. Use the shared reader projection; never invoke the fiction route.
+
 ### Use the two-room writing boundary
 
 Internal ledgers, Guard names, route ids, model ids, status fields, and agent
@@ -111,6 +137,7 @@ Read:
 - [references/shared/research-packet.md](references/shared/research-packet.md)
 - [references/shared/reader-brief.md](references/shared/reader-brief.md)
 - [references/shared/human-writing.md](references/shared/human-writing.md)
+- [references/shared/writing-contract.md](references/shared/writing-contract.md)
 
 Default final copy must sound like a knowledgeable person explaining the
 subject, not an AI describing its workflow. Do not expose internal terminology
@@ -159,6 +186,12 @@ looping.
   review.
 - Do not close academic work without a current LogicGuard argument model,
   revision provenance, and actual-artifact reader review.
+- Do not close fiction without current story-model, continuity, Guard lifecycle,
+  shared-writing, actual-artifact semantic review, and model-prose binding
+  evidence appropriate to the selected depth.
+- Do not close travel without current source-time, feasibility, traveler-fit,
+  fallback, shared-writing, final-artifact identity, and reverse-guide evidence.
+- Do not let one sibling route call another or issue its closure.
 - Do not convert a missing provider, stale receipt, skipped check, partial
   search, failed rendering, or unsupported claim into success.
 - Do not expose internal workflow vocabulary in ordinary final prose.

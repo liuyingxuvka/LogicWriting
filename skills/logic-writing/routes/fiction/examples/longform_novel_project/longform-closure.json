@@ -1,0 +1,114 @@
+{
+  "schema_version": "storyline-design.longform_closure.v1",
+  "project_id": "aurora-key",
+  "model_revision": "aurora-key-model-r1",
+  "closure_id": "closure-book-01",
+  "artifact_type": "novel",
+  "prose_phase": "pre_draft",
+  "closure_level": "book",
+  "claim_boundary": "Book 1 model closure passes for outline, hierarchy, chapter interfaces, continuity, and audit. Final prose is not claimed.",
+  "required_surfaces": [
+    {
+      "surface": "flowguard_process",
+      "status": "passed",
+      "evidence_ref": "file:guard_handoffs/flowguard-planning.json;sha256:dd55d2ba22232215e8b722aab4a60bf65cf389c2cba6a0de4c27ef18b7755326",
+      "input_fingerprint": "sha256:7e8cf42912b12ec51e9b1d97fecbd6413fd6579b616ade34c83110d7474507b3",
+      "blocks_closure": false,
+      "next_action": "Refresh FlowGuard process evidence after model, validator, fixture, prose, or installed-copy changes"
+    },
+    {
+      "surface": "traceguard_storyline",
+      "status": "passed",
+      "evidence_ref": "file:guard_handoffs/traceguard-planning.json;sha256:f214f5ab09acea1e545e565c12281e488eab811d55ad4bf899169e1eaff54688",
+      "input_fingerprint": "sha256:d2266e0aa5a54ea556782bac87fc488d67766713250b11b93ab65f99dd1aa457",
+      "blocks_closure": false,
+      "next_action": "Refresh TraceGuard storyline evidence after chronology, clue, or reveal changes"
+    },
+    {
+      "surface": "worldguard_story_claims",
+      "status": "passed",
+      "evidence_ref": "file:guard_handoffs/worldguard-planning.json;sha256:b05de01163ec34313dc757660ee2e7fd2e37cc6fbba83aff185c0d37ea279e05",
+      "input_fingerprint": "sha256:fec08d79452f1600e3d9252c77dbdbfb52ada31f9f47c0e23e35a2e71cdd3a8b",
+      "blocks_closure": false,
+      "next_action": "Refresh WorldGuard story-claim evidence after world rule, access, resource, or causality edits"
+    },
+    {
+      "surface": "logicguard_theme_support",
+      "status": "not_applicable_with_reason",
+      "evidence_ref": "file:guard_handoffs/logicguard-planning.json;sha256:8ea4a667f414d2f1b25133ad4fdb623c7b1a7645fa93da6aae9872cd7333569d",
+      "input_fingerprint": "sha256:10940539101895ab19896e080b3e8828f29eab1fd3f2e2ee811c8fe7993929bb",
+      "not_applicable_reason": "Not applicable because the pre-draft model fixture does not claim final theme or ending-interpretation closure.",
+      "blocks_closure": false,
+      "next_action": "Run LogicGuard theme support if theme closure is claimed"
+    },
+    {
+      "surface": "sourceguard_canon_support",
+      "status": "not_applicable_with_reason",
+      "evidence_ref": "file:guard_handoffs/sourceguard-planning.json;sha256:c5f87fcfbcb3d349c7832f03bd8445a707afbb226731ee5ca0eba72a1cd06d7a",
+      "input_fingerprint": "sha256:c56beb78c29782d8d22dae95c439a8b1801246c76c5da46551ea8d0c842765ce",
+      "not_applicable_reason": "Not applicable because no external canon, adaptation source, historical fact, or prior-draft constraint is part of this fixture.",
+      "blocks_closure": false,
+      "next_action": "Run SourceGuard canon/source support if source constraints are added"
+    },
+    {
+      "surface": "novel_ledger",
+      "status": "passed",
+      "evidence_ref": "novel-ledger.json",
+      "blocks_closure": true,
+      "next_action": "rerun novel_ledger_check.py after ledger edits"
+    },
+    {
+      "surface": "story_contribution",
+      "status": "passed",
+      "evidence_ref": "novel-ledger.json#story_units",
+      "blocks_closure": true,
+      "next_action": "rerun story_contribution_check.py after unit edits"
+    },
+    {
+      "surface": "chapter_interface",
+      "status": "passed",
+      "evidence_ref": "chapter-interfaces.json",
+      "blocks_closure": true,
+      "next_action": "rerun chapter_interface_check.py after chapter handoff edits"
+    },
+    {
+      "surface": "promise_payoff",
+      "status": "passed",
+      "evidence_ref": "promise-payoff.json",
+      "blocks_closure": true,
+      "next_action": "refresh promises after chapter or ending edits"
+    },
+    {
+      "surface": "voice_style",
+      "status": "passed",
+      "evidence_ref": "voice-style-report.json",
+      "blocks_closure": true,
+      "next_action": "rerun voice_style_continuity_check.py after prose edits"
+    },
+    {
+      "surface": "reverse_outline",
+      "status": "passed",
+      "evidence_ref": "chapter-interfaces.json#reverse_outlines",
+      "blocks_closure": true,
+      "next_action": "refresh reverse outlines after draft edits"
+    }
+  ],
+  "child_reports": [
+    {"id": "closure-ch01", "level": "chapter", "status": "passed", "evidence_ref": "chapter-interfaces.json#iface-ch01", "blocks_parent": false},
+    {"id": "closure-ch02", "level": "chapter", "status": "passed", "evidence_ref": "chapter-interfaces.json#iface-ch02", "blocks_parent": false},
+    {"id": "closure-ch03", "level": "chapter", "status": "passed", "evidence_ref": "chapter-interfaces.json#iface-ch03", "blocks_parent": false},
+    {"id": "closure-ch04", "level": "chapter", "status": "passed", "evidence_ref": "chapter-interfaces.json#iface-ch04", "blocks_parent": false},
+    {"id": "closure-ch05", "level": "chapter", "status": "passed", "evidence_ref": "chapter-interfaces.json#iface-ch05", "blocks_parent": false}
+  ],
+  "deferred_items": [
+    {
+      "id": "promise-series-map-origin",
+      "deferral_level": "series",
+      "claim_boundary": "Book 1 defers origin but closes control of the map."
+    }
+  ],
+  "blocking_items": [],
+  "stale_items": [],
+  "decision": "passed",
+  "next_actions": []
+}

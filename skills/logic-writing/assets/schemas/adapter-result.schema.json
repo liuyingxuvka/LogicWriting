@@ -130,7 +130,7 @@
       "additionalProperties": { "$ref": "#/$defs/fingerprint" }
     },
     "nativeOwner": {
-      "enum": ["sourceguard", "logicguard", "traceguard", "flowguard", "documents", "pdf"]
+      "enum": ["sourceguard", "logicguard", "traceguard", "worldguard", "flowguard", "documents", "pdf"]
     },
     "status": {
       "enum": [
@@ -157,9 +157,12 @@
         "sourceguard",
         "logicguard",
         "traceguard",
+        "worldguard",
         "flowguard",
         "documents",
         "pdf",
+        "fiction-writing",
+        "travel-guide",
         "human_review",
         "none"
       ]
@@ -178,6 +181,7 @@
         "causal_trace",
         "competing_storyline",
         "prediction_boundary",
+        "world_consistency",
         "process_model",
         "process_freshness",
         "document_content",

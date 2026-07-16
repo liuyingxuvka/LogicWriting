@@ -1,0 +1,15 @@
+{
+  "schema_version": "storyline-design.guard_handoff.v1",
+  "surface": "flowguard_process",
+  "guard_id": "flowguard",
+  "native_owner": "flowguard-development-process-flow",
+  "native_route_id": "development_process_flow",
+  "native_check_id": "flowguard.development_process_flow.terminal",
+  "tool_version": "0.55.0",
+  "receipt_schema_version": "flowguard.native_terminal_receipt.v1",
+  "input_fingerprint": "sha256:feae668c8ccba67a8f117f8ce81446e47a530adf999ebcf12406b9f123dbed33",
+  "terminal_receipt_id": "compact-guard-pass-flowguard-terminal",
+  "terminal_receipt_ref": "file:../receipts/flowguard-terminal.json;sha256:b2fb76735a886ab7e063cd012cf3d64c535af05b38b7634db6165f0ebb80d466",
+  "terminal_status": "passed",
+  "claim_boundary": "FlowGuard process route completed for the compact fixture input; literary quality is outside this receipt."
+}

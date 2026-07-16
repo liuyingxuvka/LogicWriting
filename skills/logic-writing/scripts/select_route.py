@@ -41,6 +41,26 @@ ACADEMIC_DELIVERABLES = {
     "proposal",
     "academic_revision",
 }
+FICTION_DELIVERABLES = {
+    "short_story",
+    "fiction_chapter",
+    "novel",
+    "novella",
+    "fiction_outline",
+    "story_plan",
+    "series_bible",
+    "story_audit",
+    "fiction_revision",
+}
+TRAVEL_DELIVERABLES = {
+    "itinerary",
+    "destination_guide",
+    "travel_guide",
+    "lodging_strategy",
+    "route_plan",
+    "traveler_fit_recommendation",
+    "travel_revision",
+}
 TRIVIAL_CLASSES = {
     "quick_lookup",
     "quick_fact",
@@ -49,7 +69,14 @@ TRIVIAL_CLASSES = {
     "casual_copy",
     "casual_summary",
 }
-KNOWN_DELIVERABLES = INVESTIGATION_DELIVERABLES | ACADEMIC_DELIVERABLES | TRIVIAL_CLASSES | {"unresolved"}
+KNOWN_DELIVERABLES = (
+    INVESTIGATION_DELIVERABLES
+    | ACADEMIC_DELIVERABLES
+    | FICTION_DELIVERABLES
+    | TRAVEL_DELIVERABLES
+    | TRIVIAL_CLASSES
+    | {"unresolved"}
+)
 
 
 def select_route(request):
@@ -90,6 +117,18 @@ def select_route(request):
         owner = "academic-writing"
         status = "current"
         reason = "the terminal artifact is academic"
+        if research_required:
+            child_routes.append("investigation")
+    elif deliverable_kind in FICTION_DELIVERABLES:
+        owner = "fiction-writing"
+        status = "current"
+        reason = "the terminal artifact is fiction"
+        if research_required:
+            child_routes.append("investigation")
+    elif deliverable_kind in TRAVEL_DELIVERABLES:
+        owner = "travel-guide"
+        status = "current"
+        reason = "the terminal artifact is a traveler-facing guide or plan"
         if research_required:
             child_routes.append("investigation")
     else:

@@ -1,0 +1,276 @@
+{
+  "schema_version": "storyline-design.artifact-taxonomy.v1",
+  "authority": "storyline-design.route.current",
+  "prose_phases": [
+    "pre_draft",
+    "post_draft",
+    "final_prose"
+  ],
+  "route_profiles": {
+    "light": {
+      "route_id": "route:light",
+      "base_required_surfaces": [
+        "target_artifact",
+        "claim_boundary",
+        "flowguard_process",
+        "assumptions_and_gaps",
+        "partial_boundary"
+      ],
+      "phase_required_surfaces": {
+        "pre_draft": [],
+        "post_draft": [
+          "postwrite_observation"
+        ]
+      }
+    },
+    "compact": {
+      "route_id": "route:compact",
+      "base_required_surfaces": [
+        "target_artifact",
+        "claim_boundary",
+        "flowguard_process",
+        "compact_story_movement",
+        "main_promise_boundary",
+        "traceguard_storyline",
+        "worldguard_story_claims",
+        "logicguard_theme_support",
+        "sourceguard_canon_support",
+        "compact_closure"
+      ],
+      "phase_required_surfaces": {
+        "pre_draft": [],
+        "post_draft": [
+          "postwrite_observation"
+        ]
+      }
+    },
+    "full_guarded": {
+      "route_id": "route:full-guarded",
+      "base_required_surfaces": [
+        "target_artifact",
+        "claim_boundary",
+        "flowguard_process",
+        "traceguard_storyline",
+        "worldguard_story_claims",
+        "logicguard_theme_support",
+        "sourceguard_canon_support",
+        "story_ledger",
+        "turning_point",
+        "scene_contract",
+        "promise_payoff",
+        "storyline_closure"
+      ],
+      "phase_required_surfaces": {
+        "pre_draft": [],
+        "post_draft": [
+          "reverse_outline"
+        ],
+        "final_prose": [
+          "reverse_outline",
+          "source_requirements",
+          "final_artifact",
+          "artifact_bound_review",
+          "model_prose_binding"
+        ]
+      }
+    },
+    "longform": {
+      "route_id": "route:longform",
+      "base_required_surfaces": [
+        "target_artifact",
+        "claim_boundary",
+        "flowguard_process",
+        "traceguard_storyline",
+        "worldguard_story_claims",
+        "logicguard_theme_support",
+        "sourceguard_canon_support",
+        "novel_ledger",
+        "story_contribution",
+        "chapter_interface",
+        "prose_blueprint",
+        "promise_payoff",
+        "voice_style",
+        "longform_closure"
+      ],
+      "phase_required_surfaces": {
+        "pre_draft": [],
+        "post_draft": [
+          "reverse_outline"
+        ],
+        "final_prose": [
+          "reverse_outline",
+          "source_requirements",
+          "final_artifact",
+          "artifact_bound_review",
+          "model_prose_binding"
+        ]
+      }
+    }
+  },
+  "canonical_artifacts": {
+    "premise": {
+      "route_profile": "light",
+      "base_depth_tier": "light",
+      "closure_level": "partial",
+      "allowed_prose_phases": [
+        "pre_draft"
+      ]
+    },
+    "audit": {
+      "route_profile": "light",
+      "base_depth_tier": "light",
+      "closure_level": "partial",
+      "allowed_prose_phases": [
+        "pre_draft",
+        "post_draft"
+      ]
+    },
+    "revision_plan": {
+      "route_profile": "light",
+      "base_depth_tier": "light",
+      "closure_level": "partial",
+      "allowed_prose_phases": [
+        "pre_draft",
+        "post_draft"
+      ]
+    },
+    "prose_sample": {
+      "route_profile": "light",
+      "base_depth_tier": "light",
+      "closure_level": "partial",
+      "allowed_prose_phases": [
+        "post_draft"
+      ]
+    },
+    "scene": {
+      "route_profile": "compact",
+      "base_depth_tier": "compact",
+      "closure_level": "partial",
+      "allowed_prose_phases": [
+        "pre_draft",
+        "post_draft"
+      ]
+    },
+    "micro_story": {
+      "route_profile": "compact",
+      "base_depth_tier": "compact",
+      "closure_level": "story",
+      "allowed_prose_phases": [
+        "pre_draft",
+        "post_draft"
+      ]
+    },
+    "short_story": {
+      "route_profile": "full_guarded",
+      "base_depth_tier": "short_story",
+      "closure_level": "story",
+      "allowed_prose_phases": [
+        "pre_draft",
+        "post_draft",
+        "final_prose"
+      ]
+    },
+    "chapter": {
+      "route_profile": "longform",
+      "base_depth_tier": "intermediate",
+      "closure_level": "chapter",
+      "allowed_prose_phases": [
+        "pre_draft",
+        "post_draft",
+        "final_prose"
+      ]
+    },
+    "chapter_batch": {
+      "route_profile": "longform",
+      "base_depth_tier": "intermediate",
+      "closure_level": "chapter",
+      "allowed_prose_phases": [
+        "pre_draft",
+        "post_draft",
+        "final_prose"
+      ]
+    },
+    "novella": {
+      "route_profile": "longform",
+      "base_depth_tier": "longform",
+      "closure_level": "book",
+      "allowed_prose_phases": [
+        "pre_draft",
+        "post_draft",
+        "final_prose"
+      ]
+    },
+    "novel": {
+      "route_profile": "longform",
+      "base_depth_tier": "longform",
+      "closure_level": "book",
+      "allowed_prose_phases": [
+        "pre_draft",
+        "post_draft",
+        "final_prose"
+      ]
+    },
+    "book": {
+      "route_profile": "longform",
+      "base_depth_tier": "longform",
+      "closure_level": "book",
+      "allowed_prose_phases": [
+        "pre_draft",
+        "post_draft",
+        "final_prose"
+      ]
+    },
+    "volume": {
+      "route_profile": "longform",
+      "base_depth_tier": "longform",
+      "closure_level": "volume",
+      "allowed_prose_phases": [
+        "pre_draft",
+        "post_draft",
+        "final_prose"
+      ]
+    },
+    "series": {
+      "route_profile": "longform",
+      "base_depth_tier": "longform",
+      "closure_level": "series",
+      "allowed_prose_phases": [
+        "pre_draft",
+        "post_draft",
+        "final_prose"
+      ]
+    },
+    "story_bible": {
+      "route_profile": "longform",
+      "base_depth_tier": "longform",
+      "closure_level": "book",
+      "allowed_prose_phases": [
+        "pre_draft"
+      ]
+    },
+    "continuity_repair": {
+      "route_profile": "longform",
+      "base_depth_tier": "longform",
+      "closure_level": "book",
+      "allowed_prose_phases": [
+        "pre_draft",
+        "post_draft"
+      ]
+    }
+  },
+  "aliases": {
+    "micro-story": "micro_story",
+    "short-story": "short_story",
+    "chapter-plan": "chapter",
+    "chapter-batch": "chapter_batch",
+    "novel-plan": "novel",
+    "book-plan": "book",
+    "volume-plan": "volume",
+    "series-bible": "story_bible",
+    "continuity-repair": "continuity_repair",
+    "revision-plan": "revision_plan",
+    "prose-sample": "prose_sample"
+  },
+  "final_prose_depth_tier": "final_manuscript",
+  "claim_boundary": "This taxonomy compiles route, depth, closure level, prose phase, and required structured surfaces. It does not prove that any required surface is present, current, or semantically sound."
+}

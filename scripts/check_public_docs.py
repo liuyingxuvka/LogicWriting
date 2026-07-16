@@ -15,33 +15,25 @@ from _release_common import RELEASE_CONTRACT_RELATIVE, emit, git_lines
 LINK = re.compile(r"!?\[[^]]*\]\(([^)]+)\)")
 PLACEHOLDER = re.compile(r"\b(?:TODO|TBD|FIXME|FINAL SHA|FINAL TAG)\b", re.IGNORECASE)
 ENGLISH_SECTIONS = [
-    "Why one entrypoint?",
-    "One entrypoint, two internal routes",
-    "The plain-language quality gate",
-    "Specialists keep their own jobs",
-    "Good fits and non-fits",
-    "Requirements",
-    "Install from a source checkout",
-    "Use",
-    "Evidence and claim boundaries",
-    "Repository map",
-    "Local validation entrypoints",
-    "Migration and retirement",
+    "Why one skill",
+    "Four final-owner routes",
+    "“Say it like a person” is an executable boundary",
+    "Specialist ownership stays intact",
+    "Architecture",
+    "Install",
+    "Validation",
+    "Scope limits",
     "License",
 ]
 CHINESE_SECTIONS = [
-    "为什么要统一入口？",
-    "一个入口，两条内部路线",
-    "“说人话”的三道质量闸门",
-    "专业技能继续做自己的专业工作",
-    "适合什么，不适合什么",
-    "使用条件",
-    "从源码副本安装",
-    "使用方法",
-    "证据与措辞边界",
-    "仓库结构",
-    "本地验证入口",
-    "迁移与退役",
+    "为什么合在一起",
+    "一个入口，四条最终路线",
+    "“说人话”不是一句口号",
+    "专业技能仍然各管各的",
+    "整体结构",
+    "安装和使用",
+    "验证边界",
+    "不负责什么",
     "许可证",
 ]
 REQUIRED_PUBLIC_FILES = {
@@ -143,7 +135,7 @@ def check(root: Path) -> dict:
     prompt = (root / "assets/readme-hero/hero_prompt.md").read_text(encoding="utf-8")
     if "determin" not in note.lower() or "exact" not in note.lower():
         findings.append("hero_generation_method_missing")
-    if "Logic Writing" not in prompt or "Investigation" not in prompt or "Academic writing" not in prompt:
+    if any(term not in prompt for term in ("Logic Writing", "Investigation", "Academic writing", "Fiction", "Travel")):
         findings.append("hero_visual_brief_incomplete")
     return {
         "check": "public-docs",

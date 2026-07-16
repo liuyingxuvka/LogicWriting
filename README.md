@@ -1,262 +1,150 @@
 # Logic Writing
 
 <p align="center">
-  <img src="https://img.shields.io/badge/source-1.0.2-6f42c1" alt="Source version 1.0.2" />
-  <img src="https://img.shields.io/badge/skill-logic--writing-2463eb" alt="Codex skill logic-writing" />
-  <img src="https://img.shields.io/badge/license-MIT-2f855a" alt="MIT license" />
+  <img src="https://img.shields.io/badge/source-2.0.0-6f42c1" alt="Source version 2.0.0" />
+  <img src="https://img.shields.io/badge/skill-logic--writing-334155" alt="Skill logic-writing" />
+  <img src="https://img.shields.io/badge/routes-4-0a7f5a" alt="Four final-owner routes" />
+  <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT license" />
 </p>
 
-<p align="center"><a href="README.zh-CN.md">中文说明</a></p>
-
+<p align="center">
 <!-- README HERO START -->
-<p align="center">
-  <img src="./assets/readme-hero/hero.png" alt="Logic Writing turns bounded evidence into investigation or academic writing and then into a reader-ready artifact" width="100%" />
-</p>
-
-<p align="center">
-  <strong>One entrypoint for deep investigation and academic writing, with evidence boundaries readers can actually follow.</strong>
-</p>
+  <img src="./assets/readme-hero/hero.png" alt="Logic Writing turns models and evidence into reader-ready artifacts" width="100%" />
 <!-- README HERO END -->
+</p>
 
-Logic Writing gives related research and academic-writing work one public
-entrypoint without turning that entrypoint into a replacement for specialist
-skills. It selects one final owner from the deliverable the user actually
-wants, coordinates the required specialists, and keeps internal workflow
-language out of the finished artifact.
+One formal Codex skill for deep investigation, academic writing, fiction, and
+evidence-heavy travel guides. It keeps one public entrypoint, selects exactly
+one final owner, calls specialist Guard skills for their native judgments, and
+turns the result into language a real reader can follow.
 
-> **Source status:** the repository metadata declares the `1.0.2` source
-> version line. That number alone does not claim a Git tag, hosted release,
-> package-registry publication, completed predecessor retirement, or a full
-> regression result.
+> Source status: repository metadata declares `2.0.0`. Release, installation,
+> and predecessor-retirement claims require their own current receipts; the
+> version string alone proves none of them.
 
-## Why one entrypoint?
+## Why one skill
 
-Investigation and academic writing share much of the same evidence work, but
-they do not have the same finishing responsibility.
+These writing jobs share a real core: deciding what the final artifact is,
+preserving specialist authority, tracking exact artifact identity, planning
+what changes for the reader, keeping internal model language out of final
+copy, and rechecking the delivered bytes. They do not share one universal data
+packet. Investigation keeps evidence semantics, fiction keeps story semantics,
+and travel keeps operational semantics.
 
-- A contested question may need a research report whose final owner is the
-  investigation route.
-- A thesis chapter may need the same research machinery, while the academic
-  route must still own structure, integration, prose, and the final file.
-- Both routes need a boundary between internal reasoning records and language a
-  real reader can understand.
+Investigation and academic evidence handoffs use a current `ResearchPacket`;
+the writer receives a sanitized `ReaderBrief` rather than internal ledgers.
 
-Logic Writing keeps those shared needs in one shell while preserving two
-focused internal routes.
+## Four final-owner routes
 
-## One entrypoint, two internal routes
-
-Route selection follows the **terminal deliverable**, not whichever activity
-happens first.
-
-| What the user expects to receive | Final owner | Bounded child work |
+| Terminal deliverable | Final owner | Preserved native strength |
 | --- | --- | --- |
-| Research report, briefing, evidence package, decision note, or investigated answer | `investigation` | Specialist logic, trace, and document work |
-| Paper, thesis chapter, dissertation section, literature review, proposal, or substantive academic revision | `academic-writing` | A bounded investigation request for a specific evidence gap |
-| Quick fact, grammar-only edit, or casual copy | No Logic Writing route | Exit to a simpler workflow |
+| Research report, briefing, evidence package, decision note, investigated answer | `investigation` | Source depth, claim competition, numbers, negative evidence, traces, bounded conclusions |
+| Paper, thesis/dissertation unit, literature review, proposal, substantive academic revision | `academic-writing` | Structure, citations, revision provenance, figures/tables, document and PDF workflows |
+| Story plan, short story, fiction chapter, novel, series bible, story audit or revision | `fiction-writing` | Turning points, scenes, promises, continuity, voice, world consistency, model–manuscript binding |
+| Itinerary, destination guide, route plan, lodging strategy, traveler-fit recommendation | `travel-guide` | Dated evidence, weather/alerts, feasibility, fit, lodging, negative evidence, reachable fallbacks |
 
-Only one route owns the final answer. An academic task may ask investigation
-for a bounded evidence packet, but that child request does not take ownership
-of the paper or thesis.
+Routing follows the terminal deliverable, not the first activity or the subject.
+A paper about tourism is academic. A researched historical novel is fiction. A
+story-shaped itinerary is travel. A child investigation may return a bounded
+evidence packet, but it cannot close its parent artifact.
+
+## “Say it like a person” is an executable boundary
+
+The shared writing kernel asks every important unit:
+
+- What does the reader know or expect on entry?
+- What concrete evidence, action, object, choice, or instruction changes that?
+- What remains unresolved, or why is the unit terminal?
+- Which exact later unit consumes the change?
+- Who owns the technical, local, quoted, narrator, or character register?
+- If a pattern repeats, what new effect makes the repetition useful?
+- Which current model rows are visible in which exact delivered words?
+
+It rejects internal workflow leakage, generic handoffs, prose that announces
+its own job, flattened voices, repetition without changed effect, unbound prose,
+unrealized model rows, and reviews tied to an older artifact hash. Genre profiles
+then add evidence/citation fit, academic qualification, fictional payoff and
+voice, or travel operability and fallback proximity.
+
+## Specialist ownership stays intact
+
+Logic Writing is an orchestration shell, not a replacement for its providers:
+
+- SourceGuard owns discovery planning and evidence-depth decisions.
+- LogicGuard owns source preservation, argument support, structure, citation
+  semantics, model depth, and synthesis plans.
+- TraceGuard owns material temporal, causal, implementation, competing-story,
+  counterfactual, and prediction-boundary analysis.
+- WorldGuard owns material consistency across events, agents, spaces,
+  resources, capabilities, conflicts, authority, and norms.
+- FlowGuard owns workflow order, state, freshness, and closure behavior.
+- Documents and PDF own their native file mutation, extraction, rendering, and
+  visual inspection boundaries.
+
+A missing or non-passing provider result remains visible. Logic Writing may
+explain it but cannot reimplement it locally or strengthen it into success.
+
+## Architecture
 
 ```mermaid
 flowchart TD
-    A["Requested final deliverable"] --> R{"What must the user receive?"}
-    R -->|"Report, briefing, investigated answer"| I["Investigation: final owner"]
-    R -->|"Paper, thesis, literature review"| W["Academic writing: final owner"]
-    W -. "specific evidence gap" .-> C["Bounded investigation child"]
-    C --> PS["ResearchPacket slice"]
-    PS --> W
-    I --> P["ResearchPacket"]
-    P --> B["ReaderBrief"]
-    W --> B
-    B --> O["Reader-facing artifact"]
-    O --> Q["Audit the actual delivered text or file"]
+    U["User request"] --> R["Terminal-deliverable router"]
+    R --> I["investigation"]
+    R --> A["academic-writing"]
+    R --> F["fiction-writing"]
+    R --> T["travel-guide"]
+    I & A & F & T --> K["Shared reader and artifact kernel"]
+    K --> X["Actual delivered artifact"]
+    X --> V["Reverse audit, freshness, final-owner closure"]
+    A -. "bounded evidence gap" .-> I
+    F -. "bounded evidence gap" .-> I
+    T -. "bounded evidence gap" .-> I
 ```
 
-## The plain-language quality gate
+The shared kernel is not a fifth route. No sibling final route invokes another;
+travel uses neutral reader projection, not the fiction route.
 
-The project uses three deliberately different artifacts so that good internal
-analysis does not automatically become unreadable prose.
+See [architecture](docs/architecture.md), [responsibility map](docs/responsibility-map.md),
+and [migration guide](MIGRATION.md) for the full boundaries.
 
-1. **ResearchPacket — what the evidence permits.** It records the sources that
-   were actually observed, the claims and numbers they can support, competing
-   explanations, unresolved gaps, and wording that would go too far. It is a
-   bounded evidence handoff, not a dump of search notes.
-2. **ReaderBrief — what the writer needs.** It translates that evidence into
-   the reader's question, audience, genre, concepts, main findings, evidence
-   anchors, alternatives, limitations, explanation order, citations, and safe
-   wording. Tool names, route ids, ledgers, and agent instructions stay out.
-3. **Reader audit — whether the delivered artifact works.** The current text or
-   file is inspected for concept introduction, claim-to-evidence movement,
-   paragraph and section handoffs, citations, limitations, genre, and reader
-   fit. Metadata that says an artifact is clear is not evidence that it is.
+## Install
 
-Deterministic checks can find observable defects. A separate reader judgment is
-still needed for clarity and coherence. A material edit makes the affected
-audit stale.
-
-## Specialists keep their own jobs
-
-Logic Writing coordinates specialist skills through bounded requests and
-consumes their native results. It does not recreate their judgment inside a
-larger prompt.
-
-| Specialist | What it owns | What its result does not prove by itself |
-| --- | --- | --- |
-| SourceGuard | Search planning and evidence-discovery depth | That a candidate or search snippet is a verified fact |
-| LogicGuard | Source preservation, argument support, structure, citation semantics, model depth, and synthesis plans | Factual truth or the quality of the final prose |
-| TraceGuard | Temporal order, implementation, causal chains, competing stories, counterfactuals, and prediction boundaries when material | That chronology alone establishes causality |
-| FlowGuard | Process order, state, freshness, no-progress handling, and closure constraints | Source quality, argument truth, or reader clarity |
-| Documents | DOCX, Word, and Google Docs mutation, tracked changes, comments, rendering, and page-level inspection | That the document's claims are well supported |
-| PDF | PDF extraction, creation, rendering, and visual inspection | That extracted text proves correct layout, or that a rendered page proves semantic accuracy |
-
-If a required specialist is unavailable, Logic Writing preserves that degraded
-state. It does not silently substitute an imitation or turn “not run” into a
-pass.
-
-## Good fits and non-fits
-
-Use Logic Writing for:
-
-- a difficult, source-backed investigation;
-- a report or briefing that must distinguish evidence from inference;
-- a paper, thesis, dissertation section, literature review, or proposal;
-- substantive academic revision where structure, evidence, citations, and
-  prose must be integrated;
-- evidence-heavy writing that currently sounds like internal AI workflow
-  language instead of an explanation for people.
-
-Use a simpler route for:
-
-- a quick factual lookup;
-- grammar-only or spelling-only editing;
-- casual, low-stakes copy;
-- a request whose final deliverable is still materially ambiguous.
-
-Logic Writing does not promise that every source is accessible, that every
-claim can be resolved, or that a visually correct document can be produced
-without the required document provider.
-
-## Requirements
-
-- A Codex environment that can load the `logic-writing` skill.
-- The real specialist provider required by the selected task. Specialist
-  skills are installed and validated separately; this repository does not
-  bundle replacements for them.
-- Python 3.10 or newer for the repository's portable validation scripts.
-- Documents, PDF, rendering, or office dependencies only when the requested
-  artifact needs those capabilities.
-
-## Install from a source checkout
-
-This repository documents a direct source-copy installation path. It does not
-claim a package-registry installer. Run the command from the repository root
-and use a fresh target directory.
-
-PowerShell:
-
-```powershell
-$codexHome = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $HOME ".codex" }
-$target = Join-Path $codexHome "skills\logic-writing"
-if (Test-Path $target) { throw "Target already exists; review MIGRATION.md before replacing it." }
-New-Item -ItemType Directory -Force (Split-Path $target) | Out-Null
-Copy-Item -Recurse ".\skills\logic-writing" $target
-```
-
-POSIX shell:
-
-```sh
-target="${CODEX_HOME:-$HOME/.codex}/skills/logic-writing"
-test ! -e "$target" || { echo "Target already exists; review MIGRATION.md before replacing it."; exit 1; }
-mkdir -p "$(dirname "$target")"
-cp -R ./skills/logic-writing "$target"
-```
-
-This copies the orchestration skill only. Install the specialist skills needed
-by your task through their own supported installation paths.
-
-## Use
-
-Invoke the public skill and describe the final artifact, reader, scope, and
-important constraints. The internal route is selected for you.
+Copy or install `skills/logic-writing` as the single active skill directory,
+then invoke `$logic-writing`. Maintained installations should use SkillGuard's
+transactional install path so the installed projection is content-exact and
+recoverable.
 
 ```text
-$logic-writing
-
-Investigate this contested question and produce a concise decision briefing.
-Separate observed facts, competing explanations, and unresolved evidence gaps.
+Use $logic-writing to turn this request into the correct reader-ready artifact.
 ```
+
+The former public `storyline-design` and `travel-story-planner` skill ids are
+not compatibility aliases. Their supported intents now route through
+`$logic-writing`.
+
+## Validation
+
+The repository keeps separate owners for routing/shared writing, existing
+routes, fiction regression, travel regression, FlowGuard models and alignment,
+SkillGuard authority, reader judgment, public docs/privacy, and the final full
+suite. The release gate freezes one validation inventory and accepts one current
+terminal receipt per declared owner.
+
+Focused examples:
 
 ```text
-$logic-writing
-
-Revise this literature-review chapter for a disciplinary audience. Preserve
-the supplied material, repair the argument progression, and return a coherent
-academic chapter with claim-level citations.
-```
-
-Useful request details include:
-
-- the final deliverable and intended reader;
-- geographic, temporal, and disciplinary scope;
-- source or citation requirements;
-- material that must be preserved in a revision;
-- required file format, tracked changes, comments, or visual inspection;
-- what uncertainty would change the conclusion.
-
-## Evidence and claim boundaries
-
-- Search candidates and snippets are leads, not facts.
-- Several pages that repeat one origin do not become independent evidence.
-- An announcement can show stated intent; it does not by itself prove
-  implementation or effect.
-- Earlier-than does not mean caused-by.
-- Text extraction does not prove layout correctness.
-- A green development check does not prove a user's artifact is clear, and a
-  clear artifact does not prove the repository is release-ready.
-- Final wording cannot be stronger than the weakest unresolved important
-  obligation.
-
-## Repository map
-
-```text
-skills/logic-writing/   Installable skill, route references, schemas, and helpers
-scripts/                Portable repository validation entrypoints
-tests/                  Contract and regression tests
-docs/                   Public architecture, responsibility, and retirement guides
-MIGRATION.md            Cutover guidance from the former public entrypoints
-CONTRIBUTING.md         Contribution and validation expectations
-```
-
-The public repository is intended to contain reusable source, schemas, tests,
-and documentation. It should not contain user artifacts, private source
-material, credentials, machine-specific configuration, or runtime recovery
-material.
-
-## Local validation entrypoints
-
-These commands are available to contributors; listing them here is not a claim
-that a particular checkout has passed them.
-
-```sh
-python scripts/validate_skill.py --skill-root skills/logic-writing --json
-python scripts/check_privacy.py --root . --json
+python scripts/run_fiction_regression.py --repository-root .
+python scripts/run_travel_regression.py --repository-root .
 python -m pytest -q
 ```
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for scope and evidence rules,
-[docs/architecture.md](docs/architecture.md) for the design, and
-[docs/responsibility-map.md](docs/responsibility-map.md) for exact ownership.
+## Scope limits
 
-## Migration and retirement
-
-Logic Writing starts a clean `1.0.0` source version line and replaces the two
-former public entrypoints with one supported entrypoint and two internal
-routes. It does not provide compatibility aliases or treat predecessor runtime
-records as current evidence. See [MIGRATION.md](MIGRATION.md) and the
-[release and retirement checklist](docs/release-retirement-checklist.md).
+Logic Writing does not determine factual truth, literary beauty, originality,
+or traveler satisfaction. It does not cover casual copy, grammar-only edits,
+quick lookups, poetry as a general-purpose route, or lightweight attraction
+lists. Human judgment remains explicit where deterministic checks stop.
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+[MIT](LICENSE)

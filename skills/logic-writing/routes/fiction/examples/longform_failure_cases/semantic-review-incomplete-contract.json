@@ -1,0 +1,43 @@
+{
+  "schema_version": "storyline-design.semantic_review.v1",
+  "project_id": "aurora-key",
+  "review_id": "review-incomplete-contract",
+  "model_revision": "aurora-key-model-r1",
+  "reviewed_at": "2026-07-14T12:00:00+02:00",
+  "artifact_ref": "file:../longform_novel_project/drafts/book-01-final.txt;sha256:668e9f1b0911b8fd0e63cd8c01cfc0615d96479317e1aed2b45b0808cc5168ee",
+  "artifact_sha256": "sha256:668e9f1b0911b8fd0e63cd8c01cfc0615d96479317e1aed2b45b0808cc5168ee",
+  "evaluator": {
+    "id": "fixture-evaluator-incomplete",
+    "kind": "ai",
+    "identity": "Incomplete contract regression evaluator",
+    "method": "Deliberately omit required dimensions and retain blocked scope."
+  },
+  "reviewed_units": ["chapter-01"],
+  "rubric_dimensions": [
+    {
+      "dimension": "reader_room",
+      "status": "pass",
+      "findings": ["Only one dimension was recorded."],
+      "evidence_anchors": ["chapter-01"],
+      "reviewer_notes": "This is intentionally incomplete."
+    }
+  ],
+  "findings": [
+    {
+      "id": "finding-incomplete",
+      "dimension": "reader_room",
+      "finding": "The review omits the remaining required dimensions.",
+      "status": "pass"
+    }
+  ],
+  "skipped_scope": [
+    {
+      "id": "skip-rest-of-manuscript",
+      "reason": "The remaining chapters were not reviewed.",
+      "blocks_closure": true
+    }
+  ],
+  "limitations": ["Negative fixture."],
+  "human_review_items": [],
+  "decision": "passed"
+}

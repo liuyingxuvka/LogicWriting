@@ -17,11 +17,12 @@ from typing import Iterable
 from flowguard import FunctionResult, Invariant, InvariantResult, Workflow
 
 
-FINAL_OWNERS = ("investigation", "academic-writing")
+FINAL_OWNERS = ("investigation", "academic-writing", "fiction-writing", "travel-guide")
 NATIVE_OWNERS = (
     "sourceguard",
     "logicguard",
     "traceguard",
+    "worldguard",
     "flowguard",
     "documents",
     "pdf",
@@ -30,6 +31,7 @@ NATIVE_EVIDENCE_DOMAINS = {
     "sourceguard": ("source_observation", "source_depth", "source_discovery", "source_library"),
     "logicguard": ("argument_model", "structured_artifact", "model_depth", "artifact_synthesis", "citation_semantics"),
     "traceguard": ("temporal_trace", "causal_trace", "competing_storyline", "prediction_boundary"),
+    "worldguard": ("world_consistency",),
     "flowguard": ("process_model", "process_freshness", "development_validation"),
     "documents": ("document_content", "document_mutation", "document_render", "document_visual"),
     "pdf": ("pdf_content", "pdf_render", "pdf_visual"),
@@ -900,7 +902,7 @@ class QuarantineLegacyLocal(_DevelopmentBlock):
         if event.action != "quarantine_legacy_local":
             return self._pass(event, state, "local_retirement_not_requested")
         ok = state.release_status == "current_pass" and state.global_route_status == "current_pass" and state.backups_verified
-        if not ok or event.target not in {"research", "academic"}:
+        if not ok or event.target not in {"travel", "storyline"}:
             return (FunctionResult(event, replace(state, errors=state.errors + ("local_retirement_gate_failed",)), label="local_retirement_blocked"),)
         retired = tuple(dict.fromkeys(state.retired_local + (event.target,)))
         return (FunctionResult(event, replace(state, retired_local=retired), label="legacy_local_quarantined"),)
@@ -915,7 +917,7 @@ class RecheckAfterFirstPrivatization(_DevelopmentBlock):
         if event.action != "recheck_after_first_privatization":
             return self._pass(event, state, "health_recheck_not_requested")
         ok = (
-            state.privatized_remote == ("research",)
+            state.privatized_remote == ("travel",)
             and state.release_status == "current_pass"
             and state.install_status == "current_pass"
             and state.global_route_status == "current_pass"
@@ -951,13 +953,13 @@ class PrivatizeLegacyRemote(_DevelopmentBlock):
             and state.install_status == "current_pass"
             and state.global_route_status == "current_pass"
             and state.backups_verified
-            and set(state.retired_local) == {"research", "academic"}
+            and set(state.retired_local) == {"travel", "storyline"}
         )
         order_ok = (
-            event.target == "research" and not state.privatized_remote
+            event.target == "travel" and not state.privatized_remote
         ) or (
-            event.target == "academic"
-            and state.privatized_remote == ("research",)
+            event.target == "storyline"
+            and state.privatized_remote == ("travel",)
             and state.first_privatization_health_rechecked
         )
         if not common or not order_ok:
@@ -986,7 +988,7 @@ class RecordRemoteDeletionHandoff(_DevelopmentBlock):
         if event.action != "record_remote_deletion_handoff":
             return self._pass(event, state, "deletion_handoff_not_requested")
         ok = (
-            state.privatized_remote == ("research", "academic")
+            state.privatized_remote == ("travel", "storyline")
             and len(state.visibility_receipts) == 2
             and event.status == "current_pass"
         )
@@ -1159,7 +1161,7 @@ def retirement_requires_recoverable_cutover(state: DevelopmentState, trace) -> I
         and state.release_status == "current_pass"
         and state.install_status == "current_pass"
         and state.global_route_status == "current_pass"
-        and set(state.retired_local) == {"research", "academic"}
+        and set(state.retired_local) == {"travel", "storyline"}
     ):
         return _fail("retirement_requires_recoverable_cutover", "legacy remote retired before recoverable new cutover")
     return InvariantResult.pass_()
@@ -1167,10 +1169,10 @@ def retirement_requires_recoverable_cutover(state: DevelopmentState, trace) -> I
 
 def retirement_order_is_sequential(state: DevelopmentState, trace) -> InvariantResult:
     del trace
-    if state.privatized_remote not in {(), ("research",), ("research", "academic")}:
+    if state.privatized_remote not in {(), ("travel",), ("travel", "storyline")}:
         return _fail("retirement_order_is_sequential", f"invalid retirement order {state.privatized_remote!r}")
-    if state.privatized_remote == ("research", "academic") and not state.first_privatization_health_rechecked:
-        return _fail("retirement_order_is_sequential", "academic repository privatized without post-research health recheck")
+    if state.privatized_remote == ("travel", "storyline") and not state.first_privatization_health_rechecked:
+        return _fail("retirement_order_is_sequential", "Storyline repository privatized without post-Travel health recheck")
     return InvariantResult.pass_()
 
 
@@ -1194,7 +1196,7 @@ def remote_visibility_side_effect_at_most_once(state: DevelopmentState, trace) -
 def deletion_handoff_requires_private_remotes(state: DevelopmentState, trace) -> InvariantResult:
     del trace
     if state.user_deletion_handoff_status == "current_pass" and not (
-        state.privatized_remote == ("research", "academic")
+        state.privatized_remote == ("travel", "storyline")
         and len(state.visibility_receipts) == 2
         and state.terminal
     ):
@@ -1207,7 +1209,7 @@ def deletion_handoff_requires_private_remotes(state: DevelopmentState, trace) ->
 DEVELOPMENT_INVARIANTS = (
     Invariant("release_requires_frozen_validation", "Release consumes current frozen validation", release_requires_frozen_validation),
     Invariant("retirement_requires_recoverable_cutover", "Remote retirement follows recoverable cutover", retirement_requires_recoverable_cutover),
-    Invariant("retirement_order_is_sequential", "Research retires first, then health recheck, then academic", retirement_order_is_sequential),
+    Invariant("retirement_order_is_sequential", "Travel retires first, then health recheck, then Storyline", retirement_order_is_sequential),
     Invariant("operation_changes_do_not_stale_release", "User artifact changes do not stale release evidence", operation_changes_do_not_stale_release),
     Invariant("remote_visibility_side_effect_at_most_once", "Each legacy remote visibility change occurs at most once", remote_visibility_side_effect_at_most_once),
     Invariant("deletion_handoff_requires_private_remotes", "User deletion handoff follows two verified privatizations", deletion_handoff_requires_private_remotes),

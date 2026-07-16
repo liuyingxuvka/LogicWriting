@@ -50,6 +50,8 @@ from models.research_packet_model import build_plan as packet_plan  # noqa: E402
 from models.reader_artifact_model import build_plan as reader_plan  # noqa: E402
 from models.operation_freshness_closure_model import build_plan as freshness_plan  # noqa: E402
 from models.release_retirement_model import build_plan as retirement_plan  # noqa: E402
+from models.fiction_route_model import build_plan as fiction_plan  # noqa: E402
+from models.travel_route_model import build_plan as travel_plan  # noqa: E402
 from models.retirement_field_lifecycle import review_retirement_visibility_fields  # noqa: E402
 
 
@@ -57,6 +59,8 @@ MODEL_FACTORIES = {
     "route_and_guard_model": route_plan,
     "research_packet_model": packet_plan,
     "reader_artifact_model": reader_plan,
+    "fiction_route_model": fiction_plan,
+    "travel_route_model": travel_plan,
     "operation_freshness_closure_model": freshness_plan,
     "release_retirement_model": retirement_plan,
 }
@@ -92,16 +96,16 @@ def _next_development_event(state: DevelopmentState):
         return DevelopmentEvent("publish_release", fingerprint="release:abc")
     if not state.backups_verified:
         return DevelopmentEvent("verify_backups", status="current_pass")
-    if "research" not in state.retired_local:
-        return DevelopmentEvent("quarantine_legacy_local", target="research")
-    if "academic" not in state.retired_local:
-        return DevelopmentEvent("quarantine_legacy_local", target="academic")
+    if "travel" not in state.retired_local:
+        return DevelopmentEvent("quarantine_legacy_local", target="travel")
+    if "storyline" not in state.retired_local:
+        return DevelopmentEvent("quarantine_legacy_local", target="storyline")
     if not state.privatized_remote:
-        return DevelopmentEvent("privatize_legacy_remote", fingerprint="private+anon404:research", target="research")
+        return DevelopmentEvent("privatize_legacy_remote", fingerprint="private+anon404:travel", target="travel")
     if not state.first_privatization_health_rechecked:
         return DevelopmentEvent("recheck_after_first_privatization", status="current_pass")
-    if state.privatized_remote == ("research",):
-        return DevelopmentEvent("privatize_legacy_remote", fingerprint="private+anon404:academic", target="academic")
+    if state.privatized_remote == ("travel",):
+        return DevelopmentEvent("privatize_legacy_remote", fingerprint="private+anon404:storyline", target="storyline")
     if state.user_deletion_handoff_status != "current_pass":
         return DevelopmentEvent("record_remote_deletion_handoff", status="current_pass")
     return None

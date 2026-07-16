@@ -1,4 +1,4 @@
-"""ReaderBrief, actual-artifact writing, audit, repair, and closure model."""
+"""Shared reader projection, actual-artifact writing, binding, audit, repair, and closure model."""
 
 from __future__ import annotations
 
@@ -55,16 +55,22 @@ def build_plan(*, conformance_status="skipped_with_reason", conformance_evidence
             "revision_provenance_status",
             "audit_artifact_fingerprint",
             "closure_status",
+            "unit_contribution",
+            "reader_state_interface",
+            "register_owner",
+            "model_artifact_binding",
         ),
         modeled_side_effects=("reader_artifact_written", "final_closure"),
         completion_evidence=("actual_artifact_audited", "operation_closed"),
         known_bad_cases=("metadata_fake_green", "stale_audit_after_artifact_edit"),
-        failure_modes=("metadata passes while prose is unread", "an edit preserves old audit status"),
+        failure_modes=("metadata passes while prose is unread", "an edit preserves old audit status", "a shared projection issues sibling closure", "model and artifact drift apart"),
         harms=("AI-internal prose or unsupported conclusions are delivered as final",),
         hard_invariants=(
             "audit binds actual artifact",
             "academic closure requires current revision provenance",
             "closure binds current audit",
+            "shared projection never becomes a final owner",
+            "important model rows bind actual artifact spans",
         ),
         adversarial_inputs=("metadata-only audit", "artifact edit after audit", "academic artifact without provenance"),
         conformance_status=conformance_status,

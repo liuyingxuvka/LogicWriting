@@ -48,6 +48,12 @@ META_PROSE = re.compile(
     r"(?:本节|本段|本章)(?:将|旨在)",
     re.IGNORECASE,
 )
+GENERIC_HANDOFF = re.compile(
+    r"\b(?:sets? up (?:the )?next (?:section|chapter|day)|leads? into what follows|"
+    r"moves? (?:the reader )?to the next part)\b|(?:引出|铺垫)(?:下文|下一节|下一章)",
+    re.IGNORECASE,
+)
+SPEAKER_LINE = re.compile(r"^\s*([A-Z][A-Za-z0-9_-]{1,30})\s*:\s*[\"“]?(.+)")
 STRONG_CAUSAL = re.compile(
     r"\b(?:proves?|proved|definitively establishes?|caused|causes|led to|results? in|guarantees?)\b|"
     r"(?:确凿证明|充分证明|必然导致|直接导致|证明了?因果|毫无疑问)",
@@ -242,6 +248,13 @@ def _derive_audit(
             findings.append(
                 _finding(unit, "meta_prose", "artifact describes future writing instead of content")
             )
+            findings.append(
+                _finding(unit, "explanation_pressure", "the prose explains its own job instead of delivering content")
+            )
+        if GENERIC_HANDOFF.search(text):
+            findings.append(
+                _finding(unit, "generic_handoff", "handoff names continuation but no changed reader state")
+            )
         if unit["kind"] == "paragraph" and len(text.split()) > 220:
             findings.append(_finding(unit, "overloaded_paragraph", "more than 220 words"))
         if unit["kind"] == "paragraph" and len(text) < 45:
@@ -250,6 +263,29 @@ def _derive_audit(
             )
 
     nonheadings = [item for item in units if item["kind"] != "heading"]
+    opening_rows: dict[str, list[Mapping[str, Any]]] = {}
+    speaker_openings: dict[str, list[tuple[str, Mapping[str, Any]]]] = {}
+    for unit in nonheadings:
+        words = re.findall(r"[A-Za-z\u4e00-\u9fff]+", unit["text"].casefold())
+        if len(words) >= 4:
+            opening_rows.setdefault(" ".join(words[:4]), []).append(unit)
+        speaker = SPEAKER_LINE.search(unit["text"])
+        if speaker:
+            spoken = re.findall(r"[A-Za-z]+", speaker.group(2).casefold())
+            if len(spoken) >= 4:
+                speaker_openings.setdefault(" ".join(spoken[:4]), []).append(
+                    (speaker.group(1), unit)
+                )
+    for opening, rows in opening_rows.items():
+        if len(rows) >= 3:
+            findings.append(
+                _finding(rows[2], "variation_without_effect", f"three units repeat the opening: {opening}")
+            )
+    for opening, rows in speaker_openings.items():
+        if len({speaker for speaker, _unit in rows}) >= 3:
+            findings.append(
+                _finding(rows[2][1], "register_owner_drift", f"distinct speakers share one unsupported opening: {opening}")
+            )
     list_items = [item for item in nonheadings if item["kind"] == "list_item"]
     if nonheadings and PROSE_GENRES.search(genre) and len(list_items) / len(nonheadings) >= 0.5:
         findings.append(
@@ -410,6 +446,9 @@ def _derive_audit(
         "limitation_not_near_affected_claim",
         "scope_escalation",
         "concept_not_explained_at_introduction",
+        "explanation_pressure",
+        "generic_handoff",
+        "register_owner_drift",
     }
     status = (
         "passed"
@@ -431,6 +470,17 @@ def _derive_audit(
         "visible_units": units,
         "reverse_outline": reverse_outline,
         "findings": findings,
+        "quality_dimensions": [
+            "internal_language",
+            "concrete_referents",
+            "concept_introduction",
+            "explanation_pressure",
+            "generic_handoff",
+            "register_ownership",
+            "variation_pressure",
+            "scope_and_limitations",
+            "actual_artifact_identity"
+        ],
         "status": status,
     }
     audit["audit_fingerprint"] = fingerprint_without(audit, "audit_fingerprint")

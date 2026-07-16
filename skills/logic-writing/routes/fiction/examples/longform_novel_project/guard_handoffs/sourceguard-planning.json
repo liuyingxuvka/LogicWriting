@@ -1,0 +1,15 @@
+{
+  "schema_version": "storyline-design.guard_handoff.v1",
+  "surface": "sourceguard_canon_support",
+  "guard_id": "sourceguard",
+  "native_owner": "sourceguard",
+  "native_route_id": "sourceguard",
+  "native_check_id": "sourceguard.canon_support_applicability",
+  "tool_version": "0.4.2",
+  "receipt_schema_version": "sourceguard.native_terminal_receipt.v1",
+  "input_fingerprint": "sha256:c56beb78c29782d8d22dae95c439a8b1801246c76c5da46551ea8d0c842765ce",
+  "terminal_receipt_id": "aurora-key-pre-draft-sourceguard-terminal",
+  "terminal_receipt_ref": "file:../guard_receipts/sourceguard-planning.json;sha256:4871cc8857130597cc1c5b68cbdeef345181732513d9f4beafe2b8e3bdb8c9d5",
+  "terminal_status": "not_applicable_with_reason",
+  "claim_boundary": "No external canon, adaptation source, historical fact, or prior-draft constraint applies to the Aurora Key pre-draft model fixture."
+}

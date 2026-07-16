@@ -1,0 +1,16 @@
+{
+  "schema_version": "sourceguard.native_terminal_receipt.v1",
+  "receipt_id": "compact-guard-pass-sourceguard-terminal",
+  "guard_id": "sourceguard",
+  "surface": "sourceguard_canon_support",
+  "native_owner": "sourceguard",
+  "route_id": "sourceguard",
+  "check_id": "sourceguard.canon_support_applicability",
+  "tool_version": "0.4.2",
+  "input_fingerprint": "sha256:d46f9afebfa242ba7991beabcfe78ba3fcbffdf920f106313b72f08ae887f901",
+  "terminal": true,
+  "immutable": true,
+  "freshness": "current",
+  "status": "not_applicable_with_reason",
+  "claim_boundary": "No user canon, prior draft, adaptation source, historical fact, or external source constrains the compact fixture input."
+}

@@ -1,0 +1,47 @@
+{
+  "check_id": "check:storyline:depth-closure",
+  "native_owner_id": "storyline-design.native-route",
+  "universes": [
+    {
+      "covered_claim_scope": ["storyline:guard-receipt-and-claim-boundary"],
+      "evaluated_item_ids": ["item:guard-receipt", "item:claim-boundary"],
+      "inventory_items": [
+        {
+          "critical": true,
+          "item_id": "item:guard-receipt",
+          "object_id": "obligation:storyline-design:guard-receipt",
+          "stratum_ids": ["stratum:all"]
+        },
+        {
+          "critical": true,
+          "item_id": "item:claim-boundary",
+          "object_id": "obligation:storyline-design:claim-boundary",
+          "stratum_ids": ["stratum:all"]
+        }
+      ],
+      "policy_fingerprint": "FA65CA5F57A13419FA808F7472936A374CB24CA0950AA89E612814D778500EC4",
+      "requested_claim_scope": ["storyline:guard-receipt-and-claim-boundary"],
+      "selected_item_ids": ["item:guard-receipt", "item:claim-boundary"],
+      "universe_id": "universe:storyline-closure",
+      "validated_item_ids": ["item:guard-receipt", "item:claim-boundary"]
+    }
+  ],
+  "depth_contribution_ranges": [
+    {
+      "end": 1,
+      "kind": "semantic",
+      "obligation_ids": ["obligation:storyline-design:guard-receipt"],
+      "range_id": "range:storyline-guard-receipt",
+      "start": 0,
+      "universe_id": "universe:storyline-closure"
+    },
+    {
+      "end": 2,
+      "kind": "semantic",
+      "obligation_ids": ["obligation:storyline-design:claim-boundary"],
+      "range_id": "range:storyline-claim-boundary",
+      "start": 1,
+      "universe_id": "universe:storyline-closure"
+    }
+  ]
+}

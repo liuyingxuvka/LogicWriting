@@ -1,0 +1,21 @@
+{
+  "schema_version": "storyline-design.longform_closure.v1",
+  "project_id": "aurora-key",
+  "closure_id": "closure-book-final-nonexistent-manuscript",
+  "artifact_type": "novel",
+  "prose_phase": "final_prose",
+  "closure_level": "book",
+  "claim_boundary": "Book 1 final prose closure is attempted with a nonexistent manuscript.",
+  "required_surfaces": [
+    {"surface": "source_requirements", "status": "passed", "evidence_ref": "file:../longform_novel_project/source-requirements.json;sha256:506fd0f26b42f07121ba5f70d9b4c3342fb391bae872c65b05917dce97522aa2", "blocks_closure": true, "next_action": "refresh requirements"},
+    {"surface": "final_artifact", "status": "passed", "evidence_ref": "file:../longform_novel_project/drafts/does-not-exist.txt;sha256:1111111111111111111111111111111111111111111111111111111111111111", "blocks_closure": true, "next_action": "restore the manuscript"},
+    {"surface": "artifact_bound_review", "status": "passed", "evidence_ref": "file:../longform_novel_project/semantic-review.json;sha256:5d79e7196fe9843b6465eabbe366d1530febb4ad15b20ddb0ace28cdbaadb476", "blocks_closure": true, "next_action": "rerun review"},
+    {"surface": "model_prose_binding", "status": "passed", "evidence_ref": "file:../longform_novel_project/model-prose-binding.json;sha256:2e15bc4af4becc322f3169bb27a57ab59a568047421e1f82413fa786393196c6", "blocks_closure": true, "next_action": "rerun binding"}
+  ],
+  "child_reports": [{"id": "closure-ch01", "level": "chapter", "status": "passed", "evidence_ref": "../longform_novel_project/chapter-interfaces.json#iface-ch01", "blocks_parent": false}],
+  "deferred_items": [],
+  "blocking_items": [],
+  "stale_items": [],
+  "decision": "passed",
+  "next_actions": ["restore and rehash the final manuscript"]
+}

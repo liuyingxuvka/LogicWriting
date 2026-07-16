@@ -1,0 +1,40 @@
+{
+  "schema_version": "storyline-design.semantic_review.v1",
+  "project_id": "aurora-key",
+  "review_id": "review-book-01-stale",
+  "model_revision": "aurora-key-model-r0",
+  "reviewed_at": "2026-07-13T12:00:00+02:00",
+  "artifact_ref": "file:../longform_novel_project/drafts/book-01-final.txt;sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "artifact_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "evaluator": {
+    "id": "fixture-evaluator-stale",
+    "kind": "ai",
+    "identity": "Storyline Design stale-review regression evaluator",
+    "method": "Structured review contract deliberately bound to an obsolete digest."
+  },
+  "reviewed_units": ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05"],
+  "rubric_dimensions": [
+    {"dimension": "reader_room", "status": "pass", "findings": ["Recorded against the obsolete artifact identity."], "evidence_anchors": ["chapter-01"], "reviewer_notes": "Negative fixture note."},
+    {"dimension": "explanation_pressure", "status": "pass", "findings": ["Recorded against the obsolete artifact identity."], "evidence_anchors": ["chapter-02"], "reviewer_notes": "Negative fixture note."},
+    {"dimension": "variation", "status": "pass", "findings": ["Recorded against the obsolete artifact identity."], "evidence_anchors": ["chapter-03"], "reviewer_notes": "Negative fixture note."},
+    {"dimension": "story_contribution", "status": "pass", "findings": ["Recorded against the obsolete artifact identity."], "evidence_anchors": ["chapter-04"], "reviewer_notes": "Negative fixture note."},
+    {"dimension": "voice", "status": "pass", "findings": ["Recorded against the obsolete artifact identity."], "evidence_anchors": ["chapter-05"], "reviewer_notes": "Negative fixture note."},
+    {"dimension": "payoff", "status": "pass", "findings": ["Recorded against the obsolete artifact identity."], "evidence_anchors": ["chapter-05"], "reviewer_notes": "Negative fixture note."},
+    {"dimension": "model_prose_binding", "status": "pass", "findings": ["Recorded against the obsolete artifact identity."], "evidence_anchors": ["chapter-01"], "reviewer_notes": "Negative fixture note."},
+    {"dimension": "resistance_friction", "status": "pass", "findings": ["Recorded against the obsolete artifact identity."], "evidence_anchors": ["chapter-03"], "reviewer_notes": "Negative fixture note."},
+    {"dimension": "reader_state", "status": "pass", "findings": ["Recorded against the obsolete artifact identity."], "evidence_anchors": ["chapter-04"], "reviewer_notes": "Negative fixture note."},
+    {"dimension": "register_ownership", "status": "pass", "findings": ["Recorded against the obsolete artifact identity."], "evidence_anchors": ["chapter-02"], "reviewer_notes": "Negative fixture note."}
+  ],
+  "findings": [
+    {
+      "id": "finding-stale-review",
+      "dimension": "model_prose_binding",
+      "finding": "This record intentionally carries an obsolete manuscript digest.",
+      "status": "pass"
+    }
+  ],
+  "skipped_scope": [],
+  "limitations": ["Negative fixture."],
+  "human_review_items": [],
+  "decision": "passed"
+}

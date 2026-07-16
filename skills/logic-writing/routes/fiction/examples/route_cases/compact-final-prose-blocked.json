@@ -1,0 +1,11 @@
+{
+  "case_id": "compact-final-prose-blocked",
+  "request": {
+    "artifact_type": "micro_story",
+    "prose_phase": "final_prose"
+  },
+  "expected": {
+    "status": "blocked",
+    "issue_code": "unsupported_prose_phase"
+  }
+}

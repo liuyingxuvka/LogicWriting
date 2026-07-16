@@ -1,0 +1,10 @@
+{
+  "schema_version": "storyline-design.depth_calibration_case.v1",
+  "case_id": "storyline-design:intentionally-shallow-missing-guard-receipt",
+  "executed_surface_ids": [
+    "surface:route-compiled",
+    "surface:real-artifact-opened-and-hashed",
+    "surface:project-mesh-validated",
+    "surface:claim-boundary-preserved"
+  ]
+}

@@ -155,7 +155,7 @@ def _progress_config(workflow, initial_states):
             if is_development
             else (lambda state: state.terminal)
         ),
-        max_states=32 if is_development else 8,
+        max_states=64 if is_development else 8,
         max_depth=32 if is_development else 8,
     )
 
@@ -239,6 +239,8 @@ def _topology_hazard_plan(model_id, workflow, initial_states, external_inputs):
         "route_and_guard_model": "C01",
         "research_packet_model": "C05",
         "reader_artifact_model": "C07",
+        "fiction_route_model": "C12",
+        "travel_route_model": "C13",
         "operation_freshness_closure_model": "C08",
         "release_retirement_model": "C10",
     }[model_id]

@@ -1,0 +1,16 @@
+{
+  "schema_version": "flowguard.native_terminal_receipt.v1",
+  "receipt_id": "lantern-map-flowguard-terminal",
+  "guard_id": "flowguard",
+  "surface": "flowguard_process",
+  "native_owner": "flowguard-development-process-flow",
+  "route_id": "development_process_flow",
+  "check_id": "flowguard.development_process_flow.terminal",
+  "tool_version": "0.55.0",
+  "input_fingerprint": "sha256:4f2956ce5637fb77c759714900a488f68d65322cda95025cccf1879cbc6b9787",
+  "terminal": true,
+  "immutable": true,
+  "freshness": "current",
+  "status": "passed",
+  "claim_boundary": "FlowGuard process route completed for the Lantern Map structural-design input; final prose quality is outside this receipt."
+}

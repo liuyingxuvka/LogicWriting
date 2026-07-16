@@ -1,0 +1,49 @@
+{
+  "schema_version": "storyline-design.guard_known_good_set.v1",
+  "target_skill_id": "storyline-design",
+  "cases": [
+    {
+      "case_id": "known-good:compact-guard-lifecycle",
+      "native_validator": "scripts/storyline_closure_check.py",
+      "fixture_path": "examples/guard_lifecycle_cases/compact-pass.json",
+      "covered_obligation_ids": [
+        "guard_surface.flowguard_process",
+        "guard_surface.traceguard_storyline",
+        "guard_surface.worldguard_scope",
+        "guard_surface.logicguard_theme",
+        "guard_surface.sourceguard_canon",
+        "evidence.structured_not_self_reported",
+        "evidence.flowguard_freshness"
+      ],
+      "expected_native_status": "pass",
+      "self_reported_outcome_allowed": false
+    },
+    {
+      "case_id": "known-good:longform-final-prose-closure",
+      "native_validator": "scripts/longform_closure_check.py",
+      "fixture_path": "examples/longform_novel_project/longform-final-prose-closure.json",
+      "covered_obligation_ids": [
+        "longform.novel_ledger_identity",
+        "longform.closure_artifact_identity",
+        "longform.structured_surface_identity",
+        "final_prose.artifact_bound_review",
+        "final_prose.hash_alignment",
+        "final_prose.final_artifact",
+        "final_prose.source_requirements",
+        "chapter.concrete_handoff",
+        "promise.key_resolution",
+        "continuity.material_rows",
+        "binding.prose_span_coverage",
+        "binding.model_ref_realization",
+        "binding.duplicate_delta",
+        "binding.resistance_or_cost",
+        "binding.reader_hypothesis_drift",
+        "binding.register_ownership",
+        "binding.length_outlier_review",
+        "final_prose.model_prose_binding"
+      ],
+      "expected_native_status": "pass",
+      "self_reported_outcome_allowed": false
+    }
+  ]
+}

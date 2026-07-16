@@ -1,0 +1,1 @@
+{"schema_version":"travel-story-planner.failure-case.v2","case_id":"walking-tolerance-exceeded","base_plan":"skills/logic-writing/routes/travel/examples/good_city_couple_trip/plan.json","mutations":[{"op":"set","path":["traveler_profile","walking_tolerance_km"],"value":1}],"expected_issue_codes":["closure_report.status.mismatch","route_mesh.walking_tolerance.exceeded"]}

@@ -1,0 +1,256 @@
+{
+  "schema_version": "storyline-design.guard_known_bad_set.v1",
+  "target_skill_id": "storyline-design",
+  "cases": [
+    {
+      "case_id": "known-bad:missing-flowguard-process",
+      "failure_id": "failure:storyline:missing-flowguard-process",
+      "oracle_id": "oracle:storyline:missing-flowguard-process",
+      "trigger_obligation_id": "guard_surface.flowguard_process",
+      "fixture_path": "examples/guard_lifecycle_cases/compact-missing-flowguard.json",
+      "expected_native_status": "blocked",
+      "expected_finding_code": "storyline_blocked:missing-flowguard-process",
+      "self_reported_outcome_allowed": false
+    },
+    {
+      "case_id": "known-bad:missing-traceguard-storyline",
+      "failure_id": "failure:storyline:missing-traceguard-storyline",
+      "oracle_id": "oracle:storyline:missing-traceguard-storyline",
+      "trigger_obligation_id": "guard_surface.traceguard_storyline",
+      "fixture_path": "examples/guard_lifecycle_cases/compact-missing-traceguard.json",
+      "expected_native_status": "blocked",
+      "expected_finding_code": "storyline_blocked:missing-traceguard-storyline",
+      "self_reported_outcome_allowed": false
+    },
+    {
+      "case_id": "known-bad:fictional-worldguard-auto-scopeout",
+      "failure_id": "failure:storyline:fictional-worldguard-auto-scopeout",
+      "oracle_id": "oracle:storyline:fictional-worldguard-auto-scopeout",
+      "trigger_obligation_id": "guard_surface.worldguard_scope",
+      "fixture_path": "examples/guard_lifecycle_cases/compact-bad-worldguard-scopeout.json",
+      "expected_native_status": "blocked",
+      "expected_finding_code": "storyline_blocked:fictional-worldguard-auto-scopeout",
+      "self_reported_outcome_allowed": false
+    },
+    {
+      "case_id": "known-bad:missing-logicguard-theme",
+      "failure_id": "failure:storyline:missing-logicguard-theme",
+      "oracle_id": "oracle:storyline:missing-logicguard-theme",
+      "trigger_obligation_id": "guard_surface.logicguard_theme",
+      "fixture_path": "examples/guard_lifecycle_cases/compact-missing-logicguard.json",
+      "expected_native_status": "blocked",
+      "expected_finding_code": "storyline_blocked:missing-logicguard-theme",
+      "self_reported_outcome_allowed": false
+    },
+    {
+      "case_id": "known-bad:missing-sourceguard-canon",
+      "failure_id": "failure:storyline:missing-sourceguard-canon",
+      "oracle_id": "oracle:storyline:missing-sourceguard-canon",
+      "trigger_obligation_id": "guard_surface.sourceguard_canon",
+      "fixture_path": "examples/guard_lifecycle_cases/compact-missing-sourceguard.json",
+      "expected_native_status": "blocked",
+      "expected_finding_code": "storyline_blocked:missing-sourceguard-canon",
+      "self_reported_outcome_allowed": false
+    },
+    {
+      "case_id": "known-bad:prose-only-evidence-substitution",
+      "failure_id": "failure:storyline:prose-only-evidence-substitution",
+      "oracle_id": "oracle:storyline:prose-only-evidence-substitution",
+      "trigger_obligation_id": "evidence.structured_not_self_reported",
+      "fixture_path": "examples/guard_lifecycle_cases/compact-prose-only-evidence.json",
+      "expected_native_status": "blocked",
+      "expected_finding_code": "storyline_blocked:prose-only-evidence-substitution",
+      "self_reported_outcome_allowed": false
+    },
+    {
+      "case_id": "known-bad:stale-flowguard-process",
+      "failure_id": "failure:storyline:stale-flowguard-process",
+      "oracle_id": "oracle:storyline:stale-flowguard-process",
+      "trigger_obligation_id": "evidence.flowguard_freshness",
+      "fixture_path": "examples/guard_lifecycle_cases/compact-stale-flowguard.json",
+      "expected_native_status": "blocked",
+      "expected_finding_code": "storyline_blocked:stale-flowguard-process",
+      "self_reported_outcome_allowed": false
+    },
+    {
+      "case_id": "known-bad:reverse-outline-as-ledger",
+      "failure_id": "failure:storyline:reverse-outline-as-ledger",
+      "oracle_id": "oracle:storyline:reverse-outline-as-ledger",
+      "trigger_obligation_id": "longform.novel_ledger_identity",
+      "fixture_path": "examples/longform_failure_cases/substitute-reverse-outline-as-ledger.json",
+      "expected_native_status": "blocked",
+      "expected_finding_code": "storyline_blocked:reverse-outline-as-ledger",
+      "self_reported_outcome_allowed": false
+    },
+    {
+      "case_id": "known-bad:weak-reverse-outline-as-closure",
+      "failure_id": "failure:storyline:weak-reverse-outline-as-closure",
+      "oracle_id": "oracle:storyline:weak-reverse-outline-as-closure",
+      "trigger_obligation_id": "longform.closure_artifact_identity",
+      "fixture_path": "examples/longform_failure_cases/weak-reverse-outline.json",
+      "expected_native_status": "blocked",
+      "expected_finding_code": "storyline_blocked:weak-reverse-outline-as-closure",
+      "self_reported_outcome_allowed": false
+    },
+    {
+      "case_id": "known-bad:markdown-model-substitution",
+      "failure_id": "failure:storyline:markdown-model-substitution",
+      "oracle_id": "oracle:storyline:markdown-model-substitution",
+      "trigger_obligation_id": "longform.structured_surface_identity",
+      "fixture_path": "examples/longform_failure_cases/markdown-model-surface-substitution.json",
+      "expected_native_status": "blocked",
+      "expected_finding_code": "storyline_blocked:markdown-model-substitution",
+      "self_reported_outcome_allowed": false
+    },
+    {
+      "case_id": "known-bad:review-not-artifact-bound",
+      "failure_id": "failure:storyline:review-not-artifact-bound",
+      "oracle_id": "oracle:storyline:review-not-artifact-bound",
+      "trigger_obligation_id": "final_prose.artifact_bound_review",
+      "fixture_path": "examples/longform_failure_cases/final-prose-fake-ai-review.json",
+      "expected_native_status": "blocked",
+      "expected_finding_code": "storyline_blocked:review-not-artifact-bound",
+      "self_reported_outcome_allowed": false
+    },
+    {
+      "case_id": "known-bad:artifact-review-hash-mismatch",
+      "failure_id": "failure:storyline:artifact-review-hash-mismatch",
+      "oracle_id": "oracle:storyline:artifact-review-hash-mismatch",
+      "trigger_obligation_id": "final_prose.hash_alignment",
+      "fixture_path": "examples/longform_failure_cases/final-prose-hash-mismatch.json",
+      "expected_native_status": "blocked",
+      "expected_finding_code": "storyline_blocked:artifact-review-hash-mismatch",
+      "self_reported_outcome_allowed": false
+    },
+    {
+      "case_id": "known-bad:missing-final-artifact",
+      "failure_id": "failure:storyline:missing-final-artifact",
+      "oracle_id": "oracle:storyline:missing-final-artifact",
+      "trigger_obligation_id": "final_prose.final_artifact",
+      "fixture_path": "examples/longform_failure_cases/final-prose-missing-artifact.json",
+      "expected_native_status": "blocked",
+      "expected_finding_code": "storyline_blocked:missing-final-artifact",
+      "self_reported_outcome_allowed": false
+    },
+    {
+      "case_id": "known-bad:missing-source-requirements",
+      "failure_id": "failure:storyline:missing-source-requirements",
+      "oracle_id": "oracle:storyline:missing-source-requirements",
+      "trigger_obligation_id": "final_prose.source_requirements",
+      "fixture_path": "examples/longform_failure_cases/final-prose-missing-source-requirements.json",
+      "expected_native_status": "blocked",
+      "expected_finding_code": "storyline_blocked:missing-source-requirements",
+      "self_reported_outcome_allowed": false
+    },
+    {
+      "case_id": "known-bad:generic-chapter-interface",
+      "failure_id": "failure:storyline:generic-chapter-interface",
+      "oracle_id": "oracle:storyline:generic-chapter-interface",
+      "trigger_obligation_id": "chapter.concrete_handoff",
+      "fixture_path": "examples/longform_failure_cases/fake-chapter-interface.json",
+      "expected_native_status": "blocked",
+      "expected_finding_code": "storyline_blocked:generic-chapter-interface",
+      "self_reported_outcome_allowed": false
+    },
+    {
+      "case_id": "known-bad:unresolved-key-promise",
+      "failure_id": "failure:storyline:unresolved-key-promise",
+      "oracle_id": "oracle:storyline:unresolved-key-promise",
+      "trigger_obligation_id": "promise.key_resolution",
+      "fixture_path": "examples/longform_failure_cases/unresolved-key-promise.json",
+      "expected_native_status": "blocked",
+      "expected_finding_code": "storyline_blocked:unresolved-key-promise",
+      "self_reported_outcome_allowed": false
+    },
+    {
+      "case_id": "known-bad:missing-material-continuity",
+      "failure_id": "failure:storyline:missing-material-continuity",
+      "oracle_id": "oracle:storyline:missing-material-continuity",
+      "trigger_obligation_id": "continuity.material_rows",
+      "fixture_path": "examples/longform_failure_cases/missing-material-continuity.json",
+      "expected_native_status": "blocked",
+      "expected_finding_code": "storyline_blocked:missing-material-continuity",
+      "self_reported_outcome_allowed": false
+    },
+    {
+      "case_id": "known-bad:unbound-prose-span",
+      "failure_id": "failure:storyline:unbound-prose-span",
+      "oracle_id": "oracle:storyline:unbound-prose-span",
+      "trigger_obligation_id": "binding.prose_span_coverage",
+      "fixture_path": "examples/longform_failure_cases/unbound-prose-span.json",
+      "expected_native_status": "blocked",
+      "expected_finding_code": "storyline_blocked:unbound-prose-span",
+      "self_reported_outcome_allowed": false
+    },
+    {
+      "case_id": "known-bad:unrealized-model-reference",
+      "failure_id": "failure:storyline:unrealized-model-reference",
+      "oracle_id": "oracle:storyline:unrealized-model-reference",
+      "trigger_obligation_id": "binding.model_ref_realization",
+      "fixture_path": "examples/longform_failure_cases/unrealized-model-ref.json",
+      "expected_native_status": "blocked",
+      "expected_finding_code": "storyline_blocked:unrealized-model-reference",
+      "self_reported_outcome_allowed": false
+    },
+    {
+      "case_id": "known-bad:duplicate-binding-without-delta",
+      "failure_id": "failure:storyline:duplicate-binding-without-delta",
+      "oracle_id": "oracle:storyline:duplicate-binding-without-delta",
+      "trigger_obligation_id": "binding.duplicate_delta",
+      "fixture_path": "examples/longform_failure_cases/duplicate-binding-without-delta.json",
+      "expected_native_status": "blocked",
+      "expected_finding_code": "storyline_blocked:duplicate-binding-without-delta",
+      "self_reported_outcome_allowed": false
+    },
+    {
+      "case_id": "known-bad:reveal-without-resistance",
+      "failure_id": "failure:storyline:reveal-without-resistance",
+      "oracle_id": "oracle:storyline:reveal-without-resistance",
+      "trigger_obligation_id": "binding.resistance_or_cost",
+      "fixture_path": "examples/longform_failure_cases/smooth-reveal-without-resistance.json",
+      "expected_native_status": "blocked",
+      "expected_finding_code": "storyline_blocked:reveal-without-resistance",
+      "self_reported_outcome_allowed": false
+    },
+    {
+      "case_id": "known-bad:premature-hypothesis-collapse",
+      "failure_id": "failure:storyline:premature-hypothesis-collapse",
+      "oracle_id": "oracle:storyline:premature-hypothesis-collapse",
+      "trigger_obligation_id": "binding.reader_hypothesis_drift",
+      "fixture_path": "examples/longform_failure_cases/premature-hypothesis-collapse.json",
+      "expected_native_status": "blocked",
+      "expected_finding_code": "storyline_blocked:premature-hypothesis-collapse",
+      "self_reported_outcome_allowed": false
+    },
+    {
+      "case_id": "known-bad:term-register-owner-drift",
+      "failure_id": "failure:storyline:term-register-owner-drift",
+      "oracle_id": "oracle:storyline:term-register-owner-drift",
+      "trigger_obligation_id": "binding.register_ownership",
+      "fixture_path": "examples/longform_failure_cases/term-register-owner-drift.json",
+      "expected_native_status": "blocked",
+      "expected_finding_code": "storyline_blocked:term-register-owner-drift",
+      "self_reported_outcome_allowed": false
+    },
+    {
+      "case_id": "known-bad:length-outlier-without-review",
+      "failure_id": "failure:storyline:length-outlier-without-review",
+      "oracle_id": "oracle:storyline:length-outlier-without-review",
+      "trigger_obligation_id": "binding.length_outlier_review",
+      "fixture_path": "examples/longform_failure_cases/length-outlier-without-binding-review.json",
+      "expected_native_status": "blocked",
+      "expected_finding_code": "storyline_blocked:length-outlier-without-review",
+      "self_reported_outcome_allowed": false
+    },
+    {
+      "case_id": "known-bad:missing-model-prose-binding",
+      "failure_id": "failure:storyline:missing-model-prose-binding",
+      "oracle_id": "oracle:storyline:missing-model-prose-binding",
+      "trigger_obligation_id": "final_prose.model_prose_binding",
+      "fixture_path": "examples/longform_failure_cases/final-prose-missing-model-prose-binding.json",
+      "expected_native_status": "blocked",
+      "expected_finding_code": "storyline_blocked:missing-model-prose-binding",
+      "self_reported_outcome_allowed": false
+    }
+  ]
+}

@@ -1,0 +1,180 @@
+{
+  "schema_version": "travel-story-planner.plan.v2",
+  "trip_context": {
+    "trip_id": "fixture-city-couple-2027",
+    "destination": "Example City",
+    "planning_as_of": "2026-07-14T14:00:00+02:00",
+    "timezone": "Europe/Berlin",
+    "date_relation": "far_future",
+    "start_date": "2027-05-01",
+    "end_date": "2027-05-03",
+    "trip_days": 3,
+    "day_ids": ["day-1", "day-2", "day-3"],
+    "overnight": true,
+    "nights": 2,
+    "requested_claim_level": "bookable",
+    "allowed_claim_level": "initial_plan",
+    "evaluation_mode": "frozen_fixture"
+  },
+  "traveler_profile": {
+    "traveler_count": 2,
+    "ages": [32, 34],
+    "companions": "couple",
+    "stamina": "medium",
+    "walking_tolerance_km": 7,
+    "stairs_or_hills_tolerance": "medium",
+    "transit_tolerance": "medium",
+    "budget_level": "midrange",
+    "interests": ["design", "local food", "riverside views"],
+    "must_avoid": ["late long transfers"],
+    "food_constraints": ["none declared"],
+    "accessibility_needs": ["none declared"],
+    "safety_constraints": ["comfortable late return"],
+    "pace": "balanced",
+    "style": "romantic"
+  },
+  "source_portfolio": {
+    "sources": [
+      {"source_id": "src-official", "source_class": "official_facts", "source_date": "2026-07-01", "coverage_period": "static fixture boundary", "locator": "fixture://official", "access_status": "inspected", "content_sha256": "fixture-official", "can_support": ["candidate identity"], "cannot_support": ["2027 opening hours"], "freshness_status": "bounded", "next_action": "recheck before booking"},
+      {"source_id": "src-transit", "source_class": "transport_map", "source_date": "2026-07-01", "coverage_period": "static fixture boundary", "locator": "fixture://transit", "access_status": "inspected", "content_sha256": "fixture-transit", "can_support": ["route shape"], "cannot_support": ["2027 timetable"], "freshness_status": "bounded", "next_action": "recheck timetable"},
+      {"source_id": "src-booking", "source_class": "booking_price", "source_date": "2026-07-01", "coverage_period": "static fixture boundary", "locator": "fixture://booking", "access_status": "inspected", "content_sha256": "fixture-booking", "can_support": ["reservation need"], "cannot_support": ["2027 availability or price"], "freshness_status": "bounded", "next_action": "recheck price and availability"},
+      {"source_id": "src-experience", "source_class": "traveler_experience", "source_date": "2026-06-01", "coverage_period": "fixture experience sample", "locator": "fixture://experience", "access_status": "inspected", "content_sha256": "fixture-experience", "can_support": ["fit and friction signals"], "cannot_support": ["official facts"], "freshness_status": "bounded", "next_action": "seek current traveler reports"},
+      {"source_id": "src-negative", "source_class": "negative_experience", "source_date": "2026-06-01", "coverage_period": "fixture risk sample", "locator": "fixture://negative", "access_status": "inspected", "content_sha256": "fixture-negative", "can_support": ["queue fatigue and weather risk signals"], "cannot_support": ["official closure"], "freshness_status": "bounded", "next_action": "seek recent independent signals"},
+      {"source_id": "src-access", "source_class": "accessibility_safety", "source_date": "2026-07-01", "coverage_period": "fixture access sample", "locator": "fixture://access", "access_status": "inspected", "content_sha256": "fixture-access", "can_support": ["walking and late-return boundary"], "cannot_support": ["day-of safety"], "freshness_status": "bounded", "next_action": "recheck current advisories"},
+      {"source_id": "src-fallback", "source_class": "fallback_source", "source_date": "2026-07-01", "coverage_period": "fixture fallback sample", "locator": "fixture://fallback", "access_status": "inspected", "content_sha256": "fixture-fallback", "can_support": ["indoor gallery and cafe alternatives"], "cannot_support": ["2027 opening status"], "freshness_status": "bounded", "next_action": "recheck fallback opening"},
+      {"source_id": "src-hotel", "source_class": "hotel_lodging", "source_date": "2026-07-01", "coverage_period": "fixture lodging sample", "locator": "fixture://hotel", "access_status": "inspected", "content_sha256": "fixture-hotel", "can_support": ["central base and luggage shape"], "cannot_support": ["2027 room availability"], "freshness_status": "bounded", "next_action": "recheck hotel policies"},
+      {"source_id": "src-climate", "source_class": "weather_climate", "source_date": "2026-06-01", "coverage_period": "seasonal planning only", "locator": "fixture://climate", "access_status": "inspected", "content_sha256": "fixture-climate", "can_support": ["broad precipitation and wind planning"], "cannot_support": ["daily forecast or alert"], "freshness_status": "bounded", "next_action": "check forecast and alerts before travel"}
+    ]
+  },
+  "experience_candidate_pool": {
+    "candidates": [
+      {"candidate_id": "cand-hotel", "class": "hotel", "name_or_area": "Central hotel area", "trip_role": "lodging base", "why_worth_considering": "Simplifies luggage and late return.", "why_may_be_bad_fit": "May cost more.", "best_for": ["balanced couple pace"], "avoid_when": ["budget is strict"], "source_ids": ["src-hotel", "src-access"], "source_roles": ["hotel_lodging", "accessibility_safety"], "negative_signal_ids": ["pit-fatigue"], "world_check_id": "wc-cand-hotel", "freshness": "bounded fixture", "access_status": "inspected", "candidate_status": "usable", "next_action": "recheck availability"},
+      {"candidate_id": "cand-station", "class": "transport", "name_or_area": "Main station", "trip_role": "arrival anchor", "why_worth_considering": "Keeps arrival simple.", "why_may_be_bad_fit": "Can be crowded.", "best_for": ["arrival day"], "avoid_when": ["service disruption"], "source_ids": ["src-transit", "src-negative"], "source_roles": ["transport_map", "negative_experience"], "negative_signal_ids": ["pit-fatigue"], "world_check_id": "wc-cand-station", "freshness": "bounded fixture", "access_status": "inspected", "candidate_status": "usable", "next_action": "recheck timetable"},
+      {"candidate_id": "cand-shop", "class": "shop", "name_or_area": "Design shop street", "trip_role": "shopping texture", "why_worth_considering": "Matches design interest.", "why_may_be_bad_fit": "Can encourage overspending.", "best_for": ["design interest"], "avoid_when": ["fatigue is high"], "source_ids": ["src-experience", "src-negative"], "source_roles": ["traveler_experience", "negative_experience"], "negative_signal_ids": ["pit-fatigue"], "world_check_id": "wc-cand-shop", "freshness": "bounded fixture", "access_status": "inspected", "candidate_status": "usable", "next_action": "recheck current shops"},
+      {"candidate_id": "cand-food", "class": "restaurant", "name_or_area": "Local bistro cluster", "trip_role": "early dinner", "why_worth_considering": "Pays the local-food promise.", "why_may_be_bad_fit": "Reservation friction.", "best_for": ["early dinner"], "avoid_when": ["queue is long"], "source_ids": ["src-booking", "src-experience", "src-negative"], "source_roles": ["booking_price", "traveler_experience", "negative_experience"], "negative_signal_ids": ["pit-queue"], "world_check_id": "wc-cand-food", "freshness": "bounded fixture", "access_status": "inspected", "candidate_status": "usable", "next_action": "recheck reservation"},
+      {"candidate_id": "cand-view", "class": "attraction", "name_or_area": "Riverside viewpoint", "trip_role": "evening peak", "why_worth_considering": "Creates a calm day ending.", "why_may_be_bad_fit": "Exposed to rain and wind.", "best_for": ["clear evening"], "avoid_when": ["weather exposure is high"], "source_ids": ["src-official", "src-experience", "src-negative"], "source_roles": ["official_facts", "traveler_experience", "negative_experience"], "negative_signal_ids": ["pit-weather"], "world_check_id": "wc-cand-view", "freshness": "bounded fixture", "access_status": "inspected", "candidate_status": "usable", "next_action": "check forecast"},
+      {"candidate_id": "cand-gallery", "class": "fallback", "name_or_area": "Indoor gallery", "trip_role": "weather fallback", "why_worth_considering": "Keeps the design theme indoors.", "why_may_be_bad_fit": "Opening status needs recheck.", "best_for": ["rain or strong wind"], "avoid_when": ["closed"], "source_ids": ["src-fallback", "src-official"], "source_roles": ["fallback_source", "official_facts"], "negative_signal_ids": ["pit-weather"], "world_check_id": "wc-cand-gallery", "freshness": "bounded fixture", "access_status": "inspected", "candidate_status": "usable", "next_action": "recheck opening"},
+      {"candidate_id": "cand-rest", "class": "rest", "name_or_area": "Quiet cafe near hotel", "trip_role": "fatigue buffer", "why_worth_considering": "Protects pace and departure energy.", "why_may_be_bad_fit": "Seating may be limited.", "best_for": ["fatigue"], "avoid_when": ["crowded"], "source_ids": ["src-fallback", "src-experience"], "source_roles": ["fallback_source", "traveler_experience"], "negative_signal_ids": ["pit-fatigue"], "world_check_id": "wc-cand-rest", "freshness": "bounded fixture", "access_status": "inspected", "candidate_status": "usable", "next_action": "recheck cafe"}
+    ]
+  },
+  "world_feasibility": {
+    "checks": [
+      {"world_check_id": "wc-cand-hotel", "target_type": "candidate", "target_id": "cand-hotel", "guards_checked": ["access", "resource"], "status": "pass", "missing_slots": ["none within fixture"], "counterexamples": ["real availability unproven"], "boundary": "fixture route shape", "next_action": "recheck"},
+      {"world_check_id": "wc-cand-station", "target_type": "candidate", "target_id": "cand-station", "guards_checked": ["time", "access"], "status": "pass", "missing_slots": ["none within fixture"], "counterexamples": ["real timetable unproven"], "boundary": "fixture route shape", "next_action": "recheck"},
+      {"world_check_id": "wc-cand-shop", "target_type": "candidate", "target_id": "cand-shop", "guards_checked": ["time", "resource"], "status": "pass", "missing_slots": ["none within fixture"], "counterexamples": ["shop changes unproven"], "boundary": "fixture route shape", "next_action": "recheck"},
+      {"world_check_id": "wc-cand-food", "target_type": "candidate", "target_id": "cand-food", "guards_checked": ["time", "resource"], "status": "pass", "missing_slots": ["none within fixture"], "counterexamples": ["reservation unproven"], "boundary": "fixture route shape", "next_action": "recheck"},
+      {"world_check_id": "wc-cand-view", "target_type": "candidate", "target_id": "cand-view", "guards_checked": ["weather", "access"], "status": "pass", "missing_slots": ["none within fixture"], "counterexamples": ["daily weather unproven"], "boundary": "fixture route shape", "next_action": "forecast recheck"},
+      {"world_check_id": "wc-cand-gallery", "target_type": "candidate", "target_id": "cand-gallery", "guards_checked": ["access", "weather"], "status": "pass", "missing_slots": ["none within fixture"], "counterexamples": ["opening unproven"], "boundary": "fixture fallback shape", "next_action": "recheck"},
+      {"world_check_id": "wc-cand-rest", "target_type": "candidate", "target_id": "cand-rest", "guards_checked": ["access", "fit"], "status": "pass", "missing_slots": ["none within fixture"], "counterexamples": ["seating unproven"], "boundary": "fixture fallback shape", "next_action": "recheck"},
+      {"world_check_id": "wc-route-primary", "target_type": "route", "target_id": "trace-primary", "guards_checked": ["time", "space", "weather", "resource"], "status": "pass", "missing_slots": ["none within fixture"], "counterexamples": ["live disruptions unproven"], "boundary": "fixture route shape", "next_action": "recheck"},
+      {"world_check_id": "wc-route-comfort", "target_type": "route", "target_id": "trace-comfort", "guards_checked": ["time", "space", "weather", "rest"], "status": "pass", "missing_slots": ["none within fixture"], "counterexamples": ["live disruptions unproven"], "boundary": "fixture route shape", "next_action": "recheck"},
+      {"world_check_id": "wc-lodging", "target_type": "hotel_strategy", "target_id": "lodging-central", "guards_checked": ["check_in", "luggage", "late_return"], "status": "pass", "missing_slots": ["none within fixture"], "counterexamples": ["real policy unproven"], "boundary": "fixture lodging shape", "next_action": "recheck"}
+    ]
+  },
+  "negative_evidence": [
+    {"pit_id": "pit-fatigue", "node_id": "cand-station", "issue": "Arrival or departure fatigue", "affected_traveler": "both travelers", "source_ids": ["src-negative", "src-access"], "severity": "medium", "trigger_condition": "energy drops before the next walking segment", "mitigation": "shorten the route and use the quiet cafe", "fallback_ids": ["fb-rest"], "status": "usable"},
+    {"pit_id": "pit-queue", "node_id": "cand-food", "issue": "Dinner queue or reservation failure", "affected_traveler": "both travelers", "source_ids": ["src-booking", "src-negative"], "severity": "medium", "trigger_condition": "reservation unavailable or queue exceeds tolerance", "mitigation": "move dinner earlier and use the gallery-side cafe", "fallback_ids": ["fb-gallery"], "status": "usable"},
+    {"pit_id": "pit-weather", "node_id": "cand-view", "issue": "Rain or strong wind at the riverside", "affected_traveler": "both travelers", "source_ids": ["src-climate", "src-negative"], "severity": "high", "trigger_condition": "forecast or alert shows uncomfortable exposure", "mitigation": "replace the viewpoint with the indoor gallery", "fallback_ids": ["fb-gallery", "fb-rest"], "status": "usable"}
+  ],
+  "fallback_options": [
+    {"fallback_id": "fb-gallery", "candidate_id": "cand-gallery", "replaces_route_node_ids": ["rn-p-view"], "reachable_from_route_node_ids": ["rn-p-food"], "trigger": "rain, strong wind, closure, or dinner delay", "travel_time_delta_minutes": 10, "cost_delta": "small indoor ticket caveat", "fit_notes": "preserves design interest with less exposure", "source_ids": ["src-fallback", "src-official"], "world_check_id": "wc-cand-gallery", "status": "usable", "boundary": "opening requires current recheck"},
+    {"fallback_id": "fb-rest", "candidate_id": "cand-rest", "replaces_route_node_ids": ["rn-p-shop", "rn-p-view", "rn-c-gallery"], "reachable_from_route_node_ids": ["rn-p-station", "rn-p-food", "rn-c-food"], "trigger": "fatigue, crowding, or delayed arrival", "travel_time_delta_minutes": -30, "cost_delta": "one cafe purchase", "fit_notes": "protects stamina and late return", "source_ids": ["src-fallback", "src-experience"], "world_check_id": "wc-cand-rest", "status": "usable", "boundary": "seating requires recheck"}
+  ],
+  "route_mesh": {
+    "routes": [
+      {
+        "trace_id": "trace-primary", "route_type": "primary", "title": "Design street, local dinner, riverside", "day_ids": ["day-1", "day-2", "day-3"], "story_arc": "Arrive gently, widen the city day, close near the hotel.", "walking_km": 5.5,
+        "route_nodes": [
+          {"route_node_id": "rn-p-station", "trace_id": "trace-primary", "day_id": "day-1", "candidate_id": "cand-station", "time_window": "14:00-15:00", "role_in_day": "arrival anchor", "source_ids": ["src-transit"], "world_check_id": "wc-cand-station", "fallback_ids": ["fb-rest"], "risk_ids": ["pit-fatigue"], "status": "pass"},
+          {"route_node_id": "rn-p-shop", "trace_id": "trace-primary", "day_id": "day-1", "candidate_id": "cand-shop", "time_window": "15:30-17:00", "role_in_day": "design browse", "source_ids": ["src-experience"], "world_check_id": "wc-cand-shop", "fallback_ids": ["fb-rest"], "risk_ids": ["pit-fatigue"], "status": "pass"},
+          {"route_node_id": "rn-p-food", "trace_id": "trace-primary", "day_id": "day-2", "candidate_id": "cand-food", "time_window": "17:30-19:00", "role_in_day": "local dinner", "source_ids": ["src-booking", "src-experience"], "world_check_id": "wc-cand-food", "fallback_ids": ["fb-gallery"], "risk_ids": ["pit-queue"], "status": "pass"},
+          {"route_node_id": "rn-p-view", "trace_id": "trace-primary", "day_id": "day-2", "candidate_id": "cand-view", "time_window": "19:15-20:30", "role_in_day": "evening peak", "source_ids": ["src-official", "src-climate"], "world_check_id": "wc-cand-view", "fallback_ids": ["fb-gallery", "fb-rest"], "risk_ids": ["pit-weather", "pit-fatigue"], "status": "pass"}
+        ],
+        "movement_edges": [
+          {"edge_id": "edge-p-1", "from_node_id": "rn-p-station", "to_node_id": "rn-p-shop", "travel_minutes": 15, "mode": "walk", "status": "pass"},
+          {"edge_id": "edge-p-2", "from_node_id": "rn-p-shop", "to_node_id": "rn-p-food", "travel_minutes": 20, "mode": "transit", "status": "pass"},
+          {"edge_id": "edge-p-3", "from_node_id": "rn-p-food", "to_node_id": "rn-p-view", "travel_minutes": 15, "mode": "walk", "status": "pass"}
+        ],
+        "operational_steps": ["store luggage", "browse design street", "eat early", "check weather before riverside"], "world_check_ids": ["wc-route-primary"], "weakest_links": ["dinner reservation", "weather exposure"], "fallback_ids": ["fb-gallery", "fb-rest"], "feasibility_status": "pass", "evidence_boundary": "fixture structure only", "downgrade_reason": "none within fixture"
+      },
+      {
+        "trace_id": "trace-comfort", "route_type": "comfort", "title": "Hotel buffer, early dinner, indoor gallery", "day_ids": ["day-1", "day-2", "day-3"], "story_arc": "Keep transfers short and protect energy.", "walking_km": 3.2,
+        "route_nodes": [
+          {"route_node_id": "rn-c-station", "trace_id": "trace-comfort", "day_id": "day-1", "candidate_id": "cand-station", "time_window": "14:00-15:00", "role_in_day": "arrival anchor", "source_ids": ["src-transit"], "world_check_id": "wc-cand-station", "fallback_ids": ["fb-rest"], "risk_ids": ["pit-fatigue"], "status": "pass"},
+          {"route_node_id": "rn-c-food", "trace_id": "trace-comfort", "day_id": "day-2", "candidate_id": "cand-food", "time_window": "17:00-18:15", "role_in_day": "early dinner", "source_ids": ["src-booking"], "world_check_id": "wc-cand-food", "fallback_ids": ["fb-gallery"], "risk_ids": ["pit-queue"], "status": "pass"},
+          {"route_node_id": "rn-c-gallery", "trace_id": "trace-comfort", "day_id": "day-2", "candidate_id": "cand-gallery", "time_window": "18:30-20:00", "role_in_day": "indoor peak", "source_ids": ["src-fallback"], "world_check_id": "wc-cand-gallery", "fallback_ids": ["fb-rest"], "risk_ids": ["pit-weather"], "status": "pass"},
+          {"route_node_id": "rn-c-rest", "trace_id": "trace-comfort", "day_id": "day-3", "candidate_id": "cand-rest", "time_window": "09:00-10:00", "role_in_day": "departure rest", "source_ids": ["src-experience"], "world_check_id": "wc-cand-rest", "fallback_ids": ["fb-rest"], "risk_ids": ["pit-fatigue"], "status": "pass"}
+        ],
+        "movement_edges": [
+          {"edge_id": "edge-c-1", "from_node_id": "rn-c-station", "to_node_id": "rn-c-food", "travel_minutes": 15, "mode": "transit", "status": "pass"},
+          {"edge_id": "edge-c-2", "from_node_id": "rn-c-food", "to_node_id": "rn-c-gallery", "travel_minutes": 10, "mode": "walk", "status": "pass"},
+          {"edge_id": "edge-c-3", "from_node_id": "rn-c-gallery", "to_node_id": "rn-c-rest", "travel_minutes": 15, "mode": "transit", "status": "pass"}
+        ],
+        "operational_steps": ["store luggage", "eat early", "use indoor gallery", "rest near hotel"], "world_check_ids": ["wc-route-comfort"], "weakest_links": ["gallery opening", "cafe seating"], "fallback_ids": ["fb-gallery", "fb-rest"], "feasibility_status": "pass", "evidence_boundary": "fixture structure only", "downgrade_reason": "none within fixture"
+      }
+    ]
+  },
+  "lodging_strategy": {"strategy_id": "lodging-central", "hotel_candidate_ids": ["cand-hotel"], "world_check_ids": ["wc-lodging"], "affected_trace_ids": ["trace-primary", "trace-comfort"], "check_in_window": "after 15:00", "check_out_window": "before 11:00", "luggage_plan": "store bags before first route", "late_return_plan": "end near central hotel", "status": "pass", "boundary": "real policies require recheck"},
+  "trip_fit_review": {
+    "status": "pass", "boundary": "fit only within fixture route shape",
+    "dimension_rows": [
+      {"dimension": "age", "status": "pass", "affected_trace_ids": ["trace-primary", "trace-comfort"], "evidence_ids": ["profile-ages"], "mitigation_ids": ["fb-rest"], "input_field": "traveler_profile.ages", "input_values": [32, 34]},
+      {"dimension": "stamina", "status": "pass", "affected_trace_ids": ["trace-primary", "trace-comfort"], "evidence_ids": ["walking-load"], "mitigation_ids": ["fb-rest"], "input_field": "traveler_profile.stamina", "input_values": ["medium"]},
+      {"dimension": "companions", "status": "pass", "affected_trace_ids": ["trace-primary"], "evidence_ids": ["couple-pace"], "mitigation_ids": ["fb-gallery"], "input_field": "traveler_profile.companions", "input_values": ["couple"]},
+      {"dimension": "interests", "status": "pass", "affected_trace_ids": ["trace-primary"], "evidence_ids": ["design-food-view"], "mitigation_ids": ["fb-gallery"], "input_field": "traveler_profile.interests", "input_values": ["design", "local food", "riverside views"]},
+      {"dimension": "pace", "status": "pass", "affected_trace_ids": ["trace-primary", "trace-comfort"], "evidence_ids": ["balanced-pace"], "mitigation_ids": ["fb-rest"], "input_field": "traveler_profile.pace", "input_values": ["balanced"]},
+      {"dimension": "rest", "status": "pass", "affected_trace_ids": ["trace-comfort"], "evidence_ids": ["cand-rest"], "mitigation_ids": ["fb-rest"], "input_field": "traveler_profile.stamina", "input_values": ["medium"]},
+      {"dimension": "budget", "status": "pass", "affected_trace_ids": ["trace-primary"], "evidence_ids": ["midrange-boundary"], "mitigation_ids": ["fb-rest"], "input_field": "traveler_profile.budget_level", "input_values": ["midrange"]},
+      {"dimension": "safety", "status": "pass", "affected_trace_ids": ["trace-primary", "trace-comfort"], "evidence_ids": ["central-return"], "mitigation_ids": ["fb-rest"], "input_field": "traveler_profile.safety_constraints", "input_values": ["comfortable late return"]},
+      {"dimension": "weather_resilience", "status": "pass", "affected_trace_ids": ["trace-primary", "trace-comfort"], "evidence_ids": ["pit-weather"], "mitigation_ids": ["fb-gallery"], "input_field": "traveler_profile.safety_constraints", "input_values": ["comfortable late return"]},
+      {"dimension": "fallback_fit", "status": "pass", "affected_trace_ids": ["trace-primary", "trace-comfort"], "evidence_ids": ["fb-gallery", "fb-rest"], "mitigation_ids": ["fb-gallery", "fb-rest"], "input_field": "traveler_profile.must_avoid", "input_values": ["late long transfers"]},
+      {"dimension": "food_fit", "status": "pass", "affected_trace_ids": ["trace-primary"], "evidence_ids": ["cand-food"], "mitigation_ids": ["fb-gallery"], "input_field": "traveler_profile.food_constraints", "input_values": ["none declared"]},
+      {"dimension": "hotel_lodging_fit", "status": "pass", "affected_trace_ids": ["trace-primary", "trace-comfort"], "evidence_ids": ["lodging-central"], "mitigation_ids": ["fb-rest"], "input_field": "trip_context.overnight", "input_values": [true]}
+    ]
+  },
+  "recommendation_support": {"status": "pass", "candidate_ids": ["cand-station", "cand-shop", "cand-food", "cand-view", "cand-gallery", "cand-rest", "cand-hotel"], "trace_ids": ["trace-primary", "trace-comfort"], "world_check_ids": ["wc-route-primary", "wc-route-comfort"], "fit_status": "pass", "boundary": "fixture route structure; not current bookability", "next_action": "recheck all current facts"},
+  "reader_projection": {"route_options": ["primary", "comfort"], "operational_summary": ["arrival anchor", "early dinner", "weather branch", "hotel buffer"], "risk_summary": ["fatigue", "queue", "rain or wind"], "evidence_boundary": "far-future climate evidence licenses initial planning only", "pre_departure_recheck": ["opening hours", "prices", "transport", "forecast", "alerts"], "model_evidence": {"candidate_ids": ["cand-station", "cand-shop", "cand-food", "cand-view", "cand-gallery", "cand-rest"], "trace_ids": ["trace-primary", "trace-comfort"], "world_check_ids": ["wc-route-primary", "wc-route-comfort"], "trip_fit_status": "pass", "recommendation_status": "pass"}},
+  "traveler_native_guide": {
+    "guide_projection": {"reader_visibility": "traveler_native", "source_model_surfaces": ["candidate_pool", "route_traces", "world_feasibility", "trip_fit_review", "recommendation_support"], "blocked_internal_terms": ["candidate pool", "route trace", "sourceguard", "traceguard", "worldguard", "guard mesh", "validation id"], "traveler_facing_brief": "A balanced design, food, view, and rest journey with a visible climate boundary.", "claim_boundary": "Initial planning shape only."},
+    "travel_scene_contracts": [
+      {"scene_id": "scene-day-1", "kind": "day", "owner_id": "day-1", "entry_state": "arriving with luggage", "intended_traveler_experience": "gentle orientation", "obstacle": "fatigue", "turn": "use the central hotel and short shop route", "exit_state": "settled near hotel", "contribution": "protects arrival energy", "local_texture_candidate_ids": ["cand-shop", "cand-rest"], "risk_trigger_ids": ["pit-fatigue"], "fallback_ids": ["fb-rest"], "contract_status": "pass"},
+      {"scene_id": "scene-day-2", "kind": "day", "owner_id": "day-2", "entry_state": "rested near hotel", "intended_traveler_experience": "local food and evening peak", "obstacle": "queue and weather", "turn": "eat early and select riverside or gallery", "exit_state": "calm evening return", "contribution": "pays food and view promises", "local_texture_candidate_ids": ["cand-food", "cand-view", "cand-gallery"], "risk_trigger_ids": ["pit-queue", "pit-weather"], "fallback_ids": ["fb-gallery", "fb-rest"], "contract_status": "pass"},
+      {"scene_id": "scene-day-3", "kind": "day", "owner_id": "day-3", "entry_state": "departure morning", "intended_traveler_experience": "quiet local close", "obstacle": "limited time", "turn": "use cafe and hotel area", "exit_state": "ready to depart", "contribution": "protects continuity", "local_texture_candidate_ids": ["cand-rest", "cand-hotel"], "risk_trigger_ids": ["pit-fatigue"], "fallback_ids": ["fb-rest"], "contract_status": "pass"}
+    ],
+    "experience_promises": [
+      {"promise_id": "promise-food", "promise_kind": "food", "promise_text": "One concrete local dinner anchors the trip.", "importance": "major", "expected_payoff": "early bistro dinner", "payoff_status": "paid", "concrete_payoff": ["cand-food early dinner"], "candidate_ids": ["cand-food"], "fallback_ids": ["fb-gallery"], "evidence_source_ids": ["src-booking", "src-experience"]},
+      {"promise_id": "promise-shopping", "promise_kind": "shopping", "promise_text": "Design shopping remains a lived segment.", "importance": "key", "expected_payoff": "design shop street", "payoff_status": "paid", "concrete_payoff": ["cand-shop browse"], "candidate_ids": ["cand-shop"], "fallback_ids": ["fb-rest"], "evidence_source_ids": ["src-experience"]},
+      {"promise_id": "promise-lodging", "promise_kind": "lodging", "promise_text": "The hotel base reduces luggage and late-return friction.", "importance": "major", "expected_payoff": "central base", "payoff_status": "paid", "concrete_payoff": ["cand-hotel central base"], "candidate_ids": ["cand-hotel"], "fallback_ids": ["fb-rest"], "evidence_source_ids": ["src-hotel", "src-access"]}
+    ],
+    "day_interfaces": [
+      {"interface_id": "if-1-2", "previous_day_id": "day-1", "next_day_id": "day-2", "previous_output": "settled near hotel", "current_input": "rested near hotel", "traveler_state_before": "arrival fatigue", "traveler_state_after": "ready for wider day", "unresolved_choices": ["riverside weather"], "promise_movements": ["food and view open"], "status": "pass"},
+      {"interface_id": "if-2-3", "previous_day_id": "day-2", "next_day_id": "day-3", "previous_output": "calm evening return", "current_input": "departure morning", "traveler_state_before": "satisfied but tired", "traveler_state_after": "ready to depart", "unresolved_choices": ["final souvenir"], "promise_movements": ["shopping closes"], "status": "pass"}
+    ],
+    "local_texture_index": {"food_candidate_ids": ["cand-food"], "shopping_candidate_ids": ["cand-shop"], "rest_candidate_ids": ["cand-rest", "cand-hotel"], "negative_signal_ids": ["pit-fatigue", "pit-queue", "pit-weather"], "named_fallback_ids": ["fb-gallery", "fb-rest"]},
+    "weather_evidence_summary": {"weather_summary_id": "weather-city", "date_relation": "far_future", "source_type": "climate", "weather_source_mode": "climate", "source_ids": ["src-climate"], "covered_dates": ["2027-05-01/2027-05-03 planning shape"], "checked_hazards": ["precipitation", "wind"], "missing_or_downgraded_hazards": ["daily forecast", "official alerts"], "affected_day_ids": ["day-2"], "route_adjustments": ["replace riverside with indoor gallery"], "fallback_ids": ["fb-gallery", "fb-rest"], "claim_status": "partial", "recheck_note": "Check forecast and alerts before booking."},
+    "final_artifact": {"path": "skills/logic-writing/routes/travel/examples/good_city_couple_trip/guide.md", "sha256": "074A94F914858D861F7964C69A8230ED45C942AABBD04A8269BC36D1EE4D066F", "generated_from_plan_id": "fixture-city-couple-2027", "generated_at": "2026-07-14T14:00:00+02:00"},
+    "reverse_guide_review": {"final_artifact_ref": "skills/logic-writing/routes/travel/examples/good_city_couple_trip/guide.md", "final_artifact_path": "skills/logic-writing/routes/travel/examples/good_city_couple_trip/guide.md", "final_artifact_sha256": "074A94F914858D861F7964C69A8230ED45C942AABBD04A8269BC36D1EE4D066F", "observed_days": ["day-1", "day-2", "day-3"], "observed_day_headings": ["Day 1", "Day 2", "Day 3"], "observed_local_food_details": ["local bistro dinner", "cafe rest stop", "market snack"], "observed_shopping_details": ["design shop street", "souvenir shelves"], "observed_rest_nodes": ["central hotel", "quiet cafe"], "observed_weather_evidence": ["climate planning boundary"], "observed_weather_source_type": ["weather_climate"], "observed_weather_source_mode": "climate", "observed_weather_checked_hazards": ["precipitation", "wind"], "observed_weather_missing_or_downgraded_hazards": ["daily forecast", "official alerts"], "weather_claim_status": "partial", "weather_route_adjustments": ["riverside to indoor gallery"], "observed_risks": ["arrival fatigue", "dinner queue", "rain or wind"], "observed_fallbacks": ["indoor gallery", "hotel buffer"], "internal_label_leakage": false, "promise_alignment_status": "pass", "continuity_status": "pass", "status": "pass"}
+  },
+  "closure_report": {
+    "status": "downgraded", "requested_claim_level": "bookable", "allowed_claim_level": "initial_plan", "derivation_reason": "far_future_planning_boundary",
+    "surface_rows": [
+      {"surface": "trip_context", "owner": "travel-story-planner", "status": "pass", "evidence_ids": ["fixture-city-couple-2027"], "missing_or_stale": ["none"], "downgrade_or_blocker": ["none"], "next_action": "retain context"},
+      {"surface": "traveler_profile", "owner": "travel-story-planner", "status": "pass", "evidence_ids": ["profile"], "missing_or_stale": ["none"], "downgrade_or_blocker": ["none"], "next_action": "confirm before travel"},
+      {"surface": "source_portfolio", "owner": "SourceGuard", "status": "partial", "evidence_ids": ["src-climate"], "missing_or_stale": ["current 2027 facts"], "downgrade_or_blocker": ["initial_plan only"], "next_action": "refresh sources"},
+      {"surface": "experience_candidate_pool", "owner": "SourceGuard", "status": "pass", "evidence_ids": ["cand-food", "cand-view"], "missing_or_stale": ["none within fixture"], "downgrade_or_blocker": ["none"], "next_action": "refresh"},
+      {"surface": "negative_evidence", "owner": "travel-story-planner", "status": "pass", "evidence_ids": ["pit-fatigue", "pit-queue", "pit-weather"], "missing_or_stale": ["none within fixture"], "downgrade_or_blocker": ["none"], "next_action": "refresh"},
+      {"surface": "fallback_options", "owner": "travel-story-planner", "status": "pass", "evidence_ids": ["fb-gallery", "fb-rest"], "missing_or_stale": ["opening status"], "downgrade_or_blocker": ["recheck"], "next_action": "refresh"},
+      {"surface": "candidate_feasibility", "owner": "WorldGuard", "status": "pass", "evidence_ids": ["wc-cand-view"], "missing_or_stale": ["live facts"], "downgrade_or_blocker": ["fixture boundary"], "next_action": "rerun"},
+      {"surface": "route_mesh", "owner": "TraceGuard", "status": "pass", "evidence_ids": ["trace-primary", "trace-comfort"], "missing_or_stale": ["live timing"], "downgrade_or_blocker": ["fixture boundary"], "next_action": "rerun"},
+      {"surface": "route_feasibility", "owner": "WorldGuard", "status": "pass", "evidence_ids": ["wc-route-primary", "wc-route-comfort"], "missing_or_stale": ["live timing"], "downgrade_or_blocker": ["fixture boundary"], "next_action": "rerun"},
+      {"surface": "trip_fit_review", "owner": "travel-story-planner", "status": "pass", "evidence_ids": ["fit"], "missing_or_stale": ["none within profile"], "downgrade_or_blocker": ["none"], "next_action": "confirm profile"},
+      {"surface": "recommendation_support", "owner": "LogicGuard", "status": "pass", "evidence_ids": ["recommendation"], "missing_or_stale": ["current facts"], "downgrade_or_blocker": ["initial_plan only"], "next_action": "refresh"},
+      {"surface": "traveler_native_guide", "owner": "travel-story-planner", "status": "pass", "evidence_ids": ["guide.md"], "missing_or_stale": ["current facts"], "downgrade_or_blocker": ["initial_plan only"], "next_action": "regenerate after refresh"},
+      {"surface": "final_artifact", "owner": "travel-story-planner", "status": "pass", "evidence_ids": ["ED9F5C7F"], "missing_or_stale": ["none"], "downgrade_or_blocker": ["none"], "next_action": "preserve hash"},
+      {"surface": "reverse_guide_review", "owner": "travel-story-planner", "status": "pass", "evidence_ids": ["reverse-review"], "missing_or_stale": ["none"], "downgrade_or_blocker": ["none"], "next_action": "rerun after text change"},
+      {"surface": "reader_projection", "owner": "logic-writing.shared-reader-projection", "status": "pass", "evidence_ids": ["reader-projection"], "missing_or_stale": ["current facts"], "downgrade_or_blocker": ["initial_plan only"], "next_action": "refresh"},
+      {"surface": "claim_boundary", "owner": "travel-story-planner", "status": "downgraded", "evidence_ids": ["far_future_planning_boundary"], "missing_or_stale": ["forecast and alerts"], "downgrade_or_blocker": ["bookable not licensed"], "next_action": "recheck before booking"}
+    ],
+    "failures": [], "blockers": ["forecast and official alerts are not yet available for the real dates"], "skipped_checks": [], "residual_risk": ["fixture sources do not prove real travel facts"], "next_action": "refresh sources and rerun before booking", "claim_boundary": "The artifact is a structurally closed initial plan, not a current bookable guide."
+  }
+}

@@ -1,182 +1,83 @@
-# Release and Predecessor-Retirement Checklist
+# Release and predecessor-retirement checklist
 
-> **This is a checklist, not a completion record.** An unchecked or listed
-> item does not mean it has been run. The document makes no claim that Logic
-> Writing has been published, installed, fully validated, made either
-> predecessor private, or deleted either predecessor.
+This checklist describes the `2.0.0` cutover. Checkboxes are coordination aids,
+not evidence; every pass claim needs its current terminal receipt.
 
-Use one evidence record for the exact source snapshot and external state being
-changed. Do not convert progress messages, plans, or still-running processes
-into completion evidence.
+## Freeze the replacement
 
-## 1. Freeze the intended public contract
+- [ ] Reconcile Logic Writing, Storyline public/installed/candidate, and Travel
+  public/installed source identities and capability dispositions.
+- [ ] Confirm one entrypoint and exactly four final owners.
+- [ ] Confirm no sibling route invokes another and travel uses shared reader
+  projection.
+- [ ] Confirm SourceGuard, LogicGuard, TraceGuard, WorldGuard, FlowGuard,
+  Documents, and PDF provider boundaries remain native.
+- [ ] Freeze the OpenSpec obligations, FlowGuard BCL/model mesh/alignment,
+  TestMesh inventory, and SkillGuard declared-check authority.
 
-- [ ] Confirm the public name is **Logic Writing** and the skill id is
-  `logic-writing`.
-- [ ] Confirm `$logic-writing` is the only public invocation.
-- [ ] Confirm the terminal deliverable selects exactly one final owner:
-  `investigation` or `academic-writing`.
-- [ ] Confirm bounded academic-to-investigation work returns only the requested
-  `ResearchPacket` slice and cannot close the academic artifact.
-- [ ] Confirm SourceGuard, LogicGuard, TraceGuard, FlowGuard, Documents, and PDF
-  retain their native responsibilities.
-- [ ] Confirm no predecessor alias, forwarding shim, fallback, alternate
-  manifest, or automatic receipt migration remains.
-- [ ] Reconcile the change specification, implementation tasks, and public docs
-  against the same contract.
+## Focused validation
 
-## 2. Freeze source and validation ownership
+- [ ] Run source reconciliation.
+- [ ] Run routing and shared-writing tests, including mixed-subject and generic
+  handoff/model-binding failures.
+- [ ] Run investigation and academic regression tests.
+- [ ] Run the fiction owner, including route, native, long-form, Guard lifecycle,
+  model mesh, installation parity, and exact known-bad cases.
+- [ ] Run the travel owner, including base, positive, exact-negative, time mode,
+  feasibility, fit, fallback, text, and artifact-hash cases.
+- [ ] Run FlowGuard models, BCL, Primary Path Authority, model-test alignment,
+  TestMesh plan, and retirement workflow checks.
+- [ ] Compile and check the sole current SkillGuard contract and calibration.
+- [ ] Run reader semantic review, public docs, privacy, and source-release checks.
 
-- [ ] Freeze the exact governed source, model, schema, test, and tool identities
-  for the candidate snapshot.
-- [ ] Map each affected source component to its exact validation owner.
-- [ ] Assign exactly one primary execution owner to each check and to the final
-  full validation.
-- [ ] Reuse only immutable terminal-success evidence whose input identity still
-  matches; do not reuse stale or partial results.
-- [ ] Do not use a still-running background process, scheduled task, unattended
-  retry, or progress log as final validation evidence.
-- [ ] After an interruption or timeout, confirm the complete descendant process
-  tree has ended before accepting evidence or starting another owner.
+## One final release owner
 
-## 3. Run source and contract checks
+- [ ] Freeze source, toolchain, check inventory, dependencies, and exactly one
+  execution owner per command.
+- [ ] Reuse only exact current immutable owner receipts.
+- [ ] Run one final full validation owner after the integration snapshot is
+  stable; do not use a scheduled task, unattended retry, or mutable background
+  resume.
+- [ ] Verify OpenSpec and archive the completed change.
+- [ ] Rerun the stable post-archive release contract on the new source identity.
 
-- [ ] Run installable-skill static validation.
-- [ ] Run schema, route, adapter, fingerprint, stale-propagation, closure, and
-  no-progress tests affected by the final snapshot.
-- [ ] Run `ResearchPacket`, `ReaderBrief`, actual-artifact audit, and reader
-  judgment boundary tests.
-- [ ] Run investigation and academic-writing route regression scenarios,
-  including bounded child work and provider-unavailable states.
-- [ ] Run specialist integration contract checks without replacing the native
-  specialist owners.
-- [ ] Run the repository privacy scanner and review public prose semantically.
-- [ ] Review English and Chinese README copies for factual equivalence.
-- [ ] Confirm no private user artifacts, source material, credentials,
-  machine-specific paths, or recovery archives are tracked.
-- [ ] Record every skipped, blocked, stale, or unavailable check with its claim
-  boundary.
+## Installation cutover
 
-Available portable commands include:
+- [ ] Preserve a recoverable backup of the current active installation.
+- [ ] Stage and activate `logic-writing` through SkillGuard.
+- [ ] Refresh the global router and confirm investigation, academic, fiction,
+  and travel intents resolve only to `logic-writing`.
+- [ ] Move active `travel-story-planner` and `storyline-design` skill
+  directories to recoverable quarantine outside the active skill root.
+- [ ] Run installed content parity and representative behavior checks.
 
-```sh
-python scripts/validate_skill.py --skill-root skills/logic-writing --json
-python scripts/check_privacy.py --root . --json
-python -m pytest -q
-```
+## GitHub release
 
-Their presence is not evidence that they passed for a given snapshot.
+- [ ] Commit the frozen source snapshot.
+- [ ] Push the default branch, create signed/annotated `v2.0.0` as configured,
+  and publish the GitHub Release without mutable-identity reuse.
+- [ ] Clone `LogicWriting` anonymously into a new directory.
+- [ ] Validate the fresh clone, install from it, and run all four representative
+  routes without old active skill ids.
 
-## 4. Final stable-snapshot validation
+## Privatize predecessors in dependency order
 
-- [ ] Freeze the final source and tool identities before starting.
-- [ ] Run one full validation under the declared primary execution owner.
-- [ ] Confirm model checks, test results, and generated receipts refer to the
-  same frozen snapshot.
-- [ ] Inspect counterexamples and failures; repair the source or narrow the
-  claim rather than weakening an invariant.
-- [ ] If the final source changes, invalidate the affected evidence and repeat
-  only the required owners before a new final full run.
-- [ ] Produce a final validation summary that distinguishes passed, failed,
-  blocked, stale, not-run, and unavailable evidence.
+- [ ] Verify local backups for both predecessor repositories.
+- [ ] Change `travel-story-planner` to private.
+- [ ] Verify authenticated visibility is `PRIVATE` and anonymous access is not
+  visible. Anonymous non-visibility is not proof of deletion.
+- [ ] Recheck the replacement install, router, four-route behavior, and public
+  LogicWriting release.
+- [ ] Only after that health check, change `storyline-design-skill` to private.
+- [ ] Verify authenticated `PRIVATE`, anonymous non-visibility, and replacement
+  health again.
+- [ ] Record that later repository deletion remains user-owned. Do not delete
+  either repository automatically.
 
-## 5. Installation cutover
+## Rollback
 
-- [ ] Install `skills/logic-writing` into a clean target.
-- [ ] Verify the installed copy matches the frozen installation projection.
-- [ ] Confirm required specialist providers are separately discoverable.
-- [ ] Invoke one representative investigation request and inspect the selected
-  final owner, evidence handoff, reader-facing output, and failure boundaries.
-- [ ] Invoke one representative academic-writing request with a bounded
-  evidence gap and confirm the academic route keeps final ownership.
-- [ ] Confirm internal Guard names, route ids, ledgers, and agent instructions
-  do not leak into ordinary final prose.
-- [ ] Update active registries, instructions, examples, and automations to call
-  `$logic-writing` directly.
-
-## 6. Publish LogicWriting
-
-- [ ] Confirm the public repository boundary and license.
-- [ ] Confirm README install commands match the actual source layout.
-- [ ] Confirm the source version, changelog wording, intended tag, and intended
-  release notes agree without claiming unverified state.
-- [ ] Create and inspect the intended Git history and remote configuration.
-- [ ] Push the exact validated snapshot to the `LogicWriting` repository.
-- [ ] Verify the hosted default branch and public files directly.
-- [ ] Test a fresh checkout and source-copy installation from the hosted
-  repository.
-- [ ] Only then create and verify any intended tag or hosted release.
-
-## 7. Prove zero active predecessor dependence
-
-- [ ] Search active skill registries, prompts, docs, examples, automations, and
-  installed skill directories for `research-investigation-workflow`.
-- [ ] Search the same surfaces for `academic-thesis-revision-workflow`.
-- [ ] Classify every match as an intentional migration-history reference or an
-  active dependency; resolve all active dependencies.
-- [ ] Confirm no compatibility alias, fallback, dual manifest, or alternate
-  success route remains.
-- [ ] Confirm predecessor runtime receipts are not accepted as current Logic
-  Writing evidence.
-
-Historical names may remain in this migration guide and checklist because they
-identify what is being retired. They must not remain as callable authorities.
-
-## 8. Prepare visibility retirement and later deletion
-
-- [ ] Capture a separately stored, verified recovery copy for each predecessor
-  repository before changing its visibility.
-- [ ] Verify each recovery copy can reconstruct the intended Git history and
-  public repository content without credentials or private runtime material.
-- [ ] Record who owns recovery and where its verification evidence is kept;
-  keep those details outside the public repository.
-- [ ] Confirm maintainers understand that privatization is reversible but any
-  later repository deletion has no automatic rollback.
-- [ ] Confirm LogicWriting remains healthy and reachable immediately before the
-  first privatization.
-
-## 9. Retire predecessors in sequence
-
-- [ ] Remove the installed `research-investigation-workflow` skill after the
-  clean cutover check.
-- [ ] Change the hosted `research-investigation-workflow` repository to private
-  only after verifying the recovery copy and current LogicWriting health.
-- [ ] Verify authenticated visibility is `PRIVATE`, anonymous GitHub API access
-  returns 404, and the owner can still read the unchanged HEAD, tags, and
-  releases.
-- [ ] Recheck LogicWriting hosting, installation, both routes, and public docs.
-- [ ] Stop retirement if that health check fails.
-- [ ] Remove the installed `academic-thesis-revision-workflow` skill after the
-  second clean cutover check.
-- [ ] Change the hosted `academic-thesis-revision-workflow` repository to
-  private only after verifying its recovery copy and current LogicWriting
-  health.
-- [ ] Verify authenticated visibility is `PRIVATE`, anonymous GitHub API access
-  returns 404, and the owner can still read the unchanged HEAD, tags, and
-  releases.
-- [ ] Recheck LogicWriting hosting, installation, both routes, and public docs
-  again.
-- [ ] Record that the user, not this retirement workflow, owns any later
-  irreversible deletion of the two private repositories.
-
-Do not describe an anonymous 404 as deletion. Describe a predecessor as private
-only after authenticated visibility and anonymous inaccessibility are both
-checked. Describe it as deleted only after the user performs deletion and the
-hosted state is checked directly afterward.
-
-## 10. Close the release and retirement record
-
-- [ ] Record the exact LogicWriting commit, tag or release when applicable,
-  installed projection identity, validation summary, and hosted verification.
-- [ ] Record the two predecessor privatization results separately and keep the
-  later deletion handoff distinct from completion evidence.
-- [ ] Record residual risks, unavailable external providers, and any checks
-  that remain bounded.
-- [ ] Re-run the public privacy scan on the final tracked snapshot.
-- [ ] Verify that public documentation contains no private recovery location,
-  maintainer credential, personal machine path, or user artifact.
-- [ ] Preserve the evidence record outside the public repository when it
-  contains operational or recovery details.
-
-Completion means every required item has current evidence or a clearly bounded
-non-pass disposition. The checklist itself is never proof of completion.
+- [ ] On installation or router failure, restore the prior active installation.
+- [ ] On first visibility or health-check failure, restore Travel to public and
+  stop before Storyline.
+- [ ] On second visibility or health-check failure, restore Storyline to public
+  and keep the verified LogicWriting release intact.

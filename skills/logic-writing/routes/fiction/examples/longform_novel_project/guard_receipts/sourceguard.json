@@ -1,0 +1,16 @@
+{
+  "schema_version": "sourceguard.native_terminal_receipt.v1",
+  "receipt_id": "aurora-key-final-prose-sourceguard-terminal",
+  "surface": "sourceguard_canon_support",
+  "guard_id": "sourceguard",
+  "native_owner": "sourceguard",
+  "route_id": "sourceguard",
+  "check_id": "sourceguard.canon_support_applicability",
+  "tool_version": "0.4.2",
+  "input_fingerprint": "sha256:8a2a9448e059aaf4bd5baa1eb12e10ee2b17ac90f4b37382c38508995d710e69",
+  "terminal": true,
+  "immutable": true,
+  "freshness": "current",
+  "status": "passed",
+  "claim_boundary": "The SourceGuard receipt covers the current Aurora Key user request and source-requirement surface; it does not establish unrelated factual truth."
+}

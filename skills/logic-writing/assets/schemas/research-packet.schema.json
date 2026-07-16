@@ -118,6 +118,7 @@
         "causal_trace",
         "competing_storyline",
         "prediction_boundary",
+        "world_consistency",
         "process_model",
         "process_freshness",
         "document_content",
@@ -229,7 +230,7 @@
       "properties": {
         "receipt_fingerprint": { "$ref": "#/$defs/fingerprint" },
         "producer_skill": {
-          "enum": ["sourceguard", "logicguard", "traceguard", "flowguard", "documents", "pdf"]
+          "enum": ["sourceguard", "logicguard", "traceguard", "worldguard", "flowguard", "documents", "pdf"]
         },
         "native_route": { "$ref": "#/$defs/identifier" },
         "evidence_domain": { "$ref": "#/$defs/evidenceDomain" },

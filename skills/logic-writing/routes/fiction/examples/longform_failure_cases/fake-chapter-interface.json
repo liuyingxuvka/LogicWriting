@@ -1,0 +1,51 @@
+{
+  "chapter_interfaces": [
+    {
+      "id": "iface-fake",
+      "chapter_id": "chapter-02",
+      "previous_chapter_id": "chapter-01",
+      "next_chapter_id": "chapter-03",
+      "previous_output": "continues the story",
+      "current_input": "sets up the next chapter",
+      "reader_state_before": ["The reader has a vague feeling."],
+      "reader_state_after": ["The reader keeps reading."],
+      "unresolved_tension_in": ["Something may happen."],
+      "unresolved_tension_out": ["Something may happen later."],
+      "promise_movements": [{"promise_id": "promise-vague", "role": "setup"}],
+      "arc_movements": [{"arc_id": "arc-vague", "movement": "vague movement"}],
+      "hook_role": "pressure_forward",
+      "status": "pass",
+      "evidence_refs": ["reverse-fake"]
+    }
+  ],
+  "prose_blueprints": [
+    {
+      "id": "blueprint-fake",
+      "chapter_id": "chapter-02",
+      "source_interface_id": "iface-fake",
+      "prose_scope": "chapter",
+      "pov": "limited_third",
+      "tense": "past",
+      "scene_order": ["scene-fake"],
+      "required_reader_experience": ["vague pressure"],
+      "must_include": ["vague clue"],
+      "must_not_include": ["answer"],
+      "voice_style_refs": ["voice-contract"],
+      "status": "pass"
+    }
+  ],
+  "reverse_outlines": [
+    {
+      "id": "reverse-fake",
+      "chapter_id": "chapter-02",
+      "source_draft_ref": "drafts/chapter-02.md",
+      "observed_events": ["Generic bridge"],
+      "observed_reader_state_after": ["Generic continuation"],
+      "observed_promise_movements": ["vague setup"],
+      "observed_arc_movements": ["vague movement"],
+      "model_alignment": "pass",
+      "drift": [],
+      "status": "pass"
+    }
+  ]
+}

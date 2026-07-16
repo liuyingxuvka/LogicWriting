@@ -122,3 +122,23 @@ before first use, adding a missing warrant or limitation, merging repetition,
 splitting an overloaded unit, and rewriting the handoff to state the real
 relationship. Avoid cosmetic transition words when the logical relation itself
 is missing.
+
+Apply the shared writing contract to important sections and paragraphs. Record
+the incoming reader state, new contribution, changed state, unresolved item,
+and exact downstream consumer. At major handoffs, recover the research
+question and explain how the contribution advances it; “this leads to the next
+section” is not a handoff.
+
+Treat explanation pressure as a repair signal. Replace prose that announces
+what a section intends to prove with the evidence, reasoning, definition, or
+comparison that actually does the work. Give technical, institutional, quoted,
+and author-summary language an explicit register owner, and introduce terms
+before relying on them. Repetition is permitted only when it creates a changed
+effect such as escalation, contrast, narrower scope, stronger evidence, or a
+new implication.
+
+Do not hide execution friction in a smooth synthesis: access limits, failed
+methods, missing data, non-comparable measures, document constraints, and
+unresolved review decisions stay near the conclusions they change. Bind every
+important structural/model row to exact current artifact spans and reject
+unbound prose, unrealized rows, or bindings to an older draft.
