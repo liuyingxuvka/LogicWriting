@@ -1,9 +1,29 @@
-# Migration to Logic Writing 2.0
+# Migration to Logic Writing 2.1
 
-Version `2.0.0` keeps one public skill id, `logic-writing`, and expands the
-internal final-owner set from two routes to four. It directly replaces the
-separately installed Storyline Design and Travel Story Planner skills. There
-are no runtime compatibility aliases or fallback launchers.
+Version `2.1.0` keeps one public skill id, `logic-writing`, and one provider
+console for its three research Guard dependencies. LogicGuard, SourceGuard,
+and TraceGuard remain separate semantic owners, but their only executable
+paths are the `logic`, `source`, and `trace` members of ResearchGuard `0.1.0`.
+There are no direct member-module providers, runtime compatibility aliases,
+fallback launchers, or alternate provider roots.
+
+## ResearchGuard provider cutover
+
+| Semantic owner | Current executable path | Primary identity |
+| --- | --- | --- |
+| LogicGuard | `researchguard logic` | `primary:researchguard:logic` |
+| SourceGuard | `researchguard source` | `primary:researchguard:source` |
+| TraceGuard | `researchguard trace` | `primary:researchguard:trace` |
+
+A missing console, failed member probe, or timeout is a visible terminal
+provider-preflight failure. Upgrade or installation work must fix that one
+current path; it must not add an old module reader or retry another member.
+
+## Route consolidation inherited from 2.0
+
+Logic Writing still owns four internal final-owner routes and directly
+replaces the separately installed Storyline Design and Travel Story Planner
+skills.
 
 ## Intent mapping
 
@@ -51,7 +71,8 @@ shared reader-state and model-artifact contract.
 
 ## Installation cutover
 
-1. Validate and release the exact `2.0.0` source snapshot.
+1. Validate and release the exact `2.1.0` source snapshot, including the
+   ResearchGuard `0.1.0` dependency identity and zero-residual check.
 2. Stage and activate `skills/logic-writing` transactionally.
 3. Refresh the global router and confirm all four supported intent families
    resolve to `logic-writing`.

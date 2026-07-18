@@ -9,6 +9,8 @@ Logic Writing still preflights LogicGuard, SourceGuard, and TraceGuard as indepe
 - Fail visibly when the console or selected member capability is unavailable; add no module import, `python -m`, alias, compatibility reader, or retry path.
 - Remove the retired five LogicGuard satellite-skill ids and `traceguard-library` from current consumer guidance and tests.
 - Keep Logic Writing as the only directly installed skill owned by this repository.
+- Freeze the changed provider topology as source version `2.1.0` and publish
+  the candidate commit only to the existing review branch.
 
 ## Capabilities
 
@@ -23,4 +25,4 @@ None.
 
 ## Impact
 
-Affected surfaces include `skills/logic-writing/SKILL.md`, ResearchGuard adapter references, provider preflight code, fiction Guard receipt fixtures, FlowGuard topology models, focused tests, and the Logic Writing SkillGuard maintenance contract. Installation, global routing, Git publication, tags, and releases remain outside this change.
+Affected surfaces include `skills/logic-writing/SKILL.md`, ResearchGuard adapter references, provider preflight code, fiction Guard receipt fixtures, FlowGuard topology models, focused tests, Logic Writing version/release surfaces, and the Logic Writing SkillGuard maintenance contract. Installation, global routing, default-branch publication, tags, and GitHub Releases remain outside this candidate change.

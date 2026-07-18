@@ -19,7 +19,18 @@
 
 - [x] 4.1 Run focused tests, fiction regression, FlowGuard checks, and OpenSpec strict validation.
 - [x] 4.2 Run the full Logic Writing test suite and zero-residual scan.
-- [x] 4.3 Confirm no installation, global routing, Git publication, release, or FlowPilot change occurred.
+- [x] 4.3 Confirm no installation, global routing, default-branch publication,
+  tag, GitHub Release, or FlowPilot change occurred.
+
+## 5. Version Freeze
+
+- [x] 5.1 Freeze `VERSION`, package metadata, both README source badges,
+  changelog, source reconciliation, current OpenSpec release requirements, and
+  the release-retirement checklist at `2.1.0`.
+- [x] 5.2 Recompile SkillGuard and rerun source, topology, OpenSpec, and
+  affected repository checks on the frozen candidate.
+- [x] 5.3 Commit and push the exact candidate to the existing PR branch
+  without installing, tagging, or creating a GitHub Release.
 
 ## Verification Boundary
 
