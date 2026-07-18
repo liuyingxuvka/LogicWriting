@@ -32,6 +32,11 @@ BUSINESS_INTENT = "run Logic Writing for a reader-facing terminal artifact"
 BUSINESS_INTENT_ID = "intent:select-one-final-owner"
 BEHAVIOR_COMMITMENT_ID = "C01:select-one-final-owner"
 PRIMARY_PATH_ID = "logic_writing.entry"
+RESEARCHGUARD_MEMBER_PATHS = {
+    "logicguard": ("logic", "primary:researchguard:logic"),
+    "sourceguard": ("source", "primary:researchguard:source"),
+    "traceguard": ("trace", "primary:researchguard:trace"),
+}
 
 
 def design_plan():
@@ -84,6 +89,50 @@ def design_plan():
         metadata={
             "claim_boundary": "design topology only; installed runtime evidence is not yet available",
             "internal_route_boundary": "investigation, academic-writing, fiction-writing, and travel-guide are selected children of the primary entry, not alternate public entrypoints",
+        },
+    )
+
+
+def researchguard_member_plan():
+    """Model one console with three fail-closed semantic member paths."""
+
+    return PrimaryPathAuthorityPlan(
+        "logic-writing-researchguard-member-topology",
+        primary_paths=(
+            PrimaryPathContract(
+                "logic_writing.researchguard.console",
+                business_intent="invoke one selected ResearchGuard semantic owner",
+                business_intent_id="intent:researchguard:selected-member",
+                behavior_commitment_id="C02:preserve-specialist-authority",
+                primary_entrypoint_id="console:researchguard",
+                owner_model_id="model:route-and-guard",
+                owner_code_contract_id="contract:researchguard-single-console",
+                expected_terminal="native_member_result_or_visible_provider_unavailable",
+                failure_policy=PPA_FAILURE_POLICY_FAIL_CLOSED,
+                source_surface_ids=("surface:logic-writing-adapter",),
+                metadata={
+                    "provider_console_id": "researchguard",
+                    "member_bindings": {
+                        member_id: {
+                            "member_command": member_command,
+                            "primary_path_id": primary_path_id,
+                        }
+                        for member_id, (
+                            member_command,
+                            primary_path_id,
+                        ) in RESEARCHGUARD_MEMBER_PATHS.items()
+                    },
+                    "alternate_success_path": False,
+                },
+            ),
+        ),
+        fallback_candidates=(),
+        metadata={
+            "claim_boundary": (
+                "design authority for Logic Writing provider routing; native "
+                "ResearchGuard work and installation evidence remain separate"
+            ),
+            "compatibility_policy": "direct-current-only",
         },
     )
 

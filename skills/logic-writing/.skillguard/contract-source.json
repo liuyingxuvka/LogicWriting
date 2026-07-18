@@ -31,8 +31,15 @@
       "evidence_subject_id": "subject:logic-writing:routing"
     },
     {
+      "args": [
+        "scripts/check_researchguard_topology.py",
+        "--root",
+        ".",
+        "--json"
+      ],
       "check_id": "check:logic-writing:specialist-authority",
-      "coverage_rationale": "Portable adapter contracts preserve each specialist's owner, native route, evidence domain, and degraded state.",
+      "command": "python",
+      "coverage_rationale": "The target-owned topology checker preserves LogicGuard, SourceGuard, and TraceGuard semantic ownership through one ResearchGuard console and rejects retired ids, old module commands, direct imports, bare executable routes, and alternate-success paths.",
       "coverage_scope": "declared_obligations",
       "covers_obligation_ids": [
         "obligation:logic-writing:specialist-authority"
@@ -50,17 +57,29 @@
         },
         {
           "kind": "path",
+          "path": "skills/logic-writing/scripts/provider_preflight.py"
+        },
+        {
+          "kind": "path",
           "path": "skills/logic-writing/scripts/validate_adapter_request.py"
         },
         {
           "kind": "path",
           "path": "skills/logic-writing/scripts/validate_adapter_result.py"
+        },
+        {
+          "kind": "path",
+          "path": "scripts/check_researchguard_topology.py"
         }
       ],
-      "kind": "model_assertion",
+      "kind": "command",
       "native_route_id": "route:logic-writing:router",
       "semantic_check_id": "semantic:logic-writing:specialist-authority",
       "timeout_seconds": 60,
+      "cwd_token": "repository_root",
+      "expected": {
+        "exit_code": 0
+      },
       "maintenance_unit_id": "unit:logic-writing",
       "member_skill_id": "logic-writing",
       "evidence_subject_id": "subject:logic-writing:specialist-authority"

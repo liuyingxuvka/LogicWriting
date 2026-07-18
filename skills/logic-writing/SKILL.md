@@ -1,6 +1,6 @@
 ---
 name: logic-writing
-description: Use for deep source-backed investigation, academic writing, fiction planning or revision, and evidence-heavy travel guides. Routes each task to exactly one of four final owners, coordinates SourceGuard, LogicGuard, TraceGuard, WorldGuard, FlowGuard, Documents, and PDF without replacing them, and turns internal models into clear prose for real readers. Skip quick lookups, grammar-only edits, casual copy, and lightweight attraction lists.
+description: Use for deep source-backed investigation, academic writing, fiction planning or revision, and evidence-heavy travel guides. Routes each task to exactly one of four final owners, coordinates the LogicGuard, SourceGuard, and TraceGuard members through the single ResearchGuard console plus WorldGuard, FlowGuard, Documents, and PDF without replacing them, and turns internal models into clear prose for real readers. Skip quick lookups, grammar-only edits, casual copy, and lightweight attraction lists.
 ---
 
 # Logic Writing
@@ -59,19 +59,25 @@ Read [references/router.md](references/router.md) for routing details.
 Read only the route, shared contract, schema, and adapter reference needed for
 the selected work. Do not load both route playbooks by default. Local scripts
 validate envelopes, derive freshness, and calculate closure; installed
-specialists retain their own domain work.
+providers and ResearchGuard members retain their own domain work.
 
 ## Required Workflow
 
 ### Preserve specialist ownership
 
-This skill is an orchestration shell. It calls installed specialist skills and
-consumes their native receipts; it does not recreate their domain decisions:
+This skill is an orchestration shell. It consumes native provider receipts; it
+does not recreate their domain decisions. ResearchGuard is one versioned suite
+and one executable console with three exact semantic owners:
 
-- SourceGuard owns evidence-discovery planning and source-depth status.
-- LogicGuard owns source preservation, argument support, structure, citation
-  semantics, model depth, and synthesis plans.
-- TraceGuard owns material temporal, causal, implementation, competing-story,
+- `researchguard source` / `primary:researchguard:source`: SourceGuard owns
+  evidence-discovery planning and source-depth status.
+- `researchguard logic` / `primary:researchguard:logic`: LogicGuard owns source
+  preservation, argument support, structure, citation semantics, model depth,
+  and synthesis plans. Its source-library, structured-artifact,
+  model-deepening, artifact-synthesis, and project-library-viewer capabilities
+  are internal routes, not separate installed skills.
+- `researchguard trace` / `primary:researchguard:trace`: TraceGuard owns
+  material temporal, causal, implementation, competing-story,
   counterfactual, and prediction-boundary analysis.
 - WorldGuard owns material event, agent, space, resource, access, capability,
   conflict, authority, and norm consistency in real and fictional worlds.
@@ -81,15 +87,20 @@ consumes their native receipts; it does not recreate their domain decisions:
 - PDF owns PDF extraction, creation, rendering, and visual inspection.
 
 Before every required adapter call, verify that its real provider is available.
-If it is unavailable, return the typed degraded state. Never substitute a local
-imitation or claim that the native check ran.
+For the three ResearchGuard owners, preflight the installed `researchguard`
+console and the selected member command only. Never import an old member
+package, invoke `python -m`, locate a sibling checkout, try another member, or
+accept a provider-root override. If the one current path is unavailable or
+times out, return the typed degraded state and stop that handoff.
 
 Validate the bounded handoff with `scripts/validate_adapter_request.py` before
 the native call and `scripts/validate_adapter_result.py` after it. These
 envelopes preserve the specialist's own route, receipt, scope, and failure
 state; they do not re-run or reinterpret the specialist's native check.
 
-Load only the relevant adapter reference under `references/adapters/`.
+Read [references/adapters/researchguard.md](references/adapters/researchguard.md)
+before a ResearchGuard handoff, then load only the selected member adapter
+reference under `references/adapters/`.
 
 ### Run the selected route
 
@@ -192,6 +203,8 @@ looping.
 - Do not close travel without current source-time, feasibility, traveler-fit,
   fallback, shared-writing, final-artifact identity, and reverse-guide evidence.
 - Do not let one sibling route call another or issue its closure.
+- Do not route LogicGuard, SourceGuard, or TraceGuard through any executable
+  other than the single `researchguard` console.
 - Do not convert a missing provider, stale receipt, skipped check, partial
   search, failed rendering, or unsupported claim into success.
 - Do not expose internal workflow vocabulary in ordinary final prose.

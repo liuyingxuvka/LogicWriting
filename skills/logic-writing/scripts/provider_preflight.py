@@ -6,21 +6,67 @@ import argparse
 import importlib
 import re
 import shutil
+import subprocess
 from pathlib import Path
 
 from _common import dump_json, fingerprint, validation_result
 
 
+RESEARCHGUARD_MEMBERS = {
+    "sourceguard": {
+        "member_command": "source",
+        "primary_path_id": "primary:researchguard:source",
+    },
+    "logicguard": {
+        "member_command": "logic",
+        "primary_path_id": "primary:researchguard:logic",
+    },
+    "traceguard": {
+        "member_command": "trace",
+        "primary_path_id": "primary:researchguard:trace",
+    },
+}
 MODULE_PROVIDERS = {
-    "sourceguard": ("sourceguard", ("build_source_coverage_universe", "build_source_depth_receipt")),
-    "logicguard": ("logicguard", ("ArgumentBlock", "DepthCoverageSummary")),
-    "traceguard": ("traceguard", ("derive_trace_handoffs", "evaluate_storyline_depth")),
     "flowguard": ("flowguard", ("SCHEMA_VERSION", "FlowGuardCheckPlan")),
 }
 SKILL_PROVIDERS = {
     "documents": ("documents", ("docx", "render")),
     "pdf": ("pdf", ("pdf", "render")),
 }
+PROBE_TIMEOUT_SECONDS = 60
+
+
+def _run_console_probe(console: str, args: tuple[str, ...]) -> dict[str, object]:
+    command = ["researchguard", *args]
+    try:
+        completed = subprocess.run(
+            [console, *args],
+            capture_output=True,
+            text=True,
+            timeout=PROBE_TIMEOUT_SECONDS,
+            check=False,
+        )
+    except subprocess.TimeoutExpired:
+        return {
+            "command": command,
+            "passed": False,
+            "timed_out": True,
+            "timeout_seconds": PROBE_TIMEOUT_SECONDS,
+        }
+    except OSError as exc:
+        return {
+            "command": command,
+            "passed": False,
+            "timed_out": False,
+            "probe_error": f"{type(exc).__name__}: {exc}",
+        }
+    return {
+        "command": command,
+        "passed": completed.returncode == 0,
+        "timed_out": False,
+        "exit_code": completed.returncode,
+        "stdout": completed.stdout.strip(),
+    }
 
 
 def _skill_manifest(root: Path):
@@ -43,6 +89,54 @@ def preflight(provider: str, *, provider_root: str | None = None, require_render
     if provider != original_provider or provider != provider.lower():
         status = "blocked"
         evidence["reason"] = "provider id must be the exact canonical lowercase id"
+    elif provider in RESEARCHGUARD_MEMBERS:
+        binding = RESEARCHGUARD_MEMBERS[provider]
+        evidence.update(
+            {
+                "provider_console_id": "researchguard",
+                "member_id": provider,
+                "member_command": binding["member_command"],
+                "primary_path_id": binding["primary_path_id"],
+            }
+        )
+        if provider_root:
+            status = "blocked"
+            evidence["reason"] = (
+                "ResearchGuard members use the installed researchguard console; "
+                "provider-root overrides are not an execution path"
+            )
+        else:
+            console = shutil.which("researchguard")
+            evidence["console_resolved"] = bool(console)
+            if not console:
+                status = "provider_unavailable"
+            else:
+                version_probe = _run_console_probe(console, ("--version",))
+                member_probe = _run_console_probe(
+                    console,
+                    (str(binding["member_command"]), "--help"),
+                )
+                version_text = str(version_probe.get("stdout", ""))
+                version_match = re.fullmatch(
+                    r"researchguard\s+([0-9]+(?:\.[0-9]+){2}(?:[-+][A-Za-z0-9._-]+)?)",
+                    version_text,
+                )
+                version_probe["version_format_current"] = bool(version_match)
+                version_probe.pop("stdout", None)
+                member_probe.pop("stdout", None)
+                available = (
+                    bool(version_probe.get("passed"))
+                    and bool(version_match)
+                    and bool(member_probe.get("passed"))
+                )
+                evidence.update(
+                    {
+                        "suite_version": version_match.group(1) if version_match else None,
+                        "version_probe": version_probe,
+                        "member_capability_probe": member_probe,
+                    }
+                )
+                status = "current_pass" if available else "provider_unavailable"
     elif provider in MODULE_PROVIDERS:
         module_name, required_capabilities = MODULE_PROVIDERS[provider]
         try:
@@ -116,7 +210,12 @@ def preflight(provider: str, *, provider_root: str | None = None, require_render
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("provider", choices=tuple(MODULE_PROVIDERS) + tuple(SKILL_PROVIDERS))
+    parser.add_argument(
+        "provider",
+        choices=tuple(RESEARCHGUARD_MEMBERS)
+        + tuple(MODULE_PROVIDERS)
+        + tuple(SKILL_PROVIDERS),
+    )
     parser.add_argument("--provider-root")
     parser.add_argument("--require-render", action="store_true")
     parser.add_argument("--output")

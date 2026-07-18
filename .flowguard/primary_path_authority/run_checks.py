@@ -7,6 +7,7 @@ from model import (
     broken_manual_recovery_auto_invoked,
     broken_old_skill_masks_primary_failure,
     design_plan,
+    researchguard_member_plan,
 )
 
 
@@ -22,6 +23,11 @@ def main():
     print(design.format_text())
     if not design.ok:
         raise SystemExit("Logic Writing design-phase Primary Path Authority failed")
+
+    researchguard = review_primary_path_authority(researchguard_member_plan())
+    print(researchguard.format_text())
+    if not researchguard.ok:
+        raise SystemExit("Logic Writing ResearchGuard member topology failed")
 
     masked = review_primary_path_authority(broken_old_skill_masks_primary_failure())
     assert_codes(masked, "primary_failure_masked_by_fallback_success")
