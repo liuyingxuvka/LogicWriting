@@ -9,13 +9,16 @@ Preflight the selected owner with `scripts/provider_preflight.py`:
 | SourceGuard | `researchguard source` | `primary:researchguard:source` |
 | TraceGuard | `researchguard trace` | `primary:researchguard:trace` |
 
-The console version probe and selected member help probe establish provider
-availability only. They do not prove that native domain work ran.
+Resolve the console from the installed ResearchGuard distribution record, not
+from ambient PATH state. The console version probe and selected member help
+probe establish provider availability only. They do not prove that native
+domain work ran.
 
-Use exactly one row per handoff. A missing console, failed command, or timeout
-is `provider_unavailable`. Do not import a former member package, run a module
-command, supply a checkout path, retry through another member, or reinterpret a
-non-pass native result.
+Use exactly one row per handoff. A missing or ambiguous installed console,
+failed command, or timeout is `provider_unavailable`. Do not use PATH as a
+second resolver, import a former member package, run a module command, supply a
+checkout path, retry through another member, or reinterpret a non-pass native
+result.
 
 Keep `native_owner` equal to the selected semantic member. Bind executable
 route evidence to the exact current primary path and preserve the member's own

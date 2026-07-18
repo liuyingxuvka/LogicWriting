@@ -9,6 +9,36 @@ import provider_preflight
 from scripts.check_researchguard_topology import check
 
 
+class _Distribution:
+    def __init__(self, executable: Path) -> None:
+        self.entry_points = [
+            SimpleNamespace(
+                group="console_scripts",
+                name="researchguard",
+                value="researchguard.cli:main",
+            )
+        ]
+        self.files = [Path("../Scripts/researchguard.exe")]
+        self._executable = executable
+
+    def locate_file(self, _relative: Path) -> Path:
+        return self._executable
+
+
+def _install_distribution_probe(
+    monkeypatch,
+    tmp_path: Path,
+) -> Path:
+    executable = tmp_path / "researchguard.exe"
+    executable.write_bytes(b"current console")
+    monkeypatch.setattr(
+        provider_preflight.importlib.metadata,
+        "distribution",
+        lambda _name: _Distribution(executable),
+    )
+    return executable
+
+
 def _completed(argv, **_kwargs):
     if argv[1:] == ["--version"]:
         return SimpleNamespace(returncode=0, stdout="researchguard 0.1.0\n", stderr="")
@@ -17,10 +47,10 @@ def _completed(argv, **_kwargs):
     raise AssertionError(f"unexpected command: {argv}")
 
 
-def test_each_member_uses_one_researchguard_console(monkeypatch):
+def test_each_member_uses_one_researchguard_console(monkeypatch, tmp_path):
     calls: list[list[str]] = []
 
-    monkeypatch.setattr(provider_preflight.shutil, "which", lambda name: "RG" if name == "researchguard" else None)
+    executable = _install_distribution_probe(monkeypatch, tmp_path)
 
     def recording_run(argv, **kwargs):
         calls.append(list(argv))
@@ -42,17 +72,23 @@ def test_each_member_uses_one_researchguard_console(monkeypatch):
         assert result["evidence"]["suite_version"] == "0.1.0"
 
     assert calls == [
-        ["RG", "--version"],
-        ["RG", "logic", "--help"],
-        ["RG", "--version"],
-        ["RG", "source", "--help"],
-        ["RG", "--version"],
-        ["RG", "trace", "--help"],
+        [str(executable.resolve()), "--version"],
+        [str(executable.resolve()), "logic", "--help"],
+        [str(executable.resolve()), "--version"],
+        [str(executable.resolve()), "source", "--help"],
+        [str(executable.resolve()), "--version"],
+        [str(executable.resolve()), "trace", "--help"],
     ]
 
 
 def test_missing_console_blocks_without_old_module_import(monkeypatch):
-    monkeypatch.setattr(provider_preflight.shutil, "which", lambda _name: None)
+    monkeypatch.setattr(
+        provider_preflight.importlib.metadata,
+        "distribution",
+        lambda _name: (_ for _ in ()).throw(
+            provider_preflight.importlib.metadata.PackageNotFoundError
+        ),
+    )
     monkeypatch.setattr(
         provider_preflight.importlib,
         "import_module",
@@ -65,9 +101,9 @@ def test_missing_console_blocks_without_old_module_import(monkeypatch):
     assert result["evidence"]["console_resolved"] is False
 
 
-def test_member_timeout_is_visible_and_has_no_retry(monkeypatch):
+def test_member_timeout_is_visible_and_has_no_retry(monkeypatch, tmp_path):
     calls: list[list[str]] = []
-    monkeypatch.setattr(provider_preflight.shutil, "which", lambda _name: "RG")
+    executable = _install_distribution_probe(monkeypatch, tmp_path)
 
     def timed_out(argv, **_kwargs):
         calls.append(list(argv))
@@ -81,7 +117,10 @@ def test_member_timeout_is_visible_and_has_no_retry(monkeypatch):
 
     assert result["status"] == "provider_unavailable"
     assert result["evidence"]["member_capability_probe"]["timed_out"] is True
-    assert calls == [["RG", "--version"], ["RG", "trace", "--help"]]
+    assert calls == [
+        [str(executable.resolve()), "--version"],
+        [str(executable.resolve()), "trace", "--help"],
+    ]
 
 
 def test_member_provider_root_is_rejected_before_console_execution(monkeypatch, tmp_path):

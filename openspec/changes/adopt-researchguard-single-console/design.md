@@ -1,6 +1,6 @@
 ## Context
 
-Logic Writing is one consumer skill with four final writing routes. Its adapter envelopes already preserve `logicguard`, `sourceguard`, and `traceguard` as semantic owners, but provider preflight imports three independent Python packages. ResearchGuard v0.1.0 now provides the sole executable console and exact member bindings. Because this changes the external provider dependency while preserving Logic Writing's one-skill behavior, the frozen candidate source version is `2.1.0`:
+Logic Writing is one consumer skill with four final writing routes. Its adapter envelopes already preserve `logicguard`, `sourceguard`, and `traceguard` as semantic owners, but provider preflight imports three independent Python packages. ResearchGuard v0.1.0 now provides the sole executable console and exact member bindings. Because this changes the external provider dependency while preserving Logic Writing's one-skill behavior, the frozen candidate source version is `2.1.1`:
 
 | Semantic owner | Console command | Primary path |
 | --- | --- | --- |
@@ -20,7 +20,7 @@ The consumer must adopt this authority without hard-coding a sibling checkout, a
 - Eliminate current consumer references to retired LogicGuard satellite ids and old module commands.
 - Bind fixtures, FlowGuard, tests, and SkillGuard supervision to the same topology.
 - Bind every current source-version surface and installation-identity input to
-  the same `2.1.0` candidate tree.
+  the same `2.1.1` candidate tree.
 
 **Non-Goals:**
 
@@ -40,7 +40,14 @@ The alternative—renaming every adapter owner to `researchguard`—would erase 
 
 ### Capability probing is console-only and fail-closed
 
-Preflight will locate only `researchguard`, execute `researchguard --version`, then execute `researchguard logic|source|trace --help`. A missing executable, non-zero exit, or timeout yields `provider_unavailable`. It will not import the old modules, run `python -m`, inspect a sibling checkout, retry another member, or accept `--provider-root` for these three providers.
+Preflight resolves the one `researchguard` console executable from the installed
+ResearchGuard distribution record, executes `researchguard --version`, then
+executes `researchguard logic|source|trace --help`. It does not depend on the
+ambient PATH and does not retain PATH lookup as another authority. A missing or
+ambiguous distribution executable, non-zero exit, or timeout yields
+`provider_unavailable`. It will not import the old modules, run `python -m`,
+inspect a sibling checkout, retry another member, or accept `--provider-root`
+for these three providers.
 
 The timeout is a bounded diagnostic limit, not a recovery trigger. Increasing it later remains a single-path configuration change.
 
@@ -52,7 +59,7 @@ Consumer fixtures that currently identify `logicguard`, `sourceguard`, or `trace
 
 `VERSION`, package metadata, both README source badges, the changelog, source
 reconciliation, current OpenSpec requirements, and the release-retirement
-checklist identify source version `2.1.0`. SkillGuard is recompiled only after
+checklist identify source version `2.1.1`. SkillGuard is recompiled only after
 those inputs and the consumer distribution are frozen. No installed projection
 is activated in this change.
 
@@ -74,7 +81,7 @@ A focused checker will scan current consumer source, tests, active OpenSpec, and
 3. Update skill guidance, adapter references, current route ids, and content-addressed fixtures.
 4. Add zero-residual validation.
 5. Update and compile the SkillGuard contract.
-6. Freeze the `2.1.0` source and installation-identity inputs.
+6. Freeze the `2.1.1` source and installation-identity inputs.
 7. Run focused and full repository validation without installing, tagging, or
    creating a GitHub Release.
 8. Commit and push the candidate to the existing review branch.

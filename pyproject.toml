@@ -1,6 +1,6 @@
 [project]
 name = "logic-writing-skill"
-version = "2.1.0"
+version = "2.1.1"
 description = "One Codex skill for investigation, academic writing, fiction, and evidence-heavy travel guides"
 readme = "README.md"
 requires-python = ">=3.10"

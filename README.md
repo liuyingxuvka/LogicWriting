@@ -1,7 +1,7 @@
 # Logic Writing
 
 <p align="center">
-  <img src="https://img.shields.io/badge/source-2.1.0-6f42c1" alt="Source version 2.1.0" />
+  <img src="https://img.shields.io/badge/source-2.1.1-6f42c1" alt="Source version 2.1.1" />
   <img src="https://img.shields.io/badge/skill-logic--writing-334155" alt="Skill logic-writing" />
   <img src="https://img.shields.io/badge/routes-4-0a7f5a" alt="Four final-owner routes" />
   <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT license" />
@@ -19,7 +19,7 @@ one final owner, calls specialist Guard owners through their current provider
 entrypoints for native judgments, and turns the result into language a real
 reader can follow.
 
-> Source status: repository metadata declares `2.1.0`. Release, installation,
+> Source status: repository metadata declares `2.1.1`. Release, installation,
 > and predecessor-retirement claims require their own current receipts; the
 > version string alone proves none of them.
 

@@ -32,6 +32,12 @@
 - [x] 5.3 Commit and push the exact candidate to the existing PR branch
   without installing, tagging, or creating a GitHub Release.
 
+## 6. Installed Console Model-Miss Repair
+
+- [x] 6.1 Record the Windows false-unavailable result caused by relying on ambient PATH after ResearchGuard installed its current console outside PATH.
+- [x] 6.2 Resolve exactly one console executable from the installed ResearchGuard distribution record and retain no PATH, old-module, module-command, checkout, or alternate-member fallback.
+- [ ] 6.3 Freeze version `2.1.1`, recompile SkillGuard, run the complete release gate, install the exact consumer projection, and synchronize source, Git, tag, Release, and CI.
+
 ## Verification Boundary
 
 The current authoritative SkillGuard `check-skill` passes without requiring a

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import importlib
+import importlib.metadata
 import re
 import shutil
 import subprocess
@@ -34,6 +35,31 @@ SKILL_PROVIDERS = {
     "pdf": ("pdf", ("pdf", "render")),
 }
 PROBE_TIMEOUT_SECONDS = 60
+
+
+def _researchguard_console() -> str | None:
+    try:
+        distribution = importlib.metadata.distribution("researchguard")
+    except importlib.metadata.PackageNotFoundError:
+        return None
+    entries = [
+        entry
+        for entry in distribution.entry_points
+        if entry.group == "console_scripts"
+        and entry.name == "researchguard"
+        and entry.value == "researchguard.cli:main"
+    ]
+    if len(entries) != 1:
+        return None
+    candidates = sorted(
+        {
+            Path(distribution.locate_file(relative)).resolve()
+            for relative in distribution.files or ()
+            if Path(str(relative)).name.lower() in {"researchguard", "researchguard.exe"}
+            and Path(distribution.locate_file(relative)).resolve().is_file()
+        }
+    )
+    return str(candidates[0]) if len(candidates) == 1 else None
 
 
 def _run_console_probe(console: str, args: tuple[str, ...]) -> dict[str, object]:
@@ -106,7 +132,7 @@ def preflight(provider: str, *, provider_root: str | None = None, require_render
                 "provider-root overrides are not an execution path"
             )
         else:
-            console = shutil.which("researchguard")
+            console = _researchguard_console()
             evidence["console_resolved"] = bool(console)
             if not console:
                 status = "provider_unavailable"

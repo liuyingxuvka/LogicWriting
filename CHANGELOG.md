@@ -10,6 +10,17 @@ line follows semantic versioning.
 
 - Hosted release metadata is intentionally not asserted by this source file.
 
+## [2.1.1]
+
+### Fixed
+
+- Resolved the one installed ResearchGuard console from its exact distribution
+  record instead of depending on ambient Windows PATH state.
+- Kept missing, ambiguous, failing, and timed-out provider probes terminal; no
+  PATH lookup, old-module import, module command, checkout override, alternate
+  member, or fallback launcher was added.
+- Updated the project to FlowGuard 0.58.1 and its single `flowguard` entry.
+
 ## [2.1.0]
 
 ### Changed

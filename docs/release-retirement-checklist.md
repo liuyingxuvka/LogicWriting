@@ -1,6 +1,6 @@
 # Release and predecessor-retirement checklist
 
-This checklist describes the `2.1.0` cutover. Checkboxes are coordination aids,
+This checklist describes the `2.1.1` cutover. Checkboxes are coordination aids,
 not evidence; every pass claim needs its current terminal receipt.
 
 ## Freeze the replacement
@@ -19,7 +19,7 @@ not evidence; every pass claim needs its current terminal receipt.
   remain native.
 - [ ] Freeze `VERSION`, `pyproject.toml`, both README source badges, changelog,
   source reconciliation, OpenSpec version requirements, and the generated
-  SkillGuard consumer-distribution identity on the same `2.1.0` source tree.
+  SkillGuard consumer-distribution identity on the same `2.1.1` source tree.
 - [ ] Freeze the OpenSpec obligations, FlowGuard BCL/model mesh/alignment,
   TestMesh inventory, and SkillGuard declared-check authority.
 
@@ -62,7 +62,7 @@ not evidence; every pass claim needs its current terminal receipt.
 ## GitHub release
 
 - [ ] Commit the frozen source snapshot.
-- [ ] Push the default branch, create signed/annotated `v2.1.0` as configured,
+- [ ] Push the default branch, create signed/annotated `v2.1.1` as configured,
   and publish the GitHub Release without mutable-identity reuse.
 - [ ] Clone `LogicWriting` anonymously into a new directory.
 - [ ] Validate the fresh clone, install from it, and run all four representative
