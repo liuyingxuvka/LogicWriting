@@ -110,9 +110,9 @@ and [migration guide](MIGRATION.md) for the full boundaries.
 ## Install
 
 Copy or install `skills/logic-writing` as the single active skill directory,
-then invoke `$logic-writing`. Maintained installations should use SkillGuard's
-transactional install path so the installed projection is content-exact and
-recoverable.
+excluding its author-only `.skillguard` directory, then invoke
+`$logic-writing`. The installed consumer skill works independently: it does
+not need SkillGuard, SkillGuard receipts, or global-router state.
 
 ```text
 Use $logic-writing to turn this request into the correct reader-ready artifact.

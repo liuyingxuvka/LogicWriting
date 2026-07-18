@@ -101,7 +101,7 @@
     "readerText": {
       "type": "string",
       "minLength": 1,
-      "pattern": "^(?!.*\\b(?:SourceGuard|LogicGuard|TraceGuard|FlowGuard|SkillGuard)\\b)(?!.*\\b(?:current_pass|provider_unavailable|render_not_run|closure_status)\\b).+$"
+      "pattern": "^(?!.*\\b(?:SourceGuard|LogicGuard|TraceGuard|FlowGuard)\\b)(?!.*\\b(?:current_pass|provider_unavailable|render_not_run|closure_status)\\b).+$"
     },
     "sourceRole": {
       "enum": [

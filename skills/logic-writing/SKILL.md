@@ -195,8 +195,8 @@ looping.
 - Do not convert a missing provider, stale receipt, skipped check, partial
   search, failed rendering, or unsupported claim into success.
 - Do not expose internal workflow vocabulary in ordinary final prose.
-- Do not release or install a maintained copy unless the current SkillGuard
-  authority and the frozen validation owners agree on the same source identity.
+- Do not release or install a maintained copy unless the frozen validation
+  owners agree on the same source identity.
 
 ## Output Requirements
 
@@ -212,12 +212,3 @@ closed, add a short, plain-language audit note containing these exact fields:
 Keep those fields out of normal prose when every required gate passes and the
 user did not request an audit record. Never describe an output as complete when
 one of the five fields contains a material unresolved item.
-
-## SkillGuard Maintenance
-
-The sole current maintenance authority is `.skillguard/contract-source.json`,
-compiled into `.skillguard/compiled-contract.json` and the exact
-`.skillguard/check-manifest.json`. Maintainers must compile and check that
-authority, run its target-owned calibration fixture, and verify the installed
-projection. Do not add a legacy contract reader, alternate manifest, fallback
-launcher, compatibility alias, or second source of truth.

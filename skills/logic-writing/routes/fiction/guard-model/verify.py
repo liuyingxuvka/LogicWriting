@@ -19,7 +19,6 @@ ORACLE_SCHEMA = "storyline-design.guard_oracle_set.v1"
 GOOD_SCHEMA = "storyline-design.guard_known_good_set.v1"
 BAD_SCHEMA = "storyline-design.guard_known_bad_set.v1"
 RESULT_SCHEMA = "storyline-design.guard_model_proof_result.v1"
-SOURCE_SCHEMA = "skillguard.contract_source.v2"
 EXPECTED_FAILURE_COUNT = 25
 
 
@@ -72,17 +71,6 @@ def _require_text(row: Mapping[str, Any], fields: tuple[str, ...], label: str) -
     for field in fields:
         if not str(row.get(field, "")).strip():
             raise GuardModelContractError(f"{label}.{field} is required")
-
-
-def _expected_check_ids(failure_ids: set[str]) -> set[str]:
-    return {
-        "check:storyline:guard-model-contract",
-        "check:storyline:known-good",
-        *{
-            f"check:storyline:known-bad:{failure_id.rsplit(':', 1)[-1]}"
-            for failure_id in failure_ids
-        },
-    }
 
 
 def validate_bundle(skill_root: Path) -> dict[str, Any]:
@@ -254,107 +242,6 @@ def validate_bundle(skill_root: Path) -> dict[str, Any]:
         fixture_paths.add(fixture_path)
     if set(case_by_failure) != set(failure_by_id):
         raise GuardModelContractError("known-bad fixtures do not exhaust the independently declared failure universe")
-
-    for retired in (".skillguard/work-contract.json", ".skillguard/check_manifest.json"):
-        if (skill_root / retired).exists():
-            raise GuardModelContractError(f"retired SkillGuard authority remains: {retired}")
-    source = _load(skill_root / ".skillguard" / "contract-source.json")
-    if source.get("schema_version") != SOURCE_SCHEMA or source.get("skill_id") != target:
-        raise GuardModelContractError("the sole current SkillGuard source contract is missing")
-    if (
-        source.get("model_id") != "storyline-design.guard-purpose-proof.current"
-        or source.get("model_path") != ".skillguard/flowguard_contract_model.py"
-        or source.get("default_route_id") != contract["native_route_id"]
-        or source.get("integration_mode") != "native-integrated"
-        or source.get("native_route_owner") != contract["native_owner_id"]
-    ):
-        raise GuardModelContractError("the current SkillGuard source identity differs from the target-owned purpose route")
-    expected_obligation_ids = {
-        "obligation:storyline:purpose-before-candidate",
-        "obligation:storyline:known-good",
-        *{
-            f"obligation:storyline:blocks:{failure_id.rsplit(':', 1)[-1]}"
-            for failure_id in failure_by_id
-        },
-    }
-    profiles = source.get("closure_profiles")
-    if (
-        not isinstance(profiles, list)
-        or len(profiles) != 1
-        or not isinstance(profiles[0], Mapping)
-        or set(profiles[0]) != {"profile_id", "required_obligation_ids"}
-        or profiles[0].get("profile_id") != "enforced"
-        or set(profiles[0].get("required_obligation_ids", [])) != expected_obligation_ids
-    ):
-        raise GuardModelContractError("StorylineDesign must have exactly one enforced closure profile")
-    depth = source.get("depth_profile")
-    if not isinstance(depth, Mapping):
-        raise GuardModelContractError("the current contract requires one enforced depth profile")
-    if (
-        depth.get("enforcement_level") != "enforced"
-        or depth.get("required_closure_profiles") != ["enforced"]
-        or depth.get("skillguard_adds_domain_route") is not False
-        or depth.get("native_route_ids") != [contract["native_route_id"]]
-    ):
-        raise GuardModelContractError("the depth profile is not the fixed target-native enforced route")
-    source_checks = source.get("checks")
-    if not isinstance(source_checks, list):
-        raise GuardModelContractError("the current SkillGuard source has no check inventory")
-    source_check_ids = {
-        str(row.get("check_id", ""))
-        for row in source_checks
-        if isinstance(row, Mapping) and str(row.get("check_id", ""))
-    }
-    expected_check_ids = _expected_check_ids(set(failure_by_id))
-    if source_check_ids != expected_check_ids or set(depth.get("native_check_ids", [])) != expected_check_ids:
-        raise GuardModelContractError("the enforced SkillGuard check inventory is not the exact 25-bad plus good and contract proof")
-    check_by_id = {
-        str(row["check_id"]): row
-        for row in source_checks
-        if isinstance(row, Mapping) and str(row.get("check_id", ""))
-    }
-    contract_check = check_by_id["check:storyline:guard-model-contract"]
-    good_check = check_by_id["check:storyline:known-good"]
-    expected_contract_args = ["guard-model/verify.py", "check-contract", "--skill-root", "."]
-    expected_good_args = ["guard-model/verify.py", "prove-known-good", "--skill-root", "."]
-    for row, expected_args, expected_covers, expected_dependencies in (
-        (contract_check, expected_contract_args, ["obligation:storyline:purpose-before-candidate"], []),
-        (good_check, expected_good_args, ["obligation:storyline:known-good"], ["check:storyline:guard-model-contract"]),
-    ):
-        if (
-            row.get("kind") != "command"
-            or row.get("command") != "python"
-            or row.get("args") != expected_args
-            or row.get("expected") != {"exit_code": 0}
-            or row.get("native_route_id") != contract["native_route_id"]
-            or row.get("covers_obligation_ids") != expected_covers
-            or row.get("depends_on_check_ids") != expected_dependencies
-        ):
-            raise GuardModelContractError(f"declared check behavior differs from the target-owned proof: {row.get('check_id')}")
-    for failure_id in sorted(failure_by_id):
-        slug = failure_id.rsplit(":", 1)[-1]
-        check_id = f"check:storyline:known-bad:{slug}"
-        row = check_by_id[check_id]
-        expected_args = [
-            "guard-model/verify.py",
-            "prove-known-bad",
-            "--skill-root",
-            ".",
-            "--failure-id",
-            failure_id,
-        ]
-        if (
-            row.get("kind") != "command"
-            or row.get("command") != "python"
-            or row.get("args") != expected_args
-            or row.get("expected") != {"exit_code": 0}
-            or row.get("native_route_id") != contract["native_route_id"]
-            or row.get("covers_obligation_ids") != [f"obligation:storyline:blocks:{slug}"]
-            or row.get("depends_on_check_ids") != ["check:storyline:known-good"]
-        ):
-            raise GuardModelContractError(f"known-bad check behavior differs from its sole native proof: {check_id}")
-    if source.get("may_define_parallel_execution_route") is not False or source.get("may_define_skillguard_runtime_route") is not False:
-        raise GuardModelContractError("SkillGuard cannot define a parallel StorylineDesign route")
 
     skill_text = (skill_root / "SKILL.md").read_text(encoding="utf-8")
     reference_text = (skill_root / "references" / "guard-purpose-contract.md").read_text(encoding="utf-8")
