@@ -155,7 +155,7 @@ checks:
     execution_id: logic-writing-release.model-test-alignment.v1
     validation_scope: full
     snapshot_policy: frozen
-    toolchain_identity: flowguard-0.56.0-python
+    toolchain_identity: flowguard-0.58.1-python
     input_selectors: [.flowguard/model_test_alignment/**, .flowguard/models/**, .flowguard/behavior_commitment_ledger/**, openspec/verification-contract.yaml, tests/**]
     depends_on_receipts: [check.tests.archive-lifecycle]
     command: python
@@ -171,7 +171,7 @@ checks:
     execution_id: logic-writing-release.models-full.v1
     validation_scope: full
     snapshot_policy: frozen
-    toolchain_identity: flowguard-0.56.0-python
+    toolchain_identity: flowguard-0.58.1-python
     input_selectors: [.flowguard/**, skills/logic-writing/scripts/**, tests/**, openspec/verification-contract.yaml]
     depends_on_receipts: [check.models.alignment]
     command: python
@@ -187,7 +187,7 @@ checks:
     execution_id: logic-writing-release.testmesh-plan.v1
     validation_scope: full
     snapshot_policy: frozen
-    toolchain_identity: flowguard-0.56.0-python
+    toolchain_identity: flowguard-0.58.1-python
     input_selectors: [.flowguard/test_mesh/**, .flowguard/models/frozen_source_contract_exhaustion.py, openspec/verification-contract.yaml, scripts/_release_common.py, scripts/run_frozen_validation.py, tests/flowguard/test_alignment_and_mesh.py]
     depends_on_receipts: [check.models.alignment]
     command: python

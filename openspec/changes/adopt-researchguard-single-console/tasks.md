@@ -36,7 +36,8 @@
 
 - [x] 6.1 Record the Windows false-unavailable result caused by relying on ambient PATH after ResearchGuard installed its current console outside PATH.
 - [x] 6.2 Resolve exactly one console executable from the installed ResearchGuard distribution record and retain no PATH, old-module, module-command, checkout, or alternate-member fallback.
-- [ ] 6.3 Freeze version `2.1.1`, recompile SkillGuard, run the complete release gate, install the exact consumer projection, and synchronize source, Git, tag, Release, and CI.
+- [x] 6.3 Freeze version `2.1.1`, recompile SkillGuard, run the complete release gate, install the exact consumer projection, and synchronize source, Git, tag, Release, and CI.
+- [x] 6.4 Replace the obsolete status-only FlowGuard conformance declaration with one current `ConformanceReport` derived from the exact model-test alignment replay and known-bad rejection.
 
 ## Verification Boundary
 

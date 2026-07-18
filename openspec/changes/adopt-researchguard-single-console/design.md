@@ -24,10 +24,8 @@ The consumer must adopt this authority without hard-coding a sibling checkout, a
 
 **Non-Goals:**
 
-- Installing ResearchGuard or Logic Writing.
 - Changing ResearchGuard member algorithms or receipt semantics.
-- Publishing the default branch, tagging, creating a GitHub Release, or
-  updating global routing. Pushing the existing candidate PR branch is allowed.
+- Updating global routing; that remains one final fleet-wide refresh.
 - Touching FlowPilot.
 
 ## Decisions
@@ -67,9 +65,18 @@ is activated in this change.
 
 A focused checker will scan current consumer source, tests, active OpenSpec, and FlowGuard material while excluding archived history and generated SkillGuard projections. It will reject retired satellite ids, old module commands, direct old imports, and bare Guard route ids in executable receipt fields.
 
+### Full FlowGuard evidence is typed and current
+
+FlowGuard `0.58.1` rejects a status-only conformance declaration. The full
+model profile supplies one typed `ConformanceReport` that records the exact
+current model-code-test alignment replay and the declared missing-artifact
+known-bad rejection. This is bounded structural conformance evidence; the
+frozen test owner remains responsible for terminal test execution.
+
 ## Risks / Trade-offs
 
-- [ResearchGuard is not installed during this phase] → Preflight tests use controlled process doubles; cross-repository source validation proves the declared console contract, while installation remains a later synchronized step.
+- [ResearchGuard may be installed outside ambient PATH] → Resolve its one
+  current distribution entry point and materialized executable directly.
 - [Subprocess probing can time out] → Preserve `provider_unavailable` with timeout evidence and stop; never branch to another provider.
 - [Fixture route changes invalidate content hashes] → Recompute every affected receipt and handoff reference, then run the full fiction regression.
 - [Generated SkillGuard contracts become stale] → Recompile only after source, tests, and model identities are frozen.
@@ -82,9 +89,9 @@ A focused checker will scan current consumer source, tests, active OpenSpec, and
 4. Add zero-residual validation.
 5. Update and compile the SkillGuard contract.
 6. Freeze the `2.1.1` source and installation-identity inputs.
-7. Run focused and full repository validation without installing, tagging, or
-   creating a GitHub Release.
-8. Commit and push the candidate to the existing review branch.
+7. Run focused and full repository validation on the frozen release commit.
+8. Install the exact consumer projection, push the default branch, create the
+   annotated tag and GitHub Release, and prove five-surface identity.
 
 Rollback is a source-level revert of this change before installation. No runtime compatibility layer is retained.
 

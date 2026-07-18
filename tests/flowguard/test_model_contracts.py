@@ -22,6 +22,12 @@ from models.frozen_source_contract_exhaustion import (  # noqa: E402
     CASE_IDS,
     review_frozen_source_name_family,
 )
+from model_test_alignment.model import (  # noqa: E402
+    aligned_plan,
+    broken_missing_actual_artifact_plan,
+)
+from flowguard import review_model_test_alignment  # noqa: E402
+from run_models import _current_conformance_report  # noqa: E402
 
 
 def _step(workflow, state, event):
@@ -30,6 +36,23 @@ def _step(workflow, state, event):
     assert not run.exception_branches
     assert len(run.completed_paths) == 1
     return run.completed_paths[0].state
+
+
+def test_full_model_run_uses_a_current_conformance_report():
+    aligned = review_model_test_alignment(aligned_plan())
+    known_bad = review_model_test_alignment(
+        broken_missing_actual_artifact_plan()
+    )
+
+    report = _current_conformance_report(aligned, known_bad)
+
+    assert report.ok
+    assert report.model_fingerprint.startswith("sha256:")
+    assert report.prediction_fingerprint == report.model_fingerprint
+    assert [row.label for row in report.replayed_steps] == [
+        "current-model-code-test-alignment",
+        "known-bad-missing-artifact-rejected",
+    ]
 
 
 def test_router_selects_one_owner_and_preserves_bounded_child():

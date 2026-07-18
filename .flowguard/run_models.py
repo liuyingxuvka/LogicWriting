@@ -6,6 +6,7 @@ import argparse
 import hashlib
 import json
 import sys
+from dataclasses import replace
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -14,9 +15,11 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from flowguard import (  # noqa: E402
+    ConformanceReport,
     GraphEdge,
     LoopCheckConfig,
     ProgressCheckConfig,
+    ReplayObservation,
     check_loops,
     check_progress,
     contract_exhaustion_to_composite_handoff_acceptance_ids,
@@ -263,6 +266,50 @@ def _full_summary_ok(summary) -> bool:
     )
 
 
+def _current_conformance_report(aligned, alignment_known_bad) -> ConformanceReport:
+    source_identity = _source_identity()
+    model_fingerprint = "sha256:" + hashlib.sha256(
+        json.dumps(
+            source_identity,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    ).hexdigest()
+    return ConformanceReport(
+        ok=aligned.ok and not alignment_known_bad.ok,
+        replayed_steps=(
+            ReplayObservation(
+                function_name="review_model_test_alignment",
+                observed_output=aligned.decision,
+                observed_state={
+                    "binding_row_count": len(aligned.binding_rows),
+                    "finding_count": len(aligned.findings),
+                },
+                label="current-model-code-test-alignment",
+                reason="Replayed the exact current structural alignment plan.",
+            ),
+            ReplayObservation(
+                function_name="review_model_test_alignment",
+                observed_output=alignment_known_bad.decision,
+                observed_state={
+                    "known_bad_rejected": not alignment_known_bad.ok,
+                    "finding_count": len(alignment_known_bad.findings),
+                },
+                label="known-bad-missing-artifact-rejected",
+                reason="Replayed the declared broken plan against the current checker.",
+            ),
+        ),
+        summary=(
+            "Current structural model-code-test alignment passed and the "
+            "declared missing-artifact known-bad plan was rejected."
+        ),
+        prediction_id="logic-writing:model-test-alignment:current",
+        prediction_fingerprint=model_fingerprint,
+        model_fingerprint=model_fingerprint,
+        observation_boundary_id="logic-writing:model-test-alignment:current",
+    )
+
+
 def run(profile: str):
     aligned = review_model_test_alignment(model_test_alignment_plan())
     alignment_known_bad = review_model_test_alignment(broken_missing_actual_artifact_plan())
@@ -273,11 +320,19 @@ def run(profile: str):
         if conformance_status == "passed"
         else ()
     )
+    conformance_report = (
+        _current_conformance_report(aligned, alignment_known_bad)
+        if conformance_status == "passed"
+        else None
+    )
     summaries = {
         name: run_model_first_checks(
-            factory(
-                conformance_status=conformance_status,
-                conformance_evidence=conformance_evidence,
+            replace(
+                factory(
+                    conformance_status=conformance_status,
+                    conformance_evidence=conformance_evidence,
+                ),
+                conformance_report=conformance_report,
             )
         )
         for name, factory in MODEL_FACTORIES.items()
