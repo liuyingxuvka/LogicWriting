@@ -1,0 +1,23 @@
+{
+  "claim_boundary": "Author adoption marks only this explicit skill-maintainer repository. It creates no consumer or ordinary-project dependency and proves no target-domain work.",
+  "maintenance_default": "skillguard-author-maintenance-only",
+  "managed_block_hash": "615FEC70302CB17F55D199E8168FB86A3551C4E0FB158C53FBDB5336D30DB377",
+  "managed_skills": [
+    {
+      "integration_mode": "native-integrated",
+      "maintenance_unit_id": "unit:logic-writing",
+      "native_owner_id": "logic-writing",
+      "native_route_evidence_path": "skills/logic-writing/SKILL.md",
+      "native_route_status": "present",
+      "skill_id": "logic-writing",
+      "skill_path": "skills/logic-writing"
+    }
+  ],
+  "manifest_hash": "9CD4A1BD925AAEE3089BA4FC17BE83BE9C7E874299770CC8E1CA65E85D5E462C",
+  "project_id": "LogicWriting",
+  "project_prompt_path": "AGENTS.md",
+  "repository_role": "skill_maintainer_source",
+  "schema_version": "skillguard.project_adoption.v1",
+  "skillguard_repository": "https://github.com/liuyingxuvka/SkillGuard",
+  "skillguard_version": "0.3.3"
+}

@@ -3,13 +3,13 @@
   "surface": "logicguard_theme_support",
   "guard_id": "logicguard",
   "native_owner": "logicguard",
-  "native_route_id": "logicguard",
+  "native_route_id": "primary:researchguard:logic",
   "native_check_id": "logicguard.theme_support_applicability",
-  "tool_version": "0.17.4",
+  "tool_version": "0.1.0",
   "receipt_schema_version": "logicguard.native_terminal_receipt.v1",
   "input_fingerprint": "sha256:3a85fcd7149479214cf661ef2ba96e681cc326dc097c7f11be43f8b3c45cc0b3",
   "terminal_receipt_id": "aurora-key-final-prose-logicguard-terminal",
-  "terminal_receipt_ref": "file:../guard_receipts/logicguard.json;sha256:f6c0715d8f1d20925463818d8e9e2d92c3dd64d9b79cb51c49e47111a8443bb0",
+  "terminal_receipt_ref": "file:../guard_receipts/logicguard.json;sha256:10a733ca379561e8a3292420fe0876855635aa9bb57fafcc4098070e85053fab",
   "terminal_status": "passed",
   "claim_boundary": "The LogicGuard receipt covers the declared theme support from the current Aurora Key ending and arc; it does not prove reader interpretation."
 }

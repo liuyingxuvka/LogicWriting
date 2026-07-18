@@ -10,6 +10,24 @@ line follows semantic versioning.
 
 - Hosted release metadata is intentionally not asserted by this source file.
 
+## [2.1.0]
+
+### Changed
+
+- Kept `logic-writing` as the sole public skill while routing LogicGuard,
+  SourceGuard, and TraceGuard through the single ResearchGuard `0.1.0`
+  console and their exact `logic`, `source`, and `trace` member commands.
+- Preserved the three Guard semantic owners and native receipt boundaries
+  without publishing them as Logic Writing child skills.
+- Bound source, tests, FlowGuard, SkillGuard, and current fiction handoffs to
+  the same ResearchGuard primary-path identities.
+
+### Removed
+
+- Direct `logicguard`, `sourceguard`, and `traceguard` Python/module provider
+  paths, retired LogicGuard satellite-skill routes, `traceguard-library`, and
+  all provider retry, alias, or compatibility paths.
+
 ## [2.0.0]
 
 ### Added

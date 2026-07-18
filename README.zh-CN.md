@@ -1,7 +1,7 @@
 # Logic Writing
 
 <p align="center">
-  <img src="https://img.shields.io/badge/source-2.0.0-6f42c1" alt="源码版本 2.0.0" />
+  <img src="https://img.shields.io/badge/source-2.1.0-6f42c1" alt="源码版本 2.1.0" />
   <img src="https://img.shields.io/badge/skill-logic--writing-334155" alt="技能 logic-writing" />
   <img src="https://img.shields.io/badge/routes-4-0a7f5a" alt="四条最终路线" />
   <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT 许可证" />
@@ -15,9 +15,10 @@
 
 一个正式的 Codex 写作技能，统一处理深度调查、学术写作、小说和重证据的
 旅行攻略。它只有一个公开入口，每次只选一个最终负责人；需要专业判断时，
-仍由相应 Guard 技能负责，最后再把内部模型翻译成人能读懂的话。
+仍由相应 Guard 语义负责人通过当前统一入口负责，最后再把内部模型翻译成
+人能读懂的话。
 
-> 源码状态：仓库元数据声明 `2.0.0`。这个版本号本身不代表 GitHub Release、
+> 源码状态：仓库元数据声明 `2.1.0`。这个版本号本身不代表 GitHub Release、
 > 安装、完整回归或旧仓库退役已经完成；这些结论都要有各自当前的验证记录。
 
 ## 为什么合在一起

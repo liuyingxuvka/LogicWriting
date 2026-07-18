@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any
 
 
-IGNORED_PREFIXES = (".skillguard/runs/",)
+IGNORED_PREFIXES: tuple[str, ...] = ()
 IGNORED_PARTS = {"__pycache__"}
 
 

@@ -1,4 +1,4 @@
-"""Replay the exact SkillGuard installation projection against the active skill."""
+"""Compare the target-owned consumer projection with the active skill."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ import os
 import sys
 from pathlib import Path
 
-from _release_common import canonical_hash, emit, portable_files
+from _release_common import canonical_hash, emit
 
 
 def _skillguard_scripts(codex_home: Path) -> Path:
@@ -25,23 +25,56 @@ def check(source_skill: Path, codex_home: Path) -> dict:
     try:
         scripts = _skillguard_scripts(home)
         sys.path.insert(0, str(scripts))
-        from skillguard_v2.installation import (  # type: ignore[import-not-found]
-            installation_member_paths,
-            installation_projection_identity,
+        from skillguard_v2.consumer_distribution import (  # type: ignore[import-not-found]
+            audit_consumer_distribution,
+            consumer_distribution_plan,
+        )
+        from skillguard_v2.contract_compiler import (  # type: ignore[import-not-found]
+            canonical_hash as skillguard_canonical_hash,
         )
 
-        paths = installation_member_paths(source)
+        contract_path = source / ".skillguard" / "compiled-contract.json"
+        contract = json.loads(contract_path.read_text(encoding="utf-8"))
+        plan = consumer_distribution_plan(source, contract)
+        if plan.get("status") != "passed":
+            findings.extend(
+                f"{row.get('code', 'consumer_projection_blocked')}:{row.get('path', '')}"
+                for row in plan.get("findings", [])
+                if isinstance(row, dict)
+            )
+        paths = tuple(str(row["path"]) for row in plan.get("files", []))
         active = home / "skills" / "logic-writing"
-        source_projection = installation_projection_identity(source)
-        active_projection = installation_projection_identity(active)
-        source_files = portable_files(source, relative_paths=paths)
-        active_files = portable_files(active, relative_paths=paths)
-        actual_active = portable_files(active)
-        if source_files != active_files:
-            findings.append("active_bytes_do_not_match_source_projection")
-        if set(actual_active) != set(paths):
-            findings.append("active_tree_has_missing_or_unexpected_files")
-        if source_projection != active_projection:
+        audit = audit_consumer_distribution(active)
+        if audit.get("status") != "passed":
+            findings.extend(
+                f"{row.get('code', 'consumer_audit_blocked')}:{row.get('path', '')}"
+                for row in audit.get("findings", [])
+                if isinstance(row, dict)
+            )
+        source_projection = {
+            "projection_id": "projection:consumer-distribution",
+            "release_id": str(plan.get("release_id", "")),
+            "member_paths_hash": skillguard_canonical_hash(
+                sorted([*paths, "consumer-release.json"])
+            ),
+        }
+        active_projection = {
+            "projection_id": "projection:consumer-distribution",
+            "release_id": str(audit.get("release_id", "")),
+            "member_paths_hash": skillguard_canonical_hash(
+                sorted(
+                    [
+                        *[
+                            str(row.get("path", ""))
+                            for row in audit.get("manifest", {}).get("files", [])
+                            if isinstance(row, dict)
+                        ],
+                        "consumer-release.json",
+                    ]
+                )
+            ),
+        }
+        if source_projection["release_id"] != active_projection["release_id"]:
             findings.append("active_projection_identity_mismatch")
 
         head_path = home / "target-install-transactions" / "logic-writing" / "HEAD.json"
@@ -78,7 +111,7 @@ def check(source_skill: Path, codex_home: Path) -> dict:
         "projection_hash": projection_hash,
         "receipt_status": receipt_status,
         "findings": sorted(set(findings)),
-        "claim_boundary": "This check replays exact local installation bytes and the committed target-install receipt; it does not prove specialist availability, GitHub publication, or output quality.",
+        "claim_boundary": "This author-side check compares the target-owned consumer manifest and files with the current source projection and committed local activation receipt; the installed consumer itself requires no SkillGuard state.",
     }
 
 

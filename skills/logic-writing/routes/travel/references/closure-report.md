@@ -31,7 +31,7 @@ Skill development closure needs:
 - good plan validators pass;
 - traveler-native text output validator pass;
 - failure cases validator pass;
-- Travel-declared SkillGuard contract and receipt supervision pass;
+- Travel-owned contract and validation checks pass;
 - installed-copy sync pass;
 - global router resolution or refresh evidence;
 - local git commit containing only relevant upgrade files.

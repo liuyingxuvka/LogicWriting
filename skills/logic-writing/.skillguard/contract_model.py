@@ -171,7 +171,11 @@ def export_contract_model() -> dict[str, object]:
 
     rows = (
         ("obligation:logic-writing:routing", "logic_writing_selects_one_final_owner", ("step:logic-writing:route",)),
-        ("obligation:logic-writing:specialist-authority", "logic_writing_preserves_specialist_authority", ("step:logic-writing:route",)),
+        (
+            "obligation:logic-writing:specialist-authority",
+            "logic_writing_preserves_specialist_authority_through_one_researchguard_console",
+            ("step:logic-writing:route",),
+        ),
         ("obligation:logic-writing:investigation-evidence", "investigation_requires_current_content_evidence", ("step:logic-writing:evidence",)),
         ("obligation:logic-writing:academic-provenance", "academic_requires_current_revision_provenance", ("step:logic-writing:evidence",)),
         ("obligation:logic-writing:fiction-native", "fiction_requires_story_continuity_and_actual_manuscript_binding", ("step:logic-writing:evidence",)),

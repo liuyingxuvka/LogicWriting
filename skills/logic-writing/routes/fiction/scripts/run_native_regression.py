@@ -60,7 +60,7 @@ def main(argv: list[str] | None = None) -> int:
         "passed": all(row["passed"] for row in results),
         "summary": {"case_count": len(results), "failed_count": sum(not row["passed"] for row in results)},
         "results": results,
-        "claim_boundary": "This owner runs native surfaces not already owned by route, Guard, longform, mesh, installation, or SkillGuard focused checks.",
+        "claim_boundary": "This owner runs native surfaces not already owned by route, Guard, longform, mesh, or installation checks.",
     }
     if args.json:
         print(json.dumps(report, indent=2, sort_keys=True))

@@ -4,7 +4,7 @@
 TBD - created by archiving change expand-logic-writing-four-routes. Update Purpose after archive.
 ## Requirements
 ### Requirement: Replacement is recoverable before predecessor retirement
-The system SHALL preserve source and release identities, validate the `2.0.0` source, activate a recoverable installed projection, refresh one global route, publish the GitHub release, and pass fresh-clone validation before changing predecessor visibility.
+The system SHALL preserve source and release identities, validate the `2.1.0` source, activate a recoverable installed projection, refresh one global route, publish the GitHub release, and pass fresh-clone validation before changing predecessor visibility.
 
 #### Scenario: Privatization is attempted before fresh-clone validation
 - **WHEN** either predecessor repository is still public but replacement fresh-clone installation has not passed

@@ -223,7 +223,7 @@ def reject_unknown_keys(mapping: dict[str, Any], allowed: set[str], label: str) 
 
 def contains_internal_language(text: str) -> tuple[str, ...]:
     patterns = {
-        "guard_name": r"\b(?:SourceGuard|LogicGuard|TraceGuard|FlowGuard|SkillGuard)\b",
+        "guard_name": r"\b(?:SourceGuard|LogicGuard|TraceGuard|FlowGuard)\b",
         "route_id": r"\b(?:investigation-route|academic-writing-route|route_id|model_id|gap_id)\b",
         "status_field": r"\b(?:closure_status|reader_native|current_pass|provider_unavailable|render_not_run)\b",
         "agent_instruction": r"\b(?:the agent must|invoke the skill|run the workflow|internal ledger)\b",

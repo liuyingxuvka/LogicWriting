@@ -3,13 +3,13 @@
   "surface": "sourceguard_canon_support",
   "guard_id": "sourceguard",
   "native_owner": "sourceguard",
-  "native_route_id": "sourceguard",
+  "native_route_id": "primary:researchguard:source",
   "native_check_id": "sourceguard.canon_support_applicability",
-  "tool_version": "0.4.2",
+  "tool_version": "0.1.0",
   "receipt_schema_version": "sourceguard.native_terminal_receipt.v1",
   "input_fingerprint": "sha256:1dfbf8860323f1e4a557e5ef67fadf03c7d23807173cf3a008d3318a946f9be4",
   "terminal_receipt_id": "lantern-map-sourceguard-terminal",
-  "terminal_receipt_ref": "file:../guard_receipts/sourceguard-terminal.json;sha256:a663b153725dc0d2a289575b0454c1b04c595f2d6c440a04c23f55c84e89663a",
+  "terminal_receipt_ref": "file:../guard_receipts/sourceguard-terminal.json;sha256:bfa9aa7fd48614d711c1913732f534aa50605f67a3efc2bcd2eea3cf08ec2c8c",
   "terminal_status": "not_applicable_with_reason",
   "claim_boundary": "No user canon, prior draft, adaptation source, historical fact, or external source constrains the Lantern Map fixture."
 }
