@@ -13,11 +13,11 @@
       "skill_path": "skills/logic-writing"
     }
   ],
-  "manifest_hash": "9CD4A1BD925AAEE3089BA4FC17BE83BE9C7E874299770CC8E1CA65E85D5E462C",
+  "manifest_hash": "9691CFF92BF815338DD193637DB2DCC45EC09AFA508CD491BDA85901E4762D9B",
   "project_id": "LogicWriting",
   "project_prompt_path": "AGENTS.md",
   "repository_role": "skill_maintainer_source",
   "schema_version": "skillguard.project_adoption.v1",
   "skillguard_repository": "https://github.com/liuyingxuvka/SkillGuard",
-  "skillguard_version": "0.3.3"
+  "skillguard_version": "0.3.4"
 }

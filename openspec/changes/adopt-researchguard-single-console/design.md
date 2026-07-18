@@ -73,6 +73,13 @@ current model-code-test alignment replay and the declared missing-artifact
 known-bad rejection. This is bounded structural conformance evidence; the
 frozen test owner remains responsible for terminal test execution.
 
+### SkillGuard project authority is current-only
+
+SkillGuard `0.3.4` uses `.skillguard/author-project.json` and
+`maintainer-audit`. The retired `.skillguard/project.json` file and removed
+`project-audit` command are deleted from the active source and validation
+contract; no dual manifest, alias, or compatibility reader remains.
+
 ## Risks / Trade-offs
 
 - [ResearchGuard may be installed outside ambient PATH] → Resolve its one

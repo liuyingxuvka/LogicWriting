@@ -28,7 +28,7 @@ def _commands(repository: Path, target: Path, scripts: Path) -> dict[str, list[s
         "contract": [sys.executable, str(cli), "check-contract", "--target", str(target), "--repository-root", str(repository), "--output", "-"],
         "depth": [sys.executable, str(cli), "check-depth", "--target", str(target), "--target-root", str(repository), "--output", "-"],
         "static": [sys.executable, str(cli), "check-skill", "--target", str(target), "--repository-root", str(repository), "--output", "-"],
-        "project": [sys.executable, str(cli), "project-audit", "--root", str(repository)],
+        "project": [sys.executable, str(cli), "maintainer-audit", "--root", str(repository)],
     }
 
 
@@ -42,7 +42,7 @@ def _execution_projection(
         yield repository, target, "repository-root"
         return
 
-    manifest_path = repository / ".skillguard" / "project.json"
+    manifest_path = repository / ".skillguard" / "author-project.json"
     try:
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
@@ -59,7 +59,7 @@ def _execution_projection(
     target_relative = target.relative_to(repository)
     projection_paths = (
         Path("AGENTS.md"),
-        Path(".skillguard/project.json"),
+        Path(".skillguard/author-project.json"),
         target_relative / "SKILL.md",
         target_relative / ".skillguard/contract-source.json",
         target_relative / ".skillguard/compiled-contract.json",

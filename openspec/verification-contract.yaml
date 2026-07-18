@@ -413,7 +413,7 @@ checks:
     validation_scope: full
     snapshot_policy: frozen
     toolchain_identity: installed-skillguard-current
-    input_selectors: [AGENTS.md, .skillguard/project.json, skills/logic-writing/SKILL.md, skills/logic-writing/.skillguard/*.json, scripts/check_skillguard_authority.py]
+    input_selectors: [AGENTS.md, .skillguard/author-project.json, skills/logic-writing/SKILL.md, skills/logic-writing/.skillguard/*.json, scripts/check_skillguard_authority.py]
     depends_on_receipts: [check.skillguard.static]
     command: python
     args: [scripts/check_skillguard_authority.py, --repository-root, ., --target, skills/logic-writing, --check, project, --json]

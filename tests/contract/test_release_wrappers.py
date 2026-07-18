@@ -140,7 +140,7 @@ def test_skillguard_project_owner_stages_stable_project_identity(tmp_path, monke
         "# provider\n", encoding="utf-8"
     )
     (repository / ".skillguard").mkdir(parents=True)
-    (repository / ".skillguard" / "project.json").write_text(
+    (repository / ".skillguard" / "author-project.json").write_text(
         json.dumps({"project_id": "LogicWriting"}), encoding="utf-8"
     )
     (repository / "AGENTS.md").write_text("project contract\n", encoding="utf-8")
@@ -161,7 +161,8 @@ def test_skillguard_project_owner_stages_stable_project_identity(tmp_path, monke
         assert cwd.name == "LogicWriting"
         assert not (cwd / ".git").exists()
         assert (cwd / "AGENTS.md").is_file()
-        assert (cwd / ".skillguard" / "project.json").is_file()
+        assert (cwd / ".skillguard" / "author-project.json").is_file()
+        assert command[2] == "maintainer-audit"
         assert (cwd / "skills" / "logic-writing" / "SKILL.md").is_file()
         root_arg = Path(command[command.index("--root") + 1])
         assert root_arg == cwd
@@ -231,7 +232,7 @@ def test_frozen_public_checks_bind_concrete_admitted_source_manifests():
         ".gitattributes",
         ".gitignore",
         ".logicguard/readme-capability-model.yaml",
-        ".skillguard/project.json",
+        ".skillguard/author-project.json",
         "AGENTS.md",
         "CHANGELOG.md",
         "README.md",

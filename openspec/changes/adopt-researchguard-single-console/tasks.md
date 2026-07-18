@@ -38,6 +38,7 @@
 - [x] 6.2 Resolve exactly one console executable from the installed ResearchGuard distribution record and retain no PATH, old-module, module-command, checkout, or alternate-member fallback.
 - [x] 6.3 Freeze version `2.1.1`, recompile SkillGuard, run the complete release gate, install the exact consumer projection, and synchronize source, Git, tag, Release, and CI.
 - [x] 6.4 Replace the obsolete status-only FlowGuard conformance declaration with one current `ConformanceReport` derived from the exact model-test alignment replay and known-bad rejection.
+- [x] 6.5 Delete the retired `.skillguard/project.json` authority and replace the removed `project-audit` command with the sole current `author-project.json` plus `maintainer-audit` path.
 
 ## Verification Boundary
 
