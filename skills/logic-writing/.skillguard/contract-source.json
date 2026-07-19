@@ -52,7 +52,7 @@
       "execution_owner_id": "owner:logic-writing:specialist-authority",
       "input_selectors": [
         {
-          "kind": "path",
+          "kind": "subtree",
           "path": "skills/logic-writing/references/adapters"
         },
         {
@@ -177,7 +177,7 @@
           "path": "skills/logic-writing/references/routes/fiction-writing.md"
         },
         {
-          "kind": "path",
+          "kind": "subtree",
           "path": "skills/logic-writing/routes/fiction"
         },
         {
@@ -212,7 +212,7 @@
           "path": "skills/logic-writing/references/routes/travel-guide.md"
         },
         {
-          "kind": "path",
+          "kind": "subtree",
           "path": "skills/logic-writing/routes/travel"
         },
         {
@@ -387,7 +387,7 @@
           "path": "skills/logic-writing/.skillguard/checks/evaluate_contract_calibration.py"
         },
         {
-          "kind": "path",
+          "kind": "subtree",
           "path": "skills/logic-writing/.skillguard/fixtures"
         }
       ],
@@ -537,7 +537,9 @@
     "skills/logic-writing/assets",
     "skills/logic-writing/.skillguard/contract_model.py",
     "skills/logic-writing/.skillguard/checks",
-    "skills/logic-writing/.skillguard/fixtures"
+    "skills/logic-writing/.skillguard/fixtures",
+    "scripts/run_fiction_regression.py",
+    "scripts/run_travel_regression.py"
   ],
   "integration_mode": "native-integrated",
   "judgment_rubrics": [],
