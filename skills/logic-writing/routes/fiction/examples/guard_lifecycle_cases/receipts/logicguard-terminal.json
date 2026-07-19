@@ -6,7 +6,7 @@
   "native_owner": "logicguard",
   "route_id": "primary:researchguard:logic",
   "check_id": "logicguard.theme_support_applicability",
-  "tool_version": "0.1.0",
+  "tool_version": "0.1.2",
   "input_fingerprint": "sha256:b8a700a5c74b3793451391acc76d2fc7153e389e752c8285ec42a51c7b93a07b",
   "terminal": true,
   "immutable": true,

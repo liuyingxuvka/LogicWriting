@@ -6,7 +6,7 @@
   "native_owner": "traceguard",
   "route_id": "primary:researchguard:trace",
   "check_id": "traceguard.storyline_terminal",
-  "tool_version": "0.1.0",
+  "tool_version": "0.1.2",
   "input_fingerprint": "sha256:d2266e0aa5a54ea556782bac87fc488d67766713250b11b93ab65f99dd1aa457",
   "terminal": true,
   "immutable": true,

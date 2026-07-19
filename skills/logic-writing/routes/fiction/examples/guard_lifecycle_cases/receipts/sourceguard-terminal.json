@@ -6,7 +6,7 @@
   "native_owner": "sourceguard",
   "route_id": "primary:researchguard:source",
   "check_id": "sourceguard.canon_support_applicability",
-  "tool_version": "0.1.0",
+  "tool_version": "0.1.2",
   "input_fingerprint": "sha256:d46f9afebfa242ba7991beabcfe78ba3fcbffdf920f106313b72f08ae887f901",
   "terminal": true,
   "immutable": true,

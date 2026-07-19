@@ -19,7 +19,7 @@
     {
       "surface": "traceguard_storyline",
       "status": "passed",
-      "evidence_ref": "file:guard_handoffs/traceguard-planning.json;sha256:7eb7fb6b60977b26dea1638650e893ba92b9ebe705666057df0a232f16c07422",
+      "evidence_ref": "file:guard_handoffs/traceguard-planning.json;sha256:24a65b8ba42b5cdd30c69442e3531ab18db4a5a343ddb6a25655cf0a76f957e5",
       "input_fingerprint": "sha256:d2266e0aa5a54ea556782bac87fc488d67766713250b11b93ab65f99dd1aa457",
       "blocks_closure": false,
       "next_action": "Refresh TraceGuard storyline evidence after chronology, clue, or reveal changes"
@@ -35,7 +35,7 @@
     {
       "surface": "logicguard_theme_support",
       "status": "not_applicable_with_reason",
-      "evidence_ref": "file:guard_handoffs/logicguard-planning.json;sha256:da39d0d7f9f8b4cd628c653e248796a776b4498456392c0e469cb212c72054a7",
+      "evidence_ref": "file:guard_handoffs/logicguard-planning.json;sha256:555a84482644cffc96c98228c3f679f9d91329c67119fed49d9f15a4a1671885",
       "input_fingerprint": "sha256:10940539101895ab19896e080b3e8828f29eab1fd3f2e2ee811c8fe7993929bb",
       "not_applicable_reason": "Not applicable because the pre-draft model fixture does not claim final theme or ending-interpretation closure.",
       "blocks_closure": false,
@@ -44,7 +44,7 @@
     {
       "surface": "sourceguard_canon_support",
       "status": "not_applicable_with_reason",
-      "evidence_ref": "file:guard_handoffs/sourceguard-planning.json;sha256:f503a08cf1c3f031a29c024be1261efc5e77d1d136a528b3a749a0d411b88156",
+      "evidence_ref": "file:guard_handoffs/sourceguard-planning.json;sha256:13bae3e6ff29c7eccaf4872c7e7d691c9b719f146e800ebe1eb59963a67454d6",
       "input_fingerprint": "sha256:c56beb78c29782d8d22dae95c439a8b1801246c76c5da46551ea8d0c842765ce",
       "not_applicable_reason": "Not applicable because no external canon, adaptation source, historical fact, or prior-draft constraint is part of this fixture.",
       "blocks_closure": false,

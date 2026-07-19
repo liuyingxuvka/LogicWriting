@@ -5,11 +5,11 @@
   "native_owner": "logicguard",
   "native_route_id": "primary:researchguard:logic",
   "native_check_id": "logicguard.theme_support_applicability",
-  "tool_version": "0.1.0",
+  "tool_version": "0.1.2",
   "receipt_schema_version": "logicguard.native_terminal_receipt.v1",
   "input_fingerprint": "sha256:10940539101895ab19896e080b3e8828f29eab1fd3f2e2ee811c8fe7993929bb",
   "terminal_receipt_id": "aurora-key-pre-draft-logicguard-terminal",
-  "terminal_receipt_ref": "file:../guard_receipts/logicguard-planning.json;sha256:6aa2577a6324628e930b65cabdbf0e7d502265feb2cde0fdb4c99db086929bc0",
+  "terminal_receipt_ref": "file:../guard_receipts/logicguard-planning.json;sha256:ac85c6761c8b98b49985d18876f472bb6bdd1fad8513ec39c8aa197b9bb6a7b2",
   "terminal_status": "not_applicable_with_reason",
   "claim_boundary": "No final theme, moral, or ending-interpretation conclusion is claimed at the Aurora Key pre-draft model boundary."
 }

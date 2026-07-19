@@ -10,6 +10,17 @@ line follows semantic versioning.
 
 - Hosted release metadata is intentionally not asserted by this source file.
 
+## [2.1.2]
+
+### Changed
+
+- Refreshed the private author-side SkillGuard contract under the current
+  affected-only validation ownership model.
+- Bound all current ResearchGuard provider examples, topology checks, and
+  migration guidance to the single ResearchGuard `0.1.2` distribution.
+- Retained one `logic-writing` entrypoint and one ResearchGuard console with no
+  predecessor alias, alternate launcher, compatibility reader, or fallback.
+
 ## [2.1.1]
 
 ### Fixed

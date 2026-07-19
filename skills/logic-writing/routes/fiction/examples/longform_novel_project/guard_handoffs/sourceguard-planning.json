@@ -5,11 +5,11 @@
   "native_owner": "sourceguard",
   "native_route_id": "primary:researchguard:source",
   "native_check_id": "sourceguard.canon_support_applicability",
-  "tool_version": "0.1.0",
+  "tool_version": "0.1.2",
   "receipt_schema_version": "sourceguard.native_terminal_receipt.v1",
   "input_fingerprint": "sha256:c56beb78c29782d8d22dae95c439a8b1801246c76c5da46551ea8d0c842765ce",
   "terminal_receipt_id": "aurora-key-pre-draft-sourceguard-terminal",
-  "terminal_receipt_ref": "file:../guard_receipts/sourceguard-planning.json;sha256:e329fd45b51761d102a56ed4143bf517e73dd9a741aa1dad5bba73a1ff3b5b8a",
+  "terminal_receipt_ref": "file:../guard_receipts/sourceguard-planning.json;sha256:ab539efe734aa50b898d78399a1e08ab61686ec0064c02501c5e88967d30b7b0",
   "terminal_status": "not_applicable_with_reason",
   "claim_boundary": "No external canon, adaptation source, historical fact, or prior-draft constraint applies to the Aurora Key pre-draft model fixture."
 }

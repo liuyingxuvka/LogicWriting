@@ -1,9 +1,9 @@
 # Migration to Logic Writing 2.1
 
-Version `2.1.1` keeps one public skill id, `logic-writing`, and one provider
+Version `2.1.2` keeps one public skill id, `logic-writing`, and one provider
 console for its three research Guard dependencies. LogicGuard, SourceGuard,
 and TraceGuard remain separate semantic owners, but their only executable
-paths are the `logic`, `source`, and `trace` members of ResearchGuard `0.1.0`.
+paths are the `logic`, `source`, and `trace` members of ResearchGuard `0.1.2`.
 There are no direct member-module providers, runtime compatibility aliases,
 fallback launchers, or alternate provider roots.
 
@@ -71,8 +71,8 @@ shared reader-state and model-artifact contract.
 
 ## Installation cutover
 
-1. Validate and release the exact `2.1.1` source snapshot, including the
-   ResearchGuard `0.1.0` dependency identity and zero-residual check.
+1. Validate and release the exact `2.1.2` source snapshot, including the
+   ResearchGuard `0.1.2` dependency identity and zero-residual check.
 2. Stage and activate `skills/logic-writing` transactionally.
 3. Refresh the global router and confirm all four supported intent families
    resolve to `logic-writing`.

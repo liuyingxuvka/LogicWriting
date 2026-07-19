@@ -41,7 +41,7 @@ def _install_distribution_probe(
 
 def _completed(argv, **_kwargs):
     if argv[1:] == ["--version"]:
-        return SimpleNamespace(returncode=0, stdout="researchguard 0.1.0\n", stderr="")
+        return SimpleNamespace(returncode=0, stdout="researchguard 0.1.2\n", stderr="")
     if argv[1:] in (["logic", "--help"], ["source", "--help"], ["trace", "--help"]):
         return SimpleNamespace(returncode=0, stdout="member help\n", stderr="")
     raise AssertionError(f"unexpected command: {argv}")
@@ -69,7 +69,7 @@ def test_each_member_uses_one_researchguard_console(monkeypatch, tmp_path):
         assert result["evidence"]["provider_console_id"] == "researchguard"
         assert result["evidence"]["member_command"] == member_command
         assert result["evidence"]["primary_path_id"] == primary_path
-        assert result["evidence"]["suite_version"] == "0.1.0"
+        assert result["evidence"]["suite_version"] == "0.1.2"
 
     assert calls == [
         [str(executable.resolve()), "--version"],
@@ -108,7 +108,7 @@ def test_member_timeout_is_visible_and_has_no_retry(monkeypatch, tmp_path):
     def timed_out(argv, **_kwargs):
         calls.append(list(argv))
         if argv[1:] == ["--version"]:
-            return SimpleNamespace(returncode=0, stdout="researchguard 0.1.0\n", stderr="")
+            return SimpleNamespace(returncode=0, stdout="researchguard 0.1.2\n", stderr="")
         raise subprocess.TimeoutExpired(argv, provider_preflight.PROBE_TIMEOUT_SECONDS)
 
     monkeypatch.setattr(provider_preflight.subprocess, "run", timed_out)
