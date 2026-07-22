@@ -10,338 +10,1611 @@
         "actor_kind": "ai_agent",
         "behavior_plane": "agent_operation",
         "business_intent_id": "intent:select-one-final-owner",
+        "child_model_ids": [],
         "commitment_id": "C01:select-one-final-owner",
         "commitment_kind": "skill",
-        "evidence": {"current": false, "evidence_state": "missing", "model_obligation_ids": ["obligation:one-final-owner"], "code_contract_ids": ["contract:select-route"], "test_evidence_ids": ["test:routing"]},
+        "evidence": {
+          "code_contract_ids": [
+            "contract:select-route"
+          ],
+          "coverage_case_ids": [],
+          "coverage_receipt_ids": [],
+          "coverage_shard_ids": [],
+          "current": false,
+          "evidence_state": "missing",
+          "metadata": {},
+          "model_obligation_ids": [
+            "obligation:one-final-owner"
+          ],
+          "proof_artifact_ids": [],
+          "risk_gate_ids": [],
+          "test_evidence_ids": [
+            "test:routing"
+          ],
+          "test_mesh_state": "shard_current"
+        },
+        "excluded_behavior_ids": [],
         "expected_result": "exactly one of investigation, academic-writing, fiction-writing, or travel-guide owns the requested terminal artifact",
         "expected_terminal": "one owner selected or a visible ambiguity/out-of-scope result",
+        "external_differences": [],
         "failure_boundary": "never activate two final owners and never guess a materially ambiguous owner",
+        "in_scope": true,
         "label": "select exactly one final owner",
-        "lookup_binding": {"path_patterns": ["skills/logic-writing/SKILL.md", "skills/logic-writing/scripts/select_route.py"], "task_terms": ["Logic Writing", "deep investigation", "academic writing", "fiction writing", "travel guide"], "tool_ids": ["logic-writing"], "workflow_families": ["logic_writing_entry"]},
+        "lookup_binding": {
+          "error_signatures": [],
+          "metadata": {},
+          "path_patterns": [
+            "skills/logic-writing/SKILL.md",
+            "skills/logic-writing/scripts/select_route.py"
+          ],
+          "task_terms": [
+            "Logic Writing",
+            "deep investigation",
+            "academic writing",
+            "fiction writing",
+            "travel guide"
+          ],
+          "tool_ids": [
+            "logic-writing"
+          ],
+          "workflow_families": [
+            "logic_writing_entry"
+          ]
+        },
+        "metadata": {},
+        "miss_origin_state": "no_miss",
+        "model_sync_state": "owner_model_current",
         "owner": "Logic Writing router",
+        "path_authority": {
+          "behavior_commitment_id": "",
+          "business_intent": "",
+          "business_intent_id": "",
+          "evidence_current": false,
+          "evidence_refs": [],
+          "fallback_candidate_ids": [],
+          "metadata": {},
+          "path_sensitive": false,
+          "ppa_confidence": "",
+          "ppa_coverage_receipt_ids": [],
+          "ppa_coverage_shard_ids": [],
+          "ppa_decision": "",
+          "ppa_ok": null,
+          "ppa_report_id": "",
+          "ppa_risk_gate_ids": [],
+          "primary_path_id": "",
+          "proof_artifact_ids": [],
+          "runtime_observation_ids": [],
+          "scoped_out_reason": ""
+        },
+        "preconditions": [],
         "primary_owner_model_id": "model:route-and-guard",
         "rationale": "terminal deliverable ownership prevents duplicate orchestration",
-        "source_surface_ids": ["surface:openspec", "surface:skill-entry"],
-        "state_writes": ["route_owner", "child_routes"],
+        "relations": [],
+        "replacement_state": "active",
+        "scoped_out_reason": "",
+        "side_effects": [],
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_refs": [],
+        "source_surface_ids": [
+          "surface:openspec",
+          "surface:skill-entry"
+        ],
+        "state_writes": [
+          "route_owner",
+          "child_routes"
+        ],
+        "supporting_model_ids": [],
+        "surface_delegation_only": false,
         "trigger": "a non-trivial request enters Logic Writing",
-        "validation_boundary": "route model, select-route contract, and routing tests cover the same decision"
+        "validation_boundary": "route model, select-route contract, and routing tests cover the same decision",
+        "variant_of_business_intent_id": ""
       },
       {
         "actor": "Logic Writing final route",
         "actor_kind": "ai_agent",
         "behavior_plane": "agent_operation",
         "business_intent_id": "intent:preserve-specialist-authority",
+        "child_model_ids": [],
         "commitment_id": "C02:preserve-specialist-authority",
         "commitment_kind": "workflow",
-        "evidence": {"current": false, "evidence_state": "missing", "model_obligation_ids": ["obligation:native-owner"], "code_contract_ids": ["contract:adapter-envelope"], "test_evidence_ids": ["test:adapters"]},
+        "evidence": {
+          "code_contract_ids": [
+            "contract:adapter-envelope"
+          ],
+          "coverage_case_ids": [],
+          "coverage_receipt_ids": [],
+          "coverage_shard_ids": [],
+          "current": false,
+          "evidence_state": "missing",
+          "metadata": {},
+          "model_obligation_ids": [
+            "obligation:native-owner"
+          ],
+          "proof_artifact_ids": [],
+          "risk_gate_ids": [],
+          "test_evidence_ids": [
+            "test:adapters"
+          ],
+          "test_mesh_state": "shard_current"
+        },
+        "excluded_behavior_ids": [],
         "expected_result": "typed native receipts are consumed without reimplementing specialist decisions",
         "expected_terminal": "current native receipt or visible provider/dependency failure",
+        "external_differences": [],
         "failure_boundary": "missing specialists block substitution and degraded states remain visible",
+        "in_scope": true,
         "label": "preserve specialist Guard authority",
-        "lookup_binding": {"path_patterns": ["skills/logic-writing/references/adapters", "skills/logic-writing/scripts/provider_preflight.py"], "task_terms": ["SourceGuard", "LogicGuard", "TraceGuard", "WorldGuard", "FlowGuard", "Documents", "PDF"], "workflow_families": ["typed_guard_adapter"]},
+        "lookup_binding": {
+          "error_signatures": [],
+          "metadata": {},
+          "path_patterns": [
+            "skills/logic-writing/references/adapters",
+            "skills/logic-writing/scripts/provider_preflight.py"
+          ],
+          "task_terms": [
+            "SourceGuard",
+            "LogicGuard",
+            "TraceGuard",
+            "WorldGuard",
+            "FlowGuard",
+            "Documents",
+            "PDF"
+          ],
+          "tool_ids": [],
+          "workflow_families": [
+            "typed_guard_adapter"
+          ]
+        },
+        "metadata": {},
+        "miss_origin_state": "no_miss",
+        "model_sync_state": "owner_model_current",
         "owner": "Logic Writing adapter layer",
+        "path_authority": {
+          "behavior_commitment_id": "",
+          "business_intent": "",
+          "business_intent_id": "",
+          "evidence_current": false,
+          "evidence_refs": [],
+          "fallback_candidate_ids": [],
+          "metadata": {},
+          "path_sensitive": false,
+          "ppa_confidence": "",
+          "ppa_coverage_receipt_ids": [],
+          "ppa_coverage_shard_ids": [],
+          "ppa_decision": "",
+          "ppa_ok": null,
+          "ppa_report_id": "",
+          "ppa_risk_gate_ids": [],
+          "primary_path_id": "",
+          "proof_artifact_ids": [],
+          "runtime_observation_ids": [],
+          "scoped_out_reason": ""
+        },
+        "preconditions": [],
         "primary_owner_model_id": "model:route-and-guard",
-        "relations": [{"target_commitment_id": "C01:select-one-final-owner", "relation_type": "depends_on", "rationale": "the selected owner decides which specialist receipts are required"}],
         "rationale": "a shell may coordinate domain owners but may not become a shadow implementation",
-        "source_surface_ids": ["surface:openspec", "surface:skill-entry"],
-        "state_writes": ["adapter_receipts", "adapter_status"],
+        "relations": [
+          {
+            "metadata": {},
+            "rationale": "the selected owner decides which specialist receipts are required",
+            "relation_type": "depends_on",
+            "target_commitment_id": "C01:select-one-final-owner"
+          }
+        ],
+        "replacement_state": "active",
+        "scoped_out_reason": "",
+        "side_effects": [],
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_refs": [],
+        "source_surface_ids": [
+          "surface:openspec",
+          "surface:skill-entry"
+        ],
+        "state_writes": [
+          "adapter_receipts",
+          "adapter_status"
+        ],
+        "supporting_model_ids": [],
+        "surface_delegation_only": false,
         "trigger": "the final route needs source, logic, trace, document, PDF, or process evidence",
-        "validation_boundary": "adapter contracts validate identity and status but do not rerun native checks"
+        "validation_boundary": "adapter contracts validate identity and status but do not rerun native checks",
+        "variant_of_business_intent_id": ""
       },
       {
         "actor": "investigation route",
         "actor_kind": "ai_agent",
         "behavior_plane": "agent_operation",
         "business_intent_id": "intent:build-current-research-packet",
+        "child_model_ids": [],
         "commitment_id": "C03:build-current-research-packet",
         "commitment_kind": "workflow",
-        "evidence": {"current": false, "evidence_state": "missing", "model_obligation_ids": ["obligation:packet-current", "obligation:minimum-core-content"], "code_contract_ids": ["contract:research-packet"], "test_evidence_ids": ["test:investigation", "test:process-green-content-not-run"]},
+        "evidence": {
+          "code_contract_ids": [
+            "contract:research-packet"
+          ],
+          "coverage_case_ids": [],
+          "coverage_receipt_ids": [],
+          "coverage_shard_ids": [],
+          "current": false,
+          "evidence_state": "missing",
+          "metadata": {},
+          "model_obligation_ids": [
+            "obligation:packet-current",
+            "obligation:minimum-core-content"
+          ],
+          "proof_artifact_ids": [],
+          "risk_gate_ids": [],
+          "test_evidence_ids": [
+            "test:investigation",
+            "test:process-green-content-not-run"
+          ],
+          "test_mesh_state": "shard_current"
+        },
+        "excluded_behavior_ids": [],
         "expected_result": "a fingerprinted ResearchPacket preserves sources, support limits, alternatives, gaps, and native receipts, with current source-observation and argument-model evidence as its minimum content baseline",
         "expected_terminal": "current packet, bounded partial packet, or visible rejection",
+        "external_differences": [],
         "failure_boundary": "candidate sources, plans, stale receipts, access gaps, and process-only green receipts cannot become passing content evidence",
+        "in_scope": true,
         "label": "assemble a verifier-derived ResearchPacket",
-        "lookup_binding": {"path_patterns": ["skills/logic-writing/assets/schemas/research-packet.schema.json"], "task_terms": ["ResearchPacket", "research handoff"], "workflow_families": ["research_packet"]},
+        "lookup_binding": {
+          "error_signatures": [],
+          "metadata": {},
+          "path_patterns": [
+            "skills/logic-writing/assets/schemas/research-packet.schema.json"
+          ],
+          "task_terms": [
+            "ResearchPacket",
+            "research handoff"
+          ],
+          "tool_ids": [],
+          "workflow_families": [
+            "research_packet"
+          ]
+        },
+        "metadata": {},
+        "miss_origin_state": "no_miss",
+        "model_sync_state": "owner_model_current",
         "owner": "investigation route",
+        "path_authority": {
+          "behavior_commitment_id": "",
+          "business_intent": "",
+          "business_intent_id": "",
+          "evidence_current": false,
+          "evidence_refs": [],
+          "fallback_candidate_ids": [],
+          "metadata": {},
+          "path_sensitive": false,
+          "ppa_confidence": "",
+          "ppa_coverage_receipt_ids": [],
+          "ppa_coverage_shard_ids": [],
+          "ppa_decision": "",
+          "ppa_ok": null,
+          "ppa_report_id": "",
+          "ppa_risk_gate_ids": [],
+          "primary_path_id": "",
+          "proof_artifact_ids": [],
+          "runtime_observation_ids": [],
+          "scoped_out_reason": ""
+        },
+        "preconditions": [],
         "primary_owner_model_id": "model:research-packet",
-        "relations": [{"target_commitment_id": "C02:preserve-specialist-authority", "relation_type": "depends_on", "rationale": "packet status is derived from native receipt status"}],
         "rationale": "one typed handoff prevents research ledgers from leaking into prose or being silently strengthened",
-        "source_surface_ids": ["surface:openspec", "surface:skill-entry"],
-        "state_writes": ["packet_fingerprint", "packet_status"],
-        "side_effects": ["research_packet_created"],
+        "relations": [
+          {
+            "metadata": {},
+            "rationale": "packet status is derived from native receipt status",
+            "relation_type": "depends_on",
+            "target_commitment_id": "C02:preserve-specialist-authority"
+          }
+        ],
+        "replacement_state": "active",
+        "scoped_out_reason": "",
+        "side_effects": [
+          "research_packet_created"
+        ],
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_refs": [],
+        "source_surface_ids": [
+          "surface:openspec",
+          "surface:skill-entry"
+        ],
+        "state_writes": [
+          "packet_fingerprint",
+          "packet_status"
+        ],
+        "supporting_model_ids": [],
+        "surface_delegation_only": false,
         "trigger": "investigation has enough bounded evidence to hand off or report",
-        "validation_boundary": "packet schema, member manifest, exact receipt identities, minimum content domains, and verifier-derived status"
+        "validation_boundary": "packet schema, member manifest, exact receipt identities, minimum content domains, and verifier-derived status",
+        "variant_of_business_intent_id": ""
       },
       {
         "actor": "selected final route",
         "actor_kind": "ai_agent",
         "behavior_plane": "agent_operation",
         "business_intent_id": "intent:build-reader-brief",
+        "child_model_ids": [],
         "commitment_id": "C04:build-reader-brief",
         "commitment_kind": "workflow",
-        "evidence": {"current": false, "evidence_state": "missing", "model_obligation_ids": ["obligation:two-room-boundary"], "code_contract_ids": ["contract:reader-brief"], "test_evidence_ids": ["test:reader"]},
+        "evidence": {
+          "code_contract_ids": [
+            "contract:reader-brief"
+          ],
+          "coverage_case_ids": [],
+          "coverage_receipt_ids": [],
+          "coverage_shard_ids": [],
+          "current": false,
+          "evidence_state": "missing",
+          "metadata": {},
+          "model_obligation_ids": [
+            "obligation:two-room-boundary"
+          ],
+          "proof_artifact_ids": [],
+          "risk_gate_ids": [],
+          "test_evidence_ids": [
+            "test:reader"
+          ],
+          "test_mesh_state": "shard_current"
+        },
+        "excluded_behavior_ids": [],
         "expected_result": "a route-neutral ReaderBrief base plus the selected route extension carries audience, meaning, reader state, contribution sequence, evidence or canon boundaries, limitations, and wording constraints",
         "expected_terminal": "current ReaderBrief or visible block",
+        "external_differences": [],
         "failure_boundary": "raw ledgers and internal Guard language never substitute for a reader brief",
+        "in_scope": true,
         "label": "translate evidence into a ReaderBrief",
-        "lookup_binding": {"path_patterns": ["skills/logic-writing/scripts/build_reader_brief.py"], "task_terms": ["reader brief", "say it like a human"], "workflow_families": ["reader_facing_synthesis"]},
+        "lookup_binding": {
+          "error_signatures": [],
+          "metadata": {},
+          "path_patterns": [
+            "skills/logic-writing/scripts/build_reader_brief.py"
+          ],
+          "task_terms": [
+            "reader brief",
+            "say it like a human"
+          ],
+          "tool_ids": [],
+          "workflow_families": [
+            "reader_facing_synthesis"
+          ]
+        },
+        "metadata": {},
+        "miss_origin_state": "no_miss",
+        "model_sync_state": "owner_model_current",
         "owner": "selected final route",
+        "path_authority": {
+          "behavior_commitment_id": "",
+          "business_intent": "",
+          "business_intent_id": "",
+          "evidence_current": false,
+          "evidence_refs": [],
+          "fallback_candidate_ids": [],
+          "metadata": {},
+          "path_sensitive": false,
+          "ppa_confidence": "",
+          "ppa_coverage_receipt_ids": [],
+          "ppa_coverage_shard_ids": [],
+          "ppa_decision": "",
+          "ppa_ok": null,
+          "ppa_report_id": "",
+          "ppa_risk_gate_ids": [],
+          "primary_path_id": "",
+          "proof_artifact_ids": [],
+          "runtime_observation_ids": [],
+          "scoped_out_reason": ""
+        },
+        "preconditions": [],
         "primary_owner_model_id": "model:reader-artifact",
-        "relations": [{"target_commitment_id": "C01:select-one-final-owner", "relation_type": "depends_on", "rationale": "the selected owner determines the route extension and admissible content packet"}],
         "rationale": "the two-room boundary separates diagnostic machinery from reader-facing explanation",
-        "source_surface_ids": ["surface:openspec", "surface:skill-entry"],
-        "state_writes": ["brief_fingerprint", "brief_status"],
+        "relations": [
+          {
+            "metadata": {},
+            "rationale": "the selected owner determines the route extension and admissible content packet",
+            "relation_type": "depends_on",
+            "target_commitment_id": "C01:select-one-final-owner"
+          }
+        ],
+        "replacement_state": "active",
+        "scoped_out_reason": "",
+        "side_effects": [],
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_refs": [],
+        "source_surface_ids": [
+          "surface:openspec",
+          "surface:skill-entry"
+        ],
+        "state_writes": [
+          "brief_fingerprint",
+          "brief_status"
+        ],
+        "supporting_model_ids": [],
+        "surface_delegation_only": false,
         "trigger": "the final route is ready to plan reader-facing prose",
-        "validation_boundary": "brief sanitizer retains evidence boundaries while excluding internal instructions"
+        "validation_boundary": "brief sanitizer retains evidence boundaries while excluding internal instructions",
+        "variant_of_business_intent_id": ""
       },
       {
         "actor": "selected final route",
         "actor_kind": "ai_agent",
         "behavior_plane": "agent_operation",
         "business_intent_id": "intent:audit-actual-artifact",
+        "child_model_ids": [],
         "commitment_id": "C05:audit-actual-artifact",
         "commitment_kind": "workflow",
-        "evidence": {"current": false, "evidence_state": "missing", "model_obligation_ids": ["obligation:actual-artifact-audit"], "code_contract_ids": ["contract:reader-audit"], "test_evidence_ids": ["test:reader-quality"]},
+        "evidence": {
+          "code_contract_ids": [
+            "contract:reader-audit"
+          ],
+          "coverage_case_ids": [],
+          "coverage_receipt_ids": [],
+          "coverage_shard_ids": [],
+          "current": false,
+          "evidence_state": "missing",
+          "metadata": {},
+          "model_obligation_ids": [
+            "obligation:actual-artifact-audit"
+          ],
+          "proof_artifact_ids": [],
+          "risk_gate_ids": [],
+          "test_evidence_ids": [
+            "test:reader-quality"
+          ],
+          "test_mesh_state": "shard_current"
+        },
+        "excluded_behavior_ids": [],
         "expected_result": "deterministic and separately judged evidence inspect the actual current artifact for contribution, reader-state handoff, explanation pressure, register ownership, variation, model-artifact binding, and route-native semantics",
         "expected_terminal": "current pass, repair request, or visible not-run/degraded state",
+        "external_differences": [],
         "failure_boundary": "metadata, outlines, or audits for an older fingerprint cannot prove prose quality",
+        "in_scope": true,
         "label": "audit the actual reader artifact",
-        "lookup_binding": {"path_patterns": ["skills/logic-writing/scripts/audit_reader_output.py"], "task_terms": ["postwrite audit", "reader flow", "internal language"], "workflow_families": ["actual_artifact_audit"]},
+        "lookup_binding": {
+          "error_signatures": [],
+          "metadata": {},
+          "path_patterns": [
+            "skills/logic-writing/scripts/audit_reader_output.py"
+          ],
+          "task_terms": [
+            "postwrite audit",
+            "reader flow",
+            "internal language"
+          ],
+          "tool_ids": [],
+          "workflow_families": [
+            "actual_artifact_audit"
+          ]
+        },
+        "metadata": {},
+        "miss_origin_state": "no_miss",
+        "model_sync_state": "owner_model_current",
         "owner": "selected final route",
+        "path_authority": {
+          "behavior_commitment_id": "",
+          "business_intent": "",
+          "business_intent_id": "",
+          "evidence_current": false,
+          "evidence_refs": [],
+          "fallback_candidate_ids": [],
+          "metadata": {},
+          "path_sensitive": false,
+          "ppa_confidence": "",
+          "ppa_coverage_receipt_ids": [],
+          "ppa_coverage_shard_ids": [],
+          "ppa_decision": "",
+          "ppa_ok": null,
+          "ppa_report_id": "",
+          "ppa_risk_gate_ids": [],
+          "primary_path_id": "",
+          "proof_artifact_ids": [],
+          "runtime_observation_ids": [],
+          "scoped_out_reason": ""
+        },
+        "preconditions": [],
         "primary_owner_model_id": "model:reader-artifact",
-        "relations": [{"target_commitment_id": "C04:build-reader-brief", "relation_type": "depends_on", "rationale": "artifact quality is checked against its reader contract"}],
         "rationale": "quality claims must be bound to what the user receives",
-        "source_surface_ids": ["surface:openspec", "surface:skill-entry"],
-        "state_writes": ["audit_artifact_fingerprint", "deterministic_audit_status", "judgment_status"],
+        "relations": [
+          {
+            "metadata": {},
+            "rationale": "artifact quality is checked against its reader contract",
+            "relation_type": "depends_on",
+            "target_commitment_id": "C04:build-reader-brief"
+          }
+        ],
+        "replacement_state": "active",
+        "scoped_out_reason": "",
+        "side_effects": [],
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_refs": [],
+        "source_surface_ids": [
+          "surface:openspec",
+          "surface:skill-entry"
+        ],
+        "state_writes": [
+          "audit_artifact_fingerprint",
+          "deterministic_audit_status",
+          "judgment_status"
+        ],
+        "supporting_model_ids": [],
+        "surface_delegation_only": false,
         "trigger": "reader-facing text or document is materially complete",
-        "validation_boundary": "actual text fingerprint, deterministic diagnostics, and independent judgment receipt"
+        "validation_boundary": "actual text fingerprint, deterministic diagnostics, and independent judgment receipt",
+        "variant_of_business_intent_id": ""
       },
       {
         "actor": "selected final route",
         "actor_kind": "ai_agent",
         "behavior_plane": "agent_operation",
         "business_intent_id": "intent:issue-final-artifact-closure",
+        "child_model_ids": [],
         "commitment_id": "C06:issue-final-artifact-closure",
         "commitment_kind": "workflow",
-        "evidence": {"current": false, "evidence_state": "missing", "model_obligation_ids": ["obligation:final-owner-closure", "obligation:minimum-final-content"], "code_contract_ids": ["contract:derive-closure"], "test_evidence_ids": ["test:freshness-closure", "test:process-green-content-not-run", "test:academic-revision-provenance"]},
+        "evidence": {
+          "code_contract_ids": [
+            "contract:derive-closure"
+          ],
+          "coverage_case_ids": [],
+          "coverage_receipt_ids": [],
+          "coverage_shard_ids": [],
+          "current": false,
+          "evidence_state": "missing",
+          "metadata": {},
+          "model_obligation_ids": [
+            "obligation:final-owner-closure",
+            "obligation:minimum-final-content"
+          ],
+          "proof_artifact_ids": [],
+          "risk_gate_ids": [],
+          "test_evidence_ids": [
+            "test:freshness-closure",
+            "test:process-green-content-not-run",
+            "test:academic-revision-provenance"
+          ],
+          "test_mesh_state": "shard_current"
+        },
+        "excluded_behavior_ids": [],
         "expected_result": "only the selected final owner derives closure from the shared minimum baseline, current route-native content, reader evidence, child Guard receipts, and exact artifact identities",
         "expected_terminal": "passed, partial, blocked, or bounded no-progress termination with residual risk",
+        "external_differences": [],
         "failure_boundary": "children, adapters, plans, self-reported status, and process-only green evidence cannot issue final closure; academic closure additionally requires current source-unit-to-target-unit revision provenance",
+        "in_scope": true,
         "label": "derive final closure with one owner",
-        "lookup_binding": {"path_patterns": ["skills/logic-writing/scripts/derive_closure.py"], "task_terms": ["final closure", "done", "residual risk"], "workflow_families": ["operation_closure"]},
+        "lookup_binding": {
+          "error_signatures": [],
+          "metadata": {},
+          "path_patterns": [
+            "skills/logic-writing/scripts/derive_closure.py"
+          ],
+          "task_terms": [
+            "final closure",
+            "done",
+            "residual risk"
+          ],
+          "tool_ids": [],
+          "workflow_families": [
+            "operation_closure"
+          ]
+        },
+        "metadata": {},
+        "miss_origin_state": "no_miss",
+        "model_sync_state": "owner_model_current",
         "owner": "selected final route",
+        "path_authority": {
+          "behavior_commitment_id": "",
+          "business_intent": "",
+          "business_intent_id": "",
+          "evidence_current": false,
+          "evidence_refs": [],
+          "fallback_candidate_ids": [],
+          "metadata": {},
+          "path_sensitive": false,
+          "ppa_confidence": "",
+          "ppa_coverage_receipt_ids": [],
+          "ppa_coverage_shard_ids": [],
+          "ppa_decision": "",
+          "ppa_ok": null,
+          "ppa_report_id": "",
+          "ppa_risk_gate_ids": [],
+          "primary_path_id": "",
+          "proof_artifact_ids": [],
+          "runtime_observation_ids": [],
+          "scoped_out_reason": ""
+        },
+        "preconditions": [],
         "primary_owner_model_id": "model:operation-freshness-closure",
-        "relations": [{"target_commitment_id": "C05:audit-actual-artifact", "relation_type": "depends_on", "rationale": "closure requires current artifact-bound audits"}],
         "rationale": "verifier-derived monotonic closure prevents fake green completion",
-        "source_surface_ids": ["surface:openspec", "surface:skill-entry"],
-        "state_writes": ["revision_provenance_status", "closure_status", "closure_owner", "residual_risk"],
-        "side_effects": ["final_user_claim"],
+        "relations": [
+          {
+            "metadata": {},
+            "rationale": "closure requires current artifact-bound audits",
+            "relation_type": "depends_on",
+            "target_commitment_id": "C05:audit-actual-artifact"
+          }
+        ],
+        "replacement_state": "active",
+        "scoped_out_reason": "",
+        "side_effects": [
+          "final_user_claim"
+        ],
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_refs": [],
+        "source_surface_ids": [
+          "surface:openspec",
+          "surface:skill-entry"
+        ],
+        "state_writes": [
+          "revision_provenance_status",
+          "closure_status",
+          "closure_owner",
+          "residual_risk"
+        ],
+        "supporting_model_ids": [],
+        "surface_delegation_only": false,
         "trigger": "the final route attempts to finish the user artifact",
-        "validation_boundary": "minimum route content, ReaderBrief, deterministic audit, independent reader judgment, academic revision provenance when applicable, and exact artifact identities"
+        "validation_boundary": "minimum route content, ReaderBrief, deterministic audit, independent reader judgment, academic revision provenance when applicable, and exact artifact identities",
+        "variant_of_business_intent_id": ""
       },
       {
         "actor": "release owner",
         "actor_kind": "developer",
         "behavior_plane": "development_process",
         "business_intent_id": "intent:freeze-one-validation-owner",
+        "child_model_ids": [],
         "commitment_id": "C07:freeze-one-validation-owner",
         "commitment_kind": "process",
-        "evidence": {"current": false, "evidence_state": "missing", "model_obligation_ids": ["obligation:frozen-validation", "contract_exhaustion:case:source-name:receipt-schema-json", "contract_exhaustion:case:frozen-boundary:live-consumer-bound-to-change-lifecycle-contract", "contract_exhaustion:case:frozen-boundary:post-archive-full-regression-not-run"], "code_contract_ids": ["contract:verification-owner-plan"], "test_evidence_ids": ["test:frozen-source-materialization", "test:frozen-execution-boundary", "test:full-validation"]},
+        "evidence": {
+          "code_contract_ids": [
+            "contract:verification-owner-plan"
+          ],
+          "coverage_case_ids": [],
+          "coverage_receipt_ids": [],
+          "coverage_shard_ids": [],
+          "current": false,
+          "evidence_state": "missing",
+          "metadata": {},
+          "model_obligation_ids": [
+            "obligation:frozen-validation",
+            "contract_exhaustion:case:source-name:receipt-schema-json",
+            "contract_exhaustion:case:frozen-boundary:live-consumer-bound-to-change-lifecycle-contract",
+            "contract_exhaustion:case:frozen-boundary:post-archive-full-regression-not-run"
+          ],
+          "proof_artifact_ids": [],
+          "risk_gate_ids": [],
+          "test_evidence_ids": [
+            "test:frozen-source-materialization",
+            "test:frozen-execution-boundary",
+            "test:full-validation"
+          ],
+          "test_mesh_state": "shard_current"
+        },
+        "excluded_behavior_ids": [],
         "expected_result": "one frozen validation owner materializes every governed source, every live consumer binds the archive-stable release contract, and the post-archive snapshot aggregates exact current child receipts",
         "expected_terminal": "immutable terminal success receipt or visible blocker",
+        "external_differences": [],
         "failure_boundary": "progress, duplicate owners, mutable inputs, generated-output basename collisions, change-lifecycle contract paths, missing post-archive replay, and interrupted descendants never count as final evidence",
+        "in_scope": true,
         "label": "freeze the final validation owner",
-        "lookup_binding": {"path_patterns": ["openspec/verification-contract.yaml"], "task_terms": ["final validation", "frozen snapshot", "post-archive regression"], "workflow_families": ["development_validation"]},
+        "lookup_binding": {
+          "error_signatures": [],
+          "metadata": {},
+          "path_patterns": [
+            "openspec/verification-contract.yaml"
+          ],
+          "task_terms": [
+            "final validation",
+            "frozen snapshot",
+            "post-archive regression"
+          ],
+          "tool_ids": [],
+          "workflow_families": [
+            "development_validation"
+          ]
+        },
+        "metadata": {},
+        "miss_origin_state": "no_miss",
+        "model_sync_state": "owner_model_current",
         "owner": "single validation owner",
+        "path_authority": {
+          "behavior_commitment_id": "",
+          "business_intent": "",
+          "business_intent_id": "",
+          "evidence_current": false,
+          "evidence_refs": [],
+          "fallback_candidate_ids": [],
+          "metadata": {},
+          "path_sensitive": false,
+          "ppa_confidence": "",
+          "ppa_coverage_receipt_ids": [],
+          "ppa_coverage_shard_ids": [],
+          "ppa_decision": "",
+          "ppa_ok": null,
+          "ppa_report_id": "",
+          "ppa_risk_gate_ids": [],
+          "primary_path_id": "",
+          "proof_artifact_ids": [],
+          "runtime_observation_ids": [],
+          "scoped_out_reason": ""
+        },
+        "preconditions": [],
         "primary_owner_model_id": "model:release-retirement",
-        "relations": [{"target_commitment_id": "C06:issue-final-artifact-closure", "relation_type": "validates", "rationale": "release validation covers the implementation that derives operation closure, not a user artifact instance"}],
         "rationale": "one execution owner prevents duplicate or stale release evidence",
-        "source_surface_ids": ["surface:openspec", "surface:release-process"],
-        "state_writes": ["validation_fingerprint", "validation_status"],
+        "relations": [
+          {
+            "metadata": {},
+            "rationale": "release validation covers the implementation that derives operation closure, not a user artifact instance",
+            "relation_type": "validates",
+            "target_commitment_id": "C06:issue-final-artifact-closure"
+          }
+        ],
+        "replacement_state": "active",
+        "scoped_out_reason": "",
+        "side_effects": [],
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_refs": [],
+        "source_surface_ids": [
+          "surface:openspec",
+          "surface:release-process"
+        ],
+        "state_writes": [
+          "validation_fingerprint",
+          "validation_status"
+        ],
+        "supporting_model_ids": [],
+        "surface_delegation_only": false,
         "trigger": "the release candidate source and toolchain identities are frozen",
-        "validation_boundary": "one stable current verification contract, byte-identical frozen source materialization, finite generated-output and archive-lifecycle bad-case families, post-archive full replay, and immutable terminal receipts"
+        "validation_boundary": "one stable current verification contract, byte-identical frozen source materialization, finite generated-output and archive-lifecycle bad-case families, post-archive full replay, and immutable terminal receipts",
+        "variant_of_business_intent_id": ""
       },
       {
         "actor": "SkillGuard installation owner",
         "actor_kind": "automation",
         "behavior_plane": "development_process",
         "business_intent_id": "intent:activate-recoverable-install",
+        "child_model_ids": [],
         "commitment_id": "C08:activate-recoverable-install",
         "commitment_kind": "process",
-        "evidence": {"current": false, "evidence_state": "missing", "model_obligation_ids": ["obligation:recoverable-install"], "code_contract_ids": ["contract:installation-projection"], "test_evidence_ids": ["test:installed-smoke"]},
+        "evidence": {
+          "code_contract_ids": [
+            "contract:installation-projection"
+          ],
+          "coverage_case_ids": [],
+          "coverage_receipt_ids": [],
+          "coverage_shard_ids": [],
+          "current": false,
+          "evidence_state": "missing",
+          "metadata": {},
+          "model_obligation_ids": [
+            "obligation:recoverable-install"
+          ],
+          "proof_artifact_ids": [],
+          "risk_gate_ids": [],
+          "test_evidence_ids": [
+            "test:installed-smoke"
+          ],
+          "test_mesh_state": "shard_current"
+        },
+        "excluded_behavior_ids": [],
         "expected_result": "the exact validated projection is staged, checked, and activated with rollback retained",
         "expected_terminal": "active current installation or rollback to prior active state",
+        "external_differences": [],
         "failure_boundary": "never mutate the active installation before stage verification",
+        "in_scope": true,
         "label": "activate a recoverable Logic Writing installation",
-        "lookup_binding": {"path_patterns": ["skills/logic-writing/.skillguard"], "task_terms": ["install Logic Writing", "activate skill"], "workflow_families": ["skill_installation"]},
+        "lookup_binding": {
+          "error_signatures": [],
+          "metadata": {},
+          "path_patterns": [
+            "skills/logic-writing/.skillguard"
+          ],
+          "task_terms": [
+            "install Logic Writing",
+            "activate skill"
+          ],
+          "tool_ids": [],
+          "workflow_families": [
+            "skill_installation"
+          ]
+        },
+        "metadata": {},
+        "miss_origin_state": "no_miss",
+        "model_sync_state": "owner_model_current",
         "owner": "SkillGuard",
+        "path_authority": {
+          "behavior_commitment_id": "",
+          "business_intent": "",
+          "business_intent_id": "",
+          "evidence_current": false,
+          "evidence_refs": [],
+          "fallback_candidate_ids": [],
+          "metadata": {},
+          "path_sensitive": false,
+          "ppa_confidence": "",
+          "ppa_coverage_receipt_ids": [],
+          "ppa_coverage_shard_ids": [],
+          "ppa_decision": "",
+          "ppa_ok": null,
+          "ppa_report_id": "",
+          "ppa_risk_gate_ids": [],
+          "primary_path_id": "",
+          "proof_artifact_ids": [],
+          "runtime_observation_ids": [],
+          "scoped_out_reason": ""
+        },
+        "preconditions": [],
         "primary_owner_model_id": "model:release-retirement",
-        "relations": [{"target_commitment_id": "C07:freeze-one-validation-owner", "relation_type": "depends_on", "rationale": "installation consumes the frozen installation projection"}],
         "rationale": "staging and rollback prevent replacement from destroying the current working route",
-        "source_surface_ids": ["surface:openspec", "surface:release-process"],
-        "state_writes": ["stage_fingerprint", "active_fingerprint", "install_status"],
-        "side_effects": ["active_skill_installation"],
+        "relations": [
+          {
+            "metadata": {},
+            "rationale": "installation consumes the frozen installation projection",
+            "relation_type": "depends_on",
+            "target_commitment_id": "C07:freeze-one-validation-owner"
+          }
+        ],
+        "replacement_state": "active",
+        "scoped_out_reason": "",
+        "side_effects": [
+          "active_skill_installation"
+        ],
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_refs": [],
+        "source_surface_ids": [
+          "surface:openspec",
+          "surface:release-process"
+        ],
+        "state_writes": [
+          "stage_fingerprint",
+          "active_fingerprint",
+          "install_status"
+        ],
+        "supporting_model_ids": [],
+        "surface_delegation_only": false,
         "trigger": "a validated release candidate is ready to install",
-        "validation_boundary": "stage identity, activation identity, installed smoke, and rollback evidence"
+        "validation_boundary": "stage identity, activation identity, installed smoke, and rollback evidence",
+        "variant_of_business_intent_id": ""
       },
       {
         "actor": "SkillGuard global router",
         "actor_kind": "automation",
         "behavior_plane": "development_process",
         "business_intent_id": "intent:project-one-global-route",
+        "child_model_ids": [],
         "commitment_id": "C09:project-one-global-route",
         "commitment_kind": "process",
-        "evidence": {"current": false, "evidence_state": "missing", "model_obligation_ids": ["obligation:one-global-route"], "code_contract_ids": ["contract:global-router-projection"], "test_evidence_ids": ["test:global-routing"]},
+        "evidence": {
+          "code_contract_ids": [
+            "contract:global-router-projection"
+          ],
+          "coverage_case_ids": [],
+          "coverage_receipt_ids": [],
+          "coverage_shard_ids": [],
+          "current": false,
+          "evidence_state": "missing",
+          "metadata": {},
+          "model_obligation_ids": [
+            "obligation:one-global-route"
+          ],
+          "proof_artifact_ids": [],
+          "risk_gate_ids": [],
+          "test_evidence_ids": [
+            "test:global-routing"
+          ],
+          "test_mesh_state": "shard_current"
+        },
+        "excluded_behavior_ids": [],
         "expected_result": "exactly one current logic-writing route resolves globally",
         "expected_terminal": "one current route or visible routing block",
+        "external_differences": [],
         "failure_boundary": "old route IDs and duplicate authorities cannot remain active",
+        "in_scope": true,
         "label": "project one global Logic Writing route",
-        "lookup_binding": {"path_patterns": [".codex/.skillguard/global-router/global_registry.json"], "task_terms": ["global route", "logic-writing"], "workflow_families": ["global_skill_routing"]},
+        "lookup_binding": {
+          "error_signatures": [],
+          "metadata": {},
+          "path_patterns": [
+            ".codex/.skillguard/global-router/global_registry.json"
+          ],
+          "task_terms": [
+            "global route",
+            "logic-writing"
+          ],
+          "tool_ids": [],
+          "workflow_families": [
+            "global_skill_routing"
+          ]
+        },
+        "metadata": {},
+        "miss_origin_state": "no_miss",
+        "model_sync_state": "owner_model_current",
         "owner": "SkillGuard global router",
+        "path_authority": {
+          "behavior_commitment_id": "",
+          "business_intent": "",
+          "business_intent_id": "",
+          "evidence_current": false,
+          "evidence_refs": [],
+          "fallback_candidate_ids": [],
+          "metadata": {},
+          "path_sensitive": false,
+          "ppa_confidence": "",
+          "ppa_coverage_receipt_ids": [],
+          "ppa_coverage_shard_ids": [],
+          "ppa_decision": "",
+          "ppa_ok": null,
+          "ppa_report_id": "",
+          "ppa_risk_gate_ids": [],
+          "primary_path_id": "",
+          "proof_artifact_ids": [],
+          "runtime_observation_ids": [],
+          "scoped_out_reason": ""
+        },
+        "preconditions": [],
         "primary_owner_model_id": "model:release-retirement",
-        "relations": [{"target_commitment_id": "C08:activate-recoverable-install", "relation_type": "depends_on", "rationale": "only the active installed projection may become globally authoritative"}],
         "rationale": "one current route eliminates ambiguous old/new activation",
-        "source_surface_ids": ["surface:openspec", "surface:release-process"],
-        "state_writes": ["global_route_status"],
-        "side_effects": ["global_skill_route_projection"],
+        "relations": [
+          {
+            "metadata": {},
+            "rationale": "only the active installed projection may become globally authoritative",
+            "relation_type": "depends_on",
+            "target_commitment_id": "C08:activate-recoverable-install"
+          }
+        ],
+        "replacement_state": "active",
+        "scoped_out_reason": "",
+        "side_effects": [
+          "global_skill_route_projection"
+        ],
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_refs": [],
+        "source_surface_ids": [
+          "surface:openspec",
+          "surface:release-process"
+        ],
+        "state_writes": [
+          "global_route_status"
+        ],
+        "supporting_model_ids": [],
+        "surface_delegation_only": false,
         "trigger": "the staged installation has activated and passed installed checks",
-        "validation_boundary": "registry currentness, exact route count, and old-route non-authority"
+        "validation_boundary": "registry currentness, exact route count, and old-route non-authority",
+        "variant_of_business_intent_id": ""
       },
       {
         "actor": "release owner",
         "actor_kind": "developer",
         "behavior_plane": "development_process",
         "business_intent_id": "intent:publish-logic-writing-release",
+        "child_model_ids": [],
         "commitment_id": "C10:publish-logic-writing-release",
         "commitment_kind": "release",
-        "evidence": {"current": false, "evidence_state": "missing", "model_obligation_ids": ["obligation:publish-release"], "code_contract_ids": ["contract:release-gate"], "test_evidence_ids": ["test:fresh-clone"]},
+        "evidence": {
+          "code_contract_ids": [
+            "contract:release-gate"
+          ],
+          "coverage_case_ids": [],
+          "coverage_receipt_ids": [],
+          "coverage_shard_ids": [],
+          "current": false,
+          "evidence_state": "missing",
+          "metadata": {},
+          "model_obligation_ids": [
+            "obligation:publish-release"
+          ],
+          "proof_artifact_ids": [],
+          "risk_gate_ids": [],
+          "test_evidence_ids": [
+            "test:fresh-clone"
+          ],
+          "test_mesh_state": "shard_current"
+        },
+        "excluded_behavior_ids": [],
         "expected_result": "commit, tag, release, docs, and active installation share the Logic Writing v2.0.0 release identity",
         "expected_terminal": "public v2.0.0 release with immutable prior history or visible blocked publication",
+        "external_differences": [],
         "failure_boundary": "no release while validation, installation, privacy, or fresh-clone evidence is stale or missing",
+        "in_scope": true,
         "label": "publish the verified Logic Writing release",
-        "lookup_binding": {"path_patterns": ["VERSION", "CHANGELOG.md", "docs/release-retirement-checklist.md"], "task_terms": ["publish LogicWriting", "v2.0.0", "four-route release", "post-archive release"], "workflow_families": ["github_release"]},
+        "lookup_binding": {
+          "error_signatures": [],
+          "metadata": {},
+          "path_patterns": [
+            "VERSION",
+            "CHANGELOG.md",
+            "docs/release-retirement-checklist.md"
+          ],
+          "task_terms": [
+            "publish LogicWriting",
+            "v2.0.0",
+            "four-route release",
+            "post-archive release"
+          ],
+          "tool_ids": [],
+          "workflow_families": [
+            "github_release"
+          ]
+        },
+        "metadata": {},
+        "miss_origin_state": "no_miss",
+        "model_sync_state": "owner_model_current",
         "owner": "release workflow",
+        "path_authority": {
+          "behavior_commitment_id": "",
+          "business_intent": "",
+          "business_intent_id": "",
+          "evidence_current": false,
+          "evidence_refs": [],
+          "fallback_candidate_ids": [],
+          "metadata": {},
+          "path_sensitive": false,
+          "ppa_confidence": "",
+          "ppa_coverage_receipt_ids": [],
+          "ppa_coverage_shard_ids": [],
+          "ppa_decision": "",
+          "ppa_ok": null,
+          "ppa_report_id": "",
+          "ppa_risk_gate_ids": [],
+          "primary_path_id": "",
+          "proof_artifact_ids": [],
+          "runtime_observation_ids": [],
+          "scoped_out_reason": ""
+        },
+        "preconditions": [],
         "primary_owner_model_id": "model:release-retirement",
-        "relations": [{"target_commitment_id": "C09:project-one-global-route", "relation_type": "depends_on", "rationale": "publication consumes current validation, install, and routing evidence"}],
         "rationale": "a single identity prevents a green claim for a different source snapshot",
-        "source_surface_ids": ["surface:openspec", "surface:release-process"],
-        "state_writes": ["release_status", "release_fingerprint"],
-        "side_effects": ["public_github_release"],
+        "relations": [
+          {
+            "metadata": {},
+            "rationale": "publication consumes current validation, install, and routing evidence",
+            "relation_type": "depends_on",
+            "target_commitment_id": "C09:project-one-global-route"
+          }
+        ],
+        "replacement_state": "active",
+        "scoped_out_reason": "",
+        "side_effects": [
+          "public_github_release"
+        ],
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_refs": [],
+        "source_surface_ids": [
+          "surface:openspec",
+          "surface:release-process"
+        ],
+        "state_writes": [
+          "release_status",
+          "release_fingerprint"
+        ],
+        "supporting_model_ids": [],
+        "surface_delegation_only": false,
         "trigger": "the installed, routed replacement is current and release candidate checks pass",
-        "validation_boundary": "commit, tag, release, VERSION, README, install, and fresh clone match"
+        "validation_boundary": "commit, tag, release, VERSION, README, install, and fresh clone match",
+        "variant_of_business_intent_id": ""
       },
       {
         "actor": "retirement owner",
         "actor_kind": "developer",
         "behavior_plane": "development_process",
         "business_intent_id": "intent:retire-predecessors-safely",
+        "child_model_ids": [],
         "commitment_id": "C11:retire-predecessors-safely",
         "commitment_kind": "process",
-        "evidence": {"current": false, "evidence_state": "missing", "model_obligation_ids": ["obligation:sequential-retirement"], "code_contract_ids": ["contract:retirement-gate"], "test_evidence_ids": ["test:legacy-residual"]},
+        "evidence": {
+          "code_contract_ids": [
+            "contract:retirement-gate"
+          ],
+          "coverage_case_ids": [],
+          "coverage_receipt_ids": [],
+          "coverage_shard_ids": [],
+          "current": false,
+          "evidence_state": "missing",
+          "metadata": {},
+          "model_obligation_ids": [
+            "obligation:sequential-retirement"
+          ],
+          "proof_artifact_ids": [],
+          "risk_gate_ids": [],
+          "test_evidence_ids": [
+            "test:legacy-residual"
+          ],
+          "test_mesh_state": "shard_current"
+        },
+        "excluded_behavior_ids": [],
         "expected_result": "verified backups and healthy replacement precede local removal, travel-then-storyline GitHub privatization, and an explicit no-deletion terminal",
         "expected_terminal": "travel-story-planner and storyline-design-skill are private with authenticated visibility and anonymous-inaccessibility receipts while Logic Writing remains healthy",
+        "external_differences": [],
         "failure_boundary": "never privatize before recovery, release, install, routing, residual, and post-first-privatization health gates pass; never privatize Storyline before Travel; never issue repository deletion",
+        "in_scope": true,
         "label": "retire Travel and Storyline predecessor skills and public repository surfaces sequentially",
-        "lookup_binding": {"path_patterns": ["MIGRATION.md", "docs/release-retirement-checklist.md"], "task_terms": ["privatize old repositories", "retire predecessors", "handoff deletion"], "workflow_families": ["predecessor_retirement"]},
+        "lookup_binding": {
+          "error_signatures": [],
+          "metadata": {},
+          "path_patterns": [
+            "MIGRATION.md",
+            "docs/release-retirement-checklist.md"
+          ],
+          "task_terms": [
+            "privatize old repositories",
+            "retire predecessors",
+            "handoff deletion"
+          ],
+          "tool_ids": [],
+          "workflow_families": [
+            "predecessor_retirement"
+          ]
+        },
+        "metadata": {},
+        "miss_origin_state": "no_miss",
+        "model_sync_state": "owner_model_current",
         "owner": "retirement workflow",
+        "path_authority": {
+          "behavior_commitment_id": "",
+          "business_intent": "",
+          "business_intent_id": "",
+          "evidence_current": false,
+          "evidence_refs": [],
+          "fallback_candidate_ids": [],
+          "metadata": {},
+          "path_sensitive": false,
+          "ppa_confidence": "",
+          "ppa_coverage_receipt_ids": [],
+          "ppa_coverage_shard_ids": [],
+          "ppa_decision": "",
+          "ppa_ok": null,
+          "ppa_report_id": "",
+          "ppa_risk_gate_ids": [],
+          "primary_path_id": "",
+          "proof_artifact_ids": [],
+          "runtime_observation_ids": [],
+          "scoped_out_reason": ""
+        },
+        "preconditions": [],
         "primary_owner_model_id": "model:release-retirement",
-        "relations": [
-          {"target_commitment_id": "C10:publish-logic-writing-release", "relation_type": "depends_on", "rationale": "the replacement release must exist before old authorities are removed"},
-          {"target_commitment_id": "C06:issue-final-artifact-closure", "relation_type": "requires_evidence_from", "rationale": "installed representative operation evidence must remain healthy across retirement"}
-        ],
         "rationale": "public-surface retirement is safe only after an independently recoverable replacement exists, and irreversible deletion remains user-owned",
-        "source_surface_ids": ["surface:openspec", "surface:release-process"],
-        "state_writes": ["retired_local", "privatized_remote", "visibility_receipts", "repository_deletion_prohibited"],
-        "side_effects": ["local_skill_removal", "github_repository_visibility_private"],
+        "relations": [
+          {
+            "metadata": {},
+            "rationale": "the replacement release must exist before old authorities are removed",
+            "relation_type": "depends_on",
+            "target_commitment_id": "C10:publish-logic-writing-release"
+          },
+          {
+            "metadata": {},
+            "rationale": "installed representative operation evidence must remain healthy across retirement",
+            "relation_type": "requires_evidence_from",
+            "target_commitment_id": "C06:issue-final-artifact-closure"
+          }
+        ],
+        "replacement_state": "active",
+        "scoped_out_reason": "",
+        "side_effects": [
+          "local_skill_removal",
+          "github_repository_visibility_private"
+        ],
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_refs": [],
+        "source_surface_ids": [
+          "surface:openspec",
+          "surface:release-process"
+        ],
+        "state_writes": [
+          "retired_local",
+          "privatized_remote",
+          "visibility_receipts",
+          "repository_deletion_prohibited"
+        ],
+        "supporting_model_ids": [],
+        "surface_delegation_only": false,
         "trigger": "the replacement release, installation, routing, backups, and residual audit are current",
-        "validation_boundary": "backup restore, zero active residuals, Travel-then-Storyline authenticated PRIVATE plus anonymous 404 receipts, replacement health rechecks, rollback, and deletion prohibition"
+        "validation_boundary": "backup restore, zero active residuals, Travel-then-Storyline authenticated PRIVATE plus anonymous 404 receipts, replacement health rechecks, rollback, and deletion prohibition",
+        "variant_of_business_intent_id": ""
       },
       {
         "actor": "fiction-writing final route",
         "actor_kind": "ai_agent",
         "behavior_plane": "agent_operation",
         "business_intent_id": "intent:produce-fiction-artifact",
+        "child_model_ids": [],
         "commitment_id": "C12:produce-fiction-artifact",
         "commitment_kind": "skill",
-        "evidence": {"current": false, "evidence_state": "missing", "model_obligation_ids": ["obligation:fiction-route", "obligation:fiction-final-manuscript"], "code_contract_ids": ["contract:fiction-native"], "test_evidence_ids": ["test:fiction-native"]},
+        "evidence": {
+          "code_contract_ids": [
+            "contract:fiction-native"
+          ],
+          "coverage_case_ids": [],
+          "coverage_receipt_ids": [],
+          "coverage_shard_ids": [],
+          "current": false,
+          "evidence_state": "missing",
+          "metadata": {},
+          "model_obligation_ids": [
+            "obligation:fiction-route",
+            "obligation:fiction-final-manuscript"
+          ],
+          "proof_artifact_ids": [],
+          "risk_gate_ids": [],
+          "test_evidence_ids": [
+            "test:fiction-native"
+          ],
+          "test_mesh_state": "shard_current"
+        },
+        "excluded_behavior_ids": [],
         "expected_result": "fiction planning or prose preserves story contribution, reader state, promises, continuity, voice, real manuscript identity, semantic review, and model-prose binding at the requested depth",
         "expected_terminal": "current bounded fiction artifact, explicit human review, partial result, or visible block",
+        "external_differences": [],
         "failure_boundary": "compact evidence cannot close longform prose and attractive prose cannot replace missing model, binding, continuity, Guard, or actual-artifact evidence",
+        "in_scope": true,
         "label": "produce a model-bound fiction artifact",
-        "lookup_binding": {"path_patterns": ["skills/logic-writing/references/routes/fiction-writing.md", "skills/logic-writing/routes/fiction"], "task_terms": ["fiction", "novel", "short story", "chapter", "story audit"], "workflow_families": ["fiction_writing"]},
+        "lookup_binding": {
+          "error_signatures": [],
+          "metadata": {},
+          "path_patterns": [
+            "skills/logic-writing/references/routes/fiction-writing.md",
+            "skills/logic-writing/routes/fiction"
+          ],
+          "task_terms": [
+            "fiction",
+            "novel",
+            "short story",
+            "chapter",
+            "story audit"
+          ],
+          "tool_ids": [],
+          "workflow_families": [
+            "fiction_writing"
+          ]
+        },
+        "metadata": {},
+        "miss_origin_state": "no_miss",
+        "model_sync_state": "owner_model_current",
         "owner": "fiction-writing route",
+        "path_authority": {
+          "behavior_commitment_id": "",
+          "business_intent": "",
+          "business_intent_id": "",
+          "evidence_current": false,
+          "evidence_refs": [],
+          "fallback_candidate_ids": [],
+          "metadata": {},
+          "path_sensitive": false,
+          "ppa_confidence": "",
+          "ppa_coverage_receipt_ids": [],
+          "ppa_coverage_shard_ids": [],
+          "ppa_decision": "",
+          "ppa_ok": null,
+          "ppa_report_id": "",
+          "ppa_risk_gate_ids": [],
+          "primary_path_id": "",
+          "proof_artifact_ids": [],
+          "runtime_observation_ids": [],
+          "scoped_out_reason": ""
+        },
+        "preconditions": [],
         "primary_owner_model_id": "model:fiction-route",
-        "relations": [
-          {"target_commitment_id": "C01:select-one-final-owner", "relation_type": "depends_on", "rationale": "fiction begins only after terminal deliverable routing"},
-          {"target_commitment_id": "C02:preserve-specialist-authority", "relation_type": "depends_on", "rationale": "fiction consumes native Guard receipts"}
-        ],
         "rationale": "fiction has route-specific narrative semantics that cannot be collapsed into generic prose quality",
-        "source_surface_ids": ["surface:openspec", "surface:skill-entry"],
-        "state_writes": ["fiction_depth", "story_model_status", "fiction_artifact_status"],
-        "side_effects": ["fiction_artifact_created"],
+        "relations": [
+          {
+            "metadata": {},
+            "rationale": "fiction begins only after terminal deliverable routing",
+            "relation_type": "depends_on",
+            "target_commitment_id": "C01:select-one-final-owner"
+          },
+          {
+            "metadata": {},
+            "rationale": "fiction consumes native Guard receipts",
+            "relation_type": "depends_on",
+            "target_commitment_id": "C02:preserve-specialist-authority"
+          }
+        ],
+        "replacement_state": "active",
+        "scoped_out_reason": "",
+        "side_effects": [
+          "fiction_artifact_created"
+        ],
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_refs": [],
+        "source_surface_ids": [
+          "surface:openspec",
+          "surface:skill-entry"
+        ],
+        "state_writes": [
+          "fiction_depth",
+          "story_model_status",
+          "fiction_artifact_status"
+        ],
+        "supporting_model_ids": [],
+        "surface_delegation_only": false,
         "trigger": "the terminal deliverable is fiction planning, prose, revision, or audit",
-        "validation_boundary": "fiction native regression, exact known-bad family, actual manuscript identity, and route-specific semantic review"
+        "validation_boundary": "fiction native regression, exact known-bad family, actual manuscript identity, and route-specific semantic review",
+        "variant_of_business_intent_id": ""
       },
       {
         "actor": "travel-guide final route",
         "actor_kind": "ai_agent",
         "behavior_plane": "agent_operation",
         "business_intent_id": "intent:produce-travel-guide",
+        "child_model_ids": [],
         "commitment_id": "C13:produce-travel-guide",
         "commitment_kind": "skill",
-        "evidence": {"current": false, "evidence_state": "missing", "model_obligation_ids": ["obligation:travel-route", "obligation:travel-final-guide"], "code_contract_ids": ["contract:travel-native"], "test_evidence_ids": ["test:travel-native"]},
+        "evidence": {
+          "code_contract_ids": [
+            "contract:travel-native"
+          ],
+          "coverage_case_ids": [],
+          "coverage_receipt_ids": [],
+          "coverage_shard_ids": [],
+          "current": false,
+          "evidence_state": "missing",
+          "metadata": {},
+          "model_obligation_ids": [
+            "obligation:travel-route",
+            "obligation:travel-final-guide"
+          ],
+          "proof_artifact_ids": [],
+          "risk_gate_ids": [],
+          "test_evidence_ids": [
+            "test:travel-native"
+          ],
+          "test_mesh_state": "shard_current"
+        },
+        "excluded_behavior_ids": [],
         "expected_result": "a source-time-aware, feasible, traveler-fit, fallback-aware guide is projected through the shared reader kernel and reverse-reviewed from actual bytes",
         "expected_terminal": "initial-plan, bookable, day-of, downgraded, human-review, or blocked guide boundary",
+        "external_differences": [],
         "failure_boundary": "story polish cannot strengthen source freshness, weather, alert, feasibility, fit, lodging, fallback, or artifact identity status",
+        "in_scope": true,
         "label": "produce a verified traveler-native guide",
-        "lookup_binding": {"path_patterns": ["skills/logic-writing/references/routes/travel-guide.md", "skills/logic-writing/routes/travel"], "task_terms": ["travel guide", "itinerary", "lodging", "route plan", "traveler fit"], "workflow_families": ["travel_guide"]},
+        "lookup_binding": {
+          "error_signatures": [],
+          "metadata": {},
+          "path_patterns": [
+            "skills/logic-writing/references/routes/travel-guide.md",
+            "skills/logic-writing/routes/travel"
+          ],
+          "task_terms": [
+            "travel guide",
+            "itinerary",
+            "lodging",
+            "route plan",
+            "traveler fit"
+          ],
+          "tool_ids": [],
+          "workflow_families": [
+            "travel_guide"
+          ]
+        },
+        "metadata": {},
+        "miss_origin_state": "no_miss",
+        "model_sync_state": "owner_model_current",
         "owner": "travel-guide route",
+        "path_authority": {
+          "behavior_commitment_id": "",
+          "business_intent": "",
+          "business_intent_id": "",
+          "evidence_current": false,
+          "evidence_refs": [],
+          "fallback_candidate_ids": [],
+          "metadata": {},
+          "path_sensitive": false,
+          "ppa_confidence": "",
+          "ppa_coverage_receipt_ids": [],
+          "ppa_coverage_shard_ids": [],
+          "ppa_decision": "",
+          "ppa_ok": null,
+          "ppa_report_id": "",
+          "ppa_risk_gate_ids": [],
+          "primary_path_id": "",
+          "proof_artifact_ids": [],
+          "runtime_observation_ids": [],
+          "scoped_out_reason": ""
+        },
+        "preconditions": [],
         "primary_owner_model_id": "model:travel-route",
-        "relations": [
-          {"target_commitment_id": "C01:select-one-final-owner", "relation_type": "depends_on", "rationale": "travel begins only after terminal deliverable routing"},
-          {"target_commitment_id": "C02:preserve-specialist-authority", "relation_type": "depends_on", "rationale": "travel consumes SourceGuard, WorldGuard, TraceGuard, and LogicGuard evidence"}
-        ],
         "rationale": "travel requires live-world, feasibility, fit, and fallback semantics beyond generic narrative projection",
-        "source_surface_ids": ["surface:openspec", "surface:skill-entry"],
-        "state_writes": ["allowed_claim_level", "route_feasibility_status", "travel_artifact_status"],
-        "side_effects": ["travel_guide_created"],
+        "relations": [
+          {
+            "metadata": {},
+            "rationale": "travel begins only after terminal deliverable routing",
+            "relation_type": "depends_on",
+            "target_commitment_id": "C01:select-one-final-owner"
+          },
+          {
+            "metadata": {},
+            "rationale": "travel consumes SourceGuard, WorldGuard, TraceGuard, and LogicGuard evidence",
+            "relation_type": "depends_on",
+            "target_commitment_id": "C02:preserve-specialist-authority"
+          }
+        ],
+        "replacement_state": "active",
+        "scoped_out_reason": "",
+        "side_effects": [
+          "travel_guide_created"
+        ],
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_refs": [],
+        "source_surface_ids": [
+          "surface:openspec",
+          "surface:skill-entry"
+        ],
+        "state_writes": [
+          "allowed_claim_level",
+          "route_feasibility_status",
+          "travel_artifact_status"
+        ],
+        "supporting_model_ids": [],
+        "surface_delegation_only": false,
         "trigger": "the terminal deliverable is a substantive itinerary, route, lodging, fit recommendation, or traveler guide",
-        "validation_boundary": "travel native regression, exact time/feasibility/fallback cases, and actual-guide reverse review"
+        "validation_boundary": "travel native regression, exact time/feasibility/fallback cases, and actual-guide reverse review",
+        "variant_of_business_intent_id": ""
       },
       {
         "actor": "shared reader kernel",
         "actor_kind": "ai_agent",
         "behavior_plane": "agent_operation",
         "business_intent_id": "intent:bind-model-to-reader-artifact",
+        "child_model_ids": [],
         "commitment_id": "C14:bind-model-to-reader-artifact",
         "commitment_kind": "workflow",
-        "evidence": {"current": false, "evidence_state": "missing", "model_obligation_ids": ["obligation:model-artifact-binding"], "code_contract_ids": ["contract:model-artifact-binding"], "test_evidence_ids": ["test:shared-writing"]},
+        "evidence": {
+          "code_contract_ids": [
+            "contract:model-artifact-binding"
+          ],
+          "coverage_case_ids": [],
+          "coverage_receipt_ids": [],
+          "coverage_shard_ids": [],
+          "current": false,
+          "evidence_state": "missing",
+          "metadata": {},
+          "model_obligation_ids": [
+            "obligation:model-artifact-binding"
+          ],
+          "proof_artifact_ids": [],
+          "risk_gate_ids": [],
+          "test_evidence_ids": [
+            "test:shared-writing"
+          ],
+          "test_mesh_state": "shard_current"
+        },
+        "excluded_behavior_ids": [],
         "expected_result": "important planned rows and reader-facing units bind to the same current artifact identity with concrete reader-state handoffs and route-specific extensions",
         "expected_terminal": "current binding and reverse audit or visible drift",
+        "external_differences": [],
         "failure_boundary": "generic handoffs, unbound prose, unrealized rows, duplicate binding without changed effect, and stale artifact hashes cannot pass",
+        "in_scope": true,
         "label": "bind model work to the actual reader artifact",
-        "lookup_binding": {"path_patterns": ["skills/logic-writing/references/shared", "skills/logic-writing/scripts/audit_reader_output.py"], "task_terms": ["reader state", "model prose binding", "reverse audit", "say it like a human"], "workflow_families": ["shared_reader_kernel"]},
+        "lookup_binding": {
+          "error_signatures": [],
+          "metadata": {},
+          "path_patterns": [
+            "skills/logic-writing/references/shared",
+            "skills/logic-writing/scripts/audit_reader_output.py"
+          ],
+          "task_terms": [
+            "reader state",
+            "model prose binding",
+            "reverse audit",
+            "say it like a human"
+          ],
+          "tool_ids": [],
+          "workflow_families": [
+            "shared_reader_kernel"
+          ]
+        },
+        "metadata": {},
+        "miss_origin_state": "no_miss",
+        "model_sync_state": "owner_model_current",
         "owner": "shared reader kernel",
+        "path_authority": {
+          "behavior_commitment_id": "",
+          "business_intent": "",
+          "business_intent_id": "",
+          "evidence_current": false,
+          "evidence_refs": [],
+          "fallback_candidate_ids": [],
+          "metadata": {},
+          "path_sensitive": false,
+          "ppa_confidence": "",
+          "ppa_coverage_receipt_ids": [],
+          "ppa_coverage_shard_ids": [],
+          "ppa_decision": "",
+          "ppa_ok": null,
+          "ppa_report_id": "",
+          "ppa_risk_gate_ids": [],
+          "primary_path_id": "",
+          "proof_artifact_ids": [],
+          "runtime_observation_ids": [],
+          "scoped_out_reason": ""
+        },
+        "preconditions": [],
         "primary_owner_model_id": "model:reader-artifact",
-        "relations": [
-          {"target_commitment_id": "C04:build-reader-brief", "relation_type": "depends_on", "rationale": "binding consumes the route-neutral reader contract"},
-          {"target_commitment_id": "C05:audit-actual-artifact", "relation_type": "depends_on", "rationale": "actual-artifact audit verifies the binding"}
-        ],
         "rationale": "shared model-to-reader evidence improves every route without transferring route-native semantics",
-        "source_surface_ids": ["surface:openspec", "surface:skill-entry"],
-        "state_writes": ["binding_status", "reader_state_status", "artifact_identity"],
+        "relations": [
+          {
+            "metadata": {},
+            "rationale": "binding consumes the route-neutral reader contract",
+            "relation_type": "depends_on",
+            "target_commitment_id": "C04:build-reader-brief"
+          },
+          {
+            "metadata": {},
+            "rationale": "actual-artifact audit verifies the binding",
+            "relation_type": "depends_on",
+            "target_commitment_id": "C05:audit-actual-artifact"
+          }
+        ],
+        "replacement_state": "active",
+        "scoped_out_reason": "",
+        "side_effects": [],
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_refs": [],
+        "source_surface_ids": [
+          "surface:openspec",
+          "surface:skill-entry"
+        ],
+        "state_writes": [
+          "binding_status",
+          "reader_state_status",
+          "artifact_identity"
+        ],
+        "supporting_model_ids": [],
+        "surface_delegation_only": false,
         "trigger": "a selected route projects model work into a reader-facing artifact",
-        "validation_boundary": "shared writing regression, actual artifact fingerprint, and route-specific reverse audit"
+        "validation_boundary": "shared writing regression, actual artifact fingerprint, and route-specific reverse audit",
+        "variant_of_business_intent_id": ""
       }
     ],
     "current_revision": "logic-writing-model-v3-four-routes",
     "expected_business_intent_ids": [
-      "intent:select-one-final-owner", "intent:preserve-specialist-authority", "intent:build-current-research-packet", "intent:build-reader-brief", "intent:audit-actual-artifact", "intent:issue-final-artifact-closure", "intent:freeze-one-validation-owner", "intent:activate-recoverable-install", "intent:project-one-global-route", "intent:publish-logic-writing-release", "intent:retire-predecessors-safely", "intent:produce-fiction-artifact", "intent:produce-travel-guide", "intent:bind-model-to-reader-artifact"
+      "intent:select-one-final-owner",
+      "intent:preserve-specialist-authority",
+      "intent:build-current-research-packet",
+      "intent:build-reader-brief",
+      "intent:audit-actual-artifact",
+      "intent:issue-final-artifact-closure",
+      "intent:freeze-one-validation-owner",
+      "intent:activate-recoverable-install",
+      "intent:project-one-global-route",
+      "intent:publish-logic-writing-release",
+      "intent:retire-predecessors-safely",
+      "intent:produce-fiction-artifact",
+      "intent:produce-travel-guide",
+      "intent:bind-model-to-reader-artifact"
     ],
     "expected_commitment_ids": [
-      "C01:select-one-final-owner", "C02:preserve-specialist-authority", "C03:build-current-research-packet", "C04:build-reader-brief", "C05:audit-actual-artifact", "C06:issue-final-artifact-closure", "C07:freeze-one-validation-owner", "C08:activate-recoverable-install", "C09:project-one-global-route", "C10:publish-logic-writing-release", "C11:retire-predecessors-safely", "C12:produce-fiction-artifact", "C13:produce-travel-guide", "C14:bind-model-to-reader-artifact"
+      "C01:select-one-final-owner",
+      "C02:preserve-specialist-authority",
+      "C03:build-current-research-packet",
+      "C04:build-reader-brief",
+      "C05:audit-actual-artifact",
+      "C06:issue-final-artifact-closure",
+      "C07:freeze-one-validation-owner",
+      "C08:activate-recoverable-install",
+      "C09:project-one-global-route",
+      "C10:publish-logic-writing-release",
+      "C11:retire-predecessors-safely",
+      "C12:produce-fiction-artifact",
+      "C13:produce-travel-guide",
+      "C14:bind-model-to-reader-artifact"
     ],
     "ledger_id": "logic-writing-behavior-ledger",
-    "metadata": {"canonical_authority": ".flowguard/behavior_commitment_ledger/ledger.json", "evidence_phase": "preimplementation", "python_adapter_role": "thin_loader_only"},
+    "metadata": {
+      "canonical_authority": ".flowguard/behavior_commitment_ledger/ledger.json",
+      "evidence_phase": "preimplementation",
+      "python_adapter_role": "thin_loader_only"
+    },
     "owner": "Logic Writing maintainer",
     "project_boundary": "Logic Writing agent operation plus validation, install, release, and predecessor retirement",
     "rationale": "register the complete promise set before implementation and update evidence bindings only from current owner receipts",
@@ -349,37 +1622,119 @@
     "require_risk_gates_for_broad_claim": true,
     "source_surfaces": [
       {
-        "business_intent_ids": ["intent:select-one-final-owner", "intent:preserve-specialist-authority", "intent:build-current-research-packet", "intent:build-reader-brief", "intent:audit-actual-artifact", "intent:issue-final-artifact-closure", "intent:freeze-one-validation-owner", "intent:activate-recoverable-install", "intent:project-one-global-route", "intent:publish-logic-writing-release", "intent:retire-predecessors-safely", "intent:produce-fiction-artifact", "intent:produce-travel-guide", "intent:bind-model-to-reader-artifact"],
-        "commitment_ids": ["C01:select-one-final-owner", "C02:preserve-specialist-authority", "C03:build-current-research-packet", "C04:build-reader-brief", "C05:audit-actual-artifact", "C06:issue-final-artifact-closure", "C07:freeze-one-validation-owner", "C08:activate-recoverable-install", "C09:project-one-global-route", "C10:publish-logic-writing-release", "C11:retire-predecessors-safely", "C12:produce-fiction-artifact", "C13:produce-travel-guide", "C14:bind-model-to-reader-artifact"],
+        "business_intent_ids": [
+          "intent:select-one-final-owner",
+          "intent:preserve-specialist-authority",
+          "intent:build-current-research-packet",
+          "intent:build-reader-brief",
+          "intent:audit-actual-artifact",
+          "intent:issue-final-artifact-closure",
+          "intent:freeze-one-validation-owner",
+          "intent:activate-recoverable-install",
+          "intent:project-one-global-route",
+          "intent:publish-logic-writing-release",
+          "intent:retire-predecessors-safely",
+          "intent:produce-fiction-artifact",
+          "intent:produce-travel-guide",
+          "intent:bind-model-to-reader-artifact"
+        ],
+        "commitment_ids": [
+          "C01:select-one-final-owner",
+          "C02:preserve-specialist-authority",
+          "C03:build-current-research-packet",
+          "C04:build-reader-brief",
+          "C05:audit-actual-artifact",
+          "C06:issue-final-artifact-closure",
+          "C07:freeze-one-validation-owner",
+          "C08:activate-recoverable-install",
+          "C09:project-one-global-route",
+          "C10:publish-logic-writing-release",
+          "C11:retire-predecessors-safely",
+          "C12:produce-fiction-artifact",
+          "C13:produce-travel-guide",
+          "C14:bind-model-to-reader-artifact"
+        ],
+        "delegates_to_primary_path": false,
         "freshness_state": "current",
+        "in_scope": true,
         "label": "OpenSpec capability and verification contract",
+        "metadata": {},
         "owner": "Logic Writing maintainer",
+        "primary_path_id": "",
         "rationale": "the approved change defines behavior before implementation",
+        "scoped_out_reason": "",
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
         "source_ref": "openspec/specs and openspec/verification-contract.yaml",
         "surface_id": "surface:openspec",
         "surface_kind": "openspec",
         "validation_boundary": "strict OpenSpec validation and model-test alignment"
       },
       {
-        "business_intent_ids": ["intent:select-one-final-owner", "intent:preserve-specialist-authority", "intent:build-current-research-packet", "intent:build-reader-brief", "intent:audit-actual-artifact", "intent:issue-final-artifact-closure", "intent:produce-fiction-artifact", "intent:produce-travel-guide", "intent:bind-model-to-reader-artifact"],
-        "commitment_ids": ["C01:select-one-final-owner", "C02:preserve-specialist-authority", "C03:build-current-research-packet", "C04:build-reader-brief", "C05:audit-actual-artifact", "C06:issue-final-artifact-closure", "C12:produce-fiction-artifact", "C13:produce-travel-guide", "C14:bind-model-to-reader-artifact"],
+        "business_intent_ids": [
+          "intent:select-one-final-owner",
+          "intent:preserve-specialist-authority",
+          "intent:build-current-research-packet",
+          "intent:build-reader-brief",
+          "intent:audit-actual-artifact",
+          "intent:issue-final-artifact-closure",
+          "intent:produce-fiction-artifact",
+          "intent:produce-travel-guide",
+          "intent:bind-model-to-reader-artifact"
+        ],
+        "commitment_ids": [
+          "C01:select-one-final-owner",
+          "C02:preserve-specialist-authority",
+          "C03:build-current-research-packet",
+          "C04:build-reader-brief",
+          "C05:audit-actual-artifact",
+          "C06:issue-final-artifact-closure",
+          "C12:produce-fiction-artifact",
+          "C13:produce-travel-guide",
+          "C14:bind-model-to-reader-artifact"
+        ],
+        "delegates_to_primary_path": false,
         "freshness_state": "current",
+        "in_scope": true,
         "label": "single Logic Writing skill entrypoint",
+        "metadata": {},
         "owner": "Logic Writing router",
         "primary_path_id": "logic_writing.entry",
         "rationale": "one public skill entry delegates to one selected route",
+        "scoped_out_reason": "",
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
         "source_ref": "skills/logic-writing/SKILL.md",
         "surface_id": "surface:skill-entry",
         "surface_kind": "skill",
         "validation_boundary": "installed route smoke and Primary Path Authority"
       },
       {
-        "business_intent_ids": ["intent:freeze-one-validation-owner", "intent:activate-recoverable-install", "intent:project-one-global-route", "intent:publish-logic-writing-release", "intent:retire-predecessors-safely"],
-        "commitment_ids": ["C07:freeze-one-validation-owner", "C08:activate-recoverable-install", "C09:project-one-global-route", "C10:publish-logic-writing-release", "C11:retire-predecessors-safely"],
+        "business_intent_ids": [
+          "intent:freeze-one-validation-owner",
+          "intent:activate-recoverable-install",
+          "intent:project-one-global-route",
+          "intent:publish-logic-writing-release",
+          "intent:retire-predecessors-safely"
+        ],
+        "commitment_ids": [
+          "C07:freeze-one-validation-owner",
+          "C08:activate-recoverable-install",
+          "C09:project-one-global-route",
+          "C10:publish-logic-writing-release",
+          "C11:retire-predecessors-safely"
+        ],
+        "delegates_to_primary_path": false,
         "freshness_state": "current",
+        "in_scope": true,
         "label": "release and retirement process contract",
+        "metadata": {},
         "owner": "release owner",
+        "primary_path_id": "",
         "rationale": "the process surface defines irreversible side-effect gates",
+        "scoped_out_reason": "",
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
         "source_ref": "openspec/verification-contract.yaml and docs/release-retirement-checklist.md",
         "surface_id": "surface:release-process",
         "surface_kind": "process",

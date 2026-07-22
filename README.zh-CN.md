@@ -1,7 +1,7 @@
 # Logic Writing
 
 <p align="center">
-  <img src="https://img.shields.io/badge/source-2.1.2-6f42c1" alt="源码版本 2.1.2" />
+  <img src="https://img.shields.io/badge/source-2.1.3-6f42c1" alt="源码版本 2.1.3" />
   <img src="https://img.shields.io/badge/skill-logic--writing-334155" alt="技能 logic-writing" />
   <img src="https://img.shields.io/badge/routes-4-0a7f5a" alt="四条最终路线" />
   <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT 许可证" />
@@ -18,7 +18,7 @@
 仍由相应 Guard 语义负责人通过当前统一入口负责，最后再把内部模型翻译成
 人能读懂的话。
 
-> 源码状态：仓库元数据声明 `2.1.2`。这个版本号本身不代表 GitHub Release、
+> 源码状态：仓库元数据声明 `2.1.3`。这个版本号本身不代表 GitHub Release、
 > 安装、完整回归或旧仓库退役已经完成；这些结论都要有各自当前的验证记录。
 
 ## 为什么合在一起

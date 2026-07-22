@@ -80,8 +80,8 @@ def validate(root: Path) -> dict[str, Any]:
 
     if payload.get("schema_version") != SCHEMA:
         findings.append(finding("schema_invalid", f"Expected {SCHEMA}.", str(path)))
-    if payload.get("target_version") != "2.1.2":
-        findings.append(finding("target_version_invalid", "Target version must be 2.1.2.", str(path)))
+    if payload.get("target_version") != "2.1.3":
+        findings.append(finding("target_version_invalid", "Target version must be 2.1.3.", str(path)))
 
     sources = payload.get("sources") if isinstance(payload.get("sources"), list) else []
     source_ids = [row.get("source_id") for row in sources if isinstance(row, dict)]

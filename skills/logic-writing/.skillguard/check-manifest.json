@@ -1,5 +1,5 @@
 {
-  "check_declarations_hash": "A894C0250A756138C21AF155245651C7D8EA5F2898132B33316C40843C9E7835",
+  "check_declarations_hash": "53B39B8FDDB2D0F05D34A8B158D0065898438C8454E3962FDD26DA4D01C4D05C",
   "checks": [
     {
       "args": [
@@ -41,9 +41,9 @@
       "maintenance_unit_id": "unit:logic-writing",
       "member_skill_id": "logic-writing",
       "native_route_id": "route:logic-writing:router",
-      "owner_declaration_hash": "sha256:c40aaabe0714cba4571229ac1370ab27c7fa603e5e2c7f7a7a472ed02fe5a4a1",
+      "owner_declaration_hash": "sha256:19805a2fe352440b7001200591d123c04421aa1d65d85929722553fc1c841cda",
       "owner_input_projection_hash": "sha256:69afd4cf74d67d9ab088c2191db7e549c12f17095b6bfe7478a40f0f0689cf71",
-      "projection_declaration_hash": "sha256:ba1c85a9cd0154de7c9eca2269f58798e8ceebeab87144373b86123ed84c3f74",
+      "projection_declaration_hash": "sha256:61658ec5dfc730eeedea64b361f83b42de7c775bfcde92cb2743bd09d28c14cd",
       "semantic_check_id": "semantic:logic-writing:routing",
       "target_input_role_ids": [],
       "timeout_seconds": 60
@@ -108,9 +108,9 @@
       "maintenance_unit_id": "unit:logic-writing",
       "member_skill_id": "logic-writing",
       "native_route_id": "route:logic-writing:router",
-      "owner_declaration_hash": "sha256:846c3695b50d48be3b697fb68626fe536c1d8d38a3c616eb5359681331deecf0",
+      "owner_declaration_hash": "sha256:1b1508e669750f4f81188411de708ec9841dcefbafe0051e2e8852398e0c0d91",
       "owner_input_projection_hash": "sha256:1ab8de02390a7bbfd276d40425af5dea00549d883613b3e93edbf2f27c259125",
-      "projection_declaration_hash": "sha256:c6482e3f6a1b47dbdeac5ccfa53c2b7c956a26dad591df4a513af5cf40158881",
+      "projection_declaration_hash": "sha256:06b1ee4c7e4b14a02f70e0e4a8dc2446bb05c4746e57fac189887748545b8b77",
       "semantic_check_id": "semantic:logic-writing:specialist-authority",
       "target_input_role_ids": [],
       "timeout_seconds": 60
@@ -166,9 +166,9 @@
       "maintenance_unit_id": "unit:logic-writing",
       "member_skill_id": "logic-writing",
       "native_route_id": "route:logic-writing:investigation",
-      "owner_declaration_hash": "sha256:80df5d198857f557fc5e7989872c296c4a71a27886f790d8fbe03f33a1b77f16",
+      "owner_declaration_hash": "sha256:e00b9292667e9928611ce43b573a06368b0c2c5a64ba3fb2441d65c78c52fe9c",
       "owner_input_projection_hash": "sha256:10c7edcb50c8d26f0638c42c2b915c69fa03a3fdc628838b3a0b8d6cbe5be232",
-      "projection_declaration_hash": "sha256:2d1cc334c2f8b6fff21591bcc453c3e61efe54c1aaeef61afd2d51e170a9d899",
+      "projection_declaration_hash": "sha256:d2feb525a035e3bc38cfc39415ea50d248ca01af5dd7658a011a816867d92d00",
       "semantic_check_id": "semantic:logic-writing:investigation",
       "target_input_role_ids": [],
       "timeout_seconds": 60
@@ -221,9 +221,9 @@
       "maintenance_unit_id": "unit:logic-writing",
       "member_skill_id": "logic-writing",
       "native_route_id": "route:logic-writing:academic-writing",
-      "owner_declaration_hash": "sha256:9a883f04d1c8a0d539994e020ede78b5682bb3ee8623b472596ff1da8eac8627",
+      "owner_declaration_hash": "sha256:b74891d54fedb9f778fa54f825f953b755156db4ce52b8b1c752704c4a073305",
       "owner_input_projection_hash": "sha256:a31b8d30d509ca2d02d6de77669833c5e7d220ea095deee48f49621bfec8b9da",
-      "projection_declaration_hash": "sha256:4221a72b1a2e1f567f5801472a6f41a57ec74488dc35cc3638e11fb6ad90baaa",
+      "projection_declaration_hash": "sha256:2cccd7e12776acad517c8e995bffb876ba900994d25244eb1c5cb2a1f3ca8b20",
       "semantic_check_id": "semantic:logic-writing:academic",
       "target_input_role_ids": [],
       "timeout_seconds": 60
@@ -275,9 +275,9 @@
       "maintenance_unit_id": "unit:logic-writing",
       "member_skill_id": "logic-writing",
       "native_route_id": "route:logic-writing:fiction-writing",
-      "owner_declaration_hash": "sha256:411482ab49d6657ac70a1487a6a6f7285a503abba89ad4f1106a8789e08f97ab",
+      "owner_declaration_hash": "sha256:7197a9d0f9e395a09476c67b571e10da43ef844b77e4a867e3f20c31cb7af0bc",
       "owner_input_projection_hash": "sha256:ef369bba333e1ff5ec28507c907117e7b446216e74c00b06c6d215545086c286",
-      "projection_declaration_hash": "sha256:c398ed9778062467859f360d09083f0e2a7399fac58d152c523bf5a0bcee6953",
+      "projection_declaration_hash": "sha256:1d566b77f0596679efbfb22b61de66d3d9b9abf54585600f886d0a95f06c7e4e",
       "semantic_check_id": "semantic:logic-writing:fiction",
       "target_input_role_ids": [],
       "timeout_seconds": 180
@@ -330,9 +330,9 @@
       "maintenance_unit_id": "unit:logic-writing",
       "member_skill_id": "logic-writing",
       "native_route_id": "route:logic-writing:travel-guide",
-      "owner_declaration_hash": "sha256:72358aee4d8d068d3c48a44f589cb2732eb0bb351fc573c48929ee3304e43303",
+      "owner_declaration_hash": "sha256:18313e319ac8e7627d09107da648aae39f85f104fc3453d4d093c61860e92bef",
       "owner_input_projection_hash": "sha256:ca54455f5103fcbe34ed5b74dd83c3d8f910a20d654a2ac12d0d15b439933fc8",
-      "projection_declaration_hash": "sha256:4f1fc99f6335998a9fb4db78f4ae5c6aff202e00bc0f2bc53a600249dbf92f8b",
+      "projection_declaration_hash": "sha256:cc7d756b954e220ad288edd865d529ac406c235e2ce56236ea01e3e2a2a793b7",
       "semantic_check_id": "semantic:logic-writing:travel",
       "target_input_role_ids": [],
       "timeout_seconds": 180
@@ -384,9 +384,9 @@
       "maintenance_unit_id": "unit:logic-writing",
       "member_skill_id": "logic-writing",
       "native_route_id": "route:logic-writing:router",
-      "owner_declaration_hash": "sha256:aae2e2112f18da429922b8d0af288017ebd543731dbbaa26a00c51eceb47a675",
+      "owner_declaration_hash": "sha256:6081da22779259b450b08398ba9b483b46a465dd2455c486fbcc3d660f741b27",
       "owner_input_projection_hash": "sha256:127cdea388332cab4a6efd603a568a15a2a97f54b74f63eeb2a8b07c28c83ad6",
-      "projection_declaration_hash": "sha256:5687bd60a1be00b9688a6c41c7546e6445edfc3a1cbf82399fd089a75b86bbee",
+      "projection_declaration_hash": "sha256:d011f205c71e29997111280500937a49e707370c962e824f2186287189b91bbc",
       "semantic_check_id": "semantic:logic-writing:shared-writing",
       "target_input_role_ids": [],
       "timeout_seconds": 60
@@ -452,9 +452,9 @@
       "maintenance_unit_id": "unit:logic-writing",
       "member_skill_id": "logic-writing",
       "native_route_id": "route:logic-writing:router",
-      "owner_declaration_hash": "sha256:07f39060f25fe8c68a2e4e0c1ca731bc2fb23d70e83d44e4b68522875b094b92",
+      "owner_declaration_hash": "sha256:46ec46f005b1a39a0013517f5d743f819fc3e5b89ab1f80d1dd5f0a82eda13c2",
       "owner_input_projection_hash": "sha256:724d5dc5b456ca5bf15fe2bde3a64b1ca449bf802ca3be3929306dd94ea51814",
-      "projection_declaration_hash": "sha256:4f263bd8258e528c181e943cc29f07dec3ae6ff75ff067436dab21258db2662b",
+      "projection_declaration_hash": "sha256:1a9cb45b9eaaef777503289db6d13c856d1b002c567488d37b856f259d4263e8",
       "semantic_check_id": "semantic:logic-writing:reader-artifact",
       "target_input_role_ids": [],
       "timeout_seconds": 60
@@ -512,9 +512,9 @@
       "maintenance_unit_id": "unit:logic-writing",
       "member_skill_id": "logic-writing",
       "native_route_id": "route:logic-writing:router",
-      "owner_declaration_hash": "sha256:84dd1edf9704bae192f433ca6508084914dd387a207bf92b73da70d2a29b0eb9",
+      "owner_declaration_hash": "sha256:5895ccaad7e2beb8da09bd083e7f716e6853377a80e9ca88b75d9312da7540fd",
       "owner_input_projection_hash": "sha256:886da43514deeba703041f1d24eac422977a06282f57b0c15913064ad0ac80b5",
-      "projection_declaration_hash": "sha256:477e9500b11d9df305f7e6feb2db23f96a3cba77d8ae0e5983847b0eb911c8b2",
+      "projection_declaration_hash": "sha256:e62bd94d72caed3e1e37e88e578cf10b0d0d2eb0dde18534f6d664e3b66a71c4",
       "semantic_check_id": "semantic:logic-writing:final-closure",
       "target_input_role_ids": [],
       "timeout_seconds": 60
@@ -570,9 +570,9 @@
       "maintenance_unit_id": "unit:logic-writing",
       "member_skill_id": "logic-writing",
       "native_route_id": "route:logic-writing:router",
-      "owner_declaration_hash": "sha256:11374c9c98ba121b5391d8058eb9ad74a7d9d438c6029bbd3a830fd7bb27a7d6",
+      "owner_declaration_hash": "sha256:e73921db8f5947b757b62cc7455f26ec4b3553a4a9d38652b211d39805246b9b",
       "owner_input_projection_hash": "sha256:d4d95ea128719a495aedb08bb8c8974410f381ca5604b43a2d107dce6b5a930f",
-      "projection_declaration_hash": "sha256:6059b403575ee38cde7ce712b9192ccf1d4e0b19f9413ab073639bb09fc84af9",
+      "projection_declaration_hash": "sha256:fe0c4aa933a20cc4151b115e83d6d5e82fe7424fcda38fd92d074b8b81379bb7",
       "semantic_check_id": "semantic:logic-writing:contract-calibration",
       "target_input_role_ids": [],
       "timeout_seconds": 120
@@ -601,7 +601,7 @@
         "exit_code": 0
       },
       "input_component_ids": [
-        "component:contract_schema:2cf5c7e239bc3dd6",
+        "component:contract_schema:2b70e4d38df60f1e",
         "component:documentation_model:0c3c97f260f0f7d6",
         "component:documentation_model:4ec34cbc74ad314b",
         "component:documentation_model:5b69783583632e05",
@@ -660,9 +660,9 @@
       "maintenance_unit_id": "unit:logic-writing",
       "member_skill_id": "logic-writing",
       "native_route_id": "route:logic-writing:router",
-      "owner_declaration_hash": "sha256:8c5caa6eb515cfee3727fa174b7970feefa001e3dd9f513f22f0c7b8188bed41",
-      "owner_input_projection_hash": "sha256:63cc7e0e2f0c8398cbb0bbd4f1a7795cc51c2bef4175abdd945116468b9f527e",
-      "projection_declaration_hash": "sha256:e5c660753a719bb087a5d126a4e54f5168b5e8523a65ed72e4bad9cf60ae7703",
+      "owner_declaration_hash": "sha256:8db3044a9b0922f89e1449d6bbc13a46216922512567577332551fe2bf0459a5",
+      "owner_input_projection_hash": "sha256:3bd085606437331c05348fa2d822881db5737d4b7d06b8a5132c43ccecef8904",
+      "projection_declaration_hash": "sha256:2450f1f958165a190b5ac68039574f46eee771ff32f47e0e122906b06adfcce7",
       "semantic_check_id": "semantic:logic-writing:release-integrity",
       "target_input_role_ids": [],
       "timeout_seconds": 60
@@ -691,8 +691,9 @@
           "obligation:logic-writing:routing"
         ],
         "evidence_class": "hard",
+        "evidence_domain_id": "evidence-domain:logic-writing:routing",
         "execution_owner_id": "owner:logic-writing:routing",
-        "projection_declaration_hash": "sha256:ba1c85a9cd0154de7c9eca2269f58798e8ceebeab87144373b86123ed84c3f74",
+        "projection_declaration_hash": "sha256:61658ec5dfc730eeedea64b361f83b42de7c775bfcde92cb2743bd09d28c14cd",
         "semantic_check_id": "semantic:logic-writing:routing"
       },
       {
@@ -701,8 +702,9 @@
           "obligation:logic-writing:specialist-authority"
         ],
         "evidence_class": "hard",
+        "evidence_domain_id": "evidence-domain:logic-writing:specialist-authority",
         "execution_owner_id": "owner:logic-writing:specialist-authority",
-        "projection_declaration_hash": "sha256:c6482e3f6a1b47dbdeac5ccfa53c2b7c956a26dad591df4a513af5cf40158881",
+        "projection_declaration_hash": "sha256:06b1ee4c7e4b14a02f70e0e4a8dc2446bb05c4746e57fac189887748545b8b77",
         "semantic_check_id": "semantic:logic-writing:specialist-authority"
       },
       {
@@ -711,8 +713,9 @@
           "obligation:logic-writing:investigation-evidence"
         ],
         "evidence_class": "hard",
+        "evidence_domain_id": "evidence-domain:logic-writing:investigation",
         "execution_owner_id": "owner:logic-writing:investigation",
-        "projection_declaration_hash": "sha256:2d1cc334c2f8b6fff21591bcc453c3e61efe54c1aaeef61afd2d51e170a9d899",
+        "projection_declaration_hash": "sha256:d2feb525a035e3bc38cfc39415ea50d248ca01af5dd7658a011a816867d92d00",
         "semantic_check_id": "semantic:logic-writing:investigation"
       },
       {
@@ -721,8 +724,9 @@
           "obligation:logic-writing:academic-provenance"
         ],
         "evidence_class": "hard",
+        "evidence_domain_id": "evidence-domain:logic-writing:academic",
         "execution_owner_id": "owner:logic-writing:academic",
-        "projection_declaration_hash": "sha256:4221a72b1a2e1f567f5801472a6f41a57ec74488dc35cc3638e11fb6ad90baaa",
+        "projection_declaration_hash": "sha256:2cccd7e12776acad517c8e995bffb876ba900994d25244eb1c5cb2a1f3ca8b20",
         "semantic_check_id": "semantic:logic-writing:academic"
       },
       {
@@ -731,8 +735,9 @@
           "obligation:logic-writing:fiction-native"
         ],
         "evidence_class": "hard",
+        "evidence_domain_id": "evidence-domain:logic-writing:fiction",
         "execution_owner_id": "owner:logic-writing:fiction",
-        "projection_declaration_hash": "sha256:c398ed9778062467859f360d09083f0e2a7399fac58d152c523bf5a0bcee6953",
+        "projection_declaration_hash": "sha256:1d566b77f0596679efbfb22b61de66d3d9b9abf54585600f886d0a95f06c7e4e",
         "semantic_check_id": "semantic:logic-writing:fiction"
       },
       {
@@ -741,8 +746,9 @@
           "obligation:logic-writing:travel-native"
         ],
         "evidence_class": "hard",
+        "evidence_domain_id": "evidence-domain:logic-writing:travel",
         "execution_owner_id": "owner:logic-writing:travel",
-        "projection_declaration_hash": "sha256:4f1fc99f6335998a9fb4db78f4ae5c6aff202e00bc0f2bc53a600249dbf92f8b",
+        "projection_declaration_hash": "sha256:cc7d756b954e220ad288edd865d529ac406c235e2ce56236ea01e3e2a2a793b7",
         "semantic_check_id": "semantic:logic-writing:travel"
       },
       {
@@ -751,8 +757,9 @@
           "obligation:logic-writing:shared-writing"
         ],
         "evidence_class": "hard",
+        "evidence_domain_id": "evidence-domain:logic-writing:shared-writing",
         "execution_owner_id": "owner:logic-writing:shared-writing",
-        "projection_declaration_hash": "sha256:5687bd60a1be00b9688a6c41c7546e6445edfc3a1cbf82399fd089a75b86bbee",
+        "projection_declaration_hash": "sha256:d011f205c71e29997111280500937a49e707370c962e824f2186287189b91bbc",
         "semantic_check_id": "semantic:logic-writing:shared-writing"
       },
       {
@@ -761,8 +768,9 @@
           "obligation:logic-writing:reader-actual-artifact"
         ],
         "evidence_class": "hard",
+        "evidence_domain_id": "evidence-domain:logic-writing:reader-artifact",
         "execution_owner_id": "owner:logic-writing:reader-artifact",
-        "projection_declaration_hash": "sha256:4f263bd8258e528c181e943cc29f07dec3ae6ff75ff067436dab21258db2662b",
+        "projection_declaration_hash": "sha256:1a9cb45b9eaaef777503289db6d13c856d1b002c567488d37b856f259d4263e8",
         "semantic_check_id": "semantic:logic-writing:reader-artifact"
       },
       {
@@ -771,8 +779,9 @@
           "obligation:logic-writing:final-closure"
         ],
         "evidence_class": "hard",
+        "evidence_domain_id": "evidence-domain:logic-writing:final-closure",
         "execution_owner_id": "owner:logic-writing:final-closure",
-        "projection_declaration_hash": "sha256:477e9500b11d9df305f7e6feb2db23f96a3cba77d8ae0e5983847b0eb911c8b2",
+        "projection_declaration_hash": "sha256:e62bd94d72caed3e1e37e88e578cf10b0d0d2eb0dde18534f6d664e3b66a71c4",
         "semantic_check_id": "semantic:logic-writing:final-closure"
       },
       {
@@ -790,8 +799,9 @@
           "obligation:logic-writing:travel-native"
         ],
         "evidence_class": "hard",
+        "evidence_domain_id": "evidence-domain:logic-writing:fixture-calibration",
         "execution_owner_id": "owner:logic-writing:contract-calibration",
-        "projection_declaration_hash": "sha256:6059b403575ee38cde7ce712b9192ccf1d4e0b19f9413ab073639bb09fc84af9",
+        "projection_declaration_hash": "sha256:fe0c4aa933a20cc4151b115e83d6d5e82fe7424fcda38fd92d074b8b81379bb7",
         "semantic_check_id": "semantic:logic-writing:contract-calibration"
       },
       {
@@ -800,29 +810,13 @@
           "obligation:logic-writing:release-integrity"
         ],
         "evidence_class": "hard",
+        "evidence_domain_id": "evidence-domain:logic-writing:release-integrity",
         "execution_owner_id": "owner:logic-writing:release-integrity",
-        "projection_declaration_hash": "sha256:e5c660753a719bb087a5d126a4e54f5168b5e8523a65ed72e4bad9cf60ae7703",
+        "projection_declaration_hash": "sha256:2450f1f958165a190b5ac68039574f46eee771ff32f47e0e122906b06adfcce7",
         "semantic_check_id": "semantic:logic-writing:release-integrity"
       }
     ],
     "components": [
-      {
-        "classification_rule_ids": [
-          "skillguard.content_role_classifier.current:contract_schema"
-        ],
-        "component_hash": "sha256:bbd455dd272dcb9fe50cefd51030ced140cf5261815f0db75897e8f9c9254d7c",
-        "component_id": "component:contract_schema:2cf5c7e239bc3dd6",
-        "consumer_ids": [
-          "owner:logic-writing:release-integrity",
-          "projection:contract-compile",
-          "projection:installation"
-        ],
-        "install_disposition": "copy",
-        "member_paths": [
-          "skills/logic-writing/.skillguard/contract-source.json"
-        ],
-        "role": "contract_schema"
-      },
       {
         "classification_rule_ids": [
           "skillguard.content_role_classifier.current:contract_schema"
@@ -864,6 +858,23 @@
           "skills/logic-writing/assets/schemas/route-decision.schema.json",
           "skills/logic-writing/assets/schemas/source-registry.schema.json",
           "skills/logic-writing/assets/schemas/source-unit-manifest.schema.json"
+        ],
+        "role": "contract_schema"
+      },
+      {
+        "classification_rule_ids": [
+          "skillguard.content_role_classifier.current:contract_schema"
+        ],
+        "component_hash": "sha256:bbd455dd272dcb9fe50cefd51030ced140cf5261815f0db75897e8f9c9254d7c",
+        "component_id": "component:contract_schema:2b70e4d38df60f1e",
+        "consumer_ids": [
+          "owner:logic-writing:release-integrity",
+          "projection:contract-compile",
+          "projection:source-maintenance"
+        ],
+        "install_disposition": "source_only",
+        "member_paths": [
+          "skills/logic-writing/.skillguard/contract-source.json"
         ],
         "role": "contract_schema"
       },
@@ -1706,7 +1717,7 @@
       "owner_cycles": [],
       "unmapped_paths": []
     },
-    "impact_graph_hash": "sha256:0a3a287338162056787bd48dc2825ba184b88d822a7e41a377f2bf037d0ee945",
+    "impact_graph_hash": "sha256:2abdc25567ae558c2a01ffc1a5d63cab5535d2277115cb9ba1490d65ac16edc0",
     "inventory": [
       {
         "classification_rule_id": "skillguard.content_role_classifier.current:runtime_source",
@@ -1760,7 +1771,7 @@
       {
         "classification_rule_id": "skillguard.content_role_classifier.current:contract_schema",
         "content_hash": "sha256:d222224d4ca8b0add008fb1ff8ca998a5a53ec7c4eb9ffdedfd0b52c486ae067",
-        "install_disposition": "copy",
+        "install_disposition": "source_only",
         "path": "skills/logic-writing/.skillguard/contract-source.json",
         "role": "contract_schema"
       },
@@ -3921,7 +3932,7 @@
         "role": "runtime_source"
       }
     ],
-    "inventory_hash": "sha256:b08febfc7a41188fcb3c0ed04ed9507f699d8eaf704c5fdb25fdd45fe2f2569a",
+    "inventory_hash": "sha256:e7a49f62eb5c080a854cb2662ae5f56d170d25d6b41a49c401499a91b3121525",
     "member_root_path": "skills/logic-writing",
     "owner_receipt_root_ref": {
       "path_token": "owner_evidence_root",
@@ -3935,7 +3946,6 @@
         "depends_on_owner_ids": [
           "owner:logic-writing:specialist-authority"
         ],
-        "evidence_domain_id": "evidence-domain:logic-writing:academic",
         "execution_owner_id": "owner:logic-writing:academic",
         "input_component_ids": [
           "component:documentation_model:69c3a91c40ead2c9",
@@ -3958,7 +3968,7 @@
             "path": "skills/logic-writing/scripts/validate_revision_provenance.py"
           }
         ],
-        "owner_declaration_hash": "sha256:9a883f04d1c8a0d539994e020ede78b5682bb3ee8623b472596ff1da8eac8627",
+        "owner_declaration_hash": "sha256:b74891d54fedb9f778fa54f825f953b755156db4ce52b8b1c752704c4a073305",
         "owner_input_projection_hash": "sha256:a31b8d30d509ca2d02d6de77669833c5e7d220ea095deee48f49621bfec8b9da",
         "target_input_role_ids": []
       },
@@ -3967,7 +3977,6 @@
           "check:logic-writing:contract-calibration"
         ],
         "depends_on_owner_ids": [],
-        "evidence_domain_id": "evidence-domain:logic-writing:fixture-calibration",
         "execution_owner_id": "owner:logic-writing:contract-calibration",
         "input_component_ids": [
           "component:fixture_reference:3e4f681dc3142958",
@@ -3983,7 +3992,7 @@
             "path": "skills/logic-writing/.skillguard/fixtures"
           }
         ],
-        "owner_declaration_hash": "sha256:11374c9c98ba121b5391d8058eb9ad74a7d9d438c6029bbd3a830fd7bb27a7d6",
+        "owner_declaration_hash": "sha256:e73921db8f5947b757b62cc7455f26ec4b3553a4a9d38652b211d39805246b9b",
         "owner_input_projection_hash": "sha256:d4d95ea128719a495aedb08bb8c8974410f381ca5604b43a2d107dce6b5a930f",
         "target_input_role_ids": []
       },
@@ -3994,7 +4003,6 @@
         "depends_on_owner_ids": [
           "owner:logic-writing:specialist-authority"
         ],
-        "evidence_domain_id": "evidence-domain:logic-writing:fiction",
         "execution_owner_id": "owner:logic-writing:fiction",
         "input_component_ids": [
           "component:documentation_model:6b2975e50bf95529",
@@ -4016,7 +4024,7 @@
             "path": "skills/logic-writing/routes/fiction"
           }
         ],
-        "owner_declaration_hash": "sha256:411482ab49d6657ac70a1487a6a6f7285a503abba89ad4f1106a8789e08f97ab",
+        "owner_declaration_hash": "sha256:7197a9d0f9e395a09476c67b571e10da43ef844b77e4a867e3f20c31cb7af0bc",
         "owner_input_projection_hash": "sha256:ef369bba333e1ff5ec28507c907117e7b446216e74c00b06c6d215545086c286",
         "target_input_role_ids": []
       },
@@ -4027,7 +4035,6 @@
         "depends_on_owner_ids": [
           "owner:logic-writing:reader-artifact"
         ],
-        "evidence_domain_id": "evidence-domain:logic-writing:final-closure",
         "execution_owner_id": "owner:logic-writing:final-closure",
         "input_component_ids": [
           "component:documentation_model:4ec34cbc74ad314b",
@@ -4055,7 +4062,7 @@
             "path": "skills/logic-writing/scripts/receipt_authority.py"
           }
         ],
-        "owner_declaration_hash": "sha256:84dd1edf9704bae192f433ca6508084914dd387a207bf92b73da70d2a29b0eb9",
+        "owner_declaration_hash": "sha256:5895ccaad7e2beb8da09bd083e7f716e6853377a80e9ca88b75d9312da7540fd",
         "owner_input_projection_hash": "sha256:886da43514deeba703041f1d24eac422977a06282f57b0c15913064ad0ac80b5",
         "target_input_role_ids": []
       },
@@ -4066,7 +4073,6 @@
         "depends_on_owner_ids": [
           "owner:logic-writing:specialist-authority"
         ],
-        "evidence_domain_id": "evidence-domain:logic-writing:investigation",
         "execution_owner_id": "owner:logic-writing:investigation",
         "input_component_ids": [
           "component:documentation_model:b49318d306565332",
@@ -4092,7 +4098,7 @@
             "path": "skills/logic-writing/scripts/validate_source_registry.py"
           }
         ],
-        "owner_declaration_hash": "sha256:80df5d198857f557fc5e7989872c296c4a71a27886f790d8fbe03f33a1b77f16",
+        "owner_declaration_hash": "sha256:e00b9292667e9928611ce43b573a06368b0c2c5a64ba3fb2441d65c78c52fe9c",
         "owner_input_projection_hash": "sha256:10c7edcb50c8d26f0638c42c2b915c69fa03a3fdc628838b3a0b8d6cbe5be232",
         "target_input_role_ids": []
       },
@@ -4107,7 +4113,6 @@
           "owner:logic-writing:shared-writing",
           "owner:logic-writing:travel"
         ],
-        "evidence_domain_id": "evidence-domain:logic-writing:reader-artifact",
         "execution_owner_id": "owner:logic-writing:reader-artifact",
         "input_component_ids": [
           "component:documentation_model:5b69783583632e05",
@@ -4139,7 +4144,7 @@
             "path": "skills/logic-writing/scripts/validate_judgment_receipt.py"
           }
         ],
-        "owner_declaration_hash": "sha256:07f39060f25fe8c68a2e4e0c1ca731bc2fb23d70e83d44e4b68522875b094b92",
+        "owner_declaration_hash": "sha256:46ec46f005b1a39a0013517f5d743f819fc3e5b89ab1f80d1dd5f0a82eda13c2",
         "owner_input_projection_hash": "sha256:724d5dc5b456ca5bf15fe2bde3a64b1ca449bf802ca3be3929306dd94ea51814",
         "target_input_role_ids": []
       },
@@ -4150,10 +4155,9 @@
         "depends_on_owner_ids": [
           "owner:logic-writing:contract-calibration"
         ],
-        "evidence_domain_id": "evidence-domain:logic-writing:release-integrity",
         "execution_owner_id": "owner:logic-writing:release-integrity",
         "input_component_ids": [
-          "component:contract_schema:2cf5c7e239bc3dd6",
+          "component:contract_schema:2b70e4d38df60f1e",
           "component:documentation_model:0c3c97f260f0f7d6",
           "component:documentation_model:4ec34cbc74ad314b",
           "component:documentation_model:5b69783583632e05",
@@ -4208,8 +4212,8 @@
             "role": "runtime_source"
           }
         ],
-        "owner_declaration_hash": "sha256:8c5caa6eb515cfee3727fa174b7970feefa001e3dd9f513f22f0c7b8188bed41",
-        "owner_input_projection_hash": "sha256:63cc7e0e2f0c8398cbb0bbd4f1a7795cc51c2bef4175abdd945116468b9f527e",
+        "owner_declaration_hash": "sha256:8db3044a9b0922f89e1449d6bbc13a46216922512567577332551fe2bf0459a5",
+        "owner_input_projection_hash": "sha256:3bd085606437331c05348fa2d822881db5737d4b7d06b8a5132c43ccecef8904",
         "target_input_role_ids": []
       },
       {
@@ -4217,7 +4221,6 @@
           "check:logic-writing:routing"
         ],
         "depends_on_owner_ids": [],
-        "evidence_domain_id": "evidence-domain:logic-writing:routing",
         "execution_owner_id": "owner:logic-writing:routing",
         "input_component_ids": [
           "component:documentation_model:9784995190987a0d",
@@ -4234,7 +4237,7 @@
             "path": "skills/logic-writing/scripts/select_route.py"
           }
         ],
-        "owner_declaration_hash": "sha256:c40aaabe0714cba4571229ac1370ab27c7fa603e5e2c7f7a7a472ed02fe5a4a1",
+        "owner_declaration_hash": "sha256:19805a2fe352440b7001200591d123c04421aa1d65d85929722553fc1c841cda",
         "owner_input_projection_hash": "sha256:69afd4cf74d67d9ab088c2191db7e549c12f17095b6bfe7478a40f0f0689cf71",
         "target_input_role_ids": []
       },
@@ -4245,7 +4248,6 @@
         "depends_on_owner_ids": [
           "owner:logic-writing:routing"
         ],
-        "evidence_domain_id": "evidence-domain:logic-writing:shared-writing",
         "execution_owner_id": "owner:logic-writing:shared-writing",
         "input_component_ids": [
           "component:contract_schema:28082ed3115ada82",
@@ -4267,7 +4269,7 @@
             "path": "skills/logic-writing/scripts/validate_shared_writing.py"
           }
         ],
-        "owner_declaration_hash": "sha256:aae2e2112f18da429922b8d0af288017ebd543731dbbaa26a00c51eceb47a675",
+        "owner_declaration_hash": "sha256:6081da22779259b450b08398ba9b483b46a465dd2455c486fbcc3d660f741b27",
         "owner_input_projection_hash": "sha256:127cdea388332cab4a6efd603a568a15a2a97f54b74f63eeb2a8b07c28c83ad6",
         "target_input_role_ids": []
       },
@@ -4278,7 +4280,6 @@
         "depends_on_owner_ids": [
           "owner:logic-writing:routing"
         ],
-        "evidence_domain_id": "evidence-domain:logic-writing:specialist-authority",
         "execution_owner_id": "owner:logic-writing:specialist-authority",
         "input_component_ids": [
           "component:documentation_model:a493c78a9e18f441",
@@ -4311,7 +4312,7 @@
             "path": "skills/logic-writing/references/adapters"
           }
         ],
-        "owner_declaration_hash": "sha256:846c3695b50d48be3b697fb68626fe536c1d8d38a3c616eb5359681331deecf0",
+        "owner_declaration_hash": "sha256:1b1508e669750f4f81188411de708ec9841dcefbafe0051e2e8852398e0c0d91",
         "owner_input_projection_hash": "sha256:1ab8de02390a7bbfd276d40425af5dea00549d883613b3e93edbf2f27c259125",
         "target_input_role_ids": []
       },
@@ -4322,7 +4323,6 @@
         "depends_on_owner_ids": [
           "owner:logic-writing:specialist-authority"
         ],
-        "evidence_domain_id": "evidence-domain:logic-writing:travel",
         "execution_owner_id": "owner:logic-writing:travel",
         "input_component_ids": [
           "component:documentation_model:b4bf541ff3a8a97f",
@@ -4345,7 +4345,7 @@
             "path": "skills/logic-writing/routes/travel"
           }
         ],
-        "owner_declaration_hash": "sha256:72358aee4d8d068d3c48a44f589cb2732eb0bb351fc573c48929ee3304e43303",
+        "owner_declaration_hash": "sha256:18313e319ac8e7627d09107da648aae39f85f104fc3453d4d093c61860e92bef",
         "owner_input_projection_hash": "sha256:ca54455f5103fcbe34ed5b74dd83c3d8f910a20d654a2ac12d0d15b439933fc8",
         "target_input_role_ids": []
       }
@@ -4355,16 +4355,16 @@
     "projection_consumers": [
       {
         "consumer_id": "projection:contract-compile",
-        "consumer_projection_hash": "sha256:74e9a6dfd4712b429bad518aca90b7878e0caa796807a0b9d7e03ac400158a95",
+        "consumer_projection_hash": "sha256:82cd74306c87084f62f7da7724286e734c0d05eb566e832d0b2a49068d89083e",
         "impact_plan_schema_version": "skillguard.content_impact_plan.current",
         "impact_policy_id": "skillguard.content_impact_policy.current",
         "input_component_ids": [
-          "component:contract_schema:2cf5c7e239bc3dd6",
+          "component:contract_schema:2b70e4d38df60f1e",
           "component:documentation_model:9784995190987a0d"
         ],
-        "input_projection_hash": "sha256:2f1645ac7ed8d71216e1da94fe43b1897cf2d6476f397eda18cb2dcfc3cbfedc",
+        "input_projection_hash": "sha256:b89534bbc625427fe95ad137f9d3e700524ef2b67f428e5806645dd6e9ccf410",
         "kind": "contract_compile",
-        "projection_declaration_hash": "sha256:841572fa08d5c9e473afd063c45b8ee8ae648703831bdb657821642f1a4897a2"
+        "projection_declaration_hash": "sha256:d4b4169ff28a89a86525714ca8a45eae231f1b6cb4ba383f030cc6be7f9e3f24"
       },
       {
         "consumer_id": "projection:global-router",
@@ -4378,12 +4378,11 @@
       },
       {
         "consumer_id": "projection:installation",
-        "consumer_projection_hash": "sha256:da04a6d026bc2e8dba434d859677248e53d68c43ec43e8baf3e593238c37ed46",
+        "consumer_projection_hash": "sha256:76fc4676cf8fbe5312a1a0d032fb0673530ba9f7c6570250147e4f734a908058",
         "impact_plan_schema_version": "skillguard.content_impact_plan.current",
         "impact_policy_id": "skillguard.content_impact_policy.current",
         "input_component_ids": [
           "component:contract_schema:28082ed3115ada82",
-          "component:contract_schema:2cf5c7e239bc3dd6",
           "component:contract_schema:c5d0771645e19fb1",
           "component:documentation_model:0c3c97f260f0f7d6",
           "component:documentation_model:4ec34cbc74ad314b",
@@ -4411,9 +4410,9 @@
           "component:runtime_source:e715e7bfd9a6eb53",
           "component:runtime_source:e818f845c2baf08d"
         ],
-        "input_projection_hash": "sha256:47cd236fb69e64c832fa1cbeca1e98a8d9b21a52a31f9f337e0d499f444364aa",
+        "input_projection_hash": "sha256:6c596d1a05440a676fdc9bd87172faad5e72172970bb62852effcb972dade1f0",
         "kind": "installation",
-        "projection_declaration_hash": "sha256:e69ae942e9da63fc02ea19414644dfe4b83d5c7122d0cf341ce8923adbb53b37"
+        "projection_declaration_hash": "sha256:515642b4b63ca3dfc486a4e5fea5db47ce67156d359315f6f50f48705be74b32"
       },
       {
         "consumer_id": "projection:portfolio",
@@ -4429,26 +4428,27 @@
       },
       {
         "consumer_id": "projection:source-maintenance",
-        "consumer_projection_hash": "sha256:d849f372ce8f223fb66bcd0204448c771ab242519fe0e783936d779dcfbfe0bc",
+        "consumer_projection_hash": "sha256:4a35cbaed6f08aabe650e304a192c38c3e2c1da73c749f85506c18688619edfb",
         "impact_plan_schema_version": "skillguard.content_impact_plan.current",
         "impact_policy_id": "skillguard.content_impact_policy.current",
         "input_component_ids": [
+          "component:contract_schema:2b70e4d38df60f1e",
           "component:documentation_model:b4bf541ff3a8a97f",
           "component:documentation_model:b8b0fc47f039adac",
           "component:documentation_model:fd78cecba5d3bda5",
           "component:fixture_reference:3e4f681dc3142958"
         ],
-        "input_projection_hash": "sha256:94efc412d669b3e223066050a564c42ea654a25fd088ad9b1c5192ab5510afa8",
+        "input_projection_hash": "sha256:616fb5b7cfe27a3b4c80f2dd609c958a74088afcad62fbc821ccaf1c37b930a8",
         "kind": "source_maintenance",
-        "projection_declaration_hash": "sha256:176d76c6e56dc8eccba5daf900bc1a4df7e112bcf85c8217c64b53aea0245e61"
+        "projection_declaration_hash": "sha256:628a365172097de0c54537af31d84f8a4fcd3045e84a19fdcca94f10ffb80373"
       }
     ],
     "schema_version": "skillguard.content_impact_plan.current",
     "unknown_mapping_disposition": "block"
   },
-  "contract_hash": "910958578333C1A4D530A8A8318F9517DFA2B4A3E4D980DABE4ACD988453DD33",
+  "contract_hash": "9F40239D6D0C96F59FF29BA6653374A6B7CE9B5A7DED843B4EAA505416D9B1DE",
   "maintenance_unit_id": "unit:logic-writing",
-  "manifest_hash": "D4DCDAE8D676C224427F100D08E699496141A46A0D76AAD8BF48F29E41608C3D",
+  "manifest_hash": "4C544E06AFB24AC7C6A90DFD92FE579E60D08A940A06A7B0AC202DBB716680D4",
   "member_skill_ids": [
     "logic-writing"
   ],

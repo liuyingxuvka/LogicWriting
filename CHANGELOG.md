@@ -10,6 +10,19 @@ line follows semantic versioning.
 
 - Hosted release metadata is intentionally not asserted by this source file.
 
+## [2.1.3]
+
+### Changed
+
+- Adopted the current SkillGuard 0.4.1 author contract and bounded evidence
+  lifecycle while preserving Logic Writing's exact eleven target-declared
+  checks and native domain criteria.
+- Upgraded the FlowGuard project record to 0.59.0 and materialized the existing
+  behavior commitment ledger in the current canonical form without changing
+  its fourteen declared commitments.
+- Kept transient validation runs, staging data, caches, and author receipts out
+  of the independent consumer projection and release authority.
+
 ## [2.1.2]
 
 ### Changed

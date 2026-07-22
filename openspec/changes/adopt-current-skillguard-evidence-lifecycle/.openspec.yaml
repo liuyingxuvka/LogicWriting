@@ -1,0 +1,4 @@
+schema: spec-driven
+created: 2026-07-22
+goal: One current author contract, exact target-declared checks, clean consumer
+  projection, bounded evidence retention, and release/install identity parity.

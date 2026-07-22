@@ -41,10 +41,15 @@ https://github.com/liuyingxuvka/FlowGuard
 <!-- flowguard-rule:skill_suite.agent_surface -->
 
 FlowGuard agent skill suite:
-- Primary agent surface: `.agents/skills/`
-- Default entry skill: `.agents/skills/flowguard/SKILL.md`
+- Primary agent surface: the current clean consumer projection under
+  `$CODEX_HOME/skills/`
+- Default entry skill: `$CODEX_HOME/skills/flowguard/SKILL.md`
 - Complete AI-agent setup means the agent can read `AGENTS.md` and all
-  FlowGuard sibling `SKILL.md` files under `.agents/skills/`.
+  FlowGuard sibling `SKILL.md` files under `$CODEX_HOME/skills/`.
+- An ordinary target project does not copy the FlowGuard suite into its local
+  `.agents/skills/` tree and does not own the canonical suite map.
+- Project audit and upgrade verify the package-owned clean-consumer authority
+  directly against that global projection and its ownership manifest.
 - The Python `flowguard` module/CLI is executable check support, not the
   AI-agent skill installation surface.
 
@@ -58,7 +63,7 @@ Project FlowGuard record:
 <!-- flowguard-rule:project.rendered_versions -->
 
 Current adoption record:
-- FlowGuard check-engine version: `0.58.1`
+- FlowGuard check-engine version: `0.60.0`
 - FlowGuard schema version: `1.0`
 
 <!-- flowguard-rule:project.preflight_version_gate -->
@@ -251,7 +256,7 @@ Validation execution ownership:
 - Ordinary use of an installed consumer skill for its domain work does not start SkillGuard maintenance or validation and must not require SkillGuard files, imports, commands, receipts, or router state.
 - SkillGuard supervises the author-side frozen owner plan, receipts, affected-only revalidation, clean consumer projection, and closure; the target skill retains its domain actions, judgment, and native-check authority.
 - Before validating one maintenance unit, freeze its unit id, member ids, exact semantic checks, evidence subjects, covered obligations/domains, dependency order, private receipt root, and exactly one execution owner per check; missing, duplicate, foreign-unit, or cyclic ownership blocks execution.
-- Reuse one immutable terminal-success receipt only inside the same maintenance unit when unit, member, evidence subject, semantic check, owner, request, inputs, dependencies, toolchain, and environment are all exact. A different unit must execute and own its own evidence even when command text and inputs look identical.
+- Reuse one immutable terminal-success producer receipt only inside the same maintenance unit when unit, member, explicitly declared owner, request, inputs, dependencies, toolchain, and environment are all exact. Each semantic check keeps its own subject, domain, obligations, and projection identity. A different unit must execute and own its own evidence even when command text and inputs look identical.
 - Consumer distributions contain no SkillGuard receipt reference or execution-owner projection. They run their target-owned checks directly when their own workflow requires them.
 - Compile the complete maintained inventory into exact content components before validation. A change invalidates only owners and projections that explicitly consume its changed component; an unmapped or ambiguous file blocks instead of falling back to run-all.
 - Treat maintained test, code, contract, configuration, toolchain, and policy changes as freshness inputs only through those exact component edges. Reports, receipts, progress logs, checkboxes, and other runtime outputs are evidence outputs and must not refresh source authority or trigger their own validation.
