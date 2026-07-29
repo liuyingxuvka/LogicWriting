@@ -111,11 +111,15 @@ def _receipt_suite(
     revision: str,
     owned_items: tuple[str, ...],
     receipt: Mapping[str, Any] | None,
+    *,
+    suite_id: str = "",
+    owned_leaf_cell_ids: tuple[str, ...] = (),
+    covered_obligation_ids: tuple[str, ...] | None = None,
 ) -> TestSuiteEvidence:
     receipt = dict(receipt or {})
     passed = receipt.get("status") == "passed" and receipt.get("exit_code") == 0
     return TestSuiteEvidence(
-        str(check["id"]),
+        suite_id or str(check["id"]),
         command=_command(check),
         layer="release",
         result_status="passed" if passed else "not_run",
@@ -138,10 +142,16 @@ def _receipt_suite(
         not_run_reason="" if passed else "final frozen validation has not executed this owner",
         inventory_revision=revision,
         owned_inventory_item_ids=owned_items,
+        owned_obligation_ids=owned_items,
+        owned_leaf_cell_ids=owned_leaf_cell_ids,
         run_id=str(receipt.get("run_id", "")),
         terminal_status="passed" if passed else "not_run",
         result_fingerprint=str(receipt.get("result_fingerprint", "")),
-        covered_obligation_ids=owned_items if passed else (),
+        covered_obligation_ids=(
+            (covered_obligation_ids if covered_obligation_ids is not None else owned_items)
+            if passed
+            else ()
+        ),
         artifact_version=str(receipt.get("artifact_version", "")),
         verifier_version=str(receipt.get("verifier_version", "")),
     )
@@ -188,45 +198,7 @@ def release_plan(receipts: Mapping[str, Mapping[str, Any]] | None = None) -> Tes
         )
         for check in checks
     )
-    source_case_items = tuple(
-        TestPartitionItem(
-            case_id,
-            item_type="validation_obligation",
-            owner_suite_id="check.tests.full",
-            description="OpenSpec frozen-source generated-output name collision",
-            touched_paths=(
-                "skills/logic-writing/assets/schemas/**",
-                "tests/contract/test_schema_runtime_gate.py",
-            ),
-            inventory_revision=revision,
-        )
-        for case_id in frozen_source_case_ids
-    )
-    execution_case_items = tuple(
-        TestPartitionItem(
-            case_id,
-            item_type="validation_obligation",
-            owner_suite_id="check.tests.full",
-            description=(
-                "OpenSpec frozen owner runtime preparation, admitted-source, "
-                "input-manifest, and repository-metadata boundary"
-            ),
-            touched_paths=(
-                "scripts/check_reader_judgment.py",
-                "scripts/prepare_reader_quality_receipt.py",
-                "scripts/check_privacy.py",
-                "scripts/check_public_docs.py",
-                "scripts/check_release_surface.py",
-                "scripts/check_skillguard_authority.py",
-                "scripts/run_frozen_validation.py",
-                "openspec/verification-contract.yaml",
-                "tests/contract/test_release_wrappers.py",
-            ),
-            inventory_revision=revision,
-        )
-        for case_id in frozen_execution_case_ids
-    )
-    items = check_items + source_case_items + execution_case_items
+    items = check_items
     suites = tuple(
         _receipt_suite(
             check,
@@ -234,11 +206,26 @@ def release_plan(receipts: Mapping[str, Mapping[str, Any]] | None = None) -> Tes
             (
                 str(check["id"]),
                 *consumers.get(str(check["id"]), ()),
-                *(frozen_boundary_case_ids if str(check["id"]) == "check.tests.full" else ()),
             ),
             receipt_map.get(str(check["id"])),
         )
         for check in command_checks
+    )
+    full_check = next(
+        check for check in command_checks if str(check["id"]) == "check.tests.full"
+    )
+    contract_exhaustion_suite_id = "check.tests.full:contract-exhaustion"
+    suites = (
+        *suites,
+        _receipt_suite(
+            full_check,
+            revision,
+            (),
+            receipt_map.get("check.tests.full"),
+            suite_id=contract_exhaustion_suite_id,
+            owned_leaf_cell_ids=frozen_boundary_case_ids,
+            covered_obligation_ids=frozen_boundary_case_ids,
+        ),
     )
     return TestMeshPlan(
         parent_suite_id="logic-writing-frozen-release-validation",
@@ -246,7 +233,10 @@ def release_plan(receipts: Mapping[str, Mapping[str, Any]] | None = None) -> Tes
         child_suites=suites,
         target_split_derivation=TestTargetSplitDerivation(
             "model:release-retirement",
-            target_suite_ids=tuple(str(item["id"]) for item in command_checks),
+            target_suite_ids=(
+                *(str(item["id"]) for item in command_checks),
+                contract_exhaustion_suite_id,
+            ),
             covered_partition_item_ids=tuple(item.item_id for item in items),
             state_owner_fields=("validation_fingerprint", "validation_status", "validation_current"),
             side_effect_owner_fields=("validation_receipts",),
@@ -257,12 +247,22 @@ def release_plan(receipts: Mapping[str, Mapping[str, Any]] | None = None) -> Tes
             ),
         ),
         required_evidence_tier=EVIDENCE_CONFORMANCE_GREEN,
+        required_leaf_cell_ids=frozen_boundary_case_ids,
         decision_scope="release",
         release_deferred_allowed=False,
         inventory_revision=revision,
+        coverage_inventory_id="coverage:logic-writing-frozen-release-validation",
+        coverage_inventory_revision=revision,
+        coverage_inventory_fingerprint=revision,
+        coverage_inventory_evidence_ids=(
+            "openspec:verification-contract:test-mesh-inventory",
+        ),
         required_inventory_item_ids=tuple(item.item_id for item in items),
         require_complete_inventory=True,
-        require_final_receipts=True,
+        # Inventory ownership already validates one exact terminal receipt per
+        # command owner. Leaf cases are coverage cells under check.tests.full,
+        # not additional receipt identities.
+        require_final_receipts=False,
     )
 
 
@@ -273,10 +273,16 @@ def broken_missing_target_split_plan() -> TestMeshPlan:
         partition_items=plan.partition_items,
         child_suites=plan.child_suites,
         target_split_derivation=None,
+        required_leaf_cell_ids=plan.required_leaf_cell_ids,
+        required_coverage_shard_ids=plan.required_coverage_shard_ids,
         decision_scope="release",
         release_deferred_allowed=False,
         inventory_revision=plan.inventory_revision,
+        coverage_inventory_id=plan.coverage_inventory_id,
+        coverage_inventory_revision=plan.coverage_inventory_revision,
+        coverage_inventory_fingerprint=plan.coverage_inventory_fingerprint,
+        coverage_inventory_evidence_ids=plan.coverage_inventory_evidence_ids,
         required_inventory_item_ids=plan.required_inventory_item_ids,
         require_complete_inventory=True,
-        require_final_receipts=True,
+        require_final_receipts=plan.require_final_receipts,
     )

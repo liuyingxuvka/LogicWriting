@@ -1,70 +1,66 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/liuyingxuvka/LogicWriting/schemas/shared-writing-contract.schema.json",
-  "title": "Logic Writing route-neutral writing contract",
+  "title": "Logic Writing SharedWriting v2",
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "schema_version", "contract_id", "final_owner", "artifact_path",
-    "artifact_fingerprint", "audience", "purpose", "incoming_reader_state",
-    "artifact_form", "units", "route_extension", "contract_fingerprint"
+    "schema_version", "contract_id", "final_owner", "route_decision_fingerprint",
+    "reader_intent_fingerprint", "reader_brief_fingerprint", "composition_plan_fingerprint",
+    "route_extension_fingerprint", "artifact_map_fingerprint", "artifact_path",
+    "artifact_fingerprint", "iteration_id", "unit_bindings", "coverage_dispositions",
+    "contract_fingerprint"
   ],
   "properties": {
-    "schema_version": { "const": "1.0" },
-    "contract_id": { "$ref": "#/$defs/identifier" },
+    "schema_version": { "const": "2.0" },
+    "contract_id": { "$ref": "#/$defs/id" },
     "final_owner": { "enum": ["investigation", "academic-writing", "fiction-writing", "travel-guide"] },
+    "route_decision_fingerprint": { "$ref": "#/$defs/fp" },
+    "reader_intent_fingerprint": { "$ref": "#/$defs/fp" },
+    "reader_brief_fingerprint": { "$ref": "#/$defs/fp" },
+    "composition_plan_fingerprint": { "$ref": "#/$defs/fp" },
+    "route_extension_fingerprint": { "$ref": "#/$defs/fp" },
+    "artifact_map_fingerprint": { "$ref": "#/$defs/fp" },
     "artifact_path": { "type": "string", "minLength": 1 },
-    "artifact_fingerprint": { "$ref": "#/$defs/fingerprint" },
-    "audience": { "$ref": "#/$defs/text" },
-    "purpose": { "$ref": "#/$defs/text" },
-    "incoming_reader_state": { "$ref": "#/$defs/text" },
-    "artifact_form": { "$ref": "#/$defs/text" },
-    "units": {
-      "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/unit" }
-    },
-    "route_extension": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["owner", "profile", "required_surface_ids"],
-      "properties": {
-        "owner": { "enum": ["investigation", "academic-writing", "fiction-writing", "travel-guide"] },
-        "profile": { "enum": ["evidence", "academic", "fiction", "travel"] },
-        "required_surface_ids": {
-          "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true
-        }
-      }
-    },
-    "contract_fingerprint": { "$ref": "#/$defs/fingerprint" }
+    "artifact_fingerprint": { "$ref": "#/$defs/fp" },
+    "iteration_id": { "$ref": "#/$defs/id" },
+    "unit_bindings": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/binding" }, "uniqueItems": true },
+    "coverage_dispositions": { "type": "array", "items": { "$ref": "#/$defs/disposition" }, "uniqueItems": true },
+    "contract_fingerprint": { "$ref": "#/$defs/fp" }
   },
   "$defs": {
-    "identifier": {
-      "type": "string", "minLength": 2, "maxLength": 160,
-      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-    },
-    "fingerprint": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
-    "text": { "type": "string", "minLength": 1 },
-    "unit": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "unit_id", "important", "contribution", "incoming_reader_state",
-        "outgoing_reader_state", "unresolved_or_terminal", "downstream_consumer",
-        "register_owner", "variation_effect", "model_row_ids", "artifact_span"
-      ],
+    "id": { "type": "string", "minLength": 2, "maxLength": 160, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$" },
+    "fp": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "span": {
+      "type": "object", "additionalProperties": false,
+      "required": ["artifact_unit_id", "locator", "content_fingerprint"],
       "properties": {
-        "unit_id": { "$ref": "#/$defs/identifier" },
-        "important": { "type": "boolean" },
-        "contribution": { "$ref": "#/$defs/text" },
-        "incoming_reader_state": { "$ref": "#/$defs/text" },
-        "outgoing_reader_state": { "$ref": "#/$defs/text" },
-        "unresolved_or_terminal": { "$ref": "#/$defs/text" },
-        "downstream_consumer": { "$ref": "#/$defs/text" },
-        "register_owner": { "$ref": "#/$defs/text" },
-        "variation_effect": { "$ref": "#/$defs/text" },
-        "model_row_ids": {
-          "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true
-        },
-        "artifact_span": { "$ref": "#/$defs/text" }
+        "artifact_unit_id": { "$ref": "#/$defs/id" },
+        "locator": { "type": "string", "minLength": 1 },
+        "content_fingerprint": { "$ref": "#/$defs/fp" }
+      }
+    },
+    "binding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["binding_id", "planned_unit_id", "artifact_unit_ids", "content_unit_ids", "model_row_ids", "route_surface_ids", "artifact_spans"],
+      "properties": {
+        "binding_id": { "$ref": "#/$defs/id" },
+        "planned_unit_id": { "$ref": "#/$defs/id" },
+        "artifact_unit_ids": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/id" }, "uniqueItems": true },
+        "content_unit_ids": { "type": "array", "items": { "$ref": "#/$defs/id" }, "uniqueItems": true },
+        "model_row_ids": { "type": "array", "items": { "$ref": "#/$defs/id" }, "uniqueItems": true },
+        "route_surface_ids": { "type": "array", "items": { "$ref": "#/$defs/id" }, "uniqueItems": true },
+        "artifact_spans": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/span" }, "uniqueItems": true }
+      }
+    },
+    "disposition": {
+      "type": "object", "additionalProperties": false,
+      "required": ["item_kind", "item_id", "disposition", "reason"],
+      "properties": {
+        "item_kind": { "enum": ["planned_unit", "content_unit", "model_row", "route_surface"] },
+        "item_id": { "$ref": "#/$defs/id" },
+        "disposition": { "enum": ["bound", "omitted", "not_applicable", "blocked"] },
+        "reason": { "type": "string", "minLength": 1 }
       }
     }
   }

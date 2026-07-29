@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/liuyingxuvka/LogicWriting/schemas/reader-intent.schema.json",
+  "title": "Logic Writing ReaderIntent v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "artifact_mode", "language", "audience", "purpose",
+    "structure", "heading_policy", "list_policy", "style", "extent",
+    "artifact_format", "citation_policy", "table_policy", "required_content",
+    "forbidden_content", "reference_examples", "unresolved_choices",
+    "intent_fingerprint"
+  ],
+  "properties": {
+    "schema_version": { "const": "2.0" },
+    "artifact_mode": { "enum": ["create_new", "revise_existing"] },
+    "language": { "type": "string", "minLength": 1 },
+    "audience": { "type": "string", "minLength": 1 },
+    "purpose": { "type": "string", "minLength": 1 },
+    "structure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "requested_outline"],
+      "properties": {
+        "mode": { "enum": ["fixed", "partially_fixed", "route_selected"] },
+        "requested_outline": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/outlineRow" },
+          "uniqueItems": true
+        }
+      }
+    },
+    "heading_policy": { "enum": ["locked", "preserve_requested", "route_selected", "minimal", "none"] },
+    "list_policy": { "enum": ["prose_default", "lists_allowed", "lists_required", "user_defined"] },
+    "style": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["voice", "formality", "required_traits", "forbidden_traits"],
+      "properties": {
+        "voice": { "type": "string", "minLength": 1 },
+        "formality": { "enum": ["informal", "neutral", "formal", "scholarly", "user_defined"] },
+        "required_traits": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+        "forbidden_traits": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true }
+      }
+    },
+    "extent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["unit", "minimum", "target", "maximum"],
+      "properties": {
+        "unit": { "enum": ["words", "characters", "pages", "sections", "chapters", "user_defined"] },
+        "minimum": { "type": "integer", "minimum": 0 },
+        "target": { "type": "integer", "minimum": 1 },
+        "maximum": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "artifact_format": { "enum": ["text", "markdown", "docx", "pdf", "latex", "slides", "user_defined"] },
+    "citation_policy": { "enum": ["none", "inline", "footnote", "endnote", "author_date", "numeric", "user_defined"] },
+    "table_policy": { "enum": ["forbidden", "allowed", "required", "user_defined"] },
+    "required_content": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+    "forbidden_content": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+    "reference_examples": { "type": "array", "items": { "$ref": "#/$defs/referenceExample" }, "uniqueItems": true },
+    "unresolved_choices": { "type": "array", "items": { "$ref": "#/$defs/unresolvedChoice" }, "uniqueItems": true },
+    "intent_fingerprint": { "$ref": "#/$defs/fingerprint" }
+  },
+  "$defs": {
+    "identifier": { "type": "string", "minLength": 2, "maxLength": 160, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$" },
+    "fingerprint": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "outlineRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["outline_id", "parent_outline_id", "order", "label", "required", "title_locked", "source"],
+      "properties": {
+        "outline_id": { "$ref": "#/$defs/identifier" },
+        "parent_outline_id": { "type": ["string", "null"], "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$" },
+        "order": { "type": "integer", "minimum": 1 },
+        "label": { "type": "string", "minLength": 1 },
+        "required": { "type": "boolean" },
+        "title_locked": { "type": "boolean" },
+        "source": { "enum": ["user", "existing_artifact", "format_contract", "route_default"] }
+      }
+    },
+    "referenceExample": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reference_id", "role", "description"],
+      "properties": {
+        "reference_id": { "$ref": "#/$defs/identifier" },
+        "role": { "enum": ["structure", "voice", "format", "quality_bar", "avoid"] },
+        "description": { "type": "string", "minLength": 1 }
+      }
+    },
+    "unresolvedChoice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["choice_id", "question", "material"],
+      "properties": {
+        "choice_id": { "$ref": "#/$defs/identifier" },
+        "question": { "type": "string", "minLength": 1 },
+        "material": { "type": "boolean" }
+      }
+    }
+  }
+}

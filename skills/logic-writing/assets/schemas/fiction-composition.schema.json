@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/liuyingxuvka/LogicWriting/schemas/fiction-composition.schema.json",
+  "title": "Fiction composition v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "composition_id", "final_owner", "reader_intent_fingerprint",
+    "composition_plan_fingerprint", "output_room", "artifact_kind", "prose_phase",
+    "structure_authority", "voice_contract_ref", "story_movements", "unit_plans",
+    "promise_and_reveal_bindings", "realization_boundaries", "extension_fingerprint"
+  ],
+  "properties": {
+    "schema_version": { "const": "2.0" },
+    "composition_id": { "$ref": "#/$defs/id" },
+    "final_owner": { "const": "fiction-writing" },
+    "reader_intent_fingerprint": { "$ref": "#/$defs/fp" },
+    "composition_plan_fingerprint": { "$ref": "#/$defs/fp" },
+    "output_room": { "enum": ["planning", "audit", "mixed", "reader_native"] },
+    "artifact_kind": { "enum": ["short_story", "chapter", "novella", "novel", "outline", "story_plan", "series_bible", "story_audit", "revision"] },
+    "prose_phase": { "enum": ["not_applicable", "initial_draft", "integrated_draft", "repair"] },
+    "structure_authority": { "enum": ["user_fixed", "user_partial", "existing_artifact", "route_selected"] },
+    "voice_contract_ref": { "type": "string", "minLength": 1 },
+    "story_movements": { "type": "array", "items": { "$ref": "#/$defs/storyMovement" }, "uniqueItems": true },
+    "unit_plans": { "type": "array", "items": { "$ref": "#/$defs/unitPlan" }, "uniqueItems": true },
+    "promise_and_reveal_bindings": { "type": "array", "items": { "$ref": "#/$defs/promiseReveal" }, "uniqueItems": true },
+    "realization_boundaries": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+    "extension_fingerprint": { "$ref": "#/$defs/fp" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "output_room": { "const": "reader_native" } }, "required": ["output_room"] },
+      "then": {
+        "properties": {
+          "story_movements": { "minItems": 1 },
+          "unit_plans": { "minItems": 1 },
+          "prose_phase": { "enum": ["initial_draft", "integrated_draft", "repair"] }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "id": { "type": "string", "minLength": 2, "maxLength": 160, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$" },
+    "fp": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "storyMovement": {
+      "type": "object", "additionalProperties": false,
+      "required": ["movement_id", "unit_ids", "entry_story_state", "primary_pressure", "reader_state_change", "irreversible_change", "exit_story_state", "downstream_unit_ids", "promise_ids"],
+      "properties": {
+        "movement_id": { "$ref": "#/$defs/id" },
+        "unit_ids": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/id" }, "uniqueItems": true },
+        "entry_story_state": { "type": "string", "minLength": 1 },
+        "primary_pressure": { "type": "string", "minLength": 1 },
+        "reader_state_change": { "type": "string", "minLength": 1 },
+        "irreversible_change": { "type": "string", "minLength": 1 },
+        "exit_story_state": { "type": "string", "minLength": 1 },
+        "downstream_unit_ids": { "type": "array", "items": { "$ref": "#/$defs/id" }, "uniqueItems": true },
+        "promise_ids": { "type": "array", "items": { "$ref": "#/$defs/id" }, "uniqueItems": true }
+      }
+    },
+    "unitPlan": {
+      "type": "object", "additionalProperties": false,
+      "required": ["unit_id", "unit_kind", "contribution", "entry_state", "exit_state", "focal_desire", "resistance_or_cost", "reader_state_before", "reader_state_after", "open_questions_in", "open_questions_out", "voice_owner", "rhythm_role", "prohibited_reveals", "downstream_unit_ids"],
+      "properties": {
+        "unit_id": { "$ref": "#/$defs/id" },
+        "unit_kind": { "enum": ["scene", "scene_group", "chapter", "story"] },
+        "contribution": { "type": "string", "minLength": 1 },
+        "entry_state": { "type": "string", "minLength": 1 },
+        "exit_state": { "type": "string", "minLength": 1 },
+        "focal_desire": { "type": "string", "minLength": 1 },
+        "resistance_or_cost": { "type": "string", "minLength": 1 },
+        "reader_state_before": { "type": "string", "minLength": 1 },
+        "reader_state_after": { "type": "string", "minLength": 1 },
+        "open_questions_in": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+        "open_questions_out": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+        "voice_owner": { "type": "string", "minLength": 1 },
+        "rhythm_role": { "type": "string", "minLength": 1 },
+        "prohibited_reveals": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+        "downstream_unit_ids": { "type": "array", "items": { "$ref": "#/$defs/id" }, "uniqueItems": true }
+      }
+    },
+    "promiseReveal": {
+      "type": "object", "additionalProperties": false,
+      "required": ["binding_id", "promise_or_reveal_id", "setup_unit_ids", "movement_unit_ids", "payoff_unit_ids", "status"],
+      "properties": {
+        "binding_id": { "$ref": "#/$defs/id" },
+        "promise_or_reveal_id": { "$ref": "#/$defs/id" },
+        "setup_unit_ids": { "type": "array", "items": { "$ref": "#/$defs/id" }, "uniqueItems": true },
+        "movement_unit_ids": { "type": "array", "items": { "$ref": "#/$defs/id" }, "uniqueItems": true },
+        "payoff_unit_ids": { "type": "array", "items": { "$ref": "#/$defs/id" }, "uniqueItems": true },
+        "status": { "enum": ["open", "moved", "paid", "intentionally_deferred"] }
+      }
+    }
+  }
+}

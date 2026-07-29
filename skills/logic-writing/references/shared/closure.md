@@ -1,26 +1,27 @@
-# Evidence freshness and closure
+# Reader closure v2
 
-Each receipt binds producer skill and native route, run id, covered obligations,
-exact input and output fingerprints, artifact fingerprint, scope, evidence
-domain, actual status, safe claim, unsafe boundary, sequence/timestamp, and its
-own content fingerprint.
+Closure accepts only one complete current identity chain:
 
-Closure follows explicit dependency edges:
+`WritingRequest -> ReaderIntent -> RouteDecision -> CompositionPlan -> selected
+route composition -> ReaderBrief -> ArtifactMap -> SharedWriting ->
+deterministic audit -> route artifact review -> independent ReaderJudgment ->
+conditional revision provenance -> closure`
 
-`source -> claim support -> ResearchPacket -> ReaderBrief -> artifact -> audit -> closure`
+All byte-bound records must identify the same current artifact. All
+intent-bound records must identify the same ReaderIntent and CompositionPlan.
+Only the selected final route may close the artifact; bounded investigation
+children never inherit final ownership.
 
-A material upstream change stales every affected downstream receipt. Reports,
-logs, and progress files do not stale source authority unless declared as
-functional inputs.
+Creation records revision provenance as explicitly `not_applicable`. Revision
+records it as required and accounts for source-unit treatments. Neither case
+may omit the field or infer applicability from the final owner.
 
-Aggregate monotonically: the final claim is no stronger than the weakest
-unresolved important obligation. Planning artifacts and self-reported statuses
-are never proof. Broad words such as complete, comprehensive, conclusive,
-publication-ready, or submission-ready require current broad evidence in every
-applicable domain.
+A pass requires the deterministic audit, route review, and independent
+judgment all to pass. Any defect produces a typed repair request for actual
+units and preservation duties. After real new bytes exist, rebuild every
+dependent record.
 
-Only the final route closes the user artifact. Non-pass closure reports the
-missing or failed obligation, affected claim/unit, safe wording, unsafe
-boundary, next owner, and whether to rerun, downgrade, omit, or request human
-review. Two identical failed attempts with no new evidence end in a visible
-no-progress terminal.
+Repeated closure calls do not demonstrate work. `no_progress_blocked` requires
+two consecutive current repair results with the same lineage and remaining
+defect identity, a chained input/output artifact identity, and no actual
+progress. It then hands the artifact to human review instead of looping.

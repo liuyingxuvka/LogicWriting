@@ -1,294 +1,166 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/liuyingxuvka/LogicWriting/schemas/reader-brief.schema.json",
-  "title": "Logic Writing ReaderBrief",
-  "description": "A reader-facing plan derived only from a current ResearchPacket and a small reader context. Evidence, findings, limits, order, and citations are not caller-authored.",
+  "title": "Logic Writing ReaderBrief v2",
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "schema_version",
-    "brief_id",
-    "packet_fingerprint",
-    "reader_context_fingerprint",
-    "reader_question",
-    "audience",
-    "genre",
-    "purpose",
-    "concepts",
-    "principal_findings",
-    "evidence_anchors",
-    "alternatives",
-    "limitations",
-    "information_sequence",
-    "required_citations",
-    "allowed_wording",
-    "prohibited_wording",
-    "brief_fingerprint"
+    "schema_version", "brief_id", "route_decision_fingerprint", "reader_intent_fingerprint",
+    "final_owner", "terminal_deliverable", "reader_intent", "content_boundaries",
+    "composition_plan", "route_extension", "native_dependency_receipt_fingerprints",
+    "content_authority_fingerprints", "brief_fingerprint"
   ],
   "properties": {
-    "schema_version": { "const": "1.0" },
+    "schema_version": { "const": "2.0" },
     "brief_id": { "$ref": "#/$defs/identifier" },
-    "packet_fingerprint": { "$ref": "#/$defs/fingerprint" },
-    "reader_context_fingerprint": { "$ref": "#/$defs/fingerprint" },
-    "reader_question": { "$ref": "#/$defs/readerText" },
-    "audience": { "$ref": "#/$defs/readerText" },
-    "genre": { "$ref": "#/$defs/readerText" },
-    "purpose": { "$ref": "#/$defs/readerText" },
-    "concepts": {
-      "type": "array",
-      "items": { "$ref": "#/$defs/concept" },
-      "uniqueItems": true
+    "route_decision_fingerprint": { "$ref": "#/$defs/fingerprint" },
+    "reader_intent_fingerprint": { "$ref": "#/$defs/fingerprint" },
+    "final_owner": { "enum": ["investigation", "academic-writing", "fiction-writing", "travel-guide"] },
+    "terminal_deliverable": { "$ref": "writing-request.schema.json#/$defs/terminalDeliverable" },
+    "reader_intent": { "$ref": "reader-intent.schema.json" },
+    "content_boundaries": { "$ref": "#/$defs/contentBoundaries" },
+    "composition_plan": { "$ref": "composition-plan.schema.json" },
+    "route_extension": { "$ref": "#/$defs/routeExtension" },
+    "native_dependency_receipt_fingerprints": {
+      "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/fingerprint" }, "uniqueItems": true
     },
-    "principal_findings": {
-      "type": "array",
-      "minItems": 1,
-      "items": { "$ref": "#/$defs/finding" },
-      "uniqueItems": true
-    },
-    "evidence_anchors": {
-      "type": "array",
-      "minItems": 1,
-      "items": { "$ref": "#/$defs/evidenceAnchor" },
-      "uniqueItems": true
-    },
-    "alternatives": {
-      "type": "array",
-      "items": { "$ref": "#/$defs/alternative" },
-      "uniqueItems": true
-    },
-    "limitations": {
-      "type": "array",
-      "items": { "$ref": "#/$defs/limitation" },
-      "uniqueItems": true
-    },
-    "information_sequence": {
-      "type": "array",
-      "minItems": 1,
-      "items": { "$ref": "#/$defs/sequenceItem" },
-      "uniqueItems": true
-    },
-    "required_citations": {
-      "type": "array",
-      "minItems": 1,
-      "items": { "$ref": "#/$defs/citation" },
-      "uniqueItems": true
-    },
-    "allowed_wording": {
-      "type": "array",
-      "minItems": 1,
-      "items": { "$ref": "#/$defs/readerText" },
-      "uniqueItems": true
-    },
-    "prohibited_wording": {
-      "type": "array",
-      "minItems": 1,
-      "items": { "$ref": "#/$defs/readerText" },
-      "uniqueItems": true
+    "content_authority_fingerprints": {
+      "type": "object", "minProperties": 1, "additionalProperties": { "$ref": "#/$defs/fingerprint" }
     },
     "brief_fingerprint": { "$ref": "#/$defs/fingerprint" }
   },
   "$defs": {
-    "identifier": {
-      "type": "string",
-      "minLength": 2,
-      "maxLength": 128,
-      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-    },
-    "fingerprint": {
-      "type": "string",
-      "pattern": "^sha256:[a-f0-9]{64}$"
-    },
-    "readerText": {
-      "type": "string",
-      "minLength": 1,
-      "pattern": "^(?!.*\\b(?:SourceGuard|LogicGuard|TraceGuard|FlowGuard)\\b)(?!.*\\b(?:current_pass|provider_unavailable|render_not_run|closure_status)\\b).+$"
-    },
-    "sourceRole": {
-      "enum": [
-        "primary",
-        "official",
-        "implementation",
-        "outcome",
-        "method",
-        "context",
-        "counterevidence",
-        "critique",
-        "data",
-        "secondary"
-      ]
-    },
-    "concept": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["concept_id", "term", "explanation", "introduction_order"],
-      "properties": {
-        "concept_id": { "$ref": "#/$defs/identifier" },
-        "term": { "$ref": "#/$defs/readerText" },
-        "explanation": { "$ref": "#/$defs/readerText" },
-        "introduction_order": { "type": "integer", "minimum": 1 }
-      }
-    },
-    "finding": {
+    "identifier": { "type": "string", "minLength": 2, "maxLength": 160, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$" },
+    "fingerprint": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "contentBoundaries": {
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "finding_id",
-        "claim_ids",
-        "text",
-        "evidence_anchor_ids",
-        "limitation_ids"
+        "content_units", "evidence_anchors", "alternatives", "limitations",
+        "citation_duties", "must_preserve_tokens", "verbatim_obligations",
+        "prohibited_overclaims"
       ],
       "properties": {
-        "finding_id": { "$ref": "#/$defs/identifier" },
-        "claim_ids": {
-          "type": "array",
-          "minItems": 1,
-          "items": { "$ref": "#/$defs/identifier" },
-          "uniqueItems": true
-        },
-        "text": { "$ref": "#/$defs/readerText" },
-        "evidence_anchor_ids": {
-          "type": "array",
-          "minItems": 1,
-          "items": { "$ref": "#/$defs/identifier" },
-          "uniqueItems": true
-        },
-        "limitation_ids": {
-          "type": "array",
-          "items": { "$ref": "#/$defs/identifier" },
-          "uniqueItems": true
-        }
+        "content_units": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/contentUnit" }, "uniqueItems": true },
+        "evidence_anchors": { "type": "array", "items": { "$ref": "#/$defs/evidenceAnchor" }, "uniqueItems": true },
+        "alternatives": { "type": "array", "items": { "$ref": "#/$defs/alternative" }, "uniqueItems": true },
+        "limitations": { "type": "array", "items": { "$ref": "#/$defs/limitation" }, "uniqueItems": true },
+        "citation_duties": { "type": "array", "items": { "$ref": "#/$defs/citationDuty" }, "uniqueItems": true },
+        "must_preserve_tokens": { "type": "array", "items": { "$ref": "#/$defs/preserveToken" }, "uniqueItems": true },
+        "verbatim_obligations": { "type": "array", "items": { "$ref": "#/$defs/verbatim" }, "uniqueItems": true },
+        "prohibited_overclaims": { "type": "array", "items": { "$ref": "#/$defs/overclaim" }, "uniqueItems": true }
+      }
+    },
+    "contentUnit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["content_unit_id", "safe_meaning", "required", "evidence_anchor_ids", "alternative_ids", "limitation_ids", "model_row_ids"],
+      "properties": {
+        "content_unit_id": { "$ref": "#/$defs/identifier" },
+        "safe_meaning": { "type": "string", "minLength": 1 },
+        "required": { "type": "boolean" },
+        "evidence_anchor_ids": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true },
+        "alternative_ids": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true },
+        "limitation_ids": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true },
+        "model_row_ids": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true }
       }
     },
     "evidenceAnchor": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "anchor_id",
-        "claim_id",
-        "source_id",
-        "source_anchor_id",
-        "relation",
-        "locator",
-        "observed_summary",
-        "source_role",
-        "reader_role",
-        "supported_wording",
-        "boundary"
-      ],
+      "required": ["anchor_id", "source_id", "locator", "relation", "observed_summary", "boundary"],
       "properties": {
         "anchor_id": { "$ref": "#/$defs/identifier" },
-        "claim_id": { "$ref": "#/$defs/identifier" },
         "source_id": { "$ref": "#/$defs/identifier" },
-        "source_anchor_id": { "$ref": "#/$defs/identifier" },
+        "locator": { "type": "string", "minLength": 1 },
         "relation": { "enum": ["support", "limit", "counter", "context"] },
-        "locator": { "$ref": "#/$defs/readerText" },
-        "observed_summary": { "$ref": "#/$defs/readerText" },
-        "source_role": { "$ref": "#/$defs/sourceRole" },
-        "reader_role": { "$ref": "#/$defs/readerText" },
-        "supported_wording": { "$ref": "#/$defs/readerText" },
-        "boundary": { "$ref": "#/$defs/readerText" }
+        "observed_summary": { "type": "string", "minLength": 1 },
+        "boundary": { "type": "string", "minLength": 1 }
       }
     },
     "alternative": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "alternative_id",
-        "text",
-        "treatment",
-        "claim_ids",
-        "evidence_anchor_ids"
-      ],
+      "required": ["alternative_id", "safe_meaning", "status", "content_unit_ids"],
       "properties": {
         "alternative_id": { "$ref": "#/$defs/identifier" },
-        "text": { "$ref": "#/$defs/readerText" },
-        "treatment": { "enum": ["live", "qualified", "rejected", "unsupported"] },
-        "claim_ids": {
-          "type": "array",
-          "minItems": 1,
-          "items": { "$ref": "#/$defs/identifier" },
-          "uniqueItems": true
-        },
-        "evidence_anchor_ids": {
-          "type": "array",
-          "items": { "$ref": "#/$defs/identifier" },
-          "uniqueItems": true
-        }
+        "safe_meaning": { "type": "string", "minLength": 1 },
+        "status": { "enum": ["live", "qualified", "rejected", "unsupported"] },
+        "content_unit_ids": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true }
       }
     },
     "limitation": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "limitation_id",
-        "text",
-        "affected_finding_ids",
-        "evidence_anchor_ids",
-        "placement"
-      ],
+      "required": ["limitation_id", "safe_meaning", "affected_content_unit_ids", "required_placement"],
       "properties": {
         "limitation_id": { "$ref": "#/$defs/identifier" },
-        "text": { "$ref": "#/$defs/readerText" },
-        "affected_finding_ids": {
-          "type": "array",
-          "items": { "$ref": "#/$defs/identifier" },
-          "uniqueItems": true
-        },
-        "evidence_anchor_ids": {
-          "type": "array",
-          "items": { "$ref": "#/$defs/identifier" },
-          "uniqueItems": true
-        },
-        "placement": { "enum": ["near_claim", "section", "conclusion", "appendix"] }
+        "safe_meaning": { "type": "string", "minLength": 1 },
+        "affected_content_unit_ids": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true },
+        "required_placement": { "enum": ["same_unit", "adjacent_unit", "conclusion", "appendix"] }
       }
     },
-    "sequenceItem": {
+    "citationDuty": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["order", "item_kind", "item_id", "prior_item_ids", "purpose", "handoff"],
-      "properties": {
-        "order": { "type": "integer", "minimum": 1 },
-        "item_kind": { "enum": ["finding", "alternative", "limitation"] },
-        "item_id": { "$ref": "#/$defs/identifier" },
-        "prior_item_ids": {
-          "type": "array",
-          "items": { "$ref": "#/$defs/identifier" },
-          "uniqueItems": true
-        },
-        "purpose": { "$ref": "#/$defs/readerText" },
-        "handoff": { "$ref": "#/$defs/readerText" }
-      }
-    },
-    "citation": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "citation_id",
-        "target_kind",
-        "target_id",
-        "evidence_anchor_ids",
-        "source_id",
-        "citation_label",
-        "locator",
-        "marker",
-        "supported_wording"
-      ],
+      "required": ["citation_id", "content_unit_ids", "source_id", "marker", "placement"],
       "properties": {
         "citation_id": { "$ref": "#/$defs/identifier" },
-        "target_kind": { "enum": ["finding", "limitation", "alternative"] },
-        "target_id": { "$ref": "#/$defs/identifier" },
-        "evidence_anchor_ids": {
-          "type": "array",
-          "minItems": 1,
-          "items": { "$ref": "#/$defs/identifier" },
-          "uniqueItems": true
-        },
+        "content_unit_ids": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true },
         "source_id": { "$ref": "#/$defs/identifier" },
-        "citation_label": { "$ref": "#/$defs/readerText" },
-        "locator": { "$ref": "#/$defs/readerText" },
-        "marker": { "type": "string", "pattern": "^\\[S[1-9][0-9]*\\]$" },
-        "supported_wording": { "$ref": "#/$defs/readerText" }
+        "marker": { "type": "string", "minLength": 1 },
+        "placement": { "enum": ["same_sentence", "same_paragraph", "same_unit", "footnote", "endnote"] }
+      }
+    },
+    "preserveToken": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["token_id", "token", "reason", "content_unit_ids"],
+      "properties": {
+        "token_id": { "$ref": "#/$defs/identifier" },
+        "token": { "type": "string", "minLength": 1 },
+        "reason": { "type": "string", "minLength": 1 },
+        "content_unit_ids": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true }
+      }
+    },
+    "verbatim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verbatim_id", "text", "reason", "content_unit_ids"],
+      "properties": {
+        "verbatim_id": { "$ref": "#/$defs/identifier" },
+        "text": { "type": "string", "minLength": 1 },
+        "reason": { "type": "string", "minLength": 1 },
+        "content_unit_ids": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true }
+      }
+    },
+    "overclaim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["overclaim_id", "affected_content_unit_ids", "forbidden_meaning", "reason", "authority_refs"],
+      "properties": {
+        "overclaim_id": { "$ref": "#/$defs/identifier" },
+        "affected_content_unit_ids": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true },
+        "forbidden_meaning": { "type": "string", "minLength": 1 },
+        "reason": { "type": "string", "minLength": 1 },
+        "authority_refs": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true }
+      }
+    },
+    "routeExtension": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["owner", "profile", "schema_name", "extension_fingerprint", "native_receipt_fingerprints"],
+      "properties": {
+        "owner": { "enum": ["investigation", "academic-writing", "fiction-writing", "travel-guide"] },
+        "profile": { "type": "string", "minLength": 1 },
+        "schema_name": {
+          "enum": [
+            "investigation-composition.schema.json", "academic-composition.schema.json",
+            "fiction-composition.schema.json", "travel-composition.schema.json"
+          ]
+        },
+        "extension_fingerprint": { "$ref": "#/$defs/fingerprint" },
+        "native_receipt_fingerprints": { "type": "array", "items": { "$ref": "#/$defs/fingerprint" }, "uniqueItems": true }
       }
     }
   }

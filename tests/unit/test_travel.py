@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 from select_route import select_route
+from tests.v2_support import route_request
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -18,20 +19,7 @@ def test_travel_route_pack_is_internal_not_installable():
 
 
 def test_story_shaped_itinerary_does_not_invoke_fiction_owner():
-    decision = select_route({
-        "request_id": "request:travel-unit",
-        "decision_id": "decision:travel-unit",
-        "decided_at": "2026-07-16T10:00:00Z",
-        "terminal_deliverable": {
-            "kind": "itinerary",
-            "description": "A story-shaped but operational itinerary",
-            "acceptance_criteria": ["The final guide remains executable."],
-        },
-        "scope_class": "substantive",
-        "substantial_research_required": True,
-        "constraints": {"presentation": "journey storyline"},
-        "material_assumptions": [],
-    })
+    decision = select_route(route_request("itinerary", research=True))
     assert decision["final_owner"] == "travel-guide"
     assert decision["child_routes"] == ["investigation"]
 

@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/liuyingxuvka/LogicWriting/schemas/reader-repair-result.schema.json",
+  "title": "Logic Writing ReaderRepairResult v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "repair_id", "request_fingerprint", "defect_lineage",
+    "input_artifact_fingerprint", "output_artifact_fingerprint", "changed_unit_ids",
+    "preservation_check", "remaining_defect_set_fingerprint", "progress_status",
+    "rerun_required", "result_fingerprint"
+  ],
+  "properties": {
+    "schema_version": { "const": "2.0" },
+    "repair_id": { "$ref": "#/$defs/id" },
+    "request_fingerprint": { "$ref": "#/$defs/fp" },
+    "defect_lineage": { "$ref": "#/$defs/id" },
+    "input_artifact_fingerprint": { "$ref": "#/$defs/fp" },
+    "output_artifact_fingerprint": { "$ref": "#/$defs/fp" },
+    "changed_unit_ids": { "type": "array", "items": { "$ref": "#/$defs/id" }, "uniqueItems": true },
+    "preservation_check": {
+      "type": "object", "additionalProperties": false,
+      "required": ["status", "preserved_content_unit_ids", "violations"],
+      "properties": {
+        "status": { "enum": ["passed", "failed", "blocked"] },
+        "preserved_content_unit_ids": { "type": "array", "items": { "$ref": "#/$defs/id" }, "uniqueItems": true },
+        "violations": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true }
+      }
+    },
+    "remaining_defect_set_fingerprint": { "$ref": "#/$defs/fp" },
+    "progress_status": { "enum": ["progressed", "no_progress", "blocked"] },
+    "rerun_required": {
+      "type": "array", "minItems": 4,
+      "items": { "enum": ["artifact_map", "shared_writing", "deterministic_audit", "route_audit", "reader_judgment", "revision_provenance"] },
+      "uniqueItems": true
+    },
+    "result_fingerprint": { "$ref": "#/$defs/fp" }
+  },
+  "$defs": {
+    "id": { "type": "string", "minLength": 2, "maxLength": 160, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$" },
+    "fp": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/liuyingxuvka/LogicWriting/schemas/investigation-composition.schema.json",
+  "title": "Investigation composition v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "composition_id", "final_owner", "reader_intent_fingerprint",
+    "composition_plan_fingerprint", "profile", "bounded_answer_content_unit_ids",
+    "evidence_strength_rows", "alternative_ids", "unresolved_discriminators",
+    "limitation_ids", "fallback_or_recheck_units", "actual_artifact_review_required",
+    "extension_fingerprint"
+  ],
+  "properties": {
+    "schema_version": { "const": "2.0" },
+    "composition_id": { "$ref": "#/$defs/id" },
+    "final_owner": { "const": "investigation" },
+    "reader_intent_fingerprint": { "$ref": "#/$defs/fp" },
+    "composition_plan_fingerprint": { "$ref": "#/$defs/fp" },
+    "profile": { "enum": ["explanatory_report", "decision_analysis", "evidence_audit", "case_trace", "user_defined"] },
+    "bounded_answer_content_unit_ids": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/id" }, "uniqueItems": true },
+    "evidence_strength_rows": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/evidenceStrength" }, "uniqueItems": true },
+    "alternative_ids": { "type": "array", "items": { "$ref": "#/$defs/id" }, "uniqueItems": true },
+    "unresolved_discriminators": { "type": "array", "items": { "$ref": "#/$defs/discriminator" }, "uniqueItems": true },
+    "limitation_ids": { "type": "array", "items": { "$ref": "#/$defs/id" }, "uniqueItems": true },
+    "fallback_or_recheck_units": { "type": "array", "items": { "$ref": "#/$defs/actionUnit" }, "uniqueItems": true },
+    "actual_artifact_review_required": { "const": true },
+    "extension_fingerprint": { "$ref": "#/$defs/fp" }
+  },
+  "$defs": {
+    "id": { "type": "string", "minLength": 2, "maxLength": 160, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$" },
+    "fp": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "evidenceStrength": {
+      "type": "object", "additionalProperties": false,
+      "required": ["content_unit_id", "strength", "reason"],
+      "properties": {
+        "content_unit_id": { "$ref": "#/$defs/id" },
+        "strength": { "enum": ["strong", "moderate", "limited", "conflicted", "insufficient"] },
+        "reason": { "type": "string", "minLength": 1 }
+      }
+    },
+    "discriminator": {
+      "type": "object", "additionalProperties": false,
+      "required": ["discriminator_id", "alternative_ids", "needed_evidence", "planned_unit_id"],
+      "properties": {
+        "discriminator_id": { "$ref": "#/$defs/id" },
+        "alternative_ids": { "type": "array", "minItems": 2, "items": { "$ref": "#/$defs/id" }, "uniqueItems": true },
+        "needed_evidence": { "type": "string", "minLength": 1 },
+        "planned_unit_id": { "$ref": "#/$defs/id" }
+      }
+    },
+    "actionUnit": {
+      "type": "object", "additionalProperties": false,
+      "required": ["action_id", "condition", "action", "planned_unit_id"],
+      "properties": {
+        "action_id": { "$ref": "#/$defs/id" },
+        "condition": { "type": "string", "minLength": 1 },
+        "action": { "type": "string", "minLength": 1 },
+        "planned_unit_id": { "$ref": "#/$defs/id" }
+      }
+    }
+  }
+}

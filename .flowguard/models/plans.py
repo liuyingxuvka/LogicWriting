@@ -241,6 +241,8 @@ def _topology_hazard_plan(model_id, workflow, initial_states, external_inputs):
         "reader_artifact_model": "C07",
         "fiction_route_model": "C12",
         "travel_route_model": "C13",
+        "investigation_route_model": "C15",
+        "academic_route_model": "C16",
         "operation_freshness_closure_model": "C08",
         "release_retirement_model": "C10",
     }[model_id]

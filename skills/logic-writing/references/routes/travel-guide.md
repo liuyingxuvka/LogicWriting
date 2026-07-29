@@ -4,6 +4,21 @@ The travel route owns substantive itineraries, destination guides, route
 alternatives, lodging strategy, traveler-fit recommendations, traveler-native
 prose, and final-guide closure. A quick list of attractions is out of scope.
 
+## Reader composition v2
+
+Select the real guide kind: itinerary, destination guide, lodging strategy,
+route plan, traveler-fit recommendation, or revision. Plan narrative body
+sections separately from the operational appendix, source-boundary zone, and
+recheck zone. Each body section changes a traveler state and hands a concrete
+choice or condition to its next consumer. Candidate lists and route nodes are
+content inputs, not a paragraph template.
+
+Build the guide ArtifactMap from current bytes. Review actual spans for guide
+kind, traveler fit, unit responsibility and handoffs, narrative body,
+operational appendix, risk/fallback, source recheck, and local texture. Facts,
+prices, availability, feasibility, and fit remain owned by native evidence;
+the writer owns integration and wording.
+
 ## Start with the traveler and time boundary
 
 Record trip dates, planning timestamp, date relation, allowed claim level,

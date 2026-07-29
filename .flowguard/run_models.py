@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import sys
 from dataclasses import replace
 from datetime import datetime, timezone
@@ -55,7 +56,10 @@ from models.operation_freshness_closure_model import build_plan as freshness_pla
 from models.release_retirement_model import build_plan as retirement_plan  # noqa: E402
 from models.fiction_route_model import build_plan as fiction_plan  # noqa: E402
 from models.travel_route_model import build_plan as travel_plan  # noqa: E402
+from models.investigation_route_model import build_plan as investigation_plan  # noqa: E402
+from models.academic_route_model import build_plan as academic_plan  # noqa: E402
 from models.retirement_field_lifecycle import review_retirement_visibility_fields  # noqa: E402
+from models.reader_contract_field_lifecycle import review_reader_contract_fields  # noqa: E402
 
 
 MODEL_FACTORIES = {
@@ -64,6 +68,8 @@ MODEL_FACTORIES = {
     "reader_artifact_model": reader_plan,
     "fiction_route_model": fiction_plan,
     "travel_route_model": travel_plan,
+    "investigation_route_model": investigation_plan,
+    "academic_route_model": academic_plan,
     "operation_freshness_closure_model": freshness_plan,
     "release_retirement_model": retirement_plan,
 }
@@ -77,7 +83,7 @@ def _one_successor(workflow, state, event):
 
 
 def _operation_progress_transition(state: OperationState):
-    if state.terminal:
+    if state.terminal or state.closure_status == "blocked":
         return ()
     event = OperationEvent("close_operation")
     new_state = _one_successor(operation_workflow("operation_no_progress_graph"), state, event)
@@ -132,7 +138,7 @@ def _loop_and_progress_reports():
         LoopCheckConfig(
             initial_states=(operation_initial,),
             transition_fn=_operation_progress_transition,
-            is_terminal=lambda state: state.terminal,
+            is_terminal=lambda state: state.terminal or state.closure_status == "blocked",
             max_states=8,
             max_depth=8,
         )
@@ -141,7 +147,7 @@ def _loop_and_progress_reports():
         ProgressCheckConfig(
             initial_states=(operation_initial,),
             transition_fn=_operation_progress_transition,
-            is_terminal=lambda state: state.terminal,
+            is_terminal=lambda state: state.terminal or state.closure_status == "blocked",
             max_states=8,
             max_depth=8,
         )
@@ -339,7 +345,9 @@ def run(profile: str):
     }
     known_bad = run_known_bad_proofs()
     graph_reports = _loop_and_progress_reports()
-    field_lifecycle = review_retirement_visibility_fields()
+    retirement_field_lifecycle = review_retirement_visibility_fields()
+    reader_field_lifecycle = review_reader_contract_fields()
+    field_lifecycle_ok = retirement_field_lifecycle.ok and reader_field_lifecycle.ok
     source_name_exhaustion = review_frozen_source_name_family()
     execution_boundary_exhaustion = review_frozen_execution_boundary()
     if profile == "model-phase":
@@ -370,12 +378,12 @@ def run(profile: str):
             ),
         },
         "field_lifecycle": {
-            "ok": field_lifecycle.ok,
-            "decision": field_lifecycle.decision,
-            "confidence": field_lifecycle.confidence,
-            "finding_count": len(field_lifecycle.findings),
-            "projection_count": len(field_lifecycle.projections),
-            "summary": field_lifecycle.summary,
+            "ok": field_lifecycle_ok,
+            "decision": "field_lifecycle_full" if field_lifecycle_ok else "field_lifecycle_blocked",
+            "confidence": "full" if field_lifecycle_ok else "blocked",
+            "finding_count": len(retirement_field_lifecycle.findings) + len(reader_field_lifecycle.findings),
+            "projection_count": len(retirement_field_lifecycle.projections) + len(reader_field_lifecycle.projections),
+            "summary": "Remote-retirement and reader-contract field inventories are complete." if field_lifecycle_ok else "One or more field lifecycle inventories are blocked.",
             "claim_boundary": "Field inventory and replacement disposition; behavior proof remains model-test-validation owned.",
         },
         "frozen_source_contract_exhaustion": {
@@ -461,7 +469,7 @@ def run(profile: str):
                 "terminal test execution remains a separate frozen validation owner"
             )
         ),
-        "status": "pass_with_gaps" if model_ok and bad_ok and graph_ok and field_lifecycle.ok and source_name_exhaustion.ok and execution_boundary_exhaustion.ok and profile == "model-phase" else ("pass" if model_ok and bad_ok and graph_ok and field_lifecycle.ok and source_name_exhaustion.ok and execution_boundary_exhaustion.ok else "failed"),
+        "status": "pass_with_gaps" if model_ok and bad_ok and graph_ok and field_lifecycle_ok and source_name_exhaustion.ok and execution_boundary_exhaustion.ok and profile == "model-phase" else ("pass" if model_ok and bad_ok and graph_ok and field_lifecycle_ok and source_name_exhaustion.ok and execution_boundary_exhaustion.ok else "failed"),
     }
     canonical = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
     payload["receipt_sha256"] = hashlib.sha256(canonical).hexdigest()
@@ -472,7 +480,13 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--profile", choices=("model-phase", "full"), default="model-phase")
     parser.add_argument("--json", action="store_true")
-    parser.add_argument("--output", type=Path, default=ROOT / "evidence" / "models" / "model-report.json")
+    isolated_output = os.environ.get("FLOWGUARD_OUTPUT_DIR")
+    default_output = (
+        Path(isolated_output) / "model-report.json"
+        if isolated_output
+        else ROOT / "evidence" / "models" / "model-report.json"
+    )
+    parser.add_argument("--output", type=Path, default=default_output)
     args = parser.parse_args()
     payload = run(args.profile)
     args.output.parent.mkdir(parents=True, exist_ok=True)

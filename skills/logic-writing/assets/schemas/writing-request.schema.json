@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/liuyingxuvka/LogicWriting/schemas/writing-request.schema.json",
+  "title": "Logic Writing WritingRequest v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "request_id", "terminal_deliverable", "reader_intent", "request_fingerprint"],
+  "properties": {
+    "schema_version": { "const": "2.0" },
+    "request_id": { "$ref": "#/$defs/identifier" },
+    "terminal_deliverable": { "$ref": "#/$defs/terminalDeliverable" },
+    "reader_intent": { "$ref": "reader-intent.schema.json" },
+    "request_fingerprint": { "$ref": "#/$defs/fingerprint" }
+  },
+  "$defs": {
+    "identifier": { "type": "string", "minLength": 2, "maxLength": 160, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$" },
+    "fingerprint": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "terminalDeliverable": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "description", "acceptance_criteria", "fingerprint"],
+      "properties": {
+        "kind": {
+          "enum": [
+            "research_report", "briefing", "evidence_package", "decision_note", "investigated_answer", "memo",
+            "evidence_audit", "policy_analysis", "market_analysis", "case_investigation",
+            "paper", "thesis", "thesis_chapter", "dissertation", "dissertation_section", "academic_chapter",
+            "literature_review", "formal_literature_review", "research_proposal", "proposal", "academic_revision",
+            "short_story", "fiction_chapter", "novel", "novella", "fiction_outline", "story_plan",
+            "series_bible", "story_audit", "fiction_revision",
+            "itinerary", "destination_guide", "travel_guide", "lodging_strategy", "route_plan",
+            "traveler_fit_recommendation", "travel_revision",
+            "quick_lookup", "quick_fact", "grammar_only", "formatting_only", "casual_copy", "casual_summary", "unresolved"
+          ]
+        },
+        "description": { "type": "string", "minLength": 1 },
+        "acceptance_criteria": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+        "fingerprint": { "$ref": "#/$defs/fingerprint" }
+      }
+    }
+  }
+}

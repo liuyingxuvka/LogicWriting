@@ -60,11 +60,20 @@ OPERATION_ACTIONS = (
     "invoke_adapter",
     "assemble_packet",
     "handoff_packet",
+    "freeze_reader_intent",
+    "validate_composition",
     "build_reader_brief",
-    "write_artifact",
+    "draft_artifact",
+    "integrate_artifact",
+    "map_artifact",
+    "bind_shared_writing",
     "record_revision_provenance",
-    "audit_artifact",
-    "update_artifact",
+    "deterministic_audit",
+    "route_audit",
+    "judge_artifact",
+    "request_repair",
+    "apply_repair",
+    "record_repair_result",
     "source_changed",
     "close_operation",
 )
@@ -82,15 +91,9 @@ DEVELOPMENT_ACTIONS = (
     "privatize_legacy_remote",
     "record_remote_deletion_handoff",
 )
-ADAPTER_STATUSES = ("current_pass",) + NON_PASSING
-AUDIT_STATUSES = (
-    "passed+passed",
-    "passed+failed",
-    "passed+not_run",
-    "failed+passed",
-    "failed+failed",
-    "failed+not_run",
-)
+ADAPTER_STATUSES = ("current_pass", "not_applicable") + NON_PASSING
+REVIEW_STATUSES = ("passed", "repair", "blocked", "failed", "not_run", "stale")
+REPAIR_STATUSES = ("progressed", "no_progress", "blocked")
 
 
 @dataclass(frozen=True)
@@ -105,6 +108,11 @@ class OperationEvent:
     status: str = ""
     child_routes: tuple[str, ...] = ()
     artifact_fingerprint: str = ""
+    related_fingerprint: str = ""
+    defect_lineage: str = ""
+    artifact_mode: str = ""
+    producer_id: str = ""
+    judge_id: str = ""
     target: str = ""
     reason: str = ""
 
@@ -124,6 +132,11 @@ class OperationState:
     packet_status: str = "not_run"
     packet_current: bool = False
     handoff_status: str = "not_run"
+    reader_intent_fingerprint: str = ""
+    reader_intent_status: str = "not_run"
+    composition_plan_fingerprint: str = ""
+    composition_plan_status: str = "not_run"
+    route_extension_fingerprint: str = ""
     brief_fingerprint: str = ""
     brief_status: str = "not_run"
     brief_current: bool = False
@@ -131,10 +144,27 @@ class OperationState:
     artifact_bound_brief: str = ""
     artifact_status: str = "not_run"
     artifact_current: bool = False
+    artifact_mode: str = "create_new"
+    integration_status: str = "not_run"
+    artifact_map_fingerprint: str = ""
+    artifact_map_status: str = "not_run"
+    shared_binding_fingerprint: str = ""
+    shared_binding_status: str = "not_run"
+    shared_binding_artifact_fingerprint: str = ""
     revision_provenance_status: str = "not_run"
     deterministic_audit_status: str = "not_run"
+    route_audit_status: str = "not_run"
     judgment_status: str = "not_run"
     audit_artifact_fingerprint: str = ""
+    judgment_artifact_fingerprint: str = ""
+    producer_id: str = ""
+    judge_id: str = ""
+    repair_request_fingerprint: str = ""
+    repair_request_artifact_fingerprint: str = ""
+    repair_attempt_count: int = 0
+    defect_lineage: str = ""
+    consecutive_no_progress: int = 0
+    last_repair_status: str = "not_run"
     closure_status: str = "not_run"
     closure_artifact_fingerprint: str = ""
     closure_owner: str = ""
@@ -224,8 +254,10 @@ class RejectUnknownOperationEvent(_OperationBlock):
     def apply(self, event: OperationEvent, state: OperationState) -> Iterable[FunctionResult]:
         if event.action == "invoke_adapter":
             invalid_status = event.status not in ADAPTER_STATUSES
-        elif event.action == "audit_artifact":
-            invalid_status = event.status not in AUDIT_STATUSES
+        elif event.action in {"deterministic_audit", "route_audit", "judge_artifact"}:
+            invalid_status = event.status not in REVIEW_STATUSES
+        elif event.action == "record_repair_result":
+            invalid_status = event.status not in REPAIR_STATUSES
         elif event.action == "record_revision_provenance":
             invalid_status = event.status not in ADAPTER_STATUSES
         else:
@@ -442,15 +474,130 @@ class HandoffResearchPacket(_OperationBlock):
         return (FunctionResult(event, replace(state, handoff_status="current_pass"), label="packet_handoff_verified"),)
 
 
+class FreezeReaderIntent(_OperationBlock):
+    name = "FreezeReaderIntent"
+    reads = ("route_status", "request_fingerprint")
+    writes = (
+        "reader_intent_fingerprint",
+        "reader_intent_status",
+        "composition_plan_status",
+        "brief_status",
+        "brief_current",
+        "closure_status",
+        "closure_artifact_fingerprint",
+        "terminal",
+    )
+
+    def apply(self, event: OperationEvent, state: OperationState) -> Iterable[FunctionResult]:
+        if event.action != "freeze_reader_intent":
+            return self._pass(event, state, "reader_intent_not_requested")
+        if state.route_status != "current_pass" or not state.request_fingerprint or not event.fingerprint:
+            return (
+                FunctionResult(
+                    event,
+                    replace(state, reader_intent_status="blocked", brief_current=False),
+                    label="reader_intent_blocked",
+                ),
+            )
+        return (
+            FunctionResult(
+                event,
+                replace(
+                    state,
+                    reader_intent_fingerprint=event.fingerprint,
+                    reader_intent_status="current_pass",
+                    composition_plan_status="not_run",
+                    brief_status="not_run",
+                    brief_current=False,
+                    closure_status="stale" if state.closure_status == "passed" else state.closure_status,
+                    closure_artifact_fingerprint="",
+                    terminal=False,
+                ),
+                label="reader_intent_current",
+            ),
+        )
+
+
+class ValidateCompositionPlan(_OperationBlock):
+    name = "ValidateCompositionPlan"
+    reads = ("reader_intent_status", "route_owner", "packet_current")
+    writes = (
+        "composition_plan_fingerprint",
+        "composition_plan_status",
+        "route_extension_fingerprint",
+        "brief_current",
+        "closure_status",
+        "closure_artifact_fingerprint",
+        "terminal",
+    )
+
+    def apply(self, event: OperationEvent, state: OperationState) -> Iterable[FunctionResult]:
+        if event.action != "validate_composition":
+            return self._pass(event, state, "composition_not_requested")
+        valid = (
+            state.reader_intent_status == "current_pass"
+            and state.packet_current
+            and state.route_owner in FINAL_OWNERS
+            and bool(event.fingerprint)
+            and bool(event.related_fingerprint)
+            and event.owner == state.route_owner
+            and event.status in {"", "current_pass"}
+        )
+        if not valid:
+            return (
+                FunctionResult(
+                    event,
+                    replace(state, composition_plan_status="blocked", brief_current=False),
+                    label="composition_blocked",
+                ),
+            )
+        return (
+            FunctionResult(
+                event,
+                replace(
+                    state,
+                    composition_plan_fingerprint=event.fingerprint,
+                    composition_plan_status="current_pass",
+                    route_extension_fingerprint=event.related_fingerprint,
+                    brief_current=False,
+                    closure_status="stale" if state.closure_status == "passed" else state.closure_status,
+                    closure_artifact_fingerprint="",
+                    terminal=False,
+                ),
+                label="composition_current",
+            ),
+        )
+
+
 class BuildReaderBrief(_OperationBlock):
     name = "BuildReaderBrief"
-    reads = ("packet_current", "handoff_status", "packet_fingerprint")
-    writes = ("brief_fingerprint", "brief_status", "brief_current", "artifact_current", "terminal")
+    reads = (
+        "packet_current",
+        "handoff_status",
+        "reader_intent_status",
+        "composition_plan_status",
+        "route_extension_fingerprint",
+    )
+    writes = (
+        "brief_fingerprint",
+        "brief_status",
+        "brief_current",
+        "artifact_current",
+        "closure_status",
+        "closure_artifact_fingerprint",
+        "terminal",
+    )
 
     def apply(self, event: OperationEvent, state: OperationState) -> Iterable[FunctionResult]:
         if event.action != "build_reader_brief":
             return self._pass(event, state, "brief_not_requested")
-        if not state.packet_current or state.handoff_status not in {"current_pass", "not_run"}:
+        if (
+            not state.packet_current
+            or state.handoff_status not in {"current_pass", "not_run"}
+            or state.reader_intent_status != "current_pass"
+            or state.composition_plan_status != "current_pass"
+            or not state.route_extension_fingerprint
+        ):
             return (FunctionResult(event, replace(state, brief_status="blocked", brief_current=False), label="brief_blocked"),)
         return (
             FunctionResult(
@@ -461,6 +608,8 @@ class BuildReaderBrief(_OperationBlock):
                     brief_status="current_pass",
                     brief_current=True,
                     artifact_current=False,
+                    closure_status="stale" if state.closure_status == "passed" else state.closure_status,
+                    closure_artifact_fingerprint="",
                     terminal=False,
                 ),
                 label="reader_brief_current",
@@ -468,26 +617,34 @@ class BuildReaderBrief(_OperationBlock):
         )
 
 
-class WriteArtifact(_OperationBlock):
-    name = "WriteArtifact"
-    reads = ("brief_current", "brief_fingerprint", "route_owner")
+class DraftArtifact(_OperationBlock):
+    name = "DraftArtifact"
+    reads = ("brief_current", "brief_fingerprint", "route_owner", "composition_plan_status")
     writes = (
         "artifact_fingerprint",
         "artifact_bound_brief",
         "artifact_status",
         "artifact_current",
+        "artifact_mode",
+        "integration_status",
+        "artifact_map_status",
+        "shared_binding_status",
         "revision_provenance_status",
         "deterministic_audit_status",
+        "route_audit_status",
         "judgment_status",
         "audit_artifact_fingerprint",
+        "judgment_artifact_fingerprint",
+        "closure_status",
+        "closure_artifact_fingerprint",
         "side_effects",
         "terminal",
     )
 
     def apply(self, event: OperationEvent, state: OperationState) -> Iterable[FunctionResult]:
-        if event.action != "write_artifact":
-            return self._pass(event, state, "write_not_requested")
-        if not state.brief_current or not state.route_owner:
+        if event.action != "draft_artifact":
+            return self._pass(event, state, "draft_not_requested")
+        if not state.brief_current or not state.route_owner or state.composition_plan_status != "current_pass":
             return (FunctionResult(event, replace(state, artifact_status="blocked", artifact_current=False), label="artifact_blocked"),)
         return (
             FunctionResult(
@@ -498,14 +655,138 @@ class WriteArtifact(_OperationBlock):
                     artifact_bound_brief=state.brief_fingerprint,
                     artifact_status="current",
                     artifact_current=True,
+                    artifact_mode=event.artifact_mode or "create_new",
+                    integration_status="not_run",
+                    artifact_map_status="not_run",
+                    shared_binding_status="not_run",
                     revision_provenance_status="not_run",
                     deterministic_audit_status="not_run",
+                    route_audit_status="not_run",
                     judgment_status="not_run",
                     audit_artifact_fingerprint="",
+                    judgment_artifact_fingerprint="",
+                    closure_status="stale" if state.closure_status == "passed" else state.closure_status,
+                    closure_artifact_fingerprint="",
                     side_effects=state.side_effects + ("reader_artifact_written",),
                     terminal=False,
                 ),
-                label="artifact_written",
+                label="whole_artifact_drafted",
+            ),
+        )
+
+
+class IntegrateArtifact(_OperationBlock):
+    name = "IntegrateArtifact"
+    reads = ("artifact_current", "artifact_fingerprint", "composition_plan_status")
+    writes = ("integration_status", "closure_status", "closure_artifact_fingerprint", "terminal")
+
+    def apply(self, event: OperationEvent, state: OperationState) -> Iterable[FunctionResult]:
+        if event.action != "integrate_artifact":
+            return self._pass(event, state, "integration_not_requested")
+        current = (
+            state.artifact_current
+            and state.composition_plan_status == "current_pass"
+            and (event.artifact_fingerprint or event.fingerprint) == state.artifact_fingerprint
+        )
+        return (
+            FunctionResult(
+                event,
+                replace(
+                    state,
+                    integration_status="current_pass" if current else "blocked",
+                    closure_status="stale" if state.closure_status == "passed" else state.closure_status,
+                    closure_artifact_fingerprint="",
+                    terminal=False,
+                ),
+                label="artifact_integrated" if current else "integration_blocked",
+            ),
+        )
+
+
+class MapArtifact(_OperationBlock):
+    name = "MapArtifact"
+    reads = ("artifact_current", "artifact_fingerprint", "integration_status")
+    writes = (
+        "artifact_map_fingerprint",
+        "artifact_map_status",
+        "shared_binding_status",
+        "deterministic_audit_status",
+        "route_audit_status",
+        "judgment_status",
+        "closure_status",
+        "closure_artifact_fingerprint",
+        "terminal",
+    )
+
+    def apply(self, event: OperationEvent, state: OperationState) -> Iterable[FunctionResult]:
+        if event.action != "map_artifact":
+            return self._pass(event, state, "artifact_map_not_requested")
+        current = (
+            state.artifact_current
+            and state.integration_status == "current_pass"
+            and bool(event.fingerprint)
+            and event.artifact_fingerprint == state.artifact_fingerprint
+        )
+        return (
+            FunctionResult(
+                event,
+                replace(
+                    state,
+                    artifact_map_fingerprint=event.fingerprint if current else "",
+                    artifact_map_status="current_pass" if current else "blocked",
+                    shared_binding_status="not_run",
+                    deterministic_audit_status="not_run",
+                    route_audit_status="not_run",
+                    judgment_status="not_run",
+                    closure_status="stale" if state.closure_status == "passed" else state.closure_status,
+                    closure_artifact_fingerprint="",
+                    terminal=False,
+                ),
+                label="artifact_map_current" if current else "artifact_map_blocked",
+            ),
+        )
+
+
+class BindSharedWriting(_OperationBlock):
+    name = "BindSharedWriting"
+    reads = (
+        "artifact_map_status",
+        "artifact_fingerprint",
+        "composition_plan_status",
+        "route_extension_fingerprint",
+    )
+    writes = (
+        "shared_binding_fingerprint",
+        "shared_binding_status",
+        "shared_binding_artifact_fingerprint",
+        "closure_status",
+        "closure_artifact_fingerprint",
+        "terminal",
+    )
+
+    def apply(self, event: OperationEvent, state: OperationState) -> Iterable[FunctionResult]:
+        if event.action != "bind_shared_writing":
+            return self._pass(event, state, "shared_binding_not_requested")
+        current = (
+            state.artifact_map_status == "current_pass"
+            and state.composition_plan_status == "current_pass"
+            and event.artifact_fingerprint == state.artifact_fingerprint
+            and bool(event.fingerprint)
+            and event.related_fingerprint == state.artifact_map_fingerprint
+        )
+        return (
+            FunctionResult(
+                event,
+                replace(
+                    state,
+                    shared_binding_fingerprint=event.fingerprint if current else "",
+                    shared_binding_status="current_pass" if current else "blocked",
+                    shared_binding_artifact_fingerprint=state.artifact_fingerprint if current else "",
+                    closure_status="stale" if state.closure_status == "passed" else state.closure_status,
+                    closure_artifact_fingerprint="",
+                    terminal=False,
+                ),
+                label="shared_binding_current" if current else "shared_binding_blocked",
             ),
         )
 
@@ -513,20 +794,26 @@ class WriteArtifact(_OperationBlock):
 class RecordRevisionProvenance(_OperationBlock):
     name = "RecordRevisionProvenance"
     reads = ("route_owner", "artifact_current", "artifact_fingerprint")
-    writes = ("revision_provenance_status", "terminal")
+    writes = (
+        "revision_provenance_status",
+        "closure_status",
+        "closure_artifact_fingerprint",
+        "terminal",
+    )
 
     def apply(self, event: OperationEvent, state: OperationState) -> Iterable[FunctionResult]:
         if event.action != "record_revision_provenance":
             return self._pass(event, state, "revision_provenance_not_requested")
-        if state.route_owner != "academic-writing":
-            return self._pass(event, state, "revision_provenance_not_applicable")
-        current = state.artifact_current and event.status == "current_pass"
+        expected = "not_applicable" if state.artifact_mode == "create_new" else "current_pass"
+        current = state.artifact_current and event.status == expected
         return (
             FunctionResult(
                 event,
                 replace(
                     state,
-                    revision_provenance_status="current_pass" if current else (event.status or "blocked"),
+                    revision_provenance_status=expected if current else (event.status or "blocked"),
+                    closure_status="stale" if state.closure_status == "passed" else state.closure_status,
+                    closure_artifact_fingerprint="",
                     terminal=False,
                 ),
                 label="revision_provenance_current" if current else "revision_provenance_blocked",
@@ -534,48 +821,180 @@ class RecordRevisionProvenance(_OperationBlock):
         )
 
 
-class AuditActualArtifact(_OperationBlock):
-    name = "AuditActualArtifact"
-    reads = ("artifact_fingerprint", "artifact_current")
-    writes = ("deterministic_audit_status", "judgment_status", "audit_artifact_fingerprint", "terminal")
+class DeterministicAudit(_OperationBlock):
+    name = "DeterministicAudit"
+    reads = ("artifact_fingerprint", "artifact_map_status", "shared_binding_status")
+    writes = (
+        "deterministic_audit_status",
+        "audit_artifact_fingerprint",
+        "closure_status",
+        "closure_artifact_fingerprint",
+        "terminal",
+    )
 
     def apply(self, event: OperationEvent, state: OperationState) -> Iterable[FunctionResult]:
-        if event.action != "audit_artifact":
-            return self._pass(event, state, "audit_not_requested")
-        artifact_id = event.artifact_fingerprint or event.fingerprint
-        if not state.artifact_current or artifact_id != state.artifact_fingerprint:
-            return (
-                FunctionResult(
-                    event,
-                    replace(state, deterministic_audit_status="blocked", judgment_status="not_run"),
-                    label="audit_blocked",
-                ),
-            )
-        deterministic, _, judgment = (event.status or "failed").partition("+")
-        judgment = judgment or "not_run"
+        if event.action != "deterministic_audit":
+            return self._pass(event, state, "deterministic_audit_not_requested")
+        current = (
+            state.artifact_map_status == "current_pass"
+            and state.shared_binding_status == "current_pass"
+            and event.artifact_fingerprint == state.artifact_fingerprint
+        )
+        status = event.status if current else "blocked"
         return (
             FunctionResult(
                 event,
                 replace(
                     state,
-                    deterministic_audit_status=deterministic,
-                    judgment_status=judgment,
-                    audit_artifact_fingerprint=artifact_id,
+                    deterministic_audit_status=status,
+                    audit_artifact_fingerprint=state.artifact_fingerprint if current else "",
+                    closure_status="stale" if state.closure_status == "passed" else state.closure_status,
+                    closure_artifact_fingerprint="",
                     terminal=False,
                 ),
-                label="actual_artifact_audited",
+                label="deterministic_artifact_audited" if current else "deterministic_audit_blocked",
             ),
         )
 
 
-class UpdateArtifact(_OperationBlock):
-    name = "UpdateArtifact"
-    reads = ("artifact_fingerprint", "audit_artifact_fingerprint", "closure_status")
+class RouteArtifactAudit(_OperationBlock):
+    name = "RouteArtifactAudit"
+    reads = ("artifact_fingerprint", "artifact_map_status", "route_owner")
+    writes = ("route_audit_status", "closure_status", "closure_artifact_fingerprint", "terminal")
+
+    def apply(self, event: OperationEvent, state: OperationState) -> Iterable[FunctionResult]:
+        if event.action != "route_audit":
+            return self._pass(event, state, "route_audit_not_requested")
+        current = (
+            state.artifact_map_status == "current_pass"
+            and event.artifact_fingerprint == state.artifact_fingerprint
+            and event.owner == state.route_owner
+        )
+        return (
+            FunctionResult(
+                event,
+                replace(
+                    state,
+                    route_audit_status=event.status if current else "blocked",
+                    closure_status="stale" if state.closure_status == "passed" else state.closure_status,
+                    closure_artifact_fingerprint="",
+                    terminal=False,
+                ),
+                label="route_artifact_audited" if current else "route_audit_blocked",
+            ),
+        )
+
+
+class JudgeArtifact(_OperationBlock):
+    name = "JudgeArtifact"
+    reads = (
+        "artifact_fingerprint",
+        "deterministic_audit_status",
+        "route_audit_status",
+        "producer_id",
+    )
+    writes = (
+        "judgment_status",
+        "judgment_artifact_fingerprint",
+        "producer_id",
+        "judge_id",
+        "defect_lineage",
+        "closure_status",
+        "closure_artifact_fingerprint",
+        "terminal",
+    )
+
+    def apply(self, event: OperationEvent, state: OperationState) -> Iterable[FunctionResult]:
+        if event.action != "judge_artifact":
+            return self._pass(event, state, "judgment_not_requested")
+        independent = bool(event.producer_id and event.judge_id and event.producer_id != event.judge_id)
+        current = (
+            state.deterministic_audit_status == "passed"
+            and state.route_audit_status == "passed"
+            and event.artifact_fingerprint == state.artifact_fingerprint
+            and independent
+        )
+        status = event.status if current else "blocked"
+        return (
+            FunctionResult(
+                event,
+                replace(
+                    state,
+                    judgment_status=status,
+                    judgment_artifact_fingerprint=state.artifact_fingerprint if current else "",
+                    producer_id=event.producer_id,
+                    judge_id=event.judge_id,
+                    defect_lineage=event.defect_lineage if status != "passed" else "",
+                    closure_status="stale" if state.closure_status == "passed" else state.closure_status,
+                    closure_artifact_fingerprint="",
+                    terminal=False,
+                ),
+                label="independent_judgment_recorded" if current else "judgment_blocked",
+            ),
+        )
+
+
+class RequestRepair(_OperationBlock):
+    name = "RequestRepair"
+    reads = ("artifact_fingerprint", "judgment_status", "defect_lineage", "route_owner")
+    writes = (
+        "repair_request_fingerprint",
+        "repair_request_artifact_fingerprint",
+        "defect_lineage",
+        "closure_status",
+        "closure_artifact_fingerprint",
+        "terminal",
+    )
+
+    def apply(self, event: OperationEvent, state: OperationState) -> Iterable[FunctionResult]:
+        if event.action != "request_repair":
+            return self._pass(event, state, "repair_request_not_requested")
+        current = (
+            state.judgment_status in {"repair", "blocked", "failed"}
+            and bool(event.fingerprint)
+            and event.artifact_fingerprint == state.artifact_fingerprint
+            and event.owner == state.route_owner
+            and bool(event.defect_lineage)
+        )
+        return (
+            FunctionResult(
+                event,
+                replace(
+                    state,
+                    repair_request_fingerprint=event.fingerprint if current else "",
+                    repair_request_artifact_fingerprint=state.artifact_fingerprint if current else "",
+                    defect_lineage=event.defect_lineage if current else state.defect_lineage,
+                    closure_status="stale" if state.closure_status == "passed" else state.closure_status,
+                    closure_artifact_fingerprint="",
+                    terminal=False,
+                ),
+                label="repair_requested" if current else "repair_request_blocked",
+            ),
+        )
+
+
+class ApplyRepair(_OperationBlock):
+    name = "ApplyRepair"
+    reads = (
+        "repair_request_fingerprint",
+        "repair_request_artifact_fingerprint",
+        "artifact_fingerprint",
+    )
     writes = (
         "artifact_fingerprint",
+        "artifact_current",
+        "integration_status",
+        "artifact_map_fingerprint",
+        "artifact_map_status",
+        "shared_binding_fingerprint",
+        "shared_binding_status",
+        "shared_binding_artifact_fingerprint",
         "revision_provenance_status",
         "deterministic_audit_status",
+        "route_audit_status",
         "judgment_status",
+        "audit_artifact_fingerprint",
+        "judgment_artifact_fingerprint",
         "closure_status",
         "closure_artifact_fingerprint",
         "errors",
@@ -583,26 +1002,96 @@ class UpdateArtifact(_OperationBlock):
     )
 
     def apply(self, event: OperationEvent, state: OperationState) -> Iterable[FunctionResult]:
-        if event.action != "update_artifact":
-            return self._pass(event, state, "update_not_requested")
-        if not state.artifact_current:
-            return (FunctionResult(event, replace(state, errors=state.errors + ("cannot_update_missing_artifact",)), label="update_blocked"),)
+        if event.action != "apply_repair":
+            return self._pass(event, state, "repair_not_requested")
+        if (
+            not state.artifact_current
+            or not state.repair_request_fingerprint
+            or state.repair_request_artifact_fingerprint != state.artifact_fingerprint
+        ):
+            return (
+                FunctionResult(
+                    event,
+                    replace(state, errors=state.errors + ("cannot_apply_unbound_repair",)),
+                    label="repair_blocked",
+                ),
+            )
         return (
             FunctionResult(
                 event,
                 replace(
                     state,
                     artifact_fingerprint=event.artifact_fingerprint or event.fingerprint,
+                    integration_status="not_run",
+                    artifact_map_fingerprint="",
+                    artifact_map_status="stale",
+                    shared_binding_fingerprint="",
+                    shared_binding_status="stale",
+                    shared_binding_artifact_fingerprint="",
                     revision_provenance_status=(
-                        "stale" if state.route_owner == "academic-writing" else state.revision_provenance_status
+                        "stale" if state.revision_provenance_status != "not_run" else "not_run"
                     ),
                     deterministic_audit_status="stale",
+                    route_audit_status="stale",
                     judgment_status="stale",
+                    audit_artifact_fingerprint="",
+                    judgment_artifact_fingerprint="",
                     closure_status="stale",
                     closure_artifact_fingerprint="",
                     terminal=False,
                 ),
-                label="artifact_updated_audits_stale",
+                label="repair_applied_evidence_stale",
+            ),
+        )
+
+
+class RecordRepairResult(_OperationBlock):
+    name = "RecordRepairResult"
+    reads = (
+        "repair_request_fingerprint",
+        "artifact_fingerprint",
+        "defect_lineage",
+        "consecutive_no_progress",
+    )
+    writes = (
+        "repair_request_fingerprint",
+        "repair_request_artifact_fingerprint",
+        "repair_attempt_count",
+        "last_repair_status",
+        "consecutive_no_progress",
+        "no_progress_count",
+        "terminal",
+    )
+
+    def apply(self, event: OperationEvent, state: OperationState) -> Iterable[FunctionResult]:
+        if event.action != "record_repair_result":
+            return self._pass(event, state, "repair_result_not_requested")
+        bound = (
+            bool(state.repair_request_fingerprint)
+            and event.related_fingerprint == state.repair_request_fingerprint
+            and event.defect_lineage == state.defect_lineage
+            and event.artifact_fingerprint == state.artifact_fingerprint
+        )
+        if not bound:
+            return (
+                FunctionResult(event, replace(state, last_repair_status="blocked"), label="repair_result_blocked"),
+            )
+        no_progress = state.consecutive_no_progress + 1 if event.status == "no_progress" else 0
+        terminal = no_progress >= 2
+        return (
+            FunctionResult(
+                event,
+                replace(
+                    state,
+                    repair_request_fingerprint="",
+                    repair_request_artifact_fingerprint="",
+                    repair_attempt_count=state.repair_attempt_count + 1,
+                    last_repair_status=event.status,
+                    consecutive_no_progress=no_progress,
+                    no_progress_count=no_progress,
+                    terminal=terminal,
+                ),
+                label="repair_no_progress_terminated" if terminal else "repair_result_recorded",
             ),
         )
 
@@ -614,12 +1103,18 @@ class PropagateOperationStaleness(_OperationBlock):
         "packet_status",
         "packet_current",
         "handoff_status",
+        "reader_intent_status",
+        "composition_plan_status",
         "brief_status",
         "brief_current",
         "artifact_status",
         "artifact_current",
+        "integration_status",
+        "artifact_map_status",
+        "shared_binding_status",
         "revision_provenance_status",
         "deterministic_audit_status",
+        "route_audit_status",
         "judgment_status",
         "closure_status",
         "terminal",
@@ -636,14 +1131,24 @@ class PropagateOperationStaleness(_OperationBlock):
                     packet_status="stale" if state.packet_status != "not_run" else "not_run",
                     packet_current=False,
                     handoff_status="stale" if state.handoff_status != "not_run" else "not_run",
+                    reader_intent_status=(
+                        "stale" if state.reader_intent_status != "not_run" else "not_run"
+                    ),
+                    composition_plan_status=(
+                        "stale" if state.composition_plan_status != "not_run" else "not_run"
+                    ),
                     brief_status="stale" if state.brief_status != "not_run" else "not_run",
                     brief_current=False,
                     artifact_status="stale" if state.artifact_status != "not_run" else "not_run",
                     artifact_current=False,
+                    integration_status="stale" if state.integration_status != "not_run" else "not_run",
+                    artifact_map_status="stale" if state.artifact_map_status != "not_run" else "not_run",
+                    shared_binding_status="stale" if state.shared_binding_status != "not_run" else "not_run",
                     revision_provenance_status=(
                         "stale" if state.revision_provenance_status != "not_run" else "not_run"
                     ),
                     deterministic_audit_status="stale" if state.deterministic_audit_status != "not_run" else "not_run",
+                    route_audit_status="stale" if state.route_audit_status != "not_run" else "not_run",
                     judgment_status="stale" if state.judgment_status != "not_run" else "not_run",
                     closure_status="stale" if state.closure_status != "not_run" else "not_run",
                     terminal=False,
@@ -658,11 +1163,21 @@ class CloseOperation(_OperationBlock):
     reads = (
         "route_owner",
         "packet_current",
+        "reader_intent_status",
+        "composition_plan_status",
         "brief_current",
         "artifact_current",
+        "integration_status",
+        "artifact_map_status",
+        "shared_binding_status",
+        "shared_binding_artifact_fingerprint",
+        "artifact_mode",
         "revision_provenance_status",
         "deterministic_audit_status",
+        "route_audit_status",
         "judgment_status",
+        "judgment_artifact_fingerprint",
+        "consecutive_no_progress",
     )
     writes = (
         "closure_status",
@@ -679,16 +1194,22 @@ class CloseOperation(_OperationBlock):
         ready = (
             state.route_owner in FINAL_OWNERS
             and state.packet_current
+            and state.reader_intent_status == "current_pass"
+            and state.composition_plan_status == "current_pass"
             and state.brief_current
             and state.artifact_current
             and state.artifact_bound_brief == state.brief_fingerprint
-            and (
-                state.route_owner != "academic-writing"
-                or state.revision_provenance_status == "current_pass"
-            )
+            and state.integration_status == "current_pass"
+            and state.artifact_map_status == "current_pass"
+            and state.shared_binding_status == "current_pass"
+            and state.shared_binding_artifact_fingerprint == state.artifact_fingerprint
+            and state.revision_provenance_status
+            == ("not_applicable" if state.artifact_mode == "create_new" else "current_pass")
             and state.deterministic_audit_status == "passed"
+            and state.route_audit_status == "passed"
             and state.judgment_status == "passed"
             and state.audit_artifact_fingerprint == state.artifact_fingerprint
+            and state.judgment_artifact_fingerprint == state.artifact_fingerprint
         )
         if ready:
             return (
@@ -705,8 +1226,7 @@ class CloseOperation(_OperationBlock):
                     label="operation_closed",
                 ),
             )
-        repeats = state.no_progress_count + 1
-        terminal = repeats >= 2
+        terminal = state.consecutive_no_progress >= 2
         return (
             FunctionResult(
                 event,
@@ -714,7 +1234,7 @@ class CloseOperation(_OperationBlock):
                     state,
                     closure_status="no_progress_blocked" if terminal else "blocked",
                     closure_owner=state.route_owner,
-                    no_progress_count=repeats,
+                    no_progress_count=state.consecutive_no_progress,
                     residual_risk=tuple(dict.fromkeys(state.residual_risk + ("required_current_evidence_missing",))),
                     terminal=terminal,
                 ),
@@ -1019,11 +1539,20 @@ OPERATION_BLOCKS = (
     InvokeTypedGuardAdapter(),
     AssembleResearchPacket(),
     HandoffResearchPacket(),
+    FreezeReaderIntent(),
+    ValidateCompositionPlan(),
     BuildReaderBrief(),
-    WriteArtifact(),
+    DraftArtifact(),
+    IntegrateArtifact(),
+    MapArtifact(),
+    BindSharedWriting(),
     RecordRevisionProvenance(),
-    AuditActualArtifact(),
-    UpdateArtifact(),
+    DeterministicAudit(),
+    RouteArtifactAudit(),
+    JudgeArtifact(),
+    RequestRepair(),
+    ApplyRepair(),
+    RecordRepairResult(),
     PropagateOperationStaleness(),
     CloseOperation(),
 )
@@ -1097,18 +1626,51 @@ def actual_artifact_required_for_audit(state: OperationState, trace) -> Invarian
     return InvariantResult.pass_()
 
 
+def current_reader_chain_is_single_identity(state: OperationState, trace) -> InvariantResult:
+    del trace
+    if state.shared_binding_status == "current_pass" and (
+        state.shared_binding_artifact_fingerprint != state.artifact_fingerprint
+        or state.artifact_map_status != "current_pass"
+        or state.composition_plan_status != "current_pass"
+        or state.reader_intent_status != "current_pass"
+    ):
+        return _fail(
+            "current_reader_chain_is_single_identity",
+            "shared binding passed without one current ReaderIntent, composition plan, map, and artifact identity",
+        )
+    if state.judgment_status == "passed" and (
+        state.producer_id == state.judge_id
+        or state.judgment_artifact_fingerprint != state.artifact_fingerprint
+        or state.route_audit_status != "passed"
+    ):
+        return _fail(
+            "current_reader_chain_is_single_identity",
+            "reader judgment passed without independent current route-bound evidence",
+        )
+    return InvariantResult.pass_()
+
+
 def closure_requires_current_chain(state: OperationState, trace) -> InvariantResult:
     del trace
     if state.closure_status != "passed":
         return InvariantResult.pass_()
     required = (
         state.packet_current,
+        state.reader_intent_status == "current_pass",
+        state.composition_plan_status == "current_pass",
         state.brief_current,
         state.artifact_current,
-        state.route_owner != "academic-writing" or state.revision_provenance_status == "current_pass",
+        state.integration_status == "current_pass",
+        state.artifact_map_status == "current_pass",
+        state.shared_binding_status == "current_pass",
+        state.shared_binding_artifact_fingerprint == state.artifact_fingerprint,
+        state.revision_provenance_status
+        == ("not_applicable" if state.artifact_mode == "create_new" else "current_pass"),
         state.deterministic_audit_status == "passed",
+        state.route_audit_status == "passed",
         state.judgment_status == "passed",
         state.audit_artifact_fingerprint == state.artifact_fingerprint,
+        state.judgment_artifact_fingerprint == state.artifact_fingerprint,
         state.closure_artifact_fingerprint == state.artifact_fingerprint,
         state.closure_owner == state.route_owner,
     )
@@ -1126,8 +1688,10 @@ def bounded_child_never_closes_parent(state: OperationState, trace) -> Invariant
 
 def operation_terminal_is_visible(state: OperationState, trace) -> InvariantResult:
     del trace
-    if state.no_progress_count >= 2 and not state.terminal:
+    if state.consecutive_no_progress >= 2 and not state.terminal:
         return _fail("operation_terminal_is_visible", "repeated identical no-progress attempts did not terminate visibly")
+    if state.no_progress_count > state.repair_attempt_count:
+        return _fail("operation_terminal_is_visible", "closure derivation manufactured repair progress")
     return InvariantResult.pass_()
 
 
@@ -1136,6 +1700,7 @@ OPERATION_INVARIANTS = (
     Invariant("specialist_authority_preserved", "Every specialist receipt keeps its native owner", specialist_authority_preserved),
     Invariant("packet_requires_core_content", "A passing packet contains current source and logic evidence", packet_requires_core_content),
     Invariant("actual_artifact_required_for_audit", "Passing reader audit binds actual current text", actual_artifact_required_for_audit),
+    Invariant("current_reader_chain_is_single_identity", "The reader chain binds one current identity", current_reader_chain_is_single_identity),
     Invariant("closure_requires_current_chain", "Final closure requires the current evidence chain", closure_requires_current_chain),
     Invariant("bounded_child_never_closes_parent", "Child routes close only bounded obligations", bounded_child_never_closes_parent),
     Invariant("operation_terminal_is_visible", "Repeated no-progress attempts terminate visibly", operation_terminal_is_visible),

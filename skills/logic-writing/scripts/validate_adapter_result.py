@@ -453,7 +453,7 @@ def build_adapter_receipt(
     adapter_object_fingerprint = _store_content_object(dict(value), root=root)
     return _commit_managed_receipt(
         {
-            "schema_version": "1.0",
+            "schema_version": "2.0",
             "producer_skill": value["native_owner"],
             "semantic_owner_id": value["semantic_owner_id"],
             "native_route": value["native_route"],
@@ -476,7 +476,7 @@ def build_adapter_receipt(
             ],
         },
         root=root,
-        builder_id="logic-writing.adapter-result.v1",
+        builder_id="logic-writing.adapter-result.v2",
         source_fingerprint=value["adapter_result_fingerprint"],
     )
 

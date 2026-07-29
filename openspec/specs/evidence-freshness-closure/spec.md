@@ -13,14 +13,19 @@ The system SHALL derive closure from current specialist receipts and artifact id
 - **AND** return `partial`, `downgraded`, or `blocked`
 
 ### Requirement: Every final closure has a minimum content baseline
-Final closure SHALL require route-specific content and reader evidence even when the caller does not request broad, comprehensive, final, or publication-ready wording. Investigation closure SHALL require current source-observation, argument-model, ReaderBrief, deterministic actual-artifact audit, and independent reader-judgment receipts. Academic closure SHALL require current argument-model, source-unit-to-target-unit revision provenance, ReaderBrief, deterministic actual-artifact audit, and independent reader-judgment receipts. Process, routing, or layout receipts SHALL NOT replace this baseline.
+Every final route closure SHALL consume the shared current reader chain consisting of ReaderBrief, route composition, SharedWriting binding, route-native actual-artifact review, model-artifact binding, deterministic audit, and independent reader judgment, plus the selected route's native evidence. All shared reader evidence SHALL bind the same final owner, RouteDecision, ReaderIntent, CompositionPlan, and current artifact fingerprint. Revision provenance SHALL be required only when artifact mode is revise-existing and SHALL be explicitly not applicable for create-new artifacts.
 
 #### Scenario: Process is green but content work did not run
-- **WHEN** routing and FlowGuard process checks pass
-- **AND** the route-specific source, argument, provenance, or reader evidence is absent
-- **AND** broad claim wording was not requested
-- **THEN** final closure SHALL still return `blocked` or `partial`
-- **AND** identify the missing content owner
+- **WHEN** process and release checks pass but any required shared reader-chain evidence is missing, stale, skipped, partial, or failed
+- **THEN** final closure remains blocked
+
+#### Scenario: New academic artifact has no source document
+- **WHEN** an academic artifact is created from zero
+- **THEN** revision provenance is explicitly not applicable and the remaining academic and shared reader baseline determines closure
+
+#### Scenario: Route-native review is missing
+- **WHEN** shared reader checks pass but the selected route has not reviewed the current actual artifact
+- **THEN** final closure remains blocked
 
 #### Scenario: Academic artifact lacks revision provenance
 - **WHEN** an academic artifact and its reader audits are current
@@ -215,17 +220,19 @@ The development validation plane SHALL prove that every declared authority input
 - **AND** the native project audit result SHALL remain the sole pass or fail authority
 
 ### Requirement: Repeated no-progress loops terminate visibly
-The system SHALL detect repeated identical failed packets, gap sets, or artifact hashes and SHALL stop with a bounded blocker instead of claiming progress.
+Closure SHALL derive no-progress only from consecutive current RepairResult receipts for the same selected final owner and defect lineage. A no-progress result SHALL prove that a real repair request was issued and that the artifact bytes did not change or that the blocking defect set remained materially unchanged after a current edit. Repeated closure derivation alone SHALL NOT count as repair.
 
 #### Scenario: Same packet is rejected twice
-- **WHEN** the same packet fingerprint and gap-set fingerprint are rejected without any changed input
-- **THEN** the route SHALL return `no_progress_blocked`
-- **AND** identify the missing external input or human decision
+- **WHEN** no RepairRequest and RepairResult pair exists for the repeated rejection
+- **THEN** closure does not increment the no-progress count
 
 #### Scenario: Artifact repair changes no bytes
-- **WHEN** a repair step produces the same artifact fingerprint
-- **THEN** the old audit failure SHALL remain current
-- **AND** the route SHALL not count the step as progress
+- **WHEN** a current repair result binds identical input and output artifact fingerprints
+- **THEN** one no-progress attempt is recorded
+
+#### Scenario: Two genuine repairs make no progress
+- **WHEN** two consecutive current repair results for the same defect lineage record no progress
+- **THEN** closure terminates visibly as blocked and identifies the remaining defects and next human or evidence owner
 
 ### Requirement: Release validation survives change archival
 The repository SHALL maintain exactly one current release verification contract at a stable path outside every active or archived OpenSpec change directory. Every live release consumer SHALL bind that exact path. Change-local verification contracts SHALL remain scoped to their own active change, and archived contracts SHALL be historical evidence only; live consumers SHALL NOT search active and archived locations, use aliases, or fall back between them.
@@ -293,3 +300,28 @@ Judgment-based reader, academic, fiction, and travel reviews SHALL identify the 
 #### Scenario: Review praises prose without opening the final artifact
 - **WHEN** a semantic review cannot resolve the delivered artifact identity or reviewed unit set
 - **THEN** the review SHALL NOT contribute to final closure
+
+### Requirement: Reader-chain edits propagate exact staleness
+An edit to ReaderIntent, RouteDecision, route content, CompositionPlan, route extension, actual artifact bytes, ArtifactMap, or repair output SHALL stale exactly the dependent ReaderBrief, SharedWriting, deterministic audit, route-native review, ReaderJudgment, and closure evidence. Runtime logs, receipts, and progress outputs SHALL NOT stale their producers.
+
+#### Scenario: Artifact punctuation changes inside a bound span
+- **WHEN** current artifact bytes change inside a bound span
+- **THEN** the ArtifactMap and every dependent reader-chain receipt become stale
+
+#### Scenario: Unrelated release log changes
+- **WHEN** a runtime progress log changes without a governed source or artifact identity change
+- **THEN** reader-content evidence remains current
+
+### Requirement: Shared evidence owners are dynamic and route bounded
+Shared reader builders and validators MAY execute under the shared reader kernel, but every receipt SHALL bind the selected final owner and SHALL NOT assign Academic as the semantic owner of Investigation, Fiction, or Travel work.
+
+#### Scenario: Travel reader audit is produced
+- **WHEN** the shared deterministic auditor checks a travel artifact
+- **THEN** the receipt names the travel final owner and shared producer separately
+
+### Requirement: Current closure rejects legacy reader evidence
+The current closure SHALL reject legacy ReaderBrief, SharedWriting, audit, judgment, repair, and no-progress shapes and SHALL NOT consume compatibility projections or converted receipts.
+
+#### Scenario: Legacy audit is otherwise passing
+- **WHEN** a v1 audit has a passing status but lacks current ReaderIntent, CompositionPlan, and artifact binding identities
+- **THEN** closure rejects it as ineligible evidence

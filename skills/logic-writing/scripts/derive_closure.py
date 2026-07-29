@@ -1,663 +1,248 @@
-"""Derive final closure from one current FlowGuard obligation contract."""
+#!/usr/bin/env python3
+"""Derive the only current reader-facing closure from the complete v2 chain."""
 
 from __future__ import annotations
 
 import argparse
-import json
 from pathlib import Path
 from typing import Any, Mapping
 
-from _common import (
-    ValidationError,
-    dump_json,
-    fingerprint,
-    fingerprint_without,
-    load_json,
-    require_mapping,
-    require_schema,
-    require_string,
-    validation_result,
+from _common import ValidationError, dump_json, fingerprint, load_json, require_mapping, require_schema
+from reader_pipeline import (
+    validate_artifact_map,
+    validate_reader_judgment,
+    validate_revision_provenance,
+    validate_route_artifact_review,
+    validate_route_composition,
+    validate_shared_writing,
 )
-from build_obligation_manifest import build_obligation_manifest
-from build_source_unit_manifest import fingerprint_bytes
-from receipt_authority import (
-    _commit_managed_receipt,
-    _store_content_object,
-    resolve_content_object,
-    resolve_current_receipt,
-    resolve_latest_receipt_by_owner,
-)
+from reader_receipts import _commit
 
 
-REQUEST_FIELDS = {"contract_receipt_fingerprint"}
-HARD_BLOCK = {
-    "blocked",
-    "failed",
-    "provider_unavailable",
-    "dependency_unavailable",
-    "not_run",
-    "stale",
-}
-DOWNGRADED = {
-    "downgraded",
-    "bounded",
-    "access_gap",
-    "planning_only",
-    "saved_but_modeling_incomplete",
-}
-NEXT_OWNERS = {
-    "investigation",
-    "academic-writing",
-    "fiction-writing",
-    "travel-guide",
-    "sourceguard",
-    "logicguard",
-    "traceguard",
-    "worldguard",
-    "flowguard",
-    "documents",
-    "pdf",
-    "source_access",
-    "human_review",
-    "user",
-}
-ACTIONS = {
-    "rerun",
-    "rerun_or_human_review",
-    "repair",
-    "downgrade",
-    "omit",
-    "request_access",
-    "human_review",
-    "declare_required_obligations",
-    "provide_input",
-}
-BROAD_BASELINE_DOMAINS = {
-    "investigation": {
-        "source_observation",
-        "source_depth",
-        "argument_model",
-        "reader_brief",
-        "reader_deterministic",
-        "reader_judgment",
-    },
-    "academic-writing": {
-        "source_observation",
-        "argument_model",
-        "structured_artifact",
-        "model_depth",
-        "artifact_synthesis",
-        "citation_semantics",
-        "revision_provenance",
-        "reader_brief",
-        "reader_deterministic",
-        "reader_judgment",
-    },
-    "fiction-writing": {
-        "story_model",
-        "story_continuity",
-        "model_artifact_binding",
-        "shared_writing",
-        "reader_deterministic",
-        "reader_judgment",
-    },
-    "travel-guide": {
-        "travel_evidence",
-        "travel_feasibility",
-        "traveler_fit",
-        "travel_fallback",
-        "model_artifact_binding",
-        "shared_writing",
-        "reader_deterministic",
-        "reader_judgment",
-    },
-}
-FINAL_BASELINE_DOMAINS = {
-    "investigation": {
-        "source_observation",
-        "argument_model",
-        "reader_brief",
-        "reader_deterministic",
-        "reader_judgment",
-    },
-    "academic-writing": {
-        "argument_model",
-        "revision_provenance",
-        "reader_brief",
-        "reader_deterministic",
-        "reader_judgment",
-    },
-    "fiction-writing": {
-        "story_model",
-        "story_continuity",
-        "model_artifact_binding",
-        "shared_writing",
-        "reader_deterministic",
-        "reader_judgment",
-    },
-    "travel-guide": {
-        "travel_evidence",
-        "travel_feasibility",
-        "traveler_fit",
-        "travel_fallback",
-        "model_artifact_binding",
-        "shared_writing",
-        "reader_deterministic",
-        "reader_judgment",
-    },
-}
-DOMAIN_OWNER = {
-    "source_observation": "sourceguard",
-    "source_depth": "sourceguard",
-    "argument_model": "logicguard",
-    "structured_artifact": "logicguard",
-    "model_depth": "logicguard",
-    "artifact_synthesis": "logicguard",
-    "citation_semantics": "logicguard",
-    "revision_provenance": "academic-writing",
-    "reader_brief": "academic-writing",
-    "reader_deterministic": "academic-writing",
-    "reader_judgment": "human_review",
-    "shared_writing": "academic-writing",
-    "story_model": "fiction-writing",
-    "story_continuity": "fiction-writing",
-    "model_artifact_binding": "academic-writing",
-    "travel_evidence": "travel-guide",
-    "travel_feasibility": "travel-guide",
-    "traveler_fit": "travel-guide",
-    "travel_fallback": "travel-guide",
+REQUIRED_DIMENSIONS = {
+    "investigation": (
+        "recoverable_question", "bounded_answer", "evidence_strength",
+        "negative_evidence", "alternatives", "conditions", "limitations",
+        "fallback_recheck", "conclusion_scope",
+    ),
+    "academic-writing": (
+        "research_question", "central_contribution", "hierarchy_progression",
+        "paragraph_contribution", "evidence_citation", "method_depth",
+        "figure_table_jobs", "qualification_implication",
+    ),
+    "fiction-writing": (
+        "output_room", "story_movement", "resistance_cost", "promise_reveal",
+        "continuity", "pov_voice", "reader_state", "actual_spans",
+    ),
+    "travel-guide": (
+        "guide_kind", "traveler_fit", "unit_responsibility", "handoffs",
+        "narrative_body", "operational_appendix", "risk_fallback",
+        "source_recheck", "local_texture",
+    ),
 }
 
 
-def _required_subset(required: Mapping[str, str], actual: Mapping[str, str]) -> bool:
-    return all(actual.get(key) == value for key, value in required.items())
+def _exact(value: Mapping[str, Any], field: str, label: str) -> str:
+    actual = value.get(field)
+    if not isinstance(actual, str):
+        raise ValidationError(f"{label}.{field} is required")
+    return actual
 
 
-def _residual(
-    obligation: Mapping[str, Any],
-    status: str,
-) -> dict[str, Any]:
-    next_owner = obligation["next_owner"]
-    action = obligation["action"]
-    if next_owner not in NEXT_OWNERS or action not in ACTIONS:
-        raise ValidationError("obligation next owner or action is unsupported")
-    return {
-        "obligation_id": obligation["obligation_id"],
-        "evidence_domain": obligation["evidence_domain"],
-        "status": status,
-        "critical": obligation["critical"],
-        "affected_scope": obligation["affected_scope"],
-        "safe_claim": obligation["safe_claim"],
-        "unsafe_claim_boundary": obligation["unsafe_claim_boundary"],
-        "next_owner": next_owner,
-        "action": action,
-    }
-
-
-def _missing_baseline_residual(
-    domain: str,
-    final_owner: str,
-    *,
-    broad_only: bool,
-) -> dict[str, Any]:
-    next_owner = (
-        "human_review"
-        if domain == "reader_judgment"
-        else final_owner
-        if domain in {
-            "reader_brief",
-            "reader_deterministic",
-            "revision_provenance",
-            "shared_writing",
-            "story_model",
-            "story_continuity",
-            "model_artifact_binding",
-            "travel_evidence",
-            "travel_feasibility",
-            "traveler_fit",
-            "travel_fallback",
-        }
-        else DOMAIN_OWNER[domain]
+def _no_progress_terminal(results: list[Mapping[str, Any]], artifact_fingerprint: str) -> bool:
+    if len(results) < 2:
+        return False
+    left, right = results[-2:]
+    for result in (left, right):
+        require_schema("reader-repair-result.schema.json", result, label="ReaderRepairResult")
+    return (
+        left["progress_status"] == right["progress_status"] == "no_progress"
+        and left["defect_lineage"] == right["defect_lineage"]
+        and left["remaining_defect_set_fingerprint"] == right["remaining_defect_set_fingerprint"]
+        and right["output_artifact_fingerprint"] == artifact_fingerprint
+        and left["output_artifact_fingerprint"] == right["input_artifact_fingerprint"]
     )
-    return {
-        "obligation_id": f"{'broad' if broad_only else 'final'}.{domain}",
-        "evidence_domain": domain,
-        "status": "not_run",
-        "critical": True,
-        "affected_scope": (
-            "the requested broad completion claim"
-            if broad_only
-            else "the final reader-facing artifact"
-        ),
-        "safe_claim": (
-            "Only the narrower contracted scope can be described."
-            if broad_only
-            else "The work may be described only as an unfinished internal step."
-        ),
-        "unsafe_claim_boundary": (
-            "Do not claim comprehensive coverage without this evidence domain."
-            if broad_only
-            else "Do not issue final closure without this content and reader evidence."
-        ),
-        "next_owner": next_owner,
-        "action": "declare_required_obligations",
-    }
-
-
-def _chain_residual(
-    *,
-    obligation_id: str,
-    evidence_domain: str,
-    next_owner: str,
-    message: str,
-) -> dict[str, Any]:
-    return {
-        "obligation_id": obligation_id,
-        "evidence_domain": evidence_domain,
-        "status": "blocked",
-        "critical": True,
-        "affected_scope": "the final artifact evidence chain",
-        "safe_claim": message,
-        "unsafe_claim_boundary": "Do not issue final closure while the evidence chain refers to different artifacts or reader plans.",
-        "next_owner": next_owner,
-        "action": "repair",
-    }
-
-
-def _reader_chain_residuals(
-    matched: list[dict[str, Any]],
-    *,
-    receipt_root: str | Path,
-) -> list[dict[str, Any]]:
-    receipts = [item["receipt"] for item in matched]
-    briefs = [item for item in receipts if item["evidence_domain"] == "reader_brief"]
-    audits = [
-        item for item in receipts if item["evidence_domain"] == "reader_deterministic"
-    ]
-    judgments = [
-        item for item in receipts if item["evidence_domain"] == "reader_judgment"
-    ]
-    if not any((briefs, audits, judgments)):
-        return []
-    if len(briefs) != 1 or len(audits) != 1 or len(judgments) != 1:
-        return [
-            _chain_residual(
-                obligation_id="closure.reader-chain.cardinality",
-                evidence_domain="reader_judgment",
-                next_owner="human_review",
-                message="The closure contract does not resolve to one ReaderBrief, one deterministic audit, and one judgment.",
-            )
-        ]
-    brief, audit, judgment = briefs[0], audits[0], judgments[0]
-    if brief["receipt_fingerprint"] not in audit["dependency_receipt_fingerprints"]:
-        return [
-            _chain_residual(
-                obligation_id="closure.reader-chain.audit",
-                evidence_domain="reader_deterministic",
-                next_owner="academic-writing",
-                message="The deterministic audit is not bound to the contracted ReaderBrief.",
-            )
-        ]
-    if not {
-        brief["receipt_fingerprint"],
-        audit["receipt_fingerprint"],
-    }.issubset(judgment["dependency_receipt_fingerprints"]):
-        return [
-            _chain_residual(
-                obligation_id="closure.reader-chain.judgment",
-                evidence_domain="reader_judgment",
-                next_owner="human_review",
-                message="The reader judgment is not bound to the same ReaderBrief and deterministic audit.",
-            )
-        ]
-    audit_object = audit["output_fingerprints"].get("reader_audit_object")
-    judgment_object = judgment["output_fingerprints"].get("reader_judgment_object")
-    if not isinstance(audit_object, str) or not isinstance(judgment_object, str):
-        return [
-            _chain_residual(
-                obligation_id="closure.reader-chain.objects",
-                evidence_domain="reader_judgment",
-                next_owner="human_review",
-                message="The reader checks do not preserve their exact reviewed objects.",
-            )
-        ]
-    audit_value = require_mapping(
-        resolve_content_object(audit_object, root=receipt_root), "reader audit"
-    )
-    judgment_value = require_mapping(
-        resolve_content_object(judgment_object, root=receipt_root), "reader judgment"
-    )
-    if (
-        audit_value.get("status") != "passed"
-        or judgment_value.get("status") != "passed"
-        or audit_value.get("reader_brief_fingerprint")
-        != judgment_value.get("reader_brief_fingerprint")
-        or audit_value.get("artifact_fingerprint")
-        != judgment_value.get("artifact_fingerprint")
-    ):
-        return [
-            _chain_residual(
-                obligation_id="closure.reader-chain.content",
-                evidence_domain="reader_judgment",
-                next_owner="human_review",
-                message="The reader checks do not provide a passing judgment for the same artifact and ReaderBrief.",
-            )
-        ]
-    return []
-
-
-def _provenance_chain_residuals(
-    matched: list[dict[str, Any]],
-    *,
-    receipt_root: str | Path,
-) -> list[dict[str, Any]]:
-    provenance_receipts = [
-        item["receipt"]
-        for item in matched
-        if item["receipt"]["evidence_domain"] == "revision_provenance"
-        and item["receipt"]["builder_provenance"]["builder_id"]
-        == "logic-writing.revision-provenance.v1"
-    ]
-    for provenance in provenance_receipts:
-        manifest_found = False
-        for dependency in provenance["dependency_receipt_fingerprints"]:
-            projection = resolve_current_receipt(dependency, root=receipt_root)
-            receipt = projection["receipt"]
-            if (
-                projection["current"]
-                and projection["status"] == "current_pass"
-                and receipt["builder_provenance"]["builder_id"]
-                == "logic-writing.source-unit-manifest.v1"
-                and receipt["output_fingerprints"].get("source_unit_manifest")
-                == provenance["output_fingerprints"].get("source_unit_manifest")
-            ):
-                manifest_found = True
-                break
-        if not manifest_found:
-            return [
-                _chain_residual(
-                    obligation_id="closure.revision-manifest-chain",
-                    evidence_domain="revision_provenance",
-                    next_owner="academic-writing",
-                    message="Revision provenance is not bound to a current complete source-unit manifest.",
-                )
-            ]
-    return []
 
 
 def derive_closure(
-    value: Mapping[str, Any],
+    value: Any,
     *,
-    receipt_root: str | Path,
+    receipt_root: str | Path | None = None,
 ) -> dict[str, Any]:
-    request = require_mapping(dict(value), "closure request")
-    if set(request) != REQUEST_FIELDS:
-        raise ValidationError(
-            "closure request accepts only contract_receipt_fingerprint"
-        )
-    contract_fingerprint = require_string(request, "contract_receipt_fingerprint")
-    manifest_result = build_obligation_manifest(
-        {"contract_receipt_fingerprint": contract_fingerprint},
-        root=receipt_root,
+    request = require_mapping(value, "closure input")
+    required = (
+        "closure_id", "route_decision", "reader_brief", "route_composition",
+        "artifact_map", "shared_writing", "deterministic_audit", "route_review",
+        "judgment", "revision_provenance", "native_receipt_fingerprints",
     )
-    manifest = manifest_result["manifest"]
-    final_owner = manifest["final_owner"]
-    artifact_fingerprint = manifest["artifact_fingerprint"]
-    route_decision = manifest["route_decision"]
-    decision_id = route_decision["decision_id"]
-    closure_id = f"closure:{decision_id}"
+    missing = [field for field in required if field not in request]
+    if missing:
+        raise ValidationError(f"closure input is missing current v2 fields: {missing}")
 
-    matched: list[dict[str, Any]] = []
-    residuals: list[dict[str, Any]] = []
-    projection_rows: list[dict[str, Any]] = []
-    for obligation in manifest["obligations"]:
-        try:
-            projection = resolve_latest_receipt_by_owner(
-                producer_skill=obligation["producer_skill"],
-                semantic_owner_id=obligation["semantic_owner_id"],
-                evidence_domain=obligation["evidence_domain"],
-                root=receipt_root,
-            )
-        except ValidationError as exc:
-            if str(exc) != "semantic evidence owner has no authoritative receipt":
-                raise
-            residuals.append(_residual(obligation, "not_run"))
-            continue
-        receipt = projection["receipt"]
-        projection_rows.append(
-            {
-                "receipt_fingerprint": projection["receipt_fingerprint"],
-                "projection_fingerprint": projection["projection_fingerprint"],
-                "current": projection["current"],
-                "status": projection["status"],
-            }
-        )
-        exact_contract = (
-            receipt["native_route"] == obligation["native_route"]
-            and obligation["obligation_id"] in receipt["covered_obligation_ids"]
-            and _required_subset(
-                obligation["required_input_fingerprints"],
-                receipt["input_fingerprints"],
-            )
-            and _required_subset(
-                obligation["required_output_fingerprints"],
-                receipt["output_fingerprints"],
-            )
-        )
-        if (
-            projection["current"]
-            and projection["status"] == "current_pass"
-            and exact_contract
-        ):
-            matched.append(projection)
-        else:
-            residuals.append(
-                _residual(
-                    obligation,
-                    projection["status"] if exact_contract else "blocked",
-                )
-            )
+    decision = require_mapping(request["route_decision"], "RouteDecision")
+    require_schema("route-decision.schema.json", decision, label="RouteDecision")
+    owner = decision["final_owner"]
+    if decision["schema_version"] != "2.0" or decision["status"] != "current":
+        raise ValidationError("closure requires one current v2 RouteDecision")
+    brief = require_mapping(request["reader_brief"], "ReaderBrief")
+    require_schema("reader-brief.schema.json", brief, label="ReaderBrief")
+    if brief["route_decision_fingerprint"] != decision["decision_fingerprint"]:
+        raise ValidationError("ReaderBrief is stale for RouteDecision")
+    if brief["final_owner"] != owner:
+        raise ValidationError("ReaderBrief belongs to a sibling route")
 
-    declared_domains = {
-        item["evidence_domain"] for item in manifest["obligations"]
-    }
-    required_domains = set(FINAL_BASELINE_DOMAINS[final_owner])
-    if manifest["broad_claim_requested"]:
-        required_domains.update(BROAD_BASELINE_DOMAINS[final_owner])
-    for domain in sorted(required_domains - declared_domains):
-        residuals.append(
-            _missing_baseline_residual(
-                domain,
-                final_owner,
-                broad_only=domain not in FINAL_BASELINE_DOMAINS[final_owner],
-            )
-        )
-    residuals.extend(
-        _reader_chain_residuals(matched, receipt_root=receipt_root)
+    route = validate_route_composition(
+        request["route_composition"],
+        owner=owner,
+        reader_intent_fingerprint=brief["reader_intent_fingerprint"],
+        composition_plan_fingerprint=brief["composition_plan"]["plan_fingerprint"],
     )
-    residuals.extend(
-        _provenance_chain_residuals(matched, receipt_root=receipt_root)
+    amap = validate_artifact_map(request["artifact_map"])
+    shared = validate_shared_writing(
+        request["shared_writing"], artifact_map=amap, reader_brief=brief
     )
+    audit = require_mapping(request["deterministic_audit"], "ReaderAudit")
+    require_schema("reader-audit.schema.json", audit, label="ReaderAudit")
+    route_review = validate_route_artifact_review(
+        request["route_review"],
+        owner=owner,
+        route_composition=route,
+        artifact_map=amap,
+        required_dimensions=REQUIRED_DIMENSIONS[owner],
+    )
+    judgment = validate_reader_judgment(
+        request["judgment"],
+        artifact_map=amap,
+        reader_brief=brief,
+        shared_writing=shared,
+        deterministic_audit=audit,
+        route_review=route_review,
+    )
+    provenance = validate_revision_provenance(
+        request["revision_provenance"],
+        target_artifact_fingerprint=amap["artifact_fingerprint"],
+    )
+    if provenance["reader_intent_fingerprint"] != brief["reader_intent_fingerprint"]:
+        raise ValidationError("revision provenance is stale for ReaderIntent")
+    if provenance["final_owner"] != owner:
+        raise ValidationError("revision provenance belongs to a sibling route")
 
-    if not residuals:
-        raw_status = "passed"
-    elif any(item["critical"] and item["status"] in HARD_BLOCK for item in residuals):
-        raw_status = "blocked"
-    elif any(item["status"] in DOWNGRADED for item in residuals):
-        raw_status = "downgraded"
-    else:
-        raw_status = "partial"
-    if manifest["broad_claim_requested"] and residuals:
-        raw_status = "blocked"
+    native_receipts = list(request["native_receipt_fingerprints"])
+    if not native_receipts or len(native_receipts) != len(set(native_receipts)):
+        raise ValidationError("closure requires unique current native route receipt fingerprints")
+    if native_receipts != brief["native_dependency_receipt_fingerprints"]:
+        raise ValidationError("closure native receipts differ from the frozen ReaderBrief")
 
-    projection_rows.sort(key=lambda item: item["receipt_fingerprint"])
-    contract_projection = resolve_current_receipt(
-        contract_fingerprint, root=receipt_root
-    )
-    authority_projection_fingerprint = fingerprint(
-        {
-            "contract": contract_projection["projection_fingerprint"],
-            "manifest_object": manifest_result["manifest_object_fingerprint"],
-            "receipts": projection_rows,
-        }
-    )
-    matched_fingerprints = sorted(
-        item["receipt_fingerprint"] for item in matched
-    )
-    attempt_basis = {
-        "obligation_manifest_fingerprint": manifest["manifest_fingerprint"],
-        "artifact_fingerprint": artifact_fingerprint,
-        "matched_receipt_fingerprints": matched_fingerprints,
-        "authority_projection_fingerprint": authority_projection_fingerprint,
-        "residual_risk": residuals,
-        "raw_status": raw_status,
-    }
-    attempt_fingerprint = fingerprint(attempt_basis)
-    status = raw_status
-    semantic_owner_id = f"final-closure:{decision_id}"
-    if raw_status != "passed":
-        try:
-            prior_projection = resolve_latest_receipt_by_owner(
-                producer_skill="logic-writing",
-                semantic_owner_id=semantic_owner_id,
-                evidence_domain="final_closure",
-                root=receipt_root,
-            )
-        except ValidationError as exc:
-            if str(exc) != "semantic evidence owner has no authoritative receipt":
-                raise
-        else:
-            prior_object_fingerprint = prior_projection["receipt"][
-                "output_fingerprints"
-            ].get("final_closure_object")
-            if isinstance(prior_object_fingerprint, str):
-                prior_closure = require_mapping(
-                    resolve_content_object(
-                        prior_object_fingerprint, root=receipt_root
-                    ),
-                    "prior closure",
-                )
-                if prior_closure.get("attempt_fingerprint") == attempt_fingerprint:
-                    status = "no_progress_blocked"
-
-    if residuals:
-        safe_claim = " ".join(
-            dict.fromkeys(str(item["safe_claim"]) for item in residuals)
-        )
-        unsafe_claim_boundary = " ".join(
-            dict.fromkeys(
-                str(item["unsafe_claim_boundary"]) for item in residuals
-            )
-        )
-    else:
-        safe_claim = "Every obligation in the current contract passed for this exact artifact and scope."
-        unsafe_claim_boundary = "Do not extend this closure beyond the contracted artifact, owners, and evidence boundaries."
-    next_actions = [
-        {
-            "owner": item["next_owner"],
-            "action": item["action"],
-            "obligation_ids": [item["obligation_id"]],
-        }
-        for item in residuals
+    repair_results = [
+        require_mapping(row, "ReaderRepairResult")
+        for row in request.get("repair_results", [])
     ]
-    closure: dict[str, Any] = {
-        "schema_version": "1.0",
-        "closure_id": closure_id,
-        "final_owner": final_owner,
-        "artifact_fingerprint": artifact_fingerprint,
-        "obligation_contract_receipt_fingerprint": contract_fingerprint,
-        "obligation_manifest_fingerprint": manifest["manifest_fingerprint"],
-        "route_decision_fingerprint": route_decision["decision_fingerprint"],
+    all_passed = audit["status"] == route_review["status"] == judgment["status"] == "passed"
+    no_progress = _no_progress_terminal(repair_results, amap["artifact_fingerprint"])
+    status = "passed" if all_passed else ("no_progress_blocked" if no_progress else "blocked")
+
+    defect_ids = [
+        *(row["finding_id"] for row in audit["findings"]),
+        *(row["finding_id"] for row in route_review["findings"]),
+        *(row["observation_id"] for row in judgment["defects"]),
+    ]
+    if not defect_ids and status != "passed":
+        defect_ids = ["reader.quality-gate"]
+    residual = [
+        {
+            "defect_id": defect_id,
+            "owner": owner,
+            "reason": "The current actual-artifact quality chain has not passed.",
+        }
+        for defect_id in dict.fromkeys(defect_ids)
+    ]
+    next_actions = (
+        []
+        if status == "passed"
+        else [{
+            "owner": "human_review" if no_progress else owner,
+            "action": "human_review" if no_progress else "repair_and_rerun",
+        }]
+    )
+    closure = {
+        "schema_version": "2.0",
+        "closure_id": request["closure_id"],
+        "final_owner": owner,
+        "artifact_fingerprint": amap["artifact_fingerprint"],
+        "reader_intent_fingerprint": brief["reader_intent_fingerprint"],
+        "composition_plan_fingerprint": brief["composition_plan"]["plan_fingerprint"],
+        "route_extension_fingerprint": route["extension_fingerprint"],
+        "artifact_map_fingerprint": amap["map_fingerprint"],
+        "shared_writing_contract_fingerprint": shared["contract_fingerprint"],
+        "deterministic_audit_fingerprint": audit["audit_fingerprint"],
+        "route_audit_fingerprint": route_review["review_fingerprint"],
+        "judgment_fingerprint": judgment["judgment_fingerprint"],
+        "revision_provenance_fingerprint": provenance["provenance_fingerprint"],
+        "repair_result_fingerprints": [row["result_fingerprint"] for row in repair_results],
+        "native_receipt_fingerprints": native_receipts,
         "status": status,
-        "matched_receipt_fingerprints": matched_fingerprints,
-        "authority_projection_fingerprint": authority_projection_fingerprint,
-        "residual_risk": residuals,
-        "safe_claim": safe_claim,
-        "unsafe_claim_boundary": unsafe_claim_boundary,
+        "residual_risk": [] if status == "passed" else residual,
         "next_actions": next_actions,
-        "broad_claim_allowed": bool(
-            manifest["broad_claim_requested"] and status == "passed"
+        "safe_claim": (
+            "The exact current artifact passed composition coverage, deterministic checks, "
+            "route-semantic review, and independent reader judgment."
+            if status == "passed"
+            else "The exact current artifact is preserved with explicit unresolved reader-facing defects."
         ),
-        "attempt_fingerprint": attempt_fingerprint,
+        "unsafe_claim_boundary": (
+            "Structural licensing and actual-artifact review do not establish universal factual or aesthetic truth."
+        ),
+        "broad_claim_allowed": status == "passed",
         "terminal": status in {"passed", "no_progress_blocked"},
     }
-    closure["closure_fingerprint"] = fingerprint_without(
-        closure, "closure_fingerprint"
-    )
+    closure["closure_fingerprint"] = fingerprint(closure)
     require_schema("closure.schema.json", closure, label="closure")
-    closure_object_fingerprint = _store_content_object(
-        closure, root=receipt_root
-    )
-    builder_fingerprint = fingerprint_bytes(Path(__file__).read_bytes())
-    receipt_status = {
-        "passed": "current_pass",
-        "partial": "partial",
-        "downgraded": "downgraded",
-        "blocked": "blocked",
-        "no_progress_blocked": "blocked",
-    }[status]
-    receipt = _commit_managed_receipt(
-        {
-            "schema_version": "1.0",
-            "producer_skill": "logic-writing",
-            "semantic_owner_id": semantic_owner_id,
-            "native_route": "derive-final-closure",
-            "run_id": closure_id,
-            "covered_obligation_ids": ["closure.final"],
-            "input_fingerprints": {
-                f"final-closure:{decision_id}:contract": contract_fingerprint,
-                f"final-closure:{decision_id}:manifest": manifest[
-                    "manifest_fingerprint"
-                ],
-                f"final-closure:{decision_id}:artifact": artifact_fingerprint,
-                f"final-closure:{decision_id}:authority": authority_projection_fingerprint,
-                f"final-closure:{decision_id}:builder": builder_fingerprint,
+
+    result: dict[str, Any] = {"closure": closure}
+    if receipt_root is not None:
+        receipt = _commit(
+            closure,
+            root=receipt_root,
+            builder_id="logic-writing.final-closure.v2",
+            native_route="derive-reader-closure",
+            evidence_domain="process_freshness",
+            semantic_owner_id=f"reader-closure:{closure['closure_id']}",
+            covered_obligation_ids=["reader.full-current-chain"],
+            input_fingerprints={
+                "reader_intent": closure["reader_intent_fingerprint"],
+                "composition_plan": closure["composition_plan_fingerprint"],
+                "artifact_map": closure["artifact_map_fingerprint"],
+                "judgment": closure["judgment_fingerprint"],
             },
-            "output_fingerprints": {
-                "final_closure": closure["closure_fingerprint"],
-                "final_closure_object": closure_object_fingerprint,
-            },
-            "artifact_fingerprint": artifact_fingerprint,
-            "covered_scope": "the exact route decision, obligation manifest, artifact, and latest evidence owners",
-            "evidence_domain": "final_closure",
-            "status": receipt_status,
-            "safe_claim": safe_claim,
-            "unsafe_claim_boundary": unsafe_claim_boundary,
-            "sequence_id": closure_id,
-            "dependency_receipt_fingerprints": [
-                contract_fingerprint,
-                *matched_fingerprints,
-            ],
-        },
-        root=receipt_root,
-        builder_id="logic-writing.final-closure.v1",
-        source_fingerprint=fingerprint(
-            {
-                "closure": closure["closure_fingerprint"],
-                "builder": builder_fingerprint,
-            }
-        ),
-    )
-    return validation_result(status=status, closure=closure, receipt=receipt)
+            output_field="closure_fingerprint",
+            artifact_fingerprint=closure["artifact_fingerprint"],
+            dependency_receipt_fingerprints=native_receipts,
+            status="current_pass" if status == "passed" else "blocked",
+            safe_claim=closure["safe_claim"],
+            unsafe_claim_boundary=closure["unsafe_claim_boundary"],
+            run_id=f"reader-closure:{closure['closure_id']}:{closure['closure_fingerprint'][7:19]}",
+        )
+        result["receipt"] = receipt
+    return result
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser()
     parser.add_argument("--input", required=True)
-    parser.add_argument("--receipt-root", required=True)
     parser.add_argument("--output")
+    parser.add_argument("--receipt-root")
     args = parser.parse_args()
     try:
         result = derive_closure(load_json(args.input), receipt_root=args.receipt_root)
-        dump_json(result, args.output)
-        return 0 if result["status"] == "passed" else 1
-    except (ValidationError, OSError, json.JSONDecodeError) as exc:
-        dump_json(validation_result(status="blocked", errors=(str(exc),)), args.output)
-        return 1
+    except (OSError, ValueError, ValidationError) as exc:
+        print(f"ERROR: {exc}")
+        return 2
+    dump_json(result, args.output)
+    return 0
 
 
 if __name__ == "__main__":
     raise SystemExit(main())
 
 
-__all__ = ["derive_closure"]
+__all__ = ["REQUIRED_DIMENSIONS", "derive_closure"]

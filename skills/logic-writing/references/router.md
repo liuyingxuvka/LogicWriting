@@ -12,9 +12,13 @@ Route by what the user expects to receive at the end.
 
 ## Decision record
 
-Record one `route-decision` with the request fingerprint, terminal deliverable,
-one final owner, zero or more bounded child routes, material assumptions, and
-status. A material request change makes the decision stale.
+Freeze one current `WritingRequest` and immutable `ReaderIntent` before route
+selection. Record one `route-decision` with both fingerprints, the terminal
+deliverable, one final owner, zero or more bounded child routes, material
+assumptions, intent conflicts, and status. Route selection may narrow
+feasibility, but it must not silently rewrite the requested language, audience,
+purpose, artifact mode, format, length, tone, structure constraints, or list
+policy. A material request or intent change makes the decision stale.
 
 If the requested genre and final artifact conflict, explain the conflict and
 ask one focused question. Do not run both routes in parallel and decide later.
@@ -23,6 +27,12 @@ Subject matter and presentation technique do not transfer ownership. A paper
 about travel remains academic; a historically researched novel remains
 fiction; a story-shaped itinerary remains travel. Shared reader projection is
 a kernel with no final-success path, never a fifth route or a sibling caller.
+
+After selection, the final owner authors one whole-artifact `CompositionPlan`.
+Findings, claims, scene cards, places, and checklist rows are content inputs,
+not automatic headings or paragraph units. The route must plan the full reader
+journey and draft one integrated artifact before `ArtifactMap` generation and
+actual-byte review.
 
 ## Bounded academic-to-investigation request
 

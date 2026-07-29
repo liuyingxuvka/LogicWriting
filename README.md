@@ -1,7 +1,7 @@
 # Logic Writing
 
 <p align="center">
-  <img src="https://img.shields.io/badge/source-2.1.3-6f42c1" alt="Source version 2.1.3" />
+  <img src="https://img.shields.io/badge/source-3.0.0-6f42c1" alt="Source version 3.0.0" />
   <img src="https://img.shields.io/badge/skill-logic--writing-334155" alt="Skill logic-writing" />
   <img src="https://img.shields.io/badge/routes-4-0a7f5a" alt="Four final-owner routes" />
   <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT license" />
@@ -19,18 +19,19 @@ one final owner, calls specialist Guard owners through their current provider
 entrypoints for native judgments, and turns the result into language a real
 reader can follow.
 
-> Source status: repository metadata declares `2.1.3`. Release, installation,
+> Source status: repository metadata declares `3.0.0`. Release, installation,
 > and predecessor-retirement claims require their own current receipts; the
 > version string alone proves none of them.
 
 ## Why one skill
 
-These writing jobs share a real core: deciding what the final artifact is,
-preserving specialist authority, tracking exact artifact identity, planning
-what changes for the reader, keeping internal model language out of final
-copy, and rechecking the delivered bytes. They do not share one universal data
-packet. Investigation keeps evidence semantics, fiction keeps story semantics,
-and travel keeps operational semantics.
+These writing jobs share a real core: preserve the complete ReaderIntent, plan
+the whole artifact before drafting, preserve specialist authority, bind the
+plan to exact current bytes, keep internal model language out of final copy,
+and review the real result. They do not share one universal data packet.
+Investigation keeps evidence semantics, academic writing keeps scholarly
+hierarchy and provenance, fiction keeps story semantics, and travel keeps
+operational semantics.
 
 Investigation and academic evidence handoffs use a current `ResearchPacket`;
 the writer receives a sanitized `ReaderBrief` rather than internal ledgers.
@@ -51,6 +52,13 @@ evidence packet, but it cannot close its parent artifact.
 
 ## “Say it like a person” is an executable boundary
 
+Version 3 replaces the old finding-order reader contracts directly. It keeps
+the user's structure, language, audience, format, style, extent, list/table
+policy, citations, and content duties in one immutable ReaderIntent. The
+selected route then builds a whole-artifact CompositionPlan. Findings, claims,
+scene cards, and attractions provide content; they do not automatically become
+paragraphs.
+
 The shared writing kernel asks every important unit:
 
 - What does the reader know or expect on entry?
@@ -62,10 +70,11 @@ The shared writing kernel asks every important unit:
 - Which current model rows are visible in which exact delivered words?
 
 It rejects internal workflow leakage, generic handoffs, prose that announces
-its own job, flattened voices, repetition without changed effect, unbound prose,
-unrealized model rows, and reviews tied to an older artifact hash. Genre profiles
-then add evidence/citation fit, academic qualification, fictional payoff and
-voice, or travel operability and fallback proximity.
+its own job, flattened voices, card-like fragmentation, repetition without
+changed effect, unbound prose, unrealized model rows, and reviews tied to an
+older artifact hash. Deterministic checks, route-semantic review, and an
+independent reader judgment all inspect the actual artifact. A repair must
+produce real new bytes and rerun the dependent checks.
 
 ## Specialist ownership stays intact
 

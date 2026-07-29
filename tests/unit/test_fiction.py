@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from select_route import select_route
+from tests.v2_support import route_request
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -17,20 +18,7 @@ def test_fiction_route_pack_is_internal_not_installable():
 
 
 def test_fiction_route_keeps_final_ownership_over_bounded_research():
-    decision = select_route({
-        "request_id": "request:fiction-unit",
-        "decision_id": "decision:fiction-unit",
-        "decided_at": "2026-07-16T10:00:00Z",
-        "terminal_deliverable": {
-            "kind": "novel",
-            "description": "A historically grounded novel",
-            "acceptance_criteria": ["The manuscript remains the terminal artifact."],
-        },
-        "scope_class": "substantive",
-        "substantial_research_required": True,
-        "constraints": {},
-        "material_assumptions": [],
-    })
+    decision = select_route(route_request("novel", research=True))
     assert decision["final_owner"] == "fiction-writing"
     assert decision["child_routes"] == ["investigation"]
 

@@ -27,9 +27,33 @@ READY_FICTION = OperationState(
 def build_plan(*, conformance_status="skipped_with_reason", conformance_evidence=()):
     workflow = operation_workflow("fiction_route_model")
     sequence = (
+        OperationEvent("freeze_reader_intent", fingerprint="fiction-intent:1"),
+        OperationEvent(
+            "validate_composition",
+            fingerprint="fiction-composition:1",
+            related_fingerprint="fiction-extension:1",
+            owner="fiction-writing",
+        ),
         OperationEvent("build_reader_brief", fingerprint="fiction-brief:1"),
-        OperationEvent("write_artifact", artifact_fingerprint="manuscript:1"),
-        OperationEvent("audit_artifact", artifact_fingerprint="manuscript:1", status="passed+passed"),
+        OperationEvent("draft_artifact", artifact_fingerprint="manuscript:1", artifact_mode="create_new"),
+        OperationEvent("integrate_artifact", artifact_fingerprint="manuscript:1"),
+        OperationEvent("map_artifact", fingerprint="manuscript-map:1", artifact_fingerprint="manuscript:1"),
+        OperationEvent(
+            "bind_shared_writing",
+            fingerprint="fiction-binding:1",
+            related_fingerprint="manuscript-map:1",
+            artifact_fingerprint="manuscript:1",
+        ),
+        OperationEvent("record_revision_provenance", status="not_applicable"),
+        OperationEvent("deterministic_audit", artifact_fingerprint="manuscript:1", status="passed"),
+        OperationEvent("route_audit", artifact_fingerprint="manuscript:1", owner="fiction-writing", status="passed"),
+        OperationEvent(
+            "judge_artifact",
+            artifact_fingerprint="manuscript:1",
+            producer_id="fiction-writer:1",
+            judge_id="fiction-critic:1",
+            status="passed",
+        ),
         OperationEvent("close_operation"),
     )
     return formal_plan(
@@ -40,7 +64,7 @@ def build_plan(*, conformance_status="skipped_with_reason", conformance_evidence
         invariants=OPERATION_INVARIANTS,
         scenarios=(scenario("fiction_actual_manuscript_closes", "Fiction retains final ownership through bounded research and current actual-manuscript review", READY_FICTION, sequence, workflow, OPERATION_INVARIANTS),),
         protected_error_classes=("fiction_sibling_owner_cycle", "fiction_model_artifact_drift"),
-        modeled_state=("story_model", "promise_continuity", "reader_state", "manuscript_identity", "model_prose_binding"),
+        modeled_state=("story_model", "story_movement", "promise_continuity", "reader_state", "manuscript_identity", "model_prose_binding", "artifact_map"),
         modeled_side_effects=("fiction_artifact_written", "fiction_closure"),
         completion_evidence=("guard_lifecycle_current", "model_prose_binding_current", "actual_manuscript_reviewed"),
         known_bad_cases=("metadata_fake_green", "stale_audit_after_artifact_edit"),

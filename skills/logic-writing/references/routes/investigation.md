@@ -3,6 +3,19 @@
 The investigation route turns a difficult question into a source-grounded
 report or a bounded ResearchPacket.
 
+## Reader composition v2
+
+For a final report, choose an investigation profile and author the report's
+whole CompositionPlan. Place the bounded answer, evidence strength, live
+alternatives, unresolved discriminators, limitations, and fallback or recheck
+conditions into reader-facing units. Evidence-discovery order is never the
+report outline, and one finding is never automatically one paragraph.
+
+After drafting, review actual report spans for the recoverable question,
+bounded answer, evidence strength, negative evidence, alternatives, conditions,
+limitations, fallback/recheck instruction, and conclusion scope. A source
+packet or argument model cannot pass this postwrite gate for the report.
+
 ## 1. Contract
 
 State the reader's decision or question, critical claims, geographic and time

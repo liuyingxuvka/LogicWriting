@@ -236,7 +236,7 @@ def build_source_unit_manifest_receipt(
     builder_fingerprint = fingerprint_bytes(Path(__file__).read_bytes())
     receipt = _commit_managed_receipt(
         {
-            "schema_version": "1.0",
+            "schema_version": "2.0",
             "producer_skill": "logic-writing",
             "semantic_owner_id": f"source-unit-manifest:{manifest_id}",
             "native_route": "build-source-unit-manifest",
@@ -261,7 +261,7 @@ def build_source_unit_manifest_receipt(
             "dependency_receipt_fingerprints": [],
         },
         root=receipt_root,
-        builder_id="logic-writing.source-unit-manifest.v1",
+        builder_id="logic-writing.source-unit-manifest.v2",
         source_fingerprint=fingerprint_bytes(Path(__file__).read_bytes()),
     )
     return validation_result(

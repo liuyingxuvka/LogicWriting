@@ -1,231 +1,82 @@
 from __future__ import annotations
 
 import copy
-import json
-from pathlib import Path
 
 import pytest
 
-from _common import ValidationError, fingerprint_without
-from audit_reader_output import build_reader_audit_receipt
-from receipt_authority import resolve_current_receipt
-from validate_judgment_receipt import build_judgment_receipt, validate_judgment_receipt
+from _common import ValidationError, fingerprint, fingerprint_text
+from reader_pipeline import build_artifact_map, build_reader_audit, validate_reader_judgment
+from tests.v2_support import complete_chain, make_reader_chain
 
 
-def _audit(chain: dict, receipt_root: Path, artifact_path: Path, *, audit_id: str) -> dict:
-    return build_reader_audit_receipt(
-        {
-            "schema_version": "1.0",
-            "audit_id": audit_id,
-            "artifact_path": str(artifact_path),
-            "audited_text_path": None,
-            "artifact_extraction_receipt_fingerprint": None,
-            "reader_brief": chain["brief"],
-            "reader_brief_receipt_fingerprint": chain["brief_result"][
-                "derivation_receipt_fingerprint"
-            ],
-            "run_id": f"run:{audit_id}",
-        },
-        receipt_root=receipt_root,
+def test_artifact_map_binds_exact_utf8_bytes_and_spans(tmp_path):
+    chain = make_reader_chain(tmp_path)
+    amap = build_artifact_map(chain["artifact_path"], map_id="map:again", language="zh-CN")
+    assert amap["artifact_fingerprint"] == chain["artifact_map"]["artifact_fingerprint"]
+    assert any(row["unit_kind"] == "paragraph" for row in amap["units"])
+
+
+@pytest.mark.parametrize(
+    ("text", "expected_code"),
+    [
+        ("# 完整回答\n\nTODO: 稍后补写。", "placeholder"),
+        ("# 完整回答\n\nFlowGuard reports current_pass.", "workflow_leak"),
+        ("# 完整回答\n\n第一点。\n\n第二点。\n\n第三点。\n\n第四点。", "microparagraph_sequence"),
+    ],
+)
+def test_deterministic_audit_catches_reader_facing_failures(tmp_path, text, expected_code):
+    chain = make_reader_chain(tmp_path)
+    chain["artifact_path"].write_text(text, encoding="utf-8")
+    amap = build_artifact_map(chain["artifact_path"], map_id="map:bad", language="zh-CN")
+    # Rebind a minimal current contract so the audit tests the actual bytes.
+    paragraph = next(row for row in amap["units"] if row["unit_kind"] == "paragraph")
+    contract = copy.deepcopy(chain["shared_writing"])
+    contract["artifact_map_fingerprint"] = amap["map_fingerprint"]
+    contract["artifact_fingerprint"] = amap["artifact_fingerprint"]
+    contract["artifact_path"] = str(chain["artifact_path"].resolve())
+    contract["unit_bindings"][0]["artifact_unit_ids"] = [paragraph["artifact_unit_id"]]
+    contract["unit_bindings"][0]["artifact_spans"] = [{
+        "artifact_unit_id": paragraph["artifact_unit_id"],
+        "locator": paragraph["locator"],
+        "content_fingerprint": paragraph["content_fingerprint"],
+    }]
+    contract["contract_fingerprint"] = fingerprint({k: v for k, v in contract.items() if k != "contract_fingerprint"})
+    audit = build_reader_audit(
+        audit_id="audit:bad", artifact_map=amap,
+        reader_brief=chain["reader_brief"], shared_writing=contract,
     )
+    assert expected_code in {row["code"] for row in audit["findings"]}
 
 
-def test_reader_brief_contains_reader_content_not_internal_workflow(reader_chain):
-    rendered = json.dumps(reader_chain["brief"], ensure_ascii=False)
-
-    for term in ("SourceGuard", "LogicGuard", "TraceGuard", "FlowGuard", "route_id", "current_pass"):
-        assert term not in rendered
-    assert reader_chain["brief"]["principal_findings"]
-    assert reader_chain["brief"]["limitations"]
-    assert reader_chain["brief"]["required_citations"]
-
-
-def test_citation_binds_finding_source_anchor_and_visible_marker(reader_chain):
-    brief = reader_chain["brief"]
-    citation = brief["required_citations"][0]
-    anchor = {
-        item["anchor_id"]: item for item in brief["evidence_anchors"]
-    }[citation["evidence_anchor_ids"][0]]
-
-    assert citation["target_id"] == brief["principal_findings"][0]["finding_id"]
-    assert citation["source_id"] == anchor["source_id"]
-    assert citation["marker"] in reader_chain["artifact_text"]
-    assert citation["supported_wording"] in reader_chain["artifact_text"]
-
-
-def test_positive_actual_artifact_passes_deterministic_and_judged_checks(reader_chain):
-    assert reader_chain["audit_result"]["status"] == "current_pass"
-    assert reader_chain["audit_result"]["audit"]["status"] == "passed"
-    assert reader_chain["audit_result"]["audit"]["visible_units"]
-    assert reader_chain["audit_result"]["audit"]["reverse_outline"]
-    assert reader_chain["judgment_result"]["status"] == "current_pass"
-    assert reader_chain["judgment_result"]["judgment"]["actual_text_inspected"] is True
-
-
-def test_negated_causal_limitation_is_not_a_false_overclaim(reader_chain):
-    codes = {item["code"] for item in reader_chain["audit_result"]["audit"]["findings"]}
-
-    assert "scope_escalation" not in codes
-    assert "caused" in reader_chain["artifact_text"]
-    assert "do not establish" in reader_chain["artifact_text"]
-
-
-def test_unlicensed_strong_causal_sentence_is_rejected(reader_chain, receipt_root, tmp_path):
-    path = tmp_path / "causal-overclaim.md"
-    path.write_text(
-        reader_chain["artifact_text"] + "\nThe intervention caused the change.\n",
-        encoding="utf-8",
-    )
-
-    result = _audit(reader_chain, receipt_root, path, audit_id="audit:causal-overclaim")
-    assert result["status"] == "failed"
-    assert "scope_escalation" in {item["code"] for item in result["audit"]["findings"]}
-
-
-def test_internal_agent_language_in_actual_prose_is_rejected(reader_chain, receipt_root, tmp_path):
-    path = tmp_path / "internal-language.md"
-    path.write_text(
-        reader_chain["artifact_text"] + "\nFlowGuard reports that route_id reached current_pass.\n",
-        encoding="utf-8",
-    )
-
-    result = _audit(reader_chain, receipt_root, path, audit_id="audit:internal-language")
-    assert result["status"] == "failed"
-    assert "internal_language" in {item["code"] for item in result["audit"]["findings"]}
-
-
-def test_citation_marker_must_be_adjacent_to_supported_wording(reader_chain, receipt_root, tmp_path):
-    citation = reader_chain["brief"]["required_citations"][0]
-    path = tmp_path / "detached-citation.md"
-    path.write_text(
-        reader_chain["artifact_text"].replace(
-            f" {citation['marker']} ",
-            "\n\nThe source marker appears here instead: " + citation["marker"] + " ",
-        ),
-        encoding="utf-8",
-    )
-
-    result = _audit(reader_chain, receipt_root, path, audit_id="audit:detached-citation")
-    assert result["status"] == "failed"
-    assert "citation_not_adjacent_to_target_wording" in {
-        item["code"] for item in result["audit"]["findings"]
-    }
-
-
-def test_concept_must_be_explained_at_its_introduction(reader_chain, receipt_root, tmp_path):
-    path = tmp_path / "missing-concept-explanation.md"
-    path.write_text(
-        reader_chain["artifact_text"].replace(
-            "the period covered by the available records",
-            "an important period",
-        ),
-        encoding="utf-8",
-    )
-
-    result = _audit(reader_chain, receipt_root, path, audit_id="audit:concept-gap")
-    assert result["status"] == "failed"
-    assert "concept_not_explained_at_introduction" in {
-        item["code"] for item in result["audit"]["findings"]
-    }
-
-
-def test_outline_does_not_count_as_finished_report(reader_chain, receipt_root, tmp_path):
-    paragraph = reader_chain["artifact_text"].splitlines()[2]
-    path = tmp_path / "outline.md"
-    path.write_text(
-        "# Outline\n\n- " + paragraph + "\n- Additional context belongs here.\n",
-        encoding="utf-8",
-    )
-
-    result = _audit(reader_chain, receipt_root, path, audit_id="audit:outline")
-    assert result["status"] == "partial"
-    assert "outline_as_final" in {item["code"] for item in result["audit"]["findings"]}
-
-
-def test_caller_cannot_self_attest_reader_native_quality(reader_chain, receipt_root):
-    request = {
-        "schema_version": "1.0",
-        "audit_id": "audit:self-attested",
-        "artifact_path": str(reader_chain["artifact_path"]),
-        "audited_text_path": None,
-        "artifact_extraction_receipt_fingerprint": None,
-        "reader_brief": reader_chain["brief"],
-        "reader_brief_receipt_fingerprint": reader_chain["brief_result"][
-            "derivation_receipt_fingerprint"
-        ],
-        "run_id": "run:self-attested",
-        "reader_native": True,
-    }
-
-    with pytest.raises(ValidationError, match="unsupported fields"):
-        build_reader_audit_receipt(request, receipt_root=receipt_root)
-
-
-def test_judgment_excerpt_must_exist_at_actual_locator(reader_chain, receipt_root):
-    judgment = copy.deepcopy(reader_chain["judgment_result"]["judgment"])
-    judgment["observations"][0]["excerpt"] = "Text that is not in the artifact"
-    judgment["judgment_fingerprint"] = fingerprint_without(
-        judgment, "judgment_fingerprint"
-    )
-
-    with pytest.raises(ValidationError, match="does not occur"):
-        validate_judgment_receipt(
+def test_judge_must_be_independent(tmp_path):
+    chain = complete_chain(tmp_path)
+    judgment = copy.deepcopy(chain["judgment"])
+    judgment["judge_id"] = judgment["producer_id"]
+    judgment["judgment_fingerprint"] = fingerprint({k: v for k, v in judgment.items() if k != "judgment_fingerprint"})
+    with pytest.raises(ValidationError, match="independent"):
+        validate_reader_judgment(
             judgment,
-            artifact_path=reader_chain["artifact_path"],
-            reader_brief=reader_chain["brief"],
-            receipt_root=receipt_root,
+            artifact_map=chain["artifact_map"],
+            reader_brief=chain["reader_brief"],
+            shared_writing=chain["shared_writing"],
+            deterministic_audit=chain["deterministic_audit"],
+            route_review=chain["route_review"],
         )
 
 
-def test_material_edit_supersedes_prior_audit_for_same_owner(reader_chain, receipt_root, tmp_path):
-    prior = reader_chain["audit_result"]["receipt"]
-    path = tmp_path / "edited-reader-report.md"
-    path.write_text(
-        reader_chain["artifact_text"] + "\nFlowGuard route_id leaked into the prose.\n",
-        encoding="utf-8",
-    )
-    edited = _audit(
-        reader_chain,
-        receipt_root,
-        path,
-        audit_id="audit:clinic-study:investigation",
-    )
-
-    prior_projection = resolve_current_receipt(prior["receipt_fingerprint"], root=receipt_root)
-    assert edited["status"] == "failed"
-    assert prior_projection["current"] is False
-    assert prior_projection["status"] == "stale"
-
-
-def test_judgment_cannot_override_failed_deterministic_audit(reader_chain, receipt_root, tmp_path):
-    path = tmp_path / "bad-reader-report.md"
-    path.write_text(
-        reader_chain["artifact_text"] + "\nThe intervention caused the change.\n",
-        encoding="utf-8",
-    )
-    audit = _audit(reader_chain, receipt_root, path, audit_id="audit:bad-for-judgment")
-    request = {
-        "schema_version": "1.0",
-        "judgment_id": "judgment:bad-artifact",
-        "artifact_path": str(path),
-        "reader_brief": reader_chain["brief"],
-        "reader_brief_receipt_fingerprint": reader_chain["brief_result"][
-            "derivation_receipt_fingerprint"
-        ],
-        "deterministic_receipt_fingerprint": audit["receipt"]["receipt_fingerprint"],
-        "judge_id": "judge:reader-review",
-        "judge_kind": "model",
-        "judged_at": "2026-07-14T12:05:00Z",
-        "rubric": reader_chain["judgment_result"]["judgment"]["rubric"],
-        "observations": [
-            {
-                **item,
-                "locator": "line:3",
-            }
-            for item in reader_chain["judgment_result"]["judgment"]["observations"]
-        ],
-        "run_id": "run:judgment:bad-artifact",
-    }
-
-    with pytest.raises(ValidationError, match="deterministic|status"):
-        build_judgment_receipt(request, receipt_root=receipt_root)
+def test_judgment_excerpt_must_exist_in_current_unit(tmp_path):
+    chain = complete_chain(tmp_path)
+    judgment = copy.deepcopy(chain["judgment"])
+    evidence = judgment["reverse_outline"][0]["evidence"]
+    evidence["excerpt"] = "这段文字并不存在"
+    evidence["excerpt_fingerprint"] = fingerprint_text(evidence["excerpt"])
+    judgment["judgment_fingerprint"] = fingerprint({k: v for k, v in judgment.items() if k != "judgment_fingerprint"})
+    with pytest.raises(ValidationError, match="absent"):
+        validate_reader_judgment(
+            judgment,
+            artifact_map=chain["artifact_map"],
+            reader_brief=chain["reader_brief"],
+            shared_writing=chain["shared_writing"],
+            deterministic_audit=chain["deterministic_audit"],
+            route_review=chain["route_review"],
+        )

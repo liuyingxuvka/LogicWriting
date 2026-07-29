@@ -24,6 +24,7 @@ if str(FLOWGUARD_ROOT) not in sys.path:
     sys.path.insert(0, str(FLOWGUARD_ROOT))
 
 from models.retirement_field_lifecycle import review_retirement_visibility_fields
+from models.reader_contract_field_lifecycle import review_reader_contract_fields
 from models.frozen_source_contract_exhaustion import (
     CASE_IDS as FROZEN_SOURCE_CASE_IDS,
     EXECUTION_CASE_IDS as FROZEN_EXECUTION_CASE_IDS,
@@ -334,6 +335,36 @@ BINDINGS = (
         "tests/unit/test_shared_writing.py",
         ("happy_path", "negative_path"),
     ),
+    BindingSpec(
+        "obligation:investigation-actual-artifact",
+        "investigation composition and semantic review bind bounded answers, alternatives, limitations, and recheck conditions to current report spans",
+        "agent_operation",
+        "intent:produce-investigation-report",
+        "C15:produce-investigation-report",
+        "logic_writing.investigation",
+        "contract:investigation-composition",
+        "skills/logic-writing/routes/investigation/scripts/validate_investigation_artifact.py",
+        "validate_investigation_artifact",
+        "test:investigation-route",
+        "test_investigation_report_requires_actual_span_bound_semantics",
+        "tests/unit/test_investigation_v2.py",
+        ("happy_path", "negative_path"),
+    ),
+    BindingSpec(
+        "obligation:academic-actual-artifact",
+        "academic hierarchy, contribution, artifact-bound review, and conditional revision provenance remain current",
+        "agent_operation",
+        "intent:produce-academic-artifact",
+        "C16:produce-academic-artifact",
+        "logic_writing.academic",
+        "contract:academic-composition",
+        "skills/logic-writing/routes/academic/scripts/validate_academic_artifact.py",
+        "validate_academic_artifact",
+        "test:academic-route",
+        "test_academic_artifact_requires_hierarchy_contribution_and_current_spans",
+        "tests/unit/test_academic_v2.py",
+        ("happy_path", "negative_path"),
+    ),
 )
 
 
@@ -487,16 +518,71 @@ def _frozen_execution_evidence() -> tuple[TestEvidence, ...]:
     return tuple(evidence)
 
 
+_READER_V2_OBLIGATION = ModelObligation(
+    "obligation:reader-contract-v2",
+    obligation_type="external_contract",
+    description="direct-current ReaderIntent, composition, byte binding, review, repair, and closure fields remain one current chain",
+    required_test_kinds=("happy_path", "failure_path", "negative_path", "replay"),
+    behavior_plane="agent_operation",
+    business_intent_id="intent:deliver-one-reader-ready-artifact",
+    behavior_commitment_id="C14:bind-model-to-reader-artifact",
+    primary_path_id="logic_writing.reader.v2",
+)
+
+
+_READER_V2_CONTRACT = CodeContract(
+    "contract:reader-pipeline-v2",
+    path="skills/logic-writing/scripts/reader_pipeline.py",
+    symbol="validate_shared_writing",
+    role="owner",
+    implements_obligations=("obligation:reader-contract-v2",),
+    external_inputs=("writing_request", "route_content", "current_artifact_bytes"),
+    external_outputs=("reader_contract_receipt", "artifact_quality_receipt", "closure"),
+    error_paths=("legacy_contract_rejected", "identity_mismatch", "typed_repair_required"),
+    behavior_plane="agent_operation",
+    business_intent_id="intent:deliver-one-reader-ready-artifact",
+    behavior_commitment_id="C14:bind-model-to-reader-artifact",
+    primary_path_id="logic_writing.reader.v2",
+)
+
+
+def _reader_v2_evidence() -> tuple[TestEvidence, ...]:
+    return tuple(
+        TestEvidence(
+            f"test:reader-pipeline-v2:{kind}",
+            test_name="test_complete_current_chain_closes",
+            path="tests/unit/test_freshness_closure.py",
+            command="python -m pytest -q tests/unit/test_freshness_closure.py tests/adversarial/test_boundaries.py",
+            result_status="passed",
+            evidence_current=True,
+            test_kind=kind,
+            covered_obligations=("obligation:reader-contract-v2",),
+            covered_code_contracts=("contract:reader-pipeline-v2",),
+            assertion_scope="external_contract",
+            behavior_plane="agent_operation",
+            business_intent_id="intent:deliver-one-reader-ready-artifact",
+            behavior_commitment_id="C14:bind-model-to-reader-artifact",
+            primary_path_id="logic_writing.reader.v2",
+        )
+        for kind in ("happy_path", "failure_path", "negative_path", "replay")
+    )
+
+
 def aligned_plan() -> ModelTestAlignmentPlan:
-    field_lifecycle = review_retirement_visibility_fields()
+    retirement_field_lifecycle = review_retirement_visibility_fields()
+    reader_field_lifecycle = review_reader_contract_fields()
     return ModelTestAlignmentPlan(
         model_id="logic-writing-model-test-alignment",
         obligations=(
             *( _obligation(spec) for spec in BINDINGS),
             *_FROZEN_SOURCE_OBLIGATIONS,
             *_FROZEN_EXECUTION_OBLIGATIONS,
+            _READER_V2_OBLIGATION,
         ),
-        code_contracts=tuple(_contract(spec) for spec in BINDINGS),
+        code_contracts=(
+            *(_contract(spec) for spec in BINDINGS),
+            _READER_V2_CONTRACT,
+        ),
         test_evidence=(
             *(
                 _evidence(spec, kind)
@@ -505,9 +591,13 @@ def aligned_plan() -> ModelTestAlignmentPlan:
             ),
             *_frozen_source_evidence(),
             *_frozen_execution_evidence(),
+            *_reader_v2_evidence(),
         ),
-        field_lifecycle_reports=(field_lifecycle,),
-        field_lifecycle_projections=field_lifecycle.projections,
+        field_lifecycle_reports=(retirement_field_lifecycle, reader_field_lifecycle),
+        field_lifecycle_projections=(
+            *retirement_field_lifecycle.projections,
+            *reader_field_lifecycle.projections,
+        ),
         require_stable_authority_ids=True,
         require_behavior_plane_binding=True,
     )

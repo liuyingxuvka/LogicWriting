@@ -4,6 +4,20 @@ The academic route creates or substantively revises the final scholarly
 artifact. It owns planning, evidence integration, prose, postwrite review, and
 final closure.
 
+## Reader composition v2
+
+Choose the artifact mode and academic profile before drafting. Build one
+hierarchy from document through paragraph groups in which every unit states its
+research-question contribution, incoming dependency, new claim or warrant,
+evidence, qualification, and downstream consumer. Figure and table rows state
+their reasoning job. A literature matrix, claim list, or paragraph blueprint
+must not become a sequence of disconnected mini-sections.
+
+Postwrite review cites actual current spans for the research question, central
+contribution, hierarchy progression, paragraph contribution, evidence/citation
+fit, method depth, figure/table jobs, and qualification/implication. Creation
+provenance is explicitly not applicable; revision provenance is required.
+
 ## 1. Define the artifact and revision contract
 
 Record audience, genre, research question, contribution, requested units,

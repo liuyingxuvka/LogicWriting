@@ -1,0 +1,474 @@
+{
+  "governed_input_globs": [
+    ".flowguard/**/*.py",
+    ".flowguard/behavior_commitment_ledger/ledger.json"
+  ],
+  "models": [
+    {
+      "absence_reason": "",
+      "distribution_policy": "required_public",
+      "exclusion_reason": "",
+      "expected_artifacts": [],
+      "input_globs": [
+        ".flowguard/behavior_commitment_ledger/model.py",
+        ".flowguard/behavior_commitment_ledger/run_checks.py",
+        ".flowguard/behavior_commitment_ledger/ledger.json"
+      ],
+      "model_id": "behavior_commitment_ledger",
+      "model_kind": "executable_workflow",
+      "model_path": ".flowguard/behavior_commitment_ledger/model.py",
+      "mutation_policy": "none",
+      "purpose_closure": {
+        "adoption_scope": "current_candidate_only",
+        "claim_boundary": "Current closure covers the declared Logic Writing behavior_commitment_ledger model and native runner cases only; it does not prove future AI prose quality, undeclared runtime behavior, installation, or publication.",
+        "closure_fingerprint": "sha256:3756aea1381811fd8cbb08ec47bae1c13d4a25776031f9db5e83dd754ed1648e",
+        "declaration_fingerprint": "sha256:26db0fad8b4fa499278d7347929f00c5c3f5507f021eb6f5d54c503b28a3f651",
+        "declaration_phase": "before_candidate",
+        "evidence_check_ids": [
+          "check:model-regression:behavior_commitment_ledger"
+        ],
+        "failure_bindings": [
+          {
+            "failure_id": "bcl:duplicate-owner",
+            "known_bad_case_id": "native-runner:behavior_commitment_ledger:duplicate-owner",
+            "oracle_id": "native:behavior_commitment_ledger:run-checks"
+          },
+          {
+            "failure_id": "bcl:incomplete-source-inventory",
+            "known_bad_case_id": "native-runner:behavior_commitment_ledger:incomplete-source-inventory",
+            "oracle_id": "native:behavior_commitment_ledger:run-checks"
+          },
+          {
+            "failure_id": "bcl:mixed-plane",
+            "known_bad_case_id": "native-runner:behavior_commitment_ledger:mixed-plane",
+            "oracle_id": "native:behavior_commitment_ledger:run-checks"
+          },
+          {
+            "failure_id": "bcl:stale-evidence",
+            "known_bad_case_id": "native-runner:behavior_commitment_ledger:stale-evidence",
+            "oracle_id": "native:behavior_commitment_ledger:run-checks"
+          }
+        ],
+        "guarded_purpose": "Prevent Logic Writing behavior coverage from accepting duplicate owners, incomplete source inventory, mixed execution planes, or stale evidence as current.",
+        "known_good_case_id": "native-runner:behavior_commitment_ledger:declared-positive-suite",
+        "model_instance_id": "regression:behavior_commitment_ledger:logic-writing-v3.0.0",
+        "model_sha256": "sha256:10d84d2a74ed04de77379ff9966c65dd9022421655899a30a0798aea2c2364d5",
+        "protected_failure_ids": [
+          "bcl:duplicate-owner",
+          "bcl:incomplete-source-inventory",
+          "bcl:mixed-plane",
+          "bcl:stale-evidence"
+        ],
+        "reusable_model_type_id": "behavior_commitment_ledger",
+        "runner_sha256": "sha256:901760206f0853adf75a98fb82c5b8bbde5e88cec138b46a75429eb9f1e2a3bf",
+        "schema_version": "flowguard.model_purpose_closure.v1",
+        "task_intent_id": "flowguard-regression:behavior_commitment_ledger:logic-writing-reader-composition"
+      },
+      "runner": [
+        "{python}",
+        ".flowguard/behavior_commitment_ledger/run_checks.py"
+      ],
+      "shard_safe": true,
+      "tier": "fast",
+      "timeout_seconds": 180
+    },
+    {
+      "absence_reason": "",
+      "distribution_policy": "required_public",
+      "exclusion_reason": "",
+      "expected_artifacts": [],
+      "input_globs": [
+        ".flowguard/development_process_flow/*.py"
+      ],
+      "model_id": "development_process_flow",
+      "model_kind": "executable_workflow",
+      "model_path": ".flowguard/development_process_flow/model.py",
+      "mutation_policy": "none",
+      "purpose_closure": {
+        "adoption_scope": "current_candidate_only",
+        "claim_boundary": "Current closure covers the declared Logic Writing development_process_flow model and native runner cases only; it does not prove future AI prose quality, undeclared runtime behavior, installation, or publication.",
+        "closure_fingerprint": "sha256:a647af174ff0801487a28ed0412145ef4c2fd393b9627d9532f5d1a75881509f",
+        "declaration_fingerprint": "sha256:5306ec71895d4ab124c872de965c40ae8d8f67cea02755b60b99cf1915d99504",
+        "declaration_phase": "before_candidate",
+        "evidence_check_ids": [
+          "check:model-regression:development_process_flow"
+        ],
+        "failure_bindings": [
+          {
+            "failure_id": "process:peer-overwrite",
+            "known_bad_case_id": "native-runner:development_process_flow:peer-overwrite",
+            "oracle_id": "native:development_process_flow:run-checks"
+          },
+          {
+            "failure_id": "process:stale-evidence",
+            "known_bad_case_id": "native-runner:development_process_flow:stale-evidence",
+            "oracle_id": "native:development_process_flow:run-checks"
+          },
+          {
+            "failure_id": "process:background-final-gate",
+            "known_bad_case_id": "native-runner:development_process_flow:background-final-gate",
+            "oracle_id": "native:development_process_flow:run-checks"
+          }
+        ],
+        "guarded_purpose": "Prevent the Logic Writing upgrade and release process from overwriting peer work, consuming stale evidence, or treating background progress as final validation.",
+        "known_good_case_id": "native-runner:development_process_flow:declared-positive-suite",
+        "model_instance_id": "regression:development_process_flow:logic-writing-v3.0.0",
+        "model_sha256": "sha256:7b249020e08128e8339659ecd799c580828574b6e62333afe2cee05027b00ee0",
+        "protected_failure_ids": [
+          "process:peer-overwrite",
+          "process:stale-evidence",
+          "process:background-final-gate"
+        ],
+        "reusable_model_type_id": "development_process_flow",
+        "runner_sha256": "sha256:213bdd505af7a18c1320f67846a4b6a60fb98ba5f09e7b317dd19cb796fda5db",
+        "schema_version": "flowguard.model_purpose_closure.v1",
+        "task_intent_id": "flowguard-regression:development_process_flow:logic-writing-reader-composition"
+      },
+      "runner": [
+        "{python}",
+        ".flowguard/development_process_flow/run_checks.py"
+      ],
+      "shard_safe": true,
+      "tier": "focused",
+      "timeout_seconds": 180
+    },
+    {
+      "absence_reason": "",
+      "distribution_policy": "required_public",
+      "exclusion_reason": "",
+      "expected_artifacts": [],
+      "input_globs": [
+        ".flowguard/model_test_alignment/*.py",
+        ".flowguard/models/retirement_field_lifecycle.py",
+        ".flowguard/models/frozen_source_contract_exhaustion.py"
+      ],
+      "model_id": "model_test_alignment",
+      "model_kind": "executable_workflow",
+      "model_path": ".flowguard/model_test_alignment/model.py",
+      "mutation_policy": "none",
+      "purpose_closure": {
+        "adoption_scope": "current_candidate_only",
+        "claim_boundary": "Current closure covers the declared Logic Writing model_test_alignment model and native runner cases only; it does not prove future AI prose quality, undeclared runtime behavior, installation, or publication.",
+        "closure_fingerprint": "sha256:575b0fa3aec8eeef88acf877d476504111dd89119dd65ba72b1ffbae969fde0d",
+        "declaration_fingerprint": "sha256:4c5b74841f03873d029c8e277081c06aebdfaaf430c51be7d19f1fbc457b3ee1",
+        "declaration_phase": "before_candidate",
+        "evidence_check_ids": [
+          "check:model-regression:model_test_alignment"
+        ],
+        "failure_bindings": [
+          {
+            "failure_id": "alignment:missing-code-contract",
+            "known_bad_case_id": "native-runner:model_test_alignment:missing-code-contract",
+            "oracle_id": "native:model_test_alignment:run-checks"
+          },
+          {
+            "failure_id": "alignment:orphan-test",
+            "known_bad_case_id": "native-runner:model_test_alignment:orphan-test",
+            "oracle_id": "native:model_test_alignment:run-checks"
+          },
+          {
+            "failure_id": "alignment:stale-evidence",
+            "known_bad_case_id": "native-runner:model_test_alignment:stale-evidence",
+            "oracle_id": "native:model_test_alignment:run-checks"
+          },
+          {
+            "failure_id": "alignment:field-gap",
+            "known_bad_case_id": "native-runner:model_test_alignment:field-gap",
+            "oracle_id": "native:model_test_alignment:run-checks"
+          }
+        ],
+        "guarded_purpose": "Prevent Logic Writing model obligations, external code contracts, schema fields, and current tests from being declared aligned when bindings or evidence are missing.",
+        "known_good_case_id": "native-runner:model_test_alignment:declared-positive-suite",
+        "model_instance_id": "regression:model_test_alignment:logic-writing-v3.0.0",
+        "model_sha256": "sha256:17ff746ab57588de5c66f281aa9fd623d79098101fc49cb190b9360d2e64933b",
+        "protected_failure_ids": [
+          "alignment:missing-code-contract",
+          "alignment:orphan-test",
+          "alignment:stale-evidence",
+          "alignment:field-gap"
+        ],
+        "reusable_model_type_id": "model_test_alignment",
+        "runner_sha256": "sha256:a6e76b2816c3aa75b44fe626c9d49929ecacdd635272fade409c73ff6e581695",
+        "schema_version": "flowguard.model_purpose_closure.v1",
+        "task_intent_id": "flowguard-regression:model_test_alignment:logic-writing-reader-composition"
+      },
+      "runner": [
+        "{python}",
+        ".flowguard/model_test_alignment/run_checks.py"
+      ],
+      "shard_safe": true,
+      "tier": "focused",
+      "timeout_seconds": 180
+    },
+    {
+      "absence_reason": "",
+      "distribution_policy": "required_public",
+      "exclusion_reason": "",
+      "expected_artifacts": [],
+      "input_globs": [
+        ".flowguard/plan_detailing/*.py"
+      ],
+      "model_id": "plan_detailing",
+      "model_kind": "executable_workflow",
+      "model_path": ".flowguard/plan_detailing/model.py",
+      "mutation_policy": "none",
+      "purpose_closure": {
+        "adoption_scope": "current_candidate_only",
+        "claim_boundary": "Current closure covers the declared Logic Writing plan_detailing model and native runner cases only; it does not prove future AI prose quality, undeclared runtime behavior, installation, or publication.",
+        "closure_fingerprint": "sha256:3c1c00009915ce43d22f5f5a9cb9aee3726a8f7e6051eb711b69814abde636e9",
+        "declaration_fingerprint": "sha256:66e5c61f802c4ce2a1fe9fa13f1b63e5214cba8929d45d77ca6c929407dde3e9",
+        "declaration_phase": "before_candidate",
+        "evidence_check_ids": [
+          "check:model-regression:plan_detailing"
+        ],
+        "failure_bindings": [
+          {
+            "failure_id": "plan:missing-dependency",
+            "known_bad_case_id": "native-runner:plan_detailing:missing-dependency",
+            "oracle_id": "native:plan_detailing:run-checks"
+          },
+          {
+            "failure_id": "plan:missing-validation",
+            "known_bad_case_id": "native-runner:plan_detailing:missing-validation",
+            "oracle_id": "native:plan_detailing:run-checks"
+          },
+          {
+            "failure_id": "plan:hidden-blocker",
+            "known_bad_case_id": "native-runner:plan_detailing:hidden-blocker",
+            "oracle_id": "native:plan_detailing:run-checks"
+          }
+        ],
+        "guarded_purpose": "Prevent the staged Logic Writing upgrade plan from omitting dependencies, validation gates, release synchronization, or visible blockers.",
+        "known_good_case_id": "native-runner:plan_detailing:declared-positive-suite",
+        "model_instance_id": "regression:plan_detailing:logic-writing-v3.0.0",
+        "model_sha256": "sha256:07a4a7cb6542972ee36840f3f785f5d446b4783fd5a9aec9cc9c2b5ed9b020d9",
+        "protected_failure_ids": [
+          "plan:missing-dependency",
+          "plan:missing-validation",
+          "plan:hidden-blocker"
+        ],
+        "reusable_model_type_id": "plan_detailing",
+        "runner_sha256": "sha256:87080ee76347ec4a32e6c601be77bae6b56ed331127f807a3b3dcf0d9230e552",
+        "schema_version": "flowguard.model_purpose_closure.v1",
+        "task_intent_id": "flowguard-regression:plan_detailing:logic-writing-reader-composition"
+      },
+      "runner": [
+        "{python}",
+        ".flowguard/plan_detailing/run_checks.py"
+      ],
+      "shard_safe": true,
+      "tier": "fast",
+      "timeout_seconds": 180
+    },
+    {
+      "absence_reason": "",
+      "distribution_policy": "required_public",
+      "exclusion_reason": "",
+      "expected_artifacts": [],
+      "input_globs": [
+        ".flowguard/primary_path_authority/*.py"
+      ],
+      "model_id": "primary_path_authority",
+      "model_kind": "executable_workflow",
+      "model_path": ".flowguard/primary_path_authority/model.py",
+      "mutation_policy": "none",
+      "purpose_closure": {
+        "adoption_scope": "current_candidate_only",
+        "claim_boundary": "Current closure covers the declared Logic Writing primary_path_authority model and native runner cases only; it does not prove future AI prose quality, undeclared runtime behavior, installation, or publication.",
+        "closure_fingerprint": "sha256:dff2df2c75198fbcbabdf99c820d15b6c76b47fca885d8e0a4fac765d3297949",
+        "declaration_fingerprint": "sha256:95ac8b120db6a89de53a29a98bd2023ddc3bdc0a9b6f40f03bbced64574d3de8",
+        "declaration_phase": "before_candidate",
+        "evidence_check_ids": [
+          "check:model-regression:primary_path_authority"
+        ],
+        "failure_bindings": [
+          {
+            "failure_id": "path:alternate-success",
+            "known_bad_case_id": "native-runner:primary_path_authority:alternate-success",
+            "oracle_id": "native:primary_path_authority:run-checks"
+          },
+          {
+            "failure_id": "path:duplicate-final-owner",
+            "known_bad_case_id": "native-runner:primary_path_authority:duplicate-final-owner",
+            "oracle_id": "native:primary_path_authority:run-checks"
+          },
+          {
+            "failure_id": "path:ambiguous-install-authority",
+            "known_bad_case_id": "native-runner:primary_path_authority:ambiguous-install-authority",
+            "oracle_id": "native:primary_path_authority:run-checks"
+          }
+        ],
+        "guarded_purpose": "Prevent Logic Writing from retaining an alternate success path, fallback route, duplicate final owner, or ambiguous installation authority.",
+        "known_good_case_id": "native-runner:primary_path_authority:declared-positive-suite",
+        "model_instance_id": "regression:primary_path_authority:logic-writing-v3.0.0",
+        "model_sha256": "sha256:9008ddb895374e9cab76c0068cf71fae43d91c2af587ad3c9ecbe06576bbc7c7",
+        "protected_failure_ids": [
+          "path:alternate-success",
+          "path:duplicate-final-owner",
+          "path:ambiguous-install-authority"
+        ],
+        "reusable_model_type_id": "primary_path_authority",
+        "runner_sha256": "sha256:5f56271b4bbaa364d9d6b69db68bb50000ff057dae785411cb493457bf8bdfd2",
+        "schema_version": "flowguard.model_purpose_closure.v1",
+        "task_intent_id": "flowguard-regression:primary_path_authority:logic-writing-reader-composition"
+      },
+      "runner": [
+        "{python}",
+        ".flowguard/primary_path_authority/run_checks.py"
+      ],
+      "shard_safe": true,
+      "tier": "focused",
+      "timeout_seconds": 180
+    },
+    {
+      "absence_reason": "",
+      "distribution_policy": "required_public",
+      "exclusion_reason": "",
+      "expected_artifacts": [],
+      "input_globs": [
+        ".flowguard/test_mesh/*.py",
+        ".flowguard/models/frozen_source_contract_exhaustion.py"
+      ],
+      "model_id": "test_mesh",
+      "model_kind": "executable_workflow",
+      "model_path": ".flowguard/test_mesh/model.py",
+      "mutation_policy": "none",
+      "purpose_closure": {
+        "adoption_scope": "current_candidate_only",
+        "claim_boundary": "Current closure covers the declared Logic Writing test_mesh model and native runner cases only; it does not prove future AI prose quality, undeclared runtime behavior, installation, or publication.",
+        "closure_fingerprint": "sha256:3c9f3bedea531f879f838766a20521982f6ceae298df5b9d05cdabd68171cb38",
+        "declaration_fingerprint": "sha256:0a11a4d679f0c66bc7c9a9867c3dfc3c56ab3c0854b82b4f62bfe6432193ebe6",
+        "declaration_phase": "before_candidate",
+        "evidence_check_ids": [
+          "check:model-regression:test_mesh"
+        ],
+        "failure_bindings": [
+          {
+            "failure_id": "test-mesh:hidden-failure",
+            "known_bad_case_id": "native-runner:test_mesh:hidden-failure",
+            "oracle_id": "native:test_mesh:run-checks"
+          },
+          {
+            "failure_id": "test-mesh:stale-child",
+            "known_bad_case_id": "native-runner:test_mesh:stale-child",
+            "oracle_id": "native:test_mesh:run-checks"
+          },
+          {
+            "failure_id": "test-mesh:duplicate-owner",
+            "known_bad_case_id": "native-runner:test_mesh:duplicate-owner",
+            "oracle_id": "native:test_mesh:run-checks"
+          },
+          {
+            "failure_id": "test-mesh:unowned-check",
+            "known_bad_case_id": "native-runner:test_mesh:unowned-check",
+            "oracle_id": "native:test_mesh:run-checks"
+          }
+        ],
+        "guarded_purpose": "Prevent Logic Writing validation from hiding failed, skipped, stale, duplicated, or unowned regression evidence behind a parent green result.",
+        "known_good_case_id": "native-runner:test_mesh:declared-positive-suite",
+        "model_instance_id": "regression:test_mesh:logic-writing-v3.0.0",
+        "model_sha256": "sha256:87a6fac5e65f3a84add744798214d5195706dc15bd0ddf8d5d49b972a323c259",
+        "protected_failure_ids": [
+          "test-mesh:hidden-failure",
+          "test-mesh:stale-child",
+          "test-mesh:duplicate-owner",
+          "test-mesh:unowned-check"
+        ],
+        "reusable_model_type_id": "test_mesh",
+        "runner_sha256": "sha256:b1349e9f9ae0ab11cd1495262460df555c958cd5114ca33ed8a7b4a196332917",
+        "schema_version": "flowguard.model_purpose_closure.v1",
+        "task_intent_id": "flowguard-regression:test_mesh:logic-writing-reader-composition"
+      },
+      "runner": [
+        "{python}",
+        ".flowguard/test_mesh/run_checks.py"
+      ],
+      "shard_safe": true,
+      "tier": "focused",
+      "timeout_seconds": 180
+    },
+    {
+      "absence_reason": "",
+      "distribution_policy": "required_public",
+      "exclusion_reason": "",
+      "expected_artifacts": [
+        "model-report.json"
+      ],
+      "input_globs": [
+        ".flowguard/logic_writing_models/*.py",
+        ".flowguard/run_models.py",
+        ".flowguard/models/**/*.py"
+      ],
+      "model_id": "logic_writing_models",
+      "model_kind": "executable_workflow",
+      "model_path": ".flowguard/logic_writing_models/model.py",
+      "mutation_policy": "isolated_output",
+      "purpose_closure": {
+        "adoption_scope": "current_candidate_only",
+        "claim_boundary": "Current closure covers the declared Logic Writing model mesh and native runner cases only; it does not prove future AI prose quality, undeclared runtime behavior, installation, or publication.",
+        "closure_fingerprint": "sha256:3b64852deea89efefd79fb69cce8ba70370b0643d76a6b1b94a592f18cd33014",
+        "declaration_fingerprint": "sha256:baf8769c05dc20fd95d9b987e46b97d796fe4bb16bb59a20e01fef5d46e292c5",
+        "declaration_phase": "before_candidate",
+        "evidence_check_ids": [
+          "check:model-regression:logic_writing_models"
+        ],
+        "failure_bindings": [
+          {
+            "failure_id": "reader-artifact:metadata-fake-green",
+            "known_bad_case_id": "native-runner:logic_writing_models:metadata-fake-green",
+            "oracle_id": "native:logic_writing_models:run-checks"
+          },
+          {
+            "failure_id": "reader-artifact:stale-audit",
+            "known_bad_case_id": "native-runner:logic_writing_models:stale-audit",
+            "oracle_id": "native:logic_writing_models:run-checks"
+          },
+          {
+            "failure_id": "lifecycle:duplicate-owner",
+            "known_bad_case_id": "native-runner:logic_writing_models:duplicate-owner",
+            "oracle_id": "native:logic_writing_models:run-checks"
+          },
+          {
+            "failure_id": "closure:stale-evidence",
+            "known_bad_case_id": "native-runner:logic_writing_models:stale-evidence",
+            "oracle_id": "native:logic_writing_models:run-checks"
+          },
+          {
+            "failure_id": "workflow:non-progressing",
+            "known_bad_case_id": "native-runner:logic_writing_models:non-progressing",
+            "oracle_id": "native:logic_writing_models:run-checks"
+          }
+        ],
+        "guarded_purpose": "Prevent the Logic Writing route, reader artifact, freshness, fiction, travel, installation, and release models from accepting metadata-only quality, stale artifact evidence, duplicate closure, or non-progressing work.",
+        "known_good_case_id": "native-runner:logic_writing_models:declared-positive-suite",
+        "model_instance_id": "regression:logic_writing_models:logic-writing-v3.0.0",
+        "model_sha256": "sha256:42994a37ec6bc7908918730bb124cc1f20f5d7f30ab5bbcd8068a440f205b399",
+        "protected_failure_ids": [
+          "reader-artifact:metadata-fake-green",
+          "reader-artifact:stale-audit",
+          "lifecycle:duplicate-owner",
+          "closure:stale-evidence",
+          "workflow:non-progressing"
+        ],
+        "reusable_model_type_id": "logic_writing_models",
+        "runner_sha256": "sha256:f1ad0d4eee7b7dd352ac6728e4abdbd424bdb811554b45ccc20838e18dbf7b4f",
+        "schema_version": "flowguard.model_purpose_closure.v1",
+        "task_intent_id": "flowguard-regression:logic_writing_models:logic-writing-reader-composition"
+      },
+      "runner": [
+        "{python}",
+        ".flowguard/logic_writing_models/run_checks.py"
+      ],
+      "shard_safe": true,
+      "tier": "full",
+      "timeout_seconds": 180
+    }
+  ],
+  "schema_version": "flowguard.model_regression_manifest.v3",
+  "shared_input_groups": [],
+  "snapshot_only_input_globs": [
+    ".flowguard/evidence/**/*",
+    ".flowguard/model-system/**/*",
+    ".flowguard/run_artifacts/**/*"
+  ]
+}

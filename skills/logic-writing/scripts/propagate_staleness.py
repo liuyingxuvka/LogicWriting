@@ -1,251 +1,83 @@
-"""Propagate evidence staleness through explicit receipt dependencies only."""
+#!/usr/bin/env python3
+"""Propagate current v2 reader-chain staleness along explicit dependencies."""
 
 from __future__ import annotations
 
-import argparse
-import json
-from pathlib import Path
-from typing import Mapping
+from typing import Any
 
-from _common import (
-    ALL_STATUSES,
-    ValidationError,
-    dump_json,
-    fingerprint,
-    load_json,
-    require_list,
-    require_mapping,
-    require_string,
-    reject_unknown_keys,
-    validation_result,
-)
-from receipt_authority import resolve_current_receipt
+from _common import ValidationError, cli_validate, fingerprint, require_mapping, validation_result
 
 
-PLANES = {"agent_operation", "development_process"}
-REQUEST_FIELDS = {"schema_version", "current_inputs", "nodes"}
-NODE_FIELDS = {
-    "receipt_fingerprint",
-    "plane",
-    "status",
-    "input_fingerprints",
-    "dependency_receipt_fingerprints",
-}
-
-
-def _fingerprint_map(value, label):
-    value = require_mapping(value, label)
-    for key, item in value.items():
-        if not isinstance(key, str) or not key.strip():
-            raise ValidationError(f"{label} keys must be non-empty strings")
-        if not isinstance(item, str) or not item.startswith("sha256:") or len(item) != 71:
-            raise ValidationError(f"{label}.{key} must be a sha256 fingerprint")
-    return value
-
-
-def _cycles(dependencies):
-    visiting: set[str] = set()
-    visited: set[str] = set()
-    stack: list[str] = []
-    found: list[list[str]] = []
-
-    def visit(node):
-        if node in visiting:
-            start = stack.index(node)
-            cycle = stack[start:] + [node]
-            if cycle not in found:
-                found.append(cycle)
-            return
-        if node in visited:
-            return
-        visiting.add(node)
-        stack.append(node)
-        for dependency in dependencies[node]:
-            visit(dependency)
-        stack.pop()
-        visiting.remove(node)
-        visited.add(node)
-
-    for node in sorted(dependencies):
-        visit(node)
-    return found
-
-
-def propagate_staleness(
-    value,
-    *,
-    receipt_root: str | Path | None = None,
-):
-    value = require_mapping(value, "staleness request")
-    reject_unknown_keys(value, REQUEST_FIELDS, "staleness request")
-    if require_string(value, "schema_version") != "1.0":
-        raise ValidationError("schema_version must be 1.0")
-    current_inputs = _fingerprint_map(value.get("current_inputs"), "current_inputs")
-    rows = require_list(value.get("nodes"), "nodes")
-    if not rows:
-        raise ValidationError("nodes must contain at least one receipt node")
-
-    nodes: dict[str, dict] = {}
-    for index, item in enumerate(rows):
-        node = require_mapping(item, f"node {index}")
-        reject_unknown_keys(node, NODE_FIELDS, f"node {index}")
-        receipt_fingerprint = require_string(node, "receipt_fingerprint")
-        if not receipt_fingerprint.startswith("sha256:") or len(receipt_fingerprint) != 71:
-            raise ValidationError("receipt_fingerprint must be a sha256 fingerprint")
-        if receipt_fingerprint in nodes:
-            raise ValidationError(f"duplicate receipt_fingerprint: {receipt_fingerprint}")
-        plane = require_string(node, "plane")
-        if plane not in PLANES:
-            raise ValidationError(f"unsupported plane: {plane}")
-        status = require_string(node, "status")
-        if status not in ALL_STATUSES:
-            raise ValidationError(f"unsupported node status: {status}")
-        inputs = _fingerprint_map(
-            node.get("input_fingerprints"),
-            f"node {receipt_fingerprint}.input_fingerprints",
-        )
-        dependencies = require_list(
-            node.get("dependency_receipt_fingerprints"),
-            "dependency_receipt_fingerprints",
-        )
-        if not all(
-            isinstance(dep, str) and dep.startswith("sha256:") and len(dep) == 71
-            for dep in dependencies
-        ):
-            raise ValidationError(
-                "dependency_receipt_fingerprints must contain sha256 fingerprints"
-            )
-        nodes[receipt_fingerprint] = {
-            "receipt_fingerprint": receipt_fingerprint,
-            "plane": plane,
-            "status": status,
-            "input_fingerprints": inputs,
-            "dependency_receipt_fingerprints": list(dict.fromkeys(dependencies)),
-        }
-
-    dependencies = {
-        receipt_fingerprint: node["dependency_receipt_fingerprints"]
-        for receipt_fingerprint, node in nodes.items()
+def propagate_staleness(value: Any, *, receipt_root=None) -> dict[str, Any]:
+    del receipt_root
+    request = require_mapping(value, "staleness request")
+    allowed = {"schema_version", "current_inputs", "observed_inputs", "records"}
+    unknown = sorted(set(request) - allowed)
+    if unknown:
+        raise ValidationError(f"staleness request has unknown current fields: {unknown}")
+    if request.get("schema_version") != "2.0":
+        raise ValidationError("staleness request schema_version must be 2.0")
+    current = require_mapping(request.get("current_inputs"), "current_inputs")
+    observed = require_mapping(request.get("observed_inputs"), "observed_inputs")
+    if set(current) != set(observed):
+        raise ValidationError("observed_inputs must exactly cover current_inputs")
+    changed = {
+        key for key in current
+        if current[key] != observed[key]
     }
-    unknown_dependencies = sorted(
-        {dependency for items in dependencies.values() for dependency in items if dependency not in nodes}
-    )
-    if unknown_dependencies:
-        raise ValidationError(
-            "unknown dependency receipt fingerprints: " + ", ".join(unknown_dependencies)
-        )
-    cycles = _cycles(dependencies)
-    if cycles:
-        return validation_result(
-            status="blocked",
-            stale_receipt_fingerprints=[],
-            current_receipt_fingerprints=[],
-            reasons={},
-            cross_plane_stale_edges=[],
-            cycles=cycles,
-            graph_fingerprint=fingerprint(value),
-        )
-
-    stale: set[str] = set()
-    reasons: dict[str, list[str]] = {}
-    authority_projection_fingerprints: dict[str, str] = {}
-    for receipt_fingerprint, node in nodes.items():
-        node_reasons: list[str] = []
-        if receipt_root is not None:
-            projection = resolve_current_receipt(
-                receipt_fingerprint,
-                root=receipt_root,
-                expected={
-                    "status": node["status"],
-                    "input_fingerprints": node["input_fingerprints"],
-                },
-            )
-            receipt = projection["receipt"]
-            if receipt["dependency_receipt_fingerprints"] != node[
-                "dependency_receipt_fingerprints"
-            ]:
-                raise ValidationError(
-                    "staleness node dependencies do not match authoritative original"
-                )
-            authority_projection_fingerprints[receipt_fingerprint] = projection[
-                "projection_fingerprint"
+    records = request.get("records")
+    if not isinstance(records, list):
+        raise ValidationError("records must be an array")
+    ids = [row.get("record_id") for row in records if isinstance(row, dict)]
+    if len(ids) != len(records) or not all(ids) or len(ids) != len(set(ids)):
+        raise ValidationError("record ids must be non-empty and unique")
+    known = set(ids)
+    status_by_id: dict[str, str] = {}
+    rows: list[dict[str, Any]] = []
+    pending = list(records)
+    while pending:
+        progressed = False
+        for row in list(pending):
+            consumes = row.get("consumes", [])
+            depends_on = row.get("depends_on", [])
+            if not isinstance(consumes, list) or not isinstance(depends_on, list):
+                raise ValidationError("record consumes and depends_on must be arrays")
+            if not set(consumes) <= set(current):
+                raise ValidationError(f"record {row['record_id']} consumes an unknown input")
+            if not set(depends_on) <= known:
+                raise ValidationError(f"record {row['record_id']} has an unknown dependency")
+            if any(parent not in status_by_id for parent in depends_on):
+                continue
+            stale_reasons = [
+                *(f"input_changed:{key}" for key in consumes if key in changed),
+                *(f"dependency_stale:{parent}" for parent in depends_on if status_by_id[parent] == "stale"),
             ]
-            if not projection["current"]:
-                node_reasons.extend(
-                    f"authority:{reason}" for reason in projection["reasons"]
-                )
-        if node["status"] == "stale":
-            node_reasons.append("declared_stale")
-        for input_id, consumed in node["input_fingerprints"].items():
-            current = current_inputs.get(input_id)
-            if current is None:
-                node_reasons.append(f"current_input_missing:{input_id}")
-            elif current != consumed:
-                node_reasons.append(f"input_changed:{input_id}")
-        if node_reasons:
-            stale.add(receipt_fingerprint)
-            reasons[receipt_fingerprint] = node_reasons
-
-    changed = True
-    while changed:
-        changed = False
-        for receipt_fingerprint, node in nodes.items():
-            stale_dependencies = [
-                dep for dep in node["dependency_receipt_fingerprints"] if dep in stale
-            ]
-            if stale_dependencies and receipt_fingerprint not in stale:
-                stale.add(receipt_fingerprint)
-                reasons[receipt_fingerprint] = [
-                    f"dependency_stale:{dep}" for dep in stale_dependencies
-                ]
-                changed = True
-
-    cross_plane = []
-    for receipt_fingerprint in sorted(stale):
-        node = nodes[receipt_fingerprint]
-        for dependency in node["dependency_receipt_fingerprints"]:
-            if dependency in stale and nodes[dependency]["plane"] != node["plane"]:
-                cross_plane.append(
-                    {
-                        "dependency_receipt_fingerprint": dependency,
-                        "dependent_receipt_fingerprint": receipt_fingerprint,
-                        "from_plane": nodes[dependency]["plane"],
-                        "to_plane": node["plane"],
-                    }
-                )
-
+            status = "stale" if stale_reasons else "current"
+            status_by_id[row["record_id"]] = status
+            rows.append({
+                "record_id": row["record_id"],
+                "status": status,
+                "stale_because": stale_reasons,
+            })
+            pending.remove(row)
+            progressed = True
+        if not progressed:
+            raise ValidationError("record dependency graph contains a cycle")
+    result = {
+        "schema_version": "2.0",
+        "changed_input_ids": sorted(changed),
+        "records": rows,
+    }
+    result["propagation_fingerprint"] = fingerprint(result)
     return validation_result(
         status="current_pass",
-        stale_receipt_fingerprints=sorted(stale),
-        current_receipt_fingerprints=sorted(set(nodes) - stale),
-        reasons={key: reasons[key] for key in sorted(reasons)},
-        cross_plane_stale_edges=cross_plane,
-        cycles=[],
-        authority_projection_fingerprints={
-            key: authority_projection_fingerprints[key]
-            for key in sorted(authority_projection_fingerprints)
-        },
-        graph_fingerprint=fingerprint(value),
+        staleness=result,
+        stale_record_ids=[row["record_id"] for row in rows if row["status"] == "stale"],
     )
-
-
-def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--input", required=True)
-    parser.add_argument("--receipt-root")
-    parser.add_argument("--output")
-    args = parser.parse_args()
-    try:
-        result = propagate_staleness(
-            load_json(args.input),
-            receipt_root=args.receipt_root,
-        )
-        dump_json(result, args.output)
-        return 0 if result["status"] == "current_pass" else 1
-    except (ValidationError, OSError, json.JSONDecodeError) as exc:
-        dump_json(validation_result(status="blocked", errors=(str(exc),)), args.output)
-        return 1
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(cli_validate(propagate_staleness, __doc__))
+
+
+__all__ = ["propagate_staleness"]

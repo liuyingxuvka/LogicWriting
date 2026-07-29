@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/liuyingxuvka/LogicWriting/schemas/travel-composition.schema.json",
+  "title": "Travel composition v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "composition_id", "final_owner", "reader_intent_fingerprint",
+    "composition_plan_fingerprint", "artifact_mode", "guide_kind", "structure_authority",
+    "body_sections", "appendix_sections", "source_boundary_placement",
+    "recheck_placement", "local_texture_candidates", "risk_fallback_bindings",
+    "extension_fingerprint"
+  ],
+  "properties": {
+    "schema_version": { "const": "2.0" },
+    "composition_id": { "$ref": "#/$defs/id" },
+    "final_owner": { "const": "travel-guide" },
+    "reader_intent_fingerprint": { "$ref": "#/$defs/fp" },
+    "composition_plan_fingerprint": { "$ref": "#/$defs/fp" },
+    "artifact_mode": { "enum": ["create_new", "revise_existing"] },
+    "guide_kind": { "enum": ["itinerary", "destination_guide", "lodging_strategy", "route_plan", "traveler_fit_recommendation", "revision"] },
+    "structure_authority": { "enum": ["user_fixed", "user_partial", "existing_artifact", "route_selected"] },
+    "body_sections": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/bodySection" }, "uniqueItems": true },
+    "appendix_sections": { "type": "array", "items": { "$ref": "#/$defs/appendixSection" }, "uniqueItems": true },
+    "source_boundary_placement": { "$ref": "#/$defs/id" },
+    "recheck_placement": { "$ref": "#/$defs/id" },
+    "local_texture_candidates": { "type": "array", "items": { "$ref": "#/$defs/localCandidate" }, "uniqueItems": true },
+    "risk_fallback_bindings": { "type": "array", "items": { "$ref": "#/$defs/riskFallback" }, "uniqueItems": true },
+    "extension_fingerprint": { "$ref": "#/$defs/fp" }
+  },
+  "$defs": {
+    "id": { "type": "string", "minLength": 2, "maxLength": 160, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$" },
+    "fp": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "bodySection": {
+      "type": "object", "additionalProperties": false,
+      "required": ["section_id", "section_kind", "section_role", "incoming_traveler_state", "outgoing_traveler_state", "route_refs", "traveler_fit_refs", "local_texture_refs", "risk_fallback_binding_ids", "next_consumer_ids", "prose_required", "list_or_table_allowed"],
+      "properties": {
+        "section_id": { "$ref": "#/$defs/id" },
+        "section_kind": { "type": "string", "minLength": 1 },
+        "section_role": { "type": "string", "minLength": 1 },
+        "incoming_traveler_state": { "type": "string", "minLength": 1 },
+        "outgoing_traveler_state": { "type": "string", "minLength": 1 },
+        "route_refs": { "type": "array", "items": { "$ref": "#/$defs/id" }, "uniqueItems": true },
+        "traveler_fit_refs": { "type": "array", "items": { "$ref": "#/$defs/id" }, "uniqueItems": true },
+        "local_texture_refs": { "type": "array", "items": { "$ref": "#/$defs/id" }, "uniqueItems": true },
+        "risk_fallback_binding_ids": { "type": "array", "items": { "$ref": "#/$defs/id" }, "uniqueItems": true },
+        "next_consumer_ids": { "type": "array", "items": { "$ref": "#/$defs/id" }, "uniqueItems": true },
+        "prose_required": { "type": "boolean" },
+        "list_or_table_allowed": { "type": "boolean" }
+      }
+    },
+    "appendixSection": {
+      "type": "object", "additionalProperties": false,
+      "required": ["section_id", "operational_kinds", "consumer_section_ids"],
+      "properties": {
+        "section_id": { "$ref": "#/$defs/id" },
+        "operational_kinds": { "type": "array", "minItems": 1, "items": { "enum": ["time", "transport", "booking", "lodging", "luggage", "walking_load", "price_boundary", "risk_trigger", "fallback", "source_recheck"] }, "uniqueItems": true },
+        "consumer_section_ids": { "type": "array", "items": { "$ref": "#/$defs/id" }, "uniqueItems": true }
+      }
+    },
+    "localCandidate": {
+      "type": "object", "additionalProperties": false,
+      "required": ["candidate_id", "canonical_name", "local_name", "accepted_aliases", "category", "intended_section_ids"],
+      "properties": {
+        "candidate_id": { "$ref": "#/$defs/id" },
+        "canonical_name": { "type": "string", "minLength": 1 },
+        "local_name": { "type": "string" },
+        "accepted_aliases": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+        "category": { "type": "string", "minLength": 1 },
+        "intended_section_ids": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/id" }, "uniqueItems": true }
+      }
+    },
+    "riskFallback": {
+      "type": "object", "additionalProperties": false,
+      "required": ["binding_id", "risk_id", "affected_section_ids", "trigger", "affected_travelers", "mitigation", "fallback_id", "reachable_from_route_node_ids", "evidence_mode"],
+      "properties": {
+        "binding_id": { "$ref": "#/$defs/id" },
+        "risk_id": { "$ref": "#/$defs/id" },
+        "affected_section_ids": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/id" }, "uniqueItems": true },
+        "trigger": { "type": "string", "minLength": 1 },
+        "affected_travelers": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+        "mitigation": { "type": "string", "minLength": 1 },
+        "fallback_id": { "$ref": "#/$defs/id" },
+        "reachable_from_route_node_ids": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/id" }, "uniqueItems": true },
+        "evidence_mode": { "enum": ["current", "historical", "scenario", "recheck_required"] }
+      }
+    }
+  }
+}

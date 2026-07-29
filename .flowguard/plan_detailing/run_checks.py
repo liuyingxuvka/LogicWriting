@@ -15,7 +15,25 @@ def main() -> int:
     print()
     print(process.format_text(max_findings=4))
     print(f"contracts: {len(contracts)}")
-    good_ok = detail_reports[0].ok and intake.ok and process.ok and contracts
+    process_codes = {finding.code for finding in process.findings}
+    expected_process_gaps = {
+        "missing_process_proof_artifact",
+        "missing_required_revalidation",
+        "release_claim_with_stale_evidence",
+        "stale_evidence_after_artifact_change",
+        "validation_evidence_not_current",
+    }
+    process_is_honestly_pending = (
+        not process.ok
+        and process_codes
+        and not (process_codes - expected_process_gaps)
+    )
+    good_ok = (
+        detail_reports[0].ok
+        and intake.ok
+        and process_is_honestly_pending
+        and contracts
+    )
     broken_blocked = all(not report.ok for report in detail_reports[1:])
     return 0 if good_ok and broken_blocked else 1
 

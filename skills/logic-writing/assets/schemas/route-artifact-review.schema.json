@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/liuyingxuvka/LogicWriting/schemas/route-artifact-review.schema.json",
+  "title": "Logic Writing route-native actual-artifact review v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "review_id", "final_owner", "route_profile",
+    "route_extension_fingerprint", "artifact_map_fingerprint", "artifact_fingerprint",
+    "dimensions", "findings", "required_repairs", "status", "reviewed_at", "review_fingerprint"
+  ],
+  "properties": {
+    "schema_version": { "const": "2.0" },
+    "review_id": { "$ref": "#/$defs/id" },
+    "final_owner": { "enum": ["investigation", "academic-writing", "fiction-writing", "travel-guide"] },
+    "route_profile": { "type": "string", "minLength": 1 },
+    "route_extension_fingerprint": { "$ref": "#/$defs/fp" },
+    "artifact_map_fingerprint": { "$ref": "#/$defs/fp" },
+    "artifact_fingerprint": { "$ref": "#/$defs/fp" },
+    "dimensions": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/dimension" }, "uniqueItems": true },
+    "findings": { "type": "array", "items": { "$ref": "#/$defs/finding" }, "uniqueItems": true },
+    "required_repairs": { "type": "array", "items": { "$ref": "#/$defs/id" }, "uniqueItems": true },
+    "status": { "enum": ["passed", "repair", "blocked", "stale"] },
+    "reviewed_at": { "type": "string", "format": "date-time" },
+    "review_fingerprint": { "$ref": "#/$defs/fp" }
+  },
+  "$defs": {
+    "id": { "type": "string", "minLength": 2, "maxLength": 160, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$" },
+    "fp": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "span": {
+      "type": "object", "additionalProperties": false,
+      "required": ["artifact_unit_id", "locator", "excerpt", "excerpt_fingerprint"],
+      "properties": {
+        "artifact_unit_id": { "$ref": "#/$defs/id" },
+        "locator": { "type": "string", "minLength": 1 },
+        "excerpt": { "type": "string", "minLength": 1 },
+        "excerpt_fingerprint": { "$ref": "#/$defs/fp" }
+      }
+    },
+    "dimension": {
+      "type": "object", "additionalProperties": false,
+      "required": ["dimension_id", "status", "reason", "evidence"],
+      "properties": {
+        "dimension_id": { "$ref": "#/$defs/id" },
+        "status": { "enum": ["passed", "repair", "blocked"] },
+        "reason": { "type": "string", "minLength": 1 },
+        "evidence": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/span" }, "uniqueItems": true }
+      }
+    },
+    "finding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["finding_id", "dimension_id", "severity", "observation", "reader_effect", "evidence", "repair_owner", "repair_target_unit_ids", "preserve_refs"],
+      "properties": {
+        "finding_id": { "$ref": "#/$defs/id" },
+        "dimension_id": { "$ref": "#/$defs/id" },
+        "severity": { "enum": ["blocking", "repair"] },
+        "observation": { "type": "string", "minLength": 1 },
+        "reader_effect": { "type": "string", "minLength": 1 },
+        "evidence": { "$ref": "#/$defs/span" },
+        "repair_owner": { "enum": ["investigation", "academic-writing", "fiction-writing", "travel-guide", "sourceguard", "logicguard", "traceguard", "worldguard", "human"] },
+        "repair_target_unit_ids": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/id" }, "uniqueItems": true },
+        "preserve_refs": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true }
+      }
+    }
+  }
+}

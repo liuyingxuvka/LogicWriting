@@ -10,6 +10,34 @@ line follows semantic versioning.
 
 - Hosted release metadata is intentionally not asserted by this source file.
 
+## [3.0.0]
+
+### Added
+
+- Immutable `ReaderIntent`, whole-artifact `CompositionPlan`, exact-byte
+  `ArtifactMap`, and route-specific composition contracts for investigation,
+  academic writing, fiction, and travel.
+- Three separate actual-artifact quality owners: deterministic ReaderAudit,
+  route-semantic span review, and independent ReaderJudgment.
+- Typed repair requests and results with preservation duties, defect lineage,
+  byte-level progress, and real no-progress termination.
+- A frozen twelve-case Chinese/English reader benchmark with three cases per
+  route.
+
+### Changed
+
+- Replaced finding-order and unit-card drafting with integrated whole-artifact
+  composition and complete plan-to-byte coverage.
+- Made revision provenance conditional on artifact mode rather than academic
+  ownership.
+- Upgraded managed reader receipts and closure to schema version 2.0.
+
+### Removed
+
+- Removed v1 reader-contract authority, caller quality shortcuts, repeated
+  closure attempts as progress, and all normal-runtime compatibility, alias,
+  converter, dual-emission, and fallback paths.
+
 ## [2.1.3]
 
 ### Changed

@@ -18,41 +18,61 @@ from schema_validation import (
     validate_schema,
 )
 from select_route import select_route
+from _common import fingerprint
+from tests.v2_support import make_intent
 
 
 EXPECTED = {
     "adapter-request.schema.json",
     "adapter-result.schema.json",
+    "academic-composition.schema.json",
+    "artifact-map.schema.json",
     "claim-support.schema.json",
     "closure.schema.json",
+    "composition-plan.schema.json",
+    "fiction-composition.schema.json",
+    "investigation-composition.schema.json",
     "obligation-manifest.schema.json",
     "reader-audit.schema.json",
     "reader-brief.schema.json",
+    "reader-intent.schema.json",
     "reader-judgment.schema.json",
+    "reader-repair-request.schema.json",
+    "reader-repair-result.schema.json",
     "evidence-receipt.schema.json",
     "research-packet.schema.json",
     "revision-provenance.schema.json",
     "route-decision.schema.json",
+    "route-artifact-review.schema.json",
     "shared-writing-contract.schema.json",
     "source-registry.schema.json",
     "source-unit-manifest.schema.json",
+    "travel-composition.schema.json",
+    "writing-request.schema.json",
 }
 
 
 def _decision() -> dict:
+    intent = make_intent()
+    deliverable = {
+        "kind": "research_report",
+        "description": "A bounded report",
+        "acceptance_criteria": [],
+    }
+    deliverable["fingerprint"] = fingerprint(deliverable)
+    request = {
+        "schema_version": "2.0",
+        "request_id": "request:schema-runtime",
+        "terminal_deliverable": deliverable,
+        "reader_intent": intent,
+    }
+    request["request_fingerprint"] = fingerprint(request)
     return select_route(
         {
-            "request_id": "request:schema-runtime",
+            "writing_request": request,
             "decision_id": "decision:schema-runtime",
             "decided_at": "2026-07-14T12:00:00Z",
-            "terminal_deliverable": {
-                "kind": "research_report",
-                "description": "A bounded report",
-                "acceptance_criteria": [],
-            },
-            "scope_class": "substantive",
             "substantial_research_required": False,
-            "constraints": {},
             "material_assumptions": [],
         }
     )
@@ -177,7 +197,7 @@ def test_runtime_does_not_depend_on_site_packages():
     )
 
     assert completed.returncode == 0, completed.stderr
-    assert completed.stdout.strip() == "15"
+    assert completed.stdout.strip() == "26"
 
 
 def test_schema_runtime_source_has_no_secondary_validator_import():

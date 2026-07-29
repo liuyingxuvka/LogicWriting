@@ -23,6 +23,7 @@ EVIDENCE_PENDING_CODES = {
     "final_receipt_run_id_missing",
     "final_receipt_terminal_status_missing",
     "final_receipt_verifier_version_missing",
+    "leaf_matrix_cell_evidence_missing",
     "release_suite_not_current",
     "required_inventory_item_owner_missing",
     "stale_test_evidence",

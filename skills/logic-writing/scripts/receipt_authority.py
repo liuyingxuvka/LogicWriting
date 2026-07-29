@@ -31,15 +31,18 @@ from schema_validation import assert_schema_valid
 
 AUTHORITY_ENV = "LOGIC_WRITING_RECEIPT_ROOT"
 INDEX_VERSION = "1.0"
-BUILDER_VERSION = "1.0"
+BUILDER_VERSION = "2.0"
 MANAGED_BUILDERS = {
-    "logic-writing.adapter-result.v1",
-    "logic-writing.source-unit-manifest.v1",
-    "logic-writing.revision-provenance.v1",
-    "logic-writing.reader-brief.v1",
-    "logic-writing.reader-deterministic.v1",
-    "logic-writing.reader-judgment.v1",
-    "logic-writing.final-closure.v1",
+    "logic-writing.adapter-result.v2",
+    "logic-writing.source-unit-manifest.v2",
+    "logic-writing.revision-provenance.v2",
+    "logic-writing.reader-brief.v2",
+    "logic-writing.shared-writing.v2",
+    "logic-writing.reader-deterministic.v2",
+    "logic-writing.route-artifact-review.v2",
+    "logic-writing.reader-judgment.v2",
+    "logic-writing.reader-repair.v2",
+    "logic-writing.final-closure.v2",
 }
 RECEIPT_BASE_FIELDS = {
     "schema_version",
@@ -336,8 +339,8 @@ def validate_receipt(value: Any) -> dict[str, Any]:
     missing = sorted(RECEIPT_FIELDS - set(receipt))
     if missing:
         raise ValidationError(f"receipt is missing required fields: {', '.join(missing)}")
-    if require_string(receipt, "schema_version") != "1.0":
-        raise ValidationError("schema_version must be 1.0")
+    if require_string(receipt, "schema_version") != "2.0":
+        raise ValidationError("schema_version must be 2.0")
     for field in (
         "producer_skill",
         "semantic_owner_id",
@@ -656,8 +659,8 @@ def _commit_managed_receipt_unlocked(
     if builder_id not in MANAGED_BUILDERS:
         raise ValidationError(f"unmanaged receipt builder: {builder_id}")
     source_fingerprint = _require_sha256(source_fingerprint, "source_fingerprint")
-    if base.get("schema_version") != "1.0":
-        raise ValidationError("schema_version must be 1.0")
+    if base.get("schema_version") != "2.0":
+        raise ValidationError("schema_version must be 2.0")
     for field in (
         "producer_skill",
         "semantic_owner_id",
@@ -685,7 +688,7 @@ def _commit_managed_receipt_unlocked(
         _require_sha256(dependency, f"dependency_receipt_fingerprints[{index_number}]")
     base["input_fingerprints"] = _fingerprint_map(base["input_fingerprints"], "input_fingerprints")
     base["output_fingerprints"] = _fingerprint_map(base["output_fingerprints"], "output_fingerprints")
-    if builder_id == "logic-writing.adapter-result.v1" and base["producer_skill"] not in {
+    if builder_id == "logic-writing.adapter-result.v2" and base["producer_skill"] not in {
         "sourceguard",
         "logicguard",
         "traceguard",
@@ -695,32 +698,47 @@ def _commit_managed_receipt_unlocked(
     }:
         raise ValidationError("adapter-result builder requires a native specialist producer")
     builder_contracts = {
-        "logic-writing.revision-provenance.v1": (
+        "logic-writing.revision-provenance.v2": (
             "logic-writing",
             "validate-revision-provenance",
             "revision_provenance",
         ),
-        "logic-writing.source-unit-manifest.v1": (
+        "logic-writing.source-unit-manifest.v2": (
             "logic-writing",
             "build-source-unit-manifest",
             "revision_provenance",
         ),
-        "logic-writing.reader-brief.v1": (
+        "logic-writing.reader-brief.v2": (
             "logic-writing",
             "build-reader-brief",
             "reader_brief",
         ),
-        "logic-writing.reader-deterministic.v1": (
+        "logic-writing.shared-writing.v2": (
+            "logic-writing",
+            "validate-shared-writing",
+            "shared_writing",
+        ),
+        "logic-writing.reader-deterministic.v2": (
             "logic-writing",
             "audit-reader-output",
             "reader_deterministic",
         ),
-        "logic-writing.reader-judgment.v1": (
+        "logic-writing.route-artifact-review.v2": (
+            "logic-writing",
+            "review-route-artifact",
+            "reader_route_audit",
+        ),
+        "logic-writing.reader-judgment.v2": (
             "logic-writing",
             "judge-reader-output",
             "reader_judgment",
         ),
-        "logic-writing.final-closure.v1": (
+        "logic-writing.reader-repair.v2": (
+            "logic-writing",
+            "record-reader-repair",
+            "reader_repair",
+        ),
+        "logic-writing.final-closure.v2": (
             "logic-writing",
             "derive-final-closure",
             "final_closure",

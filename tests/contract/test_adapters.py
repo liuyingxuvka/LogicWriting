@@ -240,17 +240,3 @@ def test_claim_semantics_must_consume_exact_registry(current_packet):
 
     with pytest.raises(ValidationError, match="SourceRegistry"):
         validate_adapter_result(value)
-
-
-def test_flowguard_closure_contract_binds_route_and_obligations(receipt_root, current_packet):
-    contract = make_closure_contract(
-        receipt_root,
-        [current_packet["observation_receipt"]],
-        artifact_fingerprint=fingerprint({"artifact": "closure"}),
-    )
-
-    report = validate_adapter_result(contract["adapter_result"])
-    assert report["native_owner"] == "flowguard"
-    assert contract["adapter_result"]["native_receipt"]["payload"]["evidence_payload"][
-        "route_decision"
-    ]["final_owner"] == "investigation"

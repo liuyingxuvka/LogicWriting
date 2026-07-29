@@ -1,17 +1,25 @@
-# ReaderBrief
+# ReaderBrief v2
 
-The ReaderBrief is the clean-room contract for final prose. It contains:
+ReaderBrief is the sanitized handoff from content authority to the selected
+final writer. It preserves the exact `ReaderIntent`, terminal deliverable,
+content boundaries, whole-artifact `CompositionPlan`, selected route extension,
+native receipt identities, and content-authority fingerprints.
 
-- reader question, audience, genre, and purpose;
-- necessary concepts and definitions in introduction order;
-- principal findings or argument;
-- evidence anchors and source roles;
-- alternatives, uncertainty, and material limitations;
-- old-to-new information sequence;
-- required citations and their supported wording;
-- allowed wording and prohibited overclaims.
+`ReaderIntent` is not a topic summary. It keeps language, audience, purpose,
+artifact mode and format, requested or existing structure, locked headings,
+list/table policy, style, extent, citations, required and forbidden content,
+reference examples, and unresolved choices. Material conflicts stop drafting.
 
-It excludes Guard names, route and model ids, raw ledgers, snake_case status
-fields, tool instructions, and agent work plans. Translate a provider gap into
-the factual limitation the reader needs to understand; keep the raw status in
-internal evidence.
+Content units carry safe meaning, evidence anchors, alternatives, limitations,
+citation duties, exact-preservation duties, and prohibited overclaims. These
+fields control what may be said; they do not dictate paragraph order or provide
+approved sentences to copy.
+
+The `CompositionPlan` controls how the whole artifact works: central question
+and throughline, opening and conclusion jobs, hierarchy, reader-state changes,
+unit relationships, downstream consumers, content and limitation placement,
+presentation mode, and target extent. Every required outline row and content
+unit must be planned or explicitly dispositioned.
+
+The brief excludes Guard names, raw ledgers, agent instructions, and status
+prose from the reader artifact. Keep those in receipts and audit output.

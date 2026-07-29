@@ -97,8 +97,8 @@
         "similarity_relation_ids": [],
         "source_refs": [],
         "source_surface_ids": [
-          "surface:openspec",
-          "surface:skill-entry"
+          "surface:openspec:c01-select-one-final-owner",
+          "surface:skill-entry:c01-select-one-final-owner"
         ],
         "state_writes": [
           "route_owner",
@@ -209,8 +209,8 @@
         "similarity_relation_ids": [],
         "source_refs": [],
         "source_surface_ids": [
-          "surface:openspec",
-          "surface:skill-entry"
+          "surface:openspec:c02-preserve-specialist-authority",
+          "surface:skill-entry:c02-preserve-specialist-authority"
         ],
         "state_writes": [
           "adapter_receipts",
@@ -319,8 +319,8 @@
         "similarity_relation_ids": [],
         "source_refs": [],
         "source_surface_ids": [
-          "surface:openspec",
-          "surface:skill-entry"
+          "surface:openspec:c03-build-current-research-packet",
+          "surface:skill-entry:c03-build-current-research-packet"
         ],
         "state_writes": [
           "packet_fingerprint",
@@ -337,7 +337,12 @@
         "actor_kind": "ai_agent",
         "behavior_plane": "agent_operation",
         "business_intent_id": "intent:build-reader-brief",
-        "child_model_ids": [],
+        "child_model_ids": [
+          "model:investigation-route",
+          "model:academic-route",
+          "model:fiction-route",
+          "model:travel-route"
+        ],
         "commitment_id": "C04:build-reader-brief",
         "commitment_kind": "workflow",
         "evidence": {
@@ -361,12 +366,12 @@
           "test_mesh_state": "shard_current"
         },
         "excluded_behavior_ids": [],
-        "expected_result": "a route-neutral ReaderBrief base plus the selected route extension carries audience, meaning, reader state, contribution sequence, evidence or canon boundaries, limitations, and wording constraints",
-        "expected_terminal": "current ReaderBrief or visible block",
+        "expected_result": "one immutable ReaderIntent, route-authored whole-artifact CompositionPlan, content-boundary envelope, and exactly one selected route extension are validated without projecting allowed prose wording",
+        "expected_terminal": "current ReaderIntent and ReaderBrief v2 or visible material intent/composition conflict",
         "external_differences": [],
-        "failure_boundary": "raw ledgers and internal Guard language never substitute for a reader brief",
+        "failure_boundary": "route defaults, finding order, internal Guard language, allowed-wording lists, and sibling extensions never replace explicit reader intent",
         "in_scope": true,
-        "label": "translate evidence into a ReaderBrief",
+        "label": "freeze ReaderIntent and build the current ReaderBrief",
         "lookup_binding": {
           "error_signatures": [],
           "metadata": {},
@@ -409,7 +414,7 @@
         },
         "preconditions": [],
         "primary_owner_model_id": "model:reader-artifact",
-        "rationale": "the two-room boundary separates diagnostic machinery from reader-facing explanation",
+        "rationale": "content authority and reader-facing composition are distinct contracts; user structure remains authoritative",
         "relations": [
           {
             "metadata": {},
@@ -425,17 +430,22 @@
         "similarity_relation_ids": [],
         "source_refs": [],
         "source_surface_ids": [
-          "surface:openspec",
-          "surface:skill-entry"
+          "surface:openspec:c04-build-reader-brief",
+          "surface:skill-entry:c04-build-reader-brief"
         ],
         "state_writes": [
+          "reader_intent_fingerprint",
+          "reader_intent_status",
+          "composition_plan_fingerprint",
+          "composition_plan_status",
+          "route_extension_fingerprint",
           "brief_fingerprint",
           "brief_status"
         ],
         "supporting_model_ids": [],
         "surface_delegation_only": false,
         "trigger": "the final route is ready to plan reader-facing prose",
-        "validation_boundary": "brief sanitizer retains evidence boundaries while excluding internal instructions",
+        "validation_boundary": "strict current schemas, explicit outline/content/limitation coverage, and exact fingerprint binding",
         "variant_of_business_intent_id": ""
       },
       {
@@ -443,7 +453,12 @@
         "actor_kind": "ai_agent",
         "behavior_plane": "agent_operation",
         "business_intent_id": "intent:audit-actual-artifact",
-        "child_model_ids": [],
+        "child_model_ids": [
+          "model:investigation-route",
+          "model:academic-route",
+          "model:fiction-route",
+          "model:travel-route"
+        ],
         "commitment_id": "C05:audit-actual-artifact",
         "commitment_kind": "workflow",
         "evidence": {
@@ -467,10 +482,10 @@
           "test_mesh_state": "shard_current"
         },
         "excluded_behavior_ids": [],
-        "expected_result": "deterministic and separately judged evidence inspect the actual current artifact for contribution, reader-state handoff, explanation pressure, register ownership, variation, model-artifact binding, and route-native semantics",
-        "expected_terminal": "current pass, repair request, or visible not-run/degraded state",
+        "expected_result": "deterministic current-byte checks, selected-route semantic review, and independent ReaderJudgment inspect exact ArtifactMap units and produce typed repairs for every non-pass",
+        "expected_terminal": "current three-owner pass, typed RepairRequest, or visible two-result no-progress block",
         "external_differences": [],
-        "failure_boundary": "metadata, outlines, or audits for an older fingerprint cannot prove prose quality",
+        "failure_boundary": "metadata, connector words, caller-authored scores, self-approval, stale spans, and repeated closure derivation cannot prove prose quality or repair progress",
         "in_scope": true,
         "label": "audit the actual reader artifact",
         "lookup_binding": {
@@ -516,7 +531,7 @@
         },
         "preconditions": [],
         "primary_owner_model_id": "model:reader-artifact",
-        "rationale": "quality claims must be bound to what the user receives",
+        "rationale": "quality claims bind the exact artifact bytes and every non-pass returns to the selected final owner",
         "relations": [
           {
             "metadata": {},
@@ -532,18 +547,23 @@
         "similarity_relation_ids": [],
         "source_refs": [],
         "source_surface_ids": [
-          "surface:openspec",
-          "surface:skill-entry"
+          "surface:openspec:c05-audit-actual-artifact",
+          "surface:skill-entry:c05-audit-actual-artifact"
         ],
         "state_writes": [
-          "audit_artifact_fingerprint",
+          "artifact_map_fingerprint",
           "deterministic_audit_status",
-          "judgment_status"
+          "route_audit_status",
+          "judgment_status",
+          "judgment_artifact_fingerprint",
+          "repair_request_fingerprint",
+          "repair_attempt_count",
+          "consecutive_no_progress"
         ],
         "supporting_model_ids": [],
         "surface_delegation_only": false,
         "trigger": "reader-facing text or document is materially complete",
-        "validation_boundary": "actual text fingerprint, deterministic diagnostics, and independent judgment receipt",
+        "validation_boundary": "current ArtifactMap locators, separate deterministic and semantic authority, independent producer/judge identity, and real RepairResult lineage",
         "variant_of_business_intent_id": ""
       },
       {
@@ -645,8 +665,8 @@
         "similarity_relation_ids": [],
         "source_refs": [],
         "source_surface_ids": [
-          "surface:openspec",
-          "surface:skill-entry"
+          "surface:openspec:c06-issue-final-artifact-closure",
+          "surface:skill-entry:c06-issue-final-artifact-closure"
         ],
         "state_writes": [
           "revision_provenance_status",
@@ -759,8 +779,8 @@
         "similarity_relation_ids": [],
         "source_refs": [],
         "source_surface_ids": [
-          "surface:openspec",
-          "surface:release-process"
+          "surface:openspec:c07-freeze-one-validation-owner",
+          "surface:release-process:c07-freeze-one-validation-owner"
         ],
         "state_writes": [
           "validation_fingerprint",
@@ -867,8 +887,8 @@
         "similarity_relation_ids": [],
         "source_refs": [],
         "source_surface_ids": [
-          "surface:openspec",
-          "surface:release-process"
+          "surface:openspec:c08-activate-recoverable-install",
+          "surface:release-process:c08-activate-recoverable-install"
         ],
         "state_writes": [
           "stage_fingerprint",
@@ -976,8 +996,8 @@
         "similarity_relation_ids": [],
         "source_refs": [],
         "source_surface_ids": [
-          "surface:openspec",
-          "surface:release-process"
+          "surface:openspec:c09-project-one-global-route",
+          "surface:release-process:c09-project-one-global-route"
         ],
         "state_writes": [
           "global_route_status"
@@ -1087,8 +1107,8 @@
         "similarity_relation_ids": [],
         "source_refs": [],
         "source_surface_ids": [
-          "surface:openspec",
-          "surface:release-process"
+          "surface:openspec:c10-publish-logic-writing-release",
+          "surface:release-process:c10-publish-logic-writing-release"
         ],
         "state_writes": [
           "release_status",
@@ -1204,8 +1224,8 @@
         "similarity_relation_ids": [],
         "source_refs": [],
         "source_surface_ids": [
-          "surface:openspec",
-          "surface:release-process"
+          "surface:openspec:c11-retire-predecessors-safely",
+          "surface:release-process:c11-retire-predecessors-safely"
         ],
         "state_writes": [
           "retired_local",
@@ -1325,8 +1345,8 @@
         "similarity_relation_ids": [],
         "source_refs": [],
         "source_surface_ids": [
-          "surface:openspec",
-          "surface:skill-entry"
+          "surface:openspec:c12-produce-fiction-artifact",
+          "surface:skill-entry:c12-produce-fiction-artifact"
         ],
         "state_writes": [
           "fiction_depth",
@@ -1445,8 +1465,8 @@
         "similarity_relation_ids": [],
         "source_refs": [],
         "source_surface_ids": [
-          "surface:openspec",
-          "surface:skill-entry"
+          "surface:openspec:c13-produce-travel-guide",
+          "surface:skill-entry:c13-produce-travel-guide"
         ],
         "state_writes": [
           "allowed_claim_level",
@@ -1464,7 +1484,12 @@
         "actor_kind": "ai_agent",
         "behavior_plane": "agent_operation",
         "business_intent_id": "intent:bind-model-to-reader-artifact",
-        "child_model_ids": [],
+        "child_model_ids": [
+          "model:investigation-route",
+          "model:academic-route",
+          "model:fiction-route",
+          "model:travel-route"
+        ],
         "commitment_id": "C14:bind-model-to-reader-artifact",
         "commitment_kind": "workflow",
         "evidence": {
@@ -1488,10 +1513,10 @@
           "test_mesh_state": "shard_current"
         },
         "excluded_behavior_ids": [],
-        "expected_result": "important planned rows and reader-facing units bind to the same current artifact identity with concrete reader-state handoffs and route-specific extensions",
-        "expected_terminal": "current binding and reverse audit or visible drift",
+        "expected_result": "every required planned unit, content unit, and route model row binds to exact current ArtifactMap unit ids, locators, and span fingerprints through SharedWriting v2",
+        "expected_terminal": "complete current plan-to-byte binding or visible missing, duplicate, unknown, or stale coverage",
         "external_differences": [],
-        "failure_boundary": "generic handoffs, unbound prose, unrealized rows, duplicate binding without changed effect, and stale artifact hashes cannot pass",
+        "failure_boundary": "labels, arbitrary copied spans, empty coverage arrays, stale hashes, and duplicate bindings without changed effect cannot pass",
         "in_scope": true,
         "label": "bind model work to the actual reader artifact",
         "lookup_binding": {
@@ -1539,7 +1564,7 @@
         },
         "preconditions": [],
         "primary_owner_model_id": "model:reader-artifact",
-        "rationale": "shared model-to-reader evidence improves every route without transferring route-native semantics",
+        "rationale": "ArtifactMap owns mechanical parsing and SharedWriting owns intentional plan-to-byte realization without claiming semantic quality",
         "relations": [
           {
             "metadata": {},
@@ -1561,22 +1586,261 @@
         "similarity_relation_ids": [],
         "source_refs": [],
         "source_surface_ids": [
-          "surface:openspec",
-          "surface:skill-entry"
+          "surface:openspec:c14-bind-model-to-reader-artifact",
+          "surface:skill-entry:c14-bind-model-to-reader-artifact"
         ],
         "state_writes": [
-          "binding_status",
-          "reader_state_status",
-          "artifact_identity"
+          "artifact_map_fingerprint",
+          "artifact_map_status",
+          "shared_binding_fingerprint",
+          "shared_binding_status",
+          "shared_binding_artifact_fingerprint"
         ],
         "supporting_model_ids": [],
         "surface_delegation_only": false,
         "trigger": "a selected route projects model work into a reader-facing artifact",
-        "validation_boundary": "shared writing regression, actual artifact fingerprint, and route-specific reverse audit",
+        "validation_boundary": "complete plan/model/content coverage and exact current artifact span identity",
+        "variant_of_business_intent_id": ""
+      },
+      {
+        "actor": "investigation route",
+        "actor_kind": "ai_agent",
+        "behavior_plane": "agent_operation",
+        "business_intent_id": "intent:produce-investigation-report",
+        "child_model_ids": [],
+        "commitment_id": "C15:produce-investigation-report",
+        "commitment_kind": "workflow",
+        "evidence": {
+          "code_contract_ids": [
+            "contract:investigation-composition"
+          ],
+          "coverage_case_ids": [],
+          "coverage_receipt_ids": [],
+          "coverage_shard_ids": [],
+          "current": false,
+          "evidence_state": "missing",
+          "metadata": {},
+          "model_obligation_ids": [
+            "obligation:investigation-actual-artifact"
+          ],
+          "proof_artifact_ids": [],
+          "risk_gate_ids": [],
+          "test_evidence_ids": [
+            "test:investigation-route"
+          ],
+          "test_mesh_state": "shard_current"
+        },
+        "excluded_behavior_ids": [],
+        "expected_result": "a bounded answer, evidence strength, live alternatives, discriminators, limitations, and recheck conditions form one reader-facing report whose semantic claims bind actual spans",
+        "expected_terminal": "current route-native report review and shared reader-chain closure or typed repair",
+        "external_differences": [],
+        "failure_boundary": "a complete ResearchPacket, evidence rows, or model order cannot substitute for a coherent current report",
+        "in_scope": true,
+        "label": "compose and review an investigation report",
+        "lookup_binding": {
+          "error_signatures": [],
+          "metadata": {},
+          "path_patterns": [
+            "skills/logic-writing/references/routes/investigation.md",
+            "skills/logic-writing/routes/investigation/**"
+          ],
+          "task_terms": [
+            "investigation report",
+            "decision analysis",
+            "evidence audit",
+            "case trace"
+          ],
+          "tool_ids": [],
+          "workflow_families": [
+            "investigation_route"
+          ]
+        },
+        "metadata": {},
+        "miss_origin_state": "no_miss",
+        "model_sync_state": "owner_model_current",
+        "owner": "investigation route",
+        "path_authority": {
+          "behavior_commitment_id": "",
+          "business_intent": "",
+          "business_intent_id": "",
+          "evidence_current": false,
+          "evidence_refs": [],
+          "fallback_candidate_ids": [],
+          "metadata": {},
+          "path_sensitive": false,
+          "ppa_confidence": "",
+          "ppa_coverage_receipt_ids": [],
+          "ppa_coverage_shard_ids": [],
+          "ppa_decision": "",
+          "ppa_ok": null,
+          "ppa_report_id": "",
+          "ppa_risk_gate_ids": [],
+          "primary_path_id": "",
+          "proof_artifact_ids": [],
+          "runtime_observation_ids": [],
+          "scoped_out_reason": ""
+        },
+        "preconditions": [],
+        "primary_owner_model_id": "model:investigation-route",
+        "rationale": "investigation needs a route-native document grammar and cannot inherit the academic template",
+        "relations": [
+          {
+            "metadata": {},
+            "rationale": "investigation composition consumes the current reader contract",
+            "relation_type": "depends_on",
+            "target_commitment_id": "C04:build-reader-brief"
+          },
+          {
+            "metadata": {},
+            "rationale": "investigation semantics bind current report spans",
+            "relation_type": "depends_on",
+            "target_commitment_id": "C14:bind-model-to-reader-artifact"
+          }
+        ],
+        "replacement_state": "active",
+        "scoped_out_reason": "",
+        "side_effects": [],
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_refs": [],
+        "source_surface_ids": [
+          "surface:openspec:c15-produce-investigation-report",
+          "surface:skill-entry:c15-produce-investigation-report"
+        ],
+        "state_writes": [
+          "investigation_profile",
+          "investigation_route_audit_status",
+          "artifact_fingerprint"
+        ],
+        "supporting_model_ids": [
+          "model:reader-artifact"
+        ],
+        "surface_delegation_only": false,
+        "trigger": "the terminal deliverable is an explanatory report, decision analysis, evidence audit, case trace, or user-defined investigation artifact",
+        "validation_boundary": "profile-aware composition and current artifact-bound semantic review",
+        "variant_of_business_intent_id": ""
+      },
+      {
+        "actor": "academic route",
+        "actor_kind": "ai_agent",
+        "behavior_plane": "agent_operation",
+        "business_intent_id": "intent:produce-academic-artifact",
+        "child_model_ids": [],
+        "commitment_id": "C16:produce-academic-artifact",
+        "commitment_kind": "workflow",
+        "evidence": {
+          "code_contract_ids": [
+            "contract:academic-composition"
+          ],
+          "coverage_case_ids": [],
+          "coverage_receipt_ids": [],
+          "coverage_shard_ids": [],
+          "current": false,
+          "evidence_state": "missing",
+          "metadata": {},
+          "model_obligation_ids": [
+            "obligation:academic-actual-artifact"
+          ],
+          "proof_artifact_ids": [],
+          "risk_gate_ids": [],
+          "test_evidence_ids": [
+            "test:academic-route"
+          ],
+          "test_mesh_state": "shard_current"
+        },
+        "excluded_behavior_ids": [],
+        "expected_result": "a hierarchical artifact makes the research-question contribution, claim/warrant/evidence progression, qualification, figure/table job, and conditional revision provenance recoverable from actual spans",
+        "expected_terminal": "current route-native academic review, applicable provenance, and shared reader-chain closure or typed repair",
+        "external_differences": [],
+        "failure_boundary": "author lists, fluent orphan sections, unused figures, caller pass labels, and fabricated create-new provenance cannot pass",
+        "in_scope": true,
+        "label": "compose and review an academic artifact",
+        "lookup_binding": {
+          "error_signatures": [],
+          "metadata": {},
+          "path_patterns": [
+            "skills/logic-writing/references/routes/academic-writing.md",
+            "skills/logic-writing/routes/academic/**"
+          ],
+          "task_terms": [
+            "academic writing",
+            "literature synthesis",
+            "research proposal",
+            "paper revision"
+          ],
+          "tool_ids": [],
+          "workflow_families": [
+            "academic_route"
+          ]
+        },
+        "metadata": {},
+        "miss_origin_state": "no_miss",
+        "model_sync_state": "owner_model_current",
+        "owner": "academic route",
+        "path_authority": {
+          "behavior_commitment_id": "",
+          "business_intent": "",
+          "business_intent_id": "",
+          "evidence_current": false,
+          "evidence_refs": [],
+          "fallback_candidate_ids": [],
+          "metadata": {},
+          "path_sensitive": false,
+          "ppa_confidence": "",
+          "ppa_coverage_receipt_ids": [],
+          "ppa_coverage_shard_ids": [],
+          "ppa_decision": "",
+          "ppa_ok": null,
+          "ppa_report_id": "",
+          "ppa_risk_gate_ids": [],
+          "primary_path_id": "",
+          "proof_artifact_ids": [],
+          "runtime_observation_ids": [],
+          "scoped_out_reason": ""
+        },
+        "preconditions": [],
+        "primary_owner_model_id": "model:academic-route",
+        "rationale": "academic work needs route-native hierarchy and contribution checks without becoming the shared writer",
+        "relations": [
+          {
+            "metadata": {},
+            "rationale": "academic hierarchy consumes the current reader contract",
+            "relation_type": "depends_on",
+            "target_commitment_id": "C04:build-reader-brief"
+          },
+          {
+            "metadata": {},
+            "rationale": "academic contributions bind current artifact spans",
+            "relation_type": "depends_on",
+            "target_commitment_id": "C14:bind-model-to-reader-artifact"
+          }
+        ],
+        "replacement_state": "active",
+        "scoped_out_reason": "",
+        "side_effects": [],
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_refs": [],
+        "source_surface_ids": [
+          "surface:openspec:c16-produce-academic-artifact",
+          "surface:skill-entry:c16-produce-academic-artifact"
+        ],
+        "state_writes": [
+          "academic_profile",
+          "academic_route_audit_status",
+          "revision_provenance_status",
+          "artifact_fingerprint"
+        ],
+        "supporting_model_ids": [
+          "model:reader-artifact"
+        ],
+        "surface_delegation_only": false,
+        "trigger": "the terminal deliverable is an empirical paper, conceptual argument, literature synthesis, proposal, chapter, section, or user-defined academic artifact",
+        "validation_boundary": "profile-aware hierarchy, actual artifact review, and conditional revision provenance",
         "variant_of_business_intent_id": ""
       }
     ],
-    "current_revision": "logic-writing-model-v3-four-routes",
+    "current_revision": "logic-writing-v3.0.0-reader-pipeline-candidate",
     "expected_business_intent_ids": [
       "intent:select-one-final-owner",
       "intent:preserve-specialist-authority",
@@ -1591,7 +1855,9 @@
       "intent:retire-predecessors-safely",
       "intent:produce-fiction-artifact",
       "intent:produce-travel-guide",
-      "intent:bind-model-to-reader-artifact"
+      "intent:bind-model-to-reader-artifact",
+      "intent:produce-investigation-report",
+      "intent:produce-academic-artifact"
     ],
     "expected_commitment_ids": [
       "C01:select-one-final-owner",
@@ -1607,7 +1873,43 @@
       "C11:retire-predecessors-safely",
       "C12:produce-fiction-artifact",
       "C13:produce-travel-guide",
-      "C14:bind-model-to-reader-artifact"
+      "C14:bind-model-to-reader-artifact",
+      "C15:produce-investigation-report",
+      "C16:produce-academic-artifact"
+    ],
+    "expected_source_surface_ids": [
+      "surface:openspec:c01-select-one-final-owner",
+      "surface:skill-entry:c01-select-one-final-owner",
+      "surface:openspec:c02-preserve-specialist-authority",
+      "surface:skill-entry:c02-preserve-specialist-authority",
+      "surface:openspec:c03-build-current-research-packet",
+      "surface:skill-entry:c03-build-current-research-packet",
+      "surface:openspec:c04-build-reader-brief",
+      "surface:skill-entry:c04-build-reader-brief",
+      "surface:openspec:c05-audit-actual-artifact",
+      "surface:skill-entry:c05-audit-actual-artifact",
+      "surface:openspec:c06-issue-final-artifact-closure",
+      "surface:skill-entry:c06-issue-final-artifact-closure",
+      "surface:openspec:c07-freeze-one-validation-owner",
+      "surface:release-process:c07-freeze-one-validation-owner",
+      "surface:openspec:c08-activate-recoverable-install",
+      "surface:release-process:c08-activate-recoverable-install",
+      "surface:openspec:c09-project-one-global-route",
+      "surface:release-process:c09-project-one-global-route",
+      "surface:openspec:c10-publish-logic-writing-release",
+      "surface:release-process:c10-publish-logic-writing-release",
+      "surface:openspec:c11-retire-predecessors-safely",
+      "surface:release-process:c11-retire-predecessors-safely",
+      "surface:openspec:c12-produce-fiction-artifact",
+      "surface:skill-entry:c12-produce-fiction-artifact",
+      "surface:openspec:c13-produce-travel-guide",
+      "surface:skill-entry:c13-produce-travel-guide",
+      "surface:openspec:c14-bind-model-to-reader-artifact",
+      "surface:skill-entry:c14-bind-model-to-reader-artifact",
+      "surface:openspec:c15-produce-investigation-report",
+      "surface:skill-entry:c15-produce-investigation-report",
+      "surface:openspec:c16-produce-academic-artifact",
+      "surface:skill-entry:c16-produce-academic-artifact"
     ],
     "ledger_id": "logic-writing-behavior-ledger",
     "metadata": {
@@ -1618,129 +1920,1169 @@
     "owner": "Logic Writing maintainer",
     "project_boundary": "Logic Writing agent operation plus validation, install, release, and predecessor retirement",
     "rationale": "register the complete promise set before implementation and update evidence bindings only from current owner receipts",
+    "require_complete_source_inventory": true,
     "require_current_evidence": false,
     "require_risk_gates_for_broad_claim": true,
+    "source_inventory_evidence_ids": [
+      "discovery:logic-writing-source-inventory:v3.0.0-reader-pipeline"
+    ],
+    "source_inventory_fingerprint": "sha256:3eea0ee7ed17597a2a195b9fea9c5517dc8b727014616108f44a52656f862d5a",
+    "source_inventory_revision": "logic-writing-v3.0.0-reader-pipeline-candidate",
     "source_surfaces": [
       {
         "business_intent_ids": [
-          "intent:select-one-final-owner",
-          "intent:preserve-specialist-authority",
-          "intent:build-current-research-packet",
-          "intent:build-reader-brief",
-          "intent:audit-actual-artifact",
-          "intent:issue-final-artifact-closure",
-          "intent:freeze-one-validation-owner",
-          "intent:activate-recoverable-install",
-          "intent:project-one-global-route",
-          "intent:publish-logic-writing-release",
-          "intent:retire-predecessors-safely",
-          "intent:produce-fiction-artifact",
-          "intent:produce-travel-guide",
-          "intent:bind-model-to-reader-artifact"
+          "intent:select-one-final-owner"
         ],
         "commitment_ids": [
-          "C01:select-one-final-owner",
-          "C02:preserve-specialist-authority",
-          "C03:build-current-research-packet",
-          "C04:build-reader-brief",
-          "C05:audit-actual-artifact",
-          "C06:issue-final-artifact-closure",
-          "C07:freeze-one-validation-owner",
-          "C08:activate-recoverable-install",
-          "C09:project-one-global-route",
-          "C10:publish-logic-writing-release",
-          "C11:retire-predecessors-safely",
-          "C12:produce-fiction-artifact",
-          "C13:produce-travel-guide",
-          "C14:bind-model-to-reader-artifact"
+          "C01:select-one-final-owner"
         ],
+        "content_fingerprint": "sha256:6744679d4963fcdf13b9f2dbc56603ac8ae630771c928fa8e8a1c28bde768618",
+        "coverage_disposition": "modeled",
+        "declared_semantics_fingerprint": "sha256:4e532b8894c37002a0365e8ebb38b4704253852e598504dfd73aba7e62146888",
+        "delegated_owner_inventory_id": "",
         "delegates_to_primary_path": false,
+        "delegation_relation_type": "",
+        "discovery_evidence_ids": [
+          "discovery:logic-writing-source-inventory:v3.0.0-reader-pipeline"
+        ],
         "freshness_state": "current",
         "in_scope": true,
-        "label": "OpenSpec capability and verification contract",
+        "inventory_revision": "logic-writing-v3.0.0-reader-pipeline-candidate",
+        "label": "OpenSpec capability and verification contract: select exactly one final owner",
         "metadata": {},
+        "native_artifact_id": "openspec/specs and openspec/verification-contract.yaml#C01:select-one-final-owner",
+        "native_evidence_ids": [],
         "owner": "Logic Writing maintainer",
         "primary_path_id": "",
         "rationale": "the approved change defines behavior before implementation",
         "scoped_out_reason": "",
         "similarity_obligation_ids": [],
         "similarity_relation_ids": [],
+        "source_authority_role": "normative",
         "source_ref": "openspec/specs and openspec/verification-contract.yaml",
-        "surface_id": "surface:openspec",
-        "surface_kind": "openspec",
+        "source_system_id": "logic-writing-repository",
+        "surface_id": "surface:openspec:c01-select-one-final-owner",
+        "surface_kind": "doc",
         "validation_boundary": "strict OpenSpec validation and model-test alignment"
       },
       {
         "business_intent_ids": [
-          "intent:select-one-final-owner",
-          "intent:preserve-specialist-authority",
-          "intent:build-current-research-packet",
-          "intent:build-reader-brief",
-          "intent:audit-actual-artifact",
-          "intent:issue-final-artifact-closure",
-          "intent:produce-fiction-artifact",
-          "intent:produce-travel-guide",
-          "intent:bind-model-to-reader-artifact"
+          "intent:select-one-final-owner"
         ],
         "commitment_ids": [
-          "C01:select-one-final-owner",
-          "C02:preserve-specialist-authority",
-          "C03:build-current-research-packet",
-          "C04:build-reader-brief",
-          "C05:audit-actual-artifact",
-          "C06:issue-final-artifact-closure",
-          "C12:produce-fiction-artifact",
-          "C13:produce-travel-guide",
-          "C14:bind-model-to-reader-artifact"
+          "C01:select-one-final-owner"
         ],
+        "content_fingerprint": "sha256:cc96fa7d5452aa74f7f560508a1d9d6d5149ecfa78fac1a93d22eed7765aa6e6",
+        "coverage_disposition": "modeled",
+        "declared_semantics_fingerprint": "sha256:4e532b8894c37002a0365e8ebb38b4704253852e598504dfd73aba7e62146888",
+        "delegated_owner_inventory_id": "",
         "delegates_to_primary_path": false,
+        "delegation_relation_type": "",
+        "discovery_evidence_ids": [
+          "discovery:logic-writing-source-inventory:v3.0.0-reader-pipeline"
+        ],
         "freshness_state": "current",
         "in_scope": true,
-        "label": "single Logic Writing skill entrypoint",
+        "inventory_revision": "logic-writing-v3.0.0-reader-pipeline-candidate",
+        "label": "single Logic Writing skill entrypoint: select exactly one final owner",
         "metadata": {},
+        "native_artifact_id": "skills/logic-writing/SKILL.md#C01:select-one-final-owner",
+        "native_evidence_ids": [],
         "owner": "Logic Writing router",
         "primary_path_id": "logic_writing.entry",
         "rationale": "one public skill entry delegates to one selected route",
         "scoped_out_reason": "",
         "similarity_obligation_ids": [],
         "similarity_relation_ids": [],
+        "source_authority_role": "normative",
         "source_ref": "skills/logic-writing/SKILL.md",
-        "surface_id": "surface:skill-entry",
+        "source_system_id": "logic-writing-repository",
+        "surface_id": "surface:skill-entry:c01-select-one-final-owner",
         "surface_kind": "skill",
         "validation_boundary": "installed route smoke and Primary Path Authority"
       },
       {
         "business_intent_ids": [
-          "intent:freeze-one-validation-owner",
-          "intent:activate-recoverable-install",
-          "intent:project-one-global-route",
-          "intent:publish-logic-writing-release",
-          "intent:retire-predecessors-safely"
+          "intent:preserve-specialist-authority"
         ],
         "commitment_ids": [
-          "C07:freeze-one-validation-owner",
-          "C08:activate-recoverable-install",
-          "C09:project-one-global-route",
-          "C10:publish-logic-writing-release",
-          "C11:retire-predecessors-safely"
+          "C02:preserve-specialist-authority"
         ],
+        "content_fingerprint": "sha256:6744679d4963fcdf13b9f2dbc56603ac8ae630771c928fa8e8a1c28bde768618",
+        "coverage_disposition": "modeled",
+        "declared_semantics_fingerprint": "sha256:2cb39b8146338e241e0424ae134283e28ab32ead1f96be4b96fd7397e9870608",
+        "delegated_owner_inventory_id": "",
         "delegates_to_primary_path": false,
+        "delegation_relation_type": "",
+        "discovery_evidence_ids": [
+          "discovery:logic-writing-source-inventory:v3.0.0-reader-pipeline"
+        ],
         "freshness_state": "current",
         "in_scope": true,
-        "label": "release and retirement process contract",
+        "inventory_revision": "logic-writing-v3.0.0-reader-pipeline-candidate",
+        "label": "OpenSpec capability and verification contract: preserve specialist Guard authority",
         "metadata": {},
+        "native_artifact_id": "openspec/specs and openspec/verification-contract.yaml#C02:preserve-specialist-authority",
+        "native_evidence_ids": [],
+        "owner": "Logic Writing maintainer",
+        "primary_path_id": "",
+        "rationale": "the approved change defines behavior before implementation",
+        "scoped_out_reason": "",
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_authority_role": "normative",
+        "source_ref": "openspec/specs and openspec/verification-contract.yaml",
+        "source_system_id": "logic-writing-repository",
+        "surface_id": "surface:openspec:c02-preserve-specialist-authority",
+        "surface_kind": "doc",
+        "validation_boundary": "strict OpenSpec validation and model-test alignment"
+      },
+      {
+        "business_intent_ids": [
+          "intent:preserve-specialist-authority"
+        ],
+        "commitment_ids": [
+          "C02:preserve-specialist-authority"
+        ],
+        "content_fingerprint": "sha256:cc96fa7d5452aa74f7f560508a1d9d6d5149ecfa78fac1a93d22eed7765aa6e6",
+        "coverage_disposition": "modeled",
+        "declared_semantics_fingerprint": "sha256:2cb39b8146338e241e0424ae134283e28ab32ead1f96be4b96fd7397e9870608",
+        "delegated_owner_inventory_id": "",
+        "delegates_to_primary_path": false,
+        "delegation_relation_type": "",
+        "discovery_evidence_ids": [
+          "discovery:logic-writing-source-inventory:v3.0.0-reader-pipeline"
+        ],
+        "freshness_state": "current",
+        "in_scope": true,
+        "inventory_revision": "logic-writing-v3.0.0-reader-pipeline-candidate",
+        "label": "single Logic Writing skill entrypoint: preserve specialist Guard authority",
+        "metadata": {},
+        "native_artifact_id": "skills/logic-writing/SKILL.md#C02:preserve-specialist-authority",
+        "native_evidence_ids": [],
+        "owner": "Logic Writing router",
+        "primary_path_id": "logic_writing.entry",
+        "rationale": "one public skill entry delegates to one selected route",
+        "scoped_out_reason": "",
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_authority_role": "normative",
+        "source_ref": "skills/logic-writing/SKILL.md",
+        "source_system_id": "logic-writing-repository",
+        "surface_id": "surface:skill-entry:c02-preserve-specialist-authority",
+        "surface_kind": "skill",
+        "validation_boundary": "installed route smoke and Primary Path Authority"
+      },
+      {
+        "business_intent_ids": [
+          "intent:build-current-research-packet"
+        ],
+        "commitment_ids": [
+          "C03:build-current-research-packet"
+        ],
+        "content_fingerprint": "sha256:6744679d4963fcdf13b9f2dbc56603ac8ae630771c928fa8e8a1c28bde768618",
+        "coverage_disposition": "modeled",
+        "declared_semantics_fingerprint": "sha256:6111739a76a2ba3952f7302824440fe7b2d745f815fd0ae38602818fdc979e69",
+        "delegated_owner_inventory_id": "",
+        "delegates_to_primary_path": false,
+        "delegation_relation_type": "",
+        "discovery_evidence_ids": [
+          "discovery:logic-writing-source-inventory:v3.0.0-reader-pipeline"
+        ],
+        "freshness_state": "current",
+        "in_scope": true,
+        "inventory_revision": "logic-writing-v3.0.0-reader-pipeline-candidate",
+        "label": "OpenSpec capability and verification contract: assemble a verifier-derived ResearchPacket",
+        "metadata": {},
+        "native_artifact_id": "openspec/specs and openspec/verification-contract.yaml#C03:build-current-research-packet",
+        "native_evidence_ids": [],
+        "owner": "Logic Writing maintainer",
+        "primary_path_id": "",
+        "rationale": "the approved change defines behavior before implementation",
+        "scoped_out_reason": "",
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_authority_role": "normative",
+        "source_ref": "openspec/specs and openspec/verification-contract.yaml",
+        "source_system_id": "logic-writing-repository",
+        "surface_id": "surface:openspec:c03-build-current-research-packet",
+        "surface_kind": "doc",
+        "validation_boundary": "strict OpenSpec validation and model-test alignment"
+      },
+      {
+        "business_intent_ids": [
+          "intent:build-current-research-packet"
+        ],
+        "commitment_ids": [
+          "C03:build-current-research-packet"
+        ],
+        "content_fingerprint": "sha256:cc96fa7d5452aa74f7f560508a1d9d6d5149ecfa78fac1a93d22eed7765aa6e6",
+        "coverage_disposition": "modeled",
+        "declared_semantics_fingerprint": "sha256:6111739a76a2ba3952f7302824440fe7b2d745f815fd0ae38602818fdc979e69",
+        "delegated_owner_inventory_id": "",
+        "delegates_to_primary_path": false,
+        "delegation_relation_type": "",
+        "discovery_evidence_ids": [
+          "discovery:logic-writing-source-inventory:v3.0.0-reader-pipeline"
+        ],
+        "freshness_state": "current",
+        "in_scope": true,
+        "inventory_revision": "logic-writing-v3.0.0-reader-pipeline-candidate",
+        "label": "single Logic Writing skill entrypoint: assemble a verifier-derived ResearchPacket",
+        "metadata": {},
+        "native_artifact_id": "skills/logic-writing/SKILL.md#C03:build-current-research-packet",
+        "native_evidence_ids": [],
+        "owner": "Logic Writing router",
+        "primary_path_id": "logic_writing.entry",
+        "rationale": "one public skill entry delegates to one selected route",
+        "scoped_out_reason": "",
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_authority_role": "normative",
+        "source_ref": "skills/logic-writing/SKILL.md",
+        "source_system_id": "logic-writing-repository",
+        "surface_id": "surface:skill-entry:c03-build-current-research-packet",
+        "surface_kind": "skill",
+        "validation_boundary": "installed route smoke and Primary Path Authority"
+      },
+      {
+        "business_intent_ids": [
+          "intent:build-reader-brief"
+        ],
+        "commitment_ids": [
+          "C04:build-reader-brief"
+        ],
+        "content_fingerprint": "sha256:6744679d4963fcdf13b9f2dbc56603ac8ae630771c928fa8e8a1c28bde768618",
+        "coverage_disposition": "modeled",
+        "declared_semantics_fingerprint": "sha256:87ed1d384f54b54255e55a065a15f110a629b2bbb1226593e10bb989af3c9c79",
+        "delegated_owner_inventory_id": "",
+        "delegates_to_primary_path": false,
+        "delegation_relation_type": "",
+        "discovery_evidence_ids": [
+          "discovery:logic-writing-source-inventory:v3.0.0-reader-pipeline"
+        ],
+        "freshness_state": "current",
+        "in_scope": true,
+        "inventory_revision": "logic-writing-v3.0.0-reader-pipeline-candidate",
+        "label": "OpenSpec capability and verification contract: translate evidence into a ReaderBrief",
+        "metadata": {},
+        "native_artifact_id": "openspec/specs and openspec/verification-contract.yaml#C04:build-reader-brief",
+        "native_evidence_ids": [],
+        "owner": "Logic Writing maintainer",
+        "primary_path_id": "",
+        "rationale": "the approved change defines behavior before implementation",
+        "scoped_out_reason": "",
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_authority_role": "normative",
+        "source_ref": "openspec/specs and openspec/verification-contract.yaml",
+        "source_system_id": "logic-writing-repository",
+        "surface_id": "surface:openspec:c04-build-reader-brief",
+        "surface_kind": "doc",
+        "validation_boundary": "strict OpenSpec validation and model-test alignment"
+      },
+      {
+        "business_intent_ids": [
+          "intent:build-reader-brief"
+        ],
+        "commitment_ids": [
+          "C04:build-reader-brief"
+        ],
+        "content_fingerprint": "sha256:cc96fa7d5452aa74f7f560508a1d9d6d5149ecfa78fac1a93d22eed7765aa6e6",
+        "coverage_disposition": "modeled",
+        "declared_semantics_fingerprint": "sha256:87ed1d384f54b54255e55a065a15f110a629b2bbb1226593e10bb989af3c9c79",
+        "delegated_owner_inventory_id": "",
+        "delegates_to_primary_path": false,
+        "delegation_relation_type": "",
+        "discovery_evidence_ids": [
+          "discovery:logic-writing-source-inventory:v3.0.0-reader-pipeline"
+        ],
+        "freshness_state": "current",
+        "in_scope": true,
+        "inventory_revision": "logic-writing-v3.0.0-reader-pipeline-candidate",
+        "label": "single Logic Writing skill entrypoint: translate evidence into a ReaderBrief",
+        "metadata": {},
+        "native_artifact_id": "skills/logic-writing/SKILL.md#C04:build-reader-brief",
+        "native_evidence_ids": [],
+        "owner": "Logic Writing router",
+        "primary_path_id": "logic_writing.entry",
+        "rationale": "one public skill entry delegates to one selected route",
+        "scoped_out_reason": "",
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_authority_role": "normative",
+        "source_ref": "skills/logic-writing/SKILL.md",
+        "source_system_id": "logic-writing-repository",
+        "surface_id": "surface:skill-entry:c04-build-reader-brief",
+        "surface_kind": "skill",
+        "validation_boundary": "installed route smoke and Primary Path Authority"
+      },
+      {
+        "business_intent_ids": [
+          "intent:audit-actual-artifact"
+        ],
+        "commitment_ids": [
+          "C05:audit-actual-artifact"
+        ],
+        "content_fingerprint": "sha256:6744679d4963fcdf13b9f2dbc56603ac8ae630771c928fa8e8a1c28bde768618",
+        "coverage_disposition": "modeled",
+        "declared_semantics_fingerprint": "sha256:c804c68520fa89ede07cd2d3afd0cf1c4eb461a1e10d20b9726327943e160039",
+        "delegated_owner_inventory_id": "",
+        "delegates_to_primary_path": false,
+        "delegation_relation_type": "",
+        "discovery_evidence_ids": [
+          "discovery:logic-writing-source-inventory:v3.0.0-reader-pipeline"
+        ],
+        "freshness_state": "current",
+        "in_scope": true,
+        "inventory_revision": "logic-writing-v3.0.0-reader-pipeline-candidate",
+        "label": "OpenSpec capability and verification contract: audit the actual reader artifact",
+        "metadata": {},
+        "native_artifact_id": "openspec/specs and openspec/verification-contract.yaml#C05:audit-actual-artifact",
+        "native_evidence_ids": [],
+        "owner": "Logic Writing maintainer",
+        "primary_path_id": "",
+        "rationale": "the approved change defines behavior before implementation",
+        "scoped_out_reason": "",
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_authority_role": "normative",
+        "source_ref": "openspec/specs and openspec/verification-contract.yaml",
+        "source_system_id": "logic-writing-repository",
+        "surface_id": "surface:openspec:c05-audit-actual-artifact",
+        "surface_kind": "doc",
+        "validation_boundary": "strict OpenSpec validation and model-test alignment"
+      },
+      {
+        "business_intent_ids": [
+          "intent:audit-actual-artifact"
+        ],
+        "commitment_ids": [
+          "C05:audit-actual-artifact"
+        ],
+        "content_fingerprint": "sha256:cc96fa7d5452aa74f7f560508a1d9d6d5149ecfa78fac1a93d22eed7765aa6e6",
+        "coverage_disposition": "modeled",
+        "declared_semantics_fingerprint": "sha256:c804c68520fa89ede07cd2d3afd0cf1c4eb461a1e10d20b9726327943e160039",
+        "delegated_owner_inventory_id": "",
+        "delegates_to_primary_path": false,
+        "delegation_relation_type": "",
+        "discovery_evidence_ids": [
+          "discovery:logic-writing-source-inventory:v3.0.0-reader-pipeline"
+        ],
+        "freshness_state": "current",
+        "in_scope": true,
+        "inventory_revision": "logic-writing-v3.0.0-reader-pipeline-candidate",
+        "label": "single Logic Writing skill entrypoint: audit the actual reader artifact",
+        "metadata": {},
+        "native_artifact_id": "skills/logic-writing/SKILL.md#C05:audit-actual-artifact",
+        "native_evidence_ids": [],
+        "owner": "Logic Writing router",
+        "primary_path_id": "logic_writing.entry",
+        "rationale": "one public skill entry delegates to one selected route",
+        "scoped_out_reason": "",
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_authority_role": "normative",
+        "source_ref": "skills/logic-writing/SKILL.md",
+        "source_system_id": "logic-writing-repository",
+        "surface_id": "surface:skill-entry:c05-audit-actual-artifact",
+        "surface_kind": "skill",
+        "validation_boundary": "installed route smoke and Primary Path Authority"
+      },
+      {
+        "business_intent_ids": [
+          "intent:issue-final-artifact-closure"
+        ],
+        "commitment_ids": [
+          "C06:issue-final-artifact-closure"
+        ],
+        "content_fingerprint": "sha256:6744679d4963fcdf13b9f2dbc56603ac8ae630771c928fa8e8a1c28bde768618",
+        "coverage_disposition": "modeled",
+        "declared_semantics_fingerprint": "sha256:453daaa38bdc06b837c0bfa4a10f8b85c7da03af8172ec3dca78f3ed9a5d76dc",
+        "delegated_owner_inventory_id": "",
+        "delegates_to_primary_path": false,
+        "delegation_relation_type": "",
+        "discovery_evidence_ids": [
+          "discovery:logic-writing-source-inventory:v3.0.0-reader-pipeline"
+        ],
+        "freshness_state": "current",
+        "in_scope": true,
+        "inventory_revision": "logic-writing-v3.0.0-reader-pipeline-candidate",
+        "label": "OpenSpec capability and verification contract: derive final closure with one owner",
+        "metadata": {},
+        "native_artifact_id": "openspec/specs and openspec/verification-contract.yaml#C06:issue-final-artifact-closure",
+        "native_evidence_ids": [],
+        "owner": "Logic Writing maintainer",
+        "primary_path_id": "",
+        "rationale": "the approved change defines behavior before implementation",
+        "scoped_out_reason": "",
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_authority_role": "normative",
+        "source_ref": "openspec/specs and openspec/verification-contract.yaml",
+        "source_system_id": "logic-writing-repository",
+        "surface_id": "surface:openspec:c06-issue-final-artifact-closure",
+        "surface_kind": "doc",
+        "validation_boundary": "strict OpenSpec validation and model-test alignment"
+      },
+      {
+        "business_intent_ids": [
+          "intent:issue-final-artifact-closure"
+        ],
+        "commitment_ids": [
+          "C06:issue-final-artifact-closure"
+        ],
+        "content_fingerprint": "sha256:cc96fa7d5452aa74f7f560508a1d9d6d5149ecfa78fac1a93d22eed7765aa6e6",
+        "coverage_disposition": "modeled",
+        "declared_semantics_fingerprint": "sha256:453daaa38bdc06b837c0bfa4a10f8b85c7da03af8172ec3dca78f3ed9a5d76dc",
+        "delegated_owner_inventory_id": "",
+        "delegates_to_primary_path": false,
+        "delegation_relation_type": "",
+        "discovery_evidence_ids": [
+          "discovery:logic-writing-source-inventory:v3.0.0-reader-pipeline"
+        ],
+        "freshness_state": "current",
+        "in_scope": true,
+        "inventory_revision": "logic-writing-v3.0.0-reader-pipeline-candidate",
+        "label": "single Logic Writing skill entrypoint: derive final closure with one owner",
+        "metadata": {},
+        "native_artifact_id": "skills/logic-writing/SKILL.md#C06:issue-final-artifact-closure",
+        "native_evidence_ids": [],
+        "owner": "Logic Writing router",
+        "primary_path_id": "logic_writing.entry",
+        "rationale": "one public skill entry delegates to one selected route",
+        "scoped_out_reason": "",
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_authority_role": "normative",
+        "source_ref": "skills/logic-writing/SKILL.md",
+        "source_system_id": "logic-writing-repository",
+        "surface_id": "surface:skill-entry:c06-issue-final-artifact-closure",
+        "surface_kind": "skill",
+        "validation_boundary": "installed route smoke and Primary Path Authority"
+      },
+      {
+        "business_intent_ids": [
+          "intent:freeze-one-validation-owner"
+        ],
+        "commitment_ids": [
+          "C07:freeze-one-validation-owner"
+        ],
+        "content_fingerprint": "sha256:6744679d4963fcdf13b9f2dbc56603ac8ae630771c928fa8e8a1c28bde768618",
+        "coverage_disposition": "modeled",
+        "declared_semantics_fingerprint": "sha256:e1cf32616f8ad294f9acf6e5d277407d234155e4feaa40816183ab4e4a53c3a1",
+        "delegated_owner_inventory_id": "",
+        "delegates_to_primary_path": false,
+        "delegation_relation_type": "",
+        "discovery_evidence_ids": [
+          "discovery:logic-writing-source-inventory:v3.0.0-reader-pipeline"
+        ],
+        "freshness_state": "current",
+        "in_scope": true,
+        "inventory_revision": "logic-writing-v3.0.0-reader-pipeline-candidate",
+        "label": "OpenSpec capability and verification contract: freeze the final validation owner",
+        "metadata": {},
+        "native_artifact_id": "openspec/specs and openspec/verification-contract.yaml#C07:freeze-one-validation-owner",
+        "native_evidence_ids": [],
+        "owner": "Logic Writing maintainer",
+        "primary_path_id": "",
+        "rationale": "the approved change defines behavior before implementation",
+        "scoped_out_reason": "",
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_authority_role": "normative",
+        "source_ref": "openspec/specs and openspec/verification-contract.yaml",
+        "source_system_id": "logic-writing-repository",
+        "surface_id": "surface:openspec:c07-freeze-one-validation-owner",
+        "surface_kind": "doc",
+        "validation_boundary": "strict OpenSpec validation and model-test alignment"
+      },
+      {
+        "business_intent_ids": [
+          "intent:freeze-one-validation-owner"
+        ],
+        "commitment_ids": [
+          "C07:freeze-one-validation-owner"
+        ],
+        "content_fingerprint": "sha256:bc502b4aef99e481a84154e1b7a1183faa67d0bd1eb27a18247781d8a995695a",
+        "coverage_disposition": "modeled",
+        "declared_semantics_fingerprint": "sha256:e1cf32616f8ad294f9acf6e5d277407d234155e4feaa40816183ab4e4a53c3a1",
+        "delegated_owner_inventory_id": "",
+        "delegates_to_primary_path": false,
+        "delegation_relation_type": "",
+        "discovery_evidence_ids": [
+          "discovery:logic-writing-source-inventory:v3.0.0-reader-pipeline"
+        ],
+        "freshness_state": "current",
+        "in_scope": true,
+        "inventory_revision": "logic-writing-v3.0.0-reader-pipeline-candidate",
+        "label": "release and retirement process contract: freeze the final validation owner",
+        "metadata": {},
+        "native_artifact_id": "openspec/verification-contract.yaml and docs/release-retirement-checklist.md#C07:freeze-one-validation-owner",
+        "native_evidence_ids": [],
         "owner": "release owner",
         "primary_path_id": "",
         "rationale": "the process surface defines irreversible side-effect gates",
         "scoped_out_reason": "",
         "similarity_obligation_ids": [],
         "similarity_relation_ids": [],
+        "source_authority_role": "normative",
         "source_ref": "openspec/verification-contract.yaml and docs/release-retirement-checklist.md",
-        "surface_id": "surface:release-process",
+        "source_system_id": "logic-writing-repository",
+        "surface_id": "surface:release-process:c07-freeze-one-validation-owner",
         "surface_kind": "process",
         "validation_boundary": "DevelopmentProcessFlow plus release and retirement receipts"
+      },
+      {
+        "business_intent_ids": [
+          "intent:activate-recoverable-install"
+        ],
+        "commitment_ids": [
+          "C08:activate-recoverable-install"
+        ],
+        "content_fingerprint": "sha256:6744679d4963fcdf13b9f2dbc56603ac8ae630771c928fa8e8a1c28bde768618",
+        "coverage_disposition": "modeled",
+        "declared_semantics_fingerprint": "sha256:c8f3b7efef4f0eef7379615c0136045585ca452b31629a45b9886a3a8125db52",
+        "delegated_owner_inventory_id": "",
+        "delegates_to_primary_path": false,
+        "delegation_relation_type": "",
+        "discovery_evidence_ids": [
+          "discovery:logic-writing-source-inventory:v3.0.0-reader-pipeline"
+        ],
+        "freshness_state": "current",
+        "in_scope": true,
+        "inventory_revision": "logic-writing-v3.0.0-reader-pipeline-candidate",
+        "label": "OpenSpec capability and verification contract: activate a recoverable Logic Writing installation",
+        "metadata": {},
+        "native_artifact_id": "openspec/specs and openspec/verification-contract.yaml#C08:activate-recoverable-install",
+        "native_evidence_ids": [],
+        "owner": "Logic Writing maintainer",
+        "primary_path_id": "",
+        "rationale": "the approved change defines behavior before implementation",
+        "scoped_out_reason": "",
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_authority_role": "normative",
+        "source_ref": "openspec/specs and openspec/verification-contract.yaml",
+        "source_system_id": "logic-writing-repository",
+        "surface_id": "surface:openspec:c08-activate-recoverable-install",
+        "surface_kind": "doc",
+        "validation_boundary": "strict OpenSpec validation and model-test alignment"
+      },
+      {
+        "business_intent_ids": [
+          "intent:activate-recoverable-install"
+        ],
+        "commitment_ids": [
+          "C08:activate-recoverable-install"
+        ],
+        "content_fingerprint": "sha256:bc502b4aef99e481a84154e1b7a1183faa67d0bd1eb27a18247781d8a995695a",
+        "coverage_disposition": "modeled",
+        "declared_semantics_fingerprint": "sha256:c8f3b7efef4f0eef7379615c0136045585ca452b31629a45b9886a3a8125db52",
+        "delegated_owner_inventory_id": "",
+        "delegates_to_primary_path": false,
+        "delegation_relation_type": "",
+        "discovery_evidence_ids": [
+          "discovery:logic-writing-source-inventory:v3.0.0-reader-pipeline"
+        ],
+        "freshness_state": "current",
+        "in_scope": true,
+        "inventory_revision": "logic-writing-v3.0.0-reader-pipeline-candidate",
+        "label": "release and retirement process contract: activate a recoverable Logic Writing installation",
+        "metadata": {},
+        "native_artifact_id": "openspec/verification-contract.yaml and docs/release-retirement-checklist.md#C08:activate-recoverable-install",
+        "native_evidence_ids": [],
+        "owner": "release owner",
+        "primary_path_id": "",
+        "rationale": "the process surface defines irreversible side-effect gates",
+        "scoped_out_reason": "",
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_authority_role": "normative",
+        "source_ref": "openspec/verification-contract.yaml and docs/release-retirement-checklist.md",
+        "source_system_id": "logic-writing-repository",
+        "surface_id": "surface:release-process:c08-activate-recoverable-install",
+        "surface_kind": "process",
+        "validation_boundary": "DevelopmentProcessFlow plus release and retirement receipts"
+      },
+      {
+        "business_intent_ids": [
+          "intent:project-one-global-route"
+        ],
+        "commitment_ids": [
+          "C09:project-one-global-route"
+        ],
+        "content_fingerprint": "sha256:6744679d4963fcdf13b9f2dbc56603ac8ae630771c928fa8e8a1c28bde768618",
+        "coverage_disposition": "modeled",
+        "declared_semantics_fingerprint": "sha256:ee25aeef42d55353cda1925608e060a0ce4a264c99219320757ef439aa21eb07",
+        "delegated_owner_inventory_id": "",
+        "delegates_to_primary_path": false,
+        "delegation_relation_type": "",
+        "discovery_evidence_ids": [
+          "discovery:logic-writing-source-inventory:v3.0.0-reader-pipeline"
+        ],
+        "freshness_state": "current",
+        "in_scope": true,
+        "inventory_revision": "logic-writing-v3.0.0-reader-pipeline-candidate",
+        "label": "OpenSpec capability and verification contract: project one global Logic Writing route",
+        "metadata": {},
+        "native_artifact_id": "openspec/specs and openspec/verification-contract.yaml#C09:project-one-global-route",
+        "native_evidence_ids": [],
+        "owner": "Logic Writing maintainer",
+        "primary_path_id": "",
+        "rationale": "the approved change defines behavior before implementation",
+        "scoped_out_reason": "",
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_authority_role": "normative",
+        "source_ref": "openspec/specs and openspec/verification-contract.yaml",
+        "source_system_id": "logic-writing-repository",
+        "surface_id": "surface:openspec:c09-project-one-global-route",
+        "surface_kind": "doc",
+        "validation_boundary": "strict OpenSpec validation and model-test alignment"
+      },
+      {
+        "business_intent_ids": [
+          "intent:project-one-global-route"
+        ],
+        "commitment_ids": [
+          "C09:project-one-global-route"
+        ],
+        "content_fingerprint": "sha256:bc502b4aef99e481a84154e1b7a1183faa67d0bd1eb27a18247781d8a995695a",
+        "coverage_disposition": "modeled",
+        "declared_semantics_fingerprint": "sha256:ee25aeef42d55353cda1925608e060a0ce4a264c99219320757ef439aa21eb07",
+        "delegated_owner_inventory_id": "",
+        "delegates_to_primary_path": false,
+        "delegation_relation_type": "",
+        "discovery_evidence_ids": [
+          "discovery:logic-writing-source-inventory:v3.0.0-reader-pipeline"
+        ],
+        "freshness_state": "current",
+        "in_scope": true,
+        "inventory_revision": "logic-writing-v3.0.0-reader-pipeline-candidate",
+        "label": "release and retirement process contract: project one global Logic Writing route",
+        "metadata": {},
+        "native_artifact_id": "openspec/verification-contract.yaml and docs/release-retirement-checklist.md#C09:project-one-global-route",
+        "native_evidence_ids": [],
+        "owner": "release owner",
+        "primary_path_id": "",
+        "rationale": "the process surface defines irreversible side-effect gates",
+        "scoped_out_reason": "",
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_authority_role": "normative",
+        "source_ref": "openspec/verification-contract.yaml and docs/release-retirement-checklist.md",
+        "source_system_id": "logic-writing-repository",
+        "surface_id": "surface:release-process:c09-project-one-global-route",
+        "surface_kind": "process",
+        "validation_boundary": "DevelopmentProcessFlow plus release and retirement receipts"
+      },
+      {
+        "business_intent_ids": [
+          "intent:publish-logic-writing-release"
+        ],
+        "commitment_ids": [
+          "C10:publish-logic-writing-release"
+        ],
+        "content_fingerprint": "sha256:6744679d4963fcdf13b9f2dbc56603ac8ae630771c928fa8e8a1c28bde768618",
+        "coverage_disposition": "modeled",
+        "declared_semantics_fingerprint": "sha256:c1eb22e068ca3fa45f331ba2e25d625387a7edbfca90b63f8251f75fd2282d04",
+        "delegated_owner_inventory_id": "",
+        "delegates_to_primary_path": false,
+        "delegation_relation_type": "",
+        "discovery_evidence_ids": [
+          "discovery:logic-writing-source-inventory:v3.0.0-reader-pipeline"
+        ],
+        "freshness_state": "current",
+        "in_scope": true,
+        "inventory_revision": "logic-writing-v3.0.0-reader-pipeline-candidate",
+        "label": "OpenSpec capability and verification contract: publish the verified Logic Writing release",
+        "metadata": {},
+        "native_artifact_id": "openspec/specs and openspec/verification-contract.yaml#C10:publish-logic-writing-release",
+        "native_evidence_ids": [],
+        "owner": "Logic Writing maintainer",
+        "primary_path_id": "",
+        "rationale": "the approved change defines behavior before implementation",
+        "scoped_out_reason": "",
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_authority_role": "normative",
+        "source_ref": "openspec/specs and openspec/verification-contract.yaml",
+        "source_system_id": "logic-writing-repository",
+        "surface_id": "surface:openspec:c10-publish-logic-writing-release",
+        "surface_kind": "doc",
+        "validation_boundary": "strict OpenSpec validation and model-test alignment"
+      },
+      {
+        "business_intent_ids": [
+          "intent:publish-logic-writing-release"
+        ],
+        "commitment_ids": [
+          "C10:publish-logic-writing-release"
+        ],
+        "content_fingerprint": "sha256:bc502b4aef99e481a84154e1b7a1183faa67d0bd1eb27a18247781d8a995695a",
+        "coverage_disposition": "modeled",
+        "declared_semantics_fingerprint": "sha256:c1eb22e068ca3fa45f331ba2e25d625387a7edbfca90b63f8251f75fd2282d04",
+        "delegated_owner_inventory_id": "",
+        "delegates_to_primary_path": false,
+        "delegation_relation_type": "",
+        "discovery_evidence_ids": [
+          "discovery:logic-writing-source-inventory:v3.0.0-reader-pipeline"
+        ],
+        "freshness_state": "current",
+        "in_scope": true,
+        "inventory_revision": "logic-writing-v3.0.0-reader-pipeline-candidate",
+        "label": "release and retirement process contract: publish the verified Logic Writing release",
+        "metadata": {},
+        "native_artifact_id": "openspec/verification-contract.yaml and docs/release-retirement-checklist.md#C10:publish-logic-writing-release",
+        "native_evidence_ids": [],
+        "owner": "release owner",
+        "primary_path_id": "",
+        "rationale": "the process surface defines irreversible side-effect gates",
+        "scoped_out_reason": "",
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_authority_role": "normative",
+        "source_ref": "openspec/verification-contract.yaml and docs/release-retirement-checklist.md",
+        "source_system_id": "logic-writing-repository",
+        "surface_id": "surface:release-process:c10-publish-logic-writing-release",
+        "surface_kind": "process",
+        "validation_boundary": "DevelopmentProcessFlow plus release and retirement receipts"
+      },
+      {
+        "business_intent_ids": [
+          "intent:retire-predecessors-safely"
+        ],
+        "commitment_ids": [
+          "C11:retire-predecessors-safely"
+        ],
+        "content_fingerprint": "sha256:6744679d4963fcdf13b9f2dbc56603ac8ae630771c928fa8e8a1c28bde768618",
+        "coverage_disposition": "modeled",
+        "declared_semantics_fingerprint": "sha256:5f47022b7cec31fd9f4bbcc93b12c59c39b34f528990492013eef41b3e4104d5",
+        "delegated_owner_inventory_id": "",
+        "delegates_to_primary_path": false,
+        "delegation_relation_type": "",
+        "discovery_evidence_ids": [
+          "discovery:logic-writing-source-inventory:v3.0.0-reader-pipeline"
+        ],
+        "freshness_state": "current",
+        "in_scope": true,
+        "inventory_revision": "logic-writing-v3.0.0-reader-pipeline-candidate",
+        "label": "OpenSpec capability and verification contract: retire Travel and Storyline predecessor skills and public repository surfaces sequentially",
+        "metadata": {},
+        "native_artifact_id": "openspec/specs and openspec/verification-contract.yaml#C11:retire-predecessors-safely",
+        "native_evidence_ids": [],
+        "owner": "Logic Writing maintainer",
+        "primary_path_id": "",
+        "rationale": "the approved change defines behavior before implementation",
+        "scoped_out_reason": "",
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_authority_role": "normative",
+        "source_ref": "openspec/specs and openspec/verification-contract.yaml",
+        "source_system_id": "logic-writing-repository",
+        "surface_id": "surface:openspec:c11-retire-predecessors-safely",
+        "surface_kind": "doc",
+        "validation_boundary": "strict OpenSpec validation and model-test alignment"
+      },
+      {
+        "business_intent_ids": [
+          "intent:retire-predecessors-safely"
+        ],
+        "commitment_ids": [
+          "C11:retire-predecessors-safely"
+        ],
+        "content_fingerprint": "sha256:bc502b4aef99e481a84154e1b7a1183faa67d0bd1eb27a18247781d8a995695a",
+        "coverage_disposition": "modeled",
+        "declared_semantics_fingerprint": "sha256:5f47022b7cec31fd9f4bbcc93b12c59c39b34f528990492013eef41b3e4104d5",
+        "delegated_owner_inventory_id": "",
+        "delegates_to_primary_path": false,
+        "delegation_relation_type": "",
+        "discovery_evidence_ids": [
+          "discovery:logic-writing-source-inventory:v3.0.0-reader-pipeline"
+        ],
+        "freshness_state": "current",
+        "in_scope": true,
+        "inventory_revision": "logic-writing-v3.0.0-reader-pipeline-candidate",
+        "label": "release and retirement process contract: retire Travel and Storyline predecessor skills and public repository surfaces sequentially",
+        "metadata": {},
+        "native_artifact_id": "openspec/verification-contract.yaml and docs/release-retirement-checklist.md#C11:retire-predecessors-safely",
+        "native_evidence_ids": [],
+        "owner": "release owner",
+        "primary_path_id": "",
+        "rationale": "the process surface defines irreversible side-effect gates",
+        "scoped_out_reason": "",
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_authority_role": "normative",
+        "source_ref": "openspec/verification-contract.yaml and docs/release-retirement-checklist.md",
+        "source_system_id": "logic-writing-repository",
+        "surface_id": "surface:release-process:c11-retire-predecessors-safely",
+        "surface_kind": "process",
+        "validation_boundary": "DevelopmentProcessFlow plus release and retirement receipts"
+      },
+      {
+        "business_intent_ids": [
+          "intent:produce-fiction-artifact"
+        ],
+        "commitment_ids": [
+          "C12:produce-fiction-artifact"
+        ],
+        "content_fingerprint": "sha256:6744679d4963fcdf13b9f2dbc56603ac8ae630771c928fa8e8a1c28bde768618",
+        "coverage_disposition": "modeled",
+        "declared_semantics_fingerprint": "sha256:d8931f7a79ca74e34c97e48bc3d903a84c46c3d885b0a16e82000ab6c3b97094",
+        "delegated_owner_inventory_id": "",
+        "delegates_to_primary_path": false,
+        "delegation_relation_type": "",
+        "discovery_evidence_ids": [
+          "discovery:logic-writing-source-inventory:v3.0.0-reader-pipeline"
+        ],
+        "freshness_state": "current",
+        "in_scope": true,
+        "inventory_revision": "logic-writing-v3.0.0-reader-pipeline-candidate",
+        "label": "OpenSpec capability and verification contract: produce a model-bound fiction artifact",
+        "metadata": {},
+        "native_artifact_id": "openspec/specs and openspec/verification-contract.yaml#C12:produce-fiction-artifact",
+        "native_evidence_ids": [],
+        "owner": "Logic Writing maintainer",
+        "primary_path_id": "",
+        "rationale": "the approved change defines behavior before implementation",
+        "scoped_out_reason": "",
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_authority_role": "normative",
+        "source_ref": "openspec/specs and openspec/verification-contract.yaml",
+        "source_system_id": "logic-writing-repository",
+        "surface_id": "surface:openspec:c12-produce-fiction-artifact",
+        "surface_kind": "doc",
+        "validation_boundary": "strict OpenSpec validation and model-test alignment"
+      },
+      {
+        "business_intent_ids": [
+          "intent:produce-fiction-artifact"
+        ],
+        "commitment_ids": [
+          "C12:produce-fiction-artifact"
+        ],
+        "content_fingerprint": "sha256:cc96fa7d5452aa74f7f560508a1d9d6d5149ecfa78fac1a93d22eed7765aa6e6",
+        "coverage_disposition": "modeled",
+        "declared_semantics_fingerprint": "sha256:d8931f7a79ca74e34c97e48bc3d903a84c46c3d885b0a16e82000ab6c3b97094",
+        "delegated_owner_inventory_id": "",
+        "delegates_to_primary_path": false,
+        "delegation_relation_type": "",
+        "discovery_evidence_ids": [
+          "discovery:logic-writing-source-inventory:v3.0.0-reader-pipeline"
+        ],
+        "freshness_state": "current",
+        "in_scope": true,
+        "inventory_revision": "logic-writing-v3.0.0-reader-pipeline-candidate",
+        "label": "single Logic Writing skill entrypoint: produce a model-bound fiction artifact",
+        "metadata": {},
+        "native_artifact_id": "skills/logic-writing/SKILL.md#C12:produce-fiction-artifact",
+        "native_evidence_ids": [],
+        "owner": "Logic Writing router",
+        "primary_path_id": "logic_writing.entry",
+        "rationale": "one public skill entry delegates to one selected route",
+        "scoped_out_reason": "",
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_authority_role": "normative",
+        "source_ref": "skills/logic-writing/SKILL.md",
+        "source_system_id": "logic-writing-repository",
+        "surface_id": "surface:skill-entry:c12-produce-fiction-artifact",
+        "surface_kind": "skill",
+        "validation_boundary": "installed route smoke and Primary Path Authority"
+      },
+      {
+        "business_intent_ids": [
+          "intent:produce-travel-guide"
+        ],
+        "commitment_ids": [
+          "C13:produce-travel-guide"
+        ],
+        "content_fingerprint": "sha256:6744679d4963fcdf13b9f2dbc56603ac8ae630771c928fa8e8a1c28bde768618",
+        "coverage_disposition": "modeled",
+        "declared_semantics_fingerprint": "sha256:e5c3ef78b7788d1e905d6e4ec340f3d4f0d0b15c9385e14b5abbeb07f7812026",
+        "delegated_owner_inventory_id": "",
+        "delegates_to_primary_path": false,
+        "delegation_relation_type": "",
+        "discovery_evidence_ids": [
+          "discovery:logic-writing-source-inventory:v3.0.0-reader-pipeline"
+        ],
+        "freshness_state": "current",
+        "in_scope": true,
+        "inventory_revision": "logic-writing-v3.0.0-reader-pipeline-candidate",
+        "label": "OpenSpec capability and verification contract: produce a verified traveler-native guide",
+        "metadata": {},
+        "native_artifact_id": "openspec/specs and openspec/verification-contract.yaml#C13:produce-travel-guide",
+        "native_evidence_ids": [],
+        "owner": "Logic Writing maintainer",
+        "primary_path_id": "",
+        "rationale": "the approved change defines behavior before implementation",
+        "scoped_out_reason": "",
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_authority_role": "normative",
+        "source_ref": "openspec/specs and openspec/verification-contract.yaml",
+        "source_system_id": "logic-writing-repository",
+        "surface_id": "surface:openspec:c13-produce-travel-guide",
+        "surface_kind": "doc",
+        "validation_boundary": "strict OpenSpec validation and model-test alignment"
+      },
+      {
+        "business_intent_ids": [
+          "intent:produce-travel-guide"
+        ],
+        "commitment_ids": [
+          "C13:produce-travel-guide"
+        ],
+        "content_fingerprint": "sha256:cc96fa7d5452aa74f7f560508a1d9d6d5149ecfa78fac1a93d22eed7765aa6e6",
+        "coverage_disposition": "modeled",
+        "declared_semantics_fingerprint": "sha256:e5c3ef78b7788d1e905d6e4ec340f3d4f0d0b15c9385e14b5abbeb07f7812026",
+        "delegated_owner_inventory_id": "",
+        "delegates_to_primary_path": false,
+        "delegation_relation_type": "",
+        "discovery_evidence_ids": [
+          "discovery:logic-writing-source-inventory:v3.0.0-reader-pipeline"
+        ],
+        "freshness_state": "current",
+        "in_scope": true,
+        "inventory_revision": "logic-writing-v3.0.0-reader-pipeline-candidate",
+        "label": "single Logic Writing skill entrypoint: produce a verified traveler-native guide",
+        "metadata": {},
+        "native_artifact_id": "skills/logic-writing/SKILL.md#C13:produce-travel-guide",
+        "native_evidence_ids": [],
+        "owner": "Logic Writing router",
+        "primary_path_id": "logic_writing.entry",
+        "rationale": "one public skill entry delegates to one selected route",
+        "scoped_out_reason": "",
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_authority_role": "normative",
+        "source_ref": "skills/logic-writing/SKILL.md",
+        "source_system_id": "logic-writing-repository",
+        "surface_id": "surface:skill-entry:c13-produce-travel-guide",
+        "surface_kind": "skill",
+        "validation_boundary": "installed route smoke and Primary Path Authority"
+      },
+      {
+        "business_intent_ids": [
+          "intent:bind-model-to-reader-artifact"
+        ],
+        "commitment_ids": [
+          "C14:bind-model-to-reader-artifact"
+        ],
+        "content_fingerprint": "sha256:6744679d4963fcdf13b9f2dbc56603ac8ae630771c928fa8e8a1c28bde768618",
+        "coverage_disposition": "modeled",
+        "declared_semantics_fingerprint": "sha256:9aa91390d7df9e0b6e7849025a95c5451856a9da0f5909bfacdbcf102d14e5aa",
+        "delegated_owner_inventory_id": "",
+        "delegates_to_primary_path": false,
+        "delegation_relation_type": "",
+        "discovery_evidence_ids": [
+          "discovery:logic-writing-source-inventory:v3.0.0-reader-pipeline"
+        ],
+        "freshness_state": "current",
+        "in_scope": true,
+        "inventory_revision": "logic-writing-v3.0.0-reader-pipeline-candidate",
+        "label": "OpenSpec capability and verification contract: bind model work to the actual reader artifact",
+        "metadata": {},
+        "native_artifact_id": "openspec/specs and openspec/verification-contract.yaml#C14:bind-model-to-reader-artifact",
+        "native_evidence_ids": [],
+        "owner": "Logic Writing maintainer",
+        "primary_path_id": "",
+        "rationale": "the approved change defines behavior before implementation",
+        "scoped_out_reason": "",
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_authority_role": "normative",
+        "source_ref": "openspec/specs and openspec/verification-contract.yaml",
+        "source_system_id": "logic-writing-repository",
+        "surface_id": "surface:openspec:c14-bind-model-to-reader-artifact",
+        "surface_kind": "doc",
+        "validation_boundary": "strict OpenSpec validation and model-test alignment"
+      },
+      {
+        "business_intent_ids": [
+          "intent:bind-model-to-reader-artifact"
+        ],
+        "commitment_ids": [
+          "C14:bind-model-to-reader-artifact"
+        ],
+        "content_fingerprint": "sha256:cc96fa7d5452aa74f7f560508a1d9d6d5149ecfa78fac1a93d22eed7765aa6e6",
+        "coverage_disposition": "modeled",
+        "declared_semantics_fingerprint": "sha256:9aa91390d7df9e0b6e7849025a95c5451856a9da0f5909bfacdbcf102d14e5aa",
+        "delegated_owner_inventory_id": "",
+        "delegates_to_primary_path": false,
+        "delegation_relation_type": "",
+        "discovery_evidence_ids": [
+          "discovery:logic-writing-source-inventory:v3.0.0-reader-pipeline"
+        ],
+        "freshness_state": "current",
+        "in_scope": true,
+        "inventory_revision": "logic-writing-v3.0.0-reader-pipeline-candidate",
+        "label": "single Logic Writing skill entrypoint: bind model work to the actual reader artifact",
+        "metadata": {},
+        "native_artifact_id": "skills/logic-writing/SKILL.md#C14:bind-model-to-reader-artifact",
+        "native_evidence_ids": [],
+        "owner": "Logic Writing router",
+        "primary_path_id": "logic_writing.entry",
+        "rationale": "one public skill entry delegates to one selected route",
+        "scoped_out_reason": "",
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_authority_role": "normative",
+        "source_ref": "skills/logic-writing/SKILL.md",
+        "source_system_id": "logic-writing-repository",
+        "surface_id": "surface:skill-entry:c14-bind-model-to-reader-artifact",
+        "surface_kind": "skill",
+        "validation_boundary": "installed route smoke and Primary Path Authority"
+      },
+      {
+        "business_intent_ids": [
+          "intent:produce-investigation-report"
+        ],
+        "commitment_ids": [
+          "C15:produce-investigation-report"
+        ],
+        "content_fingerprint": "sha256:b9355e7e1425990610161433e0dbb3b6cf52c7f4ce963deb49a2f6cc30428a69",
+        "coverage_disposition": "modeled",
+        "declared_semantics_fingerprint": "sha256:fd6a63fc42c61618ab07434a92419f658da7d4dc17850eb06ab8a7b62401aec7",
+        "delegated_owner_inventory_id": "",
+        "delegates_to_primary_path": false,
+        "delegation_relation_type": "",
+        "discovery_evidence_ids": [
+          "discovery:logic-writing-source-inventory:v3.0.0-reader-pipeline"
+        ],
+        "freshness_state": "current",
+        "in_scope": true,
+        "inventory_revision": "logic-writing-v3.0.0-reader-pipeline-candidate",
+        "label": "OpenSpec: produce a profile-aware actual investigation report",
+        "metadata": {},
+        "native_artifact_id": "openspec/changes/repair-reader-composition-pipeline#C15:produce-investigation-report",
+        "native_evidence_ids": [],
+        "owner": "Logic Writing maintainer",
+        "primary_path_id": "",
+        "rationale": "the approved change and public entrypoint declare the exact current behavior",
+        "scoped_out_reason": "",
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_authority_role": "normative",
+        "source_ref": "openspec/changes/repair-reader-composition-pipeline",
+        "source_system_id": "logic-writing-repository",
+        "surface_id": "surface:openspec:c15-produce-investigation-report",
+        "surface_kind": "doc",
+        "validation_boundary": "strict OpenSpec validation and model-test alignment"
+      },
+      {
+        "business_intent_ids": [
+          "intent:produce-investigation-report"
+        ],
+        "commitment_ids": [
+          "C15:produce-investigation-report"
+        ],
+        "content_fingerprint": "sha256:8a274974fd095e2539ffcecf39c344ef25120211f6d48ba257ff6e604e3ea9e9",
+        "coverage_disposition": "modeled",
+        "declared_semantics_fingerprint": "sha256:fd6a63fc42c61618ab07434a92419f658da7d4dc17850eb06ab8a7b62401aec7",
+        "delegated_owner_inventory_id": "",
+        "delegates_to_primary_path": false,
+        "delegation_relation_type": "",
+        "discovery_evidence_ids": [
+          "discovery:logic-writing-source-inventory:v3.0.0-reader-pipeline"
+        ],
+        "freshness_state": "current",
+        "in_scope": true,
+        "inventory_revision": "logic-writing-v3.0.0-reader-pipeline-candidate",
+        "label": "Logic Writing entry: produce a profile-aware actual investigation report",
+        "metadata": {},
+        "native_artifact_id": "skills/logic-writing/SKILL.md#C15:produce-investigation-report",
+        "native_evidence_ids": [],
+        "owner": "Logic Writing router",
+        "primary_path_id": "logic_writing.entry",
+        "rationale": "the approved change and public entrypoint declare the exact current behavior",
+        "scoped_out_reason": "",
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_authority_role": "normative",
+        "source_ref": "skills/logic-writing/SKILL.md",
+        "source_system_id": "logic-writing-repository",
+        "surface_id": "surface:skill-entry:c15-produce-investigation-report",
+        "surface_kind": "skill",
+        "validation_boundary": "installed route smoke and route-native regression"
+      },
+      {
+        "business_intent_ids": [
+          "intent:produce-academic-artifact"
+        ],
+        "commitment_ids": [
+          "C16:produce-academic-artifact"
+        ],
+        "content_fingerprint": "sha256:b9355e7e1425990610161433e0dbb3b6cf52c7f4ce963deb49a2f6cc30428a69",
+        "coverage_disposition": "modeled",
+        "declared_semantics_fingerprint": "sha256:032ca100613def2d31c8c55d410bdc427bdf53215ccb8d505a7c310b830de452",
+        "delegated_owner_inventory_id": "",
+        "delegates_to_primary_path": false,
+        "delegation_relation_type": "",
+        "discovery_evidence_ids": [
+          "discovery:logic-writing-source-inventory:v3.0.0-reader-pipeline"
+        ],
+        "freshness_state": "current",
+        "in_scope": true,
+        "inventory_revision": "logic-writing-v3.0.0-reader-pipeline-candidate",
+        "label": "OpenSpec: produce a hierarchical actual academic artifact",
+        "metadata": {},
+        "native_artifact_id": "openspec/changes/repair-reader-composition-pipeline#C16:produce-academic-artifact",
+        "native_evidence_ids": [],
+        "owner": "Logic Writing maintainer",
+        "primary_path_id": "",
+        "rationale": "the approved change and public entrypoint declare the exact current behavior",
+        "scoped_out_reason": "",
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_authority_role": "normative",
+        "source_ref": "openspec/changes/repair-reader-composition-pipeline",
+        "source_system_id": "logic-writing-repository",
+        "surface_id": "surface:openspec:c16-produce-academic-artifact",
+        "surface_kind": "doc",
+        "validation_boundary": "strict OpenSpec validation and model-test alignment"
+      },
+      {
+        "business_intent_ids": [
+          "intent:produce-academic-artifact"
+        ],
+        "commitment_ids": [
+          "C16:produce-academic-artifact"
+        ],
+        "content_fingerprint": "sha256:8a274974fd095e2539ffcecf39c344ef25120211f6d48ba257ff6e604e3ea9e9",
+        "coverage_disposition": "modeled",
+        "declared_semantics_fingerprint": "sha256:032ca100613def2d31c8c55d410bdc427bdf53215ccb8d505a7c310b830de452",
+        "delegated_owner_inventory_id": "",
+        "delegates_to_primary_path": false,
+        "delegation_relation_type": "",
+        "discovery_evidence_ids": [
+          "discovery:logic-writing-source-inventory:v3.0.0-reader-pipeline"
+        ],
+        "freshness_state": "current",
+        "in_scope": true,
+        "inventory_revision": "logic-writing-v3.0.0-reader-pipeline-candidate",
+        "label": "Logic Writing entry: produce a hierarchical actual academic artifact",
+        "metadata": {},
+        "native_artifact_id": "skills/logic-writing/SKILL.md#C16:produce-academic-artifact",
+        "native_evidence_ids": [],
+        "owner": "Logic Writing router",
+        "primary_path_id": "logic_writing.entry",
+        "rationale": "the approved change and public entrypoint declare the exact current behavior",
+        "scoped_out_reason": "",
+        "similarity_obligation_ids": [],
+        "similarity_relation_ids": [],
+        "source_authority_role": "normative",
+        "source_ref": "skills/logic-writing/SKILL.md",
+        "source_system_id": "logic-writing-repository",
+        "surface_id": "surface:skill-entry:c16-produce-academic-artifact",
+        "surface_kind": "skill",
+        "validation_boundary": "installed route smoke and route-native regression"
       }
     ],
+    "subject_lane": "observed_implementation",
     "validation_boundary": "structure is current now; evidence remains explicitly missing until implementation owners produce receipts"
   },
   "schema_version": "1.0"

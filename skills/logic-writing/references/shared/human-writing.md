@@ -1,41 +1,26 @@
 # Human writing contract
 
-Write as a knowledgeable person explaining the subject to the declared reader.
+Write one complete artifact for the declared reader. Start from the central
+question and throughline, not from a pile of findings.
 
-## Required qualities
+- Give every section a distinct contribution to the whole.
+- Give paragraphs enough room to state a point, develop it, and hand it onward.
+- Introduce concepts and referents before relying on them.
+- Carry old information into new information so the relationship is real.
+- Put limitations, citations, resistance, friction, or fallback near the claim,
+  scene, or recommendation they change.
+- Preserve genre: investigation explains, academic prose argues, fiction
+  dramatizes change, and travel prose helps a traveler choose and act.
+- Use lists and tables only in authorized functional zones.
+- Let repeated shapes produce a changed effect rather than duplicating content.
 
-- Lead with the point the reader needs, then provide the reason and evidence.
-- Introduce concepts before relying on them.
-- Give each paragraph one discernible job and connect it to the next job.
-- Carry old information forward before introducing new information.
-- Keep referents concrete; replace vague “this”, “it”, or “the above” when the
-  noun is not unmistakable.
-- Explain why evidence matters instead of listing sources or methods.
-- Preserve real uncertainty, counterevidence, and limits near the affected claim.
-- Follow the requested genre rather than a fixed audit template.
-- Name what changes for the reader in each important unit and hand off that
-  concrete change to an exact later consumer or terminal disposition.
-- Give technical, institutional, local, quoted, narrator, and character
-  language an identifiable owner; do not flatten every voice into one abstract
-  summary register.
-- Allow repetition only when it creates a changed effect such as escalation,
-  contrast, inversion, cost, rhythm, or a new interpretation.
+Do not turn each claim, source, scene card, attraction, or audit finding into a
+separate paragraph. Do not create coherence with transition phrases alone.
+Do not copy “safe wording” as a script. Do not expose Guard names, route ids,
+model labels, status fields, paragraph jobs, or agent plans in ordinary prose.
 
-## Default prohibitions
-
-Do not expose Guard-family names, route ids, model cards, status ledgers,
-snake_case fields, checklists, “the workflow”, “the system shall”, agent
-instructions, or self-congratulatory completion language in ordinary reader
-copy. Do not hide them with synonyms while retaining the same process-centered
-sentence; rewrite around the subject matter.
-
-## Actual-text audit
-
-Parse the current artifact, derive paragraph purposes and handoffs, and check
-internal-term leakage, unexplained concepts, mechanical enumeration, vague
-referents, unsupported jumps, repeated conclusions, citation detachment, genre,
-and limitation placement. Deterministic checks find observable defects; a
-separate judgment receipt evaluates clarity, coherence, and reader fit.
-Also check explanation pressure, generic handoffs, register-owner drift,
-variation without effect, unbound prose, unrealized model rows, and whether all
-judgments still bind the exact delivered bytes.
+After drafting, judge the actual bytes. The deterministic audit finds observable
+defects. The selected route checks its own semantics in real spans. A separate
+judge evaluates reverse structure, coherence, naturalness, reader fit, genre,
+content fidelity, and instruction fidelity. Plans and self-assessment are not
+postwrite evidence.

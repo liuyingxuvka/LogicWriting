@@ -4,6 +4,20 @@ The fiction route owns story plans, short stories, chapters, novels, series
 structures, substantive fiction revisions, and final-manuscript closure. It
 may request bounded research, but it never transfers final ownership.
 
+## Reader composition v2
+
+Freeze the output room and artifact kind. For reader-native prose, plan story
+movements rather than a sequence of scene cards: entry state, pressure,
+resistance or cost, reader-state change, irreversible change, exit state,
+downstream effect, and promise/reveal movement. Models are content authority;
+the manuscript realizes them through action, perception, objects, dialogue,
+rhythm, and consequence rather than model labels.
+
+Build the manuscript ArtifactMap from current bytes. Review actual spans for
+output-room compliance, story movement, resistance/cost, promise and reveal
+handling, continuity, POV/voice, reader-state change, and real-span binding.
+A clean plan is not evidence that the prose works.
+
 ## Choose depth from the terminal artifact
 
 Every substantive StorylineDesign run uses the same guarded story lifecycle.

@@ -123,7 +123,7 @@ def build_obligation_manifest(
             "FlowGuard obligation contract receipt is not current and passing"
         )
     receipt = projection["receipt"]
-    if receipt["builder_provenance"]["builder_id"] != "logic-writing.adapter-result.v1":
+    if receipt["builder_provenance"]["builder_id"] != "logic-writing.adapter-result.v2":
         raise ValidationError(
             "obligation contract must enter through the managed FlowGuard adapter"
         )

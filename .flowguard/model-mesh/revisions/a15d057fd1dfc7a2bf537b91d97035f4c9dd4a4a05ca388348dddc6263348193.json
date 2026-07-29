@@ -1,0 +1,1944 @@
+{
+  "added_ids": [
+    "behavior_commitment:C15:produce-investigation-report",
+    "behavior_commitment:C16:produce-academic-artifact",
+    "coverage:behavior_commitments:C15:produce-investigation-report",
+    "coverage:behavior_commitments:C16:produce-academic-artifact",
+    "coverage:code_contracts:contract:contract:academic-composition",
+    "coverage:code_contracts:contract:contract:investigation-composition",
+    "coverage:external_surfaces:surface:openspec:c15-produce-investigation-report",
+    "coverage:external_surfaces:surface:openspec:c16-produce-academic-artifact",
+    "coverage:external_surfaces:surface:skill-entry:c15-produce-investigation-report",
+    "coverage:external_surfaces:surface:skill-entry:c16-produce-academic-artifact",
+    "coverage:fields_state_side_effects:field-or-effect:academic_profile",
+    "coverage:fields_state_side_effects:field-or-effect:academic_route_audit_status",
+    "coverage:fields_state_side_effects:field-or-effect:artifact_fingerprint",
+    "coverage:fields_state_side_effects:field-or-effect:artifact_map_fingerprint",
+    "coverage:fields_state_side_effects:field-or-effect:artifact_map_status",
+    "coverage:fields_state_side_effects:field-or-effect:composition_plan_fingerprint",
+    "coverage:fields_state_side_effects:field-or-effect:composition_plan_status",
+    "coverage:fields_state_side_effects:field-or-effect:consecutive_no_progress",
+    "coverage:fields_state_side_effects:field-or-effect:investigation_profile",
+    "coverage:fields_state_side_effects:field-or-effect:investigation_route_audit_status",
+    "coverage:fields_state_side_effects:field-or-effect:judgment_artifact_fingerprint",
+    "coverage:fields_state_side_effects:field-or-effect:reader_intent_fingerprint",
+    "coverage:fields_state_side_effects:field-or-effect:reader_intent_status",
+    "coverage:fields_state_side_effects:field-or-effect:repair_attempt_count",
+    "coverage:fields_state_side_effects:field-or-effect:repair_request_fingerprint",
+    "coverage:fields_state_side_effects:field-or-effect:route_audit_status",
+    "coverage:fields_state_side_effects:field-or-effect:route_extension_fingerprint",
+    "coverage:fields_state_side_effects:field-or-effect:shared_binding_artifact_fingerprint",
+    "coverage:fields_state_side_effects:field-or-effect:shared_binding_fingerprint",
+    "coverage:fields_state_side_effects:field-or-effect:shared_binding_status",
+    "coverage:tests_evidence:test:test:academic-route",
+    "coverage:tests_evidence:test:test:investigation-route",
+    "external_surface:surface:openspec:c15-produce-investigation-report",
+    "external_surface:surface:openspec:c16-produce-academic-artifact",
+    "external_surface:surface:skill-entry:c15-produce-investigation-report",
+    "external_surface:surface:skill-entry:c16-produce-academic-artifact",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c15-produce-investigation-report--C15:produce-investigation-report",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c16-produce-academic-artifact--C16:produce-academic-artifact",
+    "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c15-produce-investigation-report--C15:produce-investigation-report",
+    "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c16-produce-academic-artifact--C16:produce-academic-artifact",
+    "unresolved_gap:gap:behavior_commitments:C15:produce-investigation-report",
+    "unresolved_gap:gap:behavior_commitments:C16:produce-academic-artifact",
+    "unresolved_gap:gap:code_contracts:contract:contract:academic-composition",
+    "unresolved_gap:gap:code_contracts:contract:contract:investigation-composition",
+    "unresolved_gap:gap:external_surfaces:surface:openspec:c15-produce-investigation-report",
+    "unresolved_gap:gap:external_surfaces:surface:openspec:c16-produce-academic-artifact",
+    "unresolved_gap:gap:external_surfaces:surface:skill-entry:c15-produce-investigation-report",
+    "unresolved_gap:gap:external_surfaces:surface:skill-entry:c16-produce-academic-artifact",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:academic_profile",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:academic_route_audit_status",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:artifact_fingerprint",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:artifact_map_fingerprint",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:artifact_map_status",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:composition_plan_fingerprint",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:composition_plan_status",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:consecutive_no_progress",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:investigation_profile",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:investigation_route_audit_status",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:judgment_artifact_fingerprint",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:reader_intent_fingerprint",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:reader_intent_status",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:repair_attempt_count",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:repair_request_fingerprint",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:route_audit_status",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:route_extension_fingerprint",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:shared_binding_artifact_fingerprint",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:shared_binding_fingerprint",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:shared_binding_status",
+    "unresolved_gap:gap:tests_evidence:test:test:academic-route",
+    "unresolved_gap:gap:tests_evidence:test:test:investigation-route"
+  ],
+  "affected_closure_fingerprint": "sha256:b6146cc10f188bebcd115f6958dd1c2fa960e1f4cb958335c17dcc348140998e",
+  "affected_closure_ids": [
+    "behavior_commitment:C01:select-one-final-owner",
+    "behavior_commitment:C02:preserve-specialist-authority",
+    "behavior_commitment:C03:build-current-research-packet",
+    "behavior_commitment:C04:build-reader-brief",
+    "behavior_commitment:C05:audit-actual-artifact",
+    "behavior_commitment:C06:issue-final-artifact-closure",
+    "behavior_commitment:C07:freeze-one-validation-owner",
+    "behavior_commitment:C08:activate-recoverable-install",
+    "behavior_commitment:C09:project-one-global-route",
+    "behavior_commitment:C10:publish-logic-writing-release",
+    "behavior_commitment:C11:retire-predecessors-safely",
+    "behavior_commitment:C12:produce-fiction-artifact",
+    "behavior_commitment:C13:produce-travel-guide",
+    "behavior_commitment:C14:bind-model-to-reader-artifact",
+    "behavior_commitment:C15:produce-investigation-report",
+    "behavior_commitment:C16:produce-academic-artifact",
+    "coverage:behavior_commitments:C15:produce-investigation-report",
+    "coverage:behavior_commitments:C16:produce-academic-artifact",
+    "coverage:code_contracts:contract:contract:academic-composition",
+    "coverage:code_contracts:contract:contract:investigation-composition",
+    "coverage:external_surfaces:surface:openspec:c15-produce-investigation-report",
+    "coverage:external_surfaces:surface:openspec:c16-produce-academic-artifact",
+    "coverage:external_surfaces:surface:skill-entry:c15-produce-investigation-report",
+    "coverage:external_surfaces:surface:skill-entry:c16-produce-academic-artifact",
+    "coverage:fields_state_side_effects:field-or-effect:academic_profile",
+    "coverage:fields_state_side_effects:field-or-effect:academic_route_audit_status",
+    "coverage:fields_state_side_effects:field-or-effect:artifact_fingerprint",
+    "coverage:fields_state_side_effects:field-or-effect:artifact_identity",
+    "coverage:fields_state_side_effects:field-or-effect:artifact_map_fingerprint",
+    "coverage:fields_state_side_effects:field-or-effect:artifact_map_status",
+    "coverage:fields_state_side_effects:field-or-effect:audit_artifact_fingerprint",
+    "coverage:fields_state_side_effects:field-or-effect:binding_status",
+    "coverage:fields_state_side_effects:field-or-effect:composition_plan_fingerprint",
+    "coverage:fields_state_side_effects:field-or-effect:composition_plan_status",
+    "coverage:fields_state_side_effects:field-or-effect:consecutive_no_progress",
+    "coverage:fields_state_side_effects:field-or-effect:investigation_profile",
+    "coverage:fields_state_side_effects:field-or-effect:investigation_route_audit_status",
+    "coverage:fields_state_side_effects:field-or-effect:judgment_artifact_fingerprint",
+    "coverage:fields_state_side_effects:field-or-effect:reader_intent_fingerprint",
+    "coverage:fields_state_side_effects:field-or-effect:reader_intent_status",
+    "coverage:fields_state_side_effects:field-or-effect:reader_state_status",
+    "coverage:fields_state_side_effects:field-or-effect:repair_attempt_count",
+    "coverage:fields_state_side_effects:field-or-effect:repair_request_fingerprint",
+    "coverage:fields_state_side_effects:field-or-effect:route_audit_status",
+    "coverage:fields_state_side_effects:field-or-effect:route_extension_fingerprint",
+    "coverage:fields_state_side_effects:field-or-effect:shared_binding_artifact_fingerprint",
+    "coverage:fields_state_side_effects:field-or-effect:shared_binding_fingerprint",
+    "coverage:fields_state_side_effects:field-or-effect:shared_binding_status",
+    "coverage:tests_evidence:test:test:academic-route",
+    "coverage:tests_evidence:test:test:investigation-route",
+    "coverage:universe",
+    "external_surface:surface:openspec:c01-select-one-final-owner",
+    "external_surface:surface:openspec:c02-preserve-specialist-authority",
+    "external_surface:surface:openspec:c03-build-current-research-packet",
+    "external_surface:surface:openspec:c04-build-reader-brief",
+    "external_surface:surface:openspec:c05-audit-actual-artifact",
+    "external_surface:surface:openspec:c06-issue-final-artifact-closure",
+    "external_surface:surface:openspec:c07-freeze-one-validation-owner",
+    "external_surface:surface:openspec:c08-activate-recoverable-install",
+    "external_surface:surface:openspec:c09-project-one-global-route",
+    "external_surface:surface:openspec:c10-publish-logic-writing-release",
+    "external_surface:surface:openspec:c11-retire-predecessors-safely",
+    "external_surface:surface:openspec:c12-produce-fiction-artifact",
+    "external_surface:surface:openspec:c13-produce-travel-guide",
+    "external_surface:surface:openspec:c14-bind-model-to-reader-artifact",
+    "external_surface:surface:openspec:c15-produce-investigation-report",
+    "external_surface:surface:openspec:c16-produce-academic-artifact",
+    "external_surface:surface:release-process:c07-freeze-one-validation-owner",
+    "external_surface:surface:release-process:c08-activate-recoverable-install",
+    "external_surface:surface:release-process:c09-project-one-global-route",
+    "external_surface:surface:release-process:c10-publish-logic-writing-release",
+    "external_surface:surface:release-process:c11-retire-predecessors-safely",
+    "external_surface:surface:skill-entry:c01-select-one-final-owner",
+    "external_surface:surface:skill-entry:c02-preserve-specialist-authority",
+    "external_surface:surface:skill-entry:c03-build-current-research-packet",
+    "external_surface:surface:skill-entry:c04-build-reader-brief",
+    "external_surface:surface:skill-entry:c05-audit-actual-artifact",
+    "external_surface:surface:skill-entry:c06-issue-final-artifact-closure",
+    "external_surface:surface:skill-entry:c12-produce-fiction-artifact",
+    "external_surface:surface:skill-entry:c13-produce-travel-guide",
+    "external_surface:surface:skill-entry:c14-bind-model-to-reader-artifact",
+    "external_surface:surface:skill-entry:c15-produce-investigation-report",
+    "external_surface:surface:skill-entry:c16-produce-academic-artifact",
+    "model_instance:model:behavior_commitment_ledger",
+    "model_instance:model:development_process_flow",
+    "model_instance:model:logic_writing_models",
+    "model_instance:model:model_test_alignment",
+    "model_instance:model:plan_detailing",
+    "model_instance:model:primary_path_authority",
+    "model_instance:model:test_mesh",
+    "model_relation:relation:model-realizes-purpose:behavior_commitment_ledger",
+    "model_relation:relation:model-realizes-purpose:development_process_flow",
+    "model_relation:relation:model-realizes-purpose:logic_writing_models",
+    "model_relation:relation:model-realizes-purpose:model_test_alignment",
+    "model_relation:relation:model-realizes-purpose:plan_detailing",
+    "model_relation:relation:model-realizes-purpose:primary_path_authority",
+    "model_relation:relation:model-realizes-purpose:test_mesh",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c01-select-one-final-owner--C01:select-one-final-owner",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c02-preserve-specialist-authority--C02:preserve-specialist-authority",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c03-build-current-research-packet--C03:build-current-research-packet",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c04-build-reader-brief--C04:build-reader-brief",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c05-audit-actual-artifact--C05:audit-actual-artifact",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c06-issue-final-artifact-closure--C06:issue-final-artifact-closure",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c07-freeze-one-validation-owner--C07:freeze-one-validation-owner",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c08-activate-recoverable-install--C08:activate-recoverable-install",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c09-project-one-global-route--C09:project-one-global-route",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c10-publish-logic-writing-release--C10:publish-logic-writing-release",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c11-retire-predecessors-safely--C11:retire-predecessors-safely",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c12-produce-fiction-artifact--C12:produce-fiction-artifact",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c13-produce-travel-guide--C13:produce-travel-guide",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c14-bind-model-to-reader-artifact--C14:bind-model-to-reader-artifact",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c15-produce-investigation-report--C15:produce-investigation-report",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c16-produce-academic-artifact--C16:produce-academic-artifact",
+    "model_relation:relation:surface-produces-for-commitment:surface:release-process:c07-freeze-one-validation-owner--C07:freeze-one-validation-owner",
+    "model_relation:relation:surface-produces-for-commitment:surface:release-process:c08-activate-recoverable-install--C08:activate-recoverable-install",
+    "model_relation:relation:surface-produces-for-commitment:surface:release-process:c09-project-one-global-route--C09:project-one-global-route",
+    "model_relation:relation:surface-produces-for-commitment:surface:release-process:c10-publish-logic-writing-release--C10:publish-logic-writing-release",
+    "model_relation:relation:surface-produces-for-commitment:surface:release-process:c11-retire-predecessors-safely--C11:retire-predecessors-safely",
+    "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c01-select-one-final-owner--C01:select-one-final-owner",
+    "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c02-preserve-specialist-authority--C02:preserve-specialist-authority",
+    "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c03-build-current-research-packet--C03:build-current-research-packet",
+    "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c04-build-reader-brief--C04:build-reader-brief",
+    "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c05-audit-actual-artifact--C05:audit-actual-artifact",
+    "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c06-issue-final-artifact-closure--C06:issue-final-artifact-closure",
+    "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c12-produce-fiction-artifact--C12:produce-fiction-artifact",
+    "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c13-produce-travel-guide--C13:produce-travel-guide",
+    "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c14-bind-model-to-reader-artifact--C14:bind-model-to-reader-artifact",
+    "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c15-produce-investigation-report--C15:produce-investigation-report",
+    "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c16-produce-academic-artifact--C16:produce-academic-artifact",
+    "model_relation:relation:system-contains:behavior_commitment_ledger",
+    "model_relation:relation:system-contains:development_process_flow",
+    "model_relation:relation:system-contains:logic_writing_models",
+    "model_relation:relation:system-contains:model_test_alignment",
+    "model_relation:relation:system-contains:plan_detailing",
+    "model_relation:relation:system-contains:primary_path_authority",
+    "model_relation:relation:system-contains:test_mesh",
+    "parent_closure:purpose:behavior_commitment_ledger",
+    "parent_closure:purpose:development_process_flow",
+    "parent_closure:purpose:logic_writing_models",
+    "parent_closure:purpose:model_test_alignment",
+    "parent_closure:purpose:plan_detailing",
+    "parent_closure:purpose:primary_path_authority",
+    "parent_closure:purpose:test_mesh",
+    "parent_closure:system:flowguard:model-regression-manifest",
+    "root:model:behavior_commitment_ledger",
+    "system_property:subject_revision",
+    "unresolved_gap:gap:behavior_commitments:C15:produce-investigation-report",
+    "unresolved_gap:gap:behavior_commitments:C16:produce-academic-artifact",
+    "unresolved_gap:gap:code_contracts:contract:contract:academic-composition",
+    "unresolved_gap:gap:code_contracts:contract:contract:investigation-composition",
+    "unresolved_gap:gap:external_surfaces:surface:openspec:c15-produce-investigation-report",
+    "unresolved_gap:gap:external_surfaces:surface:openspec:c16-produce-academic-artifact",
+    "unresolved_gap:gap:external_surfaces:surface:skill-entry:c15-produce-investigation-report",
+    "unresolved_gap:gap:external_surfaces:surface:skill-entry:c16-produce-academic-artifact",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:academic_profile",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:academic_route_audit_status",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:artifact_fingerprint",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:artifact_identity",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:artifact_map_fingerprint",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:artifact_map_status",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:audit_artifact_fingerprint",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:binding_status",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:composition_plan_fingerprint",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:composition_plan_status",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:consecutive_no_progress",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:investigation_profile",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:investigation_route_audit_status",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:judgment_artifact_fingerprint",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:reader_intent_fingerprint",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:reader_intent_status",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:reader_state_status",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:repair_attempt_count",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:repair_request_fingerprint",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:route_audit_status",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:route_extension_fingerprint",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:shared_binding_artifact_fingerprint",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:shared_binding_fingerprint",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:shared_binding_status",
+    "unresolved_gap:gap:tests_evidence:test:test:academic-route",
+    "unresolved_gap:gap:tests_evidence:test:test:investigation-route"
+  ],
+  "affected_edge_ids": [
+    "model_relation:relation:model-realizes-purpose:behavior_commitment_ledger",
+    "model_relation:relation:model-realizes-purpose:development_process_flow",
+    "model_relation:relation:model-realizes-purpose:logic_writing_models",
+    "model_relation:relation:model-realizes-purpose:model_test_alignment",
+    "model_relation:relation:model-realizes-purpose:plan_detailing",
+    "model_relation:relation:model-realizes-purpose:primary_path_authority",
+    "model_relation:relation:model-realizes-purpose:test_mesh",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c01-select-one-final-owner--C01:select-one-final-owner",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c02-preserve-specialist-authority--C02:preserve-specialist-authority",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c03-build-current-research-packet--C03:build-current-research-packet",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c04-build-reader-brief--C04:build-reader-brief",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c05-audit-actual-artifact--C05:audit-actual-artifact",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c06-issue-final-artifact-closure--C06:issue-final-artifact-closure",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c07-freeze-one-validation-owner--C07:freeze-one-validation-owner",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c08-activate-recoverable-install--C08:activate-recoverable-install",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c09-project-one-global-route--C09:project-one-global-route",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c10-publish-logic-writing-release--C10:publish-logic-writing-release",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c11-retire-predecessors-safely--C11:retire-predecessors-safely",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c12-produce-fiction-artifact--C12:produce-fiction-artifact",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c13-produce-travel-guide--C13:produce-travel-guide",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c14-bind-model-to-reader-artifact--C14:bind-model-to-reader-artifact",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c15-produce-investigation-report--C15:produce-investigation-report",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c16-produce-academic-artifact--C16:produce-academic-artifact",
+    "model_relation:relation:surface-produces-for-commitment:surface:release-process:c07-freeze-one-validation-owner--C07:freeze-one-validation-owner",
+    "model_relation:relation:surface-produces-for-commitment:surface:release-process:c08-activate-recoverable-install--C08:activate-recoverable-install",
+    "model_relation:relation:surface-produces-for-commitment:surface:release-process:c09-project-one-global-route--C09:project-one-global-route",
+    "model_relation:relation:surface-produces-for-commitment:surface:release-process:c10-publish-logic-writing-release--C10:publish-logic-writing-release",
+    "model_relation:relation:surface-produces-for-commitment:surface:release-process:c11-retire-predecessors-safely--C11:retire-predecessors-safely",
+    "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c01-select-one-final-owner--C01:select-one-final-owner",
+    "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c02-preserve-specialist-authority--C02:preserve-specialist-authority",
+    "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c03-build-current-research-packet--C03:build-current-research-packet",
+    "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c04-build-reader-brief--C04:build-reader-brief",
+    "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c05-audit-actual-artifact--C05:audit-actual-artifact",
+    "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c06-issue-final-artifact-closure--C06:issue-final-artifact-closure",
+    "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c12-produce-fiction-artifact--C12:produce-fiction-artifact",
+    "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c13-produce-travel-guide--C13:produce-travel-guide",
+    "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c14-bind-model-to-reader-artifact--C14:bind-model-to-reader-artifact",
+    "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c15-produce-investigation-report--C15:produce-investigation-report",
+    "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c16-produce-academic-artifact--C16:produce-academic-artifact",
+    "model_relation:relation:system-contains:behavior_commitment_ledger",
+    "model_relation:relation:system-contains:development_process_flow",
+    "model_relation:relation:system-contains:logic_writing_models",
+    "model_relation:relation:system-contains:model_test_alignment",
+    "model_relation:relation:system-contains:plan_detailing",
+    "model_relation:relation:system-contains:primary_path_authority",
+    "model_relation:relation:system-contains:test_mesh"
+  ],
+  "affected_owner_bindings": [
+    {
+      "affected_id": "behavior_commitment:C01:select-one-final-owner",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "behavior_commitment:C02:preserve-specialist-authority",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "behavior_commitment:C03:build-current-research-packet",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "behavior_commitment:C04:build-reader-brief",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "behavior_commitment:C05:audit-actual-artifact",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "behavior_commitment:C06:issue-final-artifact-closure",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "behavior_commitment:C07:freeze-one-validation-owner",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "behavior_commitment:C08:activate-recoverable-install",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "behavior_commitment:C09:project-one-global-route",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "behavior_commitment:C10:publish-logic-writing-release",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "behavior_commitment:C11:retire-predecessors-safely",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "behavior_commitment:C12:produce-fiction-artifact",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "behavior_commitment:C13:produce-travel-guide",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "behavior_commitment:C14:bind-model-to-reader-artifact",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "behavior_commitment:C15:produce-investigation-report",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "behavior_commitment:C16:produce-academic-artifact",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "coverage:behavior_commitments:C15:produce-investigation-report",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "coverage:behavior_commitments:C16:produce-academic-artifact",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "coverage:code_contracts:contract:contract:academic-composition",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "coverage:code_contracts:contract:contract:investigation-composition",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "coverage:external_surfaces:surface:openspec:c15-produce-investigation-report",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "coverage:external_surfaces:surface:openspec:c16-produce-academic-artifact",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "coverage:external_surfaces:surface:skill-entry:c15-produce-investigation-report",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "coverage:external_surfaces:surface:skill-entry:c16-produce-academic-artifact",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "coverage:fields_state_side_effects:field-or-effect:academic_profile",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "coverage:fields_state_side_effects:field-or-effect:academic_route_audit_status",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "coverage:fields_state_side_effects:field-or-effect:artifact_fingerprint",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "coverage:fields_state_side_effects:field-or-effect:artifact_identity",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "coverage:fields_state_side_effects:field-or-effect:artifact_map_fingerprint",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "coverage:fields_state_side_effects:field-or-effect:artifact_map_status",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "coverage:fields_state_side_effects:field-or-effect:audit_artifact_fingerprint",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "coverage:fields_state_side_effects:field-or-effect:binding_status",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "coverage:fields_state_side_effects:field-or-effect:composition_plan_fingerprint",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "coverage:fields_state_side_effects:field-or-effect:composition_plan_status",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "coverage:fields_state_side_effects:field-or-effect:consecutive_no_progress",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "coverage:fields_state_side_effects:field-or-effect:investigation_profile",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "coverage:fields_state_side_effects:field-or-effect:investigation_route_audit_status",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "coverage:fields_state_side_effects:field-or-effect:judgment_artifact_fingerprint",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "coverage:fields_state_side_effects:field-or-effect:reader_intent_fingerprint",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "coverage:fields_state_side_effects:field-or-effect:reader_intent_status",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "coverage:fields_state_side_effects:field-or-effect:reader_state_status",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "coverage:fields_state_side_effects:field-or-effect:repair_attempt_count",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "coverage:fields_state_side_effects:field-or-effect:repair_request_fingerprint",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "coverage:fields_state_side_effects:field-or-effect:route_audit_status",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "coverage:fields_state_side_effects:field-or-effect:route_extension_fingerprint",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "coverage:fields_state_side_effects:field-or-effect:shared_binding_artifact_fingerprint",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "coverage:fields_state_side_effects:field-or-effect:shared_binding_fingerprint",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "coverage:fields_state_side_effects:field-or-effect:shared_binding_status",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "coverage:tests_evidence:test:test:academic-route",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "coverage:tests_evidence:test:test:investigation-route",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "coverage:universe",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "external_surface:surface:openspec:c01-select-one-final-owner",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "external_surface:surface:openspec:c02-preserve-specialist-authority",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "external_surface:surface:openspec:c03-build-current-research-packet",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "external_surface:surface:openspec:c04-build-reader-brief",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "external_surface:surface:openspec:c05-audit-actual-artifact",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "external_surface:surface:openspec:c06-issue-final-artifact-closure",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "external_surface:surface:openspec:c07-freeze-one-validation-owner",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "external_surface:surface:openspec:c08-activate-recoverable-install",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "external_surface:surface:openspec:c09-project-one-global-route",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "external_surface:surface:openspec:c10-publish-logic-writing-release",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "external_surface:surface:openspec:c11-retire-predecessors-safely",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "external_surface:surface:openspec:c12-produce-fiction-artifact",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "external_surface:surface:openspec:c13-produce-travel-guide",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "external_surface:surface:openspec:c14-bind-model-to-reader-artifact",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "external_surface:surface:openspec:c15-produce-investigation-report",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "external_surface:surface:openspec:c16-produce-academic-artifact",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "external_surface:surface:release-process:c07-freeze-one-validation-owner",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "external_surface:surface:release-process:c08-activate-recoverable-install",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "external_surface:surface:release-process:c09-project-one-global-route",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "external_surface:surface:release-process:c10-publish-logic-writing-release",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "external_surface:surface:release-process:c11-retire-predecessors-safely",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "external_surface:surface:skill-entry:c01-select-one-final-owner",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "external_surface:surface:skill-entry:c02-preserve-specialist-authority",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "external_surface:surface:skill-entry:c03-build-current-research-packet",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "external_surface:surface:skill-entry:c04-build-reader-brief",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "external_surface:surface:skill-entry:c05-audit-actual-artifact",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "external_surface:surface:skill-entry:c06-issue-final-artifact-closure",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "external_surface:surface:skill-entry:c12-produce-fiction-artifact",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "external_surface:surface:skill-entry:c13-produce-travel-guide",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "external_surface:surface:skill-entry:c14-bind-model-to-reader-artifact",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "external_surface:surface:skill-entry:c15-produce-investigation-report",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "external_surface:surface:skill-entry:c16-produce-academic-artifact",
+      "owner_route": "behavior_commitment_ledger"
+    },
+    {
+      "affected_id": "model_instance:model:behavior_commitment_ledger",
+      "owner_route": "model_test_alignment"
+    },
+    {
+      "affected_id": "model_instance:model:development_process_flow",
+      "owner_route": "model_test_alignment"
+    },
+    {
+      "affected_id": "model_instance:model:logic_writing_models",
+      "owner_route": "model_test_alignment"
+    },
+    {
+      "affected_id": "model_instance:model:model_test_alignment",
+      "owner_route": "model_test_alignment"
+    },
+    {
+      "affected_id": "model_instance:model:plan_detailing",
+      "owner_route": "model_test_alignment"
+    },
+    {
+      "affected_id": "model_instance:model:primary_path_authority",
+      "owner_route": "model_test_alignment"
+    },
+    {
+      "affected_id": "model_instance:model:test_mesh",
+      "owner_route": "model_test_alignment"
+    },
+    {
+      "affected_id": "model_relation:relation:model-realizes-purpose:behavior_commitment_ledger",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:model-realizes-purpose:development_process_flow",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:model-realizes-purpose:logic_writing_models",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:model-realizes-purpose:model_test_alignment",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:model-realizes-purpose:plan_detailing",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:model-realizes-purpose:primary_path_authority",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:model-realizes-purpose:test_mesh",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:surface-produces-for-commitment:surface:openspec:c01-select-one-final-owner--C01:select-one-final-owner",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:surface-produces-for-commitment:surface:openspec:c02-preserve-specialist-authority--C02:preserve-specialist-authority",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:surface-produces-for-commitment:surface:openspec:c03-build-current-research-packet--C03:build-current-research-packet",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:surface-produces-for-commitment:surface:openspec:c04-build-reader-brief--C04:build-reader-brief",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:surface-produces-for-commitment:surface:openspec:c05-audit-actual-artifact--C05:audit-actual-artifact",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:surface-produces-for-commitment:surface:openspec:c06-issue-final-artifact-closure--C06:issue-final-artifact-closure",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:surface-produces-for-commitment:surface:openspec:c07-freeze-one-validation-owner--C07:freeze-one-validation-owner",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:surface-produces-for-commitment:surface:openspec:c08-activate-recoverable-install--C08:activate-recoverable-install",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:surface-produces-for-commitment:surface:openspec:c09-project-one-global-route--C09:project-one-global-route",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:surface-produces-for-commitment:surface:openspec:c10-publish-logic-writing-release--C10:publish-logic-writing-release",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:surface-produces-for-commitment:surface:openspec:c11-retire-predecessors-safely--C11:retire-predecessors-safely",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:surface-produces-for-commitment:surface:openspec:c12-produce-fiction-artifact--C12:produce-fiction-artifact",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:surface-produces-for-commitment:surface:openspec:c13-produce-travel-guide--C13:produce-travel-guide",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:surface-produces-for-commitment:surface:openspec:c14-bind-model-to-reader-artifact--C14:bind-model-to-reader-artifact",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:surface-produces-for-commitment:surface:openspec:c15-produce-investigation-report--C15:produce-investigation-report",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:surface-produces-for-commitment:surface:openspec:c16-produce-academic-artifact--C16:produce-academic-artifact",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:surface-produces-for-commitment:surface:release-process:c07-freeze-one-validation-owner--C07:freeze-one-validation-owner",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:surface-produces-for-commitment:surface:release-process:c08-activate-recoverable-install--C08:activate-recoverable-install",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:surface-produces-for-commitment:surface:release-process:c09-project-one-global-route--C09:project-one-global-route",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:surface-produces-for-commitment:surface:release-process:c10-publish-logic-writing-release--C10:publish-logic-writing-release",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:surface-produces-for-commitment:surface:release-process:c11-retire-predecessors-safely--C11:retire-predecessors-safely",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c01-select-one-final-owner--C01:select-one-final-owner",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c02-preserve-specialist-authority--C02:preserve-specialist-authority",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c03-build-current-research-packet--C03:build-current-research-packet",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c04-build-reader-brief--C04:build-reader-brief",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c05-audit-actual-artifact--C05:audit-actual-artifact",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c06-issue-final-artifact-closure--C06:issue-final-artifact-closure",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c12-produce-fiction-artifact--C12:produce-fiction-artifact",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c13-produce-travel-guide--C13:produce-travel-guide",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c14-bind-model-to-reader-artifact--C14:bind-model-to-reader-artifact",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c15-produce-investigation-report--C15:produce-investigation-report",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c16-produce-academic-artifact--C16:produce-academic-artifact",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:system-contains:behavior_commitment_ledger",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:system-contains:development_process_flow",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:system-contains:logic_writing_models",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:system-contains:model_test_alignment",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:system-contains:plan_detailing",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:system-contains:primary_path_authority",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:system-contains:test_mesh",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "parent_closure:purpose:behavior_commitment_ledger",
+      "owner_route": "model_test_alignment"
+    },
+    {
+      "affected_id": "parent_closure:purpose:development_process_flow",
+      "owner_route": "model_test_alignment"
+    },
+    {
+      "affected_id": "parent_closure:purpose:logic_writing_models",
+      "owner_route": "model_test_alignment"
+    },
+    {
+      "affected_id": "parent_closure:purpose:model_test_alignment",
+      "owner_route": "model_test_alignment"
+    },
+    {
+      "affected_id": "parent_closure:purpose:plan_detailing",
+      "owner_route": "model_test_alignment"
+    },
+    {
+      "affected_id": "parent_closure:purpose:primary_path_authority",
+      "owner_route": "model_test_alignment"
+    },
+    {
+      "affected_id": "parent_closure:purpose:test_mesh",
+      "owner_route": "model_test_alignment"
+    },
+    {
+      "affected_id": "parent_closure:system:flowguard:model-regression-manifest",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "root:model:behavior_commitment_ledger",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "system_property:subject_revision",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "unresolved_gap:gap:behavior_commitments:C15:produce-investigation-report",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "unresolved_gap:gap:behavior_commitments:C16:produce-academic-artifact",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "unresolved_gap:gap:code_contracts:contract:contract:academic-composition",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "unresolved_gap:gap:code_contracts:contract:contract:investigation-composition",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "unresolved_gap:gap:external_surfaces:surface:openspec:c15-produce-investigation-report",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "unresolved_gap:gap:external_surfaces:surface:openspec:c16-produce-academic-artifact",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "unresolved_gap:gap:external_surfaces:surface:skill-entry:c15-produce-investigation-report",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "unresolved_gap:gap:external_surfaces:surface:skill-entry:c16-produce-academic-artifact",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "unresolved_gap:gap:fields_state_side_effects:field-or-effect:academic_profile",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "unresolved_gap:gap:fields_state_side_effects:field-or-effect:academic_route_audit_status",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "unresolved_gap:gap:fields_state_side_effects:field-or-effect:artifact_fingerprint",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "unresolved_gap:gap:fields_state_side_effects:field-or-effect:artifact_identity",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "unresolved_gap:gap:fields_state_side_effects:field-or-effect:artifact_map_fingerprint",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "unresolved_gap:gap:fields_state_side_effects:field-or-effect:artifact_map_status",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "unresolved_gap:gap:fields_state_side_effects:field-or-effect:audit_artifact_fingerprint",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "unresolved_gap:gap:fields_state_side_effects:field-or-effect:binding_status",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "unresolved_gap:gap:fields_state_side_effects:field-or-effect:composition_plan_fingerprint",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "unresolved_gap:gap:fields_state_side_effects:field-or-effect:composition_plan_status",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "unresolved_gap:gap:fields_state_side_effects:field-or-effect:consecutive_no_progress",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "unresolved_gap:gap:fields_state_side_effects:field-or-effect:investigation_profile",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "unresolved_gap:gap:fields_state_side_effects:field-or-effect:investigation_route_audit_status",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "unresolved_gap:gap:fields_state_side_effects:field-or-effect:judgment_artifact_fingerprint",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "unresolved_gap:gap:fields_state_side_effects:field-or-effect:reader_intent_fingerprint",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "unresolved_gap:gap:fields_state_side_effects:field-or-effect:reader_intent_status",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "unresolved_gap:gap:fields_state_side_effects:field-or-effect:reader_state_status",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "unresolved_gap:gap:fields_state_side_effects:field-or-effect:repair_attempt_count",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "unresolved_gap:gap:fields_state_side_effects:field-or-effect:repair_request_fingerprint",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "unresolved_gap:gap:fields_state_side_effects:field-or-effect:route_audit_status",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "unresolved_gap:gap:fields_state_side_effects:field-or-effect:route_extension_fingerprint",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "unresolved_gap:gap:fields_state_side_effects:field-or-effect:shared_binding_artifact_fingerprint",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "unresolved_gap:gap:fields_state_side_effects:field-or-effect:shared_binding_fingerprint",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "unresolved_gap:gap:fields_state_side_effects:field-or-effect:shared_binding_status",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "unresolved_gap:gap:tests_evidence:test:test:academic-route",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "unresolved_gap:gap:tests_evidence:test:test:investigation-route",
+      "owner_route": "model_mesh_maintenance"
+    }
+  ],
+  "base_snapshot_fingerprint": "sha256:1e4fa29752fc57b6ca42c923e8c57e85761db2f5017fdc85b4e348b123735a49",
+  "candidate_snapshot_fingerprint": "sha256:9453914907077b195a83d89d62afb7759962e3a12443435d99bce039a8347973",
+  "changed_commitment_ids": [
+    "C04:build-reader-brief",
+    "C05:audit-actual-artifact",
+    "C14:bind-model-to-reader-artifact",
+    "C15:produce-investigation-report",
+    "C16:produce-academic-artifact"
+  ],
+  "changed_contract_ids": [],
+  "changed_coverage_ids": [
+    "coverage:behavior_commitments:C15:produce-investigation-report",
+    "coverage:behavior_commitments:C16:produce-academic-artifact",
+    "coverage:code_contracts:contract:contract:academic-composition",
+    "coverage:code_contracts:contract:contract:investigation-composition",
+    "coverage:external_surfaces:surface:openspec:c15-produce-investigation-report",
+    "coverage:external_surfaces:surface:openspec:c16-produce-academic-artifact",
+    "coverage:external_surfaces:surface:skill-entry:c15-produce-investigation-report",
+    "coverage:external_surfaces:surface:skill-entry:c16-produce-academic-artifact",
+    "coverage:fields_state_side_effects:field-or-effect:academic_profile",
+    "coverage:fields_state_side_effects:field-or-effect:academic_route_audit_status",
+    "coverage:fields_state_side_effects:field-or-effect:artifact_fingerprint",
+    "coverage:fields_state_side_effects:field-or-effect:artifact_identity",
+    "coverage:fields_state_side_effects:field-or-effect:artifact_map_fingerprint",
+    "coverage:fields_state_side_effects:field-or-effect:artifact_map_status",
+    "coverage:fields_state_side_effects:field-or-effect:audit_artifact_fingerprint",
+    "coverage:fields_state_side_effects:field-or-effect:binding_status",
+    "coverage:fields_state_side_effects:field-or-effect:composition_plan_fingerprint",
+    "coverage:fields_state_side_effects:field-or-effect:composition_plan_status",
+    "coverage:fields_state_side_effects:field-or-effect:consecutive_no_progress",
+    "coverage:fields_state_side_effects:field-or-effect:investigation_profile",
+    "coverage:fields_state_side_effects:field-or-effect:investigation_route_audit_status",
+    "coverage:fields_state_side_effects:field-or-effect:judgment_artifact_fingerprint",
+    "coverage:fields_state_side_effects:field-or-effect:reader_intent_fingerprint",
+    "coverage:fields_state_side_effects:field-or-effect:reader_intent_status",
+    "coverage:fields_state_side_effects:field-or-effect:reader_state_status",
+    "coverage:fields_state_side_effects:field-or-effect:repair_attempt_count",
+    "coverage:fields_state_side_effects:field-or-effect:repair_request_fingerprint",
+    "coverage:fields_state_side_effects:field-or-effect:route_audit_status",
+    "coverage:fields_state_side_effects:field-or-effect:route_extension_fingerprint",
+    "coverage:fields_state_side_effects:field-or-effect:shared_binding_artifact_fingerprint",
+    "coverage:fields_state_side_effects:field-or-effect:shared_binding_fingerprint",
+    "coverage:fields_state_side_effects:field-or-effect:shared_binding_status",
+    "coverage:tests_evidence:test:test:academic-route",
+    "coverage:tests_evidence:test:test:investigation-route",
+    "coverage:universe"
+  ],
+  "changed_field_ids": [],
+  "changed_gap_ids": [
+    "gap:behavior_commitments:C15:produce-investigation-report",
+    "gap:behavior_commitments:C16:produce-academic-artifact",
+    "gap:code_contracts:contract:contract:academic-composition",
+    "gap:code_contracts:contract:contract:investigation-composition",
+    "gap:external_surfaces:surface:openspec:c15-produce-investigation-report",
+    "gap:external_surfaces:surface:openspec:c16-produce-academic-artifact",
+    "gap:external_surfaces:surface:skill-entry:c15-produce-investigation-report",
+    "gap:external_surfaces:surface:skill-entry:c16-produce-academic-artifact",
+    "gap:fields_state_side_effects:field-or-effect:academic_profile",
+    "gap:fields_state_side_effects:field-or-effect:academic_route_audit_status",
+    "gap:fields_state_side_effects:field-or-effect:artifact_fingerprint",
+    "gap:fields_state_side_effects:field-or-effect:artifact_identity",
+    "gap:fields_state_side_effects:field-or-effect:artifact_map_fingerprint",
+    "gap:fields_state_side_effects:field-or-effect:artifact_map_status",
+    "gap:fields_state_side_effects:field-or-effect:audit_artifact_fingerprint",
+    "gap:fields_state_side_effects:field-or-effect:binding_status",
+    "gap:fields_state_side_effects:field-or-effect:composition_plan_fingerprint",
+    "gap:fields_state_side_effects:field-or-effect:composition_plan_status",
+    "gap:fields_state_side_effects:field-or-effect:consecutive_no_progress",
+    "gap:fields_state_side_effects:field-or-effect:investigation_profile",
+    "gap:fields_state_side_effects:field-or-effect:investigation_route_audit_status",
+    "gap:fields_state_side_effects:field-or-effect:judgment_artifact_fingerprint",
+    "gap:fields_state_side_effects:field-or-effect:reader_intent_fingerprint",
+    "gap:fields_state_side_effects:field-or-effect:reader_intent_status",
+    "gap:fields_state_side_effects:field-or-effect:reader_state_status",
+    "gap:fields_state_side_effects:field-or-effect:repair_attempt_count",
+    "gap:fields_state_side_effects:field-or-effect:repair_request_fingerprint",
+    "gap:fields_state_side_effects:field-or-effect:route_audit_status",
+    "gap:fields_state_side_effects:field-or-effect:route_extension_fingerprint",
+    "gap:fields_state_side_effects:field-or-effect:shared_binding_artifact_fingerprint",
+    "gap:fields_state_side_effects:field-or-effect:shared_binding_fingerprint",
+    "gap:fields_state_side_effects:field-or-effect:shared_binding_status",
+    "gap:tests_evidence:test:test:academic-route",
+    "gap:tests_evidence:test:test:investigation-route"
+  ],
+  "changed_owner_artifact_ids": [
+    "behavior_commitment:C04:build-reader-brief",
+    "behavior_commitment:C05:audit-actual-artifact",
+    "behavior_commitment:C14:bind-model-to-reader-artifact",
+    "behavior_commitment:C15:produce-investigation-report",
+    "behavior_commitment:C16:produce-academic-artifact",
+    "external_surface:surface:openspec:c01-select-one-final-owner",
+    "external_surface:surface:openspec:c02-preserve-specialist-authority",
+    "external_surface:surface:openspec:c03-build-current-research-packet",
+    "external_surface:surface:openspec:c04-build-reader-brief",
+    "external_surface:surface:openspec:c05-audit-actual-artifact",
+    "external_surface:surface:openspec:c06-issue-final-artifact-closure",
+    "external_surface:surface:openspec:c07-freeze-one-validation-owner",
+    "external_surface:surface:openspec:c08-activate-recoverable-install",
+    "external_surface:surface:openspec:c09-project-one-global-route",
+    "external_surface:surface:openspec:c10-publish-logic-writing-release",
+    "external_surface:surface:openspec:c11-retire-predecessors-safely",
+    "external_surface:surface:openspec:c12-produce-fiction-artifact",
+    "external_surface:surface:openspec:c13-produce-travel-guide",
+    "external_surface:surface:openspec:c14-bind-model-to-reader-artifact",
+    "external_surface:surface:openspec:c15-produce-investigation-report",
+    "external_surface:surface:openspec:c16-produce-academic-artifact",
+    "external_surface:surface:release-process:c07-freeze-one-validation-owner",
+    "external_surface:surface:release-process:c08-activate-recoverable-install",
+    "external_surface:surface:release-process:c09-project-one-global-route",
+    "external_surface:surface:release-process:c10-publish-logic-writing-release",
+    "external_surface:surface:release-process:c11-retire-predecessors-safely",
+    "external_surface:surface:skill-entry:c01-select-one-final-owner",
+    "external_surface:surface:skill-entry:c02-preserve-specialist-authority",
+    "external_surface:surface:skill-entry:c03-build-current-research-packet",
+    "external_surface:surface:skill-entry:c04-build-reader-brief",
+    "external_surface:surface:skill-entry:c05-audit-actual-artifact",
+    "external_surface:surface:skill-entry:c06-issue-final-artifact-closure",
+    "external_surface:surface:skill-entry:c12-produce-fiction-artifact",
+    "external_surface:surface:skill-entry:c13-produce-travel-guide",
+    "external_surface:surface:skill-entry:c14-bind-model-to-reader-artifact",
+    "external_surface:surface:skill-entry:c15-produce-investigation-report",
+    "external_surface:surface:skill-entry:c16-produce-academic-artifact",
+    "parent_closure:purpose:behavior_commitment_ledger",
+    "parent_closure:purpose:development_process_flow",
+    "parent_closure:purpose:logic_writing_models",
+    "parent_closure:purpose:model_test_alignment",
+    "parent_closure:purpose:plan_detailing",
+    "parent_closure:purpose:primary_path_authority",
+    "parent_closure:purpose:test_mesh",
+    "parent_closure:system:flowguard:model-regression-manifest"
+  ],
+  "changed_relation_ids": [
+    "relation:model-realizes-purpose:behavior_commitment_ledger",
+    "relation:model-realizes-purpose:development_process_flow",
+    "relation:model-realizes-purpose:logic_writing_models",
+    "relation:model-realizes-purpose:model_test_alignment",
+    "relation:model-realizes-purpose:plan_detailing",
+    "relation:model-realizes-purpose:primary_path_authority",
+    "relation:model-realizes-purpose:test_mesh",
+    "relation:surface-produces-for-commitment:surface:openspec:c01-select-one-final-owner--C01:select-one-final-owner",
+    "relation:surface-produces-for-commitment:surface:openspec:c02-preserve-specialist-authority--C02:preserve-specialist-authority",
+    "relation:surface-produces-for-commitment:surface:openspec:c03-build-current-research-packet--C03:build-current-research-packet",
+    "relation:surface-produces-for-commitment:surface:openspec:c04-build-reader-brief--C04:build-reader-brief",
+    "relation:surface-produces-for-commitment:surface:openspec:c05-audit-actual-artifact--C05:audit-actual-artifact",
+    "relation:surface-produces-for-commitment:surface:openspec:c06-issue-final-artifact-closure--C06:issue-final-artifact-closure",
+    "relation:surface-produces-for-commitment:surface:openspec:c07-freeze-one-validation-owner--C07:freeze-one-validation-owner",
+    "relation:surface-produces-for-commitment:surface:openspec:c08-activate-recoverable-install--C08:activate-recoverable-install",
+    "relation:surface-produces-for-commitment:surface:openspec:c09-project-one-global-route--C09:project-one-global-route",
+    "relation:surface-produces-for-commitment:surface:openspec:c10-publish-logic-writing-release--C10:publish-logic-writing-release",
+    "relation:surface-produces-for-commitment:surface:openspec:c11-retire-predecessors-safely--C11:retire-predecessors-safely",
+    "relation:surface-produces-for-commitment:surface:openspec:c12-produce-fiction-artifact--C12:produce-fiction-artifact",
+    "relation:surface-produces-for-commitment:surface:openspec:c13-produce-travel-guide--C13:produce-travel-guide",
+    "relation:surface-produces-for-commitment:surface:openspec:c14-bind-model-to-reader-artifact--C14:bind-model-to-reader-artifact",
+    "relation:surface-produces-for-commitment:surface:openspec:c15-produce-investigation-report--C15:produce-investigation-report",
+    "relation:surface-produces-for-commitment:surface:openspec:c16-produce-academic-artifact--C16:produce-academic-artifact",
+    "relation:surface-produces-for-commitment:surface:release-process:c07-freeze-one-validation-owner--C07:freeze-one-validation-owner",
+    "relation:surface-produces-for-commitment:surface:release-process:c08-activate-recoverable-install--C08:activate-recoverable-install",
+    "relation:surface-produces-for-commitment:surface:release-process:c09-project-one-global-route--C09:project-one-global-route",
+    "relation:surface-produces-for-commitment:surface:release-process:c10-publish-logic-writing-release--C10:publish-logic-writing-release",
+    "relation:surface-produces-for-commitment:surface:release-process:c11-retire-predecessors-safely--C11:retire-predecessors-safely",
+    "relation:surface-produces-for-commitment:surface:skill-entry:c01-select-one-final-owner--C01:select-one-final-owner",
+    "relation:surface-produces-for-commitment:surface:skill-entry:c02-preserve-specialist-authority--C02:preserve-specialist-authority",
+    "relation:surface-produces-for-commitment:surface:skill-entry:c03-build-current-research-packet--C03:build-current-research-packet",
+    "relation:surface-produces-for-commitment:surface:skill-entry:c04-build-reader-brief--C04:build-reader-brief",
+    "relation:surface-produces-for-commitment:surface:skill-entry:c05-audit-actual-artifact--C05:audit-actual-artifact",
+    "relation:surface-produces-for-commitment:surface:skill-entry:c06-issue-final-artifact-closure--C06:issue-final-artifact-closure",
+    "relation:surface-produces-for-commitment:surface:skill-entry:c12-produce-fiction-artifact--C12:produce-fiction-artifact",
+    "relation:surface-produces-for-commitment:surface:skill-entry:c13-produce-travel-guide--C13:produce-travel-guide",
+    "relation:surface-produces-for-commitment:surface:skill-entry:c14-bind-model-to-reader-artifact--C14:bind-model-to-reader-artifact",
+    "relation:surface-produces-for-commitment:surface:skill-entry:c15-produce-investigation-report--C15:produce-investigation-report",
+    "relation:surface-produces-for-commitment:surface:skill-entry:c16-produce-academic-artifact--C16:produce-academic-artifact",
+    "relation:system-contains:behavior_commitment_ledger",
+    "relation:system-contains:development_process_flow",
+    "relation:system-contains:logic_writing_models",
+    "relation:system-contains:model_test_alignment",
+    "relation:system-contains:plan_detailing",
+    "relation:system-contains:primary_path_authority",
+    "relation:system-contains:test_mesh"
+  ],
+  "changed_root_ids": [
+    "root:model:behavior_commitment_ledger"
+  ],
+  "changed_side_effect_ids": [],
+  "changed_source_surface_ids": [
+    "surface:openspec:c01-select-one-final-owner",
+    "surface:openspec:c02-preserve-specialist-authority",
+    "surface:openspec:c03-build-current-research-packet",
+    "surface:openspec:c04-build-reader-brief",
+    "surface:openspec:c05-audit-actual-artifact",
+    "surface:openspec:c06-issue-final-artifact-closure",
+    "surface:openspec:c07-freeze-one-validation-owner",
+    "surface:openspec:c08-activate-recoverable-install",
+    "surface:openspec:c09-project-one-global-route",
+    "surface:openspec:c10-publish-logic-writing-release",
+    "surface:openspec:c11-retire-predecessors-safely",
+    "surface:openspec:c12-produce-fiction-artifact",
+    "surface:openspec:c13-produce-travel-guide",
+    "surface:openspec:c14-bind-model-to-reader-artifact",
+    "surface:openspec:c15-produce-investigation-report",
+    "surface:openspec:c16-produce-academic-artifact",
+    "surface:release-process:c07-freeze-one-validation-owner",
+    "surface:release-process:c08-activate-recoverable-install",
+    "surface:release-process:c09-project-one-global-route",
+    "surface:release-process:c10-publish-logic-writing-release",
+    "surface:release-process:c11-retire-predecessors-safely",
+    "surface:skill-entry:c01-select-one-final-owner",
+    "surface:skill-entry:c02-preserve-specialist-authority",
+    "surface:skill-entry:c03-build-current-research-packet",
+    "surface:skill-entry:c04-build-reader-brief",
+    "surface:skill-entry:c05-audit-actual-artifact",
+    "surface:skill-entry:c06-issue-final-artifact-closure",
+    "surface:skill-entry:c12-produce-fiction-artifact",
+    "surface:skill-entry:c13-produce-travel-guide",
+    "surface:skill-entry:c14-bind-model-to-reader-artifact",
+    "surface:skill-entry:c15-produce-investigation-report",
+    "surface:skill-entry:c16-produce-academic-artifact"
+  ],
+  "changed_system_property_ids": [
+    "system_property:subject_revision"
+  ],
+  "changed_test_ids": [],
+  "completed_evidence_refs": [
+    {
+      "affected_closure_fingerprint": "sha256:b6146cc10f188bebcd115f6958dd1c2fa960e1f4cb958335c17dcc348140998e",
+      "candidate_snapshot_fingerprint": "sha256:9453914907077b195a83d89d62afb7759962e3a12443435d99bce039a8347973",
+      "covered_affected_ids": [
+        "behavior_commitment:C01:select-one-final-owner",
+        "behavior_commitment:C02:preserve-specialist-authority",
+        "behavior_commitment:C03:build-current-research-packet",
+        "behavior_commitment:C04:build-reader-brief",
+        "behavior_commitment:C05:audit-actual-artifact",
+        "behavior_commitment:C06:issue-final-artifact-closure",
+        "behavior_commitment:C07:freeze-one-validation-owner",
+        "behavior_commitment:C08:activate-recoverable-install",
+        "behavior_commitment:C09:project-one-global-route",
+        "behavior_commitment:C10:publish-logic-writing-release",
+        "behavior_commitment:C11:retire-predecessors-safely",
+        "behavior_commitment:C12:produce-fiction-artifact",
+        "behavior_commitment:C13:produce-travel-guide",
+        "behavior_commitment:C14:bind-model-to-reader-artifact",
+        "behavior_commitment:C15:produce-investigation-report",
+        "behavior_commitment:C16:produce-academic-artifact",
+        "external_surface:surface:openspec:c01-select-one-final-owner",
+        "external_surface:surface:openspec:c02-preserve-specialist-authority",
+        "external_surface:surface:openspec:c03-build-current-research-packet",
+        "external_surface:surface:openspec:c04-build-reader-brief",
+        "external_surface:surface:openspec:c05-audit-actual-artifact",
+        "external_surface:surface:openspec:c06-issue-final-artifact-closure",
+        "external_surface:surface:openspec:c07-freeze-one-validation-owner",
+        "external_surface:surface:openspec:c08-activate-recoverable-install",
+        "external_surface:surface:openspec:c09-project-one-global-route",
+        "external_surface:surface:openspec:c10-publish-logic-writing-release",
+        "external_surface:surface:openspec:c11-retire-predecessors-safely",
+        "external_surface:surface:openspec:c12-produce-fiction-artifact",
+        "external_surface:surface:openspec:c13-produce-travel-guide",
+        "external_surface:surface:openspec:c14-bind-model-to-reader-artifact",
+        "external_surface:surface:openspec:c15-produce-investigation-report",
+        "external_surface:surface:openspec:c16-produce-academic-artifact",
+        "external_surface:surface:release-process:c07-freeze-one-validation-owner",
+        "external_surface:surface:release-process:c08-activate-recoverable-install",
+        "external_surface:surface:release-process:c09-project-one-global-route",
+        "external_surface:surface:release-process:c10-publish-logic-writing-release",
+        "external_surface:surface:release-process:c11-retire-predecessors-safely",
+        "external_surface:surface:skill-entry:c01-select-one-final-owner",
+        "external_surface:surface:skill-entry:c02-preserve-specialist-authority",
+        "external_surface:surface:skill-entry:c03-build-current-research-packet",
+        "external_surface:surface:skill-entry:c04-build-reader-brief",
+        "external_surface:surface:skill-entry:c05-audit-actual-artifact",
+        "external_surface:surface:skill-entry:c06-issue-final-artifact-closure",
+        "external_surface:surface:skill-entry:c12-produce-fiction-artifact",
+        "external_surface:surface:skill-entry:c13-produce-travel-guide",
+        "external_surface:surface:skill-entry:c14-bind-model-to-reader-artifact",
+        "external_surface:surface:skill-entry:c15-produce-investigation-report",
+        "external_surface:surface:skill-entry:c16-produce-academic-artifact"
+      ],
+      "current": true,
+      "eligible": true,
+      "environment_fingerprint": "sha256:2cc6a220b55952b0f9042e30c932dab0f0bbd99d2a039085b460308e7aa20904",
+      "obligation_ids": [
+        "obligation:logic-writing-v3:behavior_commitment_ledger"
+      ],
+      "owner_route": "behavior_commitment_ledger",
+      "receipt_fingerprint": "sha256:05fd6360b3799739beb174c314d66c567136bce7c3864712d32f620f11873a29",
+      "receipt_id": "receipt:logic-writing-v3-model-regression:1",
+      "schema": "flowguard.model_revision_evidence.v2",
+      "status": "pass",
+      "subject_fingerprint": "sha256:9453914907077b195a83d89d62afb7759962e3a12443435d99bce039a8347973",
+      "toolchain_fingerprint": "sha256:d74bcef807f2087b5314aac2884522e3c725cccd761fa9bf2b1877f4b2c5e9ea"
+    },
+    {
+      "affected_closure_fingerprint": "sha256:b6146cc10f188bebcd115f6958dd1c2fa960e1f4cb958335c17dcc348140998e",
+      "candidate_snapshot_fingerprint": "sha256:9453914907077b195a83d89d62afb7759962e3a12443435d99bce039a8347973",
+      "covered_affected_ids": [
+        "coverage:behavior_commitments:C15:produce-investigation-report",
+        "coverage:behavior_commitments:C16:produce-academic-artifact",
+        "coverage:code_contracts:contract:contract:academic-composition",
+        "coverage:code_contracts:contract:contract:investigation-composition",
+        "coverage:external_surfaces:surface:openspec:c15-produce-investigation-report",
+        "coverage:external_surfaces:surface:openspec:c16-produce-academic-artifact",
+        "coverage:external_surfaces:surface:skill-entry:c15-produce-investigation-report",
+        "coverage:external_surfaces:surface:skill-entry:c16-produce-academic-artifact",
+        "coverage:fields_state_side_effects:field-or-effect:academic_profile",
+        "coverage:fields_state_side_effects:field-or-effect:academic_route_audit_status",
+        "coverage:fields_state_side_effects:field-or-effect:artifact_fingerprint",
+        "coverage:fields_state_side_effects:field-or-effect:artifact_identity",
+        "coverage:fields_state_side_effects:field-or-effect:artifact_map_fingerprint",
+        "coverage:fields_state_side_effects:field-or-effect:artifact_map_status",
+        "coverage:fields_state_side_effects:field-or-effect:audit_artifact_fingerprint",
+        "coverage:fields_state_side_effects:field-or-effect:binding_status",
+        "coverage:fields_state_side_effects:field-or-effect:composition_plan_fingerprint",
+        "coverage:fields_state_side_effects:field-or-effect:composition_plan_status",
+        "coverage:fields_state_side_effects:field-or-effect:consecutive_no_progress",
+        "coverage:fields_state_side_effects:field-or-effect:investigation_profile",
+        "coverage:fields_state_side_effects:field-or-effect:investigation_route_audit_status",
+        "coverage:fields_state_side_effects:field-or-effect:judgment_artifact_fingerprint",
+        "coverage:fields_state_side_effects:field-or-effect:reader_intent_fingerprint",
+        "coverage:fields_state_side_effects:field-or-effect:reader_intent_status",
+        "coverage:fields_state_side_effects:field-or-effect:reader_state_status",
+        "coverage:fields_state_side_effects:field-or-effect:repair_attempt_count",
+        "coverage:fields_state_side_effects:field-or-effect:repair_request_fingerprint",
+        "coverage:fields_state_side_effects:field-or-effect:route_audit_status",
+        "coverage:fields_state_side_effects:field-or-effect:route_extension_fingerprint",
+        "coverage:fields_state_side_effects:field-or-effect:shared_binding_artifact_fingerprint",
+        "coverage:fields_state_side_effects:field-or-effect:shared_binding_fingerprint",
+        "coverage:fields_state_side_effects:field-or-effect:shared_binding_status",
+        "coverage:tests_evidence:test:test:academic-route",
+        "coverage:tests_evidence:test:test:investigation-route",
+        "coverage:universe",
+        "model_relation:relation:model-realizes-purpose:behavior_commitment_ledger",
+        "model_relation:relation:model-realizes-purpose:development_process_flow",
+        "model_relation:relation:model-realizes-purpose:logic_writing_models",
+        "model_relation:relation:model-realizes-purpose:model_test_alignment",
+        "model_relation:relation:model-realizes-purpose:plan_detailing",
+        "model_relation:relation:model-realizes-purpose:primary_path_authority",
+        "model_relation:relation:model-realizes-purpose:test_mesh",
+        "model_relation:relation:surface-produces-for-commitment:surface:openspec:c01-select-one-final-owner--C01:select-one-final-owner",
+        "model_relation:relation:surface-produces-for-commitment:surface:openspec:c02-preserve-specialist-authority--C02:preserve-specialist-authority",
+        "model_relation:relation:surface-produces-for-commitment:surface:openspec:c03-build-current-research-packet--C03:build-current-research-packet",
+        "model_relation:relation:surface-produces-for-commitment:surface:openspec:c04-build-reader-brief--C04:build-reader-brief",
+        "model_relation:relation:surface-produces-for-commitment:surface:openspec:c05-audit-actual-artifact--C05:audit-actual-artifact",
+        "model_relation:relation:surface-produces-for-commitment:surface:openspec:c06-issue-final-artifact-closure--C06:issue-final-artifact-closure",
+        "model_relation:relation:surface-produces-for-commitment:surface:openspec:c07-freeze-one-validation-owner--C07:freeze-one-validation-owner",
+        "model_relation:relation:surface-produces-for-commitment:surface:openspec:c08-activate-recoverable-install--C08:activate-recoverable-install",
+        "model_relation:relation:surface-produces-for-commitment:surface:openspec:c09-project-one-global-route--C09:project-one-global-route",
+        "model_relation:relation:surface-produces-for-commitment:surface:openspec:c10-publish-logic-writing-release--C10:publish-logic-writing-release",
+        "model_relation:relation:surface-produces-for-commitment:surface:openspec:c11-retire-predecessors-safely--C11:retire-predecessors-safely",
+        "model_relation:relation:surface-produces-for-commitment:surface:openspec:c12-produce-fiction-artifact--C12:produce-fiction-artifact",
+        "model_relation:relation:surface-produces-for-commitment:surface:openspec:c13-produce-travel-guide--C13:produce-travel-guide",
+        "model_relation:relation:surface-produces-for-commitment:surface:openspec:c14-bind-model-to-reader-artifact--C14:bind-model-to-reader-artifact",
+        "model_relation:relation:surface-produces-for-commitment:surface:openspec:c15-produce-investigation-report--C15:produce-investigation-report",
+        "model_relation:relation:surface-produces-for-commitment:surface:openspec:c16-produce-academic-artifact--C16:produce-academic-artifact",
+        "model_relation:relation:surface-produces-for-commitment:surface:release-process:c07-freeze-one-validation-owner--C07:freeze-one-validation-owner",
+        "model_relation:relation:surface-produces-for-commitment:surface:release-process:c08-activate-recoverable-install--C08:activate-recoverable-install",
+        "model_relation:relation:surface-produces-for-commitment:surface:release-process:c09-project-one-global-route--C09:project-one-global-route",
+        "model_relation:relation:surface-produces-for-commitment:surface:release-process:c10-publish-logic-writing-release--C10:publish-logic-writing-release",
+        "model_relation:relation:surface-produces-for-commitment:surface:release-process:c11-retire-predecessors-safely--C11:retire-predecessors-safely",
+        "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c01-select-one-final-owner--C01:select-one-final-owner",
+        "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c02-preserve-specialist-authority--C02:preserve-specialist-authority",
+        "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c03-build-current-research-packet--C03:build-current-research-packet",
+        "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c04-build-reader-brief--C04:build-reader-brief",
+        "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c05-audit-actual-artifact--C05:audit-actual-artifact",
+        "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c06-issue-final-artifact-closure--C06:issue-final-artifact-closure",
+        "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c12-produce-fiction-artifact--C12:produce-fiction-artifact",
+        "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c13-produce-travel-guide--C13:produce-travel-guide",
+        "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c14-bind-model-to-reader-artifact--C14:bind-model-to-reader-artifact",
+        "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c15-produce-investigation-report--C15:produce-investigation-report",
+        "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c16-produce-academic-artifact--C16:produce-academic-artifact",
+        "model_relation:relation:system-contains:behavior_commitment_ledger",
+        "model_relation:relation:system-contains:development_process_flow",
+        "model_relation:relation:system-contains:logic_writing_models",
+        "model_relation:relation:system-contains:model_test_alignment",
+        "model_relation:relation:system-contains:plan_detailing",
+        "model_relation:relation:system-contains:primary_path_authority",
+        "model_relation:relation:system-contains:test_mesh",
+        "parent_closure:system:flowguard:model-regression-manifest",
+        "root:model:behavior_commitment_ledger",
+        "system_property:subject_revision",
+        "unresolved_gap:gap:behavior_commitments:C15:produce-investigation-report",
+        "unresolved_gap:gap:behavior_commitments:C16:produce-academic-artifact",
+        "unresolved_gap:gap:code_contracts:contract:contract:academic-composition",
+        "unresolved_gap:gap:code_contracts:contract:contract:investigation-composition",
+        "unresolved_gap:gap:external_surfaces:surface:openspec:c15-produce-investigation-report",
+        "unresolved_gap:gap:external_surfaces:surface:openspec:c16-produce-academic-artifact",
+        "unresolved_gap:gap:external_surfaces:surface:skill-entry:c15-produce-investigation-report",
+        "unresolved_gap:gap:external_surfaces:surface:skill-entry:c16-produce-academic-artifact",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:academic_profile",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:academic_route_audit_status",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:artifact_fingerprint",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:artifact_identity",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:artifact_map_fingerprint",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:artifact_map_status",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:audit_artifact_fingerprint",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:binding_status",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:composition_plan_fingerprint",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:composition_plan_status",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:consecutive_no_progress",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:investigation_profile",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:investigation_route_audit_status",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:judgment_artifact_fingerprint",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:reader_intent_fingerprint",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:reader_intent_status",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:reader_state_status",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:repair_attempt_count",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:repair_request_fingerprint",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:route_audit_status",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:route_extension_fingerprint",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:shared_binding_artifact_fingerprint",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:shared_binding_fingerprint",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:shared_binding_status",
+        "unresolved_gap:gap:tests_evidence:test:test:academic-route",
+        "unresolved_gap:gap:tests_evidence:test:test:investigation-route"
+      ],
+      "current": true,
+      "eligible": true,
+      "environment_fingerprint": "sha256:2cc6a220b55952b0f9042e30c932dab0f0bbd99d2a039085b460308e7aa20904",
+      "obligation_ids": [
+        "obligation:logic-writing-v3:model_mesh_maintenance"
+      ],
+      "owner_route": "model_mesh_maintenance",
+      "receipt_fingerprint": "sha256:05fd6360b3799739beb174c314d66c567136bce7c3864712d32f620f11873a29",
+      "receipt_id": "receipt:logic-writing-v3-model-regression:2",
+      "schema": "flowguard.model_revision_evidence.v2",
+      "status": "pass",
+      "subject_fingerprint": "sha256:9453914907077b195a83d89d62afb7759962e3a12443435d99bce039a8347973",
+      "toolchain_fingerprint": "sha256:d74bcef807f2087b5314aac2884522e3c725cccd761fa9bf2b1877f4b2c5e9ea"
+    },
+    {
+      "affected_closure_fingerprint": "sha256:b6146cc10f188bebcd115f6958dd1c2fa960e1f4cb958335c17dcc348140998e",
+      "candidate_snapshot_fingerprint": "sha256:9453914907077b195a83d89d62afb7759962e3a12443435d99bce039a8347973",
+      "covered_affected_ids": [
+        "model_instance:model:behavior_commitment_ledger",
+        "model_instance:model:development_process_flow",
+        "model_instance:model:logic_writing_models",
+        "model_instance:model:model_test_alignment",
+        "model_instance:model:plan_detailing",
+        "model_instance:model:primary_path_authority",
+        "model_instance:model:test_mesh",
+        "parent_closure:purpose:behavior_commitment_ledger",
+        "parent_closure:purpose:development_process_flow",
+        "parent_closure:purpose:logic_writing_models",
+        "parent_closure:purpose:model_test_alignment",
+        "parent_closure:purpose:plan_detailing",
+        "parent_closure:purpose:primary_path_authority",
+        "parent_closure:purpose:test_mesh"
+      ],
+      "current": true,
+      "eligible": true,
+      "environment_fingerprint": "sha256:2cc6a220b55952b0f9042e30c932dab0f0bbd99d2a039085b460308e7aa20904",
+      "obligation_ids": [
+        "obligation:logic-writing-v3:model_test_alignment"
+      ],
+      "owner_route": "model_test_alignment",
+      "receipt_fingerprint": "sha256:05fd6360b3799739beb174c314d66c567136bce7c3864712d32f620f11873a29",
+      "receipt_id": "receipt:logic-writing-v3-model-regression:3",
+      "schema": "flowguard.model_revision_evidence.v2",
+      "status": "pass",
+      "subject_fingerprint": "sha256:9453914907077b195a83d89d62afb7759962e3a12443435d99bce039a8347973",
+      "toolchain_fingerprint": "sha256:d74bcef807f2087b5314aac2884522e3c725cccd761fa9bf2b1877f4b2c5e9ea"
+    }
+  ],
+  "decision_reason": "All seven current manifest models passed the full-tier affected regression; model-phase and model-test alignment are current.",
+  "evidence_complete": true,
+  "expected_head_fingerprint": "sha256:42e67c35e6a1e86dd385b41025b1f15c376480d8bfae129ec98261c6399df5a8",
+  "fingerprint": "sha256:a15d057fd1dfc7a2bf537b91d97035f4c9dd4a4a05ca388348dddc6263348193",
+  "fingerprint_changed_ids": [
+    "behavior_commitment:C04:build-reader-brief",
+    "behavior_commitment:C05:audit-actual-artifact",
+    "behavior_commitment:C14:bind-model-to-reader-artifact",
+    "coverage:universe",
+    "external_surface:surface:openspec:c01-select-one-final-owner",
+    "external_surface:surface:openspec:c02-preserve-specialist-authority",
+    "external_surface:surface:openspec:c03-build-current-research-packet",
+    "external_surface:surface:openspec:c04-build-reader-brief",
+    "external_surface:surface:openspec:c05-audit-actual-artifact",
+    "external_surface:surface:openspec:c06-issue-final-artifact-closure",
+    "external_surface:surface:openspec:c07-freeze-one-validation-owner",
+    "external_surface:surface:openspec:c08-activate-recoverable-install",
+    "external_surface:surface:openspec:c09-project-one-global-route",
+    "external_surface:surface:openspec:c10-publish-logic-writing-release",
+    "external_surface:surface:openspec:c11-retire-predecessors-safely",
+    "external_surface:surface:openspec:c12-produce-fiction-artifact",
+    "external_surface:surface:openspec:c13-produce-travel-guide",
+    "external_surface:surface:openspec:c14-bind-model-to-reader-artifact",
+    "external_surface:surface:release-process:c07-freeze-one-validation-owner",
+    "external_surface:surface:release-process:c08-activate-recoverable-install",
+    "external_surface:surface:release-process:c09-project-one-global-route",
+    "external_surface:surface:release-process:c10-publish-logic-writing-release",
+    "external_surface:surface:release-process:c11-retire-predecessors-safely",
+    "external_surface:surface:skill-entry:c01-select-one-final-owner",
+    "external_surface:surface:skill-entry:c02-preserve-specialist-authority",
+    "external_surface:surface:skill-entry:c03-build-current-research-packet",
+    "external_surface:surface:skill-entry:c04-build-reader-brief",
+    "external_surface:surface:skill-entry:c05-audit-actual-artifact",
+    "external_surface:surface:skill-entry:c06-issue-final-artifact-closure",
+    "external_surface:surface:skill-entry:c12-produce-fiction-artifact",
+    "external_surface:surface:skill-entry:c13-produce-travel-guide",
+    "external_surface:surface:skill-entry:c14-bind-model-to-reader-artifact",
+    "model_instance:model:behavior_commitment_ledger",
+    "model_instance:model:development_process_flow",
+    "model_instance:model:logic_writing_models",
+    "model_instance:model:model_test_alignment",
+    "model_instance:model:plan_detailing",
+    "model_instance:model:primary_path_authority",
+    "model_instance:model:test_mesh",
+    "model_relation:relation:model-realizes-purpose:behavior_commitment_ledger",
+    "model_relation:relation:model-realizes-purpose:development_process_flow",
+    "model_relation:relation:model-realizes-purpose:logic_writing_models",
+    "model_relation:relation:model-realizes-purpose:model_test_alignment",
+    "model_relation:relation:model-realizes-purpose:plan_detailing",
+    "model_relation:relation:model-realizes-purpose:primary_path_authority",
+    "model_relation:relation:model-realizes-purpose:test_mesh",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c01-select-one-final-owner--C01:select-one-final-owner",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c02-preserve-specialist-authority--C02:preserve-specialist-authority",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c03-build-current-research-packet--C03:build-current-research-packet",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c04-build-reader-brief--C04:build-reader-brief",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c05-audit-actual-artifact--C05:audit-actual-artifact",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c06-issue-final-artifact-closure--C06:issue-final-artifact-closure",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c07-freeze-one-validation-owner--C07:freeze-one-validation-owner",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c08-activate-recoverable-install--C08:activate-recoverable-install",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c09-project-one-global-route--C09:project-one-global-route",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c10-publish-logic-writing-release--C10:publish-logic-writing-release",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c11-retire-predecessors-safely--C11:retire-predecessors-safely",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c12-produce-fiction-artifact--C12:produce-fiction-artifact",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c13-produce-travel-guide--C13:produce-travel-guide",
+    "model_relation:relation:surface-produces-for-commitment:surface:openspec:c14-bind-model-to-reader-artifact--C14:bind-model-to-reader-artifact",
+    "model_relation:relation:surface-produces-for-commitment:surface:release-process:c07-freeze-one-validation-owner--C07:freeze-one-validation-owner",
+    "model_relation:relation:surface-produces-for-commitment:surface:release-process:c08-activate-recoverable-install--C08:activate-recoverable-install",
+    "model_relation:relation:surface-produces-for-commitment:surface:release-process:c09-project-one-global-route--C09:project-one-global-route",
+    "model_relation:relation:surface-produces-for-commitment:surface:release-process:c10-publish-logic-writing-release--C10:publish-logic-writing-release",
+    "model_relation:relation:surface-produces-for-commitment:surface:release-process:c11-retire-predecessors-safely--C11:retire-predecessors-safely",
+    "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c01-select-one-final-owner--C01:select-one-final-owner",
+    "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c02-preserve-specialist-authority--C02:preserve-specialist-authority",
+    "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c03-build-current-research-packet--C03:build-current-research-packet",
+    "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c04-build-reader-brief--C04:build-reader-brief",
+    "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c05-audit-actual-artifact--C05:audit-actual-artifact",
+    "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c06-issue-final-artifact-closure--C06:issue-final-artifact-closure",
+    "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c12-produce-fiction-artifact--C12:produce-fiction-artifact",
+    "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c13-produce-travel-guide--C13:produce-travel-guide",
+    "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c14-bind-model-to-reader-artifact--C14:bind-model-to-reader-artifact",
+    "model_relation:relation:system-contains:behavior_commitment_ledger",
+    "model_relation:relation:system-contains:development_process_flow",
+    "model_relation:relation:system-contains:logic_writing_models",
+    "model_relation:relation:system-contains:model_test_alignment",
+    "model_relation:relation:system-contains:plan_detailing",
+    "model_relation:relation:system-contains:primary_path_authority",
+    "model_relation:relation:system-contains:test_mesh",
+    "parent_closure:purpose:behavior_commitment_ledger",
+    "parent_closure:purpose:development_process_flow",
+    "parent_closure:purpose:logic_writing_models",
+    "parent_closure:purpose:model_test_alignment",
+    "parent_closure:purpose:plan_detailing",
+    "parent_closure:purpose:primary_path_authority",
+    "parent_closure:purpose:test_mesh",
+    "parent_closure:system:flowguard:model-regression-manifest",
+    "root:model:behavior_commitment_ledger"
+  ],
+  "implementation_bundle_fingerprint": "",
+  "members": [
+    {
+      "base_instance_fingerprint": "sha256:62e34a443ced33ce7370988f1655ee63c4d122e6acbfbc356f9ab06c0d011406",
+      "candidate_instance_fingerprint": "sha256:3ae3b682b207ad70893a2a51036b61d7ae3b3749a7530aff7aaf18e13c923e35",
+      "changed_element_ids": [
+        "model_instance:model:behavior_commitment_ledger"
+      ],
+      "member_id": "behavior_commitment_ledger",
+      "operation": "replace",
+      "schema": "flowguard.model_revision_member.v1"
+    },
+    {
+      "base_instance_fingerprint": "sha256:9effafc4210279ebad8a0c506c107fd48dfee74d44b45c16fff0e7b67dbbcebf",
+      "candidate_instance_fingerprint": "sha256:dd5ce81d0dc3e1bcb3d2dbf1379b2142612d1c59dd26ce7fc59526bf04d4116d",
+      "changed_element_ids": [
+        "model_instance:model:development_process_flow"
+      ],
+      "member_id": "development_process_flow",
+      "operation": "replace",
+      "schema": "flowguard.model_revision_member.v1"
+    },
+    {
+      "base_instance_fingerprint": "sha256:f46dd55fea52f2534fd05ea6d3b02add8c792d8c1f478bf1f069892da8a53664",
+      "candidate_instance_fingerprint": "sha256:0895e1335844f62a67fd69008b0c4ed60a9e0d2a6d66a66004d4cd01629fdbd4",
+      "changed_element_ids": [
+        "model_instance:model:logic_writing_models"
+      ],
+      "member_id": "logic_writing_models",
+      "operation": "replace",
+      "schema": "flowguard.model_revision_member.v1"
+    },
+    {
+      "base_instance_fingerprint": "sha256:0a0ede38b8f4c3178fc16663ddb440ad85df9255138817efd5143c6bdde8fd3d",
+      "candidate_instance_fingerprint": "sha256:4941dc6fb1908b15f057e47002f6824e7982964a36fb32789ce0235b0c520eb6",
+      "changed_element_ids": [
+        "model_instance:model:model_test_alignment"
+      ],
+      "member_id": "model_test_alignment",
+      "operation": "replace",
+      "schema": "flowguard.model_revision_member.v1"
+    },
+    {
+      "base_instance_fingerprint": "sha256:976ddefef7017ee2507a617a4c5201abfe52dc4f75dd9542243a456384f09db3",
+      "candidate_instance_fingerprint": "sha256:8582b1df591bb143300100fe761eb6b1572bbd956fb21ff189dd4269920ecac3",
+      "changed_element_ids": [
+        "model_instance:model:plan_detailing"
+      ],
+      "member_id": "plan_detailing",
+      "operation": "replace",
+      "schema": "flowguard.model_revision_member.v1"
+    },
+    {
+      "base_instance_fingerprint": "sha256:5084a1969a8d4236bf98f10600b0f397714573125c06cba364a897ddf09ad0f5",
+      "candidate_instance_fingerprint": "sha256:6fde3dbd2ca5ff439c9181f2e0413ccaadef906958c1c1adb2736c4d0b8cee2e",
+      "changed_element_ids": [
+        "model_instance:model:primary_path_authority"
+      ],
+      "member_id": "primary_path_authority",
+      "operation": "replace",
+      "schema": "flowguard.model_revision_member.v1"
+    },
+    {
+      "base_instance_fingerprint": "sha256:d6e2a7c9354e335b9a5aa2c9c3b157027cfa8fa47adafb311e8a8cf8e86e929d",
+      "candidate_instance_fingerprint": "sha256:f465b454a4ad218c07483a098ae4b3be0ad6385d260c0dbd87323f076060a7e4",
+      "changed_element_ids": [
+        "model_instance:model:test_mesh"
+      ],
+      "member_id": "test_mesh",
+      "operation": "replace",
+      "schema": "flowguard.model_revision_member.v1"
+    }
+  ],
+  "originating_activation_receipt_fingerprint": "",
+  "originating_revision_set_fingerprint": "",
+  "prediction_replay_refs": [],
+  "removal_dispositions": [
+    {
+      "disposition": "retire",
+      "reason": "The v2 governed identity is intentionally retired by the direct v3 reader-composition replacement.",
+      "removed_id": "coverage:fields_state_side_effects:field-or-effect:artifact_identity",
+      "replacement_id": "",
+      "schema": "flowguard.revision_removal_disposition.v1"
+    },
+    {
+      "disposition": "retire",
+      "reason": "The v2 governed identity is intentionally retired by the direct v3 reader-composition replacement.",
+      "removed_id": "coverage:fields_state_side_effects:field-or-effect:audit_artifact_fingerprint",
+      "replacement_id": "",
+      "schema": "flowguard.revision_removal_disposition.v1"
+    },
+    {
+      "disposition": "retire",
+      "reason": "The v2 governed identity is intentionally retired by the direct v3 reader-composition replacement.",
+      "removed_id": "coverage:fields_state_side_effects:field-or-effect:binding_status",
+      "replacement_id": "",
+      "schema": "flowguard.revision_removal_disposition.v1"
+    },
+    {
+      "disposition": "retire",
+      "reason": "The v2 governed identity is intentionally retired by the direct v3 reader-composition replacement.",
+      "removed_id": "coverage:fields_state_side_effects:field-or-effect:reader_state_status",
+      "replacement_id": "",
+      "schema": "flowguard.revision_removal_disposition.v1"
+    }
+  ],
+  "removed_ids": [
+    "coverage:fields_state_side_effects:field-or-effect:artifact_identity",
+    "coverage:fields_state_side_effects:field-or-effect:audit_artifact_fingerprint",
+    "coverage:fields_state_side_effects:field-or-effect:binding_status",
+    "coverage:fields_state_side_effects:field-or-effect:reader_state_status",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:artifact_identity",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:audit_artifact_fingerprint",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:binding_status",
+    "unresolved_gap:gap:fields_state_side_effects:field-or-effect:reader_state_status"
+  ],
+  "required_evidence_refs": [
+    {
+      "affected_closure_fingerprint": "sha256:b6146cc10f188bebcd115f6958dd1c2fa960e1f4cb958335c17dcc348140998e",
+      "candidate_snapshot_fingerprint": "sha256:9453914907077b195a83d89d62afb7759962e3a12443435d99bce039a8347973",
+      "covered_affected_ids": [
+        "behavior_commitment:C01:select-one-final-owner",
+        "behavior_commitment:C02:preserve-specialist-authority",
+        "behavior_commitment:C03:build-current-research-packet",
+        "behavior_commitment:C04:build-reader-brief",
+        "behavior_commitment:C05:audit-actual-artifact",
+        "behavior_commitment:C06:issue-final-artifact-closure",
+        "behavior_commitment:C07:freeze-one-validation-owner",
+        "behavior_commitment:C08:activate-recoverable-install",
+        "behavior_commitment:C09:project-one-global-route",
+        "behavior_commitment:C10:publish-logic-writing-release",
+        "behavior_commitment:C11:retire-predecessors-safely",
+        "behavior_commitment:C12:produce-fiction-artifact",
+        "behavior_commitment:C13:produce-travel-guide",
+        "behavior_commitment:C14:bind-model-to-reader-artifact",
+        "behavior_commitment:C15:produce-investigation-report",
+        "behavior_commitment:C16:produce-academic-artifact",
+        "external_surface:surface:openspec:c01-select-one-final-owner",
+        "external_surface:surface:openspec:c02-preserve-specialist-authority",
+        "external_surface:surface:openspec:c03-build-current-research-packet",
+        "external_surface:surface:openspec:c04-build-reader-brief",
+        "external_surface:surface:openspec:c05-audit-actual-artifact",
+        "external_surface:surface:openspec:c06-issue-final-artifact-closure",
+        "external_surface:surface:openspec:c07-freeze-one-validation-owner",
+        "external_surface:surface:openspec:c08-activate-recoverable-install",
+        "external_surface:surface:openspec:c09-project-one-global-route",
+        "external_surface:surface:openspec:c10-publish-logic-writing-release",
+        "external_surface:surface:openspec:c11-retire-predecessors-safely",
+        "external_surface:surface:openspec:c12-produce-fiction-artifact",
+        "external_surface:surface:openspec:c13-produce-travel-guide",
+        "external_surface:surface:openspec:c14-bind-model-to-reader-artifact",
+        "external_surface:surface:openspec:c15-produce-investigation-report",
+        "external_surface:surface:openspec:c16-produce-academic-artifact",
+        "external_surface:surface:release-process:c07-freeze-one-validation-owner",
+        "external_surface:surface:release-process:c08-activate-recoverable-install",
+        "external_surface:surface:release-process:c09-project-one-global-route",
+        "external_surface:surface:release-process:c10-publish-logic-writing-release",
+        "external_surface:surface:release-process:c11-retire-predecessors-safely",
+        "external_surface:surface:skill-entry:c01-select-one-final-owner",
+        "external_surface:surface:skill-entry:c02-preserve-specialist-authority",
+        "external_surface:surface:skill-entry:c03-build-current-research-packet",
+        "external_surface:surface:skill-entry:c04-build-reader-brief",
+        "external_surface:surface:skill-entry:c05-audit-actual-artifact",
+        "external_surface:surface:skill-entry:c06-issue-final-artifact-closure",
+        "external_surface:surface:skill-entry:c12-produce-fiction-artifact",
+        "external_surface:surface:skill-entry:c13-produce-travel-guide",
+        "external_surface:surface:skill-entry:c14-bind-model-to-reader-artifact",
+        "external_surface:surface:skill-entry:c15-produce-investigation-report",
+        "external_surface:surface:skill-entry:c16-produce-academic-artifact"
+      ],
+      "current": true,
+      "eligible": true,
+      "environment_fingerprint": "sha256:2cc6a220b55952b0f9042e30c932dab0f0bbd99d2a039085b460308e7aa20904",
+      "obligation_ids": [
+        "obligation:logic-writing-v3:behavior_commitment_ledger"
+      ],
+      "owner_route": "behavior_commitment_ledger",
+      "receipt_fingerprint": "sha256:05fd6360b3799739beb174c314d66c567136bce7c3864712d32f620f11873a29",
+      "receipt_id": "receipt:logic-writing-v3-model-regression:1",
+      "schema": "flowguard.model_revision_evidence.v2",
+      "status": "required",
+      "subject_fingerprint": "sha256:9453914907077b195a83d89d62afb7759962e3a12443435d99bce039a8347973",
+      "toolchain_fingerprint": "sha256:d74bcef807f2087b5314aac2884522e3c725cccd761fa9bf2b1877f4b2c5e9ea"
+    },
+    {
+      "affected_closure_fingerprint": "sha256:b6146cc10f188bebcd115f6958dd1c2fa960e1f4cb958335c17dcc348140998e",
+      "candidate_snapshot_fingerprint": "sha256:9453914907077b195a83d89d62afb7759962e3a12443435d99bce039a8347973",
+      "covered_affected_ids": [
+        "coverage:behavior_commitments:C15:produce-investigation-report",
+        "coverage:behavior_commitments:C16:produce-academic-artifact",
+        "coverage:code_contracts:contract:contract:academic-composition",
+        "coverage:code_contracts:contract:contract:investigation-composition",
+        "coverage:external_surfaces:surface:openspec:c15-produce-investigation-report",
+        "coverage:external_surfaces:surface:openspec:c16-produce-academic-artifact",
+        "coverage:external_surfaces:surface:skill-entry:c15-produce-investigation-report",
+        "coverage:external_surfaces:surface:skill-entry:c16-produce-academic-artifact",
+        "coverage:fields_state_side_effects:field-or-effect:academic_profile",
+        "coverage:fields_state_side_effects:field-or-effect:academic_route_audit_status",
+        "coverage:fields_state_side_effects:field-or-effect:artifact_fingerprint",
+        "coverage:fields_state_side_effects:field-or-effect:artifact_identity",
+        "coverage:fields_state_side_effects:field-or-effect:artifact_map_fingerprint",
+        "coverage:fields_state_side_effects:field-or-effect:artifact_map_status",
+        "coverage:fields_state_side_effects:field-or-effect:audit_artifact_fingerprint",
+        "coverage:fields_state_side_effects:field-or-effect:binding_status",
+        "coverage:fields_state_side_effects:field-or-effect:composition_plan_fingerprint",
+        "coverage:fields_state_side_effects:field-or-effect:composition_plan_status",
+        "coverage:fields_state_side_effects:field-or-effect:consecutive_no_progress",
+        "coverage:fields_state_side_effects:field-or-effect:investigation_profile",
+        "coverage:fields_state_side_effects:field-or-effect:investigation_route_audit_status",
+        "coverage:fields_state_side_effects:field-or-effect:judgment_artifact_fingerprint",
+        "coverage:fields_state_side_effects:field-or-effect:reader_intent_fingerprint",
+        "coverage:fields_state_side_effects:field-or-effect:reader_intent_status",
+        "coverage:fields_state_side_effects:field-or-effect:reader_state_status",
+        "coverage:fields_state_side_effects:field-or-effect:repair_attempt_count",
+        "coverage:fields_state_side_effects:field-or-effect:repair_request_fingerprint",
+        "coverage:fields_state_side_effects:field-or-effect:route_audit_status",
+        "coverage:fields_state_side_effects:field-or-effect:route_extension_fingerprint",
+        "coverage:fields_state_side_effects:field-or-effect:shared_binding_artifact_fingerprint",
+        "coverage:fields_state_side_effects:field-or-effect:shared_binding_fingerprint",
+        "coverage:fields_state_side_effects:field-or-effect:shared_binding_status",
+        "coverage:tests_evidence:test:test:academic-route",
+        "coverage:tests_evidence:test:test:investigation-route",
+        "coverage:universe",
+        "model_relation:relation:model-realizes-purpose:behavior_commitment_ledger",
+        "model_relation:relation:model-realizes-purpose:development_process_flow",
+        "model_relation:relation:model-realizes-purpose:logic_writing_models",
+        "model_relation:relation:model-realizes-purpose:model_test_alignment",
+        "model_relation:relation:model-realizes-purpose:plan_detailing",
+        "model_relation:relation:model-realizes-purpose:primary_path_authority",
+        "model_relation:relation:model-realizes-purpose:test_mesh",
+        "model_relation:relation:surface-produces-for-commitment:surface:openspec:c01-select-one-final-owner--C01:select-one-final-owner",
+        "model_relation:relation:surface-produces-for-commitment:surface:openspec:c02-preserve-specialist-authority--C02:preserve-specialist-authority",
+        "model_relation:relation:surface-produces-for-commitment:surface:openspec:c03-build-current-research-packet--C03:build-current-research-packet",
+        "model_relation:relation:surface-produces-for-commitment:surface:openspec:c04-build-reader-brief--C04:build-reader-brief",
+        "model_relation:relation:surface-produces-for-commitment:surface:openspec:c05-audit-actual-artifact--C05:audit-actual-artifact",
+        "model_relation:relation:surface-produces-for-commitment:surface:openspec:c06-issue-final-artifact-closure--C06:issue-final-artifact-closure",
+        "model_relation:relation:surface-produces-for-commitment:surface:openspec:c07-freeze-one-validation-owner--C07:freeze-one-validation-owner",
+        "model_relation:relation:surface-produces-for-commitment:surface:openspec:c08-activate-recoverable-install--C08:activate-recoverable-install",
+        "model_relation:relation:surface-produces-for-commitment:surface:openspec:c09-project-one-global-route--C09:project-one-global-route",
+        "model_relation:relation:surface-produces-for-commitment:surface:openspec:c10-publish-logic-writing-release--C10:publish-logic-writing-release",
+        "model_relation:relation:surface-produces-for-commitment:surface:openspec:c11-retire-predecessors-safely--C11:retire-predecessors-safely",
+        "model_relation:relation:surface-produces-for-commitment:surface:openspec:c12-produce-fiction-artifact--C12:produce-fiction-artifact",
+        "model_relation:relation:surface-produces-for-commitment:surface:openspec:c13-produce-travel-guide--C13:produce-travel-guide",
+        "model_relation:relation:surface-produces-for-commitment:surface:openspec:c14-bind-model-to-reader-artifact--C14:bind-model-to-reader-artifact",
+        "model_relation:relation:surface-produces-for-commitment:surface:openspec:c15-produce-investigation-report--C15:produce-investigation-report",
+        "model_relation:relation:surface-produces-for-commitment:surface:openspec:c16-produce-academic-artifact--C16:produce-academic-artifact",
+        "model_relation:relation:surface-produces-for-commitment:surface:release-process:c07-freeze-one-validation-owner--C07:freeze-one-validation-owner",
+        "model_relation:relation:surface-produces-for-commitment:surface:release-process:c08-activate-recoverable-install--C08:activate-recoverable-install",
+        "model_relation:relation:surface-produces-for-commitment:surface:release-process:c09-project-one-global-route--C09:project-one-global-route",
+        "model_relation:relation:surface-produces-for-commitment:surface:release-process:c10-publish-logic-writing-release--C10:publish-logic-writing-release",
+        "model_relation:relation:surface-produces-for-commitment:surface:release-process:c11-retire-predecessors-safely--C11:retire-predecessors-safely",
+        "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c01-select-one-final-owner--C01:select-one-final-owner",
+        "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c02-preserve-specialist-authority--C02:preserve-specialist-authority",
+        "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c03-build-current-research-packet--C03:build-current-research-packet",
+        "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c04-build-reader-brief--C04:build-reader-brief",
+        "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c05-audit-actual-artifact--C05:audit-actual-artifact",
+        "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c06-issue-final-artifact-closure--C06:issue-final-artifact-closure",
+        "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c12-produce-fiction-artifact--C12:produce-fiction-artifact",
+        "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c13-produce-travel-guide--C13:produce-travel-guide",
+        "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c14-bind-model-to-reader-artifact--C14:bind-model-to-reader-artifact",
+        "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c15-produce-investigation-report--C15:produce-investigation-report",
+        "model_relation:relation:surface-produces-for-commitment:surface:skill-entry:c16-produce-academic-artifact--C16:produce-academic-artifact",
+        "model_relation:relation:system-contains:behavior_commitment_ledger",
+        "model_relation:relation:system-contains:development_process_flow",
+        "model_relation:relation:system-contains:logic_writing_models",
+        "model_relation:relation:system-contains:model_test_alignment",
+        "model_relation:relation:system-contains:plan_detailing",
+        "model_relation:relation:system-contains:primary_path_authority",
+        "model_relation:relation:system-contains:test_mesh",
+        "parent_closure:system:flowguard:model-regression-manifest",
+        "root:model:behavior_commitment_ledger",
+        "system_property:subject_revision",
+        "unresolved_gap:gap:behavior_commitments:C15:produce-investigation-report",
+        "unresolved_gap:gap:behavior_commitments:C16:produce-academic-artifact",
+        "unresolved_gap:gap:code_contracts:contract:contract:academic-composition",
+        "unresolved_gap:gap:code_contracts:contract:contract:investigation-composition",
+        "unresolved_gap:gap:external_surfaces:surface:openspec:c15-produce-investigation-report",
+        "unresolved_gap:gap:external_surfaces:surface:openspec:c16-produce-academic-artifact",
+        "unresolved_gap:gap:external_surfaces:surface:skill-entry:c15-produce-investigation-report",
+        "unresolved_gap:gap:external_surfaces:surface:skill-entry:c16-produce-academic-artifact",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:academic_profile",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:academic_route_audit_status",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:artifact_fingerprint",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:artifact_identity",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:artifact_map_fingerprint",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:artifact_map_status",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:audit_artifact_fingerprint",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:binding_status",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:composition_plan_fingerprint",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:composition_plan_status",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:consecutive_no_progress",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:investigation_profile",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:investigation_route_audit_status",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:judgment_artifact_fingerprint",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:reader_intent_fingerprint",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:reader_intent_status",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:reader_state_status",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:repair_attempt_count",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:repair_request_fingerprint",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:route_audit_status",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:route_extension_fingerprint",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:shared_binding_artifact_fingerprint",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:shared_binding_fingerprint",
+        "unresolved_gap:gap:fields_state_side_effects:field-or-effect:shared_binding_status",
+        "unresolved_gap:gap:tests_evidence:test:test:academic-route",
+        "unresolved_gap:gap:tests_evidence:test:test:investigation-route"
+      ],
+      "current": true,
+      "eligible": true,
+      "environment_fingerprint": "sha256:2cc6a220b55952b0f9042e30c932dab0f0bbd99d2a039085b460308e7aa20904",
+      "obligation_ids": [
+        "obligation:logic-writing-v3:model_mesh_maintenance"
+      ],
+      "owner_route": "model_mesh_maintenance",
+      "receipt_fingerprint": "sha256:05fd6360b3799739beb174c314d66c567136bce7c3864712d32f620f11873a29",
+      "receipt_id": "receipt:logic-writing-v3-model-regression:2",
+      "schema": "flowguard.model_revision_evidence.v2",
+      "status": "required",
+      "subject_fingerprint": "sha256:9453914907077b195a83d89d62afb7759962e3a12443435d99bce039a8347973",
+      "toolchain_fingerprint": "sha256:d74bcef807f2087b5314aac2884522e3c725cccd761fa9bf2b1877f4b2c5e9ea"
+    },
+    {
+      "affected_closure_fingerprint": "sha256:b6146cc10f188bebcd115f6958dd1c2fa960e1f4cb958335c17dcc348140998e",
+      "candidate_snapshot_fingerprint": "sha256:9453914907077b195a83d89d62afb7759962e3a12443435d99bce039a8347973",
+      "covered_affected_ids": [
+        "model_instance:model:behavior_commitment_ledger",
+        "model_instance:model:development_process_flow",
+        "model_instance:model:logic_writing_models",
+        "model_instance:model:model_test_alignment",
+        "model_instance:model:plan_detailing",
+        "model_instance:model:primary_path_authority",
+        "model_instance:model:test_mesh",
+        "parent_closure:purpose:behavior_commitment_ledger",
+        "parent_closure:purpose:development_process_flow",
+        "parent_closure:purpose:logic_writing_models",
+        "parent_closure:purpose:model_test_alignment",
+        "parent_closure:purpose:plan_detailing",
+        "parent_closure:purpose:primary_path_authority",
+        "parent_closure:purpose:test_mesh"
+      ],
+      "current": true,
+      "eligible": true,
+      "environment_fingerprint": "sha256:2cc6a220b55952b0f9042e30c932dab0f0bbd99d2a039085b460308e7aa20904",
+      "obligation_ids": [
+        "obligation:logic-writing-v3:model_test_alignment"
+      ],
+      "owner_route": "model_test_alignment",
+      "receipt_fingerprint": "sha256:05fd6360b3799739beb174c314d66c567136bce7c3864712d32f620f11873a29",
+      "receipt_id": "receipt:logic-writing-v3-model-regression:3",
+      "schema": "flowguard.model_revision_evidence.v2",
+      "status": "required",
+      "subject_fingerprint": "sha256:9453914907077b195a83d89d62afb7759962e3a12443435d99bce039a8347973",
+      "toolchain_fingerprint": "sha256:d74bcef807f2087b5314aac2884522e3c725cccd761fa9bf2b1877f4b2c5e9ea"
+    }
+  ],
+  "revision_set_id": "revision:logic-writing-v3.0.0-reader-composition",
+  "rollback_contract_fingerprint": "",
+  "schema": "flowguard.model_revision_set.v2",
+  "snapshot_diff_fingerprint": "sha256:f7156112956e79657cfda8691df73213af3208dfa5844cfa4ee47e500bc9c00a",
+  "status": "accepted",
+  "task_id": "openspec:repair-reader-composition-pipeline"
+}

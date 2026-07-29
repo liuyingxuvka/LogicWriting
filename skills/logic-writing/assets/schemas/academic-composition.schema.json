@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/liuyingxuvka/LogicWriting/schemas/academic-composition.schema.json",
+  "title": "Academic composition v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "composition_id", "final_owner", "reader_intent_fingerprint",
+    "composition_plan_fingerprint", "artifact_mode", "profile", "research_question",
+    "central_contribution", "hierarchy", "figure_table_jobs", "revision_provenance_applicability",
+    "actual_artifact_review_required", "extension_fingerprint"
+  ],
+  "properties": {
+    "schema_version": { "const": "2.0" },
+    "composition_id": { "$ref": "#/$defs/id" },
+    "final_owner": { "const": "academic-writing" },
+    "reader_intent_fingerprint": { "$ref": "#/$defs/fp" },
+    "composition_plan_fingerprint": { "$ref": "#/$defs/fp" },
+    "artifact_mode": { "enum": ["create_new", "revise_existing"] },
+    "profile": { "enum": ["empirical_paper", "conceptual_argument", "literature_synthesis", "research_proposal", "chapter_or_section", "user_defined"] },
+    "research_question": { "type": "string", "minLength": 1 },
+    "central_contribution": { "type": "string", "minLength": 1 },
+    "hierarchy": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/hierarchyUnit" }, "uniqueItems": true },
+    "figure_table_jobs": { "type": "array", "items": { "$ref": "#/$defs/figureTableJob" }, "uniqueItems": true },
+    "revision_provenance_applicability": { "enum": ["required", "not_applicable"] },
+    "actual_artifact_review_required": { "const": true },
+    "extension_fingerprint": { "$ref": "#/$defs/fp" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "artifact_mode": { "const": "create_new" } }, "required": ["artifact_mode"] },
+      "then": { "properties": { "revision_provenance_applicability": { "const": "not_applicable" } } },
+      "else": { "properties": { "revision_provenance_applicability": { "const": "required" } } }
+    }
+  ],
+  "$defs": {
+    "id": { "type": "string", "minLength": 2, "maxLength": 160, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$" },
+    "fp": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "hierarchyUnit": {
+      "type": "object", "additionalProperties": false,
+      "required": ["unit_id", "parent_unit_id", "unit_kind", "research_question_contribution", "incoming_dependency", "new_claim_or_warrant", "evidence_ids", "qualification", "downstream_consumer_ids"],
+      "properties": {
+        "unit_id": { "$ref": "#/$defs/id" },
+        "parent_unit_id": { "type": ["string", "null"], "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$" },
+        "unit_kind": { "enum": ["document", "chapter", "section", "subsection", "paragraph_group", "figure", "table"] },
+        "research_question_contribution": { "type": "string", "minLength": 1 },
+        "incoming_dependency": { "type": "string", "minLength": 1 },
+        "new_claim_or_warrant": { "type": "string", "minLength": 1 },
+        "evidence_ids": { "type": "array", "items": { "$ref": "#/$defs/id" }, "uniqueItems": true },
+        "qualification": { "type": "string", "minLength": 1 },
+        "downstream_consumer_ids": { "type": "array", "items": { "$ref": "#/$defs/id" }, "uniqueItems": true }
+      }
+    },
+    "figureTableJob": {
+      "type": "object", "additionalProperties": false,
+      "required": ["artifact_unit_id", "job", "consumer_unit_ids"],
+      "properties": {
+        "artifact_unit_id": { "$ref": "#/$defs/id" },
+        "job": { "type": "string", "minLength": 1 },
+        "consumer_unit_ids": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/id" }, "uniqueItems": true }
+      }
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "benchmark_id": "logic-writing-reader-v2-blind-12",
+  "frozen_cases": [
+    {"case_id": "inv-zh-explain", "owner": "investigation", "language": "zh-CN", "target": "bounded explanatory report"},
+    {"case_id": "inv-en-decision", "owner": "investigation", "language": "en", "target": "decision analysis"},
+    {"case_id": "inv-zh-audit", "owner": "investigation", "language": "zh-CN", "target": "evidence audit"},
+    {"case_id": "acad-zh-concept", "owner": "academic-writing", "language": "zh-CN", "target": "conceptual argument"},
+    {"case_id": "acad-en-literature", "owner": "academic-writing", "language": "en", "target": "literature synthesis"},
+    {"case_id": "acad-zh-proposal", "owner": "academic-writing", "language": "zh-CN", "target": "research proposal"},
+    {"case_id": "fic-zh-short", "owner": "fiction-writing", "language": "zh-CN", "target": "short story"},
+    {"case_id": "fic-en-chapter", "owner": "fiction-writing", "language": "en", "target": "fiction chapter"},
+    {"case_id": "fic-zh-revision", "owner": "fiction-writing", "language": "zh-CN", "target": "fiction revision"},
+    {"case_id": "travel-zh-guide", "owner": "travel-guide", "language": "zh-CN", "target": "destination guide"},
+    {"case_id": "travel-en-route", "owner": "travel-guide", "language": "en", "target": "route plan"},
+    {"case_id": "travel-zh-fit", "owner": "travel-guide", "language": "zh-CN", "target": "traveler fit recommendation"}
+  ],
+  "acceptance": {
+    "explicit_structure_mapping_percent": 100,
+    "evidence_fidelity_regressions": 0,
+    "preferred_coherence_or_naturalness_minimum": 9
+  }
+}

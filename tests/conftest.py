@@ -27,13 +27,13 @@ def current_packet(receipt_root: Path):
 
 @pytest.fixture
 def reader_chain(tmp_path: Path, receipt_root: Path):
-    from tests.support import make_reader_chain
+    from tests.v2_support import complete_chain
 
-    return make_reader_chain(receipt_root, tmp_path)
+    return complete_chain(tmp_path)
 
 
 @pytest.fixture
 def revision_chain(tmp_path: Path, receipt_root: Path):
-    from tests.support import make_revision_chain
+    from tests.v2_support import complete_chain
 
-    return make_revision_chain(receipt_root, tmp_path)
+    return complete_chain(tmp_path)["revision_provenance"]

@@ -200,7 +200,7 @@ checks:
   - id: check.reader.judgment
     kind: command
     semantic_check_id: logic-writing.reader-judgment.current-artifact
-    execution_id: logic-writing-release.reader-judgment.v1
+    execution_id: logic-writing-release.reader-judgment.v2
     validation_scope: full
     snapshot_policy: frozen
     toolchain_identity: logic-writing-judgment-validator-v1

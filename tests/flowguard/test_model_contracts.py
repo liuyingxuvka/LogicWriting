@@ -157,6 +157,8 @@ def test_academic_closure_requires_revision_provenance_and_actual_artifact_audit
         route_status="current_pass",
         packet_current=True,
         packet_status="current_pass",
+        reader_intent_status="current_pass",
+        composition_plan_status="current_pass",
         brief_current=True,
         brief_status="current_pass",
         brief_fingerprint="brief:1",
@@ -164,9 +166,16 @@ def test_academic_closure_requires_revision_provenance_and_actual_artifact_audit
         artifact_status="current",
         artifact_fingerprint="artifact:1",
         artifact_bound_brief="brief:1",
+        integration_status="current_pass",
+        artifact_map_status="current_pass",
+        shared_binding_status="current_pass",
+        shared_binding_artifact_fingerprint="artifact:1",
         deterministic_audit_status="passed",
+        route_audit_status="passed",
         judgment_status="passed",
         audit_artifact_fingerprint="artifact:1",
+        judgment_artifact_fingerprint="artifact:1",
+        artifact_mode="revise_existing",
     )
     blocked = _step(
         workflow,
@@ -194,6 +203,8 @@ def test_material_artifact_change_stales_reader_evidence():
         artifact_current=True,
         artifact_status="current",
         artifact_fingerprint="artifact:old",
+        repair_request_fingerprint="repair:request",
+        repair_request_artifact_fingerprint="artifact:old",
         deterministic_audit_status="passed",
         judgment_status="passed",
         audit_artifact_fingerprint="artifact:old",
@@ -203,7 +214,7 @@ def test_material_artifact_change_stales_reader_evidence():
     updated = _step(
         workflow,
         state,
-        OperationEvent("update_artifact", artifact_fingerprint="artifact:new"),
+        OperationEvent("apply_repair", artifact_fingerprint="artifact:new"),
     )
     assert updated.artifact_fingerprint == "artifact:new"
     assert updated.deterministic_audit_status == "stale"
@@ -217,8 +228,21 @@ def test_identical_no_progress_attempts_terminate_visibly():
     first = _step(workflow, state, OperationEvent("close_operation"))
     second = _step(workflow, first, OperationEvent("close_operation"))
     assert first.closure_status == "blocked"
-    assert second.closure_status == "no_progress_blocked"
-    assert second.terminal
+    assert second.closure_status == "blocked"
+    assert not second.terminal
+    explicitly_failed = _step(
+        workflow,
+        OperationState(
+            route_owner="investigation",
+            route_status="current_pass",
+            consecutive_no_progress=2,
+            repair_attempt_count=2,
+            no_progress_count=2,
+        ),
+        OperationEvent("close_operation"),
+    )
+    assert explicitly_failed.closure_status == "no_progress_blocked"
+    assert explicitly_failed.terminal
 
 
 def test_release_requires_frozen_install_and_global_route():

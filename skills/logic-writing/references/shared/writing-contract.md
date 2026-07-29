@@ -1,24 +1,25 @@
-# Shared writing contract
+# SharedWriting v2
 
-All four routes use the same small reader-facing base: audience, purpose,
-incoming reader state, artifact form, unit contribution, reader-state change,
-specific handoff, register owner, changed effect, current artifact identity,
-and model-row binding. The selected route then adds only its own extension.
+SharedWriting proves that the selected whole-artifact plan is realized in the
+exact current bytes. It is a binding contract, not an outline and not a prose
+template.
 
-The base is not a universal research or story packet. Investigation retains
-source and claim semantics; academic writing retains revision and citation
-semantics; fiction retains story, promise, continuity, and voice semantics;
-travel retains time, feasibility, fit, fallback, and operational semantics.
+For every required planned unit, record the actual artifact units and locators,
+content units, model rows, selected-route surfaces, and current span
+fingerprints. Required content that is not bound must have an explicit blocked
+or omitted disposition; silence is not coverage.
 
-For every important unit, answer in ordinary language:
+The shared kernel owns only route-neutral composition and byte identity.
+Investigation retains evidence strength and conclusion scope; academic writing
+retains research contribution, hierarchy, citations, and provenance; fiction
+retains story movement, resistance, continuity, voice, promises, and reveals;
+travel retains traveler fit, feasibility, local texture, risk, fallback, source
+boundaries, and recheck duties.
 
-- What did the reader know or expect on entry?
-- What concrete evidence, action, scene, choice, or instruction changes that?
-- What is unresolved, or why is the unit terminal?
-- Which exact later unit consumes the change?
-- Who owns any technical, local, quoted, narrator, or character register?
-- If the shape repeats, what new effect makes the repetition useful?
-- Which current model rows are visible in which exact delivered words?
+Write the whole artifact before judging it. Paragraph boundaries follow the
+reader's changing understanding, not the count of findings or model nodes.
+Prose-required zones cannot be realized as bullet cards. A generic phrase such
+as “this leads to the next section” does not create a missing dependency.
 
-Generic handoffs such as “sets up the next section” do not pass. A byte change
-to the delivered artifact makes its identity-bound contract stale.
+Any byte change invalidates the ArtifactMap and every dependent span,
+SharedWriting binding, review, judgment, and closure.

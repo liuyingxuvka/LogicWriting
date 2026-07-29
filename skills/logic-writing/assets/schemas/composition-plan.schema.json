@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/liuyingxuvka/LogicWriting/schemas/composition-plan.schema.json",
+  "title": "Logic Writing CompositionPlan v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "plan_id", "reader_intent_fingerprint", "final_owner",
+    "central_question", "central_throughline", "artifact_form", "structure_authority",
+    "opening_job", "conclusion_job", "planned_units", "allowed_list_zones",
+    "content_dispositions", "unresolved_conflicts", "plan_fingerprint"
+  ],
+  "properties": {
+    "schema_version": { "const": "2.0" },
+    "plan_id": { "$ref": "#/$defs/identifier" },
+    "reader_intent_fingerprint": { "$ref": "#/$defs/fingerprint" },
+    "final_owner": { "enum": ["investigation", "academic-writing", "fiction-writing", "travel-guide"] },
+    "central_question": { "type": "string", "minLength": 1 },
+    "central_throughline": { "type": "string", "minLength": 1 },
+    "artifact_form": { "type": "string", "minLength": 1 },
+    "structure_authority": { "enum": ["user_fixed", "user_partial", "existing_artifact", "route_selected"] },
+    "opening_job": { "type": "string", "minLength": 1 },
+    "conclusion_job": { "type": "string", "minLength": 1 },
+    "planned_units": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/plannedUnit" }, "uniqueItems": true },
+    "allowed_list_zones": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true },
+    "content_dispositions": { "type": "array", "items": { "$ref": "#/$defs/contentDisposition" }, "uniqueItems": true },
+    "unresolved_conflicts": { "type": "array", "items": { "$ref": "#/$defs/conflict" }, "uniqueItems": true },
+    "plan_fingerprint": { "$ref": "#/$defs/fingerprint" }
+  },
+  "$defs": {
+    "identifier": { "type": "string", "minLength": 2, "maxLength": 160, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$" },
+    "fingerprint": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "plannedUnit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "planned_unit_id", "parent_unit_id", "unit_kind", "order", "required", "title",
+        "source_outline_ids", "reader_job", "content_unit_ids", "limitation_ids",
+        "relation_to_previous", "incoming_reader_state", "outgoing_reader_state",
+        "downstream_unit_ids", "presentation_mode", "target_extent"
+      ],
+      "properties": {
+        "planned_unit_id": { "$ref": "#/$defs/identifier" },
+        "parent_unit_id": { "type": ["string", "null"], "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$" },
+        "unit_kind": { "type": "string", "minLength": 1 },
+        "order": { "type": "integer", "minimum": 1 },
+        "required": { "type": "boolean" },
+        "title": { "type": "string", "minLength": 1 },
+        "source_outline_ids": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true },
+        "reader_job": { "type": "string", "minLength": 1 },
+        "content_unit_ids": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true },
+        "limitation_ids": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true },
+        "relation_to_previous": { "type": "string", "minLength": 1 },
+        "incoming_reader_state": { "type": "string", "minLength": 1 },
+        "outgoing_reader_state": { "type": "string", "minLength": 1 },
+        "downstream_unit_ids": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true },
+        "presentation_mode": { "enum": ["prose", "list", "table", "scene", "mixed", "appendix"] },
+        "target_extent": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "contentDisposition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["content_unit_id", "disposition", "planned_unit_ids", "reason"],
+      "properties": {
+        "content_unit_id": { "$ref": "#/$defs/identifier" },
+        "disposition": { "enum": ["consumed", "omitted", "deferred", "conflict"] },
+        "planned_unit_ids": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true },
+        "reason": { "type": "string", "minLength": 1 }
+      }
+    },
+    "conflict": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["conflict_id", "fields", "reason", "material"],
+      "properties": {
+        "conflict_id": { "$ref": "#/$defs/identifier" },
+        "fields": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+        "reason": { "type": "string", "minLength": 1 },
+        "material": { "type": "boolean" }
+      }
+    }
+  }
+}

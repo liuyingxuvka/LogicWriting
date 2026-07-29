@@ -1,0 +1,393 @@
+{
+  "added_ids": [],
+  "affected_closure_fingerprint": "sha256:9e67d8bfa8e09ab7f6f4c7d8e8a16d6d4b8d91d7c63270f310c11c9b8f3a34c3",
+  "affected_closure_ids": [
+    "coverage:universe",
+    "model_instance:model:behavior_commitment_ledger",
+    "model_instance:model:development_process_flow",
+    "model_instance:model:logic_writing_models",
+    "model_instance:model:model_test_alignment",
+    "model_instance:model:plan_detailing",
+    "model_instance:model:primary_path_authority",
+    "model_instance:model:test_mesh",
+    "model_relation:relation:model-realizes-purpose:behavior_commitment_ledger",
+    "model_relation:relation:model-realizes-purpose:development_process_flow",
+    "model_relation:relation:model-realizes-purpose:logic_writing_models",
+    "model_relation:relation:model-realizes-purpose:model_test_alignment",
+    "model_relation:relation:model-realizes-purpose:plan_detailing",
+    "model_relation:relation:model-realizes-purpose:primary_path_authority",
+    "model_relation:relation:model-realizes-purpose:test_mesh",
+    "model_relation:relation:system-contains:behavior_commitment_ledger",
+    "model_relation:relation:system-contains:development_process_flow",
+    "model_relation:relation:system-contains:logic_writing_models",
+    "model_relation:relation:system-contains:model_test_alignment",
+    "model_relation:relation:system-contains:plan_detailing",
+    "model_relation:relation:system-contains:primary_path_authority",
+    "model_relation:relation:system-contains:test_mesh",
+    "parent_closure:purpose:behavior_commitment_ledger",
+    "parent_closure:purpose:development_process_flow",
+    "parent_closure:purpose:logic_writing_models",
+    "parent_closure:purpose:model_test_alignment",
+    "parent_closure:purpose:plan_detailing",
+    "parent_closure:purpose:primary_path_authority",
+    "parent_closure:purpose:test_mesh",
+    "parent_closure:system:flowguard:model-regression-manifest",
+    "system_property:subject_revision"
+  ],
+  "affected_edge_ids": [
+    "model_relation:relation:model-realizes-purpose:behavior_commitment_ledger",
+    "model_relation:relation:model-realizes-purpose:development_process_flow",
+    "model_relation:relation:model-realizes-purpose:logic_writing_models",
+    "model_relation:relation:model-realizes-purpose:model_test_alignment",
+    "model_relation:relation:model-realizes-purpose:plan_detailing",
+    "model_relation:relation:model-realizes-purpose:primary_path_authority",
+    "model_relation:relation:model-realizes-purpose:test_mesh",
+    "model_relation:relation:system-contains:behavior_commitment_ledger",
+    "model_relation:relation:system-contains:development_process_flow",
+    "model_relation:relation:system-contains:logic_writing_models",
+    "model_relation:relation:system-contains:model_test_alignment",
+    "model_relation:relation:system-contains:plan_detailing",
+    "model_relation:relation:system-contains:primary_path_authority",
+    "model_relation:relation:system-contains:test_mesh"
+  ],
+  "affected_owner_bindings": [
+    {
+      "affected_id": "coverage:universe",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_instance:model:behavior_commitment_ledger",
+      "owner_route": "model_test_alignment"
+    },
+    {
+      "affected_id": "model_instance:model:development_process_flow",
+      "owner_route": "model_test_alignment"
+    },
+    {
+      "affected_id": "model_instance:model:logic_writing_models",
+      "owner_route": "model_test_alignment"
+    },
+    {
+      "affected_id": "model_instance:model:model_test_alignment",
+      "owner_route": "model_test_alignment"
+    },
+    {
+      "affected_id": "model_instance:model:plan_detailing",
+      "owner_route": "model_test_alignment"
+    },
+    {
+      "affected_id": "model_instance:model:primary_path_authority",
+      "owner_route": "model_test_alignment"
+    },
+    {
+      "affected_id": "model_instance:model:test_mesh",
+      "owner_route": "model_test_alignment"
+    },
+    {
+      "affected_id": "model_relation:relation:model-realizes-purpose:behavior_commitment_ledger",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:model-realizes-purpose:development_process_flow",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:model-realizes-purpose:logic_writing_models",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:model-realizes-purpose:model_test_alignment",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:model-realizes-purpose:plan_detailing",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:model-realizes-purpose:primary_path_authority",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:model-realizes-purpose:test_mesh",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:system-contains:behavior_commitment_ledger",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:system-contains:development_process_flow",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:system-contains:logic_writing_models",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:system-contains:model_test_alignment",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:system-contains:plan_detailing",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:system-contains:primary_path_authority",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "model_relation:relation:system-contains:test_mesh",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "parent_closure:purpose:behavior_commitment_ledger",
+      "owner_route": "model_test_alignment"
+    },
+    {
+      "affected_id": "parent_closure:purpose:development_process_flow",
+      "owner_route": "model_test_alignment"
+    },
+    {
+      "affected_id": "parent_closure:purpose:logic_writing_models",
+      "owner_route": "model_test_alignment"
+    },
+    {
+      "affected_id": "parent_closure:purpose:model_test_alignment",
+      "owner_route": "model_test_alignment"
+    },
+    {
+      "affected_id": "parent_closure:purpose:plan_detailing",
+      "owner_route": "model_test_alignment"
+    },
+    {
+      "affected_id": "parent_closure:purpose:primary_path_authority",
+      "owner_route": "model_test_alignment"
+    },
+    {
+      "affected_id": "parent_closure:purpose:test_mesh",
+      "owner_route": "model_test_alignment"
+    },
+    {
+      "affected_id": "parent_closure:system:flowguard:model-regression-manifest",
+      "owner_route": "model_mesh_maintenance"
+    },
+    {
+      "affected_id": "system_property:subject_revision",
+      "owner_route": "model_mesh_maintenance"
+    }
+  ],
+  "base_snapshot_fingerprint": "sha256:9453914907077b195a83d89d62afb7759962e3a12443435d99bce039a8347973",
+  "candidate_snapshot_fingerprint": "sha256:485c301e6e1051d6877b6485f83f4ea4defef62854bdb5b747e2d698c3532827",
+  "changed_commitment_ids": [],
+  "changed_contract_ids": [],
+  "changed_coverage_ids": [
+    "coverage:universe"
+  ],
+  "changed_field_ids": [],
+  "changed_gap_ids": [],
+  "changed_owner_artifact_ids": [
+    "parent_closure:purpose:test_mesh",
+    "parent_closure:system:flowguard:model-regression-manifest"
+  ],
+  "changed_relation_ids": [
+    "relation:model-realizes-purpose:test_mesh",
+    "relation:system-contains:behavior_commitment_ledger",
+    "relation:system-contains:development_process_flow",
+    "relation:system-contains:logic_writing_models",
+    "relation:system-contains:model_test_alignment",
+    "relation:system-contains:plan_detailing",
+    "relation:system-contains:primary_path_authority",
+    "relation:system-contains:test_mesh"
+  ],
+  "changed_root_ids": [],
+  "changed_side_effect_ids": [],
+  "changed_source_surface_ids": [],
+  "changed_system_property_ids": [
+    "system_property:subject_revision"
+  ],
+  "changed_test_ids": [],
+  "completed_evidence_refs": [
+    {
+      "affected_closure_fingerprint": "sha256:9e67d8bfa8e09ab7f6f4c7d8e8a16d6d4b8d91d7c63270f310c11c9b8f3a34c3",
+      "candidate_snapshot_fingerprint": "sha256:485c301e6e1051d6877b6485f83f4ea4defef62854bdb5b747e2d698c3532827",
+      "covered_affected_ids": [
+        "coverage:universe",
+        "model_relation:relation:model-realizes-purpose:behavior_commitment_ledger",
+        "model_relation:relation:model-realizes-purpose:development_process_flow",
+        "model_relation:relation:model-realizes-purpose:logic_writing_models",
+        "model_relation:relation:model-realizes-purpose:model_test_alignment",
+        "model_relation:relation:model-realizes-purpose:plan_detailing",
+        "model_relation:relation:model-realizes-purpose:primary_path_authority",
+        "model_relation:relation:model-realizes-purpose:test_mesh",
+        "model_relation:relation:system-contains:behavior_commitment_ledger",
+        "model_relation:relation:system-contains:development_process_flow",
+        "model_relation:relation:system-contains:logic_writing_models",
+        "model_relation:relation:system-contains:model_test_alignment",
+        "model_relation:relation:system-contains:plan_detailing",
+        "model_relation:relation:system-contains:primary_path_authority",
+        "model_relation:relation:system-contains:test_mesh",
+        "parent_closure:system:flowguard:model-regression-manifest",
+        "system_property:subject_revision"
+      ],
+      "current": true,
+      "eligible": true,
+      "environment_fingerprint": "sha256:2cc6a220b55952b0f9042e30c932dab0f0bbd99d2a039085b460308e7aa20904",
+      "obligation_ids": [
+        "obligation:logic-writing-v3-testmesh-fix:model_mesh_maintenance"
+      ],
+      "owner_route": "model_mesh_maintenance",
+      "receipt_fingerprint": "sha256:ba9d03ea4771ed2733d7383a734ca511e50745620ee231ced0f11e486c2eef6c",
+      "receipt_id": "receipt:logic-writing-v3-testmesh-fix:1",
+      "schema": "flowguard.model_revision_evidence.v2",
+      "status": "pass",
+      "subject_fingerprint": "sha256:485c301e6e1051d6877b6485f83f4ea4defef62854bdb5b747e2d698c3532827",
+      "toolchain_fingerprint": "sha256:bb2ddb8ed538fa2eecafdaae153e8284173f47ce25a6caa2aad74f75f3184290"
+    },
+    {
+      "affected_closure_fingerprint": "sha256:9e67d8bfa8e09ab7f6f4c7d8e8a16d6d4b8d91d7c63270f310c11c9b8f3a34c3",
+      "candidate_snapshot_fingerprint": "sha256:485c301e6e1051d6877b6485f83f4ea4defef62854bdb5b747e2d698c3532827",
+      "covered_affected_ids": [
+        "model_instance:model:behavior_commitment_ledger",
+        "model_instance:model:development_process_flow",
+        "model_instance:model:logic_writing_models",
+        "model_instance:model:model_test_alignment",
+        "model_instance:model:plan_detailing",
+        "model_instance:model:primary_path_authority",
+        "model_instance:model:test_mesh",
+        "parent_closure:purpose:behavior_commitment_ledger",
+        "parent_closure:purpose:development_process_flow",
+        "parent_closure:purpose:logic_writing_models",
+        "parent_closure:purpose:model_test_alignment",
+        "parent_closure:purpose:plan_detailing",
+        "parent_closure:purpose:primary_path_authority",
+        "parent_closure:purpose:test_mesh"
+      ],
+      "current": true,
+      "eligible": true,
+      "environment_fingerprint": "sha256:2cc6a220b55952b0f9042e30c932dab0f0bbd99d2a039085b460308e7aa20904",
+      "obligation_ids": [
+        "obligation:logic-writing-v3-testmesh-fix:model_test_alignment"
+      ],
+      "owner_route": "model_test_alignment",
+      "receipt_fingerprint": "sha256:ba9d03ea4771ed2733d7383a734ca511e50745620ee231ced0f11e486c2eef6c",
+      "receipt_id": "receipt:logic-writing-v3-testmesh-fix:2",
+      "schema": "flowguard.model_revision_evidence.v2",
+      "status": "pass",
+      "subject_fingerprint": "sha256:485c301e6e1051d6877b6485f83f4ea4defef62854bdb5b747e2d698c3532827",
+      "toolchain_fingerprint": "sha256:bb2ddb8ed538fa2eecafdaae153e8284173f47ce25a6caa2aad74f75f3184290"
+    }
+  ],
+  "decision_reason": "Affected TestMesh regression passed and all seven registered models remain green.",
+  "evidence_complete": true,
+  "expected_head_fingerprint": "sha256:213897125cd77c51ef0af2de4c83b0afeedf9b44634b3f7e9fd19ca18a809a09",
+  "fingerprint": "sha256:01c8edf816ffae7fbc713a66aaa4d1cbd46fd853ee4237f041cf27ef6d6ef939",
+  "fingerprint_changed_ids": [
+    "coverage:universe",
+    "model_instance:model:test_mesh",
+    "model_relation:relation:model-realizes-purpose:test_mesh",
+    "model_relation:relation:system-contains:behavior_commitment_ledger",
+    "model_relation:relation:system-contains:development_process_flow",
+    "model_relation:relation:system-contains:logic_writing_models",
+    "model_relation:relation:system-contains:model_test_alignment",
+    "model_relation:relation:system-contains:plan_detailing",
+    "model_relation:relation:system-contains:primary_path_authority",
+    "model_relation:relation:system-contains:test_mesh",
+    "parent_closure:purpose:test_mesh",
+    "parent_closure:system:flowguard:model-regression-manifest"
+  ],
+  "implementation_bundle_fingerprint": "",
+  "members": [
+    {
+      "base_instance_fingerprint": "sha256:f465b454a4ad218c07483a098ae4b3be0ad6385d260c0dbd87323f076060a7e4",
+      "candidate_instance_fingerprint": "sha256:99454a308226378909560d3e8c19cb15af082ebb69acfdbf4bc5ca1e87c4829c",
+      "changed_element_ids": [
+        "model_instance:model:test_mesh"
+      ],
+      "member_id": "test_mesh",
+      "operation": "replace",
+      "schema": "flowguard.model_revision_member.v1"
+    }
+  ],
+  "originating_activation_receipt_fingerprint": "",
+  "originating_revision_set_fingerprint": "",
+  "prediction_replay_refs": [],
+  "removal_dispositions": [],
+  "removed_ids": [],
+  "required_evidence_refs": [
+    {
+      "affected_closure_fingerprint": "sha256:9e67d8bfa8e09ab7f6f4c7d8e8a16d6d4b8d91d7c63270f310c11c9b8f3a34c3",
+      "candidate_snapshot_fingerprint": "sha256:485c301e6e1051d6877b6485f83f4ea4defef62854bdb5b747e2d698c3532827",
+      "covered_affected_ids": [
+        "coverage:universe",
+        "model_relation:relation:model-realizes-purpose:behavior_commitment_ledger",
+        "model_relation:relation:model-realizes-purpose:development_process_flow",
+        "model_relation:relation:model-realizes-purpose:logic_writing_models",
+        "model_relation:relation:model-realizes-purpose:model_test_alignment",
+        "model_relation:relation:model-realizes-purpose:plan_detailing",
+        "model_relation:relation:model-realizes-purpose:primary_path_authority",
+        "model_relation:relation:model-realizes-purpose:test_mesh",
+        "model_relation:relation:system-contains:behavior_commitment_ledger",
+        "model_relation:relation:system-contains:development_process_flow",
+        "model_relation:relation:system-contains:logic_writing_models",
+        "model_relation:relation:system-contains:model_test_alignment",
+        "model_relation:relation:system-contains:plan_detailing",
+        "model_relation:relation:system-contains:primary_path_authority",
+        "model_relation:relation:system-contains:test_mesh",
+        "parent_closure:system:flowguard:model-regression-manifest",
+        "system_property:subject_revision"
+      ],
+      "current": true,
+      "eligible": true,
+      "environment_fingerprint": "sha256:2cc6a220b55952b0f9042e30c932dab0f0bbd99d2a039085b460308e7aa20904",
+      "obligation_ids": [
+        "obligation:logic-writing-v3-testmesh-fix:model_mesh_maintenance"
+      ],
+      "owner_route": "model_mesh_maintenance",
+      "receipt_fingerprint": "sha256:ba9d03ea4771ed2733d7383a734ca511e50745620ee231ced0f11e486c2eef6c",
+      "receipt_id": "receipt:logic-writing-v3-testmesh-fix:1",
+      "schema": "flowguard.model_revision_evidence.v2",
+      "status": "required",
+      "subject_fingerprint": "sha256:485c301e6e1051d6877b6485f83f4ea4defef62854bdb5b747e2d698c3532827",
+      "toolchain_fingerprint": "sha256:bb2ddb8ed538fa2eecafdaae153e8284173f47ce25a6caa2aad74f75f3184290"
+    },
+    {
+      "affected_closure_fingerprint": "sha256:9e67d8bfa8e09ab7f6f4c7d8e8a16d6d4b8d91d7c63270f310c11c9b8f3a34c3",
+      "candidate_snapshot_fingerprint": "sha256:485c301e6e1051d6877b6485f83f4ea4defef62854bdb5b747e2d698c3532827",
+      "covered_affected_ids": [
+        "model_instance:model:behavior_commitment_ledger",
+        "model_instance:model:development_process_flow",
+        "model_instance:model:logic_writing_models",
+        "model_instance:model:model_test_alignment",
+        "model_instance:model:plan_detailing",
+        "model_instance:model:primary_path_authority",
+        "model_instance:model:test_mesh",
+        "parent_closure:purpose:behavior_commitment_ledger",
+        "parent_closure:purpose:development_process_flow",
+        "parent_closure:purpose:logic_writing_models",
+        "parent_closure:purpose:model_test_alignment",
+        "parent_closure:purpose:plan_detailing",
+        "parent_closure:purpose:primary_path_authority",
+        "parent_closure:purpose:test_mesh"
+      ],
+      "current": true,
+      "eligible": true,
+      "environment_fingerprint": "sha256:2cc6a220b55952b0f9042e30c932dab0f0bbd99d2a039085b460308e7aa20904",
+      "obligation_ids": [
+        "obligation:logic-writing-v3-testmesh-fix:model_test_alignment"
+      ],
+      "owner_route": "model_test_alignment",
+      "receipt_fingerprint": "sha256:ba9d03ea4771ed2733d7383a734ca511e50745620ee231ced0f11e486c2eef6c",
+      "receipt_id": "receipt:logic-writing-v3-testmesh-fix:2",
+      "schema": "flowguard.model_revision_evidence.v2",
+      "status": "required",
+      "subject_fingerprint": "sha256:485c301e6e1051d6877b6485f83f4ea4defef62854bdb5b747e2d698c3532827",
+      "toolchain_fingerprint": "sha256:bb2ddb8ed538fa2eecafdaae153e8284173f47ce25a6caa2aad74f75f3184290"
+    }
+  ],
+  "revision_set_id": "revision:logic-writing-v3.0.0-testmesh-current",
+  "rollback_contract_fingerprint": "",
+  "schema": "flowguard.model_revision_set.v2",
+  "snapshot_diff_fingerprint": "sha256:d48d58b22ce9c7909b26547608bceafa5d34aa1d11df0e0937aa03fb17d8d7c6",
+  "status": "accepted",
+  "task_id": "release-fix:testmesh-leaf-ownership"
+}

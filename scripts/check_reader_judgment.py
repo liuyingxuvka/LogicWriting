@@ -27,11 +27,9 @@ def check(root: Path, runtime_root: Path | None = None) -> dict:
         sys.path.insert(0, str(skill_scripts))
 
     from _common import load_json
-    from validate_judgment_receipt import build_judgment_receipt
+    from validate_judgment_receipt import validate_judgment_receipt
 
-    judgment = build_judgment_receipt(
-        load_json(request_path), receipt_root=receipt_root
-    )
+    judgment = validate_judgment_receipt(load_json(request_path))
     result_path.parent.mkdir(parents=True, exist_ok=True)
     result_path.write_text(
         json.dumps(judgment, ensure_ascii=False, indent=2, sort_keys=True) + "\n",

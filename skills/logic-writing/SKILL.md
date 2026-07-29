@@ -63,6 +63,22 @@ providers and ResearchGuard members retain their own domain work.
 
 ## Required Workflow
 
+### Freeze the current reader contract
+
+Before route work, validate one `WritingRequest` and preserve its complete
+`ReaderIntent`: language, audience, purpose, artifact mode and format,
+requested or existing structure, headings, list/table policy, style, extent,
+citations, required and forbidden content, reference examples, and unresolved
+choices. Do not collapse these fields into a short topic summary. A material
+conflict blocks drafting until it is resolved.
+
+The selected final route owns one whole-artifact `CompositionPlan`. Plan the
+opening, central throughline, conclusion, hierarchy, reader-state progression,
+content and limitation placement, handoffs, list/table zones, and target
+extent before drafting. A source finding is content authority, not a paragraph
+plan. Never make one finding, claim, scene card, place, or checklist row equal
+one paragraph by default.
+
 ### Preserve specialist ownership
 
 This skill is an orchestration shell. It consumes native provider receipts; it
@@ -140,8 +156,10 @@ actual guide. Use the shared reader projection; never invoke the fiction route.
 
 Internal ledgers, Guard names, route ids, model ids, status fields, and agent
 instructions belong in the work room. The prose writer receives a sanitized
-ReaderBrief containing the reader question, genre, concepts, evidence,
-alternatives, limitations, sequence, citations, and safe wording.
+ReaderBrief containing the exact ReaderIntent, content boundaries, the whole
+CompositionPlan, and only the selected route extension. Safe meanings,
+evidence anchors, alternatives, limitations, and citations constrain content;
+they are not sentence templates or permitted-wording scripts.
 
 Read:
 
@@ -150,17 +168,33 @@ Read:
 - [references/shared/human-writing.md](references/shared/human-writing.md)
 - [references/shared/writing-contract.md](references/shared/writing-contract.md)
 
-Default final copy must sound like a knowledgeable person explaining the
-subject, not an AI describing its workflow. Do not expose internal terminology
-unless the user explicitly requests a methods appendix or audit record.
+Draft the complete reader artifact as one integrated work. Default final copy
+must sound like a knowledgeable person explaining the subject, not an AI
+describing its workflow. Prose is the default for explanatory and narrative
+body zones. Lists and tables belong only in ReaderIntent-authorized functional
+zones. Do not repair a missing logical relation by adding canned transitions,
+more headings, or more bullet cards.
 
 ### Validate the actual delivered artifact
 
-Inspect the actual current text or document, not metadata that says it is good.
-Derive a reverse outline from the artifact, check concept introduction,
-referents, claim-support movement, paragraph handoffs, genre, citations, and
-limitations. Keep deterministic diagnostics separate from reader-quality
-judgment. A material edit makes affected audits stale.
+Build an `ArtifactMap` from the exact current bytes, then bind every required
+planned unit, content unit, model row, and route surface to real locators and
+span fingerprints through `SharedWriting`. Inspect the actual current text or
+document, not metadata that says it is good.
+
+Run three distinct quality owners:
+
+1. deterministic `ReaderAudit` for current bytes, locked structure, exact
+   preservation, citations, list zones, fragmentation, placeholders, workflow
+   leakage, and binding coverage;
+2. the selected route's semantic review against actual spans;
+3. an independent `ReaderJudgment`, with producer and judge identities
+   separated, for reverse outline, clarity, coherence, naturalness, reader fit,
+   genre fit, content fidelity, and instruction fidelity.
+
+Self-scored quality, plan review, or a route saying its draft is good cannot
+substitute for these checks. A material edit stales the ArtifactMap, bindings,
+audits, judgment, and closure.
 
 For document files, keep content evidence and visual evidence separate. Text
 extraction is not proof of correct rendering. If LibreOffice or another required
@@ -174,7 +208,7 @@ comes from current native receipts and exact fingerprints. Caller-authored
 `pass`, `complete`, or `reader_native` fields are claims, not proof.
 
 Use `scripts/propagate_staleness.py` when an input identity changes, then use
-`scripts/derive_closure.py` on the resulting current receipt set. Staleness
+`scripts/derive_closure.py` on the complete current v2 chain. Staleness
 crosses from operation to release, or back, only through an explicit dependency
 edge. A changed user artifact therefore cannot invalidate release evidence by
 implication, and a green release receipt cannot validate reader-facing prose.
@@ -184,10 +218,13 @@ Never strengthen these states into pass: `not_run`, `stale`,
 `render_not_run`, `bounded`, `partial`, `blocked`, or `failed`.
 
 Only the selected final route may issue final closure. Child routes close only
-their bounded request. Every non-pass result names the affected claim or unit,
-safe wording, unsafe boundary, next owner, and required repair. Two identical
-failed repair attempts without new evidence terminate visibly instead of
-looping.
+their bounded request. Every non-pass result creates a typed
+`ReaderRepairRequest` naming actual target units, required structural change,
+content to preserve, and forbidden shortcuts. After real new bytes exist,
+record `ReaderRepairResult`, rebuild all byte-bound evidence, and rerun the
+three quality owners. Two consecutive current repair results with the same
+defect lineage, same remaining defect set, and no byte-level progress terminate
+visibly; repeated closure calls never count as repair attempts.
 
 ## Hard Gates
 
