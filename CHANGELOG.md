@@ -10,6 +10,17 @@ line follows semantic versioning.
 
 - Hosted release metadata is intentionally not asserted by this source file.
 
+## [3.0.1]
+
+### Fixed
+
+- Bound the three direct ResearchGuard routes to the released `0.4.5`
+  distribution and one exact `researchguard` console identity.
+- Made unsupported provider versions, scope-out members, and provider evidence
+  ownership visible without adding fallback paths or an automatic updater.
+- Refreshed current release metadata, fixtures, and maintenance evidence while
+  preserving the `3.0.0` history below.
+
 ## [3.0.0]
 
 ### Added

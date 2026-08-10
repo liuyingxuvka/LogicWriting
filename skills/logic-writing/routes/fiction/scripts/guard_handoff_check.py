@@ -31,6 +31,8 @@ EXPECTED_GUARD_BY_SURFACE = {
     "logicguard_theme_support": "logicguard",
     "sourceguard_canon_support": "sourceguard",
 }
+RESEARCHGUARD_GUARDS = {"traceguard", "logicguard", "sourceguard"}
+RESEARCHGUARD_VERSION = "0.4.5"
 IDENTITY_FIELDS = {
     "surface": "surface",
     "guard_id": "guard_id",
@@ -221,6 +223,12 @@ def validate(
             "terminal_status",
             f"Terminal status must be one of {sorted(TERMINAL_STATUSES)}.",
         )
+    if guard_id in RESEARCHGUARD_GUARDS and payload.get("tool_version") != RESEARCHGUARD_VERSION:
+        reporter.error(
+            "researchguard_version_mismatch",
+            "tool_version",
+            f"ResearchGuard-owned handoffs require version {RESEARCHGUARD_VERSION}.",
+        )
 
     input_fingerprint = ""
     try:
@@ -292,6 +300,12 @@ def validate(
                     f"terminal_receipt_ref.{receipt_field}",
                     f"Receipt {receipt_field} does not match handoff {handoff_field}.",
                 )
+        if guard_id in RESEARCHGUARD_GUARDS and receipt.get("tool_version") != RESEARCHGUARD_VERSION:
+            reporter.error(
+                "researchguard_receipt_version_mismatch",
+                "terminal_receipt_ref.tool_version",
+                f"ResearchGuard-owned receipts require version {RESEARCHGUARD_VERSION}.",
+            )
         if receipt.get("terminal") is not True:
             reporter.error("guard_receipt_not_terminal", "terminal_receipt_ref.terminal", "Receipt must declare terminal=true.")
         if receipt.get("immutable") is not True:

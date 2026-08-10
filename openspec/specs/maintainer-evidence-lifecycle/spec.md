@@ -1,4 +1,10 @@
-## ADDED Requirements
+# maintainer-evidence-lifecycle Specification
+
+## Purpose
+
+Define the current SkillGuard-maintainer evidence boundary for the Logic Writing source repository. The target skill owns domain behavior and semantic checks; SkillGuard supervises author identity, evidence freshness, installation projection, and release parity without creating a consumer dependency or an updater.
+
+## Requirements
 
 ### Requirement: Target-owned validation depth
 The maintainer workflow SHALL preserve Logic Writing's sole native route and SHALL execute exactly the semantic checks declared by the target contract. SkillGuard MUST NOT invent, deepen, reinterpret, or replace target-domain criteria.
@@ -29,9 +35,8 @@ The installed Logic Writing consumer SHALL contain only the target's declared co
 - **THEN** its complete inventory matches the frozen installation projection, forbidden maintainer files are absent, and installed currentness can be checked without running a validation owner
 
 ### Requirement: Direct current authority and release parity
-The repository SHALL have one current author contract and MUST NOT retain the retired SkillGuard 0.3.4 identity as a compatibility or fallback authority. Source version, installed projection, package metadata where applicable, Git commit, version tag, and GitHub Release SHALL be independently verified before release closure.
+The repository SHALL have one current author contract and MUST NOT retain the retired SkillGuard author identity as a compatibility or fallback authority. Source version `3.0.1`, installed projection, package metadata where applicable, Git commit, version tag, and GitHub Release SHALL be independently verified before release closure. This maintenance requirement does not create an automatic updater for other computers.
 
 #### Scenario: Release identities agree
 - **WHEN** the final source snapshot and single full validation receipt are current
 - **THEN** the installed consumer matches the source projection and the pushed commit, version tag, and GitHub Release identify that same snapshot
-

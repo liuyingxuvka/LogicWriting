@@ -1,11 +1,15 @@
-# Migration to Logic Writing 2.1
+# Migration to Logic Writing 3.0.1
 
-Version `3.0.0` keeps one public skill id, `logic-writing`, and one provider
+Version `3.0.1` keeps one public skill id, `logic-writing`, and one provider
 console for its three research Guard dependencies. LogicGuard, SourceGuard,
 and TraceGuard remain separate semantic owners, but their only executable
-paths are the `logic`, `source`, and `trace` members of ResearchGuard `0.1.2`.
+paths are the `logic`, `source`, and `trace` members of ResearchGuard `0.4.5`.
 There are no direct member-module providers, runtime compatibility aliases,
 fallback launchers, or alternate provider roots.
+
+This is a small corrective release. It does not add a new writing route and it
+does not add or change an automatic updater. Other computers continue using the
+existing upgrade mechanism.
 
 ## ResearchGuard provider cutover
 
@@ -14,6 +18,11 @@ fallback launchers, or alternate provider roots.
 | LogicGuard | `researchguard logic` | `primary:researchguard:logic` |
 | SourceGuard | `researchguard source` | `primary:researchguard:source` |
 | TraceGuard | `researchguard trace` | `primary:researchguard:trace` |
+
+ResearchGuard has other native members, including ExperimentGuard and an
+umbrella `run` route. Logic Writing `3.0.1` intentionally does not activate
+those paths. A request for them is a visible scope block, not an instruction to
+run several members automatically.
 
 A missing console, failed member probe, or timeout is a visible terminal
 provider-preflight failure. Upgrade or installation work must fix that one
@@ -71,8 +80,8 @@ shared reader-state and model-artifact contract.
 
 ## Installation cutover
 
-1. Validate and release the exact `3.0.0` source snapshot, including the
-   ResearchGuard `0.1.2` dependency identity and zero-residual check.
+1. Validate and release the exact `3.0.1` source snapshot, including the
+   ResearchGuard `0.4.5` dependency identity and zero-residual check.
 2. Stage and activate `skills/logic-writing` transactionally.
 3. Refresh the global router and confirm all four supported intent families
    resolve to `logic-writing`.

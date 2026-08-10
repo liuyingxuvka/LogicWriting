@@ -46,12 +46,19 @@ ALLOWED = {
     "safe_claim",
     "unsafe_claim_boundary",
     "native_receipt",
+    "provider_reference",
     "next_route",
     "artifact_refs",
     "unresolved_gaps",
     "stale_inputs",
     "dependency_receipt_fingerprints",
     "adapter_result_fingerprint",
+}
+RESEARCHGUARD_OWNERS = {"sourceguard", "logicguard", "traceguard"}
+RESEARCHGUARD_PATHS = {
+    "sourceguard": "primary:researchguard:source",
+    "logicguard": "primary:researchguard:logic",
+    "traceguard": "primary:researchguard:trace",
 }
 NATIVE_PAYLOAD_FIELDS = {
     "producer_skill",
@@ -129,6 +136,89 @@ def _fingerprint_map(value: Any, label: str) -> dict[str, str]:
             raise ValidationError(f"{label} keys must be non-empty strings")
         require_fingerprint({key: item}, key)
     return dict(mapping)
+
+
+def _researchguard_qualification_fingerprint() -> str:
+    """Read the provider-owned suite identity; never synthesize one locally."""
+
+    try:
+        from researchguard.suite import suite_fingerprint
+    except Exception as exc:  # pragma: no cover - environment-specific import failure
+        raise ValidationError(
+            f"ResearchGuard provider qualification is unavailable: {type(exc).__name__}: {exc}"
+        ) from exc
+    try:
+        value = suite_fingerprint()
+    except Exception as exc:  # pragma: no cover - provider-owned failure
+        raise ValidationError(
+            f"ResearchGuard provider qualification failed: {type(exc).__name__}: {exc}"
+        ) from exc
+    require_fingerprint({"provider_qualification_fingerprint": value}, "provider_qualification_fingerprint")
+    return value
+
+
+def _validate_provider_reference(
+    value: Mapping[str, Any],
+    *,
+    owner: str,
+    status: str,
+) -> dict[str, Any]:
+    reference = require_mapping(value.get("provider_reference"), "provider_reference")
+    expected_keys = {
+        "provider_id",
+        "provider_version",
+        "member_id",
+        "primary_path_id",
+        "native_result_schema_version",
+        "native_result_fingerprint",
+        "native_result_locator",
+        "native_receipt_schema_version",
+        "native_receipt_fingerprint",
+        "native_receipt_locator",
+        "native_status",
+        "provider_qualification_status",
+        "provider_qualification_fingerprint",
+        "claim_boundary",
+        "reference_fingerprint",
+    }
+    reject_unknown_keys(reference, expected_keys, "provider_reference")
+    if set(reference) != expected_keys:
+        raise ValidationError(
+            "provider_reference is missing required fields: "
+            + ", ".join(sorted(expected_keys - set(reference)))
+        )
+    if require_string(reference, "provider_id") != "researchguard":
+        raise ValidationError("provider_reference provider_id must be researchguard")
+    if require_string(reference, "provider_version") != "0.4.5":
+        raise ValidationError("provider_reference provider_version must be 0.4.5")
+    if require_string(reference, "member_id") != owner:
+        raise ValidationError("provider_reference member_id does not match native_owner")
+    if require_string(reference, "primary_path_id") != RESEARCHGUARD_PATHS[owner]:
+        raise ValidationError("provider_reference primary_path_id does not match native_owner")
+    for field in (
+        "native_result_schema_version",
+        "native_result_locator",
+        "native_receipt_schema_version",
+        "native_receipt_locator",
+        "claim_boundary",
+    ):
+        require_string(reference, field)
+    require_fingerprint(reference, "native_result_fingerprint")
+    require_fingerprint(reference, "native_receipt_fingerprint")
+    require_fingerprint(reference, "provider_qualification_fingerprint")
+    require_fingerprint(reference, "reference_fingerprint")
+    if require_string(reference, "provider_qualification_status") != "current_pass":
+        raise ValidationError("provider_reference qualification is not current_pass")
+    if require_string(reference, "native_status") != status:
+        raise ValidationError("provider_reference native_status does not match adapter status")
+    expected_qualification = _researchguard_qualification_fingerprint()
+    if reference["provider_qualification_fingerprint"] != expected_qualification:
+        raise ValidationError(
+            "provider_reference qualification does not match the installed ResearchGuard suite"
+        )
+    if reference["reference_fingerprint"] != fingerprint_without(reference, "reference_fingerprint"):
+        raise ValidationError("provider_reference fingerprint does not match its exact content")
+    return dict(reference)
 
 
 def _native_fields(value: Mapping[str, Any]) -> dict[str, Any]:
@@ -300,16 +390,19 @@ def validate_adapter_result(value: Mapping[str, Any]) -> dict[str, Any]:
     value = require_mapping(dict(value), "adapter result")
     require_schema("adapter-result.schema.json", value, label="AdapterResult")
     reject_unknown_keys(value, ALLOWED, "adapter result")
-    if set(value) != ALLOWED:
+    missing_fields = ALLOWED - set(value)
+    if missing_fields - {"provider_reference"}:
         raise ValidationError(
             "adapter result is missing required fields: "
-            + ", ".join(sorted(ALLOWED - set(value)))
+            + ", ".join(sorted(missing_fields - {"provider_reference"}))
         )
     if require_string(value, "schema_version") != "1.0":
         raise ValidationError("schema_version must be 1.0")
     owner = require_string(value, "native_owner").lower()
     if owner not in NATIVE_OWNERS:
         raise ValidationError(f"unsupported native_owner: {owner}")
+    if owner in RESEARCHGUARD_OWNERS and "provider_reference" not in value:
+        raise ValidationError("ResearchGuard adapter results require provider_reference")
     require_string(value, "request_id")
     semantic_owner_id = require_string(value, "semantic_owner_id")
     native_route = require_string(value, "native_route")
@@ -360,6 +453,10 @@ def validate_adapter_result(value: Mapping[str, Any]) -> dict[str, Any]:
         raise ValidationError(
             "non-pass adapter results require an unresolved gap or stale input"
         )
+
+    provider_reference = None
+    if owner in RESEARCHGUARD_OWNERS:
+        provider_reference = _validate_provider_reference(value, owner=owner, status=status)
 
     native_receipt = require_mapping(value.get("native_receipt"), "native_receipt")
     if set(native_receipt) != {
@@ -414,6 +511,16 @@ def validate_adapter_result(value: Mapping[str, Any]) -> dict[str, Any]:
             payload.get("evidence_payload"), "native evidence_payload"
         ),
     )
+    if provider_reference is not None and provider_reference["native_receipt_fingerprint"] != native_receipt["fingerprint"]:
+        raise ValidationError(
+            "provider_reference native receipt fingerprint does not match the opaque native receipt"
+        )
+    if provider_reference is not None and provider_reference["native_result_fingerprint"] != fingerprint(
+        {"payload": payload["evidence_payload"]}
+    ):
+        raise ValidationError(
+            "provider_reference native result fingerprint does not match the opaque native result"
+        )
     if owner in {"documents", "pdf"} and status == "current_pass":
         if len(collections["artifact_refs"]) != 1:
             raise ValidationError(

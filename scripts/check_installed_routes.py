@@ -1,4 +1,4 @@
-"""Smoke-test the three installed Logic Writing ownership decisions."""
+"""Smoke-test the five installed Logic Writing ownership decisions."""
 
 from __future__ import annotations
 
@@ -16,6 +16,8 @@ SCENARIOS = (
     ("investigation", "research_report", False, "investigation", []),
     ("academic-writing", "thesis_chapter", False, "academic-writing", []),
     ("academic-with-investigation-child", "thesis_chapter", True, "academic-writing", ["investigation"]),
+    ("fiction-writing", "novel", False, "fiction-writing", []),
+    ("travel-guide", "itinerary", False, "travel-guide", []),
 )
 
 
@@ -105,7 +107,7 @@ def check(skill_root: Path) -> dict:
         "status": "passed" if not findings else "failed",
         "scenarios": results,
         "findings": findings,
-        "claim_boundary": "This smoke check proves installed route selection for three representative requests; it does not execute specialist research or write a final artifact.",
+        "claim_boundary": "This smoke check proves installed route selection for five representative requests, including all four final owners and one child handoff; it does not execute specialist research or write a final artifact.",
     }
 
 

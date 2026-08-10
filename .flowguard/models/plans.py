@@ -16,8 +16,6 @@ from flowguard import (
     RiskProfile,
     Scenario,
     ScenarioExpectation,
-    TemplateHarvestReview,
-    TemplateReuseReview,
 )
 from flowguard.state_closure import (
     STATE_CLOSURE_HANDLING_BLOCK,
@@ -368,7 +366,6 @@ def formal_plan(
                 adversarial_inputs=tuple(adversarial_inputs),
                 hard_invariants=tuple(hard_invariants),
                 known_bad_cases=tuple(known_bad_cases),
-                used_template_ids=("side_effect_at_most_once",),
                 blindspots=(
                     ()
                     if conformance_passed
@@ -388,14 +385,6 @@ def formal_plan(
             ),
         ),
         conformance_status=conformance_status,
-        template_reuse_review=TemplateReuseReview(
-            used_template_ids=("side_effect_at_most_once",),
-            searched_layers=("public", "local"),
-        ),
-        template_harvest_review=TemplateHarvestReview(
-            disposition="not_harvestable",
-            not_harvestable_reason="not_reusable_project_specific",
-        ),
         minimum_model_contract=MinimumModelContract(
             protected_error_classes=protected,
             modeled_state=tuple(modeled_state),

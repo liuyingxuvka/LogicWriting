@@ -176,6 +176,61 @@ def test_opaque_native_payload_is_rejected():
         validate_adapter_result(value)
 
 
+def test_researchguard_result_requires_opaque_provider_reference():
+    value = _generic_result(owner="logicguard", domain="structured_artifact")
+    value.pop("provider_reference")
+    value["adapter_result_fingerprint"] = fingerprint_without(
+        value, "adapter_result_fingerprint"
+    )
+
+    with pytest.raises(ValidationError, match="provider_reference"):
+        validate_adapter_result(value)
+
+
+def test_researchguard_provider_version_mismatch_is_rejected():
+    value = _generic_result(owner="sourceguard", domain="source_depth")
+    value["provider_reference"]["provider_version"] = "0.4.4"
+    value["provider_reference"]["reference_fingerprint"] = fingerprint_without(
+        value["provider_reference"], "reference_fingerprint"
+    )
+    value["adapter_result_fingerprint"] = fingerprint_without(
+        value, "adapter_result_fingerprint"
+    )
+
+    with pytest.raises(ValidationError, match="provider_reference|0.4.5"):
+        validate_adapter_result(value)
+
+
+def test_researchguard_provider_qualification_mismatch_is_rejected():
+    value = _generic_result(owner="traceguard", domain="temporal_trace")
+    value["provider_reference"]["provider_qualification_fingerprint"] = fingerprint(
+        {"foreign": "provider"}
+    )
+    value["provider_reference"]["reference_fingerprint"] = fingerprint_without(
+        value["provider_reference"], "reference_fingerprint"
+    )
+    value["adapter_result_fingerprint"] = fingerprint_without(
+        value, "adapter_result_fingerprint"
+    )
+
+    with pytest.raises(ValidationError, match="installed ResearchGuard suite"):
+        validate_adapter_result(value)
+
+
+def test_researchguard_provider_reference_must_match_selected_member():
+    value = _generic_result(owner="logicguard", domain="structured_artifact")
+    value["provider_reference"]["member_id"] = "sourceguard"
+    value["provider_reference"]["reference_fingerprint"] = fingerprint_without(
+        value["provider_reference"], "reference_fingerprint"
+    )
+    value["adapter_result_fingerprint"] = fingerprint_without(
+        value, "adapter_result_fingerprint"
+    )
+
+    with pytest.raises(ValidationError, match="member_id"):
+        validate_adapter_result(value)
+
+
 def test_owner_cannot_claim_another_specialist_domain():
     value = _generic_result(owner="logicguard", domain="structured_artifact")
     value["evidence_domain"] = "source_depth"

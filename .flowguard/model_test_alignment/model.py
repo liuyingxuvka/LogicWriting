@@ -394,7 +394,7 @@ def _contract(spec: BindingSpec) -> CodeContract:
         role="owner",
         implements_obligations=(spec.obligation_id, *extra_obligations),
         external_inputs=(
-            ("analogous_defect",)
+            ("same_class_case",)
             if spec.contract_id == "contract:verification-owner-plan"
             else ()
         ),

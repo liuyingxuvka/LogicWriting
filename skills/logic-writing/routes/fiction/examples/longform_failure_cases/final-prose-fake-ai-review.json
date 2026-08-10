@@ -13,7 +13,7 @@
     {"surface": "promise_payoff", "status": "passed", "evidence_ref": "novel-ledger.json#promises", "blocks_closure": true, "next_action": "rerun promises"},
     {"surface": "voice_style", "status": "passed", "evidence_ref": "voice-style-report.json", "blocks_closure": true, "next_action": "rerun voice"},
     {"surface": "reverse_outline", "status": "passed", "evidence_ref": "chapter-interfaces.json#reverse_outlines", "blocks_closure": true, "next_action": "rerun reverse outlines"},
-    {"surface": "source_requirements", "status": "passed", "evidence_ref": "file:../longform_novel_project/source-requirements.json;sha256:506fd0f26b42f07121ba5f70d9b4c3342fb391bae872c65b05917dce97522aa2", "blocks_closure": true, "next_action": "refresh requirements"},
+    {"surface": "source_requirements", "status": "passed", "evidence_ref": "file:../longform_novel_project/source-requirements.json;sha256:7ef47de6415d2069e6ecceee861179a03df375520476d1cde93fae1b394e4307", "blocks_closure": true, "next_action": "refresh requirements"},
     {"surface": "final_artifact", "status": "passed", "evidence_ref": "file:../longform_novel_project/drafts/book-01-final.txt;sha256:668e9f1b0911b8fd0e63cd8c01cfc0615d96479317e1aed2b45b0808cc5168ee", "blocks_closure": true, "next_action": "recompute artifact hash"},
     {"surface": "artifact_bound_review", "status": "passed", "evidence_ref": "review:ai-summary-says-the-manuscript-was-read", "blocks_closure": true, "next_action": "rerun semantic review with final artifact hash"}
   ],

@@ -27,6 +27,11 @@ RESEARCHGUARD_MEMBERS = {
         "primary_path_id": "primary:researchguard:trace",
     },
 }
+SUPPORTED_RESEARCHGUARD_VERSION = "0.4.5"
+SCOPE_OUT_PROVIDERS = {
+    "experimentguard": "ExperimentGuard is not an active Logic Writing 3.0.1 provider.",
+    "researchguard": "The ResearchGuard umbrella route is not an active Logic Writing 3.0.1 provider.",
+}
 MODULE_PROVIDERS = {
     "flowguard": ("flowguard", ("SCHEMA_VERSION", "FlowGuardCheckPlan")),
 }
@@ -37,10 +42,17 @@ SKILL_PROVIDERS = {
 PROBE_TIMEOUT_SECONDS = 60
 
 
-def _researchguard_console() -> str | None:
+def _researchguard_distribution():
     try:
         distribution = importlib.metadata.distribution("researchguard")
     except importlib.metadata.PackageNotFoundError:
+        return None
+    return distribution
+
+
+def _researchguard_console(distribution=None) -> str | None:
+    distribution = distribution or _researchguard_distribution()
+    if distribution is None:
         return None
     entries = [
         entry
@@ -115,6 +127,10 @@ def preflight(provider: str, *, provider_root: str | None = None, require_render
     if provider != original_provider or provider != provider.lower():
         status = "blocked"
         evidence["reason"] = "provider id must be the exact canonical lowercase id"
+    elif provider in SCOPE_OUT_PROVIDERS:
+        status = "blocked"
+        evidence["reason"] = SCOPE_OUT_PROVIDERS[provider]
+        evidence["provider_execution"] = "none"
     elif provider in RESEARCHGUARD_MEMBERS:
         binding = RESEARCHGUARD_MEMBERS[provider]
         evidence.update(
@@ -132,37 +148,56 @@ def preflight(provider: str, *, provider_root: str | None = None, require_render
                 "provider-root overrides are not an execution path"
             )
         else:
-            console = _researchguard_console()
+            distribution = _researchguard_distribution()
+            distribution_version = str(getattr(distribution, "version", "") or "") if distribution else None
+            evidence["distribution_version"] = distribution_version
+            if distribution is not None and distribution_version != SUPPORTED_RESEARCHGUARD_VERSION:
+                status = "blocked"
+                evidence["reason"] = "unsupported_researchguard_version"
+                evidence["supported_version"] = SUPPORTED_RESEARCHGUARD_VERSION
+                evidence["console_resolved"] = False
+                console = None
+            else:
+                console = _researchguard_console(distribution)
             evidence["console_resolved"] = bool(console)
             if not console:
-                status = "provider_unavailable"
+                if distribution is None:
+                    status = "provider_unavailable"
             else:
                 version_probe = _run_console_probe(console, ("--version",))
-                member_probe = _run_console_probe(
-                    console,
-                    (str(binding["member_command"]), "--help"),
-                )
                 version_text = str(version_probe.get("stdout", ""))
                 version_match = re.fullmatch(
                     r"researchguard\s+([0-9]+(?:\.[0-9]+){2}(?:[-+][A-Za-z0-9._-]+)?)",
                     version_text,
                 )
                 version_probe["version_format_current"] = bool(version_match)
-                version_probe.pop("stdout", None)
-                member_probe.pop("stdout", None)
-                available = (
+                console_version = version_match.group(1) if version_match else None
+                version_identity_matches = (
                     bool(version_probe.get("passed"))
-                    and bool(version_match)
-                    and bool(member_probe.get("passed"))
+                    and console_version == SUPPORTED_RESEARCHGUARD_VERSION
+                    and console_version == distribution_version
                 )
+                version_probe.pop("stdout", None)
                 evidence.update(
                     {
-                        "suite_version": version_match.group(1) if version_match else None,
+                        "suite_version": console_version,
+                        "supported_version": SUPPORTED_RESEARCHGUARD_VERSION,
+                        "version_identity_matches": version_identity_matches,
                         "version_probe": version_probe,
-                        "member_capability_probe": member_probe,
                     }
                 )
-                status = "current_pass" if available else "provider_unavailable"
+                if not version_identity_matches:
+                    status = "blocked"
+                    evidence["reason"] = "researchguard_identity_mismatch"
+                else:
+                    member_probe = _run_console_probe(
+                        console,
+                        (str(binding["member_command"]), "--help"),
+                    )
+                    member_probe.pop("stdout", None)
+                    available = bool(member_probe.get("passed"))
+                    evidence["member_capability_probe"] = member_probe
+                    status = "current_pass" if available else "provider_unavailable"
     elif provider in MODULE_PROVIDERS:
         module_name, required_capabilities = MODULE_PROVIDERS[provider]
         try:
@@ -240,7 +275,8 @@ def main():
         "provider",
         choices=tuple(RESEARCHGUARD_MEMBERS)
         + tuple(MODULE_PROVIDERS)
-        + tuple(SKILL_PROVIDERS),
+        + tuple(SKILL_PROVIDERS)
+        + tuple(SCOPE_OUT_PROVIDERS),
     )
     parser.add_argument("--provider-root")
     parser.add_argument("--require-render", action="store_true")

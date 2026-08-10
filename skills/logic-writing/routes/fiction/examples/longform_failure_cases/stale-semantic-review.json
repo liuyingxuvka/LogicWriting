@@ -4,7 +4,7 @@
   "review_id": "review-book-01-stale",
   "model_revision": "aurora-key-model-r0",
   "reviewed_at": "2026-07-13T12:00:00+02:00",
-  "artifact_ref": "file:../longform_novel_project/drafts/book-01-final.txt;sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "artifact_ref": "file:../longform_novel_project/drafts/book-01-final.txt;sha256:668e9f1b0911b8fd0e63cd8c01cfc0615d96479317e1aed2b45b0808cc5168ee",
   "artifact_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
   "evaluator": {
     "id": "fixture-evaluator-stale",

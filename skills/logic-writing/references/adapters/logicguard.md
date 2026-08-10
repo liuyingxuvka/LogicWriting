@@ -19,3 +19,6 @@ through another member.
 
 LogicGuard checks structural support, not factual truth. Its model or story plan
 is not final prose and cannot satisfy an audit of the actual delivered artifact.
+The current provider identity is ResearchGuard `0.4.5`; preserve its native
+result and receipt as an opaque reference rather than fabricating a local
+LogicGuard-native receipt.

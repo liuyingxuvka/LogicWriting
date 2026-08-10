@@ -45,6 +45,8 @@ def test_route_smoke_covers_both_owners_and_bounded_child():
         "investigation",
         "academic-writing",
         "academic-with-investigation-child",
+        "fiction-writing",
+        "travel-guide",
     ]
 
 

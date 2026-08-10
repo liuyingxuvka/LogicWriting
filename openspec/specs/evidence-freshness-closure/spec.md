@@ -325,3 +325,25 @@ The current closure SHALL reject legacy ReaderBrief, SharedWriting, audit, judgm
 #### Scenario: Legacy audit is otherwise passing
 - **WHEN** a v1 audit has a passing status but lacks current ReaderIntent, CompositionPlan, and artifact binding identities
 - **THEN** closure rejects it as ineligible evidence
+
+### Requirement: ResearchGuard suite identity is provider evidence
+Every LogicGuard, SourceGuard, or TraceGuard adapter run SHALL carry the unchanged semantic owner and a current ResearchGuard primary path, and its provider preflight SHALL identify the sole `researchguard` console and exact `0.4.5` suite version. Provider availability SHALL NOT prove that native domain work ran.
+
+#### Scenario: Console and member probe pass
+- **WHEN** both the ResearchGuard version probe and the selected member capability probe pass
+- **THEN** provider preflight SHALL report the console id, member id, primary path, suite version, exact commands, and a claim boundary limited to provider availability
+
+#### Scenario: Native provider evidence is opaque
+- **WHEN** Logic Writing consumes a ResearchGuard result or receipt
+- **THEN** it SHALL preserve the provider-owned bytes/locator/fingerprint and qualification status as an opaque reference, and SHALL NOT manufacture or reinterpret a ResearchGuard native receipt
+
+#### Scenario: Native result is non-pass
+- **WHEN** the selected member returns a failed, blocked, stale, bounded, partial, or not-run native result
+- **THEN** Logic Writing SHALL preserve that result unchanged and SHALL NOT strengthen it using another ResearchGuard member or the passing provider preflight
+
+### Requirement: Provider-root overrides cannot create a second ResearchGuard path
+Logic Writing SHALL reject a provider-root override for LogicGuard, SourceGuard, or TraceGuard because the installed `researchguard` console is the sole normal execution authority.
+
+#### Scenario: Caller supplies a member provider root
+- **WHEN** a caller supplies `--provider-root` while preflighting one of the three ResearchGuard members
+- **THEN** the preflight SHALL return a visible blocked result before executing any provider command

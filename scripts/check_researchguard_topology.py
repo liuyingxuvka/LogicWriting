@@ -42,6 +42,7 @@ REQUIRED_BINDINGS = {
     "sourceguard": ("source", "primary:researchguard:source"),
     "traceguard": ("trace", "primary:researchguard:trace"),
 }
+SUPPORTED_VERSION = "0.4.5"
 
 
 def _governed_files(root: Path):
@@ -93,6 +94,22 @@ def check(root: Path) -> dict[str, object]:
 
     provider_path = root / "skills/logic-writing/scripts/provider_preflight.py"
     provider_text = provider_path.read_text(encoding="utf-8")
+    if f'SUPPORTED_RESEARCHGUARD_VERSION = "{SUPPORTED_VERSION}"' not in provider_text:
+        findings.append(
+            {
+                "code": "supported_researchguard_version_missing",
+                "path": provider_path.relative_to(root).as_posix(),
+                "value": SUPPORTED_VERSION,
+            }
+        )
+    if '"experimentguard"' not in provider_text or '"researchguard"' not in provider_text:
+        findings.append(
+            {
+                "code": "scope_out_provider_missing",
+                "path": provider_path.relative_to(root).as_posix(),
+                "value": "experimentguard/researchguard",
+            }
+        )
     for member_id, (command, primary_path) in REQUIRED_BINDINGS.items():
         for token in (f'"{member_id}"', f'"member_command": "{command}"', primary_path):
             if token not in provider_text:

@@ -1,11 +1,15 @@
 ## ADDED Requirements
 
 ### Requirement: ResearchGuard suite identity is provider evidence
-Every LogicGuard, SourceGuard, or TraceGuard adapter run SHALL carry the unchanged semantic owner and a current ResearchGuard primary path, and its provider preflight SHALL identify the sole `researchguard` console and suite version. Provider availability SHALL NOT prove that native domain work ran.
+Every LogicGuard, SourceGuard, or TraceGuard adapter run SHALL carry the unchanged semantic owner and a current ResearchGuard primary path, and its provider preflight SHALL identify the sole `researchguard` console and exact `0.4.5` suite version. Provider availability SHALL NOT prove that native domain work ran.
 
 #### Scenario: Console and member probe pass
 - **WHEN** both the ResearchGuard version probe and the selected member capability probe pass
 - **THEN** provider preflight SHALL report the console id, member id, primary path, suite version, exact commands, and a claim boundary limited to provider availability
+
+#### Scenario: Native provider evidence is opaque
+- **WHEN** Logic Writing consumes a ResearchGuard result or receipt
+- **THEN** it SHALL preserve the provider-owned bytes/locator/fingerprint and qualification status as an opaque reference, and SHALL NOT manufacture or reinterpret a ResearchGuard native receipt
 
 #### Scenario: Native result is non-pass
 - **WHEN** the selected member returns a failed, blocked, stale, bounded, partial, or not-run native result

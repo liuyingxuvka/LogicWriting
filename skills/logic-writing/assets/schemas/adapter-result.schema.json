@@ -80,6 +80,9 @@
         "fingerprint": { "$ref": "#/$defs/fingerprint" }
       }
     },
+    "provider_reference": {
+      "$ref": "#/$defs/providerReference"
+    },
     "next_route": { "$ref": "#/$defs/nextRoute" },
     "dependency_receipt_fingerprints": {
       "type": "array",
@@ -89,6 +92,17 @@
     "adapter_result_fingerprint": { "$ref": "#/$defs/fingerprint" }
   },
   "allOf": [
+    {
+      "if": {
+        "required": ["native_owner"],
+        "properties": {
+          "native_owner": {
+            "enum": ["sourceguard", "logicguard", "traceguard"]
+          }
+        }
+      },
+      "then": { "required": ["provider_reference"] }
+    },
     {
       "if": {
         "required": ["status"],
@@ -166,6 +180,44 @@
         "human_review",
         "none"
       ]
+    },
+    "providerReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider_id",
+        "provider_version",
+        "member_id",
+        "primary_path_id",
+        "native_result_schema_version",
+        "native_result_fingerprint",
+        "native_result_locator",
+        "native_receipt_schema_version",
+        "native_receipt_fingerprint",
+        "native_receipt_locator",
+        "native_status",
+        "provider_qualification_status",
+        "provider_qualification_fingerprint",
+        "claim_boundary",
+        "reference_fingerprint"
+      ],
+      "properties": {
+        "provider_id": { "const": "researchguard" },
+        "provider_version": { "const": "0.4.5" },
+        "member_id": { "enum": ["sourceguard", "logicguard", "traceguard"] },
+        "primary_path_id": { "$ref": "#/$defs/identifier" },
+        "native_result_schema_version": { "$ref": "#/$defs/identifier" },
+        "native_result_fingerprint": { "$ref": "#/$defs/fingerprint" },
+        "native_result_locator": { "type": "string", "minLength": 1 },
+        "native_receipt_schema_version": { "$ref": "#/$defs/identifier" },
+        "native_receipt_fingerprint": { "$ref": "#/$defs/fingerprint" },
+        "native_receipt_locator": { "type": "string", "minLength": 1 },
+        "native_status": { "$ref": "#/$defs/status" },
+        "provider_qualification_status": { "const": "current_pass" },
+        "provider_qualification_fingerprint": { "$ref": "#/$defs/fingerprint" },
+        "claim_boundary": { "type": "string", "minLength": 1 },
+        "reference_fingerprint": { "$ref": "#/$defs/fingerprint" }
+      }
     },
     "evidenceDomain": {
       "enum": [

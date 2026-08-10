@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import replace
 
 from flowguard import (
-    CONTRACT_MUTATION_ANALOGOUS_DEFECT,
+    CONTRACT_MUTATION_SAME_CLASS_CASE,
     ContractCoverageUniverse,
     ContractDimension,
     ContractExhaustionPlan,
@@ -66,7 +66,7 @@ def _base_plan() -> ContractExhaustionPlan:
         required=False,
         finite=True,
         values=COLLIDING_SCHEMA_BASENAMES,
-        mutation_types=(CONTRACT_MUTATION_ANALOGOUS_DEFECT,),
+        mutation_types=(CONTRACT_MUTATION_SAME_CLASS_CASE,),
         producer="repository source authority",
         consumer="OpenSpec frozen-root materializer",
         currentness_rule=(
@@ -79,7 +79,7 @@ def _base_plan() -> ContractExhaustionPlan:
         ContractMutationCase(
             case_id=case_id,
             dimension_id=DIMENSION_ID,
-            mutation_type=CONTRACT_MUTATION_ANALOGOUS_DEFECT,
+            mutation_type=CONTRACT_MUTATION_SAME_CLASS_CASE,
             source_route="openspec",
             required=True,
             oracle_id=ORACLE_ID,
@@ -178,7 +178,7 @@ def _execution_boundary_plan() -> ContractExhaustionPlan:
         required=False,
         finite=True,
         values=EXECUTION_BOUNDARY_MEMBERS,
-        mutation_types=(CONTRACT_MUTATION_ANALOGOUS_DEFECT,),
+        mutation_types=(CONTRACT_MUTATION_SAME_CLASS_CASE,),
         producer="repository working tree and validation owner",
         consumer="OpenSpec frozen-root materializer",
         currentness_rule=(
@@ -200,7 +200,7 @@ def _execution_boundary_plan() -> ContractExhaustionPlan:
         ContractMutationCase(
             case_id=case_id,
             dimension_id=EXECUTION_DIMENSION_ID,
-            mutation_type=CONTRACT_MUTATION_ANALOGOUS_DEFECT,
+            mutation_type=CONTRACT_MUTATION_SAME_CLASS_CASE,
             source_route="openspec",
             required=True,
             oracle_id=EXECUTION_ORACLE_ID,

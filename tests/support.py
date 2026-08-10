@@ -78,6 +78,33 @@ def make_adapter_result(
         "payload": payload,
     }
     native_receipt["fingerprint"] = fingerprint(native_receipt)
+    provider_reference = None
+    if owner in {"sourceguard", "logicguard", "traceguard"}:
+        from researchguard.suite import suite_fingerprint
+
+        member_commands = {
+            "sourceguard": "source",
+            "logicguard": "logic",
+            "traceguard": "trace",
+        }
+        native_result_fingerprint = fingerprint({"payload": payload["evidence_payload"]})
+        provider_reference = {
+            "provider_id": "researchguard",
+            "provider_version": "0.4.5",
+            "member_id": owner,
+            "primary_path_id": f"primary:researchguard:{member_commands[owner]}",
+            "native_result_schema_version": "researchguard.native-result.v1",
+            "native_result_fingerprint": native_result_fingerprint,
+            "native_result_locator": f"fixture://logic-writing/tests/{owner}/result",
+            "native_receipt_schema_version": "researchguard.native-receipt.v1",
+            "native_receipt_fingerprint": native_receipt["fingerprint"],
+            "native_receipt_locator": f"fixture://logic-writing/tests/{owner}/receipt",
+            "native_status": status,
+            "provider_qualification_status": "current_pass",
+            "provider_qualification_fingerprint": suite_fingerprint(),
+            "claim_boundary": "Test fixture provider reference; native domain semantics remain provider-owned.",
+        }
+        provider_reference["reference_fingerprint"] = fingerprint(provider_reference)
     result: dict[str, Any] = {
         "schema_version": "1.0",
         "request_id": request_id,
@@ -104,6 +131,8 @@ def make_adapter_result(
         "stale_inputs": stale_inputs,
         "dependency_receipt_fingerprints": dependencies,
     }
+    if provider_reference is not None:
+        result["provider_reference"] = provider_reference
     result["adapter_result_fingerprint"] = fingerprint(result)
     return result
 

@@ -10,7 +10,8 @@ from scripts.check_researchguard_topology import check
 
 
 class _Distribution:
-    def __init__(self, executable: Path) -> None:
+    def __init__(self, executable: Path, version: str = "0.4.5") -> None:
+        self.version = version
         self.entry_points = [
             SimpleNamespace(
                 group="console_scripts",
@@ -28,20 +29,22 @@ class _Distribution:
 def _install_distribution_probe(
     monkeypatch,
     tmp_path: Path,
+    *,
+    version: str = "0.4.5",
 ) -> Path:
     executable = tmp_path / "researchguard.exe"
     executable.write_bytes(b"current console")
     monkeypatch.setattr(
         provider_preflight.importlib.metadata,
         "distribution",
-        lambda _name: _Distribution(executable),
+        lambda _name: _Distribution(executable, version),
     )
     return executable
 
 
 def _completed(argv, **_kwargs):
     if argv[1:] == ["--version"]:
-        return SimpleNamespace(returncode=0, stdout="researchguard 0.1.2\n", stderr="")
+        return SimpleNamespace(returncode=0, stdout="researchguard 0.4.5\n", stderr="")
     if argv[1:] in (["logic", "--help"], ["source", "--help"], ["trace", "--help"]):
         return SimpleNamespace(returncode=0, stdout="member help\n", stderr="")
     raise AssertionError(f"unexpected command: {argv}")
@@ -69,7 +72,9 @@ def test_each_member_uses_one_researchguard_console(monkeypatch, tmp_path):
         assert result["evidence"]["provider_console_id"] == "researchguard"
         assert result["evidence"]["member_command"] == member_command
         assert result["evidence"]["primary_path_id"] == primary_path
-        assert result["evidence"]["suite_version"] == "0.1.2"
+        assert result["evidence"]["suite_version"] == "0.4.5"
+        assert result["evidence"]["distribution_version"] == "0.4.5"
+        assert result["evidence"]["version_identity_matches"] is True
 
     assert calls == [
         [str(executable.resolve()), "--version"],
@@ -108,7 +113,7 @@ def test_member_timeout_is_visible_and_has_no_retry(monkeypatch, tmp_path):
     def timed_out(argv, **_kwargs):
         calls.append(list(argv))
         if argv[1:] == ["--version"]:
-            return SimpleNamespace(returncode=0, stdout="researchguard 0.1.2\n", stderr="")
+            return SimpleNamespace(returncode=0, stdout="researchguard 0.4.5\n", stderr="")
         raise subprocess.TimeoutExpired(argv, provider_preflight.PROBE_TIMEOUT_SECONDS)
 
     monkeypatch.setattr(provider_preflight.subprocess, "run", timed_out)
@@ -121,6 +126,64 @@ def test_member_timeout_is_visible_and_has_no_retry(monkeypatch, tmp_path):
         [str(executable.resolve()), "--version"],
         [str(executable.resolve()), "trace", "--help"],
     ]
+
+
+def test_distribution_version_mismatch_blocks_before_console(monkeypatch, tmp_path):
+    calls: list[list[str]] = []
+    _install_distribution_probe(monkeypatch, tmp_path, version="0.4.4")
+    monkeypatch.setattr(
+        provider_preflight.subprocess,
+        "run",
+        lambda argv, **_kwargs: calls.append(list(argv)),
+    )
+
+    result = provider_preflight.preflight("logicguard")
+
+    assert result["status"] == "blocked"
+    assert result["evidence"]["reason"] == "unsupported_researchguard_version"
+    assert calls == []
+
+
+def test_console_version_mismatch_blocks_before_member(monkeypatch, tmp_path):
+    calls: list[list[str]] = []
+    executable = _install_distribution_probe(monkeypatch, tmp_path)
+
+    def wrong_version(argv, **_kwargs):
+        calls.append(list(argv))
+        return SimpleNamespace(returncode=0, stdout="researchguard 0.4.4\n", stderr="")
+
+    monkeypatch.setattr(provider_preflight.subprocess, "run", wrong_version)
+    result = provider_preflight.preflight("logicguard")
+
+    assert result["status"] == "blocked"
+    assert result["evidence"]["reason"] == "researchguard_identity_mismatch"
+    assert calls == [[str(executable.resolve()), "--version"]]
+
+
+def test_scope_out_provider_runs_no_console(monkeypatch):
+    monkeypatch.setattr(
+        provider_preflight.subprocess,
+        "run",
+        lambda *_args, **_kwargs: (_ for _ in ()).throw(AssertionError("scope-out must not execute")),
+    )
+
+    result = provider_preflight.preflight("experimentguard")
+
+    assert result["status"] == "blocked"
+    assert result["evidence"]["provider_execution"] == "none"
+
+
+def test_umbrella_scope_out_provider_runs_no_console(monkeypatch):
+    monkeypatch.setattr(
+        provider_preflight.subprocess,
+        "run",
+        lambda *_args, **_kwargs: (_ for _ in ()).throw(AssertionError("scope-out must not execute")),
+    )
+
+    result = provider_preflight.preflight("researchguard")
+
+    assert result["status"] == "blocked"
+    assert result["evidence"]["provider_execution"] == "none"
 
 
 def test_member_provider_root_is_rejected_before_console_execution(monkeypatch, tmp_path):

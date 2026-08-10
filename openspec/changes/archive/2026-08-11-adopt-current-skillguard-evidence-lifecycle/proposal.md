@@ -1,15 +1,16 @@
 ## Why
 
-Logic Writing is already a single maintained skill with eleven target-owned checks, but its author record still identifies SkillGuard 0.3.4 and its FlowGuard adoption is behind the installed check engine. Historical generated evidence and installed cache residue also obscure which source, check receipt, consumer projection, and release are current.
+Logic Writing is already a single maintained skill with eleven target-owned checks, but its author record and project records are behind the installed SkillGuard/FlowGuard engines. Historical generated evidence and installed cache residue also obscure which source, check receipt, consumer projection, and release are current. This maintenance change closes that lifecycle for the Logic Writing `3.0.1` release without introducing an automatic updater.
 
 ## What Changes
 
-- Replace the old author-maintenance identity directly with the current SkillGuard contract; do not add a compatibility reader or alternate authority.
+- Replace the old author-maintenance identity directly with the current SkillGuard `0.7.2` contract; do not add a compatibility reader or alternate authority.
 - Preserve Logic Writing's exact native route and eleven declared checks. SkillGuard supervises execution, freshness, installation, and closure only; it does not invent or deepen domain criteria.
 - Keep durable terminal evidence bounded and keep transient run, staging, cache, and receipt material outside source and consumer authority.
 - Regenerate the author contract from current source, run affected FlowGuard and target-native checks, then run exactly one frozen full validation owner for release.
 - Produce a clean consumer projection with no `.skillguard`, author receipts, run state, or cache files, and synchronize source, installation, package, Git, tag, and GitHub Release identities.
-- **BREAKING**: retire the stale SkillGuard 0.3.4 author identity and obsolete local-author/cached projections instead of supporting them in parallel.
+- Keep other computers' existing upgrade mechanism out of this repository; no updater is added.
+- Retire the stale author identity directly instead of supporting it in parallel.
 
 ## Capabilities
 
