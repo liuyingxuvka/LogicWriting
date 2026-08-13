@@ -1,4 +1,21 @@
-# Migration to Logic Writing 3.0.1
+# Migration to Logic Writing 3.0.2
+
+Version `3.0.2` is a patch release. It keeps the public skill id,
+the four final-owner routes, the existing adapter envelope, and the existing
+upgrade mechanism. The current ResearchGuard dependency is `0.4.11`, and the
+current FlowGuard validation toolchain is `0.68.15`.
+
+LogicGuard, SourceGuard, and TraceGuard remain the only active direct
+ResearchGuard members. ExperimentGuard and the ResearchGuard umbrella remain
+out of scope: requests for them are visible blocks and do not fan out, retry,
+or use an older provider path. This release does not add an automatic updater.
+
+For this patch, refresh the source metadata, run the current provider and
+negative-path checks, migrate the existing FlowGuard project authority through
+the official tool, compile and activate the SkillGuard projection, and verify
+the source, installation, Git tag, and hosted release identities separately.
+
+## Historical migration notes: Logic Writing 3.0.1
 
 Version `3.0.1` keeps one public skill id, `logic-writing`, and one provider
 console for its three research Guard dependencies. LogicGuard, SourceGuard,

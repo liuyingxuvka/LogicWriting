@@ -50,10 +50,16 @@ def proof_artifact(artifact_id: str, *covered: str) -> ProofArtifactRef:
     result_path = f"tmp/{artifact_id.replace(':', '_')}.json"
     return ProofArtifactRef(
         artifact_id,
+        producer_route="test_mesh_maintenance",
+        command="python -m unittest tests.test_checkout",
         result_status=PROCESS_EVIDENCE_PASSED,
         exit_code=0,
         result_path=result_path,
-        artifact_fingerprints={result_path: "sha256:template"},
+        started_at="2026-08-13T00:00:00+00:00",
+        finished_at="2026-08-13T00:00:01+00:00",
+        subject_id="code.checkout",
+        subject_fingerprint="sha256:" + "0" * 64,
+        artifact_fingerprints={result_path: "sha256:" + "0" * 64},
         covered_obligation_ids=covered,
     )
 

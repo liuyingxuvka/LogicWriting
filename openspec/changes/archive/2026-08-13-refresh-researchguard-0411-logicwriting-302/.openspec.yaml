@@ -1,0 +1,6 @@
+schema: spec-driven
+created: 2026-08-12
+goal: Upgrade Logic Writing from 3.0.1 to patch 3.0.2, bind ResearchGuard 0.4.11
+  and FlowGuard 0.68.14, preserve exactly three direct ResearchGuard members,
+  keep ExperimentGuard and the umbrella route out of scope, and synchronize
+  validated source/install/release identities.

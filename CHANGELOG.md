@@ -10,6 +10,19 @@ line follows semantic versioning.
 
 - Hosted release metadata is intentionally not asserted by this source file.
 
+## [3.0.2]
+
+### Fixed
+
+- Bound the current ResearchGuard provider identity to the released `0.4.11`
+  distribution and one exact `researchguard` console identity.
+- Kept LogicGuard, SourceGuard, and TraceGuard as the only active direct
+  members while making ExperimentGuard and umbrella requests visible scope
+  blocks with no fallback execution.
+- Refreshed FlowGuard 0.68.15 verification inputs, installed SkillGuard
+  projection, global-router pointer, route smoke coverage, and release metadata
+  for this patch.
+
 ## [3.0.1]
 
 ### Fixed

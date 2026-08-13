@@ -1,7 +1,8 @@
 {
   "governed_input_globs": [
     ".flowguard/**/*.py",
-    ".flowguard/behavior_commitment_ledger/ledger.json"
+    ".flowguard/behavior_commitment_ledger/ledger.json",
+    ".flowguard/native-owner-bindings.json"
   ],
   "models": [
     {
@@ -13,6 +14,9 @@
         ".flowguard/behavior_commitment_ledger/model.py",
         ".flowguard/behavior_commitment_ledger/run_checks.py",
         ".flowguard/behavior_commitment_ledger/ledger.json"
+      ],
+      "intent_source_inputs": [
+        "openspec/specs/unified-routing/spec.md"
       ],
       "model_id": "behavior_commitment_ledger",
       "model_kind": "executable_workflow",
@@ -80,6 +84,9 @@
       "input_globs": [
         ".flowguard/development_process_flow/*.py"
       ],
+      "intent_source_inputs": [
+        "openspec/specs/maintainer-evidence-lifecycle/spec.md"
+      ],
       "model_id": "development_process_flow",
       "model_kind": "executable_workflow",
       "model_path": ".flowguard/development_process_flow/model.py",
@@ -87,7 +94,7 @@
       "purpose_closure": {
         "adoption_scope": "current_candidate_only",
         "claim_boundary": "Current closure covers the declared Logic Writing development_process_flow model and native runner cases only; it does not prove future AI prose quality, undeclared runtime behavior, installation, or publication.",
-        "closure_fingerprint": "sha256:a647af174ff0801487a28ed0412145ef4c2fd393b9627d9532f5d1a75881509f",
+        "closure_fingerprint": "sha256:9a2aaec22c0b99feb60fc03cd8daf6aecdf9e6355a6b1b4100ea98aa9884d6a6",
         "declaration_fingerprint": "sha256:5306ec71895d4ab124c872de965c40ae8d8f67cea02755b60b99cf1915d99504",
         "declaration_phase": "before_candidate",
         "evidence_check_ids": [
@@ -113,7 +120,7 @@
         "guarded_purpose": "Prevent the Logic Writing upgrade and release process from overwriting peer work, consuming stale evidence, or treating background progress as final validation.",
         "known_good_case_id": "native-runner:development_process_flow:declared-positive-suite",
         "model_instance_id": "regression:development_process_flow:logic-writing-v3.0.0",
-        "model_sha256": "sha256:7b249020e08128e8339659ecd799c580828574b6e62333afe2cee05027b00ee0",
+        "model_sha256": "sha256:8f8dd9c636dd0adb01f7c698393e7e5e28111fc485962eba3d771601d524c918",
         "protected_failure_ids": [
           "process:peer-overwrite",
           "process:stale-evidence",
@@ -142,6 +149,9 @@
         ".flowguard/models/retirement_field_lifecycle.py",
         ".flowguard/models/frozen_source_contract_exhaustion.py"
       ],
+      "intent_source_inputs": [
+        "openspec/verification-contract.yaml"
+      ],
       "model_id": "model_test_alignment",
       "model_kind": "executable_workflow",
       "model_path": ".flowguard/model_test_alignment/model.py",
@@ -149,7 +159,7 @@
       "purpose_closure": {
         "adoption_scope": "current_candidate_only",
         "claim_boundary": "Current closure covers the declared Logic Writing model_test_alignment model and native runner cases only; it does not prove future AI prose quality, undeclared runtime behavior, installation, or publication.",
-        "closure_fingerprint": "sha256:575b0fa3aec8eeef88acf877d476504111dd89119dd65ba72b1ffbae969fde0d",
+        "closure_fingerprint": "sha256:729524a8ff987c44bc1caacc32ab3bc68c7bb6ab969f8e018a6e201f6084c97c",
         "declaration_fingerprint": "sha256:4c5b74841f03873d029c8e277081c06aebdfaaf430c51be7d19f1fbc457b3ee1",
         "declaration_phase": "before_candidate",
         "evidence_check_ids": [
@@ -180,7 +190,7 @@
         "guarded_purpose": "Prevent Logic Writing model obligations, external code contracts, schema fields, and current tests from being declared aligned when bindings or evidence are missing.",
         "known_good_case_id": "native-runner:model_test_alignment:declared-positive-suite",
         "model_instance_id": "regression:model_test_alignment:logic-writing-v3.0.0",
-        "model_sha256": "sha256:17ff746ab57588de5c66f281aa9fd623d79098101fc49cb190b9360d2e64933b",
+        "model_sha256": "sha256:6398309add3a206b811a0909d0d470e12afc81ba6a697c45724d456a2089933a",
         "protected_failure_ids": [
           "alignment:missing-code-contract",
           "alignment:orphan-test",
@@ -207,6 +217,9 @@
       "expected_artifacts": [],
       "input_globs": [
         ".flowguard/plan_detailing/*.py"
+      ],
+      "intent_source_inputs": [
+        "docs/release-retirement-checklist.md"
       ],
       "model_id": "plan_detailing",
       "model_kind": "executable_workflow",
@@ -268,6 +281,9 @@
       "input_globs": [
         ".flowguard/primary_path_authority/*.py"
       ],
+      "intent_source_inputs": [
+        "openspec/specs/unified-routing/spec.md"
+      ],
       "model_id": "primary_path_authority",
       "model_kind": "executable_workflow",
       "model_path": ".flowguard/primary_path_authority/model.py",
@@ -328,6 +344,9 @@
       "input_globs": [
         ".flowguard/test_mesh/*.py",
         ".flowguard/models/frozen_source_contract_exhaustion.py"
+      ],
+      "intent_source_inputs": [
+        "openspec/verification-contract.yaml"
       ],
       "model_id": "test_mesh",
       "model_kind": "executable_workflow",
@@ -399,6 +418,9 @@
         ".flowguard/run_models.py",
         ".flowguard/models/**/*.py"
       ],
+      "intent_source_inputs": [
+        "skills/logic-writing/SKILL.md"
+      ],
       "model_id": "logic_writing_models",
       "model_kind": "executable_workflow",
       "model_path": ".flowguard/logic_writing_models/model.py",
@@ -464,8 +486,24 @@
       "timeout_seconds": 180
     }
   ],
-  "schema_version": "flowguard.model_regression_manifest.v3",
-  "shared_input_groups": [],
+  "schema_version": "flowguard.model_regression_manifest.v4",
+  "shared_input_groups": [
+    {
+      "component_id": "logic-writing-native-owner-bindings",
+      "globs": [
+        ".flowguard/native-owner-bindings.json"
+      ],
+      "consumers": [
+        "behavior_commitment_ledger",
+        "development_process_flow",
+        "model_test_alignment",
+        "plan_detailing",
+        "primary_path_authority",
+        "test_mesh",
+        "logic_writing_models"
+      ]
+    }
+  ],
   "snapshot_only_input_globs": [
     ".flowguard/evidence/**/*",
     ".flowguard/model-system/**/*",

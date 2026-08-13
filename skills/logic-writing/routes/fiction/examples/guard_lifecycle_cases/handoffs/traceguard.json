@@ -5,11 +5,11 @@
   "native_owner": "traceguard",
   "native_route_id": "primary:researchguard:trace",
   "native_check_id": "traceguard.storyline_terminal",
-  "tool_version": "0.4.5",
+  "tool_version": "0.4.11",
   "receipt_schema_version": "traceguard.native_terminal_receipt.v1",
   "input_fingerprint": "sha256:4033424e51858c783e89acb8b5eb760a7b698757caf86bf000fefcb8b312c216",
   "terminal_receipt_id": "compact-guard-pass-traceguard-terminal",
-  "terminal_receipt_ref": "file:../receipts/traceguard-terminal.json;sha256:ea13bdf4dc7b6e2a7fb298de6e38ca91ca88088518771f921623d0d84728dd69",
+  "terminal_receipt_ref": "file:../receipts/traceguard-terminal.json;sha256:bc61e5bb9985dc1f45be897276a844669f770586ea3a4a2b916d2ff4dfb46a79",
   "terminal_status": "passed",
   "claim_boundary": "TraceGuard terminal receipt covers the compact fixture chronology and reader-revelation input only."
 }

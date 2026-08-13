@@ -327,7 +327,7 @@ The current closure SHALL reject legacy ReaderBrief, SharedWriting, audit, judgm
 - **THEN** closure rejects it as ineligible evidence
 
 ### Requirement: ResearchGuard suite identity is provider evidence
-Every LogicGuard, SourceGuard, or TraceGuard adapter run SHALL carry the unchanged semantic owner and a current ResearchGuard primary path, and its provider preflight SHALL identify the sole `researchguard` console and exact `0.4.5` suite version. Provider availability SHALL NOT prove that native domain work ran.
+Every LogicGuard, SourceGuard, or TraceGuard adapter run SHALL carry the unchanged semantic owner and a current ResearchGuard primary path, and its provider preflight SHALL identify the sole `researchguard` console and exact `0.4.11` suite version. Provider availability SHALL NOT prove that native domain work ran.
 
 #### Scenario: Console and member probe pass
 - **WHEN** both the ResearchGuard version probe and the selected member capability probe pass

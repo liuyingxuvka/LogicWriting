@@ -1057,7 +1057,7 @@
           "test_mesh_state": "shard_current"
         },
         "excluded_behavior_ids": [],
-      "expected_result": "commit, tag, release, docs, and active installation share the Logic Writing v3.0.1 release identity",
+      "expected_result": "commit, tag, release, docs, and active installation share the Logic Writing v3.0.2 release identity",
         "expected_terminal": "public v2.0.0 release with immutable prior history or visible blocked publication",
         "external_differences": [],
         "failure_boundary": "no release while validation, installation, privacy, or fresh-clone evidence is stale or missing",
@@ -1073,7 +1073,7 @@
           ],
           "task_terms": [
             "publish LogicWriting",
-        "v3.0.1",
+        "v3.0.2",
         "four-route release",
             "post-archive release"
           ],

@@ -10,7 +10,7 @@ from scripts.check_researchguard_topology import check
 
 
 class _Distribution:
-    def __init__(self, executable: Path, version: str = "0.4.5") -> None:
+    def __init__(self, executable: Path, version: str = "0.4.11") -> None:
         self.version = version
         self.entry_points = [
             SimpleNamespace(
@@ -30,7 +30,7 @@ def _install_distribution_probe(
     monkeypatch,
     tmp_path: Path,
     *,
-    version: str = "0.4.5",
+    version: str = "0.4.11",
 ) -> Path:
     executable = tmp_path / "researchguard.exe"
     executable.write_bytes(b"current console")
@@ -44,7 +44,7 @@ def _install_distribution_probe(
 
 def _completed(argv, **_kwargs):
     if argv[1:] == ["--version"]:
-        return SimpleNamespace(returncode=0, stdout="researchguard 0.4.5\n", stderr="")
+        return SimpleNamespace(returncode=0, stdout="researchguard 0.4.11\n", stderr="")
     if argv[1:] in (["logic", "--help"], ["source", "--help"], ["trace", "--help"]):
         return SimpleNamespace(returncode=0, stdout="member help\n", stderr="")
     raise AssertionError(f"unexpected command: {argv}")
@@ -72,8 +72,8 @@ def test_each_member_uses_one_researchguard_console(monkeypatch, tmp_path):
         assert result["evidence"]["provider_console_id"] == "researchguard"
         assert result["evidence"]["member_command"] == member_command
         assert result["evidence"]["primary_path_id"] == primary_path
-        assert result["evidence"]["suite_version"] == "0.4.5"
-        assert result["evidence"]["distribution_version"] == "0.4.5"
+        assert result["evidence"]["suite_version"] == "0.4.11"
+        assert result["evidence"]["distribution_version"] == "0.4.11"
         assert result["evidence"]["version_identity_matches"] is True
 
     assert calls == [
@@ -113,7 +113,7 @@ def test_member_timeout_is_visible_and_has_no_retry(monkeypatch, tmp_path):
     def timed_out(argv, **_kwargs):
         calls.append(list(argv))
         if argv[1:] == ["--version"]:
-            return SimpleNamespace(returncode=0, stdout="researchguard 0.4.5\n", stderr="")
+            return SimpleNamespace(returncode=0, stdout="researchguard 0.4.11\n", stderr="")
         raise subprocess.TimeoutExpired(argv, provider_preflight.PROBE_TIMEOUT_SECONDS)
 
     monkeypatch.setattr(provider_preflight.subprocess, "run", timed_out)

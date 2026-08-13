@@ -1,6 +1,6 @@
 {
   "schema_version": "logic-writing.source-reconciliation.v1",
-  "target_version": "3.0.1",
+  "target_version": "3.0.2",
   "sources": [
     {
       "source_id": "logic-writing-public-v1.0.2",

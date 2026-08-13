@@ -1,9 +1,20 @@
 {
   "claim_boundary": "This snapshot is the sole finite project model-system view assembled from existing regression, ModelMesh, BehaviorCommitmentLedger, Model-Test Alignment, and TestMesh owner artifacts. Unresolved gaps remain explicit and cannot support a full-coverage claim.",
   "coverage": {
-    "boundary_id": "flowguard:manifest-ledger-owner-boundary",
+    "boundary_id": "logic-writing:manifest-ledger-owner-boundary",
     "claim_boundary": "Coverage is exhaustive only for the current regression manifest, the current behavior-commitment ledger, their resolved model inputs, and their declared contract and test references.",
     "dimensions": [
+      {
+        "complete": true,
+        "covered_ids": [],
+        "dimension_id": "affected_authority_relations",
+        "excluded_ids": [],
+        "extra_ids": [],
+        "missing_ids": [],
+        "required_ids": [],
+        "schema": "flowguard.coverage_dimension.v1",
+        "unresolved_ids": []
+      },
       {
         "complete": false,
         "covered_ids": [],
@@ -567,18 +578,105 @@
         ]
       }
     ],
-    "fingerprint": "sha256:a544e79af0fa9b90cb24c35e34c988d70bb63efb3c4a39f401dcb5531e496c6a",
+    "fingerprint": "sha256:e12e474db7a7ef65dca57b99c88ae397052aabdf265b123d3fdcc9210b3e07fe",
     "schema": "flowguard.coverage_universe.v1",
-    "source_inventory_fingerprint": "sha256:b06d4ee7f9a9746141cc1a8ba33a9f36f400805f48398e947a97d41eb5cd5d66",
+    "source_inventory_fingerprint": "sha256:11e9ffc92f38c3a195380040a5242ba3908bb63c058ee6e055083c7562087b82",
     "status": "incomplete_within_declared_boundary"
   },
   "coverage_status": "incomplete_within_declared_boundary",
-  "fingerprint": "sha256:485c301e6e1051d6877b6485f83f4ea4defef62854bdb5b747e2d698c3532827",
+  "fingerprint": "sha256:99f7d059eb89cbb6f8d2028116fe31782aeaa9a70c499d10d7260339ce827314",
   "lifecycle": "active",
   "model_instances": [
     {
-      "fingerprint": "sha256:0895e1335844f62a67fd69008b0c4ed60a9e0d2a6d66a66004d4cd01629fdbd4",
-      "input_inventory_fingerprint": "sha256:42f8681966127926f370a4bf1ccbfd5e0ae0dbf3ebedaf890405e40a52a36a92",
+      "fingerprint": "sha256:0475099ee836b608fbb5283e9bd0fd68d251128c155dbc591a217e949065c42b",
+      "input_inventory_fingerprint": "sha256:6ae7641869261ca1951f8bc31e56f4f74d37cb96c10ba9d746869ddfbae30bc8",
+      "inputs": [
+        {
+          "path": ".flowguard/development_process_flow/model.py",
+          "schema": "flowguard.model_input_ref.v1",
+          "sha256": "sha256:8f8dd9c636dd0adb01f7c698393e7e5e28111fc485962eba3d771601d524c918"
+        },
+        {
+          "path": ".flowguard/development_process_flow/run_checks.py",
+          "schema": "flowguard.model_input_ref.v1",
+          "sha256": "sha256:213bdd505af7a18c1320f67846a4b6a60fb98ba5f09e7b317dd19cb796fda5db"
+        }
+      ],
+      "logical_model_id": "development_process_flow",
+      "model_kind": "executable_workflow",
+      "model_path": ".flowguard/development_process_flow/model.py",
+      "model_sha256": "sha256:8f8dd9c636dd0adb01f7c698393e7e5e28111fc485962eba3d771601d524c918",
+      "purpose_closure_fingerprint": "sha256:9a2aaec22c0b99feb60fc03cd8daf6aecdf9e6355a6b1b4100ea98aa9884d6a6",
+      "runner_path": ".flowguard/development_process_flow/run_checks.py",
+      "runner_sha256": "sha256:213bdd505af7a18c1320f67846a4b6a60fb98ba5f09e7b317dd19cb796fda5db",
+      "schema": "flowguard.model_instance_ref.v2"
+    },
+    {
+      "fingerprint": "sha256:2ae7eea97f680c30ce7f1fbf53f3f92f257471a305b6468983901b42a1ee4d41",
+      "input_inventory_fingerprint": "sha256:e4dc03978abd614d837b8b29b8b3aed4324f2e89a9b1d4767f78d479a71c4aa5",
+      "inputs": [
+        {
+          "path": ".flowguard/behavior_commitment_ledger/ledger.json",
+          "schema": "flowguard.model_input_ref.v1",
+          "sha256": "sha256:392950b888ba9f14dc0a42c5c49aaf0beb545cb8442f32ff6f29cbc4cca815ca"
+        },
+        {
+          "path": ".flowguard/behavior_commitment_ledger/model.py",
+          "schema": "flowguard.model_input_ref.v1",
+          "sha256": "sha256:10d84d2a74ed04de77379ff9966c65dd9022421655899a30a0798aea2c2364d5"
+        },
+        {
+          "path": ".flowguard/behavior_commitment_ledger/run_checks.py",
+          "schema": "flowguard.model_input_ref.v1",
+          "sha256": "sha256:901760206f0853adf75a98fb82c5b8bbde5e88cec138b46a75429eb9f1e2a3bf"
+        }
+      ],
+      "logical_model_id": "behavior_commitment_ledger",
+      "model_kind": "executable_workflow",
+      "model_path": ".flowguard/behavior_commitment_ledger/model.py",
+      "model_sha256": "sha256:10d84d2a74ed04de77379ff9966c65dd9022421655899a30a0798aea2c2364d5",
+      "purpose_closure_fingerprint": "sha256:3756aea1381811fd8cbb08ec47bae1c13d4a25776031f9db5e83dd754ed1648e",
+      "runner_path": ".flowguard/behavior_commitment_ledger/run_checks.py",
+      "runner_sha256": "sha256:901760206f0853adf75a98fb82c5b8bbde5e88cec138b46a75429eb9f1e2a3bf",
+      "schema": "flowguard.model_instance_ref.v2"
+    },
+    {
+      "fingerprint": "sha256:3ea8eb833c946174b015b7bf5081b9abd45e375c62edef83ec9af9617f121714",
+      "input_inventory_fingerprint": "sha256:3bf5f9630860b7e399b52297f90cd5e6e620359b34ab5f00a5e121eff590544d",
+      "inputs": [
+        {
+          "path": ".flowguard/model_test_alignment/model.py",
+          "schema": "flowguard.model_input_ref.v1",
+          "sha256": "sha256:6398309add3a206b811a0909d0d470e12afc81ba6a697c45724d456a2089933a"
+        },
+        {
+          "path": ".flowguard/model_test_alignment/run_checks.py",
+          "schema": "flowguard.model_input_ref.v1",
+          "sha256": "sha256:a6e76b2816c3aa75b44fe626c9d49929ecacdd635272fade409c73ff6e581695"
+        },
+        {
+          "path": ".flowguard/models/frozen_source_contract_exhaustion.py",
+          "schema": "flowguard.model_input_ref.v1",
+          "sha256": "sha256:ae6afe0b641eabdbb3bee51b34d6833f05854de06407014b8c3da873b47c9f05"
+        },
+        {
+          "path": ".flowguard/models/retirement_field_lifecycle.py",
+          "schema": "flowguard.model_input_ref.v1",
+          "sha256": "sha256:9afff5b2834a79b6b674aabd7747dc853c9e002508a513ad86be183ac414c568"
+        }
+      ],
+      "logical_model_id": "model_test_alignment",
+      "model_kind": "executable_workflow",
+      "model_path": ".flowguard/model_test_alignment/model.py",
+      "model_sha256": "sha256:6398309add3a206b811a0909d0d470e12afc81ba6a697c45724d456a2089933a",
+      "purpose_closure_fingerprint": "sha256:729524a8ff987c44bc1caacc32ab3bc68c7bb6ab969f8e018a6e201f6084c97c",
+      "runner_path": ".flowguard/model_test_alignment/run_checks.py",
+      "runner_sha256": "sha256:a6e76b2816c3aa75b44fe626c9d49929ecacdd635272fade409c73ff6e581695",
+      "schema": "flowguard.model_instance_ref.v2"
+    },
+    {
+      "fingerprint": "sha256:6d9988d44eb48d3a88d42730e05cd4f15648188b59d08cc2c5099ce129e2daa8",
+      "input_inventory_fingerprint": "sha256:bb7a30b05db66f23bdf05238ba6f7f9c09b4f0138c56c6587f075c41f99aecaf",
       "inputs": [
         {
           "path": ".flowguard/logic_writing_models/model.py",
@@ -613,7 +711,7 @@
         {
           "path": ".flowguard/models/frozen_source_contract_exhaustion.py",
           "schema": "flowguard.model_input_ref.v1",
-          "sha256": "sha256:ef50b5053dab62a383aa2e0b21160723754c268b8bf6492b2661cff3c8c27096"
+          "sha256": "sha256:ae6afe0b641eabdbb3bee51b34d6833f05854de06407014b8c3da873b47c9f05"
         },
         {
           "path": ".flowguard/models/investigation_route_model.py",
@@ -638,7 +736,7 @@
         {
           "path": ".flowguard/models/plans.py",
           "schema": "flowguard.model_input_ref.v1",
-          "sha256": "sha256:0cb6f943284fef89710b67b060e108b725bceb6b7f1a0d7ca36f1d8dacc5ac0f"
+          "sha256": "sha256:865b456cabb2348a433abae5b5f48a1fb458209b64bd5c3f6be4f577e679a27f"
         },
         {
           "path": ".flowguard/models/reader_artifact_model.py",
@@ -691,69 +789,6 @@
       "schema": "flowguard.model_instance_ref.v2"
     },
     {
-      "fingerprint": "sha256:3ae3b682b207ad70893a2a51036b61d7ae3b3749a7530aff7aaf18e13c923e35",
-      "input_inventory_fingerprint": "sha256:e648f88e19006b130c5c761a67a673046c4d954a9554ed0ed7b27a20f568f3ad",
-      "inputs": [
-        {
-          "path": ".flowguard/behavior_commitment_ledger/ledger.json",
-          "schema": "flowguard.model_input_ref.v1",
-          "sha256": "sha256:cbe7979a7dcd0690441df80bc01b61dbdbcaaaec082f38b8fd5187c292f9e27c"
-        },
-        {
-          "path": ".flowguard/behavior_commitment_ledger/model.py",
-          "schema": "flowguard.model_input_ref.v1",
-          "sha256": "sha256:10d84d2a74ed04de77379ff9966c65dd9022421655899a30a0798aea2c2364d5"
-        },
-        {
-          "path": ".flowguard/behavior_commitment_ledger/run_checks.py",
-          "schema": "flowguard.model_input_ref.v1",
-          "sha256": "sha256:901760206f0853adf75a98fb82c5b8bbde5e88cec138b46a75429eb9f1e2a3bf"
-        }
-      ],
-      "logical_model_id": "behavior_commitment_ledger",
-      "model_kind": "executable_workflow",
-      "model_path": ".flowguard/behavior_commitment_ledger/model.py",
-      "model_sha256": "sha256:10d84d2a74ed04de77379ff9966c65dd9022421655899a30a0798aea2c2364d5",
-      "purpose_closure_fingerprint": "sha256:3756aea1381811fd8cbb08ec47bae1c13d4a25776031f9db5e83dd754ed1648e",
-      "runner_path": ".flowguard/behavior_commitment_ledger/run_checks.py",
-      "runner_sha256": "sha256:901760206f0853adf75a98fb82c5b8bbde5e88cec138b46a75429eb9f1e2a3bf",
-      "schema": "flowguard.model_instance_ref.v2"
-    },
-    {
-      "fingerprint": "sha256:4941dc6fb1908b15f057e47002f6824e7982964a36fb32789ce0235b0c520eb6",
-      "input_inventory_fingerprint": "sha256:f63c640a2a0a678efe5b35960a2f5f9cdbc21384c3b1ecf40462f4087d456271",
-      "inputs": [
-        {
-          "path": ".flowguard/model_test_alignment/model.py",
-          "schema": "flowguard.model_input_ref.v1",
-          "sha256": "sha256:17ff746ab57588de5c66f281aa9fd623d79098101fc49cb190b9360d2e64933b"
-        },
-        {
-          "path": ".flowguard/model_test_alignment/run_checks.py",
-          "schema": "flowguard.model_input_ref.v1",
-          "sha256": "sha256:a6e76b2816c3aa75b44fe626c9d49929ecacdd635272fade409c73ff6e581695"
-        },
-        {
-          "path": ".flowguard/models/frozen_source_contract_exhaustion.py",
-          "schema": "flowguard.model_input_ref.v1",
-          "sha256": "sha256:ef50b5053dab62a383aa2e0b21160723754c268b8bf6492b2661cff3c8c27096"
-        },
-        {
-          "path": ".flowguard/models/retirement_field_lifecycle.py",
-          "schema": "flowguard.model_input_ref.v1",
-          "sha256": "sha256:9afff5b2834a79b6b674aabd7747dc853c9e002508a513ad86be183ac414c568"
-        }
-      ],
-      "logical_model_id": "model_test_alignment",
-      "model_kind": "executable_workflow",
-      "model_path": ".flowguard/model_test_alignment/model.py",
-      "model_sha256": "sha256:17ff746ab57588de5c66f281aa9fd623d79098101fc49cb190b9360d2e64933b",
-      "purpose_closure_fingerprint": "sha256:575b0fa3aec8eeef88acf877d476504111dd89119dd65ba72b1ffbae969fde0d",
-      "runner_path": ".flowguard/model_test_alignment/run_checks.py",
-      "runner_sha256": "sha256:a6e76b2816c3aa75b44fe626c9d49929ecacdd635272fade409c73ff6e581695",
-      "schema": "flowguard.model_instance_ref.v2"
-    },
-    {
       "fingerprint": "sha256:6fde3dbd2ca5ff439c9181f2e0413ccaadef906958c1c1adb2736c4d0b8cee2e",
       "input_inventory_fingerprint": "sha256:5e1998205505a41f7d11c2e5808cdff3053e84b9152e916fd82b975363fd0842",
       "inputs": [
@@ -802,13 +837,13 @@
       "schema": "flowguard.model_instance_ref.v2"
     },
     {
-      "fingerprint": "sha256:99454a308226378909560d3e8c19cb15af082ebb69acfdbf4bc5ca1e87c4829c",
-      "input_inventory_fingerprint": "sha256:074129da0e7488bbdce231516444e1ef5a7be3b7411f8348736d0a7162a5dc39",
+      "fingerprint": "sha256:db9d812892b6f080ed388159a3649eb50143007c09e29da94db6cfc28d7d2075",
+      "input_inventory_fingerprint": "sha256:8160cdf73dce0c07d07518f68101976ba0b1bae429e18d20e40274d63ba26461",
       "inputs": [
         {
           "path": ".flowguard/models/frozen_source_contract_exhaustion.py",
           "schema": "flowguard.model_input_ref.v1",
-          "sha256": "sha256:ef50b5053dab62a383aa2e0b21160723754c268b8bf6492b2661cff3c8c27096"
+          "sha256": "sha256:ae6afe0b641eabdbb3bee51b34d6833f05854de06407014b8c3da873b47c9f05"
         },
         {
           "path": ".flowguard/test_mesh/model.py",
@@ -829,366 +864,342 @@
       "runner_path": ".flowguard/test_mesh/run_checks.py",
       "runner_sha256": "sha256:b1349e9f9ae0ab11cd1495262460df555c958cd5114ca33ed8a7b4a196332917",
       "schema": "flowguard.model_instance_ref.v2"
-    },
-    {
-      "fingerprint": "sha256:dd5ce81d0dc3e1bcb3d2dbf1379b2142612d1c59dd26ce7fc59526bf04d4116d",
-      "input_inventory_fingerprint": "sha256:b3b41a350eb9c7bc36f3463c6222235b467ca630ca3c75abe5f3fc4497bab37f",
-      "inputs": [
-        {
-          "path": ".flowguard/development_process_flow/model.py",
-          "schema": "flowguard.model_input_ref.v1",
-          "sha256": "sha256:7b249020e08128e8339659ecd799c580828574b6e62333afe2cee05027b00ee0"
-        },
-        {
-          "path": ".flowguard/development_process_flow/run_checks.py",
-          "schema": "flowguard.model_input_ref.v1",
-          "sha256": "sha256:213bdd505af7a18c1320f67846a4b6a60fb98ba5f09e7b317dd19cb796fda5db"
-        }
-      ],
-      "logical_model_id": "development_process_flow",
-      "model_kind": "executable_workflow",
-      "model_path": ".flowguard/development_process_flow/model.py",
-      "model_sha256": "sha256:7b249020e08128e8339659ecd799c580828574b6e62333afe2cee05027b00ee0",
-      "purpose_closure_fingerprint": "sha256:a647af174ff0801487a28ed0412145ef4c2fd393b9627d9532f5d1a75881509f",
-      "runner_path": ".flowguard/development_process_flow/run_checks.py",
-      "runner_sha256": "sha256:213bdd505af7a18c1320f67846a4b6a60fb98ba5f09e7b317dd19cb796fda5db",
-      "schema": "flowguard.model_instance_ref.v2"
     }
   ],
   "owner_artifact_refs": [
     {
       "endpoint_id": "C01:select-one-final-owner",
       "endpoint_kind": "behavior_commitment",
-      "fingerprint": "sha256:2699e3b35f4910e7bba4a5bc1bebdd8f004b7d9dc06ab46da685927c6378c637",
+      "fingerprint": "sha256:57e81394cdfe8ee94e459b56f1235f209af50c045cfbbbe19b0e42325a1b268b",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "C02:preserve-specialist-authority",
       "endpoint_kind": "behavior_commitment",
-      "fingerprint": "sha256:3412e81de71f23a87dc0ba44290dd6cf6e0077067f757f8db15e5cc295f7afc8",
+      "fingerprint": "sha256:da577c1276fe2e5c657b31e567783aeef409a3722d7f60090494bd232832abe5",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "C03:build-current-research-packet",
       "endpoint_kind": "behavior_commitment",
-      "fingerprint": "sha256:42353afbea92f521c35252132f7adab3b4b335391381d8dacab004f15b72bba2",
+      "fingerprint": "sha256:8082a878dc7f8730793ef7cb935c138d84d9d556f8ec422479774b969f9a902c",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "C04:build-reader-brief",
       "endpoint_kind": "behavior_commitment",
-      "fingerprint": "sha256:36029f08237f717c814a5fadb62f2d1479634fb56923d01c657f6be4fe5023d7",
+      "fingerprint": "sha256:45fa5535721d572111bcdf649cdf85e787c5027380bdffb2f0e8d203143f297e",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "C05:audit-actual-artifact",
       "endpoint_kind": "behavior_commitment",
-      "fingerprint": "sha256:dca55f919d7d92d17086cb785d48a118e196ed8ba7b8d4f9646fd0fc08067eeb",
+      "fingerprint": "sha256:c8d47691845bc8da60e480f059b476fabc513c9b9afc32c20c9c90f7b882d781",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "C06:issue-final-artifact-closure",
       "endpoint_kind": "behavior_commitment",
-      "fingerprint": "sha256:630e80f69a701a66979c12ee00fc44019ee248b84ee70b0f8cbf9bb31402f3a9",
+      "fingerprint": "sha256:5b51c72ed747b8fc12b86f17e44648a332929e5f145eb32776c2a26bdcc7767b",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "C07:freeze-one-validation-owner",
       "endpoint_kind": "behavior_commitment",
-      "fingerprint": "sha256:4a16d40235bfbaa25927827d02d41218b6a4ed67661bb74277230dd016a74982",
+      "fingerprint": "sha256:5ccc2e9686e7b69fdd95545989bdd22e492496150c8863ba1dfba83a326a491d",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "C08:activate-recoverable-install",
       "endpoint_kind": "behavior_commitment",
-      "fingerprint": "sha256:9674a006b7a7f081022058879df66a0a9dbfe8bc18d8c459b8909ca1d6db9972",
+      "fingerprint": "sha256:053a0b244d822faefa27871a720939b9012902968f2d33f406b61050fa043046",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "C09:project-one-global-route",
       "endpoint_kind": "behavior_commitment",
-      "fingerprint": "sha256:9e4dad7765ef8a25886ec84d9216a96b364c52a76d7c8bf44be70234bc68862a",
+      "fingerprint": "sha256:f7d6666cbead3873d09f70d558699cf2701e03716ceeea30450d351a89f3a95d",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "C10:publish-logic-writing-release",
       "endpoint_kind": "behavior_commitment",
-      "fingerprint": "sha256:a4ceac331dc1ad7f67283a90fd49763496736e619d2d44bfea7030ce7b6cedde",
+      "fingerprint": "sha256:de6baf47fe03bcc9ae676f47adfaae4ac773a7b2edff5d1eea03fb7f10c39f2c",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "C11:retire-predecessors-safely",
       "endpoint_kind": "behavior_commitment",
-      "fingerprint": "sha256:e38e7eb8913360684007bbfacc262af0b991d016f21d6266d63a94984a4fba5c",
+      "fingerprint": "sha256:5c833de4df635b37d575ceb5d87c8b10deb1e120bfecde244052802ffabca193",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "C12:produce-fiction-artifact",
       "endpoint_kind": "behavior_commitment",
-      "fingerprint": "sha256:74eeb9559ecbb6f505e66165d008b1d9aba7719d67aee1113b2bc57b212aecbb",
+      "fingerprint": "sha256:5e694d2ba0388299773ea4a7c0edb5a815459ba6c70a2d154d8866f0f1044962",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "C13:produce-travel-guide",
       "endpoint_kind": "behavior_commitment",
-      "fingerprint": "sha256:3afe17160bdc9431b0151fe4869a4fb56cc893674cda25206b7900cd67ce5e6e",
+      "fingerprint": "sha256:76da329da269d77933f4dfaf8ccf8a16829ff15075f435845662f8552404905a",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "C14:bind-model-to-reader-artifact",
       "endpoint_kind": "behavior_commitment",
-      "fingerprint": "sha256:e1d3b873ff0b683e776c33fe9ae35cb79354286800476d984b89466b6c1e7ee0",
+      "fingerprint": "sha256:0717319d5b1931fe8c681fbea726b716fde811488316134044da3ab322c2b269",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "C15:produce-investigation-report",
       "endpoint_kind": "behavior_commitment",
-      "fingerprint": "sha256:3555ba8318411ce16e21e7ba29557dc189e08959e0cde7100fff997685dc1018",
+      "fingerprint": "sha256:206dfe0446054399e815b2bd5e158b109840343d16a474eae184f5ef777935ef",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "C16:produce-academic-artifact",
       "endpoint_kind": "behavior_commitment",
-      "fingerprint": "sha256:5a513a42b308d34b201667bad7c6c8cbb0ba952460e187e668ec473c3d69f656",
+      "fingerprint": "sha256:671fa8f8603125e4b97afe7ea618f0794883ff652bae0624122112bd0597bdce",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "surface:openspec:c01-select-one-final-owner",
       "endpoint_kind": "external_surface",
-      "fingerprint": "sha256:75f1349a94c8f8d2b65761b243ec924e17f4cc5e5d6606e07389e52d5e83d951",
+      "fingerprint": "sha256:75afa54ab58f502d6e3f48fb6978c7143e24aa0500a79300f259bb194f95c141",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "surface:openspec:c02-preserve-specialist-authority",
       "endpoint_kind": "external_surface",
-      "fingerprint": "sha256:91d92b401bf39867cb87323cfa3f497319451489e27ab83c2649d2311b17e82e",
+      "fingerprint": "sha256:076645a2f792738d6f2ba797b5ecab0d3623a8c1480648023f36380a8d387afe",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "surface:openspec:c03-build-current-research-packet",
       "endpoint_kind": "external_surface",
-      "fingerprint": "sha256:f254884c0f479c49739cb5e81e260ebfefd57962ba7396b6b3458db7395658ce",
+      "fingerprint": "sha256:32f9130b2aa4839ea977eac55295fc9f14cc17840b7c58d99740cbcee3b06bff",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "surface:openspec:c04-build-reader-brief",
       "endpoint_kind": "external_surface",
-      "fingerprint": "sha256:ef2c83e0827f865097a0eb15741bd04161e6f29da3e60b397a80356d98020a11",
+      "fingerprint": "sha256:86317b0dcbcc954af170cd2ea04509a97395c18c8c4972b599db92a7ab863934",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "surface:openspec:c05-audit-actual-artifact",
       "endpoint_kind": "external_surface",
-      "fingerprint": "sha256:3d7d384faa435e1cd53874292283ab38e9cb35dde8f023a0451176a285c66ea1",
+      "fingerprint": "sha256:d47a659dc628c9e9b38abd8e64e7b4d5a21967bc395e0a6b776bda859c786a1c",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "surface:openspec:c06-issue-final-artifact-closure",
       "endpoint_kind": "external_surface",
-      "fingerprint": "sha256:2ffd680f58e8c92ead22e36d8ef6536b27b0a7659473062c18733b020d66b3f1",
+      "fingerprint": "sha256:e2ce3b5e1d8c3df00ed27f411448160a9df106a4f738868fcfd3018fb7d48a75",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "surface:openspec:c07-freeze-one-validation-owner",
       "endpoint_kind": "external_surface",
-      "fingerprint": "sha256:69128fd41ca1b19ceb50acf796a6fd56fcbe2c5ce12d951f98c0503fc4f493b6",
+      "fingerprint": "sha256:a126fb6cf3bcbadf3833f64e1d938c51b6ea209f48b6f5dcc7e363b321e11c2d",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "surface:openspec:c08-activate-recoverable-install",
       "endpoint_kind": "external_surface",
-      "fingerprint": "sha256:48f1c1810003de0d3b51dd9fcbc1d17fb9a5c084a73e869358bdbe263b06e2e3",
+      "fingerprint": "sha256:8c5c03615b0bbfcc01e7bcbd0699622c9b475ce0b80764a6ad976aa4cafce38e",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "surface:openspec:c09-project-one-global-route",
       "endpoint_kind": "external_surface",
-      "fingerprint": "sha256:97cb95e4e61a08472393194eb4f1c15af13e27d2963101412f6d06974b270aa8",
+      "fingerprint": "sha256:9fef0fad740433374c21eb66fffc0a0ee45b0c0ad9c24a3c7982c420c7be57e9",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "surface:openspec:c10-publish-logic-writing-release",
       "endpoint_kind": "external_surface",
-      "fingerprint": "sha256:7bc474e95988907d8d566ccdb6b6bcac5a33c8b9a35f9eaed14ec47546d82ae7",
+      "fingerprint": "sha256:0cd74fecbd2760629a77f5a1c42df771662160ce10dd776a3b4b89e4aba7b9db",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "surface:openspec:c11-retire-predecessors-safely",
       "endpoint_kind": "external_surface",
-      "fingerprint": "sha256:918a3f2c737847eca94efd1fac7798237aa1f4c6c064a61ce25c486df37819de",
+      "fingerprint": "sha256:0acd712fe7f3651420f3b966d802d0ad14b8eeb369ca08a6d851c3df20eeed1b",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "surface:openspec:c12-produce-fiction-artifact",
       "endpoint_kind": "external_surface",
-      "fingerprint": "sha256:df64cf02e644fe1b8061de975772e3140270931f7ccf1e2194378a99a3e7f8a9",
+      "fingerprint": "sha256:747641efe5fdda18f4c37efc380429d37e2d0cc6f194b0b23a66e07570812c10",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "surface:openspec:c13-produce-travel-guide",
       "endpoint_kind": "external_surface",
-      "fingerprint": "sha256:8679f19a20c1367825ad697b23cc48f6a96494f8a8a3250542c8808aa09d3b6d",
+      "fingerprint": "sha256:84a69837b8a089a7b3568d246a690e6701adb8f7e4323b3d066c94023e578490",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "surface:openspec:c14-bind-model-to-reader-artifact",
       "endpoint_kind": "external_surface",
-      "fingerprint": "sha256:ff36f1a99ae87b2309d4a23d41b6b02602f5d0af8fc38461773ea3918a5c0194",
+      "fingerprint": "sha256:5cad6ee37ae7d2621d035af41e0b557fd12035c0e2bacbe335bc3e2eba04d3e7",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "surface:openspec:c15-produce-investigation-report",
       "endpoint_kind": "external_surface",
-      "fingerprint": "sha256:6a072b7688871b7fa454e827b521b460e4ce83d8a0f05355fa932dd139e4130d",
+      "fingerprint": "sha256:705da911a126173b6bb6c8ba9248976855710dd1766f0457f923f357f377e54d",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "surface:openspec:c16-produce-academic-artifact",
       "endpoint_kind": "external_surface",
-      "fingerprint": "sha256:cd00d12779515695727075dddece0e3e8e983114d4c4bcf5507bd0e90cfa725e",
+      "fingerprint": "sha256:88c86d9fc4e06bf23cbaaf6fb33f582de9f27a14935913b08d21e67274a2d0b6",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "surface:release-process:c07-freeze-one-validation-owner",
       "endpoint_kind": "external_surface",
-      "fingerprint": "sha256:2ffb93a31d30053cb53e2b8707082fa14003c193cfc76137fef9aaa6a450dfb1",
+      "fingerprint": "sha256:7dd2e27a6a4575819332b156b3aa52839e13d31ff03425eb0b5f2fa508549b3a",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "surface:release-process:c08-activate-recoverable-install",
       "endpoint_kind": "external_surface",
-      "fingerprint": "sha256:1fa691cb30d2263d2ead1a9032598e3b6cda08e78da29e675d37f7278a228dcd",
+      "fingerprint": "sha256:30b5c56f1b8d6dac658980a65fe80af54e904e38bde969fffedfddcb77309f55",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "surface:release-process:c09-project-one-global-route",
       "endpoint_kind": "external_surface",
-      "fingerprint": "sha256:c5e6e5e9f46c9433f6d129d707a03af7d30d252ac74d94ff941618de687feb43",
+      "fingerprint": "sha256:a5a8ec9713b62c108b066dca1a22aff781ab54694cf2292d9340839da7f9b327",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "surface:release-process:c10-publish-logic-writing-release",
       "endpoint_kind": "external_surface",
-      "fingerprint": "sha256:4ef235f35aa8d3f2220cd08182a60a58ea11cd0d8690133b3ecc7457c30d9a7e",
+      "fingerprint": "sha256:88bd614b556ca8700ee7c5f0b8d4c384e7e22ee098bf92771f50dad8cd433ad0",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "surface:release-process:c11-retire-predecessors-safely",
       "endpoint_kind": "external_surface",
-      "fingerprint": "sha256:06a099017f03092a482589bf33901ab0a625ae7174d1dea848158922581ce4d6",
+      "fingerprint": "sha256:4a3654fa338370fc90762531222092e062c93dbd940a1dc85e2c657540ad627c",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "surface:skill-entry:c01-select-one-final-owner",
       "endpoint_kind": "external_surface",
-      "fingerprint": "sha256:dbaa868a790cd62995a579d1bcea3a9b12d6936a09185a03322c4283e202742e",
+      "fingerprint": "sha256:15dd824800746fbdc03c38afaddc4019ce8abca7d7a813dc750a83f87582c308",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "surface:skill-entry:c02-preserve-specialist-authority",
       "endpoint_kind": "external_surface",
-      "fingerprint": "sha256:de32125d469af2b66fa750c9f9969961fdec3d7d16349699a402a542e35c9c68",
+      "fingerprint": "sha256:f7ed2da3932f216b822bcf6bb569bd5c77973f6ccd045ce6e0af4f41d300fec4",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "surface:skill-entry:c03-build-current-research-packet",
       "endpoint_kind": "external_surface",
-      "fingerprint": "sha256:504aafeed446859fd1e429f3c3e9c03f58e70cc169c9dbfd624da5f55ef4e9b2",
+      "fingerprint": "sha256:8ac24f97f67d3753588b3b56611bd5b191fc2551572ea243fd977026d9d32478",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "surface:skill-entry:c04-build-reader-brief",
       "endpoint_kind": "external_surface",
-      "fingerprint": "sha256:c1eb070e05bec52934431d5192d242bcfc0c7b1a76067d8459dba9042fc49919",
+      "fingerprint": "sha256:49ad8ef2991e35b8043ec597ed75712c6a3bc8753dc244770cde9921a0425cba",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "surface:skill-entry:c05-audit-actual-artifact",
       "endpoint_kind": "external_surface",
-      "fingerprint": "sha256:6b01d97ebd9520cbee07fbc4f8e0d240da862f91e7b35c875a80b50fb2b62fbb",
+      "fingerprint": "sha256:dc0fde5e75c8f25f54e02762c499765f1c2c1dbc95a975c6d05b87a413855961",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "surface:skill-entry:c06-issue-final-artifact-closure",
       "endpoint_kind": "external_surface",
-      "fingerprint": "sha256:8c1cb9583dcd1a34123eb650a6a0769efa8a8a0494b50c629035a6e394470ea7",
+      "fingerprint": "sha256:75f4014ec74d6a43ec44de754b4623de585a77e5bdf3ad921b8aa4d94f0d5365",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "surface:skill-entry:c12-produce-fiction-artifact",
       "endpoint_kind": "external_surface",
-      "fingerprint": "sha256:49f8309ddef808c8163d37b481d445ee70733233734bc29c70082dc8ac743f36",
+      "fingerprint": "sha256:f44e27b1d98074169dd194d30410e0736b422c65936cb187f90a30861dd540de",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "surface:skill-entry:c13-produce-travel-guide",
       "endpoint_kind": "external_surface",
-      "fingerprint": "sha256:defdc68a76822f57d859f54b1ab53e3eadf4f1e1b139e6021f3aaaea76fa8b31",
+      "fingerprint": "sha256:d5b3fd53c19e470bd4177d4b7552a6d2cb9615631e6324270e0e680ca0a07fe1",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "surface:skill-entry:c14-bind-model-to-reader-artifact",
       "endpoint_kind": "external_surface",
-      "fingerprint": "sha256:67895632bae805b4dd0551196b4b72d2e59d994a64ec0713128aad4b44936495",
+      "fingerprint": "sha256:b3553b56d2ef628102333d691ba02fc7b3f9f8fdec3a39f269103f97819e3e17",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "surface:skill-entry:c15-produce-investigation-report",
       "endpoint_kind": "external_surface",
-      "fingerprint": "sha256:5e6615580b57e082fe5b089fd598dca1a19bd640f13110e53f4e06dfd5923cb9",
+      "fingerprint": "sha256:2485fa7b15e309cd5ced76369a7cc6ed8a2bb2d1f16edc399d8bf4c451e093ed",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
       "endpoint_id": "surface:skill-entry:c16-produce-academic-artifact",
       "endpoint_kind": "external_surface",
-      "fingerprint": "sha256:1e109d3420a5d9b26c18d9f972be76fabe76186e6d5c9667a2e5c55cf46c2590",
+      "fingerprint": "sha256:7db9504f93118346065de3e5033cf83acfcd55d451e4d585618e90f6a56f0bc5",
       "owner_route": "behavior_commitment_ledger",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
@@ -1202,7 +1213,7 @@
     {
       "endpoint_id": "purpose:development_process_flow",
       "endpoint_kind": "parent_closure",
-      "fingerprint": "sha256:a647af174ff0801487a28ed0412145ef4c2fd393b9627d9532f5d1a75881509f",
+      "fingerprint": "sha256:9a2aaec22c0b99feb60fc03cd8daf6aecdf9e6355a6b1b4100ea98aa9884d6a6",
       "owner_route": "model_test_alignment",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
@@ -1216,7 +1227,7 @@
     {
       "endpoint_id": "purpose:model_test_alignment",
       "endpoint_kind": "parent_closure",
-      "fingerprint": "sha256:575b0fa3aec8eeef88acf877d476504111dd89119dd65ba72b1ffbae969fde0d",
+      "fingerprint": "sha256:729524a8ff987c44bc1caacc32ab3bc68c7bb6ab969f8e018a6e201f6084c97c",
       "owner_route": "model_test_alignment",
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
@@ -1242,9 +1253,9 @@
       "schema": "flowguard.authority_endpoint_ref.v1"
     },
     {
-      "endpoint_id": "system:flowguard:model-regression-manifest",
+      "endpoint_id": "system:logic-writing:model-regression-manifest",
       "endpoint_kind": "parent_closure",
-      "fingerprint": "sha256:c7c89e147ad066bcd4e00be10d62d0d834f142ed56a6316f5b4ad8e024802418",
+      "fingerprint": "sha256:c9150177f1a9cdb7e217eca8ef90b4f31ba6e1c4a13163eb53403fa8f0f464fd",
       "owner_route": "model_mesh_maintenance",
       "schema": "flowguard.authority_endpoint_ref.v1"
     }
@@ -1260,7 +1271,7 @@
       "source": {
         "endpoint_id": "model:behavior_commitment_ledger",
         "endpoint_kind": "model_instance",
-        "fingerprint": "sha256:3ae3b682b207ad70893a2a51036b61d7ae3b3749a7530aff7aaf18e13c923e35",
+        "fingerprint": "sha256:2ae7eea97f680c30ce7f1fbf53f3f92f257471a305b6468983901b42a1ee4d41",
         "owner_route": "model_regression_manifest",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
@@ -1274,7 +1285,7 @@
     },
     {
       "evidence_fingerprints": [
-        "sha256:a647af174ff0801487a28ed0412145ef4c2fd393b9627d9532f5d1a75881509f"
+        "sha256:9a2aaec22c0b99feb60fc03cd8daf6aecdf9e6355a6b1b4100ea98aa9884d6a6"
       ],
       "kind": "realizes",
       "relation_id": "relation:model-realizes-purpose:development_process_flow",
@@ -1282,14 +1293,14 @@
       "source": {
         "endpoint_id": "model:development_process_flow",
         "endpoint_kind": "model_instance",
-        "fingerprint": "sha256:dd5ce81d0dc3e1bcb3d2dbf1379b2142612d1c59dd26ce7fc59526bf04d4116d",
+        "fingerprint": "sha256:0475099ee836b608fbb5283e9bd0fd68d251128c155dbc591a217e949065c42b",
         "owner_route": "model_regression_manifest",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "purpose:development_process_flow",
         "endpoint_kind": "parent_closure",
-        "fingerprint": "sha256:a647af174ff0801487a28ed0412145ef4c2fd393b9627d9532f5d1a75881509f",
+        "fingerprint": "sha256:9a2aaec22c0b99feb60fc03cd8daf6aecdf9e6355a6b1b4100ea98aa9884d6a6",
         "owner_route": "model_test_alignment",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
@@ -1304,7 +1315,7 @@
       "source": {
         "endpoint_id": "model:logic_writing_models",
         "endpoint_kind": "model_instance",
-        "fingerprint": "sha256:0895e1335844f62a67fd69008b0c4ed60a9e0d2a6d66a66004d4cd01629fdbd4",
+        "fingerprint": "sha256:6d9988d44eb48d3a88d42730e05cd4f15648188b59d08cc2c5099ce129e2daa8",
         "owner_route": "model_regression_manifest",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
@@ -1318,7 +1329,7 @@
     },
     {
       "evidence_fingerprints": [
-        "sha256:575b0fa3aec8eeef88acf877d476504111dd89119dd65ba72b1ffbae969fde0d"
+        "sha256:729524a8ff987c44bc1caacc32ab3bc68c7bb6ab969f8e018a6e201f6084c97c"
       ],
       "kind": "realizes",
       "relation_id": "relation:model-realizes-purpose:model_test_alignment",
@@ -1326,14 +1337,14 @@
       "source": {
         "endpoint_id": "model:model_test_alignment",
         "endpoint_kind": "model_instance",
-        "fingerprint": "sha256:4941dc6fb1908b15f057e47002f6824e7982964a36fb32789ce0235b0c520eb6",
+        "fingerprint": "sha256:3ea8eb833c946174b015b7bf5081b9abd45e375c62edef83ec9af9617f121714",
         "owner_route": "model_regression_manifest",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "purpose:model_test_alignment",
         "endpoint_kind": "parent_closure",
-        "fingerprint": "sha256:575b0fa3aec8eeef88acf877d476504111dd89119dd65ba72b1ffbae969fde0d",
+        "fingerprint": "sha256:729524a8ff987c44bc1caacc32ab3bc68c7bb6ab969f8e018a6e201f6084c97c",
         "owner_route": "model_test_alignment",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
@@ -1392,7 +1403,7 @@
       "source": {
         "endpoint_id": "model:test_mesh",
         "endpoint_kind": "model_instance",
-        "fingerprint": "sha256:99454a308226378909560d3e8c19cb15af082ebb69acfdbf4bc5ca1e87c4829c",
+        "fingerprint": "sha256:db9d812892b6f080ed388159a3649eb50143007c09e29da94db6cfc28d7d2075",
         "owner_route": "model_regression_manifest",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
@@ -1406,8 +1417,8 @@
     },
     {
       "evidence_fingerprints": [
-        "sha256:2699e3b35f4910e7bba4a5bc1bebdd8f004b7d9dc06ab46da685927c6378c637",
-        "sha256:cbe7979a7dcd0690441df80bc01b61dbdbcaaaec082f38b8fd5187c292f9e27c"
+        "sha256:392950b888ba9f14dc0a42c5c49aaf0beb545cb8442f32ff6f29cbc4cca815ca",
+        "sha256:57e81394cdfe8ee94e459b56f1235f209af50c045cfbbbe19b0e42325a1b268b"
       ],
       "kind": "produces_for",
       "relation_id": "relation:surface-produces-for-commitment:surface:openspec:c01-select-one-final-owner--C01:select-one-final-owner",
@@ -1415,22 +1426,22 @@
       "source": {
         "endpoint_id": "surface:openspec:c01-select-one-final-owner",
         "endpoint_kind": "external_surface",
-        "fingerprint": "sha256:75f1349a94c8f8d2b65761b243ec924e17f4cc5e5d6606e07389e52d5e83d951",
+        "fingerprint": "sha256:75afa54ab58f502d6e3f48fb6978c7143e24aa0500a79300f259bb194f95c141",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "C01:select-one-final-owner",
         "endpoint_kind": "behavior_commitment",
-        "fingerprint": "sha256:2699e3b35f4910e7bba4a5bc1bebdd8f004b7d9dc06ab46da685927c6378c637",
+        "fingerprint": "sha256:57e81394cdfe8ee94e459b56f1235f209af50c045cfbbbe19b0e42325a1b268b",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
     },
     {
       "evidence_fingerprints": [
-        "sha256:3412e81de71f23a87dc0ba44290dd6cf6e0077067f757f8db15e5cc295f7afc8",
-        "sha256:cbe7979a7dcd0690441df80bc01b61dbdbcaaaec082f38b8fd5187c292f9e27c"
+        "sha256:392950b888ba9f14dc0a42c5c49aaf0beb545cb8442f32ff6f29cbc4cca815ca",
+        "sha256:da577c1276fe2e5c657b31e567783aeef409a3722d7f60090494bd232832abe5"
       ],
       "kind": "produces_for",
       "relation_id": "relation:surface-produces-for-commitment:surface:openspec:c02-preserve-specialist-authority--C02:preserve-specialist-authority",
@@ -1438,22 +1449,22 @@
       "source": {
         "endpoint_id": "surface:openspec:c02-preserve-specialist-authority",
         "endpoint_kind": "external_surface",
-        "fingerprint": "sha256:91d92b401bf39867cb87323cfa3f497319451489e27ab83c2649d2311b17e82e",
+        "fingerprint": "sha256:076645a2f792738d6f2ba797b5ecab0d3623a8c1480648023f36380a8d387afe",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "C02:preserve-specialist-authority",
         "endpoint_kind": "behavior_commitment",
-        "fingerprint": "sha256:3412e81de71f23a87dc0ba44290dd6cf6e0077067f757f8db15e5cc295f7afc8",
+        "fingerprint": "sha256:da577c1276fe2e5c657b31e567783aeef409a3722d7f60090494bd232832abe5",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
     },
     {
       "evidence_fingerprints": [
-        "sha256:42353afbea92f521c35252132f7adab3b4b335391381d8dacab004f15b72bba2",
-        "sha256:cbe7979a7dcd0690441df80bc01b61dbdbcaaaec082f38b8fd5187c292f9e27c"
+        "sha256:392950b888ba9f14dc0a42c5c49aaf0beb545cb8442f32ff6f29cbc4cca815ca",
+        "sha256:8082a878dc7f8730793ef7cb935c138d84d9d556f8ec422479774b969f9a902c"
       ],
       "kind": "produces_for",
       "relation_id": "relation:surface-produces-for-commitment:surface:openspec:c03-build-current-research-packet--C03:build-current-research-packet",
@@ -1461,22 +1472,22 @@
       "source": {
         "endpoint_id": "surface:openspec:c03-build-current-research-packet",
         "endpoint_kind": "external_surface",
-        "fingerprint": "sha256:f254884c0f479c49739cb5e81e260ebfefd57962ba7396b6b3458db7395658ce",
+        "fingerprint": "sha256:32f9130b2aa4839ea977eac55295fc9f14cc17840b7c58d99740cbcee3b06bff",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "C03:build-current-research-packet",
         "endpoint_kind": "behavior_commitment",
-        "fingerprint": "sha256:42353afbea92f521c35252132f7adab3b4b335391381d8dacab004f15b72bba2",
+        "fingerprint": "sha256:8082a878dc7f8730793ef7cb935c138d84d9d556f8ec422479774b969f9a902c",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
     },
     {
       "evidence_fingerprints": [
-        "sha256:36029f08237f717c814a5fadb62f2d1479634fb56923d01c657f6be4fe5023d7",
-        "sha256:cbe7979a7dcd0690441df80bc01b61dbdbcaaaec082f38b8fd5187c292f9e27c"
+        "sha256:392950b888ba9f14dc0a42c5c49aaf0beb545cb8442f32ff6f29cbc4cca815ca",
+        "sha256:45fa5535721d572111bcdf649cdf85e787c5027380bdffb2f0e8d203143f297e"
       ],
       "kind": "produces_for",
       "relation_id": "relation:surface-produces-for-commitment:surface:openspec:c04-build-reader-brief--C04:build-reader-brief",
@@ -1484,22 +1495,22 @@
       "source": {
         "endpoint_id": "surface:openspec:c04-build-reader-brief",
         "endpoint_kind": "external_surface",
-        "fingerprint": "sha256:ef2c83e0827f865097a0eb15741bd04161e6f29da3e60b397a80356d98020a11",
+        "fingerprint": "sha256:86317b0dcbcc954af170cd2ea04509a97395c18c8c4972b599db92a7ab863934",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "C04:build-reader-brief",
         "endpoint_kind": "behavior_commitment",
-        "fingerprint": "sha256:36029f08237f717c814a5fadb62f2d1479634fb56923d01c657f6be4fe5023d7",
+        "fingerprint": "sha256:45fa5535721d572111bcdf649cdf85e787c5027380bdffb2f0e8d203143f297e",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
     },
     {
       "evidence_fingerprints": [
-        "sha256:cbe7979a7dcd0690441df80bc01b61dbdbcaaaec082f38b8fd5187c292f9e27c",
-        "sha256:dca55f919d7d92d17086cb785d48a118e196ed8ba7b8d4f9646fd0fc08067eeb"
+        "sha256:392950b888ba9f14dc0a42c5c49aaf0beb545cb8442f32ff6f29cbc4cca815ca",
+        "sha256:c8d47691845bc8da60e480f059b476fabc513c9b9afc32c20c9c90f7b882d781"
       ],
       "kind": "produces_for",
       "relation_id": "relation:surface-produces-for-commitment:surface:openspec:c05-audit-actual-artifact--C05:audit-actual-artifact",
@@ -1507,22 +1518,22 @@
       "source": {
         "endpoint_id": "surface:openspec:c05-audit-actual-artifact",
         "endpoint_kind": "external_surface",
-        "fingerprint": "sha256:3d7d384faa435e1cd53874292283ab38e9cb35dde8f023a0451176a285c66ea1",
+        "fingerprint": "sha256:d47a659dc628c9e9b38abd8e64e7b4d5a21967bc395e0a6b776bda859c786a1c",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "C05:audit-actual-artifact",
         "endpoint_kind": "behavior_commitment",
-        "fingerprint": "sha256:dca55f919d7d92d17086cb785d48a118e196ed8ba7b8d4f9646fd0fc08067eeb",
+        "fingerprint": "sha256:c8d47691845bc8da60e480f059b476fabc513c9b9afc32c20c9c90f7b882d781",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
     },
     {
       "evidence_fingerprints": [
-        "sha256:630e80f69a701a66979c12ee00fc44019ee248b84ee70b0f8cbf9bb31402f3a9",
-        "sha256:cbe7979a7dcd0690441df80bc01b61dbdbcaaaec082f38b8fd5187c292f9e27c"
+        "sha256:392950b888ba9f14dc0a42c5c49aaf0beb545cb8442f32ff6f29cbc4cca815ca",
+        "sha256:5b51c72ed747b8fc12b86f17e44648a332929e5f145eb32776c2a26bdcc7767b"
       ],
       "kind": "produces_for",
       "relation_id": "relation:surface-produces-for-commitment:surface:openspec:c06-issue-final-artifact-closure--C06:issue-final-artifact-closure",
@@ -1530,22 +1541,22 @@
       "source": {
         "endpoint_id": "surface:openspec:c06-issue-final-artifact-closure",
         "endpoint_kind": "external_surface",
-        "fingerprint": "sha256:2ffd680f58e8c92ead22e36d8ef6536b27b0a7659473062c18733b020d66b3f1",
+        "fingerprint": "sha256:e2ce3b5e1d8c3df00ed27f411448160a9df106a4f738868fcfd3018fb7d48a75",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "C06:issue-final-artifact-closure",
         "endpoint_kind": "behavior_commitment",
-        "fingerprint": "sha256:630e80f69a701a66979c12ee00fc44019ee248b84ee70b0f8cbf9bb31402f3a9",
+        "fingerprint": "sha256:5b51c72ed747b8fc12b86f17e44648a332929e5f145eb32776c2a26bdcc7767b",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
     },
     {
       "evidence_fingerprints": [
-        "sha256:4a16d40235bfbaa25927827d02d41218b6a4ed67661bb74277230dd016a74982",
-        "sha256:cbe7979a7dcd0690441df80bc01b61dbdbcaaaec082f38b8fd5187c292f9e27c"
+        "sha256:392950b888ba9f14dc0a42c5c49aaf0beb545cb8442f32ff6f29cbc4cca815ca",
+        "sha256:5ccc2e9686e7b69fdd95545989bdd22e492496150c8863ba1dfba83a326a491d"
       ],
       "kind": "produces_for",
       "relation_id": "relation:surface-produces-for-commitment:surface:openspec:c07-freeze-one-validation-owner--C07:freeze-one-validation-owner",
@@ -1553,22 +1564,22 @@
       "source": {
         "endpoint_id": "surface:openspec:c07-freeze-one-validation-owner",
         "endpoint_kind": "external_surface",
-        "fingerprint": "sha256:69128fd41ca1b19ceb50acf796a6fd56fcbe2c5ce12d951f98c0503fc4f493b6",
+        "fingerprint": "sha256:a126fb6cf3bcbadf3833f64e1d938c51b6ea209f48b6f5dcc7e363b321e11c2d",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "C07:freeze-one-validation-owner",
         "endpoint_kind": "behavior_commitment",
-        "fingerprint": "sha256:4a16d40235bfbaa25927827d02d41218b6a4ed67661bb74277230dd016a74982",
+        "fingerprint": "sha256:5ccc2e9686e7b69fdd95545989bdd22e492496150c8863ba1dfba83a326a491d",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
     },
     {
       "evidence_fingerprints": [
-        "sha256:9674a006b7a7f081022058879df66a0a9dbfe8bc18d8c459b8909ca1d6db9972",
-        "sha256:cbe7979a7dcd0690441df80bc01b61dbdbcaaaec082f38b8fd5187c292f9e27c"
+        "sha256:053a0b244d822faefa27871a720939b9012902968f2d33f406b61050fa043046",
+        "sha256:392950b888ba9f14dc0a42c5c49aaf0beb545cb8442f32ff6f29cbc4cca815ca"
       ],
       "kind": "produces_for",
       "relation_id": "relation:surface-produces-for-commitment:surface:openspec:c08-activate-recoverable-install--C08:activate-recoverable-install",
@@ -1576,22 +1587,22 @@
       "source": {
         "endpoint_id": "surface:openspec:c08-activate-recoverable-install",
         "endpoint_kind": "external_surface",
-        "fingerprint": "sha256:48f1c1810003de0d3b51dd9fcbc1d17fb9a5c084a73e869358bdbe263b06e2e3",
+        "fingerprint": "sha256:8c5c03615b0bbfcc01e7bcbd0699622c9b475ce0b80764a6ad976aa4cafce38e",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "C08:activate-recoverable-install",
         "endpoint_kind": "behavior_commitment",
-        "fingerprint": "sha256:9674a006b7a7f081022058879df66a0a9dbfe8bc18d8c459b8909ca1d6db9972",
+        "fingerprint": "sha256:053a0b244d822faefa27871a720939b9012902968f2d33f406b61050fa043046",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
     },
     {
       "evidence_fingerprints": [
-        "sha256:9e4dad7765ef8a25886ec84d9216a96b364c52a76d7c8bf44be70234bc68862a",
-        "sha256:cbe7979a7dcd0690441df80bc01b61dbdbcaaaec082f38b8fd5187c292f9e27c"
+        "sha256:392950b888ba9f14dc0a42c5c49aaf0beb545cb8442f32ff6f29cbc4cca815ca",
+        "sha256:f7d6666cbead3873d09f70d558699cf2701e03716ceeea30450d351a89f3a95d"
       ],
       "kind": "produces_for",
       "relation_id": "relation:surface-produces-for-commitment:surface:openspec:c09-project-one-global-route--C09:project-one-global-route",
@@ -1599,22 +1610,22 @@
       "source": {
         "endpoint_id": "surface:openspec:c09-project-one-global-route",
         "endpoint_kind": "external_surface",
-        "fingerprint": "sha256:97cb95e4e61a08472393194eb4f1c15af13e27d2963101412f6d06974b270aa8",
+        "fingerprint": "sha256:9fef0fad740433374c21eb66fffc0a0ee45b0c0ad9c24a3c7982c420c7be57e9",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "C09:project-one-global-route",
         "endpoint_kind": "behavior_commitment",
-        "fingerprint": "sha256:9e4dad7765ef8a25886ec84d9216a96b364c52a76d7c8bf44be70234bc68862a",
+        "fingerprint": "sha256:f7d6666cbead3873d09f70d558699cf2701e03716ceeea30450d351a89f3a95d",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
     },
     {
       "evidence_fingerprints": [
-        "sha256:a4ceac331dc1ad7f67283a90fd49763496736e619d2d44bfea7030ce7b6cedde",
-        "sha256:cbe7979a7dcd0690441df80bc01b61dbdbcaaaec082f38b8fd5187c292f9e27c"
+        "sha256:392950b888ba9f14dc0a42c5c49aaf0beb545cb8442f32ff6f29cbc4cca815ca",
+        "sha256:de6baf47fe03bcc9ae676f47adfaae4ac773a7b2edff5d1eea03fb7f10c39f2c"
       ],
       "kind": "produces_for",
       "relation_id": "relation:surface-produces-for-commitment:surface:openspec:c10-publish-logic-writing-release--C10:publish-logic-writing-release",
@@ -1622,22 +1633,22 @@
       "source": {
         "endpoint_id": "surface:openspec:c10-publish-logic-writing-release",
         "endpoint_kind": "external_surface",
-        "fingerprint": "sha256:7bc474e95988907d8d566ccdb6b6bcac5a33c8b9a35f9eaed14ec47546d82ae7",
+        "fingerprint": "sha256:0cd74fecbd2760629a77f5a1c42df771662160ce10dd776a3b4b89e4aba7b9db",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "C10:publish-logic-writing-release",
         "endpoint_kind": "behavior_commitment",
-        "fingerprint": "sha256:a4ceac331dc1ad7f67283a90fd49763496736e619d2d44bfea7030ce7b6cedde",
+        "fingerprint": "sha256:de6baf47fe03bcc9ae676f47adfaae4ac773a7b2edff5d1eea03fb7f10c39f2c",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
     },
     {
       "evidence_fingerprints": [
-        "sha256:cbe7979a7dcd0690441df80bc01b61dbdbcaaaec082f38b8fd5187c292f9e27c",
-        "sha256:e38e7eb8913360684007bbfacc262af0b991d016f21d6266d63a94984a4fba5c"
+        "sha256:392950b888ba9f14dc0a42c5c49aaf0beb545cb8442f32ff6f29cbc4cca815ca",
+        "sha256:5c833de4df635b37d575ceb5d87c8b10deb1e120bfecde244052802ffabca193"
       ],
       "kind": "produces_for",
       "relation_id": "relation:surface-produces-for-commitment:surface:openspec:c11-retire-predecessors-safely--C11:retire-predecessors-safely",
@@ -1645,22 +1656,22 @@
       "source": {
         "endpoint_id": "surface:openspec:c11-retire-predecessors-safely",
         "endpoint_kind": "external_surface",
-        "fingerprint": "sha256:918a3f2c737847eca94efd1fac7798237aa1f4c6c064a61ce25c486df37819de",
+        "fingerprint": "sha256:0acd712fe7f3651420f3b966d802d0ad14b8eeb369ca08a6d851c3df20eeed1b",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "C11:retire-predecessors-safely",
         "endpoint_kind": "behavior_commitment",
-        "fingerprint": "sha256:e38e7eb8913360684007bbfacc262af0b991d016f21d6266d63a94984a4fba5c",
+        "fingerprint": "sha256:5c833de4df635b37d575ceb5d87c8b10deb1e120bfecde244052802ffabca193",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
     },
     {
       "evidence_fingerprints": [
-        "sha256:74eeb9559ecbb6f505e66165d008b1d9aba7719d67aee1113b2bc57b212aecbb",
-        "sha256:cbe7979a7dcd0690441df80bc01b61dbdbcaaaec082f38b8fd5187c292f9e27c"
+        "sha256:392950b888ba9f14dc0a42c5c49aaf0beb545cb8442f32ff6f29cbc4cca815ca",
+        "sha256:5e694d2ba0388299773ea4a7c0edb5a815459ba6c70a2d154d8866f0f1044962"
       ],
       "kind": "produces_for",
       "relation_id": "relation:surface-produces-for-commitment:surface:openspec:c12-produce-fiction-artifact--C12:produce-fiction-artifact",
@@ -1668,22 +1679,22 @@
       "source": {
         "endpoint_id": "surface:openspec:c12-produce-fiction-artifact",
         "endpoint_kind": "external_surface",
-        "fingerprint": "sha256:df64cf02e644fe1b8061de975772e3140270931f7ccf1e2194378a99a3e7f8a9",
+        "fingerprint": "sha256:747641efe5fdda18f4c37efc380429d37e2d0cc6f194b0b23a66e07570812c10",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "C12:produce-fiction-artifact",
         "endpoint_kind": "behavior_commitment",
-        "fingerprint": "sha256:74eeb9559ecbb6f505e66165d008b1d9aba7719d67aee1113b2bc57b212aecbb",
+        "fingerprint": "sha256:5e694d2ba0388299773ea4a7c0edb5a815459ba6c70a2d154d8866f0f1044962",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
     },
     {
       "evidence_fingerprints": [
-        "sha256:3afe17160bdc9431b0151fe4869a4fb56cc893674cda25206b7900cd67ce5e6e",
-        "sha256:cbe7979a7dcd0690441df80bc01b61dbdbcaaaec082f38b8fd5187c292f9e27c"
+        "sha256:392950b888ba9f14dc0a42c5c49aaf0beb545cb8442f32ff6f29cbc4cca815ca",
+        "sha256:76da329da269d77933f4dfaf8ccf8a16829ff15075f435845662f8552404905a"
       ],
       "kind": "produces_for",
       "relation_id": "relation:surface-produces-for-commitment:surface:openspec:c13-produce-travel-guide--C13:produce-travel-guide",
@@ -1691,22 +1702,22 @@
       "source": {
         "endpoint_id": "surface:openspec:c13-produce-travel-guide",
         "endpoint_kind": "external_surface",
-        "fingerprint": "sha256:8679f19a20c1367825ad697b23cc48f6a96494f8a8a3250542c8808aa09d3b6d",
+        "fingerprint": "sha256:84a69837b8a089a7b3568d246a690e6701adb8f7e4323b3d066c94023e578490",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "C13:produce-travel-guide",
         "endpoint_kind": "behavior_commitment",
-        "fingerprint": "sha256:3afe17160bdc9431b0151fe4869a4fb56cc893674cda25206b7900cd67ce5e6e",
+        "fingerprint": "sha256:76da329da269d77933f4dfaf8ccf8a16829ff15075f435845662f8552404905a",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
     },
     {
       "evidence_fingerprints": [
-        "sha256:cbe7979a7dcd0690441df80bc01b61dbdbcaaaec082f38b8fd5187c292f9e27c",
-        "sha256:e1d3b873ff0b683e776c33fe9ae35cb79354286800476d984b89466b6c1e7ee0"
+        "sha256:0717319d5b1931fe8c681fbea726b716fde811488316134044da3ab322c2b269",
+        "sha256:392950b888ba9f14dc0a42c5c49aaf0beb545cb8442f32ff6f29cbc4cca815ca"
       ],
       "kind": "produces_for",
       "relation_id": "relation:surface-produces-for-commitment:surface:openspec:c14-bind-model-to-reader-artifact--C14:bind-model-to-reader-artifact",
@@ -1714,22 +1725,22 @@
       "source": {
         "endpoint_id": "surface:openspec:c14-bind-model-to-reader-artifact",
         "endpoint_kind": "external_surface",
-        "fingerprint": "sha256:ff36f1a99ae87b2309d4a23d41b6b02602f5d0af8fc38461773ea3918a5c0194",
+        "fingerprint": "sha256:5cad6ee37ae7d2621d035af41e0b557fd12035c0e2bacbe335bc3e2eba04d3e7",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "C14:bind-model-to-reader-artifact",
         "endpoint_kind": "behavior_commitment",
-        "fingerprint": "sha256:e1d3b873ff0b683e776c33fe9ae35cb79354286800476d984b89466b6c1e7ee0",
+        "fingerprint": "sha256:0717319d5b1931fe8c681fbea726b716fde811488316134044da3ab322c2b269",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
     },
     {
       "evidence_fingerprints": [
-        "sha256:3555ba8318411ce16e21e7ba29557dc189e08959e0cde7100fff997685dc1018",
-        "sha256:cbe7979a7dcd0690441df80bc01b61dbdbcaaaec082f38b8fd5187c292f9e27c"
+        "sha256:206dfe0446054399e815b2bd5e158b109840343d16a474eae184f5ef777935ef",
+        "sha256:392950b888ba9f14dc0a42c5c49aaf0beb545cb8442f32ff6f29cbc4cca815ca"
       ],
       "kind": "produces_for",
       "relation_id": "relation:surface-produces-for-commitment:surface:openspec:c15-produce-investigation-report--C15:produce-investigation-report",
@@ -1737,22 +1748,22 @@
       "source": {
         "endpoint_id": "surface:openspec:c15-produce-investigation-report",
         "endpoint_kind": "external_surface",
-        "fingerprint": "sha256:6a072b7688871b7fa454e827b521b460e4ce83d8a0f05355fa932dd139e4130d",
+        "fingerprint": "sha256:705da911a126173b6bb6c8ba9248976855710dd1766f0457f923f357f377e54d",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "C15:produce-investigation-report",
         "endpoint_kind": "behavior_commitment",
-        "fingerprint": "sha256:3555ba8318411ce16e21e7ba29557dc189e08959e0cde7100fff997685dc1018",
+        "fingerprint": "sha256:206dfe0446054399e815b2bd5e158b109840343d16a474eae184f5ef777935ef",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
     },
     {
       "evidence_fingerprints": [
-        "sha256:5a513a42b308d34b201667bad7c6c8cbb0ba952460e187e668ec473c3d69f656",
-        "sha256:cbe7979a7dcd0690441df80bc01b61dbdbcaaaec082f38b8fd5187c292f9e27c"
+        "sha256:392950b888ba9f14dc0a42c5c49aaf0beb545cb8442f32ff6f29cbc4cca815ca",
+        "sha256:671fa8f8603125e4b97afe7ea618f0794883ff652bae0624122112bd0597bdce"
       ],
       "kind": "produces_for",
       "relation_id": "relation:surface-produces-for-commitment:surface:openspec:c16-produce-academic-artifact--C16:produce-academic-artifact",
@@ -1760,22 +1771,22 @@
       "source": {
         "endpoint_id": "surface:openspec:c16-produce-academic-artifact",
         "endpoint_kind": "external_surface",
-        "fingerprint": "sha256:cd00d12779515695727075dddece0e3e8e983114d4c4bcf5507bd0e90cfa725e",
+        "fingerprint": "sha256:88c86d9fc4e06bf23cbaaf6fb33f582de9f27a14935913b08d21e67274a2d0b6",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "C16:produce-academic-artifact",
         "endpoint_kind": "behavior_commitment",
-        "fingerprint": "sha256:5a513a42b308d34b201667bad7c6c8cbb0ba952460e187e668ec473c3d69f656",
+        "fingerprint": "sha256:671fa8f8603125e4b97afe7ea618f0794883ff652bae0624122112bd0597bdce",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
     },
     {
       "evidence_fingerprints": [
-        "sha256:4a16d40235bfbaa25927827d02d41218b6a4ed67661bb74277230dd016a74982",
-        "sha256:cbe7979a7dcd0690441df80bc01b61dbdbcaaaec082f38b8fd5187c292f9e27c"
+        "sha256:392950b888ba9f14dc0a42c5c49aaf0beb545cb8442f32ff6f29cbc4cca815ca",
+        "sha256:5ccc2e9686e7b69fdd95545989bdd22e492496150c8863ba1dfba83a326a491d"
       ],
       "kind": "produces_for",
       "relation_id": "relation:surface-produces-for-commitment:surface:release-process:c07-freeze-one-validation-owner--C07:freeze-one-validation-owner",
@@ -1783,22 +1794,22 @@
       "source": {
         "endpoint_id": "surface:release-process:c07-freeze-one-validation-owner",
         "endpoint_kind": "external_surface",
-        "fingerprint": "sha256:2ffb93a31d30053cb53e2b8707082fa14003c193cfc76137fef9aaa6a450dfb1",
+        "fingerprint": "sha256:7dd2e27a6a4575819332b156b3aa52839e13d31ff03425eb0b5f2fa508549b3a",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "C07:freeze-one-validation-owner",
         "endpoint_kind": "behavior_commitment",
-        "fingerprint": "sha256:4a16d40235bfbaa25927827d02d41218b6a4ed67661bb74277230dd016a74982",
+        "fingerprint": "sha256:5ccc2e9686e7b69fdd95545989bdd22e492496150c8863ba1dfba83a326a491d",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
     },
     {
       "evidence_fingerprints": [
-        "sha256:9674a006b7a7f081022058879df66a0a9dbfe8bc18d8c459b8909ca1d6db9972",
-        "sha256:cbe7979a7dcd0690441df80bc01b61dbdbcaaaec082f38b8fd5187c292f9e27c"
+        "sha256:053a0b244d822faefa27871a720939b9012902968f2d33f406b61050fa043046",
+        "sha256:392950b888ba9f14dc0a42c5c49aaf0beb545cb8442f32ff6f29cbc4cca815ca"
       ],
       "kind": "produces_for",
       "relation_id": "relation:surface-produces-for-commitment:surface:release-process:c08-activate-recoverable-install--C08:activate-recoverable-install",
@@ -1806,22 +1817,22 @@
       "source": {
         "endpoint_id": "surface:release-process:c08-activate-recoverable-install",
         "endpoint_kind": "external_surface",
-        "fingerprint": "sha256:1fa691cb30d2263d2ead1a9032598e3b6cda08e78da29e675d37f7278a228dcd",
+        "fingerprint": "sha256:30b5c56f1b8d6dac658980a65fe80af54e904e38bde969fffedfddcb77309f55",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "C08:activate-recoverable-install",
         "endpoint_kind": "behavior_commitment",
-        "fingerprint": "sha256:9674a006b7a7f081022058879df66a0a9dbfe8bc18d8c459b8909ca1d6db9972",
+        "fingerprint": "sha256:053a0b244d822faefa27871a720939b9012902968f2d33f406b61050fa043046",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
     },
     {
       "evidence_fingerprints": [
-        "sha256:9e4dad7765ef8a25886ec84d9216a96b364c52a76d7c8bf44be70234bc68862a",
-        "sha256:cbe7979a7dcd0690441df80bc01b61dbdbcaaaec082f38b8fd5187c292f9e27c"
+        "sha256:392950b888ba9f14dc0a42c5c49aaf0beb545cb8442f32ff6f29cbc4cca815ca",
+        "sha256:f7d6666cbead3873d09f70d558699cf2701e03716ceeea30450d351a89f3a95d"
       ],
       "kind": "produces_for",
       "relation_id": "relation:surface-produces-for-commitment:surface:release-process:c09-project-one-global-route--C09:project-one-global-route",
@@ -1829,22 +1840,22 @@
       "source": {
         "endpoint_id": "surface:release-process:c09-project-one-global-route",
         "endpoint_kind": "external_surface",
-        "fingerprint": "sha256:c5e6e5e9f46c9433f6d129d707a03af7d30d252ac74d94ff941618de687feb43",
+        "fingerprint": "sha256:a5a8ec9713b62c108b066dca1a22aff781ab54694cf2292d9340839da7f9b327",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "C09:project-one-global-route",
         "endpoint_kind": "behavior_commitment",
-        "fingerprint": "sha256:9e4dad7765ef8a25886ec84d9216a96b364c52a76d7c8bf44be70234bc68862a",
+        "fingerprint": "sha256:f7d6666cbead3873d09f70d558699cf2701e03716ceeea30450d351a89f3a95d",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
     },
     {
       "evidence_fingerprints": [
-        "sha256:a4ceac331dc1ad7f67283a90fd49763496736e619d2d44bfea7030ce7b6cedde",
-        "sha256:cbe7979a7dcd0690441df80bc01b61dbdbcaaaec082f38b8fd5187c292f9e27c"
+        "sha256:392950b888ba9f14dc0a42c5c49aaf0beb545cb8442f32ff6f29cbc4cca815ca",
+        "sha256:de6baf47fe03bcc9ae676f47adfaae4ac773a7b2edff5d1eea03fb7f10c39f2c"
       ],
       "kind": "produces_for",
       "relation_id": "relation:surface-produces-for-commitment:surface:release-process:c10-publish-logic-writing-release--C10:publish-logic-writing-release",
@@ -1852,22 +1863,22 @@
       "source": {
         "endpoint_id": "surface:release-process:c10-publish-logic-writing-release",
         "endpoint_kind": "external_surface",
-        "fingerprint": "sha256:4ef235f35aa8d3f2220cd08182a60a58ea11cd0d8690133b3ecc7457c30d9a7e",
+        "fingerprint": "sha256:88bd614b556ca8700ee7c5f0b8d4c384e7e22ee098bf92771f50dad8cd433ad0",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "C10:publish-logic-writing-release",
         "endpoint_kind": "behavior_commitment",
-        "fingerprint": "sha256:a4ceac331dc1ad7f67283a90fd49763496736e619d2d44bfea7030ce7b6cedde",
+        "fingerprint": "sha256:de6baf47fe03bcc9ae676f47adfaae4ac773a7b2edff5d1eea03fb7f10c39f2c",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
     },
     {
       "evidence_fingerprints": [
-        "sha256:cbe7979a7dcd0690441df80bc01b61dbdbcaaaec082f38b8fd5187c292f9e27c",
-        "sha256:e38e7eb8913360684007bbfacc262af0b991d016f21d6266d63a94984a4fba5c"
+        "sha256:392950b888ba9f14dc0a42c5c49aaf0beb545cb8442f32ff6f29cbc4cca815ca",
+        "sha256:5c833de4df635b37d575ceb5d87c8b10deb1e120bfecde244052802ffabca193"
       ],
       "kind": "produces_for",
       "relation_id": "relation:surface-produces-for-commitment:surface:release-process:c11-retire-predecessors-safely--C11:retire-predecessors-safely",
@@ -1875,22 +1886,22 @@
       "source": {
         "endpoint_id": "surface:release-process:c11-retire-predecessors-safely",
         "endpoint_kind": "external_surface",
-        "fingerprint": "sha256:06a099017f03092a482589bf33901ab0a625ae7174d1dea848158922581ce4d6",
+        "fingerprint": "sha256:4a3654fa338370fc90762531222092e062c93dbd940a1dc85e2c657540ad627c",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "C11:retire-predecessors-safely",
         "endpoint_kind": "behavior_commitment",
-        "fingerprint": "sha256:e38e7eb8913360684007bbfacc262af0b991d016f21d6266d63a94984a4fba5c",
+        "fingerprint": "sha256:5c833de4df635b37d575ceb5d87c8b10deb1e120bfecde244052802ffabca193",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
     },
     {
       "evidence_fingerprints": [
-        "sha256:2699e3b35f4910e7bba4a5bc1bebdd8f004b7d9dc06ab46da685927c6378c637",
-        "sha256:cbe7979a7dcd0690441df80bc01b61dbdbcaaaec082f38b8fd5187c292f9e27c"
+        "sha256:392950b888ba9f14dc0a42c5c49aaf0beb545cb8442f32ff6f29cbc4cca815ca",
+        "sha256:57e81394cdfe8ee94e459b56f1235f209af50c045cfbbbe19b0e42325a1b268b"
       ],
       "kind": "produces_for",
       "relation_id": "relation:surface-produces-for-commitment:surface:skill-entry:c01-select-one-final-owner--C01:select-one-final-owner",
@@ -1898,22 +1909,22 @@
       "source": {
         "endpoint_id": "surface:skill-entry:c01-select-one-final-owner",
         "endpoint_kind": "external_surface",
-        "fingerprint": "sha256:dbaa868a790cd62995a579d1bcea3a9b12d6936a09185a03322c4283e202742e",
+        "fingerprint": "sha256:15dd824800746fbdc03c38afaddc4019ce8abca7d7a813dc750a83f87582c308",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "C01:select-one-final-owner",
         "endpoint_kind": "behavior_commitment",
-        "fingerprint": "sha256:2699e3b35f4910e7bba4a5bc1bebdd8f004b7d9dc06ab46da685927c6378c637",
+        "fingerprint": "sha256:57e81394cdfe8ee94e459b56f1235f209af50c045cfbbbe19b0e42325a1b268b",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
     },
     {
       "evidence_fingerprints": [
-        "sha256:3412e81de71f23a87dc0ba44290dd6cf6e0077067f757f8db15e5cc295f7afc8",
-        "sha256:cbe7979a7dcd0690441df80bc01b61dbdbcaaaec082f38b8fd5187c292f9e27c"
+        "sha256:392950b888ba9f14dc0a42c5c49aaf0beb545cb8442f32ff6f29cbc4cca815ca",
+        "sha256:da577c1276fe2e5c657b31e567783aeef409a3722d7f60090494bd232832abe5"
       ],
       "kind": "produces_for",
       "relation_id": "relation:surface-produces-for-commitment:surface:skill-entry:c02-preserve-specialist-authority--C02:preserve-specialist-authority",
@@ -1921,22 +1932,22 @@
       "source": {
         "endpoint_id": "surface:skill-entry:c02-preserve-specialist-authority",
         "endpoint_kind": "external_surface",
-        "fingerprint": "sha256:de32125d469af2b66fa750c9f9969961fdec3d7d16349699a402a542e35c9c68",
+        "fingerprint": "sha256:f7ed2da3932f216b822bcf6bb569bd5c77973f6ccd045ce6e0af4f41d300fec4",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "C02:preserve-specialist-authority",
         "endpoint_kind": "behavior_commitment",
-        "fingerprint": "sha256:3412e81de71f23a87dc0ba44290dd6cf6e0077067f757f8db15e5cc295f7afc8",
+        "fingerprint": "sha256:da577c1276fe2e5c657b31e567783aeef409a3722d7f60090494bd232832abe5",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
     },
     {
       "evidence_fingerprints": [
-        "sha256:42353afbea92f521c35252132f7adab3b4b335391381d8dacab004f15b72bba2",
-        "sha256:cbe7979a7dcd0690441df80bc01b61dbdbcaaaec082f38b8fd5187c292f9e27c"
+        "sha256:392950b888ba9f14dc0a42c5c49aaf0beb545cb8442f32ff6f29cbc4cca815ca",
+        "sha256:8082a878dc7f8730793ef7cb935c138d84d9d556f8ec422479774b969f9a902c"
       ],
       "kind": "produces_for",
       "relation_id": "relation:surface-produces-for-commitment:surface:skill-entry:c03-build-current-research-packet--C03:build-current-research-packet",
@@ -1944,22 +1955,22 @@
       "source": {
         "endpoint_id": "surface:skill-entry:c03-build-current-research-packet",
         "endpoint_kind": "external_surface",
-        "fingerprint": "sha256:504aafeed446859fd1e429f3c3e9c03f58e70cc169c9dbfd624da5f55ef4e9b2",
+        "fingerprint": "sha256:8ac24f97f67d3753588b3b56611bd5b191fc2551572ea243fd977026d9d32478",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "C03:build-current-research-packet",
         "endpoint_kind": "behavior_commitment",
-        "fingerprint": "sha256:42353afbea92f521c35252132f7adab3b4b335391381d8dacab004f15b72bba2",
+        "fingerprint": "sha256:8082a878dc7f8730793ef7cb935c138d84d9d556f8ec422479774b969f9a902c",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
     },
     {
       "evidence_fingerprints": [
-        "sha256:36029f08237f717c814a5fadb62f2d1479634fb56923d01c657f6be4fe5023d7",
-        "sha256:cbe7979a7dcd0690441df80bc01b61dbdbcaaaec082f38b8fd5187c292f9e27c"
+        "sha256:392950b888ba9f14dc0a42c5c49aaf0beb545cb8442f32ff6f29cbc4cca815ca",
+        "sha256:45fa5535721d572111bcdf649cdf85e787c5027380bdffb2f0e8d203143f297e"
       ],
       "kind": "produces_for",
       "relation_id": "relation:surface-produces-for-commitment:surface:skill-entry:c04-build-reader-brief--C04:build-reader-brief",
@@ -1967,22 +1978,22 @@
       "source": {
         "endpoint_id": "surface:skill-entry:c04-build-reader-brief",
         "endpoint_kind": "external_surface",
-        "fingerprint": "sha256:c1eb070e05bec52934431d5192d242bcfc0c7b1a76067d8459dba9042fc49919",
+        "fingerprint": "sha256:49ad8ef2991e35b8043ec597ed75712c6a3bc8753dc244770cde9921a0425cba",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "C04:build-reader-brief",
         "endpoint_kind": "behavior_commitment",
-        "fingerprint": "sha256:36029f08237f717c814a5fadb62f2d1479634fb56923d01c657f6be4fe5023d7",
+        "fingerprint": "sha256:45fa5535721d572111bcdf649cdf85e787c5027380bdffb2f0e8d203143f297e",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
     },
     {
       "evidence_fingerprints": [
-        "sha256:cbe7979a7dcd0690441df80bc01b61dbdbcaaaec082f38b8fd5187c292f9e27c",
-        "sha256:dca55f919d7d92d17086cb785d48a118e196ed8ba7b8d4f9646fd0fc08067eeb"
+        "sha256:392950b888ba9f14dc0a42c5c49aaf0beb545cb8442f32ff6f29cbc4cca815ca",
+        "sha256:c8d47691845bc8da60e480f059b476fabc513c9b9afc32c20c9c90f7b882d781"
       ],
       "kind": "produces_for",
       "relation_id": "relation:surface-produces-for-commitment:surface:skill-entry:c05-audit-actual-artifact--C05:audit-actual-artifact",
@@ -1990,22 +2001,22 @@
       "source": {
         "endpoint_id": "surface:skill-entry:c05-audit-actual-artifact",
         "endpoint_kind": "external_surface",
-        "fingerprint": "sha256:6b01d97ebd9520cbee07fbc4f8e0d240da862f91e7b35c875a80b50fb2b62fbb",
+        "fingerprint": "sha256:dc0fde5e75c8f25f54e02762c499765f1c2c1dbc95a975c6d05b87a413855961",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "C05:audit-actual-artifact",
         "endpoint_kind": "behavior_commitment",
-        "fingerprint": "sha256:dca55f919d7d92d17086cb785d48a118e196ed8ba7b8d4f9646fd0fc08067eeb",
+        "fingerprint": "sha256:c8d47691845bc8da60e480f059b476fabc513c9b9afc32c20c9c90f7b882d781",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
     },
     {
       "evidence_fingerprints": [
-        "sha256:630e80f69a701a66979c12ee00fc44019ee248b84ee70b0f8cbf9bb31402f3a9",
-        "sha256:cbe7979a7dcd0690441df80bc01b61dbdbcaaaec082f38b8fd5187c292f9e27c"
+        "sha256:392950b888ba9f14dc0a42c5c49aaf0beb545cb8442f32ff6f29cbc4cca815ca",
+        "sha256:5b51c72ed747b8fc12b86f17e44648a332929e5f145eb32776c2a26bdcc7767b"
       ],
       "kind": "produces_for",
       "relation_id": "relation:surface-produces-for-commitment:surface:skill-entry:c06-issue-final-artifact-closure--C06:issue-final-artifact-closure",
@@ -2013,22 +2024,22 @@
       "source": {
         "endpoint_id": "surface:skill-entry:c06-issue-final-artifact-closure",
         "endpoint_kind": "external_surface",
-        "fingerprint": "sha256:8c1cb9583dcd1a34123eb650a6a0769efa8a8a0494b50c629035a6e394470ea7",
+        "fingerprint": "sha256:75f4014ec74d6a43ec44de754b4623de585a77e5bdf3ad921b8aa4d94f0d5365",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "C06:issue-final-artifact-closure",
         "endpoint_kind": "behavior_commitment",
-        "fingerprint": "sha256:630e80f69a701a66979c12ee00fc44019ee248b84ee70b0f8cbf9bb31402f3a9",
+        "fingerprint": "sha256:5b51c72ed747b8fc12b86f17e44648a332929e5f145eb32776c2a26bdcc7767b",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
     },
     {
       "evidence_fingerprints": [
-        "sha256:74eeb9559ecbb6f505e66165d008b1d9aba7719d67aee1113b2bc57b212aecbb",
-        "sha256:cbe7979a7dcd0690441df80bc01b61dbdbcaaaec082f38b8fd5187c292f9e27c"
+        "sha256:392950b888ba9f14dc0a42c5c49aaf0beb545cb8442f32ff6f29cbc4cca815ca",
+        "sha256:5e694d2ba0388299773ea4a7c0edb5a815459ba6c70a2d154d8866f0f1044962"
       ],
       "kind": "produces_for",
       "relation_id": "relation:surface-produces-for-commitment:surface:skill-entry:c12-produce-fiction-artifact--C12:produce-fiction-artifact",
@@ -2036,22 +2047,22 @@
       "source": {
         "endpoint_id": "surface:skill-entry:c12-produce-fiction-artifact",
         "endpoint_kind": "external_surface",
-        "fingerprint": "sha256:49f8309ddef808c8163d37b481d445ee70733233734bc29c70082dc8ac743f36",
+        "fingerprint": "sha256:f44e27b1d98074169dd194d30410e0736b422c65936cb187f90a30861dd540de",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "C12:produce-fiction-artifact",
         "endpoint_kind": "behavior_commitment",
-        "fingerprint": "sha256:74eeb9559ecbb6f505e66165d008b1d9aba7719d67aee1113b2bc57b212aecbb",
+        "fingerprint": "sha256:5e694d2ba0388299773ea4a7c0edb5a815459ba6c70a2d154d8866f0f1044962",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
     },
     {
       "evidence_fingerprints": [
-        "sha256:3afe17160bdc9431b0151fe4869a4fb56cc893674cda25206b7900cd67ce5e6e",
-        "sha256:cbe7979a7dcd0690441df80bc01b61dbdbcaaaec082f38b8fd5187c292f9e27c"
+        "sha256:392950b888ba9f14dc0a42c5c49aaf0beb545cb8442f32ff6f29cbc4cca815ca",
+        "sha256:76da329da269d77933f4dfaf8ccf8a16829ff15075f435845662f8552404905a"
       ],
       "kind": "produces_for",
       "relation_id": "relation:surface-produces-for-commitment:surface:skill-entry:c13-produce-travel-guide--C13:produce-travel-guide",
@@ -2059,22 +2070,22 @@
       "source": {
         "endpoint_id": "surface:skill-entry:c13-produce-travel-guide",
         "endpoint_kind": "external_surface",
-        "fingerprint": "sha256:defdc68a76822f57d859f54b1ab53e3eadf4f1e1b139e6021f3aaaea76fa8b31",
+        "fingerprint": "sha256:d5b3fd53c19e470bd4177d4b7552a6d2cb9615631e6324270e0e680ca0a07fe1",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "C13:produce-travel-guide",
         "endpoint_kind": "behavior_commitment",
-        "fingerprint": "sha256:3afe17160bdc9431b0151fe4869a4fb56cc893674cda25206b7900cd67ce5e6e",
+        "fingerprint": "sha256:76da329da269d77933f4dfaf8ccf8a16829ff15075f435845662f8552404905a",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
     },
     {
       "evidence_fingerprints": [
-        "sha256:cbe7979a7dcd0690441df80bc01b61dbdbcaaaec082f38b8fd5187c292f9e27c",
-        "sha256:e1d3b873ff0b683e776c33fe9ae35cb79354286800476d984b89466b6c1e7ee0"
+        "sha256:0717319d5b1931fe8c681fbea726b716fde811488316134044da3ab322c2b269",
+        "sha256:392950b888ba9f14dc0a42c5c49aaf0beb545cb8442f32ff6f29cbc4cca815ca"
       ],
       "kind": "produces_for",
       "relation_id": "relation:surface-produces-for-commitment:surface:skill-entry:c14-bind-model-to-reader-artifact--C14:bind-model-to-reader-artifact",
@@ -2082,22 +2093,22 @@
       "source": {
         "endpoint_id": "surface:skill-entry:c14-bind-model-to-reader-artifact",
         "endpoint_kind": "external_surface",
-        "fingerprint": "sha256:67895632bae805b4dd0551196b4b72d2e59d994a64ec0713128aad4b44936495",
+        "fingerprint": "sha256:b3553b56d2ef628102333d691ba02fc7b3f9f8fdec3a39f269103f97819e3e17",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "C14:bind-model-to-reader-artifact",
         "endpoint_kind": "behavior_commitment",
-        "fingerprint": "sha256:e1d3b873ff0b683e776c33fe9ae35cb79354286800476d984b89466b6c1e7ee0",
+        "fingerprint": "sha256:0717319d5b1931fe8c681fbea726b716fde811488316134044da3ab322c2b269",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
     },
     {
       "evidence_fingerprints": [
-        "sha256:3555ba8318411ce16e21e7ba29557dc189e08959e0cde7100fff997685dc1018",
-        "sha256:cbe7979a7dcd0690441df80bc01b61dbdbcaaaec082f38b8fd5187c292f9e27c"
+        "sha256:206dfe0446054399e815b2bd5e158b109840343d16a474eae184f5ef777935ef",
+        "sha256:392950b888ba9f14dc0a42c5c49aaf0beb545cb8442f32ff6f29cbc4cca815ca"
       ],
       "kind": "produces_for",
       "relation_id": "relation:surface-produces-for-commitment:surface:skill-entry:c15-produce-investigation-report--C15:produce-investigation-report",
@@ -2105,22 +2116,22 @@
       "source": {
         "endpoint_id": "surface:skill-entry:c15-produce-investigation-report",
         "endpoint_kind": "external_surface",
-        "fingerprint": "sha256:5e6615580b57e082fe5b089fd598dca1a19bd640f13110e53f4e06dfd5923cb9",
+        "fingerprint": "sha256:2485fa7b15e309cd5ced76369a7cc6ed8a2bb2d1f16edc399d8bf4c451e093ed",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "C15:produce-investigation-report",
         "endpoint_kind": "behavior_commitment",
-        "fingerprint": "sha256:3555ba8318411ce16e21e7ba29557dc189e08959e0cde7100fff997685dc1018",
+        "fingerprint": "sha256:206dfe0446054399e815b2bd5e158b109840343d16a474eae184f5ef777935ef",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
     },
     {
       "evidence_fingerprints": [
-        "sha256:5a513a42b308d34b201667bad7c6c8cbb0ba952460e187e668ec473c3d69f656",
-        "sha256:cbe7979a7dcd0690441df80bc01b61dbdbcaaaec082f38b8fd5187c292f9e27c"
+        "sha256:392950b888ba9f14dc0a42c5c49aaf0beb545cb8442f32ff6f29cbc4cca815ca",
+        "sha256:671fa8f8603125e4b97afe7ea618f0794883ff652bae0624122112bd0597bdce"
       ],
       "kind": "produces_for",
       "relation_id": "relation:surface-produces-for-commitment:surface:skill-entry:c16-produce-academic-artifact--C16:produce-academic-artifact",
@@ -2128,117 +2139,117 @@
       "source": {
         "endpoint_id": "surface:skill-entry:c16-produce-academic-artifact",
         "endpoint_kind": "external_surface",
-        "fingerprint": "sha256:1e109d3420a5d9b26c18d9f972be76fabe76186e6d5c9667a2e5c55cf46c2590",
+        "fingerprint": "sha256:7db9504f93118346065de3e5033cf83acfcd55d451e4d585618e90f6a56f0bc5",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "C16:produce-academic-artifact",
         "endpoint_kind": "behavior_commitment",
-        "fingerprint": "sha256:5a513a42b308d34b201667bad7c6c8cbb0ba952460e187e668ec473c3d69f656",
+        "fingerprint": "sha256:671fa8f8603125e4b97afe7ea618f0794883ff652bae0624122112bd0597bdce",
         "owner_route": "behavior_commitment_ledger",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
     },
     {
       "evidence_fingerprints": [
-        "sha256:c7c89e147ad066bcd4e00be10d62d0d834f142ed56a6316f5b4ad8e024802418"
+        "sha256:c9150177f1a9cdb7e217eca8ef90b4f31ba6e1c4a13163eb53403fa8f0f464fd"
       ],
       "kind": "contains",
       "relation_id": "relation:system-contains:behavior_commitment_ledger",
       "schema": "flowguard.model_relation.v1",
       "source": {
-        "endpoint_id": "system:flowguard:model-regression-manifest",
+        "endpoint_id": "system:logic-writing:model-regression-manifest",
         "endpoint_kind": "parent_closure",
-        "fingerprint": "sha256:c7c89e147ad066bcd4e00be10d62d0d834f142ed56a6316f5b4ad8e024802418",
+        "fingerprint": "sha256:c9150177f1a9cdb7e217eca8ef90b4f31ba6e1c4a13163eb53403fa8f0f464fd",
         "owner_route": "model_mesh_maintenance",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "model:behavior_commitment_ledger",
         "endpoint_kind": "model_instance",
-        "fingerprint": "sha256:3ae3b682b207ad70893a2a51036b61d7ae3b3749a7530aff7aaf18e13c923e35",
+        "fingerprint": "sha256:2ae7eea97f680c30ce7f1fbf53f3f92f257471a305b6468983901b42a1ee4d41",
         "owner_route": "model_regression_manifest",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
     },
     {
       "evidence_fingerprints": [
-        "sha256:c7c89e147ad066bcd4e00be10d62d0d834f142ed56a6316f5b4ad8e024802418"
+        "sha256:c9150177f1a9cdb7e217eca8ef90b4f31ba6e1c4a13163eb53403fa8f0f464fd"
       ],
       "kind": "contains",
       "relation_id": "relation:system-contains:development_process_flow",
       "schema": "flowguard.model_relation.v1",
       "source": {
-        "endpoint_id": "system:flowguard:model-regression-manifest",
+        "endpoint_id": "system:logic-writing:model-regression-manifest",
         "endpoint_kind": "parent_closure",
-        "fingerprint": "sha256:c7c89e147ad066bcd4e00be10d62d0d834f142ed56a6316f5b4ad8e024802418",
+        "fingerprint": "sha256:c9150177f1a9cdb7e217eca8ef90b4f31ba6e1c4a13163eb53403fa8f0f464fd",
         "owner_route": "model_mesh_maintenance",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "model:development_process_flow",
         "endpoint_kind": "model_instance",
-        "fingerprint": "sha256:dd5ce81d0dc3e1bcb3d2dbf1379b2142612d1c59dd26ce7fc59526bf04d4116d",
+        "fingerprint": "sha256:0475099ee836b608fbb5283e9bd0fd68d251128c155dbc591a217e949065c42b",
         "owner_route": "model_regression_manifest",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
     },
     {
       "evidence_fingerprints": [
-        "sha256:c7c89e147ad066bcd4e00be10d62d0d834f142ed56a6316f5b4ad8e024802418"
+        "sha256:c9150177f1a9cdb7e217eca8ef90b4f31ba6e1c4a13163eb53403fa8f0f464fd"
       ],
       "kind": "contains",
       "relation_id": "relation:system-contains:logic_writing_models",
       "schema": "flowguard.model_relation.v1",
       "source": {
-        "endpoint_id": "system:flowguard:model-regression-manifest",
+        "endpoint_id": "system:logic-writing:model-regression-manifest",
         "endpoint_kind": "parent_closure",
-        "fingerprint": "sha256:c7c89e147ad066bcd4e00be10d62d0d834f142ed56a6316f5b4ad8e024802418",
+        "fingerprint": "sha256:c9150177f1a9cdb7e217eca8ef90b4f31ba6e1c4a13163eb53403fa8f0f464fd",
         "owner_route": "model_mesh_maintenance",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "model:logic_writing_models",
         "endpoint_kind": "model_instance",
-        "fingerprint": "sha256:0895e1335844f62a67fd69008b0c4ed60a9e0d2a6d66a66004d4cd01629fdbd4",
+        "fingerprint": "sha256:6d9988d44eb48d3a88d42730e05cd4f15648188b59d08cc2c5099ce129e2daa8",
         "owner_route": "model_regression_manifest",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
     },
     {
       "evidence_fingerprints": [
-        "sha256:c7c89e147ad066bcd4e00be10d62d0d834f142ed56a6316f5b4ad8e024802418"
+        "sha256:c9150177f1a9cdb7e217eca8ef90b4f31ba6e1c4a13163eb53403fa8f0f464fd"
       ],
       "kind": "contains",
       "relation_id": "relation:system-contains:model_test_alignment",
       "schema": "flowguard.model_relation.v1",
       "source": {
-        "endpoint_id": "system:flowguard:model-regression-manifest",
+        "endpoint_id": "system:logic-writing:model-regression-manifest",
         "endpoint_kind": "parent_closure",
-        "fingerprint": "sha256:c7c89e147ad066bcd4e00be10d62d0d834f142ed56a6316f5b4ad8e024802418",
+        "fingerprint": "sha256:c9150177f1a9cdb7e217eca8ef90b4f31ba6e1c4a13163eb53403fa8f0f464fd",
         "owner_route": "model_mesh_maintenance",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "model:model_test_alignment",
         "endpoint_kind": "model_instance",
-        "fingerprint": "sha256:4941dc6fb1908b15f057e47002f6824e7982964a36fb32789ce0235b0c520eb6",
+        "fingerprint": "sha256:3ea8eb833c946174b015b7bf5081b9abd45e375c62edef83ec9af9617f121714",
         "owner_route": "model_regression_manifest",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
     },
     {
       "evidence_fingerprints": [
-        "sha256:c7c89e147ad066bcd4e00be10d62d0d834f142ed56a6316f5b4ad8e024802418"
+        "sha256:c9150177f1a9cdb7e217eca8ef90b4f31ba6e1c4a13163eb53403fa8f0f464fd"
       ],
       "kind": "contains",
       "relation_id": "relation:system-contains:plan_detailing",
       "schema": "flowguard.model_relation.v1",
       "source": {
-        "endpoint_id": "system:flowguard:model-regression-manifest",
+        "endpoint_id": "system:logic-writing:model-regression-manifest",
         "endpoint_kind": "parent_closure",
-        "fingerprint": "sha256:c7c89e147ad066bcd4e00be10d62d0d834f142ed56a6316f5b4ad8e024802418",
+        "fingerprint": "sha256:c9150177f1a9cdb7e217eca8ef90b4f31ba6e1c4a13163eb53403fa8f0f464fd",
         "owner_route": "model_mesh_maintenance",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
@@ -2252,15 +2263,15 @@
     },
     {
       "evidence_fingerprints": [
-        "sha256:c7c89e147ad066bcd4e00be10d62d0d834f142ed56a6316f5b4ad8e024802418"
+        "sha256:c9150177f1a9cdb7e217eca8ef90b4f31ba6e1c4a13163eb53403fa8f0f464fd"
       ],
       "kind": "contains",
       "relation_id": "relation:system-contains:primary_path_authority",
       "schema": "flowguard.model_relation.v1",
       "source": {
-        "endpoint_id": "system:flowguard:model-regression-manifest",
+        "endpoint_id": "system:logic-writing:model-regression-manifest",
         "endpoint_kind": "parent_closure",
-        "fingerprint": "sha256:c7c89e147ad066bcd4e00be10d62d0d834f142ed56a6316f5b4ad8e024802418",
+        "fingerprint": "sha256:c9150177f1a9cdb7e217eca8ef90b4f31ba6e1c4a13163eb53403fa8f0f464fd",
         "owner_route": "model_mesh_maintenance",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
@@ -2274,35 +2285,35 @@
     },
     {
       "evidence_fingerprints": [
-        "sha256:c7c89e147ad066bcd4e00be10d62d0d834f142ed56a6316f5b4ad8e024802418"
+        "sha256:c9150177f1a9cdb7e217eca8ef90b4f31ba6e1c4a13163eb53403fa8f0f464fd"
       ],
       "kind": "contains",
       "relation_id": "relation:system-contains:test_mesh",
       "schema": "flowguard.model_relation.v1",
       "source": {
-        "endpoint_id": "system:flowguard:model-regression-manifest",
+        "endpoint_id": "system:logic-writing:model-regression-manifest",
         "endpoint_kind": "parent_closure",
-        "fingerprint": "sha256:c7c89e147ad066bcd4e00be10d62d0d834f142ed56a6316f5b4ad8e024802418",
+        "fingerprint": "sha256:c9150177f1a9cdb7e217eca8ef90b4f31ba6e1c4a13163eb53403fa8f0f464fd",
         "owner_route": "model_mesh_maintenance",
         "schema": "flowguard.authority_endpoint_ref.v1"
       },
       "target": {
         "endpoint_id": "model:test_mesh",
         "endpoint_kind": "model_instance",
-        "fingerprint": "sha256:99454a308226378909560d3e8c19cb15af082ebb69acfdbf4bc5ca1e87c4829c",
+        "fingerprint": "sha256:db9d812892b6f080ed388159a3649eb50143007c09e29da94db6cfc28d7d2075",
         "owner_route": "model_regression_manifest",
         "schema": "flowguard.authority_endpoint_ref.v1"
       }
     }
   ],
   "root_instance_fingerprints": [
-    "sha256:3ae3b682b207ad70893a2a51036b61d7ae3b3749a7530aff7aaf18e13c923e35"
+    "sha256:2ae7eea97f680c30ce7f1fbf53f3f92f257471a305b6468983901b42a1ee4d41"
   ],
   "schema": "flowguard.model_system_snapshot.v2",
-  "snapshot_id": "logic-writing-observed-v3.0.0-reader-composition-testmesh-current",
+  "snapshot_id": "logic-writing-genesis-postarchive",
   "subject_lane": "observed_implementation",
-  "subject_revision": "source-inventory:a7a6eae7b692965c972e71b5b932d487f9ac55b4eda0d31ac2828c1f9c73afc1",
-  "system_id": "flowguard",
+  "subject_revision": "source-inventory:41221473161a494b5378a5ff088629c662788ed487165eba24570d49bd7c36a8",
+  "system_id": "logic-writing",
   "unresolved_gap_ids": [
     "gap:behavior_commitments:C01:select-one-final-owner",
     "gap:behavior_commitments:C02:preserve-specialist-authority",

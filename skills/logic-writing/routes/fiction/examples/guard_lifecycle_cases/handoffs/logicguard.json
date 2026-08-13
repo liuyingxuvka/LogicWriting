@@ -5,11 +5,11 @@
   "native_owner": "logicguard",
   "native_route_id": "primary:researchguard:logic",
   "native_check_id": "logicguard.theme_support_applicability",
-  "tool_version": "0.4.5",
+  "tool_version": "0.4.11",
   "receipt_schema_version": "logicguard.native_terminal_receipt.v1",
   "input_fingerprint": "sha256:b8a700a5c74b3793451391acc76d2fc7153e389e752c8285ec42a51c7b93a07b",
   "terminal_receipt_id": "compact-guard-pass-logicguard-terminal",
-  "terminal_receipt_ref": "file:../receipts/logicguard-terminal.json;sha256:159b06889643e24aeca1632e0595269b1edccf6fd64c44a9542fa8fb148ba29f",
+  "terminal_receipt_ref": "file:../receipts/logicguard-terminal.json;sha256:9f2b1b1ee9f819019acda5e716fdea08b36b8411e4ba32534237ac23df1cb27d",
   "terminal_status": "not_applicable_with_reason",
   "claim_boundary": "No material theme, moral, or ending-interpretation claim exists in the compact fixture input."
 }

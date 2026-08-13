@@ -1,6 +1,6 @@
 # ResearchGuard provider boundary
 
-Logic Writing uses the released ResearchGuard `0.4.5` provider and three
+Logic Writing uses the released ResearchGuard `0.4.11` provider and three
 direct semantic member owners. ResearchGuard also has other native members,
 but they are not active Logic Writing routes in this patch.
 Preflight the selected owner with `scripts/provider_preflight.py`:
@@ -14,7 +14,7 @@ Preflight the selected owner with `scripts/provider_preflight.py`:
 Resolve the console from the installed ResearchGuard distribution record, not
 from ambient PATH state. The console version probe and selected member help
 probe establish provider availability only. The distribution version, console
-output, and supported version must all be `0.4.5`. They do not prove that
+output, and supported version must all be `0.4.11`. They do not prove that
 native domain work ran.
 
 Use exactly one row per handoff. A missing or ambiguous installed console,
@@ -30,4 +30,4 @@ provider-owned reference. Logic Writing may add its own binding/closure
 receipt, but it must not rebuild the ResearchGuard native receipt schema.
 
 `experimentguard` and the `researchguard run` umbrella are explicit scope-outs
-for Logic Writing `3.0.1`; they execute no provider command.
+for Logic Writing `3.0.2`; they execute no provider command.

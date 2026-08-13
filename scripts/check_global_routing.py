@@ -48,8 +48,17 @@ def check(codex_home: Path, *, phase: str) -> dict:
             findings.append(f"predecessor_skill_still_installed:{old_id}")
     prompt_path = home / "AGENTS.md"
     prompt = prompt_path.read_text(encoding="utf-8") if prompt_path.is_file() else ""
-    if "logic-writing" not in prompt:
-        findings.append("managed_global_prompt_missing_logic_writing")
+    # The current SkillGuard global prompt is an author-only router pointer; it
+    # intentionally does not copy every consumer route into AGENTS.md.  Accept
+    # the current registry-hash pointer, while retaining the older literal
+    # route marker for bounded fixture compatibility.
+    registry_hash = str(registry.get("registry_hash") or "")
+    has_current_registry_pointer = bool(
+        registry_hash and f"registry_hash: {registry_hash}" in prompt
+    )
+    has_legacy_route_marker = "logic-writing" in prompt
+    if not (has_current_registry_pointer or has_legacy_route_marker):
+        findings.append("managed_global_prompt_missing_router_pointer")
     if phase == "retired" and any(old_id in prompt for old_id in OLD_IDS):
         findings.append("managed_global_prompt_contains_predecessor")
     return {

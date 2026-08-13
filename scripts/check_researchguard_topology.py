@@ -42,7 +42,7 @@ REQUIRED_BINDINGS = {
     "sourceguard": ("source", "primary:researchguard:source"),
     "traceguard": ("trace", "primary:researchguard:trace"),
 }
-SUPPORTED_VERSION = "0.4.5"
+SUPPORTED_VERSION = "0.4.11"
 
 
 def _governed_files(root: Path):
@@ -94,6 +94,18 @@ def check(root: Path) -> dict[str, object]:
 
     provider_path = root / "skills/logic-writing/scripts/provider_preflight.py"
     provider_text = provider_path.read_text(encoding="utf-8")
+    expected_members = set(REQUIRED_BINDINGS)
+    declared_members = set(
+        re.findall(r'^\s*"([a-z]+guard)":\s*\{', provider_text, flags=re.MULTILINE)
+    ) & expected_members
+    if declared_members != expected_members:
+        findings.append(
+            {
+                "code": "active_member_set_invalid",
+                "path": provider_path.relative_to(root).as_posix(),
+                "value": sorted(declared_members),
+            }
+        )
     if f'SUPPORTED_RESEARCHGUARD_VERSION = "{SUPPORTED_VERSION}"' not in provider_text:
         findings.append(
             {
@@ -121,6 +133,27 @@ def check(root: Path) -> dict[str, object]:
                     }
                 )
 
+    validator_path = root / "skills/logic-writing/scripts/validate_adapter_result.py"
+    validator_text = validator_path.read_text(encoding="utf-8")
+    if 'provider_version") != "0.4.11"' not in validator_text:
+        findings.append(
+            {
+                "code": "adapter_validator_version_missing",
+                "path": validator_path.relative_to(root).as_posix(),
+                "value": SUPPORTED_VERSION,
+            }
+        )
+    schema_path = root / "skills/logic-writing/assets/schemas/adapter-result.schema.json"
+    schema_text = schema_path.read_text(encoding="utf-8")
+    if '"provider_version": { "const": "0.4.11" }' not in schema_text:
+        findings.append(
+            {
+                "code": "adapter_schema_version_missing",
+                "path": schema_path.relative_to(root).as_posix(),
+                "value": SUPPORTED_VERSION,
+            }
+        )
+
     status = "pass" if not findings else "fail"
     return {
         "schema_version": "logic-writing.researchguard-topology-check.v1",
@@ -138,8 +171,9 @@ def check(root: Path) -> dict[str, object]:
         },
         "claim_boundary": (
             "This static check proves current Logic Writing consumer surfaces "
-            "declare one ResearchGuard console topology. It does not prove the "
-            "console is installed or that native member work ran."
+            "declare one ResearchGuard console topology and exact direct-member "
+            "set. It does not prove the console is installed or that native "
+            "member work ran."
         ),
     }
 

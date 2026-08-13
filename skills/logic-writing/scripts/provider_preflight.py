@@ -27,10 +27,10 @@ RESEARCHGUARD_MEMBERS = {
         "primary_path_id": "primary:researchguard:trace",
     },
 }
-SUPPORTED_RESEARCHGUARD_VERSION = "0.4.5"
+SUPPORTED_RESEARCHGUARD_VERSION = "0.4.11"
 SCOPE_OUT_PROVIDERS = {
-    "experimentguard": "ExperimentGuard is not an active Logic Writing 3.0.1 provider.",
-    "researchguard": "The ResearchGuard umbrella route is not an active Logic Writing 3.0.1 provider.",
+    "experimentguard": "ExperimentGuard is not an active Logic Writing 3.0.2 provider.",
+    "researchguard": "The ResearchGuard umbrella route is not an active Logic Writing 3.0.2 provider.",
 }
 MODULE_PROVIDERS = {
     "flowguard": ("flowguard", ("SCHEMA_VERSION", "FlowGuardCheckPlan")),
@@ -148,6 +148,7 @@ def preflight(provider: str, *, provider_root: str | None = None, require_render
                 "provider-root overrides are not an execution path"
             )
         else:
+            status = "provider_unavailable"
             distribution = _researchguard_distribution()
             distribution_version = str(getattr(distribution, "version", "") or "") if distribution else None
             evidence["distribution_version"] = distribution_version
@@ -160,10 +161,10 @@ def preflight(provider: str, *, provider_root: str | None = None, require_render
             else:
                 console = _researchguard_console(distribution)
             evidence["console_resolved"] = bool(console)
-            if not console:
-                if distribution is None:
-                    status = "provider_unavailable"
-            else:
+            if not console and status != "blocked":
+                status = "provider_unavailable"
+                evidence["reason"] = "researchguard_console_identity_unavailable"
+            elif console:
                 version_probe = _run_console_probe(console, ("--version",))
                 version_text = str(version_probe.get("stdout", ""))
                 version_match = re.fullmatch(

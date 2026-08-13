@@ -90,7 +90,7 @@ def make_adapter_result(
         native_result_fingerprint = fingerprint({"payload": payload["evidence_payload"]})
         provider_reference = {
             "provider_id": "researchguard",
-            "provider_version": "0.4.5",
+            "provider_version": "0.4.11",
             "member_id": owner,
             "primary_path_id": f"primary:researchguard:{member_commands[owner]}",
             "native_result_schema_version": "researchguard.native-result.v1",
