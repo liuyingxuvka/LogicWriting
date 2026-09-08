@@ -439,8 +439,18 @@ def main() -> int:
         print(json.dumps(payload, indent=2, sort_keys=True))
     else:
         print(f"Logic Writing FlowGuard models: {payload['status']}")
-        for name, summary in payload["models"].items():
-            print(f"- {name}: {summary['overall_status']}")
+        # The current aggregate schema exposes child closure under
+        # ``model_mesh.receipt_inventory``; older producers exposed a
+        # top-level ``models`` mapping.  Keep the human-readable CLI usable
+        # for both without changing the content-addressed receipt payload.
+        summaries = payload.get("models")
+        if isinstance(summaries, dict):
+            for name, summary in summaries.items():
+                print(f"- {name}: {summary['overall_status']}")
+        else:
+            inventory = payload.get("model_mesh", {}).get("receipt_inventory", {}).get("models", [])
+            for row in inventory:
+                print(f"- {row.get('model_id', '<unknown>')}: {row.get('status', 'unknown')}")
         print(f"receipt: {args.output}")
     return 0 if payload["status"] in {"pass", "pass_with_gaps"} else 1
 
