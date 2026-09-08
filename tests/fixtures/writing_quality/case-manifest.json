@@ -1,0 +1,478 @@
+[
+  {
+    "case_id": "I01",
+    "route": "investigation",
+    "language": "zh-CN",
+    "task": "使用E包，为设备经理写600—800个汉字的采购试点建议。正文为连续段落，最后允许最多3项行动。回答是否扩大试点以及理由。",
+    "constraints": "必须说明10%限于本测试中负载，保留高负载反例，经济测算只作为情景；不得承诺所有设备20%节能，不复述抓取日志。",
+    "material_refs": [
+      {
+        "path": "materials-E.json",
+        "id": "E01"
+      },
+      {
+        "path": "materials-E.json",
+        "id": "E02"
+      },
+      {
+        "path": "materials-E.json",
+        "id": "E03"
+      },
+      {
+        "path": "materials-E.json",
+        "id": "E04"
+      },
+      {
+        "path": "materials-E.json",
+        "id": "E05"
+      },
+      {
+        "path": "materials-E.json",
+        "id": "E06"
+      },
+      {
+        "path": "materials-E.json",
+        "id": "E07"
+      },
+      {
+        "path": "materials-E.json",
+        "id": "E08"
+      }
+    ],
+    "revision_input": null,
+    "rubric_ref": "judge-rubric.md",
+    "repeat_count": 2,
+    "synthetic": true
+  },
+  {
+    "case_id": "I02",
+    "route": "investigation",
+    "language": "en",
+    "task": "Using E01–E08, write a 550–750 word explanatory briefing for engineers. Explain why an energy reduction at matched output can support, but does not fully establish, the proposed mechanism. Use connected prose without a findings list.",
+    "constraints": "必须E02机制+E01测量关系+E03异质性；不能把匹配时段叫randomized experiment；输出实际英文。",
+    "material_refs": [
+      {
+        "path": "materials-E.json",
+        "id": "E01"
+      },
+      {
+        "path": "materials-E.json",
+        "id": "E02"
+      },
+      {
+        "path": "materials-E.json",
+        "id": "E03"
+      },
+      {
+        "path": "materials-E.json",
+        "id": "E04"
+      },
+      {
+        "path": "materials-E.json",
+        "id": "E05"
+      },
+      {
+        "path": "materials-E.json",
+        "id": "E06"
+      },
+      {
+        "path": "materials-E.json",
+        "id": "E07"
+      },
+      {
+        "path": "materials-E.json",
+        "id": "E08"
+      }
+    ],
+    "revision_input": null,
+    "rubric_ref": "judge-rubric.md",
+    "repeat_count": 2,
+    "synthetic": true
+  },
+  {
+    "case_id": "I03",
+    "route": "investigation",
+    "language": "zh-CN",
+    "task": "使用E包写700—900字证据审计，先解释能回答什么，再提供一张“主张/证据/缺口”表，最后写应补哪个验证。",
+    "constraints": "表格允许且有用途；E06宣传和E07缺取材料可出现，但不作为性能证据；不能为了自然度删审计所需缺口。",
+    "material_refs": [
+      {
+        "path": "materials-E.json",
+        "id": "E01"
+      },
+      {
+        "path": "materials-E.json",
+        "id": "E02"
+      },
+      {
+        "path": "materials-E.json",
+        "id": "E03"
+      },
+      {
+        "path": "materials-E.json",
+        "id": "E04"
+      },
+      {
+        "path": "materials-E.json",
+        "id": "E05"
+      },
+      {
+        "path": "materials-E.json",
+        "id": "E06"
+      },
+      {
+        "path": "materials-E.json",
+        "id": "E07"
+      },
+      {
+        "path": "materials-E.json",
+        "id": "E08"
+      }
+    ],
+    "revision_input": null,
+    "rubric_ref": "judge-rubric.md",
+    "repeat_count": 2,
+    "synthetic": true
+  },
+  {
+    "case_id": "A01",
+    "route": "academic-writing",
+    "language": "zh-CN",
+    "task": "使用L包写1000—1400字概念论证，标题“从功率差异到适用结论”，讨论L04三层判据的递进。引用[L01]—[L03]，不新增研究数据，不使用平行作者清单。",
+    "constraints": "中心贡献必须是判据组织；无实验方法和图表时明确不适用，不编方法；每层不能机械补一句“并不意味着”。",
+    "material_refs": [
+      {
+        "path": "materials-L.json",
+        "id": "L01"
+      },
+      {
+        "path": "materials-L.json",
+        "id": "L02"
+      },
+      {
+        "path": "materials-L.json",
+        "id": "L03"
+      },
+      {
+        "path": "materials-L.json",
+        "id": "L04"
+      }
+    ],
+    "revision_input": null,
+    "rubric_ref": "judge-rubric.md",
+    "repeat_count": 2,
+    "synthetic": true
+  },
+  {
+    "case_id": "A02",
+    "route": "academic-writing",
+    "language": "en",
+    "task": "Using E01–E04, write a 550–750 word Methods-and-Interpretation section with headings “Comparison design” and “Interpretation”. Include the paired readings in one table and explain the limits of inference.",
+    "constraints": "两标题保留；产出匹配、三对读数、单设备/短期、无显著性检验、高负载反例必须保留；不得写p-value或claim universal efficacy。",
+    "material_refs": [
+      {
+        "path": "materials-E.json",
+        "id": "E01"
+      },
+      {
+        "path": "materials-E.json",
+        "id": "E02"
+      },
+      {
+        "path": "materials-E.json",
+        "id": "E03"
+      },
+      {
+        "path": "materials-E.json",
+        "id": "E04"
+      }
+    ],
+    "revision_input": null,
+    "rubric_ref": "judge-rubric.md",
+    "repeat_count": 2,
+    "synthetic": true
+  },
+  {
+    "case_id": "A03",
+    "route": "academic-writing",
+    "language": "zh-CN",
+    "task": "修订下列原文为700—900字，保持标题“结果”和“意义”，按E包更正事实并让论证连续。原文：“结果：新控制器显著降低20%的能耗。所有工况都有效。意义：这证明全城设备应立即更换，投资一年即可回本。”",
+    "constraints": "更正20%/显著/所有工况/全城更换/一年回本；保留结果→意义结构；写清1.2年是情景非承诺，不能凭空添加真实引文。",
+    "material_refs": [
+      {
+        "path": "materials-E.json",
+        "id": "E01"
+      },
+      {
+        "path": "materials-E.json",
+        "id": "E02"
+      },
+      {
+        "path": "materials-E.json",
+        "id": "E03"
+      },
+      {
+        "path": "materials-E.json",
+        "id": "E04"
+      },
+      {
+        "path": "materials-E.json",
+        "id": "E05"
+      },
+      {
+        "path": "materials-E.json",
+        "id": "E06"
+      },
+      {
+        "path": "materials-E.json",
+        "id": "E07"
+      },
+      {
+        "path": "materials-E.json",
+        "id": "E08"
+      }
+    ],
+    "revision_input": "结果：新控制器显著降低20%的能耗。所有工况都有效。意义：这证明全城设备应立即更换，投资一年即可回本。",
+    "rubric_ref": "judge-rubric.md",
+    "repeat_count": 2,
+    "synthetic": true
+  },
+  {
+    "case_id": "F01",
+    "route": "fiction-writing",
+    "language": "zh-CN",
+    "task": "按F包写800—1100字完整仓库场景，以林岚近距离第三人称呈现她公开账页的选择、货单获救与信任代价，不要附写作分析。",
+    "constraints": "不能提前揭示钥匙被调换，不能写主管内心；必须有行动与代价，不能全用“她意识到/这意味着”解释模型。",
+    "material_refs": [
+      {
+        "path": "materials-F.json",
+        "id": "F01"
+      },
+      {
+        "path": "materials-F.json",
+        "id": "F02"
+      },
+      {
+        "path": "materials-F.json",
+        "id": "F03"
+      },
+      {
+        "path": "materials-F.json",
+        "id": "F04"
+      },
+      {
+        "path": "materials-F.json",
+        "id": "F05"
+      },
+      {
+        "path": "materials-F.json",
+        "id": "F06"
+      }
+    ],
+    "revision_input": null,
+    "rubric_ref": "judge-rubric.md",
+    "repeat_count": 2,
+    "synthetic": true
+  },
+  {
+    "case_id": "F02",
+    "route": "fiction-writing",
+    "language": "en",
+    "task": "Write a 650–850 word story scene from F01–F06 in close third person following Lin Lan. Use the ship bell three times with a changed effect, and let the final beat register damaged trust without explaining the theme.",
+    "constraints": "实际英文；三次bell变化不能被duplicate规则误判；钥匙/视角事实不泄露；不能以“the lesson is”收尾。",
+    "material_refs": [
+      {
+        "path": "materials-F.json",
+        "id": "F01"
+      },
+      {
+        "path": "materials-F.json",
+        "id": "F02"
+      },
+      {
+        "path": "materials-F.json",
+        "id": "F03"
+      },
+      {
+        "path": "materials-F.json",
+        "id": "F04"
+      },
+      {
+        "path": "materials-F.json",
+        "id": "F05"
+      },
+      {
+        "path": "materials-F.json",
+        "id": "F06"
+      }
+    ],
+    "revision_input": null,
+    "rubric_ref": "judge-rubric.md",
+    "repeat_count": 2,
+    "synthetic": true
+  },
+  {
+    "case_id": "F03",
+    "route": "fiction-writing",
+    "language": "zh-CN",
+    "task": "只给400—600字修订报告，不重写正文。待审句子：“林岚一看就知道弟弟换过钥匙。主管心想一切尽在掌握。她公开账页，大家立刻原谅了她。三声船铃依次响起，这象征着结构升级。”按F包列3项具体改动及各自保留内容。",
+    "constraints": "允许三项列表；指出知情越界、POV越界、代价抹平和作者解释（可合并前三项）；终稿类型是修订报告，不强制它本身成为戏剧场景。",
+    "material_refs": [
+      {
+        "path": "materials-F.json",
+        "id": "F01"
+      },
+      {
+        "path": "materials-F.json",
+        "id": "F02"
+      },
+      {
+        "path": "materials-F.json",
+        "id": "F03"
+      },
+      {
+        "path": "materials-F.json",
+        "id": "F04"
+      },
+      {
+        "path": "materials-F.json",
+        "id": "F05"
+      },
+      {
+        "path": "materials-F.json",
+        "id": "F06"
+      }
+    ],
+    "revision_input": "林岚一看就知道弟弟换过钥匙。主管心想一切尽在掌握。她公开账页，大家立刻原谅了她。三声船铃依次响起，这象征着结构升级。",
+    "rubric_ref": "judge-rubric.md",
+    "repeat_count": 2,
+    "synthetic": true
+  },
+  {
+    "case_id": "T01",
+    "route": "travel-guide",
+    "language": "zh-CN",
+    "task": "按T01—T07写1000—1300字三日家庭指南。每天一段连贯说明，可附一张小时间表。讲清每天为什么这样安排和坏天气备用方案。",
+    "constraints": "周一不安排展馆，周二不安排船/河岸，排除旧塔，步行每段符合旅客条件；不编票价或真实无障碍认证。",
+    "material_refs": [
+      {
+        "path": "materials-T.json",
+        "id": "T01"
+      },
+      {
+        "path": "materials-T.json",
+        "id": "T02"
+      },
+      {
+        "path": "materials-T.json",
+        "id": "T03"
+      },
+      {
+        "path": "materials-T.json",
+        "id": "T04"
+      },
+      {
+        "path": "materials-T.json",
+        "id": "T05"
+      },
+      {
+        "path": "materials-T.json",
+        "id": "T06"
+      },
+      {
+        "path": "materials-T.json",
+        "id": "T07"
+      }
+    ],
+    "revision_input": null,
+    "rubric_ref": "judge-rubric.md",
+    "repeat_count": 2,
+    "synthetic": true
+  },
+  {
+    "case_id": "T02",
+    "route": "travel-guide",
+    "language": "en",
+    "task": "Using T01–T07, write a 450–650 word guide just for rainy Tuesday. Recommend one calm indoor plan, explain transport and rest choices, and give a short practical checklist.",
+    "constraints": "展馆开放但必须保留旅客条件；绘本馆可达备用；不能安排船/河岸/旧塔；列表在checklist区域合法。",
+    "material_refs": [
+      {
+        "path": "materials-T.json",
+        "id": "T01"
+      },
+      {
+        "path": "materials-T.json",
+        "id": "T02"
+      },
+      {
+        "path": "materials-T.json",
+        "id": "T03"
+      },
+      {
+        "path": "materials-T.json",
+        "id": "T04"
+      },
+      {
+        "path": "materials-T.json",
+        "id": "T05"
+      },
+      {
+        "path": "materials-T.json",
+        "id": "T06"
+      },
+      {
+        "path": "materials-T.json",
+        "id": "T07"
+      }
+    ],
+    "revision_input": null,
+    "rubric_ref": "judge-rubric.md",
+    "repeat_count": 2,
+    "synthetic": true
+  },
+  {
+    "case_id": "T03",
+    "route": "travel-guide",
+    "language": "zh-CN",
+    "task": "修订350—500字计划，保持“第一天”“第二天”“第三天”三个标题。旧计划：“第一天：河岸步道、旧港咖啡馆。第二天：绘本馆休息。第三天：展馆，依靠电梯上下。”新增T08，旅客此次携婴儿车；按T包只改受影响安排。",
+    "constraints": "前两天合理内容保留；第三天电梯不可靠必须改变安排或明确可执行取舍，不能声称无障碍；不为显得全面重排所有天。",
+    "material_refs": [
+      {
+        "path": "materials-T.json",
+        "id": "T01"
+      },
+      {
+        "path": "materials-T.json",
+        "id": "T02"
+      },
+      {
+        "path": "materials-T.json",
+        "id": "T03"
+      },
+      {
+        "path": "materials-T.json",
+        "id": "T04"
+      },
+      {
+        "path": "materials-T.json",
+        "id": "T05"
+      },
+      {
+        "path": "materials-T.json",
+        "id": "T06"
+      },
+      {
+        "path": "materials-T.json",
+        "id": "T07"
+      },
+      {
+        "path": "materials-T.json",
+        "id": "T08"
+      }
+    ],
+    "revision_input": "第一天：河岸步道、旧港咖啡馆。第二天：绘本馆休息。第三天：展馆，依靠电梯上下。",
+    "rubric_ref": "judge-rubric.md",
+    "repeat_count": 2,
+    "synthetic": true
+  }
+]

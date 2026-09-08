@@ -11,6 +11,7 @@ build/
 
 # Runtime evidence is reproducible and is not source authority.
 .flowguard/evidence/
+.flowguard/history/
 .flowguard/adoption_log.jsonl
 docs/flowguard_adoption_log.md
 .logicguard/evidence/
@@ -19,6 +20,7 @@ docs/flowguard_adoption_log.md
 run-artifacts/
 run_artifacts/
 validation-receipts/
+implementation-round2-evidence/
 openspec/**/verification-report.json
 openspec/**/verification-receipts/
 

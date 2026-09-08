@@ -13,6 +13,15 @@ recheck zone. Each body section changes a traveler state and hands a concrete
 choice or condition to its next consumer. Candidate lists and route nodes are
 content inputs, not a paragraph template.
 
+## Consumer resource closure
+
+The selected travel route requires the [traveler-native guide compiler](../../routes/travel/references/traveler-native-guide-compiler.md),
+[runtime workflow](../../routes/travel/references/runtime-workflow.md),
+[traveler profile](../../routes/travel/references/traveler-profile.md), and
+[negative-evidence and fallback contract](../../routes/travel/references/negative-evidence-and-fallback.md).
+The staged consumer must also retain the travel examples and every manifest-listed
+guide正文 association before route execution can be considered available.
+
 Build the guide ArtifactMap from current bytes. Review actual spans for guide
 kind, traveler fit, unit responsibility and handoffs, narrative body,
 operational appendix, risk/fallback, source recheck, and local texture. Facts,

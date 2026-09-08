@@ -27,6 +27,8 @@
     "deterministic_audit_fingerprint": { "$ref": "#/$defs/fp" },
     "route_audit_fingerprint": { "$ref": "#/$defs/fp" },
     "artifact_fingerprint": { "$ref": "#/$defs/fp" },
+    "execution_record_fingerprint": { "$ref": "#/$defs/fp" },
+    "review_obligation_manifest_fingerprint": { "$ref": "#/$defs/fp" },
     "reverse_outline": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/outline" }, "uniqueItems": true },
     "scores": { "$ref": "#/$defs/scores" },
     "defects": { "type": "array", "items": { "$ref": "#/$defs/observation" }, "uniqueItems": true },

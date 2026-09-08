@@ -1,0 +1,30 @@
+{
+  "pack_id": "L",
+  "synthetic": true,
+  "records": [
+    {
+      "id": "L01",
+      "text": "合成文献卡A论证：能耗比较必须在相同服务产出下进行；单看功率较低可能只是产出较低。未讨论动态负载或因果识别。",
+      "role": "frozen_source_material",
+      "source_locator": "acceptance-rubric.md:26"
+    },
+    {
+      "id": "L02",
+      "text": "合成文献卡B在A的比较条件上增加：即使产出相同，简单前后比较仍可能受负载/环境/维护变化影响；匹配时段改善可比性，不能自动等于随机试验。",
+      "role": "frozen_source_material",
+      "source_locator": "acceptance-rubric.md:27"
+    },
+    {
+      "id": "L03",
+      "text": "合成文献卡C增加效应异质性：控制策略可能在中等负载减少无效回流，高负载下这部分余量消失；因此要分别说明测量条件、机制和适用范围。",
+      "role": "frozen_source_material",
+      "source_locator": "acceptance-rubric.md:28"
+    },
+    {
+      "id": "L04",
+      "text": "本文预定贡献：把“服务等价、比较可识别、机制适用域”组织成三层判断，避免把测量差异直接写成普遍效益。贡献是判据与论证组织，不是发明新控制器或证明新实验结果。",
+      "role": "frozen_source_material",
+      "source_locator": "acceptance-rubric.md:29"
+    }
+  ]
+}

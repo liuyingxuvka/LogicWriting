@@ -5,7 +5,7 @@
   "native_owner": "traceguard",
   "native_route_id": "primary:researchguard:trace",
   "native_check_id": "traceguard.storyline_terminal",
-  "tool_version": "0.4.11",
+  "tool_version": "0.5.1",
   "receipt_schema_version": "traceguard.native_terminal_receipt.v1",
   "input_fingerprint": "sha256:9d69656be94f538157e409f350e305909b6b8ef0c5041c816cb41b55b8c382a4",
   "terminal_receipt_id": "lantern-map-traceguard-terminal",

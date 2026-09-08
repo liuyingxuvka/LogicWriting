@@ -8,7 +8,7 @@
     "schema_version", "brief_id", "route_decision_fingerprint", "reader_intent_fingerprint",
     "final_owner", "terminal_deliverable", "reader_intent", "content_boundaries",
     "composition_plan", "route_extension", "native_dependency_receipt_fingerprints",
-    "content_authority_fingerprints", "brief_fingerprint"
+    "content_authority_fingerprints", "writer_input", "writer_input_fingerprint", "brief_fingerprint"
   ],
   "properties": {
     "schema_version": { "const": "2.0" },
@@ -27,6 +27,8 @@
     "content_authority_fingerprints": {
       "type": "object", "minProperties": 1, "additionalProperties": { "$ref": "#/$defs/fingerprint" }
     },
+    "writer_input": { "$ref": "#/$defs/writerInput" },
+    "writer_input_fingerprint": { "$ref": "#/$defs/fingerprint" },
     "brief_fingerprint": { "$ref": "#/$defs/fingerprint" }
   },
   "$defs": {
@@ -161,6 +163,107 @@
         },
         "extension_fingerprint": { "$ref": "#/$defs/fingerprint" },
         "native_receipt_fingerprints": { "type": "array", "items": { "$ref": "#/$defs/fingerprint" }, "uniqueItems": true }
+      }
+    },
+    "writerInput": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "reader_intent", "selected_content", "composition", "limitations", "citations", "route_semantics", "gaps"],
+      "properties": {
+        "schema_version": { "enum": ["1.0", "1.1"] },
+        "reader_intent": { "$ref": "reader-intent.schema.json" },
+        "selected_content": { "type": "array", "items": { "$ref": "#/$defs/writerContent" }, "uniqueItems": true },
+        "composition": { "$ref": "#/$defs/writerComposition" },
+        "limitations": { "type": "array", "items": { "$ref": "#/$defs/writerLimitation" }, "uniqueItems": true },
+        "citations": { "type": "array", "items": { "$ref": "#/$defs/writerCitation" }, "uniqueItems": true },
+        "evidence": { "type": "array", "items": { "$ref": "#/$defs/writerEvidence" }, "uniqueItems": true },
+        "exact_obligations": { "$ref": "#/$defs/exactObligations" },
+        "forbidden_claims": { "type": "array", "items": { "type": "object", "additionalProperties": true }, "uniqueItems": true },
+        "native_handoff": { "type": "object", "additionalProperties": true },
+        "native_handoff_mapping": { "type": "array", "items": { "$ref": "#/$defs/nativeHandoffMapping" }, "uniqueItems": true },
+        "route_semantics": { "type": "object", "additionalProperties": true },
+        "gaps": { "type": "array", "items": { "$ref": "#/$defs/writerGap" }, "uniqueItems": true }
+      }
+    },
+    "writerContent": {
+      "type": "object", "additionalProperties": false,
+      "required": ["content_unit_id", "meaning", "required", "evidence_anchor_ids", "alternative_ids", "limitation_ids"],
+      "properties": {
+        "content_unit_id": { "$ref": "#/$defs/identifier" }, "meaning": { "type": "string", "minLength": 1 },
+        "required": { "type": "boolean" }, "evidence_anchor_ids": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true },
+        "alternative_ids": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true },
+        "limitation_ids": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true },
+        "disposition": { "enum": ["consumed", "body", "note", "appendix", "merged", "implied_by_scope"] },
+        "planned_unit_ids": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true }
+      }
+    },
+    "writerComposition": {
+      "type": "object", "additionalProperties": false,
+      "required": ["central_question", "central_throughline", "artifact_form", "opening_job", "conclusion_job", "units"],
+      "properties": {
+        "central_question": { "type": "string", "minLength": 1 }, "central_throughline": { "type": "string", "minLength": 1 },
+        "artifact_form": { "type": "string", "minLength": 1 }, "opening_job": { "type": "string", "minLength": 1 },
+        "conclusion_job": { "type": "string", "minLength": 1 },
+        "body_unit_order": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true },
+        "units": { "type": "array", "items": { "$ref": "#/$defs/writerUnit" }, "uniqueItems": true }
+      }
+    },
+    "writerUnit": {
+      "type": "object", "additionalProperties": false,
+      "required": ["planned_unit_id", "parent_unit_id", "order", "title", "reader_job", "content_unit_ids", "limitation_ids", "relation_to_previous", "incoming_reader_state", "outgoing_reader_state", "downstream_unit_ids", "presentation_mode", "target_extent"],
+      "properties": {
+        "planned_unit_id": { "$ref": "#/$defs/identifier" }, "parent_unit_id": { "type": ["string", "null"] }, "order": { "type": "integer", "minimum": 1 },
+        "title": { "type": "string", "minLength": 1 }, "reader_job": { "type": "string", "minLength": 1 },
+        "content_unit_ids": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true }, "limitation_ids": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true },
+        "relation_to_previous": { "type": "string", "minLength": 1 }, "incoming_reader_state": { "type": "string", "minLength": 1 }, "outgoing_reader_state": { "type": "string", "minLength": 1 },
+        "downstream_unit_ids": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true }, "presentation_mode": { "type": "string", "minLength": 1 }, "target_extent": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "writerLimitation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["limitation_id", "meaning", "affected_content_unit_ids", "required_placement", "materiality", "disposition"],
+      "properties": {
+        "limitation_id": { "$ref": "#/$defs/identifier" }, "meaning": { "type": "string", "minLength": 1 }, "affected_content_unit_ids": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true },
+        "required_placement": { "enum": ["same_unit", "adjacent_unit", "conclusion", "appendix"] }, "materiality": { "type": "string", "minLength": 1 }, "disposition": { "type": "string", "minLength": 1 },
+        "materiality_reason": { "type": "string", "minLength": 1 }, "destination_unit_ids": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true },
+        "merged_into_id": { "anyOf": [{ "$ref": "#/$defs/identifier" }, { "type": "null" }] }, "realization_requirement": { "type": "string", "minLength": 1 }
+      }
+    },
+    "writerCitation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["citation_id", "content_unit_ids", "source_id", "marker", "placement"],
+      "properties": { "citation_id": { "$ref": "#/$defs/identifier" }, "content_unit_ids": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true }, "source_id": { "$ref": "#/$defs/identifier" }, "marker": { "type": "string", "minLength": 1 }, "placement": { "type": "string", "minLength": 1 } }
+    },
+    "writerEvidence": {
+      "type": "object", "additionalProperties": false,
+      "required": ["content_unit_id", "anchor_id", "source_id", "locator", "relation", "observed_summary", "boundary"],
+      "properties": {
+        "content_unit_id": { "$ref": "#/$defs/identifier" }, "anchor_id": { "$ref": "#/$defs/identifier" },
+        "source_id": { "$ref": "#/$defs/identifier" }, "locator": { "type": "string", "minLength": 1 },
+        "relation": { "enum": ["support", "limit", "counter", "context"] },
+        "observed_summary": { "type": "string", "minLength": 1 }, "boundary": { "type": "string", "minLength": 1 }
+      }
+    },
+    "exactObligations": {
+      "type": "object", "additionalProperties": false,
+      "required": ["must_preserve", "verbatim"],
+      "properties": {
+        "must_preserve": { "type": "array", "items": { "type": "object", "additionalProperties": true }, "uniqueItems": true },
+        "verbatim": { "type": "array", "items": { "type": "object", "additionalProperties": true }, "uniqueItems": true }
+      }
+    },
+    "writerGap": {
+      "type": "object", "additionalProperties": false,
+      "required": ["subject_id", "reason"],
+      "properties": { "subject_id": { "$ref": "#/$defs/identifier" }, "reason": { "type": "string", "minLength": 1 } }
+    },
+    "nativeHandoffMapping": {
+      "type": "object", "additionalProperties": false,
+      "required": ["native_unit_id", "planned_unit_ids", "disposition", "reason"],
+      "properties": {
+        "native_unit_id": { "$ref": "#/$defs/identifier" },
+        "planned_unit_ids": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true },
+        "disposition": { "enum": ["body", "note", "appendix", "omit", "merged", "implied_by_scope"] },
+        "reason": { "type": "string", "minLength": 1 }
       }
     }
   }

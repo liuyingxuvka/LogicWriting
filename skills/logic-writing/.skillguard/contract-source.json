@@ -16,7 +16,7 @@
       "input_selectors": [
         {
           "kind": "path",
-          "path": "skills/logic-writing/.skillguard/contract_model.py"
+          "path": "scripts/author/skillguard_contract_model.py"
         },
         {
           "kind": "path",
@@ -447,7 +447,7 @@
     },
     {
       "args": [
-        "skills/logic-writing/.skillguard/checks/evaluate_contract_calibration.py",
+        "scripts/author/evaluate_contract_calibration.py",
         "--positive",
         "skills/logic-writing/.skillguard/fixtures/contract-depth-positive.json",
         "--shallow",
@@ -455,7 +455,7 @@
       ],
       "check_id": "check:logic-writing:contract-calibration",
       "command": "python",
-      "coverage_rationale": "The target-owned evaluator accepts the complete obligation set and detects one exact important reader-artifact omission.",
+      "coverage_rationale": "The target evaluator accepts the complete obligation fixture, rejects the exact reader-artifact omission, and compares the current independently scanned source inventory with explicit target semantic rules.",
       "coverage_scope": "suite",
       "covers_obligation_ids": [
         "obligation:logic-writing:routing",
@@ -481,11 +481,23 @@
       "input_selectors": [
         {
           "kind": "path",
-          "path": "skills/logic-writing/.skillguard/checks/evaluate_contract_calibration.py"
+          "path": "scripts/author/evaluate_contract_calibration.py"
         },
         {
           "kind": "subtree",
           "path": "skills/logic-writing/.skillguard/fixtures"
+        },
+        {
+          "kind": "path",
+          "path": "scripts/author/build_skillguard_surface_inventory.py"
+        },
+        {
+          "kind": "path",
+          "path": "scripts/author/logic_writing_surface_rules.json"
+        },
+        {
+          "kind": "path",
+          "path": "tests/contract/test_skillguard_surface_inventory.py"
         }
       ],
       "kind": "command",
@@ -537,9 +549,69 @@
       "native_route_id": "route:logic-writing:router",
       "semantic_check_id": "semantic:logic-writing:release-integrity",
       "timeout_seconds": 60
+    },
+    {
+      "args": [
+        "scripts/author/check_logic_writing_model_depth.py",
+        "--root",
+        ".",
+        "--json"
+      ],
+      "check_id": "check:logic-writing:model-depth",
+      "command": "python",
+      "coverage_rationale": "The target-owned native check verifies the exact 22-owner model hierarchy, every runner/test binding, and current immutable owner receipts.",
+      "coverage_scope": "declared_obligations",
+      "covers_obligation_ids": [
+        "obligation:logic-writing:model-depth"
+      ],
+      "cwd_token": "repository_root",
+      "depends_on_check_ids": [],
+      "evidence_class": "hard",
+      "evidence_domain_id": "evidence-domain:logic-writing:model-depth",
+      "evidence_subject_id": "subject:logic-writing:model-depth",
+      "execution_owner_id": "owner:logic-writing:model-depth",
+      "expected": {
+        "exit_code": 0
+      },
+      "input_selectors": [
+        {
+          "kind": "path",
+          "path": "scripts/author/check_logic_writing_model_depth.py"
+        },
+        {
+          "kind": "path",
+          "path": "scripts/author/skillguard_contract_model.py"
+        },
+        {
+          "kind": "subtree",
+          "path": ".flowguard/models"
+        },
+        {
+          "kind": "subtree",
+          "path": ".flowguard/verification"
+        },
+        {
+          "kind": "subtree",
+          "path": "skills/logic-writing/scripts"
+        },
+        {
+          "kind": "subtree",
+          "path": "tests/flowguard"
+        },
+        {
+          "kind": "path",
+          "path": "tests/contract/test_logic_writing_model_depth.py"
+        }
+      ],
+      "kind": "command",
+      "maintenance_unit_id": "unit:logic-writing",
+      "member_skill_id": "logic-writing",
+      "native_route_id": "route:logic-writing:router",
+      "semantic_check_id": "semantic:logic-writing:model-depth",
+      "timeout_seconds": 600
     }
   ],
-  "claim_boundary": "Logic Writing v3 owns immutable reader intent, route-authored whole-artifact composition, integrated drafting, exact-byte mapping, deterministic audit, route-native review, independent judgment, typed repair, and final closure. SkillGuard proves the current declared author-side check inventory and clean projection without becoming a writing engine or claiming future prose quality.",
+  "claim_boundary": "LogicWriting owns the current route-native writing contract and its 22-owner FlowGuard model mesh. SkillGuard supervises declared checks and source closure; it does not claim provider quality or future prose quality.",
   "closure_profiles": [
     {
       "profile_id": "enforced",
@@ -553,7 +625,8 @@
         "obligation:logic-writing:shared-writing",
         "obligation:logic-writing:reader-actual-artifact",
         "obligation:logic-writing:final-closure",
-        "obligation:logic-writing:release-integrity"
+        "obligation:logic-writing:release-integrity",
+        "obligation:logic-writing:model-depth"
       ]
     }
   ],
@@ -585,6 +658,32 @@
     "policy_id": "skillguard.content_impact_policy.current",
     "unknown_mapping_disposition": "block"
   },
+  "content_role_overrides": [
+    {
+      "path": "skills/logic-writing/routes/fiction/references",
+      "role": "runtime_source",
+      "install_disposition": "copy",
+      "reason": "Selected fiction route execution requires these references."
+    },
+    {
+      "path": "skills/logic-writing/routes/travel/references",
+      "role": "runtime_source",
+      "install_disposition": "copy",
+      "reason": "Selected travel route execution requires these references."
+    },
+    {
+      "path": "skills/logic-writing/routes/fiction/examples",
+      "role": "fixture_reference",
+      "install_disposition": "copy",
+      "reason": "Keep existing consumer examples with their required text payloads."
+    },
+    {
+      "path": "skills/logic-writing/routes/travel/examples",
+      "role": "fixture_reference",
+      "install_disposition": "copy",
+      "reason": "Keep existing consumer examples with their required guide payloads."
+    }
+  ],
   "default_route_id": "route:logic-writing:router",
   "depth_profile": {
     "claim_boundary": "SkillGuard supervises the exact current receipts for Logic Writing's declared checks. It does not replace investigation, academic, fiction, travel, specialist judgment, or the frozen repository validation owners.",
@@ -601,8 +700,10 @@
       "check:logic-writing:reader-artifact",
       "check:logic-writing:final-closure",
       "check:logic-writing:contract-calibration",
-      "check:logic-writing:release-integrity"
+      "check:logic-writing:release-integrity",
+      "check:logic-writing:model-depth"
     ],
+    "model_deepening_check_id": "check:logic-writing:model-depth",
     "native_owner_id": "logic-writing",
     "native_route_ids": [
       "route:logic-writing:router",
@@ -616,7 +717,8 @@
       "provider_id": "skillguard-local-provider",
       "readiness_check_ids": [
         "check:logic-writing:contract-calibration",
-        "check:logic-writing:release-integrity"
+        "check:logic-writing:release-integrity",
+        "check:logic-writing:model-depth"
       ],
       "required_capability_ids": [
         "declared-check-inventory.v1",
@@ -634,6 +736,14 @@
     ],
     "schema_version": "skillguard.depth_profile.v2",
     "skillguard_adds_domain_route": false,
+    "surface_inventory": {
+      "path": ".skillguard/surface-inventory.json",
+      "adequacy_check_ids": [
+        "check:logic-writing:contract-calibration",
+        "check:logic-writing:model-depth"
+      ],
+      "model_deepening_check_id": "check:logic-writing:model-depth"
+    },
     "target_skill_id": "logic-writing"
   },
   "implementation_paths": [
@@ -643,11 +753,16 @@
     "skills/logic-writing/routes",
     "skills/logic-writing/scripts",
     "skills/logic-writing/assets",
-    "skills/logic-writing/.skillguard/contract_model.py",
-    "skills/logic-writing/.skillguard/checks",
+    "scripts/author",
+    ".flowguard/models",
+    ".flowguard/verification",
+    "tests/flowguard",
     "skills/logic-writing/.skillguard/fixtures",
     "scripts/run_fiction_regression.py",
-    "scripts/run_travel_regression.py"
+    "scripts/run_travel_regression.py",
+    ".flowguard/structure/owner-bindings.json",
+    "tests/contract/test_skillguard_surface_inventory.py",
+    "tests/contract/test_logic_writing_model_depth.py"
   ],
   "integration_mode": "native-integrated",
   "judgment_rubrics": [],
@@ -658,7 +773,7 @@
     "logic-writing"
   ],
   "model_id": "logic-writing.skill-contract.v2",
-  "model_path": "skills/logic-writing/.skillguard/contract_model.py",
+  "model_path": "scripts/author/skillguard_contract_model.py",
   "native_check_bindings": [
     {
       "authority": "target-native",
@@ -714,6 +829,11 @@
       "authority": "target-native",
       "check_id": "check:logic-writing:release-integrity",
       "owner_id": "logic-writing"
+    },
+    {
+      "authority": "target-native",
+      "check_id": "check:logic-writing:model-depth",
+      "owner_id": "owner:logic-writing:model-depth"
     }
   ],
   "native_route_bindings": [
@@ -805,7 +925,8 @@
       },
       "check_ids": [
         "check:logic-writing:contract-calibration",
-        "check:logic-writing:release-integrity"
+        "check:logic-writing:release-integrity",
+        "check:logic-writing:model-depth"
       ],
       "output_artifact_ids": [],
       "step_id": "step:logic-writing:maintenance"

@@ -19,6 +19,10 @@ from _release_common import RELEASE_CONTRACT_RELATIVE, git_lines
 
 TEXT_SUFFIXES = {".md", ".py", ".json", ".yaml", ".yml", ".toml", ".txt"}
 EXCLUDED_PARTS = {".git", "__pycache__", ".pytest_cache", "run-artifacts", "run_artifacts", "evidence"}
+PRIVATE_ROOTS = {
+    ("implementation-round2-evidence",),
+    (".flowguard", "history"),
+}
 PATTERNS = {
     "windows_home": re.compile(r"[A-Za-z]:\\Users\\[^\\\s]+", re.IGNORECASE),
     "unix_home": re.compile(r"/(?:Users|home)/[^/\s]+/"),
@@ -82,7 +86,10 @@ def scan(root: Path):
         if not path.is_file() or path.suffix.lower() not in TEXT_SUFFIXES:
             continue
         relative = path.relative_to(root)
-        if any(part in EXCLUDED_PARTS for part in relative.parts):
+        if any(part in EXCLUDED_PARTS for part in relative.parts) or any(
+            relative.parts[: len(private_root)] == private_root
+            for private_root in PRIVATE_ROOTS
+        ):
             continue
         text = path.read_text(encoding="utf-8", errors="replace")
         for pattern_id, pattern in PATTERNS.items():

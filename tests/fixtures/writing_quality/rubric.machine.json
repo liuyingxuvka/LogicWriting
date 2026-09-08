@@ -1,0 +1,43 @@
+{
+  "schema": "logic-writing.audit-round2.rubric.v1",
+  "dimensions": [
+    "clarity",
+    "coherence",
+    "naturalness",
+    "reader_fit",
+    "genre_fit",
+    "content_fidelity",
+    "instruction_fidelity",
+    "structure_fidelity"
+  ],
+  "core_dimensions": [
+    "coherence",
+    "content_fidelity",
+    "instruction_fidelity"
+  ],
+  "minimum_core": 4,
+  "score_minimum": 1,
+  "score_maximum": 5,
+  "required_unresolved_blocking_or_repair_defects": 0,
+  "cases": 12,
+  "repeats": 2,
+  "versions": [
+    "baseline",
+    "repaired"
+  ],
+  "planned_writer_runs": 48,
+  "judges_per_pair": 2,
+  "planned_pair_judge_runs": 48,
+  "judge_two_order": "reverse_of_judge_one",
+  "required_improved_cases": 9,
+  "case_improvement": "one_repeat_unanimously_prefers_repaired_and_other_not_unanimously_prefers_baseline",
+  "nonregression_dimensions_by_case_mean": [
+    "naturalness",
+    "coherence"
+  ],
+  "baseline_missing_artifact": "incomplete_comparison_not_win",
+  "judge_disagreement": "preserve_disagreement_no_author_arbitration",
+  "unresolved_core_defect": "repair_before_counting_pair",
+  "human_acceptance": "optional_feedback_not_execution_gate",
+  "paid_cost_when_unavailable": null
+}

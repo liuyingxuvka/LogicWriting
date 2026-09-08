@@ -1,8 +1,8 @@
 ## Context
 
-The current Logic Writing source and installed projection still carry ResearchGuard 0.4.5 and Logic Writing 3.0.1 references even though the released dependency is 0.4.11. The repository also records a legacy FlowGuard project/model authority, so a version-only edit would leave the release gate unable to establish current model ownership. See `proposal.md` for the motivation and the delta spec for observable requirements.
+The current Logic Writing source and installed projection still carry ResearchGuard 0.4.5 and Logic Writing 3.0.1 references even though the released dependency is 0.5.0. The repository also records a legacy FlowGuard project/model authority, so a version-only edit would leave the release gate unable to establish current model ownership. See `proposal.md` for the motivation and the delta spec for observable requirements.
 
-FlowGuard 0.68.15 supplies a current-only direct rebuild and a provider-neutral, project-owned native owner declaration. This is part of the current authority boundary, not a compatibility reader.
+FlowGuard 0.69.0 supplies a current-only direct rebuild and a provider-neutral, project-owned native owner declaration. This is part of the current authority boundary, not a compatibility reader.
 
 ## Goals / Non-Goals
 
@@ -54,7 +54,7 @@ FlowGuard 0.68.15 supplies a current-only direct rebuild and a provider-neutral,
 3. Preview and execute the official FlowGuard current-only rebuild, then run model alignment and TestMesh checks.
 4. Compile, stage, activate, and verify the SkillGuard consumer projection.
 5. Run focused regressions, then the single frozen full validation.
-6. Commit, push, tag `v3.0.2`, create the formal GitHub Release, and verify source/tag/release/install identities independently.
+6. Commit, push, tag `v4.0.0`, create the formal GitHub Release, and verify source/tag/release/install identities independently.
 
 ## Open Questions
 

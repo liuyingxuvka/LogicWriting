@@ -203,7 +203,7 @@
       ],
       "properties": {
         "provider_id": { "const": "researchguard" },
-        "provider_version": { "const": "0.4.11" },
+        "provider_version": { "const": "0.5.1" },
         "member_id": { "enum": ["sourceguard", "logicguard", "traceguard"] },
         "primary_path_id": { "$ref": "#/$defs/identifier" },
         "native_result_schema_version": { "$ref": "#/$defs/identifier" },

@@ -29,6 +29,8 @@ def build_reader_brief_receipt(
     require_schema("reader-brief.schema.json", brief, label="ReaderBrief")
     if brief["brief_fingerprint"] != fingerprint_without(brief, "brief_fingerprint"):
         raise ValidationError("ReaderBrief fingerprint does not bind exact current content")
+    if brief["writer_input_fingerprint"] != fingerprint(brief["writer_input"]):
+        raise ValidationError("ReaderBrief writer_input fingerprint is stale")
     if not isinstance(route_content_projection_fingerprint, str) or not route_content_projection_fingerprint.startswith("sha256:"):
         raise ValidationError("route_content_projection_fingerprint must be sha256")
     dependencies = list(dict.fromkeys(dependency_receipt_fingerprints))
@@ -46,6 +48,7 @@ def build_reader_brief_receipt(
         f"reader-brief:{brief_id}:route-content": route_content_projection_fingerprint,
         f"reader-brief:{brief_id}:composition-plan": brief["composition_plan"]["plan_fingerprint"],
         f"reader-brief:{brief_id}:route-extension": brief["route_extension"]["extension_fingerprint"],
+        f"reader-brief:{brief_id}:writer-input": brief["writer_input_fingerprint"],
         f"reader-brief:{brief_id}:builder": builder_source,
     }
     return _commit_managed_receipt(

@@ -15,7 +15,7 @@ from .common import (
     OperationEvent,
     OperationState,
 )
-from .operation_freshness_closure_model import PASSED
+from models.owners.operation_freshness_closure_model.model import PASSED
 
 
 class BrokenMetadataAudit:

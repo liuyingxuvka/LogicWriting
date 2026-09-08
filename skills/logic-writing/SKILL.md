@@ -83,7 +83,7 @@ one paragraph by default.
 
 This skill is an orchestration shell. It consumes provider-owned results and
 receipts through an opaque, fingerprinted reference; it does not recreate their
-domain decisions or manufacture a native receipt. ResearchGuard `0.4.11` is one
+domain decisions or manufacture a native receipt. ResearchGuard `0.5.1` is one
 versioned suite and one executable console. Logic Writing activates exactly
 three direct semantic owners:
 
@@ -98,7 +98,7 @@ three direct semantic owners:
   material temporal, causal, implementation, competing-story,
   counterfactual, and prediction-boundary analysis.
 - ResearchGuard's `experiment` member and the umbrella `run` route are outside
-  Logic Writing `3.0.2`. Requests for them are visible scope blocks and do not
+  Logic Writing `4.0.0`. Requests for them are visible scope blocks and do not
   cause automatic multi-member execution.
 - WorldGuard owns material event, agent, space, resource, access, capability,
   conflict, authority, and norm consistency in real and fictional worlds.
@@ -112,7 +112,7 @@ For the three ResearchGuard owners, preflight the installed `researchguard`
 console and the selected member command only. Never import an old member
 package, invoke `python -m`, locate a sibling checkout, try another member, or
 accept a provider-root override. Require distribution metadata and console
-output to identify ResearchGuard `0.4.11`. If the one current path is
+output to identify ResearchGuard `0.5.1`. If the one current path is
 unavailable, mismatched, or times out, return the typed degraded state and stop
 that handoff.
 
@@ -120,6 +120,20 @@ Validate the bounded handoff with `scripts/validate_adapter_request.py` before
 the native call and `scripts/validate_adapter_result.py` after it. These
 envelopes preserve the specialist's own route, receipt, scope, and failure
 state; they do not re-run or reinterpret the specialist's native check.
+
+For LogicGuard artifact synthesis, map the current
+`researchguard.logic.synthesis-plan.v1` through
+`scripts/researchguard_handoff.py` and its
+`researchguard-logic-handoff.schema.json` contract before constructing the
+ReaderBrief. This bridge carries the reader-selected unit order, argument
+closure, source branch ids, and dispositions while retaining native result and
+receipt locators as opaque references. A blocked or stale native plan remains
+blocked; the bridge never licenses prose quality or final closure.
+Join the semantic handoff to the current ReaderBrief with
+`bind_handoff_consumption` and validate the resulting
+`researchguard.logic.consumption-binding.v1` against its bundled schema. The
+binding must exhaustively cover native units and planned units while preserving
+all current input fingerprints.
 
 Read [references/adapters/researchguard.md](references/adapters/researchguard.md)
 before a ResearchGuard handoff, then load only the selected member adapter

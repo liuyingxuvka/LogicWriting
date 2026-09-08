@@ -1,11 +1,11 @@
 ## Why
 
-Logic Writing 3.0.1 still describes and tests an older ResearchGuard provider contract, while the installed and released ResearchGuard is now 0.4.11 and the installed FlowGuard toolchain is 0.68.15. This patch keeps the existing writing behavior but makes the current provider identity, direct-member boundary, model evidence, installation projection, and release surface agree before publishing 3.0.2.
+Logic Writing 3.0.1 still describes and tests an older ResearchGuard provider contract, while the installed and released ResearchGuard is now 0.5.0 and the installed FlowGuard toolchain is 0.69.0. This patch keeps the existing writing behavior but makes the current provider identity, direct-member boundary, model evidence, installation projection, and release surface agree before publishing 4.0.0.
 
 ## What Changes
 
-- Raise Logic Writing's patch version from 3.0.1 to 3.0.2.
-- Replace current ResearchGuard dependency assertions with 0.4.11 and record FlowGuard 0.68.15 as the validation toolchain.
+- Raise Logic Writing's patch version from 3.0.1 to 4.0.0.
+- Replace current ResearchGuard dependency assertions with 0.5.0 and record FlowGuard 0.69.0 as the validation toolchain.
 - Keep exactly three active direct ResearchGuard members: LogicGuard, SourceGuard, and TraceGuard.
 - Keep ExperimentGuard and the ResearchGuard umbrella route explicitly out of scope, with visible blocking and zero provider execution for those requests.
 - Strengthen topology, version-identity, adapter, schema, receipt-boundary, and negative-path tests without changing the public adapter shape.
@@ -13,7 +13,7 @@ Logic Writing 3.0.1 still describes and tests an older ResearchGuard provider co
 - Declare Logic Writing's exact current model denominator and native owner bindings
   in the project repository; FlowGuard validates that declaration without
   embedding Logic Writing model IDs in its public runtime.
-- Recompile and install the SkillGuard consumer projection, run installed-route smoke checks, and publish a new v3.0.2 GitHub release.
+- Recompile and install the SkillGuard consumer projection, run installed-route smoke checks, and publish a new v4.0.0 GitHub release.
 - Do not add an automatic updater, ExperimentGuard support, compatibility readers, aliases, fallbacks, or a new provider route.
 
 ## Capabilities

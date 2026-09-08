@@ -1,0 +1,578 @@
+[flowguard_layout]
+schema = "flowguard.project_layout.v3"
+version = 3
+authority = "current"
+canonical_root = ".flowguard"
+project_identity = "https://github.com/liuyingxuvka/FlowGuard"
+project_identity_fingerprint = "sha256:679b44c3f8a1524c9ad0b94bf53f88d53207fda549edc5f4819a8be07685c9ef"
+model_authority_pointer = ".flowguard/project.toml#model_authority"
+model_authority_fingerprint = "sha256:172d819f0a9ca21f80c90a6647a3e5bb29ea80621096d37bde0deb18ef8d33f1"
+non_authority_roots = ["evidence", "history"]
+
+[roots]
+behavior = "behavior"  # current_effective_intent_and_behavior_contracts
+models = "models"  # current_executable_model_authority
+structure = "structure"  # surface_ownership_and_code_binding_maps
+verification = "verification"  # test_and_check_definitions
+evidence = "evidence"  # immutable_execution_evidence
+history = "history"  # explicit_historical_context
+
+[role_authority]
+behavior = "current"
+models = "current"
+structure = "current"
+verification = "current"
+evidence = "non_authority"
+history = "non_authority"
+
+[inventory]
+schema = "flowguard.project_layout_shape.v1"
+mode = "exact"
+fingerprint = "sha256:4cd4b72c142a03bce0c40807a999ed9b81432f13dfa2e9b2761af43beb712431"
+member_count = 109
+role_fingerprints = {behavior = "sha256:2156e46e8febb04aefcf73bb413f6778b2db2266fcc98bcb2c97a0b9631370a1", evidence = "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945", history = "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945", models = "sha256:cff8363f62dbc1239fd545282ba6745efcd472d5b019087e8847e5a5db34db76", structure = "sha256:e5b1d2e51b1d507b000d8520e7e0a65921db39370500e00dd507a433dac61ec9", verification = "sha256:4707f5da131106524b931a21aeb6d5a87bde27a908316eef336be34c96191b06"}
+
+[[inventory.members]]
+path = "behavior"
+role = "behavior"
+kind = "directory"
+
+[[inventory.members]]
+path = "behavior/inventory"
+role = "behavior"
+kind = "directory"
+
+[[inventory.members]]
+path = "behavior/inventory/ledger.json"
+role = "behavior"
+kind = "file"
+
+[[inventory.members]]
+path = "models"
+role = "models"
+kind = "directory"
+
+[[inventory.members]]
+path = "models/__init__.py"
+role = "models"
+kind = "file"
+
+[[inventory.members]]
+path = "models/authority"
+role = "models"
+kind = "directory"
+
+[[inventory.members]]
+path = "models/common.py"
+role = "models"
+kind = "file"
+
+[[inventory.members]]
+path = "models/frozen_source_contract_exhaustion.py"
+role = "models"
+kind = "file"
+
+[[inventory.members]]
+path = "models/known_bad.py"
+role = "models"
+kind = "file"
+
+[[inventory.members]]
+path = "models/logic_writing_lifecycle.py"
+role = "models"
+kind = "file"
+
+[[inventory.members]]
+path = "models/owners"
+role = "models"
+kind = "directory"
+
+[[inventory.members]]
+path = "models/owners/_mesh_support.py"
+role = "models"
+kind = "file"
+
+[[inventory.members]]
+path = "models/owners/academic_route_model"
+role = "models"
+kind = "directory"
+
+[[inventory.members]]
+path = "models/owners/academic_route_model/model.py"
+role = "models"
+kind = "file"
+
+[[inventory.members]]
+path = "models/owners/artifact_audit"
+role = "models"
+kind = "directory"
+
+[[inventory.members]]
+path = "models/owners/artifact_audit/model.py"
+role = "models"
+kind = "file"
+
+[[inventory.members]]
+path = "models/owners/behavior_commitment_ledger"
+role = "models"
+kind = "directory"
+
+[[inventory.members]]
+path = "models/owners/behavior_commitment_ledger/model.py"
+role = "models"
+kind = "file"
+
+[[inventory.members]]
+path = "models/owners/composition_graph"
+role = "models"
+kind = "directory"
+
+[[inventory.members]]
+path = "models/owners/composition_graph/model.py"
+role = "models"
+kind = "file"
+
+[[inventory.members]]
+path = "models/owners/development_process_flow"
+role = "models"
+kind = "directory"
+
+[[inventory.members]]
+path = "models/owners/development_process_flow/model.py"
+role = "models"
+kind = "file"
+
+[[inventory.members]]
+path = "models/owners/editorial_disposition"
+role = "models"
+kind = "directory"
+
+[[inventory.members]]
+path = "models/owners/editorial_disposition/model.py"
+role = "models"
+kind = "file"
+
+[[inventory.members]]
+path = "models/owners/execution_binding"
+role = "models"
+kind = "directory"
+
+[[inventory.members]]
+path = "models/owners/execution_binding/model.py"
+role = "models"
+kind = "file"
+
+[[inventory.members]]
+path = "models/owners/fiction_route_model"
+role = "models"
+kind = "directory"
+
+[[inventory.members]]
+path = "models/owners/fiction_route_model/model.py"
+role = "models"
+kind = "file"
+
+[[inventory.members]]
+path = "models/owners/investigation_route_model"
+role = "models"
+kind = "directory"
+
+[[inventory.members]]
+path = "models/owners/investigation_route_model/model.py"
+role = "models"
+kind = "file"
+
+[[inventory.members]]
+path = "models/owners/logic_writing_models"
+role = "models"
+kind = "directory"
+
+[[inventory.members]]
+path = "models/owners/logic_writing_models/model.py"
+role = "models"
+kind = "file"
+
+[[inventory.members]]
+path = "models/owners/model_test_alignment"
+role = "models"
+kind = "directory"
+
+[[inventory.members]]
+path = "models/owners/model_test_alignment/model.py"
+role = "models"
+kind = "file"
+
+[[inventory.members]]
+path = "models/owners/operation_freshness_closure_model"
+role = "models"
+kind = "directory"
+
+[[inventory.members]]
+path = "models/owners/operation_freshness_closure_model/model.py"
+role = "models"
+kind = "file"
+
+[[inventory.members]]
+path = "models/owners/plan_detailing"
+role = "models"
+kind = "directory"
+
+[[inventory.members]]
+path = "models/owners/plan_detailing/model.py"
+role = "models"
+kind = "file"
+
+[[inventory.members]]
+path = "models/owners/primary_path_authority"
+role = "models"
+kind = "directory"
+
+[[inventory.members]]
+path = "models/owners/primary_path_authority/model.py"
+role = "models"
+kind = "file"
+
+[[inventory.members]]
+path = "models/owners/reader_artifact_model"
+role = "models"
+kind = "directory"
+
+[[inventory.members]]
+path = "models/owners/reader_artifact_model/model.py"
+role = "models"
+kind = "file"
+
+[[inventory.members]]
+path = "models/owners/release_retirement_model"
+role = "models"
+kind = "directory"
+
+[[inventory.members]]
+path = "models/owners/release_retirement_model/model.py"
+role = "models"
+kind = "file"
+
+[[inventory.members]]
+path = "models/owners/research_packet_model"
+role = "models"
+kind = "directory"
+
+[[inventory.members]]
+path = "models/owners/research_packet_model/model.py"
+role = "models"
+kind = "file"
+
+[[inventory.members]]
+path = "models/owners/researchguard_handoff"
+role = "models"
+kind = "directory"
+
+[[inventory.members]]
+path = "models/owners/researchguard_handoff/model.py"
+role = "models"
+kind = "file"
+
+[[inventory.members]]
+path = "models/owners/route_and_guard_model"
+role = "models"
+kind = "directory"
+
+[[inventory.members]]
+path = "models/owners/route_and_guard_model/model.py"
+role = "models"
+kind = "file"
+
+[[inventory.members]]
+path = "models/owners/test_mesh"
+role = "models"
+kind = "directory"
+
+[[inventory.members]]
+path = "models/owners/test_mesh/model.py"
+role = "models"
+kind = "file"
+
+[[inventory.members]]
+path = "models/owners/travel_route_model"
+role = "models"
+kind = "directory"
+
+[[inventory.members]]
+path = "models/owners/travel_route_model/model.py"
+role = "models"
+kind = "file"
+
+[[inventory.members]]
+path = "models/owners/writer_projection"
+role = "models"
+kind = "directory"
+
+[[inventory.members]]
+path = "models/owners/writer_projection/model.py"
+role = "models"
+kind = "file"
+
+[[inventory.members]]
+path = "models/plans.py"
+role = "models"
+kind = "file"
+
+[[inventory.members]]
+path = "models/reader_contract_field_lifecycle.py"
+role = "models"
+kind = "file"
+
+[[inventory.members]]
+path = "models/regression-manifest.json"
+role = "models"
+kind = "file"
+
+[[inventory.members]]
+path = "models/retirement_field_lifecycle.py"
+role = "models"
+kind = "file"
+
+[[inventory.members]]
+path = "structure"
+role = "structure"
+kind = "directory"
+
+[[inventory.members]]
+path = "structure/owner-bindings.json"
+role = "structure"
+kind = "file"
+
+[[inventory.members]]
+path = "verification"
+role = "verification"
+kind = "directory"
+
+[[inventory.members]]
+path = "verification/owners"
+role = "verification"
+kind = "directory"
+
+[[inventory.members]]
+path = "verification/owners/academic_route_model"
+role = "verification"
+kind = "directory"
+
+[[inventory.members]]
+path = "verification/owners/academic_route_model/run_checks.py"
+role = "verification"
+kind = "file"
+
+[[inventory.members]]
+path = "verification/owners/artifact_audit"
+role = "verification"
+kind = "directory"
+
+[[inventory.members]]
+path = "verification/owners/artifact_audit/run_checks.py"
+role = "verification"
+kind = "file"
+
+[[inventory.members]]
+path = "verification/owners/behavior_commitment_ledger"
+role = "verification"
+kind = "directory"
+
+[[inventory.members]]
+path = "verification/owners/behavior_commitment_ledger/run_checks.py"
+role = "verification"
+kind = "file"
+
+[[inventory.members]]
+path = "verification/owners/composition_graph"
+role = "verification"
+kind = "directory"
+
+[[inventory.members]]
+path = "verification/owners/composition_graph/run_checks.py"
+role = "verification"
+kind = "file"
+
+[[inventory.members]]
+path = "verification/owners/development_process_flow"
+role = "verification"
+kind = "directory"
+
+[[inventory.members]]
+path = "verification/owners/development_process_flow/run_checks.py"
+role = "verification"
+kind = "file"
+
+[[inventory.members]]
+path = "verification/owners/editorial_disposition"
+role = "verification"
+kind = "directory"
+
+[[inventory.members]]
+path = "verification/owners/editorial_disposition/run_checks.py"
+role = "verification"
+kind = "file"
+
+[[inventory.members]]
+path = "verification/owners/execution_binding"
+role = "verification"
+kind = "directory"
+
+[[inventory.members]]
+path = "verification/owners/execution_binding/run_checks.py"
+role = "verification"
+kind = "file"
+
+[[inventory.members]]
+path = "verification/owners/fiction_route_model"
+role = "verification"
+kind = "directory"
+
+[[inventory.members]]
+path = "verification/owners/fiction_route_model/run_checks.py"
+role = "verification"
+kind = "file"
+
+[[inventory.members]]
+path = "verification/owners/investigation_route_model"
+role = "verification"
+kind = "directory"
+
+[[inventory.members]]
+path = "verification/owners/investigation_route_model/run_checks.py"
+role = "verification"
+kind = "file"
+
+[[inventory.members]]
+path = "verification/owners/logic_writing_models"
+role = "verification"
+kind = "directory"
+
+[[inventory.members]]
+path = "verification/owners/logic_writing_models/run_checks.py"
+role = "verification"
+kind = "file"
+
+[[inventory.members]]
+path = "verification/owners/model_test_alignment"
+role = "verification"
+kind = "directory"
+
+[[inventory.members]]
+path = "verification/owners/model_test_alignment/run_checks.py"
+role = "verification"
+kind = "file"
+
+[[inventory.members]]
+path = "verification/owners/operation_freshness_closure_model"
+role = "verification"
+kind = "directory"
+
+[[inventory.members]]
+path = "verification/owners/operation_freshness_closure_model/run_checks.py"
+role = "verification"
+kind = "file"
+
+[[inventory.members]]
+path = "verification/owners/plan_detailing"
+role = "verification"
+kind = "directory"
+
+[[inventory.members]]
+path = "verification/owners/plan_detailing/run_checks.py"
+role = "verification"
+kind = "file"
+
+[[inventory.members]]
+path = "verification/owners/primary_path_authority"
+role = "verification"
+kind = "directory"
+
+[[inventory.members]]
+path = "verification/owners/primary_path_authority/run_checks.py"
+role = "verification"
+kind = "file"
+
+[[inventory.members]]
+path = "verification/owners/reader_artifact_model"
+role = "verification"
+kind = "directory"
+
+[[inventory.members]]
+path = "verification/owners/reader_artifact_model/run_checks.py"
+role = "verification"
+kind = "file"
+
+[[inventory.members]]
+path = "verification/owners/release_retirement_model"
+role = "verification"
+kind = "directory"
+
+[[inventory.members]]
+path = "verification/owners/release_retirement_model/run_checks.py"
+role = "verification"
+kind = "file"
+
+[[inventory.members]]
+path = "verification/owners/research_packet_model"
+role = "verification"
+kind = "directory"
+
+[[inventory.members]]
+path = "verification/owners/research_packet_model/run_checks.py"
+role = "verification"
+kind = "file"
+
+[[inventory.members]]
+path = "verification/owners/researchguard_handoff"
+role = "verification"
+kind = "directory"
+
+[[inventory.members]]
+path = "verification/owners/researchguard_handoff/run_checks.py"
+role = "verification"
+kind = "file"
+
+[[inventory.members]]
+path = "verification/owners/route_and_guard_model"
+role = "verification"
+kind = "directory"
+
+[[inventory.members]]
+path = "verification/owners/route_and_guard_model/run_checks.py"
+role = "verification"
+kind = "file"
+
+[[inventory.members]]
+path = "verification/owners/test_mesh"
+role = "verification"
+kind = "directory"
+
+[[inventory.members]]
+path = "verification/owners/test_mesh/run_checks.py"
+role = "verification"
+kind = "file"
+
+[[inventory.members]]
+path = "verification/owners/travel_route_model"
+role = "verification"
+kind = "directory"
+
+[[inventory.members]]
+path = "verification/owners/travel_route_model/run_checks.py"
+role = "verification"
+kind = "file"
+
+[[inventory.members]]
+path = "verification/owners/writer_projection"
+role = "verification"
+kind = "directory"
+
+[[inventory.members]]
+path = "verification/owners/writer_projection/run_checks.py"
+role = "verification"
+kind = "file"
+
+[[inventory.members]]
+path = "verification/run_models.py"
+role = "verification"
+kind = "file"

@@ -47,8 +47,17 @@
         "incoming_dependency": { "type": "string", "minLength": 1 },
         "new_claim_or_warrant": { "type": "string", "minLength": 1 },
         "evidence_ids": { "type": "array", "items": { "$ref": "#/$defs/id" }, "uniqueItems": true },
-        "qualification": { "type": "string", "minLength": 1 },
+        "qualification": { "$ref": "#/$defs/qualification" },
         "downstream_consumer_ids": { "type": "array", "items": { "$ref": "#/$defs/id" }, "uniqueItems": true }
+      }
+    },
+    "qualification": {
+      "type": "object", "additionalProperties": false,
+      "required": ["status", "reason", "source_refs"],
+      "properties": {
+        "status": { "enum": ["required", "not_applicable"] },
+        "reason": { "type": "string", "minLength": 1 },
+        "source_refs": { "type": "array", "items": { "$ref": "#/$defs/id" }, "uniqueItems": true }
       }
     },
     "figureTableJob": {

@@ -1,0 +1,1469 @@
+{
+  "governed_input_globs": [
+    ".flowguard/models/owners/**/*.py",
+    ".flowguard/models/*.py",
+    ".flowguard/verification/**/*.py",
+    ".flowguard/behavior/inventory/ledger.json",
+    ".flowguard/structure/owner-bindings.json"
+  ],
+  "models": [
+    {
+      "absence_reason": "",
+      "distribution_policy": "required_public",
+      "exclusion_reason": "",
+      "expected_artifacts": [
+        "model-report.json"
+      ],
+      "input_globs": [
+        ".flowguard/models/owners/logic_writing_models/model.py",
+        ".flowguard/verification/owners/logic_writing_models/run_checks.py",
+        ".flowguard/models/owners/_mesh_support.py",
+        ".flowguard/verification/run_models.py",
+        ".flowguard/structure/owner-bindings.json",
+        ".flowguard/models/__init__.py",
+        ".flowguard/models/common.py",
+        ".flowguard/models/plans.py",
+        ".flowguard/models/logic_writing_lifecycle.py",
+        ".flowguard/models/known_bad.py",
+        ".flowguard/models/reader_contract_field_lifecycle.py",
+        ".flowguard/models/frozen_source_contract_exhaustion.py",
+        ".flowguard/models/retirement_field_lifecycle.py"
+      ],
+      "intent_source_inputs": [
+        "skills/logic-writing/SKILL.md"
+      ],
+      "model_id": "logic_writing_models",
+      "model_kind": "executable_workflow",
+      "model_path": ".flowguard/models/owners/logic_writing_models/model.py",
+      "mutation_policy": "isolated_output",
+      "purpose_closure": {
+        "adoption_scope": "current_candidate_only",
+        "claim_boundary": "Current closure covers the declared Logic Writing logic_writing_models model, its native runner, and frozen source/test inputs only; it does not prove future AI prose quality, undeclared runtime behavior, installation, or publication.",
+        "closure_fingerprint": "sha256:ad7083d64c329a7365ab50b13f38111b71634f46a82b25eb0023baf4f6c82537",
+        "declaration_fingerprint": "sha256:40fcafdd1d72671af595fdcbc8bd264a2fdd880cb2c36b42127719474f52a5c5",
+        "declaration_phase": "before_candidate",
+        "evidence_check_ids": [
+          "check:model-regression:logic_writing_models"
+        ],
+        "failure_bindings": [
+          {
+            "failure_id": "logic_writing_models:current_owner_identity",
+            "known_bad_case_id": "native-runner:logic_writing_models:current_owner_identity",
+            "oracle_id": "native:logic_writing_models:run-checks"
+          },
+          {
+            "failure_id": "logic_writing_models:purpose_specific_good_bad_oracle",
+            "known_bad_case_id": "native-runner:logic_writing_models:purpose_specific_good_bad_oracle",
+            "oracle_id": "native:logic_writing_models:run-checks"
+          }
+        ],
+        "guarded_purpose": "\u805a\u5408\u5f53\u524d\u8bfb\u8005\u5199\u4f5c\u7236\u5b50\u6a21\u578b\uff1b\u53ea\u6d88\u8d39\u5b50receipt\u548c\u95ed\u5408\u5173\u7cfb\uff0c\u4e0d\u518d\u6b21\u8fd0\u884c\u6240\u6709\u5b50\u6a21\u578b\u3002",
+        "known_good_case_id": "native-runner:logic_writing_models:declared-positive-suite",
+        "model_instance_id": "regression:logic_writing_models:round2",
+        "model_sha256": "sha256:732999b4be32217982250c2d89f1cdd5a00d5618f842afbadfc9c708dbc9aa03",
+        "protected_failure_ids": [
+          "logic_writing_models:current_owner_identity",
+          "logic_writing_models:purpose_specific_good_bad_oracle"
+        ],
+        "reusable_model_type_id": "logic_writing_models",
+        "runner_sha256": "sha256:21015ca8fa851969dd253ed6dc9fc669cb3ad667af13bcd046ec9438728277b9",
+        "schema_version": "flowguard.model_purpose_closure.v1",
+        "task_intent_id": "flowguard-regression:logic_writing_models:logic-writing-reader-composition"
+      },
+      "runner": [
+        "{python}",
+        ".flowguard/verification/owners/logic_writing_models/run_checks.py"
+      ],
+      "shard_safe": true,
+      "tier": "full",
+      "timeout_seconds": 180.0
+    },
+    {
+      "absence_reason": "",
+      "distribution_policy": "required_public",
+      "exclusion_reason": "",
+      "expected_artifacts": [],
+      "input_globs": [
+        ".flowguard/models/owners/development_process_flow/model.py",
+        ".flowguard/verification/owners/development_process_flow/run_checks.py",
+        ".flowguard/models/owners/_mesh_support.py",
+        "scripts/run_writing_quality_benchmark.py",
+        "scripts/run_frozen_validation.py",
+        "scripts/check_reader_judgment.py",
+        "openspec/verification-contract.yaml",
+        "tests/contract/test_release_wrappers.py",
+        ".flowguard/structure/owner-bindings.json"
+      ],
+      "intent_source_inputs": [
+        "openspec/specs/maintainer-evidence-lifecycle/spec.md"
+      ],
+      "model_id": "development_process_flow",
+      "model_kind": "executable_workflow",
+      "model_path": ".flowguard/models/owners/development_process_flow/model.py",
+      "mutation_policy": "isolated_output",
+      "purpose_closure": {
+        "adoption_scope": "current_candidate_only",
+        "claim_boundary": "Current closure covers the declared Logic Writing development_process_flow model, its native runner, and frozen source/test inputs only; it does not prove future AI prose quality, undeclared runtime behavior, installation, or publication.",
+        "closure_fingerprint": "sha256:807d90cdab07932ca6359918280984850bb3fbf155164bc217e4be9a9770da5e",
+        "declaration_fingerprint": "sha256:8657dc2b922291e68859bfd9da2a80cc55b0f9a5acb8424c22da638c0a1a50f0",
+        "declaration_phase": "before_candidate",
+        "evidence_check_ids": [
+          "check:model-regression:development_process_flow"
+        ],
+        "failure_bindings": [
+          {
+            "failure_id": "development_process_flow:current_owner_identity",
+            "known_bad_case_id": "native-runner:development_process_flow:current_owner_identity",
+            "oracle_id": "native:development_process_flow:run-checks"
+          },
+          {
+            "failure_id": "development_process_flow:purpose_specific_good_bad_oracle",
+            "known_bad_case_id": "native-runner:development_process_flow:purpose_specific_good_bad_oracle",
+            "oracle_id": "native:development_process_flow:run-checks"
+          },
+          {
+            "failure_id": "development_process_flow:a12",
+            "known_bad_case_id": "native-runner:development_process_flow:a12",
+            "oracle_id": "native:development_process_flow:run-checks"
+          }
+        ],
+        "guarded_purpose": "\u6b63\u5f0f\u7ef4\u62a4\u3001\u5b89\u88c5\u548c\u53d1\u5e03\u6d41\u7a0b\uff1b\u4e0e\u5199\u4f5c\u7ed3\u679c\u7684agent_operation\u5e73\u9762\u5206\u5f00\u3002 \u540c\u65f6\u95ed\u5408A12/L07\u7684\u672c\u673a96run\u751f\u4ea7\u300124pair\u53cc\u5ba1\u7a3f\u3001\u65e7\u8ba1\u5212\u5931\u6548\u3001\u5931\u8d25\u8ba1\u6570\u3001\u533f\u540d\u987a\u5e8f\u4e0e\u4e24\u4e2a\u53ea\u8bfbconsumer\u7684\u65e0\u73af\u63a5\u7ebf\uff1b\u5177\u4f53\u5b9e\u73b0\u4e25\u683c\u91c7\u7528lw-actions.md L06/L07\u3002",
+        "known_good_case_id": "native-runner:development_process_flow:declared-positive-suite",
+        "model_instance_id": "regression:development_process_flow:round2",
+        "model_sha256": "sha256:a05c7f143937df36859e6129901c8d1c85455c5835b68e43e8fc7272fa1b2395",
+        "protected_failure_ids": [
+          "development_process_flow:current_owner_identity",
+          "development_process_flow:purpose_specific_good_bad_oracle",
+          "development_process_flow:a12"
+        ],
+        "reusable_model_type_id": "development_process_flow",
+        "runner_sha256": "sha256:50b982e6500c9adde20567451e8e3406113609cdc721acc3069cd53bcaed82d1",
+        "schema_version": "flowguard.model_purpose_closure.v1",
+        "task_intent_id": "flowguard-regression:development_process_flow:logic-writing-reader-composition"
+      },
+      "runner": [
+        "{python}",
+        ".flowguard/verification/owners/development_process_flow/run_checks.py"
+      ],
+      "shard_safe": true,
+      "tier": "focused",
+      "timeout_seconds": 180.0
+    },
+    {
+      "absence_reason": "",
+      "distribution_policy": "required_public",
+      "exclusion_reason": "",
+      "expected_artifacts": [],
+      "input_globs": [
+        ".flowguard/models/owners/test_mesh/model.py",
+        ".flowguard/verification/owners/test_mesh/run_checks.py",
+        ".flowguard/models/owners/_mesh_support.py",
+        ".flowguard/models/frozen_source_contract_exhaustion.py",
+        ".flowguard/structure/owner-bindings.json",
+        ".flowguard/models/__init__.py",
+        ".flowguard/models/common.py",
+        ".flowguard/models/known_bad.py",
+        ".flowguard/models/reader_contract_field_lifecycle.py",
+        ".flowguard/models/retirement_field_lifecycle.py"
+      ],
+      "intent_source_inputs": [
+        "openspec/verification-contract.yaml"
+      ],
+      "model_id": "test_mesh",
+      "model_kind": "executable_workflow",
+      "model_path": ".flowguard/models/owners/test_mesh/model.py",
+      "mutation_policy": "none",
+      "purpose_closure": {
+        "adoption_scope": "current_candidate_only",
+        "claim_boundary": "Current closure covers the declared Logic Writing test_mesh model, its native runner, and frozen source/test inputs only; it does not prove future AI prose quality, undeclared runtime behavior, installation, or publication.",
+        "closure_fingerprint": "sha256:319384bce29cdd3c88b938ef2ce678144e98c5712bc46136f618e7fb13e4ba52",
+        "declaration_fingerprint": "sha256:7f67353fe62fa8f13aee7cef9e9c79e14312947bbc87763b3b63caf2f0ce3090",
+        "declaration_phase": "before_candidate",
+        "evidence_check_ids": [
+          "check:model-regression:test_mesh"
+        ],
+        "failure_bindings": [
+          {
+            "failure_id": "test_mesh:current_owner_identity",
+            "known_bad_case_id": "native-runner:test_mesh:current_owner_identity",
+            "oracle_id": "native:test_mesh:run-checks"
+          },
+          {
+            "failure_id": "test_mesh:purpose_specific_good_bad_oracle",
+            "known_bad_case_id": "native-runner:test_mesh:purpose_specific_good_bad_oracle",
+            "oracle_id": "native:test_mesh:run-checks"
+          }
+        ],
+        "guarded_purpose": "\u4fdd\u7559\u73b0\u6709\u804c\u8d23\uff0c\u4f7f\u7528\u5f53\u524d\u672c\u5e93inventory\u548c\u539f\u751f\u9a8c\u8bc1\uff1b\u4ee5support\u8fb9\u652f\u6301agent_operation\u3002",
+        "known_good_case_id": "native-runner:test_mesh:declared-positive-suite",
+        "model_instance_id": "regression:test_mesh:round2",
+        "model_sha256": "sha256:00cb28507120fb6726e4606b6f21f75a03b6e79aa80042064f203872c2b8dee1",
+        "protected_failure_ids": [
+          "test_mesh:current_owner_identity",
+          "test_mesh:purpose_specific_good_bad_oracle"
+        ],
+        "reusable_model_type_id": "test_mesh",
+        "runner_sha256": "sha256:4ae1837e9a0b39f6cc287df4f08436deb2aa99f2879c59b10903d58d180dd754",
+        "schema_version": "flowguard.model_purpose_closure.v1",
+        "task_intent_id": "flowguard-regression:test_mesh:logic-writing-reader-composition"
+      },
+      "runner": [
+        "{python}",
+        ".flowguard/verification/owners/test_mesh/run_checks.py"
+      ],
+      "shard_safe": true,
+      "tier": "focused",
+      "timeout_seconds": 180.0
+    },
+    {
+      "absence_reason": "",
+      "distribution_policy": "required_public",
+      "exclusion_reason": "",
+      "expected_artifacts": [],
+      "input_globs": [
+        ".flowguard/models/owners/behavior_commitment_ledger/model.py",
+        ".flowguard/verification/owners/behavior_commitment_ledger/run_checks.py",
+        ".flowguard/models/owners/_mesh_support.py",
+        ".flowguard/behavior/inventory/ledger.json",
+        ".flowguard/structure/owner-bindings.json"
+      ],
+      "intent_source_inputs": [
+        "openspec/specs/unified-routing/spec.md"
+      ],
+      "model_id": "behavior_commitment_ledger",
+      "model_kind": "executable_workflow",
+      "model_path": ".flowguard/models/owners/behavior_commitment_ledger/model.py",
+      "mutation_policy": "none",
+      "purpose_closure": {
+        "adoption_scope": "current_candidate_only",
+        "claim_boundary": "Current closure covers the declared Logic Writing behavior_commitment_ledger model, its native runner, and frozen source/test inputs only; it does not prove future AI prose quality, undeclared runtime behavior, installation, or publication.",
+        "closure_fingerprint": "sha256:e1371ac60fbf709d6d4a31f3647081c37201863f0fb4ff7c52c33d2cc9ddbd77",
+        "declaration_fingerprint": "sha256:b3745696e90b544dc413ff288d2bac2a4d618e3b1a103e0800c6b99cd51f33fd",
+        "declaration_phase": "before_candidate",
+        "evidence_check_ids": [
+          "check:model-regression:behavior_commitment_ledger"
+        ],
+        "failure_bindings": [
+          {
+            "failure_id": "behavior_commitment_ledger:current_owner_identity",
+            "known_bad_case_id": "native-runner:behavior_commitment_ledger:current_owner_identity",
+            "oracle_id": "native:behavior_commitment_ledger:run-checks"
+          },
+          {
+            "failure_id": "behavior_commitment_ledger:purpose_specific_good_bad_oracle",
+            "known_bad_case_id": "native-runner:behavior_commitment_ledger:purpose_specific_good_bad_oracle",
+            "oracle_id": "native:behavior_commitment_ledger:run-checks"
+          }
+        ],
+        "guarded_purpose": "\u4fdd\u7559\u73b0\u6709\u804c\u8d23\uff0c\u4f7f\u7528\u5f53\u524d\u672c\u5e93inventory\u548c\u539f\u751f\u9a8c\u8bc1\uff1b\u4ee5support\u8fb9\u652f\u6301agent_operation\u3002",
+        "known_good_case_id": "native-runner:behavior_commitment_ledger:declared-positive-suite",
+        "model_instance_id": "regression:behavior_commitment_ledger:round2",
+        "model_sha256": "sha256:938714bbcd6112a17a0ff78b576fdd863bd57b7c585d5bef00c1ed6e4343e33e",
+        "protected_failure_ids": [
+          "behavior_commitment_ledger:current_owner_identity",
+          "behavior_commitment_ledger:purpose_specific_good_bad_oracle"
+        ],
+        "reusable_model_type_id": "behavior_commitment_ledger",
+        "runner_sha256": "sha256:a0b53d38637fe8a1ceadf8cfbadfd9506e5037e988b537e4a0d282078388ef6e",
+        "schema_version": "flowguard.model_purpose_closure.v1",
+        "task_intent_id": "flowguard-regression:behavior_commitment_ledger:logic-writing-reader-composition"
+      },
+      "runner": [
+        "{python}",
+        ".flowguard/verification/owners/behavior_commitment_ledger/run_checks.py"
+      ],
+      "shard_safe": true,
+      "tier": "fast",
+      "timeout_seconds": 180.0
+    },
+    {
+      "absence_reason": "",
+      "distribution_policy": "required_public",
+      "exclusion_reason": "",
+      "expected_artifacts": [],
+      "input_globs": [
+        ".flowguard/models/owners/primary_path_authority/model.py",
+        ".flowguard/verification/owners/primary_path_authority/run_checks.py",
+        ".flowguard/models/owners/_mesh_support.py",
+        ".flowguard/structure/owner-bindings.json"
+      ],
+      "intent_source_inputs": [
+        "openspec/specs/unified-routing/spec.md"
+      ],
+      "model_id": "primary_path_authority",
+      "model_kind": "executable_workflow",
+      "model_path": ".flowguard/models/owners/primary_path_authority/model.py",
+      "mutation_policy": "none",
+      "purpose_closure": {
+        "adoption_scope": "current_candidate_only",
+        "claim_boundary": "Current closure covers the declared Logic Writing primary_path_authority model, its native runner, and frozen source/test inputs only; it does not prove future AI prose quality, undeclared runtime behavior, installation, or publication.",
+        "closure_fingerprint": "sha256:3138c0575276a1082c12c7714cb7fc5732d3afc1a6f0218b411a8de4a242bbc2",
+        "declaration_fingerprint": "sha256:b5f3df385c2a42a369754ed0862579710ba5fe61b97afdf5162fb8ed75c509e4",
+        "declaration_phase": "before_candidate",
+        "evidence_check_ids": [
+          "check:model-regression:primary_path_authority"
+        ],
+        "failure_bindings": [
+          {
+            "failure_id": "primary_path_authority:current_owner_identity",
+            "known_bad_case_id": "native-runner:primary_path_authority:current_owner_identity",
+            "oracle_id": "native:primary_path_authority:run-checks"
+          },
+          {
+            "failure_id": "primary_path_authority:purpose_specific_good_bad_oracle",
+            "known_bad_case_id": "native-runner:primary_path_authority:purpose_specific_good_bad_oracle",
+            "oracle_id": "native:primary_path_authority:run-checks"
+          }
+        ],
+        "guarded_purpose": "\u4fdd\u7559\u73b0\u6709\u804c\u8d23\uff0c\u4f7f\u7528\u5f53\u524d\u672c\u5e93inventory\u548c\u539f\u751f\u9a8c\u8bc1\uff1b\u4ee5support\u8fb9\u652f\u6301agent_operation\u3002",
+        "known_good_case_id": "native-runner:primary_path_authority:declared-positive-suite",
+        "model_instance_id": "regression:primary_path_authority:round2",
+        "model_sha256": "sha256:9008ddb895374e9cab76c0068cf71fae43d91c2af587ad3c9ecbe06576bbc7c7",
+        "protected_failure_ids": [
+          "primary_path_authority:current_owner_identity",
+          "primary_path_authority:purpose_specific_good_bad_oracle"
+        ],
+        "reusable_model_type_id": "primary_path_authority",
+        "runner_sha256": "sha256:a5a2e2a56773d1c10092213f4a175750febdcd7724e7815c0e269ef9309b5eec",
+        "schema_version": "flowguard.model_purpose_closure.v1",
+        "task_intent_id": "flowguard-regression:primary_path_authority:logic-writing-reader-composition"
+      },
+      "runner": [
+        "{python}",
+        ".flowguard/verification/owners/primary_path_authority/run_checks.py"
+      ],
+      "shard_safe": true,
+      "tier": "focused",
+      "timeout_seconds": 180.0
+    },
+    {
+      "absence_reason": "",
+      "distribution_policy": "required_public",
+      "exclusion_reason": "",
+      "expected_artifacts": [],
+      "input_globs": [
+        ".flowguard/models/owners/model_test_alignment/model.py",
+        ".flowguard/verification/owners/model_test_alignment/run_checks.py",
+        ".flowguard/models/owners/_mesh_support.py",
+        ".flowguard/models/retirement_field_lifecycle.py",
+        ".flowguard/models/frozen_source_contract_exhaustion.py",
+        ".flowguard/structure/owner-bindings.json",
+        ".flowguard/models/__init__.py",
+        ".flowguard/models/common.py",
+        ".flowguard/models/known_bad.py",
+        ".flowguard/models/reader_contract_field_lifecycle.py"
+      ],
+      "intent_source_inputs": [
+        "openspec/verification-contract.yaml"
+      ],
+      "model_id": "model_test_alignment",
+      "model_kind": "executable_workflow",
+      "model_path": ".flowguard/models/owners/model_test_alignment/model.py",
+      "mutation_policy": "none",
+      "purpose_closure": {
+        "adoption_scope": "current_candidate_only",
+        "claim_boundary": "Current closure covers the declared Logic Writing model_test_alignment model, its native runner, and frozen source/test inputs only; it does not prove future AI prose quality, undeclared runtime behavior, installation, or publication.",
+        "closure_fingerprint": "sha256:5be692d3d855c0b3b8b3c5ecac94eb72274bc8a62d1e393ee9feb542f40cf097",
+        "declaration_fingerprint": "sha256:555eb226f13b86367a14791796661489188fb41df228f4251ab27e3f06dfa21f",
+        "declaration_phase": "before_candidate",
+        "evidence_check_ids": [
+          "check:model-regression:model_test_alignment"
+        ],
+        "failure_bindings": [
+          {
+            "failure_id": "model_test_alignment:current_owner_identity",
+            "known_bad_case_id": "native-runner:model_test_alignment:current_owner_identity",
+            "oracle_id": "native:model_test_alignment:run-checks"
+          },
+          {
+            "failure_id": "model_test_alignment:purpose_specific_good_bad_oracle",
+            "known_bad_case_id": "native-runner:model_test_alignment:purpose_specific_good_bad_oracle",
+            "oracle_id": "native:model_test_alignment:run-checks"
+          }
+        ],
+        "guarded_purpose": "\u4fdd\u7559\u73b0\u6709\u804c\u8d23\uff0c\u4f7f\u7528\u5f53\u524d\u672c\u5e93inventory\u548c\u539f\u751f\u9a8c\u8bc1\uff1b\u4ee5support\u8fb9\u652f\u6301agent_operation\u3002",
+        "known_good_case_id": "native-runner:model_test_alignment:declared-positive-suite",
+        "model_instance_id": "regression:model_test_alignment:round2",
+        "model_sha256": "sha256:ccafe1a8ce580a2550ced79a7cd4c8017eb7ba71ff0334e516e22ced60c2b93f",
+        "protected_failure_ids": [
+          "model_test_alignment:current_owner_identity",
+          "model_test_alignment:purpose_specific_good_bad_oracle"
+        ],
+        "reusable_model_type_id": "model_test_alignment",
+        "runner_sha256": "sha256:6f5b3b0f620bea25f8ff75df90991e5b90c7f27f8a9a6a878f3cf9d396eef1f2",
+        "schema_version": "flowguard.model_purpose_closure.v1",
+        "task_intent_id": "flowguard-regression:model_test_alignment:logic-writing-reader-composition"
+      },
+      "runner": [
+        "{python}",
+        ".flowguard/verification/owners/model_test_alignment/run_checks.py"
+      ],
+      "shard_safe": true,
+      "tier": "focused",
+      "timeout_seconds": 180.0
+    },
+    {
+      "absence_reason": "",
+      "distribution_policy": "required_public",
+      "exclusion_reason": "",
+      "expected_artifacts": [],
+      "input_globs": [
+        ".flowguard/models/owners/plan_detailing/model.py",
+        ".flowguard/verification/owners/plan_detailing/run_checks.py",
+        ".flowguard/models/owners/_mesh_support.py",
+        ".flowguard/structure/owner-bindings.json"
+      ],
+      "intent_source_inputs": [
+        "docs/release-retirement-checklist.md"
+      ],
+      "model_id": "plan_detailing",
+      "model_kind": "executable_workflow",
+      "model_path": ".flowguard/models/owners/plan_detailing/model.py",
+      "mutation_policy": "none",
+      "purpose_closure": {
+        "adoption_scope": "current_candidate_only",
+        "claim_boundary": "Current closure covers the declared Logic Writing plan_detailing model, its native runner, and frozen source/test inputs only; it does not prove future AI prose quality, undeclared runtime behavior, installation, or publication.",
+        "closure_fingerprint": "sha256:158307b56f3b6e8d76de61e2d2f2967212b24faeac23072f72e3faaf1612015f",
+        "declaration_fingerprint": "sha256:28da77659db771e6e4cbfc97de38132e75bb92db2a328feb0946aa9c91118412",
+        "declaration_phase": "before_candidate",
+        "evidence_check_ids": [
+          "check:model-regression:plan_detailing"
+        ],
+        "failure_bindings": [
+          {
+            "failure_id": "plan_detailing:current_owner_identity",
+            "known_bad_case_id": "native-runner:plan_detailing:current_owner_identity",
+            "oracle_id": "native:plan_detailing:run-checks"
+          },
+          {
+            "failure_id": "plan_detailing:purpose_specific_good_bad_oracle",
+            "known_bad_case_id": "native-runner:plan_detailing:purpose_specific_good_bad_oracle",
+            "oracle_id": "native:plan_detailing:run-checks"
+          }
+        ],
+        "guarded_purpose": "\u4fdd\u7559\u73b0\u6709\u804c\u8d23\uff0c\u4f7f\u7528\u5f53\u524d\u672c\u5e93inventory\u548c\u539f\u751f\u9a8c\u8bc1\uff1b\u4ee5support\u8fb9\u652f\u6301agent_operation\u3002",
+        "known_good_case_id": "native-runner:plan_detailing:declared-positive-suite",
+        "model_instance_id": "regression:plan_detailing:round2",
+        "model_sha256": "sha256:3fb71c9f796c49f25fefb93167d231981ec3320b6ecdbb5d2e2e8e430fb3781f",
+        "protected_failure_ids": [
+          "plan_detailing:current_owner_identity",
+          "plan_detailing:purpose_specific_good_bad_oracle"
+        ],
+        "reusable_model_type_id": "plan_detailing",
+        "runner_sha256": "sha256:e51f955163b0372a899553b2331bd6ad678433f638b7677cb8e3cf50d20beaca",
+        "schema_version": "flowguard.model_purpose_closure.v1",
+        "task_intent_id": "flowguard-regression:plan_detailing:logic-writing-reader-composition"
+      },
+      "runner": [
+        "{python}",
+        ".flowguard/verification/owners/plan_detailing/run_checks.py"
+      ],
+      "shard_safe": true,
+      "tier": "fast",
+      "timeout_seconds": 180.0
+    },
+    {
+      "absence_reason": "",
+      "distribution_policy": "required_public",
+      "exclusion_reason": "",
+      "expected_artifacts": [],
+      "input_globs": [
+        ".flowguard/models/owners/route_and_guard_model/model.py",
+        ".flowguard/verification/owners/route_and_guard_model/run_checks.py",
+        ".flowguard/models/owners/_mesh_support.py",
+        ".flowguard/models/common.py",
+        ".flowguard/models/plans.py",
+        "tests/flowguard/test_model_contracts.py",
+        ".flowguard/structure/owner-bindings.json"
+      ],
+      "intent_source_inputs": [
+        "openspec/changes/repair-argument-to-reader-composition/design.md"
+      ],
+      "model_id": "route_and_guard_model",
+      "model_kind": "executable_workflow",
+      "model_path": ".flowguard/models/owners/route_and_guard_model/model.py",
+      "mutation_policy": "none",
+      "purpose_closure": {
+        "adoption_scope": "current_candidate_only",
+        "claim_boundary": "Current closure covers the declared Logic Writing route_and_guard_model model, its native runner, and frozen source/test inputs only; it does not prove future AI prose quality, undeclared runtime behavior, installation, or publication.",
+        "closure_fingerprint": "sha256:0a37f90fe334e5427e709c90fbb8c4f10b67583508cd82bb7333a9be5e46f426",
+        "declaration_fingerprint": "sha256:bf24e9bcac79a769620d46c5a7605b091b63c795a82285435820e9f1d783f91e",
+        "declaration_phase": "before_candidate",
+        "evidence_check_ids": [
+          "check:model-regression:route_and_guard_model"
+        ],
+        "failure_bindings": [
+          {
+            "failure_id": "route_and_guard_model:existing_finite_scenarios",
+            "known_bad_case_id": "native-runner:route_and_guard_model:existing_finite_scenarios",
+            "oracle_id": "native:route_and_guard_model:run-checks"
+          },
+          {
+            "failure_id": "route_and_guard_model:current_child_receipt",
+            "known_bad_case_id": "native-runner:route_and_guard_model:current_child_receipt",
+            "oracle_id": "native:route_and_guard_model:run-checks"
+          },
+          {
+            "failure_id": "route_and_guard_model:consumer_receipt_binding",
+            "known_bad_case_id": "native-runner:route_and_guard_model:consumer_receipt_binding",
+            "oracle_id": "native:route_and_guard_model:run-checks"
+          }
+        ],
+        "guarded_purpose": "\u628a\u73b0\u6709\u672a\u72ec\u7acb\u6ce8\u518c\u7684\u9886\u57df\u6a21\u578b\u4f5c\u4e3a\u72ec\u7acb\u5b50owner\u63a5\u56de\u7236\u6a21\u578b\uff1b\u5171\u7528common.py\u4f5c\u4e3ashared kernel\uff0c\u4e0d\u590d\u5236\u8bed\u4e49\u3002",
+        "known_good_case_id": "native-runner:route_and_guard_model:declared-positive-suite",
+        "model_instance_id": "regression:route_and_guard_model:round2",
+        "model_sha256": "sha256:8d5bedaea469f2192f07714ba76989184e7c1477a3d81c8e3678bf6717c3edc7",
+        "protected_failure_ids": [
+          "route_and_guard_model:existing_finite_scenarios",
+          "route_and_guard_model:current_child_receipt",
+          "route_and_guard_model:consumer_receipt_binding"
+        ],
+        "reusable_model_type_id": "route_and_guard_model",
+        "runner_sha256": "sha256:92041a274c52ec6e55a0c22df8a884c24f7c5f3d60ecb20c5e56b01d7e22446d",
+        "schema_version": "flowguard.model_purpose_closure.v1",
+        "task_intent_id": "flowguard-regression:route_and_guard_model:logic-writing-reader-composition"
+      },
+      "runner": [
+        "{python}",
+        ".flowguard/verification/owners/route_and_guard_model/run_checks.py"
+      ],
+      "shard_safe": true,
+      "tier": "focused",
+      "timeout_seconds": 180.0
+    },
+    {
+      "absence_reason": "",
+      "distribution_policy": "required_public",
+      "exclusion_reason": "",
+      "expected_artifacts": [],
+      "input_globs": [
+        ".flowguard/models/owners/research_packet_model/model.py",
+        ".flowguard/verification/owners/research_packet_model/run_checks.py",
+        ".flowguard/models/owners/_mesh_support.py",
+        ".flowguard/models/common.py",
+        ".flowguard/models/plans.py",
+        "tests/flowguard/test_model_contracts.py",
+        ".flowguard/structure/owner-bindings.json"
+      ],
+      "intent_source_inputs": [
+        "openspec/changes/repair-argument-to-reader-composition/design.md"
+      ],
+      "model_id": "research_packet_model",
+      "model_kind": "executable_workflow",
+      "model_path": ".flowguard/models/owners/research_packet_model/model.py",
+      "mutation_policy": "none",
+      "purpose_closure": {
+        "adoption_scope": "current_candidate_only",
+        "claim_boundary": "Current closure covers the declared Logic Writing research_packet_model model, its native runner, and frozen source/test inputs only; it does not prove future AI prose quality, undeclared runtime behavior, installation, or publication.",
+        "closure_fingerprint": "sha256:3eecf311c6d671f7965d5d9473592cabdd086158747625cd7de09f736cad17a9",
+        "declaration_fingerprint": "sha256:45153d790e979d4da3cbfd7835ba360f99e2fc49c1b9d426795f689296883279",
+        "declaration_phase": "before_candidate",
+        "evidence_check_ids": [
+          "check:model-regression:research_packet_model"
+        ],
+        "failure_bindings": [
+          {
+            "failure_id": "research_packet_model:existing_finite_scenarios",
+            "known_bad_case_id": "native-runner:research_packet_model:existing_finite_scenarios",
+            "oracle_id": "native:research_packet_model:run-checks"
+          },
+          {
+            "failure_id": "research_packet_model:current_child_receipt",
+            "known_bad_case_id": "native-runner:research_packet_model:current_child_receipt",
+            "oracle_id": "native:research_packet_model:run-checks"
+          },
+          {
+            "failure_id": "research_packet_model:consumer_receipt_binding",
+            "known_bad_case_id": "native-runner:research_packet_model:consumer_receipt_binding",
+            "oracle_id": "native:research_packet_model:run-checks"
+          }
+        ],
+        "guarded_purpose": "\u628a\u73b0\u6709\u672a\u72ec\u7acb\u6ce8\u518c\u7684\u9886\u57df\u6a21\u578b\u4f5c\u4e3a\u72ec\u7acb\u5b50owner\u63a5\u56de\u7236\u6a21\u578b\uff1b\u5171\u7528common.py\u4f5c\u4e3ashared kernel\uff0c\u4e0d\u590d\u5236\u8bed\u4e49\u3002",
+        "known_good_case_id": "native-runner:research_packet_model:declared-positive-suite",
+        "model_instance_id": "regression:research_packet_model:round2",
+        "model_sha256": "sha256:54747be0c678ea34db57ff1bcc23f26b1ddc213996226f28826d4d9b19a7238c",
+        "protected_failure_ids": [
+          "research_packet_model:existing_finite_scenarios",
+          "research_packet_model:current_child_receipt",
+          "research_packet_model:consumer_receipt_binding"
+        ],
+        "reusable_model_type_id": "research_packet_model",
+        "runner_sha256": "sha256:ed2ac2137effecfe7e85d10030fa82e8a7d3dc4a7ea467977e579535a4f0e694",
+        "schema_version": "flowguard.model_purpose_closure.v1",
+        "task_intent_id": "flowguard-regression:research_packet_model:logic-writing-reader-composition"
+      },
+      "runner": [
+        "{python}",
+        ".flowguard/verification/owners/research_packet_model/run_checks.py"
+      ],
+      "shard_safe": true,
+      "tier": "focused",
+      "timeout_seconds": 180.0
+    },
+    {
+      "absence_reason": "",
+      "distribution_policy": "required_public",
+      "exclusion_reason": "",
+      "expected_artifacts": [],
+      "input_globs": [
+        ".flowguard/models/owners/reader_artifact_model/model.py",
+        ".flowguard/verification/owners/reader_artifact_model/run_checks.py",
+        ".flowguard/models/owners/_mesh_support.py",
+        ".flowguard/models/common.py",
+        ".flowguard/models/plans.py",
+        "tests/flowguard/test_model_contracts.py",
+        ".flowguard/structure/owner-bindings.json"
+      ],
+      "intent_source_inputs": [
+        "openspec/changes/repair-argument-to-reader-composition/design.md"
+      ],
+      "model_id": "reader_artifact_model",
+      "model_kind": "executable_workflow",
+      "model_path": ".flowguard/models/owners/reader_artifact_model/model.py",
+      "mutation_policy": "none",
+      "purpose_closure": {
+        "adoption_scope": "current_candidate_only",
+        "claim_boundary": "Current closure covers the declared Logic Writing reader_artifact_model model, its native runner, and frozen source/test inputs only; it does not prove future AI prose quality, undeclared runtime behavior, installation, or publication.",
+        "closure_fingerprint": "sha256:f37c8cea6f7e8f3af2ff1275de3848f4f70c2c3ceb1b23a5ca9b67ee4c708488",
+        "declaration_fingerprint": "sha256:fa4b5ad9974aaf1aced847255bc7d998a0956d5d46038719cc1dcced1a20d270",
+        "declaration_phase": "before_candidate",
+        "evidence_check_ids": [
+          "check:model-regression:reader_artifact_model"
+        ],
+        "failure_bindings": [
+          {
+            "failure_id": "reader_artifact_model:existing_finite_scenarios",
+            "known_bad_case_id": "native-runner:reader_artifact_model:existing_finite_scenarios",
+            "oracle_id": "native:reader_artifact_model:run-checks"
+          },
+          {
+            "failure_id": "reader_artifact_model:current_child_receipt",
+            "known_bad_case_id": "native-runner:reader_artifact_model:current_child_receipt",
+            "oracle_id": "native:reader_artifact_model:run-checks"
+          },
+          {
+            "failure_id": "reader_artifact_model:consumer_receipt_binding",
+            "known_bad_case_id": "native-runner:reader_artifact_model:consumer_receipt_binding",
+            "oracle_id": "native:reader_artifact_model:run-checks"
+          }
+        ],
+        "guarded_purpose": "\u628a\u73b0\u6709\u672a\u72ec\u7acb\u6ce8\u518c\u7684\u9886\u57df\u6a21\u578b\u4f5c\u4e3a\u72ec\u7acb\u5b50owner\u63a5\u56de\u7236\u6a21\u578b\uff1b\u5171\u7528common.py\u4f5c\u4e3ashared kernel\uff0c\u4e0d\u590d\u5236\u8bed\u4e49\u3002",
+        "known_good_case_id": "native-runner:reader_artifact_model:declared-positive-suite",
+        "model_instance_id": "regression:reader_artifact_model:round2",
+        "model_sha256": "sha256:c02970473f5b2c6e6d5ee53f6a05695048fd4bbed84786a6665dd09a75199a21",
+        "protected_failure_ids": [
+          "reader_artifact_model:existing_finite_scenarios",
+          "reader_artifact_model:current_child_receipt",
+          "reader_artifact_model:consumer_receipt_binding"
+        ],
+        "reusable_model_type_id": "reader_artifact_model",
+        "runner_sha256": "sha256:a35a9f1f36766a42c18ac0bcfdfe90821812a9c876137a01c1e078b37506ce1e",
+        "schema_version": "flowguard.model_purpose_closure.v1",
+        "task_intent_id": "flowguard-regression:reader_artifact_model:logic-writing-reader-composition"
+      },
+      "runner": [
+        "{python}",
+        ".flowguard/verification/owners/reader_artifact_model/run_checks.py"
+      ],
+      "shard_safe": true,
+      "tier": "focused",
+      "timeout_seconds": 180.0
+    },
+    {
+      "absence_reason": "",
+      "distribution_policy": "required_public",
+      "exclusion_reason": "",
+      "expected_artifacts": [],
+      "input_globs": [
+        ".flowguard/models/owners/fiction_route_model/model.py",
+        ".flowguard/verification/owners/fiction_route_model/run_checks.py",
+        ".flowguard/models/owners/_mesh_support.py",
+        ".flowguard/models/common.py",
+        ".flowguard/models/plans.py",
+        "tests/flowguard/test_model_contracts.py",
+        ".flowguard/structure/owner-bindings.json"
+      ],
+      "intent_source_inputs": [
+        "openspec/changes/repair-argument-to-reader-composition/design.md"
+      ],
+      "model_id": "fiction_route_model",
+      "model_kind": "executable_workflow",
+      "model_path": ".flowguard/models/owners/fiction_route_model/model.py",
+      "mutation_policy": "none",
+      "purpose_closure": {
+        "adoption_scope": "current_candidate_only",
+        "claim_boundary": "Current closure covers the declared Logic Writing fiction_route_model model, its native runner, and frozen source/test inputs only; it does not prove future AI prose quality, undeclared runtime behavior, installation, or publication.",
+        "closure_fingerprint": "sha256:4c32fe66c607f43a9a8d0e7f1ee12342a103f8a34a3f8c62eb67914a86918a31",
+        "declaration_fingerprint": "sha256:c1fa6aa78c98e5483d72dcde12d02e14cd2561acff760bb10a5aa9843cd6dc86",
+        "declaration_phase": "before_candidate",
+        "evidence_check_ids": [
+          "check:model-regression:fiction_route_model"
+        ],
+        "failure_bindings": [
+          {
+            "failure_id": "fiction_route_model:existing_finite_scenarios",
+            "known_bad_case_id": "native-runner:fiction_route_model:existing_finite_scenarios",
+            "oracle_id": "native:fiction_route_model:run-checks"
+          },
+          {
+            "failure_id": "fiction_route_model:current_child_receipt",
+            "known_bad_case_id": "native-runner:fiction_route_model:current_child_receipt",
+            "oracle_id": "native:fiction_route_model:run-checks"
+          },
+          {
+            "failure_id": "fiction_route_model:consumer_receipt_binding",
+            "known_bad_case_id": "native-runner:fiction_route_model:consumer_receipt_binding",
+            "oracle_id": "native:fiction_route_model:run-checks"
+          }
+        ],
+        "guarded_purpose": "\u628a\u73b0\u6709\u672a\u72ec\u7acb\u6ce8\u518c\u7684\u9886\u57df\u6a21\u578b\u4f5c\u4e3a\u72ec\u7acb\u5b50owner\u63a5\u56de\u7236\u6a21\u578b\uff1b\u5171\u7528common.py\u4f5c\u4e3ashared kernel\uff0c\u4e0d\u590d\u5236\u8bed\u4e49\u3002",
+        "known_good_case_id": "native-runner:fiction_route_model:declared-positive-suite",
+        "model_instance_id": "regression:fiction_route_model:round2",
+        "model_sha256": "sha256:bf07855afd617b58e731f07da35c7dbfdc58fc564894da291b5c88d7335c0545",
+        "protected_failure_ids": [
+          "fiction_route_model:existing_finite_scenarios",
+          "fiction_route_model:current_child_receipt",
+          "fiction_route_model:consumer_receipt_binding"
+        ],
+        "reusable_model_type_id": "fiction_route_model",
+        "runner_sha256": "sha256:36d8f64bae6130f7a3f75bc756b0f0c6ffec6fb2c0eb181b14b9af36a4e316a8",
+        "schema_version": "flowguard.model_purpose_closure.v1",
+        "task_intent_id": "flowguard-regression:fiction_route_model:logic-writing-reader-composition"
+      },
+      "runner": [
+        "{python}",
+        ".flowguard/verification/owners/fiction_route_model/run_checks.py"
+      ],
+      "shard_safe": true,
+      "tier": "focused",
+      "timeout_seconds": 180.0
+    },
+    {
+      "absence_reason": "",
+      "distribution_policy": "required_public",
+      "exclusion_reason": "",
+      "expected_artifacts": [],
+      "input_globs": [
+        ".flowguard/models/owners/travel_route_model/model.py",
+        ".flowguard/verification/owners/travel_route_model/run_checks.py",
+        ".flowguard/models/owners/_mesh_support.py",
+        ".flowguard/models/common.py",
+        ".flowguard/models/plans.py",
+        "tests/flowguard/test_model_contracts.py",
+        ".flowguard/structure/owner-bindings.json"
+      ],
+      "intent_source_inputs": [
+        "openspec/changes/repair-argument-to-reader-composition/design.md"
+      ],
+      "model_id": "travel_route_model",
+      "model_kind": "executable_workflow",
+      "model_path": ".flowguard/models/owners/travel_route_model/model.py",
+      "mutation_policy": "none",
+      "purpose_closure": {
+        "adoption_scope": "current_candidate_only",
+        "claim_boundary": "Current closure covers the declared Logic Writing travel_route_model model, its native runner, and frozen source/test inputs only; it does not prove future AI prose quality, undeclared runtime behavior, installation, or publication.",
+        "closure_fingerprint": "sha256:11e30d6bf3355156b955310b1d9ce5a981cb3a1be7f4e335627a558e21822b21",
+        "declaration_fingerprint": "sha256:8c92ed66c32e537db9ec322c5018dcafe07128bae92a1330d44a4c9478057585",
+        "declaration_phase": "before_candidate",
+        "evidence_check_ids": [
+          "check:model-regression:travel_route_model"
+        ],
+        "failure_bindings": [
+          {
+            "failure_id": "travel_route_model:existing_finite_scenarios",
+            "known_bad_case_id": "native-runner:travel_route_model:existing_finite_scenarios",
+            "oracle_id": "native:travel_route_model:run-checks"
+          },
+          {
+            "failure_id": "travel_route_model:current_child_receipt",
+            "known_bad_case_id": "native-runner:travel_route_model:current_child_receipt",
+            "oracle_id": "native:travel_route_model:run-checks"
+          },
+          {
+            "failure_id": "travel_route_model:consumer_receipt_binding",
+            "known_bad_case_id": "native-runner:travel_route_model:consumer_receipt_binding",
+            "oracle_id": "native:travel_route_model:run-checks"
+          }
+        ],
+        "guarded_purpose": "\u628a\u73b0\u6709\u672a\u72ec\u7acb\u6ce8\u518c\u7684\u9886\u57df\u6a21\u578b\u4f5c\u4e3a\u72ec\u7acb\u5b50owner\u63a5\u56de\u7236\u6a21\u578b\uff1b\u5171\u7528common.py\u4f5c\u4e3ashared kernel\uff0c\u4e0d\u590d\u5236\u8bed\u4e49\u3002",
+        "known_good_case_id": "native-runner:travel_route_model:declared-positive-suite",
+        "model_instance_id": "regression:travel_route_model:round2",
+        "model_sha256": "sha256:4485a78db4cc42f48f1d0330d0aac8fc230653f8c55b0c47bcf5c9a1a5faafbd",
+        "protected_failure_ids": [
+          "travel_route_model:existing_finite_scenarios",
+          "travel_route_model:current_child_receipt",
+          "travel_route_model:consumer_receipt_binding"
+        ],
+        "reusable_model_type_id": "travel_route_model",
+        "runner_sha256": "sha256:a328cc759d0aa419b8b56bb4d7b72eb1abe47ee1947b739991628b64b9eee10a",
+        "schema_version": "flowguard.model_purpose_closure.v1",
+        "task_intent_id": "flowguard-regression:travel_route_model:logic-writing-reader-composition"
+      },
+      "runner": [
+        "{python}",
+        ".flowguard/verification/owners/travel_route_model/run_checks.py"
+      ],
+      "shard_safe": true,
+      "tier": "focused",
+      "timeout_seconds": 180.0
+    },
+    {
+      "absence_reason": "",
+      "distribution_policy": "required_public",
+      "exclusion_reason": "",
+      "expected_artifacts": [],
+      "input_globs": [
+        ".flowguard/models/owners/investigation_route_model/model.py",
+        ".flowguard/verification/owners/investigation_route_model/run_checks.py",
+        ".flowguard/models/owners/_mesh_support.py",
+        ".flowguard/models/common.py",
+        ".flowguard/models/plans.py",
+        "tests/flowguard/test_model_contracts.py",
+        ".flowguard/structure/owner-bindings.json"
+      ],
+      "intent_source_inputs": [
+        "openspec/changes/repair-argument-to-reader-composition/design.md"
+      ],
+      "model_id": "investigation_route_model",
+      "model_kind": "executable_workflow",
+      "model_path": ".flowguard/models/owners/investigation_route_model/model.py",
+      "mutation_policy": "none",
+      "purpose_closure": {
+        "adoption_scope": "current_candidate_only",
+        "claim_boundary": "Current closure covers the declared Logic Writing investigation_route_model model, its native runner, and frozen source/test inputs only; it does not prove future AI prose quality, undeclared runtime behavior, installation, or publication.",
+        "closure_fingerprint": "sha256:f8a1fec543e2c5dbb0ed40b9b276fde2afa64f2643b0664183dff03f1b05398b",
+        "declaration_fingerprint": "sha256:7e6d46634807fcb8d3eecc83875d3a2a4dbc2606b5a63d2b453d7384af6f0f3c",
+        "declaration_phase": "before_candidate",
+        "evidence_check_ids": [
+          "check:model-regression:investigation_route_model"
+        ],
+        "failure_bindings": [
+          {
+            "failure_id": "investigation_route_model:existing_finite_scenarios",
+            "known_bad_case_id": "native-runner:investigation_route_model:existing_finite_scenarios",
+            "oracle_id": "native:investigation_route_model:run-checks"
+          },
+          {
+            "failure_id": "investigation_route_model:current_child_receipt",
+            "known_bad_case_id": "native-runner:investigation_route_model:current_child_receipt",
+            "oracle_id": "native:investigation_route_model:run-checks"
+          },
+          {
+            "failure_id": "investigation_route_model:consumer_receipt_binding",
+            "known_bad_case_id": "native-runner:investigation_route_model:consumer_receipt_binding",
+            "oracle_id": "native:investigation_route_model:run-checks"
+          }
+        ],
+        "guarded_purpose": "\u628a\u73b0\u6709\u672a\u72ec\u7acb\u6ce8\u518c\u7684\u9886\u57df\u6a21\u578b\u4f5c\u4e3a\u72ec\u7acb\u5b50owner\u63a5\u56de\u7236\u6a21\u578b\uff1b\u5171\u7528common.py\u4f5c\u4e3ashared kernel\uff0c\u4e0d\u590d\u5236\u8bed\u4e49\u3002",
+        "known_good_case_id": "native-runner:investigation_route_model:declared-positive-suite",
+        "model_instance_id": "regression:investigation_route_model:round2",
+        "model_sha256": "sha256:7c82737e2f1569b5b47bab394104b837281f32e6dea7360bc18dae70cf039948",
+        "protected_failure_ids": [
+          "investigation_route_model:existing_finite_scenarios",
+          "investigation_route_model:current_child_receipt",
+          "investigation_route_model:consumer_receipt_binding"
+        ],
+        "reusable_model_type_id": "investigation_route_model",
+        "runner_sha256": "sha256:30aeea0cc73bdb73f10740bc645853f00073d3e36b989911d243cc168b4b494f",
+        "schema_version": "flowguard.model_purpose_closure.v1",
+        "task_intent_id": "flowguard-regression:investigation_route_model:logic-writing-reader-composition"
+      },
+      "runner": [
+        "{python}",
+        ".flowguard/verification/owners/investigation_route_model/run_checks.py"
+      ],
+      "shard_safe": true,
+      "tier": "focused",
+      "timeout_seconds": 180.0
+    },
+    {
+      "absence_reason": "",
+      "distribution_policy": "required_public",
+      "exclusion_reason": "",
+      "expected_artifacts": [],
+      "input_globs": [
+        ".flowguard/models/owners/academic_route_model/model.py",
+        ".flowguard/verification/owners/academic_route_model/run_checks.py",
+        ".flowguard/models/owners/_mesh_support.py",
+        ".flowguard/models/common.py",
+        ".flowguard/models/plans.py",
+        "tests/flowguard/test_model_contracts.py",
+        ".flowguard/structure/owner-bindings.json"
+      ],
+      "intent_source_inputs": [
+        "openspec/changes/repair-argument-to-reader-composition/design.md"
+      ],
+      "model_id": "academic_route_model",
+      "model_kind": "executable_workflow",
+      "model_path": ".flowguard/models/owners/academic_route_model/model.py",
+      "mutation_policy": "none",
+      "purpose_closure": {
+        "adoption_scope": "current_candidate_only",
+        "claim_boundary": "Current closure covers the declared Logic Writing academic_route_model model, its native runner, and frozen source/test inputs only; it does not prove future AI prose quality, undeclared runtime behavior, installation, or publication.",
+        "closure_fingerprint": "sha256:d0e2c80d171b57623afdcfb608bef322e03d8af2eb88aa188c3f6bbb8f9ef7c3",
+        "declaration_fingerprint": "sha256:a232db3b94e30a357744a99988e7c95d753f525b8074bf9a63947301281e2ae0",
+        "declaration_phase": "before_candidate",
+        "evidence_check_ids": [
+          "check:model-regression:academic_route_model"
+        ],
+        "failure_bindings": [
+          {
+            "failure_id": "academic_route_model:existing_finite_scenarios",
+            "known_bad_case_id": "native-runner:academic_route_model:existing_finite_scenarios",
+            "oracle_id": "native:academic_route_model:run-checks"
+          },
+          {
+            "failure_id": "academic_route_model:current_child_receipt",
+            "known_bad_case_id": "native-runner:academic_route_model:current_child_receipt",
+            "oracle_id": "native:academic_route_model:run-checks"
+          },
+          {
+            "failure_id": "academic_route_model:consumer_receipt_binding",
+            "known_bad_case_id": "native-runner:academic_route_model:consumer_receipt_binding",
+            "oracle_id": "native:academic_route_model:run-checks"
+          }
+        ],
+        "guarded_purpose": "\u628a\u73b0\u6709\u672a\u72ec\u7acb\u6ce8\u518c\u7684\u9886\u57df\u6a21\u578b\u4f5c\u4e3a\u72ec\u7acb\u5b50owner\u63a5\u56de\u7236\u6a21\u578b\uff1b\u5171\u7528common.py\u4f5c\u4e3ashared kernel\uff0c\u4e0d\u590d\u5236\u8bed\u4e49\u3002",
+        "known_good_case_id": "native-runner:academic_route_model:declared-positive-suite",
+        "model_instance_id": "regression:academic_route_model:round2",
+        "model_sha256": "sha256:09e42b2661b143168c4c09efb7488723a071242723c7cd7f06ce1325628c8217",
+        "protected_failure_ids": [
+          "academic_route_model:existing_finite_scenarios",
+          "academic_route_model:current_child_receipt",
+          "academic_route_model:consumer_receipt_binding"
+        ],
+        "reusable_model_type_id": "academic_route_model",
+        "runner_sha256": "sha256:79ccd335804408476b8e1ae6b31f012e518215667929ddea160e93f2632aa76d",
+        "schema_version": "flowguard.model_purpose_closure.v1",
+        "task_intent_id": "flowguard-regression:academic_route_model:logic-writing-reader-composition"
+      },
+      "runner": [
+        "{python}",
+        ".flowguard/verification/owners/academic_route_model/run_checks.py"
+      ],
+      "shard_safe": true,
+      "tier": "focused",
+      "timeout_seconds": 180.0
+    },
+    {
+      "absence_reason": "",
+      "distribution_policy": "required_public",
+      "exclusion_reason": "",
+      "expected_artifacts": [],
+      "input_globs": [
+        ".flowguard/models/owners/operation_freshness_closure_model/model.py",
+        ".flowguard/verification/owners/operation_freshness_closure_model/run_checks.py",
+        ".flowguard/models/owners/_mesh_support.py",
+        ".flowguard/models/common.py",
+        ".flowguard/models/plans.py",
+        "scripts/run_writing_quality_benchmark.py",
+        "scripts/run_frozen_validation.py",
+        "scripts/check_reader_judgment.py",
+        "openspec/verification-contract.yaml",
+        "tests/flowguard/test_model_contracts.py",
+        "tests/contract/test_release_wrappers.py",
+        ".flowguard/structure/owner-bindings.json"
+      ],
+      "intent_source_inputs": [
+        "openspec/changes/repair-argument-to-reader-composition/design.md"
+      ],
+      "model_id": "operation_freshness_closure_model",
+      "model_kind": "executable_workflow",
+      "model_path": ".flowguard/models/owners/operation_freshness_closure_model/model.py",
+      "mutation_policy": "none",
+      "purpose_closure": {
+        "adoption_scope": "current_candidate_only",
+        "claim_boundary": "Current closure covers the declared Logic Writing operation_freshness_closure_model model, its native runner, and frozen source/test inputs only; it does not prove future AI prose quality, undeclared runtime behavior, installation, or publication.",
+        "closure_fingerprint": "sha256:aa36925cbfcd7459e880985245a9737fe3e0d29cefe2e2ccd211cce27deedd3c",
+        "declaration_fingerprint": "sha256:ab8e9414d8d981775a63fe453fa1b599df0f0bee7748186d38bac79b27c52fa7",
+        "declaration_phase": "before_candidate",
+        "evidence_check_ids": [
+          "check:model-regression:operation_freshness_closure_model"
+        ],
+        "failure_bindings": [
+          {
+            "failure_id": "operation_freshness_closure_model:existing_finite_scenarios",
+            "known_bad_case_id": "native-runner:operation_freshness_closure_model:existing_finite_scenarios",
+            "oracle_id": "native:operation_freshness_closure_model:run-checks"
+          },
+          {
+            "failure_id": "operation_freshness_closure_model:current_child_receipt",
+            "known_bad_case_id": "native-runner:operation_freshness_closure_model:current_child_receipt",
+            "oracle_id": "native:operation_freshness_closure_model:run-checks"
+          },
+          {
+            "failure_id": "operation_freshness_closure_model:consumer_receipt_binding",
+            "known_bad_case_id": "native-runner:operation_freshness_closure_model:consumer_receipt_binding",
+            "oracle_id": "native:operation_freshness_closure_model:run-checks"
+          }
+        ],
+        "guarded_purpose": "\u628a\u73b0\u6709\u672a\u72ec\u7acb\u6ce8\u518c\u7684\u9886\u57df\u6a21\u578b\u4f5c\u4e3a\u72ec\u7acb\u5b50owner\u63a5\u56de\u7236\u6a21\u578b\uff1b\u5171\u7528common.py\u4f5c\u4e3ashared kernel\uff0c\u4e0d\u590d\u5236\u8bed\u4e49\u3002 \u540c\u65f6\u95ed\u5408A12/L07\u7684\u672c\u673a96run\u751f\u4ea7\u300124pair\u53cc\u5ba1\u7a3f\u3001\u65e7\u8ba1\u5212\u5931\u6548\u3001\u5931\u8d25\u8ba1\u6570\u3001\u533f\u540d\u987a\u5e8f\u4e0e\u4e24\u4e2a\u53ea\u8bfbconsumer\u7684\u65e0\u73af\u63a5\u7ebf\uff1b\u5177\u4f53\u5b9e\u73b0\u4e25\u683c\u91c7\u7528lw-actions.md L06/L07\u3002",
+        "known_good_case_id": "native-runner:operation_freshness_closure_model:declared-positive-suite",
+        "model_instance_id": "regression:operation_freshness_closure_model:round2",
+        "model_sha256": "sha256:89fe4930c02737e4de420727078000e73c10ea7f6dd1e86822f9a23cbf474107",
+        "protected_failure_ids": [
+          "operation_freshness_closure_model:existing_finite_scenarios",
+          "operation_freshness_closure_model:current_child_receipt",
+          "operation_freshness_closure_model:consumer_receipt_binding"
+        ],
+        "reusable_model_type_id": "operation_freshness_closure_model",
+        "runner_sha256": "sha256:b3ad9b87cff5d73cc5e58c28e3f3b2c3ee0b0d4af2ad04b08e44fe99d432e48e",
+        "schema_version": "flowguard.model_purpose_closure.v1",
+        "task_intent_id": "flowguard-regression:operation_freshness_closure_model:logic-writing-reader-composition"
+      },
+      "runner": [
+        "{python}",
+        ".flowguard/verification/owners/operation_freshness_closure_model/run_checks.py"
+      ],
+      "shard_safe": true,
+      "tier": "focused",
+      "timeout_seconds": 180.0
+    },
+    {
+      "absence_reason": "",
+      "distribution_policy": "required_public",
+      "exclusion_reason": "",
+      "expected_artifacts": [],
+      "input_globs": [
+        ".flowguard/models/owners/release_retirement_model/model.py",
+        ".flowguard/verification/owners/release_retirement_model/run_checks.py",
+        ".flowguard/models/owners/_mesh_support.py",
+        ".flowguard/models/common.py",
+        ".flowguard/models/plans.py",
+        "tests/flowguard/test_model_contracts.py",
+        ".flowguard/structure/owner-bindings.json"
+      ],
+      "intent_source_inputs": [
+        "openspec/changes/repair-argument-to-reader-composition/design.md"
+      ],
+      "model_id": "release_retirement_model",
+      "model_kind": "executable_workflow",
+      "model_path": ".flowguard/models/owners/release_retirement_model/model.py",
+      "mutation_policy": "none",
+      "purpose_closure": {
+        "adoption_scope": "current_candidate_only",
+        "claim_boundary": "Current closure covers the declared Logic Writing release_retirement_model model, its native runner, and frozen source/test inputs only; it does not prove future AI prose quality, undeclared runtime behavior, installation, or publication.",
+        "closure_fingerprint": "sha256:973d93fffd2971c5e3cb05984bcc27ca3dde22c3328be6efbb3f4a8730ebd6b5",
+        "declaration_fingerprint": "sha256:24e4b2ea3de36ac3d90ed119e319a3fb9239d64460a84cef064b8b0fd8dc0936",
+        "declaration_phase": "before_candidate",
+        "evidence_check_ids": [
+          "check:model-regression:release_retirement_model"
+        ],
+        "failure_bindings": [
+          {
+            "failure_id": "release_retirement_model:existing_finite_scenarios",
+            "known_bad_case_id": "native-runner:release_retirement_model:existing_finite_scenarios",
+            "oracle_id": "native:release_retirement_model:run-checks"
+          },
+          {
+            "failure_id": "release_retirement_model:current_child_receipt",
+            "known_bad_case_id": "native-runner:release_retirement_model:current_child_receipt",
+            "oracle_id": "native:release_retirement_model:run-checks"
+          },
+          {
+            "failure_id": "release_retirement_model:consumer_receipt_binding",
+            "known_bad_case_id": "native-runner:release_retirement_model:consumer_receipt_binding",
+            "oracle_id": "native:release_retirement_model:run-checks"
+          }
+        ],
+        "guarded_purpose": "\u628a\u73b0\u6709\u672a\u72ec\u7acb\u6ce8\u518c\u7684\u9886\u57df\u6a21\u578b\u4f5c\u4e3a\u72ec\u7acb\u5b50owner\u63a5\u56de\u7236\u6a21\u578b\uff1b\u5171\u7528common.py\u4f5c\u4e3ashared kernel\uff0c\u4e0d\u590d\u5236\u8bed\u4e49\u3002",
+        "known_good_case_id": "native-runner:release_retirement_model:declared-positive-suite",
+        "model_instance_id": "regression:release_retirement_model:round2",
+        "model_sha256": "sha256:731df816ab8bbb214575af303420e167293b8f40613f0647bc6bd00a09580d85",
+        "protected_failure_ids": [
+          "release_retirement_model:existing_finite_scenarios",
+          "release_retirement_model:current_child_receipt",
+          "release_retirement_model:consumer_receipt_binding"
+        ],
+        "reusable_model_type_id": "release_retirement_model",
+        "runner_sha256": "sha256:3f4bbdca433bc8c4b57f57835813763849f71d8a5590bcbe774acb13123acbc4",
+        "schema_version": "flowguard.model_purpose_closure.v1",
+        "task_intent_id": "flowguard-regression:release_retirement_model:logic-writing-reader-composition"
+      },
+      "runner": [
+        "{python}",
+        ".flowguard/verification/owners/release_retirement_model/run_checks.py"
+      ],
+      "shard_safe": true,
+      "tier": "focused",
+      "timeout_seconds": 180.0
+    },
+    {
+      "absence_reason": "",
+      "distribution_policy": "required_public",
+      "exclusion_reason": "",
+      "expected_artifacts": [],
+      "input_globs": [
+        ".flowguard/models/owners/writer_projection/model.py",
+        ".flowguard/verification/owners/writer_projection/run_checks.py",
+        ".flowguard/models/owners/_mesh_support.py",
+        "skills/logic-writing/scripts/reader_pipeline.py",
+        "tests/unit/test_writer_projection.py",
+        ".flowguard/structure/owner-bindings.json"
+      ],
+      "intent_source_inputs": [
+        "openspec/changes/repair-argument-to-reader-composition/design.md"
+      ],
+      "model_id": "writer_projection",
+      "model_kind": "executable_workflow",
+      "model_path": ".flowguard/models/owners/writer_projection/model.py",
+      "mutation_policy": "none",
+      "purpose_closure": {
+        "adoption_scope": "current_candidate_only",
+        "claim_boundary": "Current closure covers the declared Logic Writing writer_projection model, its native runner, and frozen source/test inputs only; it does not prove future AI prose quality, undeclared runtime behavior, installation, or publication.",
+        "closure_fingerprint": "sha256:72b75a4d6d3228a3de412e7a3965b485aa3e85eddd9deab6e33fdaa3adaa72b7",
+        "declaration_fingerprint": "sha256:3739f21bc2df72f91182a58e7e640d1f1c2b3698311d4e826392cec7e008bea3",
+        "declaration_phase": "before_candidate",
+        "evidence_check_ids": [
+          "check:model-regression:writer_projection"
+        ],
+        "failure_bindings": [
+          {
+            "failure_id": "writer_projection:a06",
+            "known_bad_case_id": "native-runner:writer_projection:a06",
+            "oracle_id": "native:writer_projection:run-checks"
+          }
+        ],
+        "guarded_purpose": "\u72ec\u7acb\u5c01\u95ed\u8bfb\u8005\u6587\u7ae0\u4ea4\u4ed8\u4e2d\u7684\u4e00\u7ec4\u5931\u8d25\u7c7b\u522b\uff1b\u7236\u6a21\u578b\u53ea\u6d88\u8d39\u8be5\u5b50\u6a21\u578b\u8f93\u51fa\u4e0ereceipt\u3002",
+        "known_good_case_id": "native-runner:writer_projection:declared-positive-suite",
+        "model_instance_id": "regression:writer_projection:round2",
+        "model_sha256": "sha256:f708bfaee369f4e2e775c2f9556ffc3a4e1acc7283d015aff4dade35373f7a09",
+        "protected_failure_ids": [
+          "writer_projection:a06"
+        ],
+        "reusable_model_type_id": "writer_projection",
+        "runner_sha256": "sha256:69ed09732be1828f31e02e0949cf48ec8e2aa4f04e80dbbf4d89bf541aebae73",
+        "schema_version": "flowguard.model_purpose_closure.v1",
+        "task_intent_id": "flowguard-regression:writer_projection:logic-writing-reader-composition"
+      },
+      "runner": [
+        "{python}",
+        ".flowguard/verification/owners/writer_projection/run_checks.py"
+      ],
+      "shard_safe": true,
+      "tier": "fast",
+      "timeout_seconds": 180.0
+    },
+    {
+      "absence_reason": "",
+      "distribution_policy": "required_public",
+      "exclusion_reason": "",
+      "expected_artifacts": [],
+      "input_globs": [
+        ".flowguard/models/owners/editorial_disposition/model.py",
+        ".flowguard/verification/owners/editorial_disposition/run_checks.py",
+        ".flowguard/models/owners/_mesh_support.py",
+        "skills/logic-writing/scripts/reader_pipeline.py",
+        "tests/unit/test_editorial_dispositions.py",
+        ".flowguard/structure/owner-bindings.json"
+      ],
+      "intent_source_inputs": [
+        "openspec/changes/repair-argument-to-reader-composition/design.md"
+      ],
+      "model_id": "editorial_disposition",
+      "model_kind": "executable_workflow",
+      "model_path": ".flowguard/models/owners/editorial_disposition/model.py",
+      "mutation_policy": "none",
+      "purpose_closure": {
+        "adoption_scope": "current_candidate_only",
+        "claim_boundary": "Current closure covers the declared Logic Writing editorial_disposition model, its native runner, and frozen source/test inputs only; it does not prove future AI prose quality, undeclared runtime behavior, installation, or publication.",
+        "closure_fingerprint": "sha256:c0b58b6ded86fea64e62d21aa3f3a58acca89103b2d78516a6270fafb84b3cb3",
+        "declaration_fingerprint": "sha256:ab7e5133e6caed7d20d2995c54af52a3152d9ad9bba61c3f18fc17291d08fda0",
+        "declaration_phase": "before_candidate",
+        "evidence_check_ids": [
+          "check:model-regression:editorial_disposition"
+        ],
+        "failure_bindings": [
+          {
+            "failure_id": "editorial_disposition:a07",
+            "known_bad_case_id": "native-runner:editorial_disposition:a07",
+            "oracle_id": "native:editorial_disposition:run-checks"
+          }
+        ],
+        "guarded_purpose": "\u72ec\u7acb\u5c01\u95ed\u8bfb\u8005\u6587\u7ae0\u4ea4\u4ed8\u4e2d\u7684\u4e00\u7ec4\u5931\u8d25\u7c7b\u522b\uff1b\u7236\u6a21\u578b\u53ea\u6d88\u8d39\u8be5\u5b50\u6a21\u578b\u8f93\u51fa\u4e0ereceipt\u3002",
+        "known_good_case_id": "native-runner:editorial_disposition:declared-positive-suite",
+        "model_instance_id": "regression:editorial_disposition:round2",
+        "model_sha256": "sha256:32eb76fcca46f55cf07d4a59f066eb7b2102fdbf6b7a26e7ff5dea9f354f81bc",
+        "protected_failure_ids": [
+          "editorial_disposition:a07"
+        ],
+        "reusable_model_type_id": "editorial_disposition",
+        "runner_sha256": "sha256:48684b2353860116bdea832ac6d5c61cc43edfc9f2b9b37cda77ca2d74192ec5",
+        "schema_version": "flowguard.model_purpose_closure.v1",
+        "task_intent_id": "flowguard-regression:editorial_disposition:logic-writing-reader-composition"
+      },
+      "runner": [
+        "{python}",
+        ".flowguard/verification/owners/editorial_disposition/run_checks.py"
+      ],
+      "shard_safe": true,
+      "tier": "fast",
+      "timeout_seconds": 180.0
+    },
+    {
+      "absence_reason": "",
+      "distribution_policy": "required_public",
+      "exclusion_reason": "",
+      "expected_artifacts": [],
+      "input_globs": [
+        ".flowguard/models/owners/composition_graph/model.py",
+        ".flowguard/verification/owners/composition_graph/run_checks.py",
+        ".flowguard/models/owners/_mesh_support.py",
+        "skills/logic-writing/scripts/reader_pipeline.py",
+        "tests/unit/test_composition_graph.py",
+        ".flowguard/structure/owner-bindings.json"
+      ],
+      "intent_source_inputs": [
+        "openspec/changes/repair-argument-to-reader-composition/design.md"
+      ],
+      "model_id": "composition_graph",
+      "model_kind": "executable_workflow",
+      "model_path": ".flowguard/models/owners/composition_graph/model.py",
+      "mutation_policy": "none",
+      "purpose_closure": {
+        "adoption_scope": "current_candidate_only",
+        "claim_boundary": "Current closure covers the declared Logic Writing composition_graph model, its native runner, and frozen source/test inputs only; it does not prove future AI prose quality, undeclared runtime behavior, installation, or publication.",
+        "closure_fingerprint": "sha256:e9b95398eed162848c2db190bc16acc552d1f2a2865da86d84cd0f4f0f91571a",
+        "declaration_fingerprint": "sha256:a57ad9630a9d2e06db855b9b087be0fcb7a883e51c056a724016e950cdbf8b8d",
+        "declaration_phase": "before_candidate",
+        "evidence_check_ids": [
+          "check:model-regression:composition_graph"
+        ],
+        "failure_bindings": [
+          {
+            "failure_id": "composition_graph:a08",
+            "known_bad_case_id": "native-runner:composition_graph:a08",
+            "oracle_id": "native:composition_graph:run-checks"
+          }
+        ],
+        "guarded_purpose": "\u72ec\u7acb\u5c01\u95ed\u8bfb\u8005\u6587\u7ae0\u4ea4\u4ed8\u4e2d\u7684\u4e00\u7ec4\u5931\u8d25\u7c7b\u522b\uff1b\u7236\u6a21\u578b\u53ea\u6d88\u8d39\u8be5\u5b50\u6a21\u578b\u8f93\u51fa\u4e0ereceipt\u3002",
+        "known_good_case_id": "native-runner:composition_graph:declared-positive-suite",
+        "model_instance_id": "regression:composition_graph:round2",
+        "model_sha256": "sha256:001d68fa887b5f7848e905cba9c802e3d4061534aa42ee351b92014c4c79803c",
+        "protected_failure_ids": [
+          "composition_graph:a08"
+        ],
+        "reusable_model_type_id": "composition_graph",
+        "runner_sha256": "sha256:bb695dd39a43b94b50fe085dc1217b5c302fa02a82cc7b61d673acea8591e029",
+        "schema_version": "flowguard.model_purpose_closure.v1",
+        "task_intent_id": "flowguard-regression:composition_graph:logic-writing-reader-composition"
+      },
+      "runner": [
+        "{python}",
+        ".flowguard/verification/owners/composition_graph/run_checks.py"
+      ],
+      "shard_safe": true,
+      "tier": "fast",
+      "timeout_seconds": 180.0
+    },
+    {
+      "absence_reason": "",
+      "distribution_policy": "required_public",
+      "exclusion_reason": "",
+      "expected_artifacts": [],
+      "input_globs": [
+        ".flowguard/models/owners/artifact_audit/model.py",
+        ".flowguard/verification/owners/artifact_audit/run_checks.py",
+        ".flowguard/models/owners/_mesh_support.py",
+        "skills/logic-writing/scripts/reader_pipeline.py",
+        "tests/unit/test_review_obligations.py",
+        "tests/adversarial/test_reader_integrity_regressions.py",
+        ".flowguard/structure/owner-bindings.json"
+      ],
+      "intent_source_inputs": [
+        "openspec/changes/repair-argument-to-reader-composition/design.md"
+      ],
+      "model_id": "artifact_audit",
+      "model_kind": "executable_workflow",
+      "model_path": ".flowguard/models/owners/artifact_audit/model.py",
+      "mutation_policy": "none",
+      "purpose_closure": {
+        "adoption_scope": "current_candidate_only",
+        "claim_boundary": "Current closure covers the declared Logic Writing artifact_audit model, its native runner, and frozen source/test inputs only; it does not prove future AI prose quality, undeclared runtime behavior, installation, or publication.",
+        "closure_fingerprint": "sha256:d906b366356c5fdc0db0490f0510b4fe5df5c90bf0212662eeea62d59dc485f1",
+        "declaration_fingerprint": "sha256:d0608c7fb6a4edacd2617242c1e2d8ddd60247372d7d956a8bdff74472950715",
+        "declaration_phase": "before_candidate",
+        "evidence_check_ids": [
+          "check:model-regression:artifact_audit"
+        ],
+        "failure_bindings": [
+          {
+            "failure_id": "artifact_audit:a09",
+            "known_bad_case_id": "native-runner:artifact_audit:a09",
+            "oracle_id": "native:artifact_audit:run-checks"
+          }
+        ],
+        "guarded_purpose": "\u72ec\u7acb\u5c01\u95ed\u8bfb\u8005\u6587\u7ae0\u4ea4\u4ed8\u4e2d\u7684\u4e00\u7ec4\u5931\u8d25\u7c7b\u522b\uff1b\u7236\u6a21\u578b\u53ea\u6d88\u8d39\u8be5\u5b50\u6a21\u578b\u8f93\u51fa\u4e0ereceipt\u3002",
+        "known_good_case_id": "native-runner:artifact_audit:declared-positive-suite",
+        "model_instance_id": "regression:artifact_audit:round2",
+        "model_sha256": "sha256:56c9dcb6ca03d09f442e15072251e1d2bddacf945c9cd87489be0598d8a56f88",
+        "protected_failure_ids": [
+          "artifact_audit:a09"
+        ],
+        "reusable_model_type_id": "artifact_audit",
+        "runner_sha256": "sha256:5e067c1615f7f4747aeeea79fc8105bdd2151e2b77148d319591ec763d4e8c5a",
+        "schema_version": "flowguard.model_purpose_closure.v1",
+        "task_intent_id": "flowguard-regression:artifact_audit:logic-writing-reader-composition"
+      },
+      "runner": [
+        "{python}",
+        ".flowguard/verification/owners/artifact_audit/run_checks.py"
+      ],
+      "shard_safe": true,
+      "tier": "fast",
+      "timeout_seconds": 180.0
+    },
+    {
+      "absence_reason": "",
+      "distribution_policy": "required_public",
+      "exclusion_reason": "",
+      "expected_artifacts": [],
+      "input_globs": [
+        ".flowguard/models/owners/execution_binding/model.py",
+        ".flowguard/verification/owners/execution_binding/run_checks.py",
+        ".flowguard/models/owners/_mesh_support.py",
+        "skills/logic-writing/scripts/reader_execution.py",
+        "scripts/check_reader_judgment.py",
+        "tests/adversarial/test_judgment_execution_binding.py",
+        "tests/contract/test_release_wrappers.py",
+        ".flowguard/structure/owner-bindings.json"
+      ],
+      "intent_source_inputs": [
+        "openspec/changes/repair-argument-to-reader-composition/design.md"
+      ],
+      "model_id": "execution_binding",
+      "model_kind": "executable_workflow",
+      "model_path": ".flowguard/models/owners/execution_binding/model.py",
+      "mutation_policy": "none",
+      "purpose_closure": {
+        "adoption_scope": "current_candidate_only",
+        "claim_boundary": "Current closure covers the declared Logic Writing execution_binding model, its native runner, and frozen source/test inputs only; it does not prove future AI prose quality, undeclared runtime behavior, installation, or publication.",
+        "closure_fingerprint": "sha256:6c5f63b028f0e8716a67768f6898efe20ae1c96f23b56f54739850c14d677456",
+        "declaration_fingerprint": "sha256:f14078802f997e641923b5dc362d57decbcf4c0da5f91dab980220e377e00deb",
+        "declaration_phase": "before_candidate",
+        "evidence_check_ids": [
+          "check:model-regression:execution_binding"
+        ],
+        "failure_bindings": [
+          {
+            "failure_id": "execution_binding:a10",
+            "known_bad_case_id": "native-runner:execution_binding:a10",
+            "oracle_id": "native:execution_binding:run-checks"
+          }
+        ],
+        "guarded_purpose": "\u72ec\u7acb\u5c01\u95ed\u8bfb\u8005\u6587\u7ae0\u4ea4\u4ed8\u4e2d\u7684\u4e00\u7ec4\u5931\u8d25\u7c7b\u522b\uff1b\u7236\u6a21\u578b\u53ea\u6d88\u8d39\u8be5\u5b50\u6a21\u578b\u8f93\u51fa\u4e0ereceipt\u3002",
+        "known_good_case_id": "native-runner:execution_binding:declared-positive-suite",
+        "model_instance_id": "regression:execution_binding:round2",
+        "model_sha256": "sha256:072c636f0161814b6139695e58dc210e6891554631f077f57f49e532a2d58945",
+        "protected_failure_ids": [
+          "execution_binding:a10"
+        ],
+        "reusable_model_type_id": "execution_binding",
+        "runner_sha256": "sha256:5ffe8faee5b41ccd5c08400d46b89bb3c7b9c5e4f38f4c1762b045ddda47f657",
+        "schema_version": "flowguard.model_purpose_closure.v1",
+        "task_intent_id": "flowguard-regression:execution_binding:logic-writing-reader-composition"
+      },
+      "runner": [
+        "{python}",
+        ".flowguard/verification/owners/execution_binding/run_checks.py"
+      ],
+      "shard_safe": true,
+      "tier": "fast",
+      "timeout_seconds": 180.0
+    },
+    {
+      "absence_reason": "",
+      "distribution_policy": "required_public",
+      "exclusion_reason": "",
+      "expected_artifacts": [],
+      "input_globs": [
+        ".flowguard/models/owners/researchguard_handoff/model.py",
+        ".flowguard/verification/owners/researchguard_handoff/run_checks.py",
+        ".flowguard/models/owners/_mesh_support.py",
+        "skills/logic-writing/scripts/researchguard_handoff.py",
+        "tests/contract/test_researchguard_handoff.py",
+        ".flowguard/structure/owner-bindings.json"
+      ],
+      "intent_source_inputs": [
+        "openspec/changes/repair-argument-to-reader-composition/design.md"
+      ],
+      "model_id": "researchguard_handoff",
+      "model_kind": "executable_workflow",
+      "model_path": ".flowguard/models/owners/researchguard_handoff/model.py",
+      "mutation_policy": "none",
+      "purpose_closure": {
+        "adoption_scope": "current_candidate_only",
+        "claim_boundary": "Current closure covers the declared Logic Writing researchguard_handoff model, its native runner, and frozen source/test inputs only; it does not prove future AI prose quality, undeclared runtime behavior, installation, or publication.",
+        "closure_fingerprint": "sha256:4d09445e9974cf6036743e746b68c20442f69f416b430de16cffe327e560a49d",
+        "declaration_fingerprint": "sha256:1a1f4725d37c41498c7b61d19a7d014f40fdf4916b124054498947442d614694",
+        "declaration_phase": "before_candidate",
+        "evidence_check_ids": [
+          "check:model-regression:researchguard_handoff"
+        ],
+        "failure_bindings": [
+          {
+            "failure_id": "researchguard_handoff:a13",
+            "known_bad_case_id": "native-runner:researchguard_handoff:a13",
+            "oracle_id": "native:researchguard_handoff:run-checks"
+          }
+        ],
+        "guarded_purpose": "\u72ec\u7acb\u5c01\u95ed\u8bfb\u8005\u6587\u7ae0\u4ea4\u4ed8\u4e2d\u7684\u4e00\u7ec4\u5931\u8d25\u7c7b\u522b\uff1b\u7236\u6a21\u578b\u53ea\u6d88\u8d39\u8be5\u5b50\u6a21\u578b\u8f93\u51fa\u4e0ereceipt\u3002",
+        "known_good_case_id": "native-runner:researchguard_handoff:declared-positive-suite",
+        "model_instance_id": "regression:researchguard_handoff:round2",
+        "model_sha256": "sha256:763151fa91971a2d7f02359418990e47bf3b8218120132c70765bdbfb39fd5bb",
+        "protected_failure_ids": [
+          "researchguard_handoff:a13"
+        ],
+        "reusable_model_type_id": "researchguard_handoff",
+        "runner_sha256": "sha256:2c84d828feb4233645d7284dd554a82c9669cbdd548124c83338f9a5f76f969a",
+        "schema_version": "flowguard.model_purpose_closure.v1",
+        "task_intent_id": "flowguard-regression:researchguard_handoff:logic-writing-reader-composition"
+      },
+      "runner": [
+        "{python}",
+        ".flowguard/verification/owners/researchguard_handoff/run_checks.py"
+      ],
+      "shard_safe": true,
+      "tier": "fast",
+      "timeout_seconds": 180.0
+    }
+  ],
+  "schema_version": "flowguard.model_regression_manifest.v4",
+  "shared_input_groups": [
+    {
+      "component_id": "logic-writing-native-owner-bindings",
+      "consumers": [
+        "academic_route_model",
+        "artifact_audit",
+        "behavior_commitment_ledger",
+        "composition_graph",
+        "development_process_flow",
+        "editorial_disposition",
+        "execution_binding",
+        "fiction_route_model",
+        "investigation_route_model",
+        "logic_writing_models",
+        "model_test_alignment",
+        "operation_freshness_closure_model",
+        "plan_detailing",
+        "primary_path_authority",
+        "reader_artifact_model",
+        "release_retirement_model",
+        "research_packet_model",
+        "researchguard_handoff",
+        "route_and_guard_model",
+        "test_mesh",
+        "travel_route_model",
+        "writer_projection"
+      ],
+      "globs": [
+        ".flowguard/structure/owner-bindings.json"
+      ]
+    }
+  ],
+  "snapshot_only_input_globs": [
+    ".flowguard/evidence/**/*",
+    ".flowguard/models/authority/**/*",
+    ".flowguard/run_artifacts/**/*"
+  ]
+}

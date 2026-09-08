@@ -189,8 +189,8 @@ def _validate_provider_reference(
         )
     if require_string(reference, "provider_id") != "researchguard":
         raise ValidationError("provider_reference provider_id must be researchguard")
-    if require_string(reference, "provider_version") != "0.4.11":
-        raise ValidationError("provider_reference provider_version must be 0.4.11")
+    if require_string(reference, "provider_version") != "0.5.1":
+        raise ValidationError("provider_reference provider_version must be 0.5.1")
     if require_string(reference, "member_id") != owner:
         raise ValidationError("provider_reference member_id does not match native_owner")
     if require_string(reference, "primary_path_id") != RESEARCHGUARD_PATHS[owner]:

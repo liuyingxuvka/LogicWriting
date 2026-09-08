@@ -1,0 +1,48 @@
+{
+  "schema": "audit-round2.frozen-inputs.v1",
+  "source_sha256": "facd43863bb0ed5f2bdf32c255a455e0beee1bb9a5778d4d4bcd5c0c98964db6",
+  "material_count": 26,
+  "case_count": 12,
+  "files": [
+    {
+      "path": "acceptance-rubric.md",
+      "bytes": 19561,
+      "sha256": "2cf1e9c60ade8a4212712be3a72d2847581da55825c14307b9709a52e102a66b"
+    },
+    {
+      "path": "case-manifest.json",
+      "bytes": 14232,
+      "sha256": "bcfa99a49d4bb2c62123ad988bb0374e8cad190bc6e0418ea6f524a00aabdaba"
+    },
+    {
+      "path": "judge-rubric.md",
+      "bytes": 4522,
+      "sha256": "0c8c78bf96d0fae45d312fbfe8ee91adf55c95c1c2b71cb7c883c66000139660"
+    },
+    {
+      "path": "materials-E.json",
+      "bytes": 2771,
+      "sha256": "5c79821716a13b91f30dd935c41b01cc048b1281dbefb2b3a2c2f944111731f2"
+    },
+    {
+      "path": "materials-F.json",
+      "bytes": 2095,
+      "sha256": "1b78035c372a309b4f89219cb5ed5d4a976f47a20c57f738bca889a0826a0cdb"
+    },
+    {
+      "path": "materials-L.json",
+      "bytes": 1431,
+      "sha256": "1cc2bc228db01f93fd08b03218e77ab03a945647a09c459b914b07fa8ca52ada"
+    },
+    {
+      "path": "materials-T.json",
+      "bytes": 2621,
+      "sha256": "f80506c029cb67bc79f5662527b8eddc90d9d2c294361007bd46d191d2a340d6"
+    },
+    {
+      "path": "rubric.machine.json",
+      "bytes": 1233,
+      "sha256": "a067ea0ff437dd32634870ed23bcb5735b612ece68f9585b2bf8e893d0ad0630"
+    }
+  ]
+}

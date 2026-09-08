@@ -1,6 +1,8 @@
 {
   "schema_version": "1.0",
-  "benchmark_id": "logic-writing-reader-v2-blind-12",
+  "benchmark_id": "logic-writing-reader-v2-protocol-12",
+  "evidence_mode": "protocol_only",
+  "claim_boundary": "Synthetic protocol and fingerprint regression only; this fixture does not prove language quality, genre fit, independent judging, or preferred quality.",
   "frozen_cases": [
     {"case_id": "inv-zh-explain", "owner": "investigation", "language": "zh-CN", "target": "bounded explanatory report"},
     {"case_id": "inv-en-decision", "owner": "investigation", "language": "en", "target": "decision analysis"},
@@ -17,7 +19,6 @@
   ],
   "acceptance": {
     "explicit_structure_mapping_percent": 100,
-    "evidence_fidelity_regressions": 0,
-    "preferred_coherence_or_naturalness_minimum": 9
+    "evidence_fidelity_regressions": 0
   }
 }

@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -20,7 +22,7 @@ BENCHMARK = json.loads(
 
 
 @pytest.mark.parametrize("case", BENCHMARK["frozen_cases"], ids=lambda row: row["case_id"])
-def test_blind_reader_benchmark_has_full_mapping_and_preferred_quality(case, tmp_path):
+def test_reader_v2_protocol_fixture_has_full_mapping_and_current_closure(case, tmp_path):
     chain = complete_chain(
         tmp_path / case["case_id"],
         case["owner"],
@@ -29,10 +31,10 @@ def test_blind_reader_benchmark_has_full_mapping_and_preferred_quality(case, tmp
     closure = derive_closure(closure_input(chain))["closure"]
     assert closure["status"] == "passed"
     assert chain["shared_writing"]["unit_bindings"]
-    assert min(chain["judgment"]["scores"].values()) >= 4
+    assert BENCHMARK["evidence_mode"] == "protocol_only"
 
 
-def test_benchmark_contract_is_twelve_balanced_cases():
+def test_protocol_fixture_has_twelve_balanced_cases():
     cases = BENCHMARK["frozen_cases"]
     assert len(cases) == 12
     assert {row["owner"] for row in cases} == {
@@ -42,6 +44,30 @@ def test_benchmark_contract_is_twelve_balanced_cases():
         "investigation", "academic-writing", "fiction-writing", "travel-guide"
     })
     assert {row["language"] for row in cases} == {"zh-CN", "en"}
+
+
+def test_real_quality_runner_records_unavailable_without_backend(tmp_path):
+    root = Path(__file__).resolve().parents[2]
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(root / "scripts" / "run_writing_quality_benchmark.py"),
+            "--root",
+            str(root),
+            "--output-dir",
+            str(tmp_path / "resources-benchmark-evidence"),
+        ],
+        cwd=root,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert completed.returncode == 2
+    result = json.loads(completed.stdout)
+    assert result["status"] == "not_run"
+    assert result["terminal_reason"] == "execution_provider_unavailable"
+    assert result["actual_execution_count"] == 0
+    assert not (tmp_path / "resources-benchmark-evidence" / "executions.json").exists()
 
 
 @pytest.mark.parametrize(

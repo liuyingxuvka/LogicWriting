@@ -1,0 +1,42 @@
+{
+  "pack_id": "F",
+  "synthetic": true,
+  "records": [
+    {
+      "id": "F01",
+      "text": "临港仓库的门只有一把机械钥匙，钥匙原来由林岚保管。她答应弟弟不再替码头主管隐瞒损失。",
+      "role": "frozen_source_material",
+      "source_locator": "acceptance-rubric.md:35"
+    },
+    {
+      "id": "F02",
+      "text": "当晚停电，旧仓库的备用泵最多还能维持十分钟，泵停后积水会损坏弟弟保存的原始货单。主管要求林岚先交钥匙再允许工人进入。",
+      "role": "frozen_source_material",
+      "source_locator": "acceptance-rubric.md:37"
+    },
+    {
+      "id": "F03",
+      "text": "林岚开场不知道钥匙已被调换，弟弟知道但尚未告诉她。读者在第一场也不能直接得知调换事实，只能看见钥匙齿缝中原来没有的白色油漆。",
+      "role": "frozen_source_material",
+      "source_locator": "acceptance-rubric.md:39"
+    },
+    {
+      "id": "F04",
+      "text": "林岚可选择继续按主管程序等待、公开自己掌握的账页逼主管开门、或砸锁。目标场景选择公开账页，救下货单，但弟弟发现她此前仍保留了主管的副本，信任受损。该损失是场景代价，不能写成所有关系立即修复。",
+      "role": "frozen_source_material",
+      "source_locator": "acceptance-rubric.md:41"
+    },
+    {
+      "id": "F05",
+      "text": "重复意象是三声船铃。第一次像安全的日常秩序，第二次成为倒计时压力，第三次救出货单后令人意识到关系已改变。允许重复同样意象，不得用“重复三次，所以不自然”机械判坏。",
+      "role": "frozen_source_material",
+      "source_locator": "acceptance-rubric.md:43"
+    },
+    {
+      "id": "F06",
+      "text": "指定视角为林岚的近距离第三人称。她无法知道主管的内心独白，也无法在弟弟开口前知道调钥匙经过。",
+      "role": "frozen_source_material",
+      "source_locator": "acceptance-rubric.md:45"
+    }
+  ]
+}

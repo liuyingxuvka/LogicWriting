@@ -1,4 +1,10 @@
-"""Prepare one complete current v2 reader chain for independent judgment."""
+"""Prepare one synthetic protocol chain for contract tests.
+
+This helper intentionally produces a ``protocol_only`` envelope.  It is useful
+for exercising identity, schema, and transport checks, but it is not an input
+to the real reader-quality owner and cannot supply independent quality
+evidence.
+"""
 
 from __future__ import annotations
 
@@ -21,12 +27,14 @@ def prepare(root: Path, receipt_root: Path, output: Path) -> dict:
     work.mkdir(parents=True, exist_ok=True)
     chain = complete_chain(work, "investigation")
     envelope = {
+        "evidence_mode": "protocol_only",
         "judgment": chain["judgment"],
         "artifact_map": chain["artifact_map"],
         "reader_brief": chain["reader_brief"],
         "shared_writing": chain["shared_writing"],
         "deterministic_audit": chain["deterministic_audit"],
         "route_review": chain["route_review"],
+        "reader_execution_records": chain["reader_execution_records"],
     }
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(
@@ -38,7 +46,8 @@ def prepare(root: Path, receipt_root: Path, output: Path) -> dict:
         "artifact": str(chain["artifact_path"].relative_to(output.parent)),
         "judgment_request": output.name,
         "deterministic_status": "current_pass",
-        "claim_boundary": "Preparation freezes one representative current v2 artifact chain; judgment remains a separate validation step.",
+        "evidence_mode": "protocol_only",
+        "claim_boundary": "Preparation freezes one synthetic current v2 artifact chain for protocol checks; it is not a real writer or independent judge execution.",
     }
 
 

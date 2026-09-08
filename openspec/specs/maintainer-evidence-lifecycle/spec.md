@@ -35,7 +35,7 @@ The installed Logic Writing consumer SHALL contain only the target's declared co
 - **THEN** its complete inventory matches the frozen installation projection, forbidden maintainer files are absent, and installed currentness can be checked without running a validation owner
 
 ### Requirement: Direct current authority and release parity
-The repository SHALL have one current author contract and MUST NOT retain the retired SkillGuard author identity as a compatibility or fallback authority. Source version `3.0.2`, installed projection, package metadata where applicable, Git commit, version tag, and GitHub Release SHALL be independently verified before release closure. This maintenance requirement does not create an automatic updater for other computers.
+The repository SHALL have one current author contract and MUST NOT retain the retired SkillGuard author identity as a compatibility or fallback authority. Source version `4.0.0`, installed projection, package metadata where applicable, Git commit, version tag, and GitHub Release SHALL be independently verified before release closure. This maintenance requirement does not create an automatic updater for other computers.
 
 #### Scenario: Release identities agree
 - **WHEN** the final source snapshot and single full validation receipt are current

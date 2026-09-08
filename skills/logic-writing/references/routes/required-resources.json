@@ -1,0 +1,45 @@
+{
+  "schema_version": "logic-writing.consumer-resource-manifest.v1",
+  "manifest_id": "logic-writing-route-resources-v1",
+  "claim_boundary": "This manifest proves portable source resource closure for the selected consumer route. It does not prove route semantics, provider availability, or writing quality.",
+  "routes": {
+    "fiction-writing": {
+      "entrypoint": "skills/logic-writing/references/routes/fiction-writing.md",
+      "required_resources": [
+        "skills/logic-writing/routes/fiction/references/prose-native-contract.md",
+        "skills/logic-writing/routes/fiction/references/scene-contract.md",
+        "skills/logic-writing/routes/fiction/references/voice-style-continuity.md"
+      ],
+      "longform_resources": [
+        "skills/logic-writing/routes/fiction/references/chapter-interface-prose-blueprint.md",
+        "skills/logic-writing/routes/fiction/references/novel-ledger.md",
+        "skills/logic-writing/routes/fiction/references/longform-lifecycle.md"
+      ],
+      "fixture_roots": ["skills/logic-writing/routes/fiction/examples"],
+      "json_associations": [
+        {
+          "json_path": "skills/logic-writing/routes/fiction/examples/longform_novel_project/longform-final-prose-closure.json",
+          "text_path": "skills/logic-writing/routes/fiction/examples/longform_novel_project/drafts/book-01-final.txt",
+          "required": true
+        }
+      ]
+    },
+    "travel-guide": {
+      "entrypoint": "skills/logic-writing/references/routes/travel-guide.md",
+      "required_resources": [
+        "skills/logic-writing/routes/travel/references/traveler-native-guide-compiler.md",
+        "skills/logic-writing/routes/travel/references/runtime-workflow.md",
+        "skills/logic-writing/routes/travel/references/traveler-profile.md",
+        "skills/logic-writing/routes/travel/references/negative-evidence-and-fallback.md"
+      ],
+      "fixture_roots": ["skills/logic-writing/routes/travel/examples"],
+      "json_associations": [
+        {
+          "json_path": "skills/logic-writing/routes/travel/examples/good_text_outputs/city_couple_native_guide.review.json",
+          "text_path": "skills/logic-writing/routes/travel/examples/good_text_outputs/city_couple_native_guide.txt",
+          "required": true
+        }
+      ]
+    }
+  }
+}

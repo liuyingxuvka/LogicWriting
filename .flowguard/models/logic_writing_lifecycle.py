@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from .operation_freshness_closure_model import build_plan as build_operation_plan
-from .release_retirement_model import build_plan as build_development_plan
+from models.owners.operation_freshness_closure_model.model import build_plan as build_operation_plan
+from models.owners.release_retirement_model.model import build_plan as build_development_plan
 
 
 MODEL_ID = "logic_writing_lifecycle"

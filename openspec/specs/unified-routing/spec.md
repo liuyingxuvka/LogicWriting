@@ -153,7 +153,7 @@ The current runtime SHALL accept only the current WritingRequest and RouteDecisi
 
 ### Requirement: Research Guard members use one executable provider
 
-Logic Writing SHALL preserve `logicguard`, `sourceguard`, and `traceguard` as distinct semantic owners while invoking each only through the `researchguard` console and its exact current primary path. The distribution metadata, console output, and supported provider identity SHALL all be ResearchGuard `0.4.11`. Logic Writing MUST NOT import an old member package, invoke an old module command, locate a sibling checkout, try another member when the selected member is unavailable, or execute ExperimentGuard or the ResearchGuard umbrella route.
+Logic Writing SHALL preserve `logicguard`, `sourceguard`, and `traceguard` as distinct semantic owners while invoking each only through the `researchguard` console and its exact current primary path. The distribution metadata, console output, and supported provider identity SHALL all be ResearchGuard `0.5.1`. Logic Writing MUST NOT import an old member package, invoke an old module command, locate a sibling checkout, try another member when the selected member is unavailable, or execute ExperimentGuard or the ResearchGuard umbrella route.
 
 #### Scenario: LogicGuard member is available
 - **WHEN** Logic Writing preflights the LogicGuard semantic owner
@@ -168,7 +168,7 @@ Logic Writing SHALL preserve `logicguard`, `sourceguard`, and `traceguard` as di
 - **THEN** Logic Writing SHALL preserve the timeout as visible provider evidence and terminate that provider preflight without recovery through another path
 
 #### Scenario: Unsupported ResearchGuard version is installed
-- **WHEN** the distribution metadata or console output is not exactly `0.4.11`
+- **WHEN** the distribution metadata or console output is not exactly `0.5.1`
 - **THEN** Logic Writing SHALL return a visible blocked identity result and SHALL NOT execute the selected member probe or a fallback provider
 
 #### Scenario: Out-of-scope member is requested
@@ -176,7 +176,7 @@ Logic Writing SHALL preserve `logicguard`, `sourceguard`, and `traceguard` as di
 - **THEN** Logic Writing SHALL return a visible scope block and SHALL execute zero ResearchGuard commands
 
 #### Scenario: Provider identity and member topology are current
-- **WHEN** a supported direct member is selected and the installed distribution, console, and exact three-member topology all report ResearchGuard `0.4.11`
+- **WHEN** a supported direct member is selected and the installed distribution, console, and exact three-member topology all report ResearchGuard `0.5.1`
 - **THEN** the provider preflight SHALL continue only to that selected member
 
 #### Scenario: Provider failure does not trigger fallback
@@ -191,9 +191,9 @@ Current Logic Writing source, tests, models, and active change artifacts SHALL c
 - **THEN** it SHALL pass only if all Guard calls resolve to the ResearchGuard console/member topology and archived history is not treated as current authority
 
 ### Requirement: The single-console topology has one source version identity
-The changed provider topology SHALL be frozen as Logic Writing source version `3.0.2`. `VERSION`, package metadata, public source badges, changelog, source reconciliation, current OpenSpec release requirements, and the release-retirement checklist SHALL agree on that identity before a candidate commit is published.
+The changed provider topology SHALL be frozen as Logic Writing source version `4.0.0`. `VERSION`, package metadata, public source badges, changelog, source reconciliation, current OpenSpec release requirements, and the release-retirement checklist SHALL agree on that identity before a candidate commit is published.
 
 #### Scenario: Candidate source is checked before installation
-- **WHEN** the `3.0.2` candidate is validated on the release branch
+- **WHEN** the `4.0.0` candidate is validated on the release branch
 - **THEN** source-version checks and the recompiled SkillGuard contract SHALL pass on the exact candidate tree
 - **AND** no installed projection, tag, or GitHub Release SHALL be claimed

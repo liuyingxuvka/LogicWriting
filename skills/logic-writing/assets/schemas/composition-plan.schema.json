@@ -24,6 +24,7 @@
     "planned_units": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/plannedUnit" }, "uniqueItems": true },
     "allowed_list_zones": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true },
     "content_dispositions": { "type": "array", "items": { "$ref": "#/$defs/contentDisposition" }, "uniqueItems": true },
+    "limitation_dispositions": { "type": "array", "items": { "$ref": "#/$defs/limitationDisposition" }, "uniqueItems": true },
     "unresolved_conflicts": { "type": "array", "items": { "$ref": "#/$defs/conflict" }, "uniqueItems": true },
     "plan_fingerprint": { "$ref": "#/$defs/fingerprint" }
   },
@@ -64,9 +65,24 @@
       "required": ["content_unit_id", "disposition", "planned_unit_ids", "reason"],
       "properties": {
         "content_unit_id": { "$ref": "#/$defs/identifier" },
-        "disposition": { "enum": ["consumed", "omitted", "deferred", "conflict"] },
+        "disposition": { "enum": ["consumed", "omitted", "deferred", "conflict", "body", "note", "appendix", "internal", "merged", "implied_by_scope", "blocked"] },
         "planned_unit_ids": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true },
         "reason": { "type": "string", "minLength": 1 }
+      }
+    },
+    "limitationDisposition": {
+      "type": "object", "additionalProperties": false,
+      "required": ["limitation_id", "affected_claim_ids", "materiality", "materiality_reason", "disposition", "destination_unit_ids", "merged_into_id", "realization_requirement", "native_boundary_refs"],
+      "properties": {
+        "limitation_id": { "$ref": "#/$defs/identifier" },
+        "affected_claim_ids": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true },
+        "materiality": { "enum": ["changes_answer", "changes_action", "changes_scope", "changes_strength", "supporting_detail", "process_only"] },
+        "materiality_reason": { "type": "string", "minLength": 1 },
+        "disposition": { "enum": ["body", "note", "appendix", "internal", "merged", "implied_by_scope", "omitted", "blocked"] },
+        "destination_unit_ids": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true },
+        "merged_into_id": { "type": ["string", "null"] },
+        "realization_requirement": { "type": "string", "minLength": 1 },
+        "native_boundary_refs": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true }
       }
     },
     "conflict": {

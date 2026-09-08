@@ -14,7 +14,10 @@ REPO_ROOT = FLOWGUARD_ROOT.parent
 
 
 def _load_model(name: str, child: str):
-    path = FLOWGUARD_ROOT / child / "model.py"
+    # Model owners live below the canonical `.flowguard/models/owners` root;
+    # loading that path keeps tests aligned with the production layout and
+    # avoids reviving a second top-level model tree.
+    path = FLOWGUARD_ROOT / "models" / "owners" / child / "model.py"
     spec = importlib.util.spec_from_file_location(name, path)
     assert spec and spec.loader
     module = importlib.util.module_from_spec(spec)

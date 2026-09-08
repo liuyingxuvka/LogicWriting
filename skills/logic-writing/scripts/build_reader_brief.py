@@ -15,6 +15,9 @@ def build_reader_brief(
     native_dependency_receipt_fingerprints,
     content_authority_fingerprints,
     brief_id,
+    native_handoff=None,
+    native_plan=None,
+    native_handoff_mapping=None,
 ):
     return _build_reader_brief(
         route_decision=route_decision,
@@ -24,6 +27,9 @@ def build_reader_brief(
         native_dependency_receipt_fingerprints=native_dependency_receipt_fingerprints,
         content_authority_fingerprints=content_authority_fingerprints,
         brief_id=brief_id,
+        native_handoff=native_handoff,
+        native_plan=native_plan,
+        native_handoff_mapping=native_handoff_mapping,
     )
 
 
@@ -41,6 +47,9 @@ def validate_request(value):
             "content_authority_fingerprints", {}
         ),
         brief_id=request.get("brief_id"),
+        native_handoff=request.get("native_handoff"),
+        native_plan=request.get("native_plan"),
+        native_handoff_mapping=request.get("native_handoff_mapping"),
     )
     return validation_result(
         status="current_pass",

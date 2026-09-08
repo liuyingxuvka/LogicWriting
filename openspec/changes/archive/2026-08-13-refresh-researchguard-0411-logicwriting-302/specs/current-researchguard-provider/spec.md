@@ -6,16 +6,16 @@ Defines the current ResearchGuard provider identity and the narrow set of direct
 
 ### Requirement: Current provider identity is explicit
 
-The system SHALL identify ResearchGuard version 0.4.11 as the current provider dependency and SHALL require the distribution metadata, the `researchguard` console identity, and the reported console version to agree before a member request can be considered current.
+The system SHALL identify ResearchGuard version 0.5.0 as the current provider dependency and SHALL require the distribution metadata, the `researchguard` console identity, and the reported console version to agree before a member request can be considered current.
 
 #### Scenario: Current provider identity passes
 
-- **WHEN** a request selects a supported direct member and the installed distribution and console both report ResearchGuard 0.4.11
+- **WHEN** a request selects a supported direct member and the installed distribution and console both report ResearchGuard 0.5.0
 - **THEN** the provider preflight reports a current identity and continues only to that selected member
 
 #### Scenario: Provider identity mismatch is visible
 
-- **WHEN** distribution metadata, console output, or configured current version differs from 0.4.11
+- **WHEN** distribution metadata, console output, or configured current version differs from 0.5.0
 - **THEN** the request is blocked with an identity-mismatch reason and no member command is executed
 
 ### Requirement: The direct member set is exact
@@ -34,7 +34,7 @@ The system SHALL expose exactly three active direct ResearchGuard members—Logi
 
 ### Requirement: ExperimentGuard and umbrella requests are out of scope
 
-The system SHALL treat ExperimentGuard and the ResearchGuard umbrella route as unsupported in Logic Writing 3.0.2, SHALL return a visible scope-out/blocking result, and SHALL execute zero ResearchGuard provider commands for either request.
+The system SHALL treat ExperimentGuard and the ResearchGuard umbrella route as unsupported in Logic Writing 4.0.0, SHALL return a visible scope-out/blocking result, and SHALL execute zero ResearchGuard provider commands for either request.
 
 #### Scenario: ExperimentGuard is requested
 
@@ -52,7 +52,7 @@ The system SHALL consume ResearchGuard result and receipt material through opaqu
 
 #### Scenario: Qualified current evidence contributes
 
-- **WHEN** a direct-member result has ResearchGuard 0.4.11 qualification, matching member/input identities, matching immutable locator fingerprints, and provider-owned passed status
+- **WHEN** a direct-member result has ResearchGuard 0.5.0 qualification, matching member/input identities, matching immutable locator fingerprints, and provider-owned passed status
 - **THEN** Logic Writing may bind the reference to its adapter envelope without changing native fields
 
 #### Scenario: Self-authored or non-terminal evidence is rejected
@@ -62,7 +62,7 @@ The system SHALL consume ResearchGuard result and receipt material through opaqu
 
 ### Requirement: Installed projection matches the current source
 
-The system SHALL expose a SkillGuard-compiled consumer projection whose declared files, hashes, version, provider contract, and route behavior match the validated Logic Writing 3.0.2 source, and SHALL fail currentness checks when projection drift exists.
+The system SHALL expose a SkillGuard-compiled consumer projection whose declared files, hashes, version, provider contract, and route behavior match the validated Logic Writing 4.0.0 source, and SHALL fail currentness checks when projection drift exists.
 
 #### Scenario: Current installation is verified
 

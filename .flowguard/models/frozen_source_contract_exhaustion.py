@@ -140,6 +140,12 @@ def _base_plan() -> ContractExhaustionPlan:
         require_actionable_oracle_feedback=True,
         inventory_revision="openspec-generated-output-v2",
         inventory_current=True,
+        metadata={
+            # This function owns the finite source-name matrix.  The required
+            # model-test and test-mesh terminal receipts are produced by their
+            # downstream owners and are not fabricated during matrix review.
+            "composite_handoff_results_deferred": True,
+        },
     )
 
 
@@ -271,6 +277,13 @@ def _execution_boundary_plan() -> ContractExhaustionPlan:
         require_actionable_oracle_feedback=True,
         inventory_revision="logic-writing-frozen-execution-boundary-v3",
         inventory_current=True,
+        metadata={
+            # Keep matrix generation separate from the downstream route
+            # acceptance receipts.  A later owner may supply those receipts;
+            # this finite producer must not turn their absence into a schema
+            # error or an invented broad-chain pass.
+            "composite_handoff_results_deferred": True,
+        },
     )
 
 

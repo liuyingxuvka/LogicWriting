@@ -139,8 +139,8 @@ checks:
       - tests/contract/test_release_wrappers.py
       - tests/flowguard/test_alignment_and_mesh.py
       - .flowguard/models/frozen_source_contract_exhaustion.py
-      - .flowguard/test_mesh/model.py
-      - .flowguard/behavior_commitment_ledger/ledger.json
+      - .flowguard/models/owners/test_mesh/model.py
+      - .flowguard/behavior/inventory/ledger.json
     depends_on_receipts: [check.routes.existing, check.fiction.native, check.travel.native]
     command: python
     args: [-m, pytest, -q, tests/contract/test_release_wrappers.py, tests/flowguard/test_alignment_and_mesh.py]
@@ -155,11 +155,11 @@ checks:
     execution_id: logic-writing-release.model-test-alignment.v1
     validation_scope: full
     snapshot_policy: frozen
-    toolchain_identity: flowguard-0.68.15-python
-    input_selectors: [.flowguard/model_test_alignment/**, .flowguard/models/**, .flowguard/behavior_commitment_ledger/**, openspec/verification-contract.yaml, tests/**]
+    toolchain_identity: flowguard-0.69.0-python
+    input_selectors: [.flowguard/models/owners/model_test_alignment/**, .flowguard/models/**, .flowguard/behavior/inventory/**, openspec/verification-contract.yaml, tests/**]
     depends_on_receipts: [check.tests.archive-lifecycle]
     command: python
-    args: [.flowguard/model_test_alignment/run_checks.py, --json]
+    args: [.flowguard/verification/owners/model_test_alignment/run_checks.py, --json]
     timeout_seconds: 600
     required: true
     covers: [req.release.stable-contract, req.release.post-archive]
@@ -171,11 +171,11 @@ checks:
     execution_id: logic-writing-release.models-full.v1
     validation_scope: full
     snapshot_policy: frozen
-    toolchain_identity: flowguard-0.68.15-python
+    toolchain_identity: flowguard-0.69.0-python
     input_selectors: [.flowguard/**, skills/logic-writing/scripts/**, tests/**, openspec/verification-contract.yaml]
     depends_on_receipts: [check.models.alignment]
     command: python
-    args: [.flowguard/run_models.py, --profile, full, --json]
+    args: [.flowguard/verification/run_models.py, --profile, full, --json]
     timeout_seconds: 3600
     required: true
     covers: [req.release.post-archive]
@@ -187,27 +187,59 @@ checks:
     execution_id: logic-writing-release.testmesh-plan.v1
     validation_scope: full
     snapshot_policy: frozen
-    toolchain_identity: flowguard-0.68.15-python
-    input_selectors: [.flowguard/test_mesh/**, .flowguard/models/frozen_source_contract_exhaustion.py, openspec/verification-contract.yaml, scripts/_release_common.py, scripts/run_frozen_validation.py, tests/flowguard/test_alignment_and_mesh.py]
+    toolchain_identity: flowguard-0.69.0-python
+    input_selectors: [.flowguard/models/owners/test_mesh/**, .flowguard/models/frozen_source_contract_exhaustion.py, openspec/verification-contract.yaml, scripts/_release_common.py, scripts/run_frozen_validation.py, tests/flowguard/test_alignment_and_mesh.py]
     depends_on_receipts: [check.models.alignment]
     command: python
-    args: [.flowguard/test_mesh/run_checks.py, --json]
+    args: [.flowguard/verification/owners/test_mesh/run_checks.py, --json]
     timeout_seconds: 600
     required: true
     covers: [req.release.stable-contract, req.release.post-archive]
     expected: {exit_code: 0}
 
+  - id: check.reader.execution-quality-producer
+    kind: command
+    semantic_check_id: logic-writing.reader-execution-quality.real-producer
+    execution_id: logic-writing-release.reader-execution-quality.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: codex-cli-0.153.4-gpt-6-astra-xhigh
+    input_selectors: [scripts/run_reader_acceptance_owner.py, scripts/run_writing_quality_benchmark.py, skills/logic-writing/scripts/**, skills/logic-writing/assets/schemas/**, tests/fixtures/writing_quality/**, skills/logic-writing/references/**]
+    depends_on_receipts: [check.tests.archive-lifecycle]
+    command: python
+    args: [scripts/run_reader_acceptance_owner.py, --root, ., --backend-plan, tests/fixtures/writing_quality/local-backend-plan.json, --json]
+    timeout_seconds: 90000
+    required: true
+    covers: [req.release.post-archive]
+    expected: {exit_code: 0}
+
   - id: check.reader.judgment
     kind: command
     semantic_check_id: logic-writing.reader-judgment.current-artifact
-    execution_id: logic-writing-release.reader-judgment.v2
+    execution_id: logic-writing-release.reader-judgment.v3
     validation_scope: full
     snapshot_policy: frozen
-    toolchain_identity: logic-writing-judgment-validator-v1
-    input_selectors: [scripts/check_reader_judgment.py, scripts/prepare_reader_quality_receipt.py, skills/logic-writing/references/shared/human-writing.md, skills/logic-writing/scripts/**, skills/logic-writing/assets/schemas/reader-judgment.schema.json, tests/support.py, tests/fixtures/forward/**]
-    depends_on_receipts: [check.tests.archive-lifecycle]
+    toolchain_identity: logic-writing-judgment-validator-v2
+    input_selectors: [scripts/check_reader_judgment.py, skills/logic-writing/scripts/**, skills/logic-writing/assets/schemas/**, tests/fixtures/writing_quality/rubric.machine.json]
+    depends_on_receipts: [check.reader.execution-quality-producer]
     command: python
-    args: [scripts/check_reader_judgment.py, --root, ., --json]
+    args: [scripts/check_reader_judgment.py, --root, ., --dependency-producer, check.reader.execution-quality-producer, --json]
+    timeout_seconds: 300
+    required: true
+    covers: [req.release.post-archive]
+    expected: {exit_code: 0}
+
+  - id: check.writing.quality-benchmark
+    kind: command
+    semantic_check_id: logic-writing.writing-quality-benchmark.acceptance
+    execution_id: logic-writing-release.writing-quality-benchmark.v2
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: logic-writing-quality-summary-validator-v1
+    input_selectors: [scripts/check_writing_quality_run.py, scripts/run_writing_quality_benchmark.py, tests/fixtures/writing_quality/**]
+    depends_on_receipts: [check.reader.execution-quality-producer]
+    command: python
+    args: [scripts/check_writing_quality_run.py, --root, ., --dependency-producer, check.reader.execution-quality-producer, --json]
     timeout_seconds: 300
     required: true
     covers: [req.release.post-archive]
@@ -250,7 +282,6 @@ checks:
       - skills/logic-writing/routes/**/*
       - skills/logic-writing/scripts/**/*.py
       - skills/logic-writing/.skillguard/*.json
-      - skills/logic-writing/.skillguard/**/*.py
       - skills/logic-writing/.skillguard/**/*.json
       - tests/**/*.py
       - tests/fixtures/**/*
@@ -302,7 +333,7 @@ checks:
     snapshot_policy: frozen
     toolchain_identity: python-pytest
     input_selectors: [skills/logic-writing/**, tests/**, .flowguard/**, openspec/**, docs/**, scripts/**, AGENTS.md, VERSION, pyproject.toml, README.md, README.zh-CN.md, CHANGELOG.md]
-    depends_on_receipts: [check.models.full, check.testmesh.plan, check.reader.judgment, check.release.source]
+    depends_on_receipts: [check.models.full, check.testmesh.plan, check.reader.judgment, check.writing.quality-benchmark, check.release.source]
     command: python
     args: [-m, pytest, -q]
     timeout_seconds: 3600

@@ -5,7 +5,7 @@
   "native_owner": "sourceguard",
   "native_route_id": "primary:researchguard:source",
   "native_check_id": "sourceguard.canon_support_applicability",
-  "tool_version": "0.4.11",
+  "tool_version": "0.5.1",
   "receipt_schema_version": "sourceguard.native_terminal_receipt.v1",
   "input_fingerprint": "sha256:d46f9afebfa242ba7991beabcfe78ba3fcbffdf920f106313b72f08ae887f901",
   "terminal_receipt_id": "compact-guard-pass-sourceguard-terminal",

@@ -1,8 +1,8 @@
 [flowguard]
 repository = "https://github.com/liuyingxuvka/FlowGuard"
-adopted_package_version = "0.68.15"
+adopted_package_version = "0.69.0"
 schema_version = "1.0"
-last_verified_at = "2026-08-12T19:52:53+00:00"
+last_verified_at = "2026-09-07T17:36:48+00:00"
 last_verified_by = "FlowGuard project-upgrade"
 agents_path = "AGENTS.md"
 
@@ -15,12 +15,12 @@ require_model_update_for_behavior_changes = true
 
 [model_authority]
 system_id = "logic-writing"
-observed_snapshot_path = ".flowguard/model-mesh/snapshots/930e6ada828a1d5b224d8af6ec6a12f4ac7a6be48f95fd0d3064c1ce8458180c.json"
-observed_snapshot_fingerprint = "sha256:930e6ada828a1d5b224d8af6ec6a12f4ac7a6be48f95fd0d3064c1ce8458180c"
-subject_revision = "source-inventory:c749ea5137b2e97e3a2ff5e51f443e48663d56ff7ba0b97ce513d349d58ff775"
+observed_snapshot_path = ".flowguard/models/authority/snapshots/e9885c5ad567437430fe8a60a0be21580f70bad3225bf9df34f7692b803b0e21.json"
+observed_snapshot_fingerprint = "sha256:e9885c5ad567437430fe8a60a0be21580f70bad3225bf9df34f7692b803b0e21"
+subject_revision = "source-inventory:1bedde09beedc4fd655196bcef086bc21fc67c3cf62f9f4a38d9679c3a3b43ff"
 coverage_status = "incomplete_within_declared_boundary"
 generation = 2
-accepted_revision_set_fingerprint = "sha256:5074c283b998e4075ced32c3bf6dcfb94f69150a9e65e6f8130aadf2a2d28819"
-previous_snapshot_fingerprint = "sha256:99f7d059eb89cbb6f8d2028116fe31782aeaa9a70c499d10d7260339ce827314"
-activation_receipt_fingerprint = "sha256:b7d66293c5286a7df27cf123860108a36ff07972825ddf7c124974ee4d3dbb94"
-head_fingerprint = "sha256:fae801e9adac0a7d2367f53de08efcef9c761e2b51149793839f155758e9407e"
+accepted_revision_set_fingerprint = "sha256:d6b078804bd98da47e72ba04e9550ce3226884b14dac820933dfa73828f27d36"
+previous_snapshot_fingerprint = "sha256:930e6ada828a1d5b224d8af6ec6a12f4ac7a6be48f95fd0d3064c1ce8458180c"
+activation_receipt_fingerprint = "sha256:8b445a7def39905e00b6279bcf60071abf4798f151ab974c6c96729199194930"
+head_fingerprint = "sha256:881b384c39630c60f02944f4cf4d4104c685fe54f22516faba8f89ed575e86a7"

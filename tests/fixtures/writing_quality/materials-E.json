@@ -1,0 +1,54 @@
+{
+  "pack_id": "E",
+  "synthetic": true,
+  "records": [
+    {
+      "id": "E01",
+      "text": "同一台合成测试设备、中等负载、相同每小时100单位服务产出。三组匹配时段旧控制器功率为100、102、98 kW，新控制器为90、92、88 kW。平均分别100和90 kW；平均功率下降10%。没有统计显著性检验。",
+      "role": "frozen_source_material",
+      "source_locator": "acceptance-rubric.md:11"
+    },
+    {
+      "id": "E02",
+      "text": "中等负载日志显示新控制器降低了无效回流，同时维持相同服务产出。日志支持这一机制解释，但没有对其它可能因素做完全随机化排除。",
+      "role": "frozen_source_material",
+      "source_locator": "acceptance-rubric.md:12"
+    },
+    {
+      "id": "E03",
+      "text": "高负载只测一组：旧110 kW，新111 kW，相同产出。此组未显示节能，不能把中等负载结果扩展为全负载优势。",
+      "role": "frozen_source_material",
+      "source_locator": "acceptance-rubric.md:13"
+    },
+    {
+      "id": "E04",
+      "text": "测试只有一台设备、短期匹配时段，没有长期老化数据。E01的数值可报告为本测试结果，不代表全部设备或长期年均节能。",
+      "role": "frozen_source_material",
+      "source_locator": "acceptance-rubric.md:14"
+    },
+    {
+      "id": "E05",
+      "text": "控制器报价12,000 CU（虚构货币单位），适用中等负载运行时间按4,000小时/年作情景假设，能源价格0.25 CU/kWh。按E01节省10 kW估算，可节省40,000 kWh/年，即10,000 CU/年，简单回收期1.2年。未包含安装、停机、维护、融资成本；该情景假设没有证明现场可达。",
+      "role": "frozen_source_material",
+      "source_locator": "acceptance-rubric.md:15"
+    },
+    {
+      "id": "E06",
+      "text": "厂商宣传写“各工况节能20%”；材料没有给出支持此百分比的试验。不得把宣传作为已观察结果。",
+      "role": "frozen_source_material",
+      "source_locator": "acceptance-rubric.md:16"
+    },
+    {
+      "id": "E07",
+      "text": "一份维护档案抓取失败；另一次搜索返回重复网址；工具日志记录了run_id、provider状态和模型检查进度。这些不是设备性能结论，也不是正文必须逐条交代的事实。",
+      "role": "process_log",
+      "source_locator": "acceptance-rubric.md:17"
+    },
+    {
+      "id": "E08",
+      "text": "建议的下一项验证是保留高/中负载分层，在更多设备上做相同产出比较；此建议不是已完成实验。",
+      "role": "frozen_source_material",
+      "source_locator": "acceptance-rubric.md:18"
+    }
+  ]
+}

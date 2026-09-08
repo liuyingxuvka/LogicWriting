@@ -1,0 +1,1078 @@
+{
+  ".skillguard/contract-source.json": [
+    "academic-provenance",
+    "fiction-native",
+    "final-closure",
+    "investigation-evidence",
+    "model-depth",
+    "reader-actual-artifact",
+    "release-integrity",
+    "routing",
+    "shared-writing",
+    "specialist-authority",
+    "travel-native"
+  ],
+  ".skillguard/evidence-specs/academic.json": [
+    "academic-provenance"
+  ],
+  ".skillguard/evidence-specs/artifact.json": [
+    "reader-actual-artifact"
+  ],
+  ".skillguard/evidence-specs/closure.json": [
+    "final-closure"
+  ],
+  ".skillguard/evidence-specs/investigation.json": [
+    "investigation-evidence"
+  ],
+  ".skillguard/evidence-specs/route.json": [
+    "routing"
+  ],
+  ".skillguard/evidence-specs/semantic.json": [
+    "shared-writing"
+  ],
+  "SKILL.md": [
+    "routing",
+    "specialist-authority"
+  ],
+  "agents/openai.yaml": [
+    "routing",
+    "specialist-authority"
+  ],
+  "assets/schemas/academic-composition.schema.json": [
+    "academic-provenance"
+  ],
+  "assets/schemas/adapter-request.schema.json": [
+    "specialist-authority"
+  ],
+  "assets/schemas/adapter-result.schema.json": [
+    "specialist-authority"
+  ],
+  "assets/schemas/artifact-map.schema.json": [
+    "reader-actual-artifact",
+    "shared-writing"
+  ],
+  "assets/schemas/claim-support.schema.json": [
+    "investigation-evidence",
+    "specialist-authority"
+  ],
+  "assets/schemas/closure.schema.json": [
+    "final-closure",
+    "reader-actual-artifact"
+  ],
+  "assets/schemas/composition-plan.schema.json": [
+    "reader-actual-artifact",
+    "shared-writing"
+  ],
+  "assets/schemas/evidence-receipt.schema.json": [
+    "final-closure",
+    "reader-actual-artifact"
+  ],
+  "assets/schemas/fiction-composition.schema.json": [
+    "fiction-native"
+  ],
+  "assets/schemas/investigation-composition.schema.json": [
+    "investigation-evidence"
+  ],
+  "assets/schemas/obligation-manifest.schema.json": [
+    "reader-actual-artifact",
+    "shared-writing"
+  ],
+  "assets/schemas/reader-audit.schema.json": [
+    "reader-actual-artifact",
+    "shared-writing"
+  ],
+  "assets/schemas/reader-brief.schema.json": [
+    "reader-actual-artifact",
+    "shared-writing"
+  ],
+  "assets/schemas/reader-execution-record.schema.json": [
+    "final-closure",
+    "reader-actual-artifact"
+  ],
+  "assets/schemas/reader-intent.schema.json": [
+    "routing",
+    "specialist-authority"
+  ],
+  "assets/schemas/reader-judgment.schema.json": [
+    "reader-actual-artifact",
+    "shared-writing"
+  ],
+  "assets/schemas/reader-repair-request.schema.json": [
+    "reader-actual-artifact",
+    "shared-writing"
+  ],
+  "assets/schemas/reader-repair-result.schema.json": [
+    "reader-actual-artifact",
+    "shared-writing"
+  ],
+  "assets/schemas/research-packet.schema.json": [
+    "investigation-evidence",
+    "specialist-authority"
+  ],
+  "assets/schemas/researchguard-consumption-binding.schema.json": [
+    "specialist-authority"
+  ],
+  "assets/schemas/researchguard-logic-handoff.schema.json": [
+    "specialist-authority"
+  ],
+  "assets/schemas/revision-provenance.schema.json": [
+    "academic-provenance"
+  ],
+  "assets/schemas/route-artifact-review.schema.json": [
+    "reader-actual-artifact",
+    "shared-writing"
+  ],
+  "assets/schemas/route-decision.schema.json": [
+    "routing",
+    "specialist-authority"
+  ],
+  "assets/schemas/shared-writing-contract.schema.json": [
+    "reader-actual-artifact",
+    "shared-writing"
+  ],
+  "assets/schemas/source-registry.schema.json": [
+    "investigation-evidence",
+    "specialist-authority"
+  ],
+  "assets/schemas/source-unit-manifest.schema.json": [
+    "investigation-evidence",
+    "specialist-authority"
+  ],
+  "assets/schemas/travel-composition.schema.json": [
+    "travel-native"
+  ],
+  "assets/schemas/writing-request.schema.json": [
+    "routing",
+    "specialist-authority"
+  ],
+  "references/adapters/documents.md": [
+    "specialist-authority"
+  ],
+  "references/adapters/flowguard.md": [
+    "specialist-authority"
+  ],
+  "references/adapters/logicguard.md": [
+    "specialist-authority"
+  ],
+  "references/adapters/pdf.md": [
+    "specialist-authority"
+  ],
+  "references/adapters/researchguard.md": [
+    "specialist-authority"
+  ],
+  "references/adapters/sourceguard.md": [
+    "specialist-authority"
+  ],
+  "references/adapters/traceguard.md": [
+    "specialist-authority"
+  ],
+  "references/adapters/worldguard.md": [
+    "specialist-authority"
+  ],
+  "references/router.md": [
+    "routing",
+    "specialist-authority"
+  ],
+  "references/routes/academic-writing.md": [
+    "academic-provenance"
+  ],
+  "references/routes/fiction-writing.md": [
+    "fiction-native"
+  ],
+  "references/routes/investigation.md": [
+    "investigation-evidence"
+  ],
+  "references/routes/required-resources.json": [
+    "reader-actual-artifact",
+    "shared-writing"
+  ],
+  "references/routes/travel-guide.md": [
+    "travel-native"
+  ],
+  "references/shared/closure.md": [
+    "final-closure",
+    "reader-actual-artifact"
+  ],
+  "references/shared/human-writing.md": [
+    "reader-actual-artifact",
+    "shared-writing"
+  ],
+  "references/shared/reader-brief.md": [
+    "reader-actual-artifact",
+    "shared-writing"
+  ],
+  "references/shared/research-packet.md": [
+    "investigation-evidence",
+    "specialist-authority"
+  ],
+  "references/shared/writing-contract.md": [
+    "reader-actual-artifact",
+    "shared-writing"
+  ],
+  "routes/academic/scripts/validate_academic_artifact.py": [
+    "academic-provenance"
+  ],
+  "routes/fiction/examples/execution-depth/intentionally-shallow.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/execution-depth/representative-positive.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/guard_lifecycle_cases/compact-bad-worldguard-scopeout.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/guard_lifecycle_cases/compact-missing-flowguard.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/guard_lifecycle_cases/compact-missing-logicguard.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/guard_lifecycle_cases/compact-missing-sourceguard.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/guard_lifecycle_cases/compact-missing-traceguard.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/guard_lifecycle_cases/compact-pass.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/guard_lifecycle_cases/compact-prose-only-evidence.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/guard_lifecycle_cases/compact-stale-flowguard.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/guard_lifecycle_cases/handoffs/flowguard.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/guard_lifecycle_cases/handoffs/logicguard.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/guard_lifecycle_cases/handoffs/sourceguard.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/guard_lifecycle_cases/handoffs/traceguard.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/guard_lifecycle_cases/handoffs/worldguard.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/guard_lifecycle_cases/receipts/flowguard-terminal.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/guard_lifecycle_cases/receipts/logicguard-terminal.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/guard_lifecycle_cases/receipts/sourceguard-terminal.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/guard_lifecycle_cases/receipts/traceguard-terminal.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/guard_lifecycle_cases/receipts/worldguard-terminal.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_failure_cases/duplicate-binding-without-delta.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_failure_cases/fake-chapter-interface.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_failure_cases/final-chapter-prose-bypass.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_failure_cases/final-prose-fake-ai-review.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_failure_cases/final-prose-hash-mismatch.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_failure_cases/final-prose-missing-artifact.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_failure_cases/final-prose-missing-model-prose-binding.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_failure_cases/final-prose-missing-source-requirements.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_failure_cases/final-prose-nonexistent-manuscript.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_failure_cases/final-prose-stale-model-binding.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_failure_cases/final-prose-stale-semantic-review.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_failure_cases/final-volume-prose-bypass.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_failure_cases/length-outlier-without-binding-review.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_failure_cases/longform-closure-missing-interface.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_failure_cases/markdown-model-surface-substitution.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_failure_cases/missing-material-continuity.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_failure_cases/orphan-chapter.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_failure_cases/pov-drift.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_failure_cases/premature-hypothesis-collapse.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_failure_cases/semantic-review-incomplete-contract.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_failure_cases/smooth-reveal-without-resistance.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_failure_cases/stale-model-prose-binding.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_failure_cases/stale-semantic-review.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_failure_cases/substitute-reverse-outline-as-ledger.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_failure_cases/term-register-owner-drift.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_failure_cases/unbound-prose-span.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_failure_cases/unrealized-model-ref.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_failure_cases/unresolved-key-promise.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_failure_cases/weak-reverse-outline.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_novel_project/chapter-interfaces.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_novel_project/drafts/book-01-final.txt": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_novel_project/guard_handoffs/flowguard-planning.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_novel_project/guard_handoffs/flowguard.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_novel_project/guard_handoffs/logicguard-planning.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_novel_project/guard_handoffs/logicguard.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_novel_project/guard_handoffs/sourceguard-planning.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_novel_project/guard_handoffs/sourceguard.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_novel_project/guard_handoffs/traceguard-planning.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_novel_project/guard_handoffs/traceguard.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_novel_project/guard_handoffs/worldguard-planning.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_novel_project/guard_handoffs/worldguard.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_novel_project/guard_receipts/flowguard-planning.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_novel_project/guard_receipts/flowguard.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_novel_project/guard_receipts/logicguard-planning.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_novel_project/guard_receipts/logicguard.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_novel_project/guard_receipts/sourceguard-planning.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_novel_project/guard_receipts/sourceguard.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_novel_project/guard_receipts/traceguard-planning.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_novel_project/guard_receipts/traceguard.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_novel_project/guard_receipts/worldguard-planning.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_novel_project/guard_receipts/worldguard.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_novel_project/longform-closure.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_novel_project/longform-final-prose-closure.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_novel_project/model-prose-binding.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_novel_project/novel-ledger.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_novel_project/project-mesh.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_novel_project/promise-payoff.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_novel_project/semantic-review.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_novel_project/source-requirements.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/longform_novel_project/voice-style-report.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/reader_room_failure_cases/author_forecast_chapter_ending.md": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/reader_room_failure_cases/duplicate_chapter_contribution.md": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/reader_room_failure_cases/exposition_pressure_over_scene.md": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/reader_room_failure_cases/intentional_repetition_with_escalation.md": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/reader_room_failure_cases/late_payoff_without_prior_support.md": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/reader_room_failure_cases/location_changes_without_pressure_change.md": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/reader_room_failure_cases/premature_reveal_without_support.md": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/reader_room_failure_cases/reader_room_planning_leak.md": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/reader_room_failure_cases/repeated_event_function.md": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/reader_room_failure_cases/same_voice_cast.md": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/route_cases/compact-final-prose-blocked.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/route_cases/compact-micro-story.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/route_cases/explicit-alias-short-story.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/route_cases/final-chapter-prose.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/route_cases/final-volume-prose.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/route_cases/missing-prose-phase.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/route_cases/novella-post-draft.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/route_cases/pre-draft-chapter-plan.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/route_cases/unknown-artifact.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/short_story_project/expected-closure.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/short_story_project/guard_handoffs/flowguard.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/short_story_project/guard_handoffs/logicguard.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/short_story_project/guard_handoffs/sourceguard.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/short_story_project/guard_handoffs/traceguard.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/short_story_project/guard_handoffs/worldguard.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/short_story_project/guard_receipts/flowguard-terminal.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/short_story_project/guard_receipts/logicguard-terminal.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/short_story_project/guard_receipts/sourceguard-terminal.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/short_story_project/guard_receipts/traceguard-terminal.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/short_story_project/guard_receipts/worldguard-terminal.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/short_story_project/scene-cards.yaml": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/short_story_project/story-ledger.yaml": [
+    "fiction-native"
+  ],
+  "routes/fiction/examples/short_story_project/worldguard-claims.yaml": [
+    "fiction-native"
+  ],
+  "routes/fiction/guard-model/contract.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/guard-model/known-bad.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/guard-model/known-good.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/guard-model/oracles.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/guard-model/verify.py": [
+    "fiction-native"
+  ],
+  "routes/fiction/references/artifact-taxonomy.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/references/chapter-interface-prose-blueprint.md": [
+    "fiction-native"
+  ],
+  "routes/fiction/references/closure-report.md": [
+    "fiction-native"
+  ],
+  "routes/fiction/references/depth-closure-evidence.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/references/depth-route-evidence.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/references/depth-validation-evidence.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/references/depth-workflow-evidence.json": [
+    "fiction-native"
+  ],
+  "routes/fiction/references/guard-depth-policy.md": [
+    "fiction-native"
+  ],
+  "routes/fiction/references/guard-receipt-handoff.md": [
+    "fiction-native"
+  ],
+  "routes/fiction/references/logicguard-theme-contract.md": [
+    "fiction-native"
+  ],
+  "routes/fiction/references/longform-closure.md": [
+    "fiction-native"
+  ],
+  "routes/fiction/references/longform-lifecycle.md": [
+    "fiction-native"
+  ],
+  "routes/fiction/references/novel-ledger.md": [
+    "fiction-native"
+  ],
+  "routes/fiction/references/project-model-mesh.md": [
+    "fiction-native"
+  ],
+  "routes/fiction/references/promise-payoff-ledger.md": [
+    "fiction-native"
+  ],
+  "routes/fiction/references/prose-native-contract.md": [
+    "fiction-native"
+  ],
+  "routes/fiction/references/scene-contract.md": [
+    "fiction-native"
+  ],
+  "routes/fiction/references/semantic-review-contract.md": [
+    "fiction-native"
+  ],
+  "routes/fiction/references/sourceguard-canon-contract.md": [
+    "fiction-native"
+  ],
+  "routes/fiction/references/story-artifact-lifecycle.md": [
+    "fiction-native"
+  ],
+  "routes/fiction/references/story-contribution-contract.md": [
+    "fiction-native"
+  ],
+  "routes/fiction/references/story-development-flowgraph.md": [
+    "fiction-native"
+  ],
+  "routes/fiction/references/story-engineering-ledger.md": [
+    "fiction-native"
+  ],
+  "routes/fiction/references/structure-turning-points.md": [
+    "fiction-native"
+  ],
+  "routes/fiction/references/traceguard-storyline-contract.md": [
+    "fiction-native"
+  ],
+  "routes/fiction/references/voice-style-continuity.md": [
+    "fiction-native"
+  ],
+  "routes/fiction/references/workflow.md": [
+    "fiction-native"
+  ],
+  "routes/fiction/references/worldguard-adapter.md": [
+    "fiction-native"
+  ],
+  "routes/fiction/scripts/build_manuscript_artifact_map.py": [
+    "fiction-native"
+  ],
+  "routes/fiction/scripts/chapter_interface_check.py": [
+    "fiction-native"
+  ],
+  "routes/fiction/scripts/doc_contract_check.py": [
+    "fiction-native"
+  ],
+  "routes/fiction/scripts/evidence_identity.py": [
+    "fiction-native"
+  ],
+  "routes/fiction/scripts/final_closure_text_check.py": [
+    "fiction-native"
+  ],
+  "routes/fiction/scripts/guard_handoff_check.py": [
+    "fiction-native"
+  ],
+  "routes/fiction/scripts/installed_parity_check.py": [
+    "fiction-native"
+  ],
+  "routes/fiction/scripts/longform_closure_check.py": [
+    "fiction-native"
+  ],
+  "routes/fiction/scripts/model_prose_binding_check.py": [
+    "fiction-native"
+  ],
+  "routes/fiction/scripts/novel_ledger_check.py": [
+    "fiction-native"
+  ],
+  "routes/fiction/scripts/promise_payoff_check.py": [
+    "fiction-native"
+  ],
+  "routes/fiction/scripts/reader_room_guidance_check.py": [
+    "fiction-native"
+  ],
+  "routes/fiction/scripts/run_guard_lifecycle_regression.py": [
+    "fiction-native"
+  ],
+  "routes/fiction/scripts/run_installed_parity_regression.py": [
+    "fiction-native"
+  ],
+  "routes/fiction/scripts/run_longform_regression.py": [
+    "fiction-native"
+  ],
+  "routes/fiction/scripts/run_native_regression.py": [
+    "fiction-native"
+  ],
+  "routes/fiction/scripts/run_route_regression.py": [
+    "fiction-native"
+  ],
+  "routes/fiction/scripts/run_story_model_mesh_regression.py": [
+    "fiction-native"
+  ],
+  "routes/fiction/scripts/scene_contract_check.py": [
+    "fiction-native"
+  ],
+  "routes/fiction/scripts/semantic_review_check.py": [
+    "fiction-native"
+  ],
+  "routes/fiction/scripts/story_contribution_check.py": [
+    "fiction-native"
+  ],
+  "routes/fiction/scripts/story_ledger_check.py": [
+    "fiction-native"
+  ],
+  "routes/fiction/scripts/storyline_closure_check.py": [
+    "fiction-native"
+  ],
+  "routes/fiction/scripts/storyline_project_mesh_check.py": [
+    "fiction-native"
+  ],
+  "routes/fiction/scripts/storyline_route_check.py": [
+    "fiction-native"
+  ],
+  "routes/fiction/scripts/turning_point_check.py": [
+    "fiction-native"
+  ],
+  "routes/fiction/scripts/validate_fiction_artifact.py": [
+    "fiction-native"
+  ],
+  "routes/fiction/scripts/voice_style_continuity_check.py": [
+    "fiction-native"
+  ],
+  "routes/investigation/scripts/validate_investigation_artifact.py": [
+    "investigation-evidence"
+  ],
+  "routes/travel/examples/failure_cases/accessibility_review_missing.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/failure_cases/candidate_dangling_risk.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/failure_cases/candidate_source_role_mismatch.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/failure_cases/candidate_unknown_source.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/failure_cases/candidate_wrong_world_target.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/failure_cases/child_protection_missing.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/failure_cases/claim_level_overreach.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/failure_cases/date_relation_lie.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/failure_cases/day_interface_chain_mismatch.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/failure_cases/fallback_unknown_replacement.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/failure_cases/fallback_unreachable.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/failure_cases/final_artifact_hash_drift.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/failure_cases/final_artifact_missing.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/failure_cases/fit_input_drift.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/failure_cases/lodging_nonhotel.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/failure_cases/promise_class_mismatch.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/failure_cases/reverse_review_hash_drift.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/failure_cases/reverse_review_observation_drift.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/failure_cases/route_edge_chain_broken.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/failure_cases/route_wrong_world_target.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/failure_cases/scene_unknown_day.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/failure_cases/upstream_nonpass_overwritten.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/failure_cases/walking_tolerance_exceeded.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/failure_cases/weather_chronology_mismatch.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/good_city_couple_trip/guide.md": [
+    "travel-native"
+  ],
+  "routes/travel/examples/good_city_couple_trip/plan.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/good_text_outputs/city_couple_native_guide.review.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/good_text_outputs/city_couple_native_guide.txt": [
+    "travel-native"
+  ],
+  "routes/travel/examples/positive_cases/accessibility-guide.md": [
+    "travel-native"
+  ],
+  "routes/travel/examples/positive_cases/accessibility.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/positive_cases/day-of-guide.md": [
+    "travel-native"
+  ],
+  "routes/travel/examples/positive_cases/day_of.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/positive_cases/family-child-guide.md": [
+    "travel-native"
+  ],
+  "routes/travel/examples/positive_cases/family_child.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/positive_cases/low-stamina-guide.md": [
+    "travel-native"
+  ],
+  "routes/travel/examples/positive_cases/low_stamina.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/positive_cases/near-future-bookable-guide.md": [
+    "travel-native"
+  ],
+  "routes/travel/examples/positive_cases/near_future_bookable.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/positive_cases/past-observed-guide.md": [
+    "travel-native"
+  ],
+  "routes/travel/examples/positive_cases/past_observed.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/text_failure_cases/artifact_hash_drift.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/text_failure_cases/bullet_list_only.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/text_failure_cases/internal_jargon_leak.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/text_failure_cases/missing_day_headings.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/text_failure_cases/missing_reverse_review.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/text_failure_cases/named_fallback_drift.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/text_failure_cases/observation_drift.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/text_failure_cases/weather_evidence_missing.json": [
+    "travel-native"
+  ],
+  "routes/travel/examples/text_failure_cases/weather_mode_missing.json": [
+    "travel-native"
+  ],
+  "routes/travel/references/closure-report.md": [
+    "travel-native"
+  ],
+  "routes/travel/references/experience-candidate-pool.md": [
+    "travel-native"
+  ],
+  "routes/travel/references/flowguard-development-process.md": [
+    "travel-native"
+  ],
+  "routes/travel/references/guard-role-map.md": [
+    "travel-native"
+  ],
+  "routes/travel/references/negative-evidence-and-fallback.md": [
+    "travel-native"
+  ],
+  "routes/travel/references/route-mesh.md": [
+    "travel-native"
+  ],
+  "routes/travel/references/runtime-workflow.md": [
+    "travel-native"
+  ],
+  "routes/travel/references/source-portfolio.md": [
+    "travel-native"
+  ],
+  "routes/travel/references/story-output-contract.md": [
+    "travel-native"
+  ],
+  "routes/travel/references/traveler-native-guide-compiler.md": [
+    "travel-native"
+  ],
+  "routes/travel/references/traveler-profile.md": [
+    "travel-native"
+  ],
+  "routes/travel/references/trip-fit-review.md": [
+    "travel-native"
+  ],
+  "routes/travel/references/world-feasibility.md": [
+    "travel-native"
+  ],
+  "routes/travel/scripts/build_guide_artifact_map.py": [
+    "travel-native"
+  ],
+  "routes/travel/scripts/fixture_mutation.py": [
+    "travel-native"
+  ],
+  "routes/travel/scripts/travel_contract.py": [
+    "travel-native"
+  ],
+  "routes/travel/scripts/validate_failure_cases.py": [
+    "travel-native"
+  ],
+  "routes/travel/scripts/validate_positive_cases.py": [
+    "travel-native"
+  ],
+  "routes/travel/scripts/validate_travel_artifact.py": [
+    "travel-native"
+  ],
+  "routes/travel/scripts/validate_travel_plan.py": [
+    "travel-native"
+  ],
+  "routes/travel/scripts/validate_travel_text_outputs.py": [
+    "travel-native"
+  ],
+  "scripts/_common.py": [
+    "reader-actual-artifact",
+    "shared-writing"
+  ],
+  "scripts/audit_reader_output.py": [
+    "reader-actual-artifact",
+    "shared-writing"
+  ],
+  "scripts/build_artifact_map.py": [
+    "reader-actual-artifact",
+    "shared-writing"
+  ],
+  "scripts/build_obligation_manifest.py": [
+    "reader-actual-artifact",
+    "shared-writing"
+  ],
+  "scripts/build_reader_brief.py": [
+    "reader-actual-artifact",
+    "shared-writing"
+  ],
+  "scripts/build_reader_brief_receipt.py": [
+    "reader-actual-artifact",
+    "shared-writing"
+  ],
+  "scripts/build_reader_repair.py": [
+    "reader-actual-artifact",
+    "shared-writing"
+  ],
+  "scripts/build_source_unit_manifest.py": [
+    "investigation-evidence",
+    "specialist-authority"
+  ],
+  "scripts/derive_closure.py": [
+    "final-closure",
+    "reader-actual-artifact"
+  ],
+  "scripts/execution_record_resolver.py": [
+    "final-closure",
+    "reader-actual-artifact"
+  ],
+  "scripts/propagate_staleness.py": [
+    "final-closure",
+    "reader-actual-artifact"
+  ],
+  "scripts/provider_preflight.py": [
+    "specialist-authority"
+  ],
+  "scripts/reader_execution.py": [
+    "final-closure",
+    "reader-actual-artifact"
+  ],
+  "scripts/local_execution_backend.py": [
+    "final-closure",
+    "reader-actual-artifact"
+  ],
+  "scripts/reader_pipeline.py": [
+    "academic-provenance",
+    "fiction-native",
+    "investigation-evidence",
+    "reader-actual-artifact",
+    "routing",
+    "shared-writing",
+    "travel-native"
+  ],
+  "scripts/reader_receipts.py": [
+    "final-closure",
+    "reader-actual-artifact"
+  ],
+  "scripts/receipt_authority.py": [
+    "final-closure",
+    "reader-actual-artifact"
+  ],
+  "scripts/receipt_store.py": [
+    "final-closure",
+    "reader-actual-artifact"
+  ],
+  "scripts/record_reader_repair.py": [
+    "reader-actual-artifact",
+    "shared-writing"
+  ],
+  "scripts/researchguard_handoff.py": [
+    "specialist-authority"
+  ],
+  "scripts/review_obligations.py": [
+    "reader-actual-artifact",
+    "shared-writing"
+  ],
+  "scripts/schema_validation.py": [
+    "reader-actual-artifact",
+    "shared-writing"
+  ],
+  "scripts/select_route.py": [
+    "routing",
+    "specialist-authority"
+  ],
+  "scripts/text_extent.py": [
+    "reader-actual-artifact",
+    "shared-writing"
+  ],
+  "scripts/validate_adapter_request.py": [
+    "specialist-authority"
+  ],
+  "scripts/validate_adapter_result.py": [
+    "specialist-authority"
+  ],
+  "scripts/validate_claim_support.py": [
+    "investigation-evidence",
+    "specialist-authority"
+  ],
+  "scripts/validate_judgment_receipt.py": [
+    "final-closure",
+    "reader-actual-artifact"
+  ],
+  "scripts/validate_research_packet.py": [
+    "investigation-evidence",
+    "specialist-authority"
+  ],
+  "scripts/validate_revision_provenance.py": [
+    "academic-provenance"
+  ],
+  "scripts/validate_shared_writing.py": [
+    "reader-actual-artifact",
+    "shared-writing"
+  ],
+  "scripts/validate_source_registry.py": [
+    "investigation-evidence",
+    "specialist-authority"
+  ]
+}

@@ -28,6 +28,7 @@
     "deterministic_audit_fingerprint": { "$ref": "#/$defs/fp" },
     "route_audit_fingerprint": { "$ref": "#/$defs/fp" },
     "judgment_fingerprint": { "$ref": "#/$defs/fp" },
+    "reader_execution_record_fingerprints": { "type": "array", "items": { "$ref": "#/$defs/fp" }, "uniqueItems": true },
     "revision_provenance_fingerprint": { "$ref": "#/$defs/fp" },
     "repair_result_fingerprints": {
       "type": "array", "items": { "$ref": "#/$defs/fp" }, "uniqueItems": true

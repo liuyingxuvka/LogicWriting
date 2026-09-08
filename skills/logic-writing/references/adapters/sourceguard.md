@@ -11,6 +11,6 @@ there is no member import, module command, checkout locator, or alternate
 member path. Preserve `candidate`, `observed`, `access_gap`, `bounded`,
 `planning_only`, `provider_unavailable`, and native receipt status exactly.
 Only observed source content with resolvable lineage may enter factual support.
-The current provider identity is ResearchGuard `0.4.11`; preserve its native
+The current provider identity is ResearchGuard `0.5.1`; preserve its native
 result and receipt as an opaque reference rather than fabricating a local
 SourceGuard-native receipt.

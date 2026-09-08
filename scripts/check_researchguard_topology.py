@@ -42,7 +42,7 @@ REQUIRED_BINDINGS = {
     "sourceguard": ("source", "primary:researchguard:source"),
     "traceguard": ("trace", "primary:researchguard:trace"),
 }
-SUPPORTED_VERSION = "0.4.11"
+SUPPORTED_VERSION = "0.5.1"
 
 
 def _governed_files(root: Path):
@@ -135,7 +135,7 @@ def check(root: Path) -> dict[str, object]:
 
     validator_path = root / "skills/logic-writing/scripts/validate_adapter_result.py"
     validator_text = validator_path.read_text(encoding="utf-8")
-    if 'provider_version") != "0.4.11"' not in validator_text:
+    if 'provider_version") != "0.5.1"' not in validator_text:
         findings.append(
             {
                 "code": "adapter_validator_version_missing",
@@ -145,7 +145,7 @@ def check(root: Path) -> dict[str, object]:
         )
     schema_path = root / "skills/logic-writing/assets/schemas/adapter-result.schema.json"
     schema_text = schema_path.read_text(encoding="utf-8")
-    if '"provider_version": { "const": "0.4.11" }' not in schema_text:
+    if '"provider_version": { "const": "0.5.1" }' not in schema_text:
         findings.append(
             {
                 "code": "adapter_schema_version_missing",

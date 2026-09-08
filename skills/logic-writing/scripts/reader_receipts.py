@@ -185,6 +185,7 @@ def commit_reader_judgment_receipt(
     shared_writing: Mapping[str, Any],
     deterministic_audit: Mapping[str, Any],
     route_review: Mapping[str, Any],
+    execution_record: Mapping[str, Any] | None = None,
     root: str | Path,
     dependency_receipt_fingerprints: list[str],
 ) -> dict[str, Any]:
@@ -195,6 +196,7 @@ def commit_reader_judgment_receipt(
         shared_writing=shared_writing,
         deterministic_audit=deterministic_audit,
         route_review=route_review,
+        execution_record=execution_record,
     )
     return _commit(
         value,
@@ -209,6 +211,7 @@ def commit_reader_judgment_receipt(
             "shared_writing": value["shared_writing_contract_fingerprint"],
             "deterministic_audit": value["deterministic_audit_fingerprint"],
             "route_audit": value["route_audit_fingerprint"],
+            **({"execution_record": value["execution_record_fingerprint"]} if value.get("execution_record_fingerprint") else {}),
         },
         output_field="judgment_fingerprint",
         artifact_fingerprint=value["artifact_fingerprint"],

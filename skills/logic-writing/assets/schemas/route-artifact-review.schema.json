@@ -17,6 +17,7 @@
     "route_extension_fingerprint": { "$ref": "#/$defs/fp" },
     "artifact_map_fingerprint": { "$ref": "#/$defs/fp" },
     "artifact_fingerprint": { "$ref": "#/$defs/fp" },
+    "review_obligation_manifest_fingerprint": { "$ref": "#/$defs/fp" },
     "dimensions": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/dimension" }, "uniqueItems": true },
     "findings": { "type": "array", "items": { "$ref": "#/$defs/finding" }, "uniqueItems": true },
     "required_repairs": { "type": "array", "items": { "$ref": "#/$defs/id" }, "uniqueItems": true },

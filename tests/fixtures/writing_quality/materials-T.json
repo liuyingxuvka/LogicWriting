@@ -1,0 +1,54 @@
+{
+  "pack_id": "T",
+  "synthetic": true,
+  "records": [
+    {
+      "id": "T01",
+      "text": "旅客为两位成人和一名6岁儿童，其中一名成人不宜连续步行超过30分钟。住中央站旅馆，三天都从旅馆出发和返回。",
+      "role": "frozen_source_material",
+      "source_locator": "acceptance-rubric.md:49"
+    },
+    {
+      "id": "T02",
+      "text": "河岸步道平坦，旅馆到入口步行12分钟，入口到旧港咖啡馆步行20分钟，可中途休息；无门票。步道周二因维护关闭。不要把“平坦”扩成经过实际无障碍认证。",
+      "role": "frozen_source_material",
+      "source_locator": "acceptance-rubric.md:51"
+    },
+    {
+      "id": "T03",
+      "text": "工业展馆周二至周日10:00—17:00开放，周一闭馆；从旅馆乘每30分钟一班的公交，车程15分钟；下车到门口步行5分钟。有电梯，但电梯检修日不能保证轮椅/婴儿车通达。",
+      "role": "frozen_source_material",
+      "source_locator": "acceptance-rubric.md:53"
+    },
+    {
+      "id": "T04",
+      "text": "山顶旧塔从公交站还要上180级楼梯，无替代电梯，不适合本次旅客。不能仅为了“景点丰富”塞进行程。",
+      "role": "frozen_source_material",
+      "source_locator": "acceptance-rubric.md:55"
+    },
+    {
+      "id": "T05",
+      "text": "渡船11:00、14:00出发，单程25分钟，最后返程16:00；强风时停航。旅馆到码头公交20分钟，建议提前15分钟到达；不提供未给出的票价。",
+      "role": "frozen_source_material",
+      "source_locator": "acceptance-rubric.md:57"
+    },
+    {
+      "id": "T06",
+      "text": "此次虚构日历周一/周二/周三分别为第一/二/三天；第一天晴，第二天雨且强风，第三天阴。天气只是冻结测试事实，不是实际预报。",
+      "role": "frozen_source_material",
+      "source_locator": "acceptance-rubric.md:59"
+    },
+    {
+      "id": "T07",
+      "text": "室内绘本馆每天09:30—18:00开，旅馆步行8分钟，有座位，是第二天不乘船的可达备选。不要建议同时去周二维护的河岸步道。",
+      "role": "frozen_source_material",
+      "source_locator": "acceptance-rubric.md:61"
+    },
+    {
+      "id": "T08",
+      "text": "测试修订变体：第三天展馆电梯检修，其它规则不变。必须只修受影响内容与相关引用/复核，不把三天全部推翻。",
+      "role": "frozen_source_material",
+      "source_locator": "acceptance-rubric.md:63"
+    }
+  ]
+}

@@ -1,9 +1,9 @@
-# Migration to Logic Writing 3.0.2
+# Migration to Logic Writing 4.0.0
 
-Version `3.0.2` is a patch release. It keeps the public skill id,
+Version `4.0.0` is a patch release. It keeps the public skill id,
 the four final-owner routes, the existing adapter envelope, and the existing
-upgrade mechanism. The current ResearchGuard dependency is `0.4.11`, and the
-current FlowGuard validation toolchain is `0.68.15`.
+upgrade mechanism. The current ResearchGuard dependency is `0.5.1`, and the
+current FlowGuard validation toolchain is `0.69.0`.
 
 LogicGuard, SourceGuard, and TraceGuard remain the only active direct
 ResearchGuard members. ExperimentGuard and the ResearchGuard umbrella remain

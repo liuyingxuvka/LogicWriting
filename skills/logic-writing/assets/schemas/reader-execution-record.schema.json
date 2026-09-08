@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/liuyingxuvka/LogicWriting/schemas/reader-execution-record.schema.json",
+  "title": "Logic Writing reader execution record v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "record_id", "role", "backend_id", "run_id", "context_id", "parent_orchestrator_run_id", "input_reader_intent_fingerprint", "input_writer_input_fingerprint", "input_artifact_fingerprint", "rubric_fingerprint", "model_id", "settings_fingerprint", "started_at", "finished_at", "terminal_status", "output_fingerprint", "provider_completion_ref", "independence_status", "evaluation_mode", "pair_inputs", "pair_input_fingerprint", "record_fingerprint"],
+  "properties": {
+    "schema_version": { "const": "1.0" }, "record_id": { "$ref": "#/$defs/id" }, "role": { "enum": ["writer", "judge"] }, "backend_id": { "$ref": "#/$defs/id" }, "run_id": { "$ref": "#/$defs/id" }, "context_id": { "$ref": "#/$defs/id" }, "parent_orchestrator_run_id": { "$ref": "#/$defs/id" },
+    "input_reader_intent_fingerprint": { "$ref": "#/$defs/fp" }, "input_writer_input_fingerprint": { "$ref": "#/$defs/fp" }, "input_artifact_fingerprint": { "anyOf": [{ "$ref": "#/$defs/fp" }, { "type": "null" }] }, "rubric_fingerprint": { "anyOf": [{ "$ref": "#/$defs/fp" }, { "type": "null" }] },
+    "model_id": { "type": "string", "minLength": 1 }, "settings_fingerprint": { "$ref": "#/$defs/fp" }, "started_at": { "type": "string", "format": "date-time" }, "finished_at": { "anyOf": [{ "type": "string", "format": "date-time" }, { "type": "null" }] },
+    "terminal_status": { "enum": ["completed", "failed", "unavailable"] }, "output_fingerprint": { "anyOf": [{ "$ref": "#/$defs/fp" }, { "type": "null" }] }, "provider_completion_ref": { "type": "string", "minLength": 1 }, "independence_status": { "enum": ["verified", "independence_unverified", "not_applicable"] },
+    "evaluation_mode": { "enum": ["single", "pair"] }, "pair_inputs": { "type": "array", "items": { "$ref": "#/$defs/pairInput" }, "uniqueItems": true }, "pair_input_fingerprint": { "anyOf": [{ "$ref": "#/$defs/fp" }, { "type": "null" }] }, "record_fingerprint": { "$ref": "#/$defs/fp" },
+    "execution_capture_ref": { "$ref": "#/$defs/relativePath" }, "raw_output_locator": { "$ref": "#/$defs/relativePath" }, "events_locator": { "$ref": "#/$defs/relativePath" }, "stderr_locator": { "$ref": "#/$defs/relativePath" }, "completion_locator": { "$ref": "#/$defs/relativePath" },
+    "request_fingerprint": { "$ref": "#/$defs/fp" }, "input_prompt_fingerprint": { "$ref": "#/$defs/fp" }, "input_prompt_locator": { "$ref": "#/$defs/relativePath" }, "raw_output_fingerprint": { "$ref": "#/$defs/fp" }, "events_fingerprint": { "$ref": "#/$defs/fp" }, "stderr_fingerprint": { "$ref": "#/$defs/fp" }, "argv_fingerprint": { "$ref": "#/$defs/fp" },
+    "cli_executable": { "type": "string", "minLength": 1 }, "cli_executable_fingerprint": { "$ref": "#/$defs/fp" }, "cli_version": { "type": "string", "minLength": 1 }, "process_id": { "type": "integer", "minimum": 1 }, "thread_id": { "type": "string", "minLength": 1 }, "exit_code": { "type": "integer" }, "timed_out": { "type": "boolean" }, "descendant_cleanup_confirmed": { "type": "boolean" }, "terminal_event_type": { "type": "string", "minLength": 1 }, "terminal_event_index": { "type": "integer", "minimum": 0 }, "tool_event_count": { "type": "integer", "minimum": 0 }, "writer_context_ids": { "type": "array", "items": { "$ref": "#/$defs/id" }, "uniqueItems": true }, "usage": { "type": ["object", "null"] }, "cost_actual": { "type": ["number", "null"], "minimum": 0 }
+  },
+  "allOf": [
+    { "if": { "properties": { "role": { "const": "writer" } }, "required": ["role"] }, "then": { "properties": { "independence_status": { "const": "not_applicable" }, "evaluation_mode": { "const": "single" }, "input_artifact_fingerprint": { "type": "null" }, "rubric_fingerprint": { "type": "null" }, "pair_inputs": { "maxItems": 0 }, "pair_input_fingerprint": { "type": "null" } } } },
+    { "if": { "properties": { "role": { "const": "judge" } }, "required": ["role"] }, "then": { "properties": { "independence_status": { "enum": ["verified", "independence_unverified"] } } } },
+    { "if": { "properties": { "evaluation_mode": { "const": "pair" } }, "required": ["evaluation_mode"] }, "then": { "properties": { "input_artifact_fingerprint": { "type": "null" }, "pair_inputs": { "minItems": 2, "maxItems": 2 }, "pair_input_fingerprint": { "$ref": "#/$defs/fp" } } } },
+    { "if": { "properties": { "evaluation_mode": { "const": "single" } }, "required": ["evaluation_mode"] }, "then": { "properties": { "pair_inputs": { "maxItems": 0 }, "pair_input_fingerprint": { "type": "null" } } } }
+  ],
+  "$defs": {
+    "id": { "type": "string", "minLength": 2, "maxLength": 160, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$" },
+    "fp": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "pairInput": { "type": "object", "additionalProperties": false, "required": ["anonymous_label", "artifact_fingerprint", "writer_run_id", "writer_context_id", "writer_input_fingerprint"], "properties": { "anonymous_label": { "enum": ["X", "Y"] }, "artifact_fingerprint": { "$ref": "#/$defs/fp" }, "writer_run_id": { "$ref": "#/$defs/id" }, "writer_context_id": { "$ref": "#/$defs/id" }, "writer_input_fingerprint": { "$ref": "#/$defs/fp" } } },
+    "relativePath": { "type": "string", "minLength": 1, "pattern": "^(?![A-Za-z]:)(?!/)(?!\\\\)(?!.*(?:^|/|\\\\)\\.\\.(?:/|\\\\|$)).+$" }
+  }
+}

@@ -1,9 +1,0 @@
-{
-  "claim_boundary": "Bootstrap establishes the first observed authority pointer only; coverage gaps remain explicit and require later revision evidence.",
-  "evidence_fingerprint": "sha256:f666986fc79b70e1014a82a96bbda65bef15d3fff6e04776a9b5e5640cf2fdd0",
-  "fingerprint": "sha256:7e117b5649b1f85616696366913e6711b6a7ff282d5c67d67346b9ec7c958110",
-  "schema": "flowguard.model_authority_bootstrap.v1",
-  "snapshot_fingerprint": "sha256:99f7d059eb89cbb6f8d2028116fe31782aeaa9a70c499d10d7260339ce827314",
-  "subject_revision": "source-inventory:41221473161a494b5378a5ff088629c662788ed487165eba24570d49bd7c36a8",
-  "system_id": "logic-writing"
-}

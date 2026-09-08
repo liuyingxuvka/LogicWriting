@@ -35,10 +35,13 @@ EXPECTED = {
     "obligation-manifest.schema.json",
     "reader-audit.schema.json",
     "reader-brief.schema.json",
+    "reader-execution-record.schema.json",
     "reader-intent.schema.json",
     "reader-judgment.schema.json",
     "reader-repair-request.schema.json",
     "reader-repair-result.schema.json",
+    "researchguard-logic-handoff.schema.json",
+    "researchguard-consumption-binding.schema.json",
     "evidence-receipt.schema.json",
     "research-packet.schema.json",
     "revision-provenance.schema.json",
@@ -197,7 +200,7 @@ def test_runtime_does_not_depend_on_site_packages():
     )
 
     assert completed.returncode == 0, completed.stderr
-    assert completed.stdout.strip() == "26"
+    assert completed.stdout.strip() == "29"
 
 
 def test_schema_runtime_source_has_no_secondary_validator_import():

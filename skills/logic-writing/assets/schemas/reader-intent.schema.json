@@ -51,7 +51,8 @@
         "unit": { "enum": ["words", "characters", "pages", "sections", "chapters", "user_defined"] },
         "minimum": { "type": "integer", "minimum": 0 },
         "target": { "type": "integer", "minimum": 1 },
-        "maximum": { "type": "integer", "minimum": 1 }
+        "maximum": { "type": "integer", "minimum": 1 },
+        "extent_metric_id": { "type": ["string", "null"], "enum": ["han_characters", null] }
       }
     },
     "artifact_format": { "enum": ["text", "markdown", "docx", "pdf", "latex", "slides", "user_defined"] },
@@ -63,6 +64,19 @@
     "unresolved_choices": { "type": "array", "items": { "$ref": "#/$defs/unresolvedChoice" }, "uniqueItems": true },
     "intent_fingerprint": { "$ref": "#/$defs/fingerprint" }
   },
+  "allOf": [
+    {
+      "if": { "properties": { "extent": { "properties": { "unit": { "const": "user_defined" } } } } },
+      "then": {
+        "properties": {
+          "extent": {
+            "required": ["extent_metric_id"],
+            "properties": { "extent_metric_id": { "const": "han_characters" } }
+          }
+        }
+      }
+    }
+  ],
   "$defs": {
     "identifier": { "type": "string", "minLength": 2, "maxLength": 160, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$" },
     "fingerprint": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },

@@ -18,6 +18,18 @@ output-room compliance, story movement, resistance/cost, promise and reveal
 handling, continuity, POV/voice, reader-state change, and real-span binding.
 A clean plan is not evidence that the prose works.
 
+## Consumer resource closure
+
+The selected fiction depth loads only its declared route references. Compact and
+short-story reader-native work requires the [prose-native contract](../../routes/fiction/references/prose-native-contract.md),
+[scene contract](../../routes/fiction/references/scene-contract.md), and
+[voice/style continuity contract](../../routes/fiction/references/voice-style-continuity.md).
+Long-form work additionally requires the [chapter interface blueprint](../../routes/fiction/references/chapter-interface-prose-blueprint.md),
+[novel ledger](../../routes/fiction/references/novel-ledger.md), and
+[long-form lifecycle](../../routes/fiction/references/longform-lifecycle.md).
+The staged consumer must retain the fiction examples and their associated prose
+payloads; a route selection alone does not prove these resources are installed.
+
 ## Choose depth from the terminal artifact
 
 Every substantive StorylineDesign run uses the same guarded story lifecycle.

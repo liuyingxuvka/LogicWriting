@@ -1,3 +1,9 @@
+"""Synthetic protocol-chain builders for reader-v2 contract regression tests.
+
+These helpers create deterministic transport, fingerprint, and closure inputs;
+they are not writer output and their scores are never quality-benchmark evidence.
+"""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -160,7 +166,11 @@ def make_route_composition(owner: str, intent: dict, plan: dict) -> dict:
                 "incoming_dependency": "读者已有问题背景。",
                 "new_claim_or_warrant": "组合计划使段落承担不同且相连的论证职责。",
                 "evidence_ids": ["evidence:one"],
-                "qualification": "只证明结构更完整，不证明事实自动正确。",
+                "qualification": {
+                    "status": "not_applicable",
+                    "reason": "概念论证没有需要声明的实证方法限定。",
+                    "source_refs": [],
+                },
                 "downstream_consumer_ids": [],
             }],
             "figure_table_jobs": [],
@@ -303,7 +313,14 @@ def make_reader_chain(workdir: Path, owner: str = "investigation", *, language: 
             "limitation_ids": [],
             "model_row_ids": ["model:throughline"],
         }],
-        "evidence_anchors": [],
+            "evidence_anchors": [{
+                "anchor_id": "evidence:one",
+                "source_id": "source:synthetic",
+                "locator": "synthetic:one",
+                "relation": "support",
+                "observed_summary": "合成测试材料支持结构性论证。",
+                "boundary": "仅用于协议测试，不代表真实学术证据。",
+            }],
         "alternatives": [],
         "limitations": [],
         "citation_duties": [],
@@ -321,19 +338,30 @@ def make_reader_chain(workdir: Path, owner: str = "investigation", *, language: 
         brief_id=f"brief:{owner}",
     )
     artifact_path = workdir / f"{owner}.md"
-    artifact_path.write_text(
-        "# 完整回答\n\n"
-        "真正需要解决的不是如何罗列更多要点，而是如何让每一段承担不同职责，并让后一句建立在前一句已经说明的内容上。这样，读者先理解问题，再看到支撑和限制，最后能够自然抵达结论。\n\n"
-        "这份成品因此把结构当作整篇文章的推进关系：开头确定方向，中间解释原因与取舍，结尾收束边界和后续行动。它保留必要信息，却不把模型标签或写作步骤暴露给读者。",
-        encoding="utf-8",
-    )
+    if language.casefold().startswith("en"):
+        artifact_text = (
+            "# 完整回答\n\n"
+            "The real problem is not how to list more points, but how each paragraph can do a different job while the next paragraph builds on what the reader has already learned. The reader can then understand the question, see the support and limits, and reach the conclusion naturally.\n\n"
+            "The artifact therefore treats structure as forward movement: the opening sets direction, the middle explains reasons and tradeoffs, and the ending closes the boundary and next action. It keeps necessary information without exposing model labels or workflow steps."
+        )
+    else:
+        artifact_text = (
+            "# 完整回答\n\n"
+            "真正需要解决的不是如何罗列更多要点，而是如何让每一段承担不同职责，并让后一句建立在前一句已经说明的内容上。这样，读者先理解问题，再看到支撑和限制，最后能够自然抵达结论。\n\n"
+            "这份成品因此把结构当作整篇文章的推进关系：开头确定方向，中间解释原因与取舍，结尾收束边界和后续行动。它保留必要信息，却不把模型标签或写作步骤暴露给读者。"
+        )
+    artifact_path.write_text(artifact_text, encoding="utf-8")
     amap = build_artifact_map(artifact_path, map_id=f"map:{owner}", language=language)
     paragraph = next(row for row in amap["units"] if row["unit_kind"] == "paragraph")
-    span = {
-        "artifact_unit_id": paragraph["artifact_unit_id"],
-        "locator": paragraph["locator"],
-        "content_fingerprint": paragraph["content_fingerprint"],
-    }
+    body_units = [
+        row for row in amap["units"]
+        if row["unit_kind"] in {"paragraph", "list", "table", "quote", "scene"}
+    ]
+    spans = [{
+        "artifact_unit_id": row["artifact_unit_id"],
+        "locator": row["locator"],
+        "content_fingerprint": row["content_fingerprint"],
+    } for row in body_units]
     shared = _with_fp({
         "schema_version": "2.0",
         "contract_id": f"shared:{owner}",
@@ -350,11 +378,11 @@ def make_reader_chain(workdir: Path, owner: str = "investigation", *, language: 
         "unit_bindings": [{
             "binding_id": "binding:answer",
             "planned_unit_id": "unit:answer",
-            "artifact_unit_ids": [paragraph["artifact_unit_id"]],
+            "artifact_unit_ids": [row["artifact_unit_id"] for row in body_units],
             "content_unit_ids": ["content:answer"],
             "model_row_ids": ["model:throughline"],
             "route_surface_ids": [f"route:{owner}:actual-artifact"],
-            "artifact_spans": [span],
+            "artifact_spans": spans,
         }],
         "coverage_dispositions": [],
     }, "contract_fingerprint")
@@ -392,10 +420,34 @@ def complete_chain(
     pass_quality: bool = True,
     language: str = "zh-CN",
 ) -> dict:
+    """Build a synthetic protocol chain; do not treat it as a blind review."""
     from derive_closure import REQUIRED_DIMENSIONS
 
     chain = make_reader_chain(workdir, owner, language=language)
     evidence = span_evidence(chain)
+    body_units = [
+        row for row in chain["artifact_map"]["units"]
+        if row["unit_kind"] in {"paragraph", "list", "table", "quote", "scene"}
+    ]
+    reverse_outline = [{
+        "artifact_unit_id": unit["artifact_unit_id"],
+        "parent_unit_id": unit["parent_unit_id"],
+        "observed_job": "解释中心答案及其结构理由。",
+        "main_point": "完整写作依赖整篇推进而不是小点拼接。",
+        "support_or_action": "实际文本说明段落职责、支撑和收束。",
+        "content_unit_ids": ["content:answer"],
+        "carries_from_unit_ids": [],
+        "relation_to_previous": "由前一正文单元进入当前解释。",
+        "downstream_effect": "使结尾能够收束边界。",
+        "orphaned": False,
+        "overloaded": False,
+        "evidence": {
+            "artifact_unit_id": unit["artifact_unit_id"],
+            "locator": unit["locator"],
+            "excerpt": unit["text"][:60],
+            "excerpt_fingerprint": fingerprint_text(unit["text"][:60]),
+        },
+    } for unit in body_units]
     route_review = {
         "schema_version": "2.0",
         "review_id": f"review:{owner}",
@@ -426,6 +478,31 @@ def complete_chain(
         "reviewed_at": NOW,
     }
     route_review["review_fingerprint"] = fingerprint(route_review)
+    judge_execution = {
+        "schema_version": "1.0",
+        "record_id": f"execution:judge:{owner}",
+        "role": "judge",
+        "backend_id": "synthetic-protocol-only",
+        "run_id": f"run:judge:{owner}",
+        "context_id": f"context:judge:{owner}",
+        "parent_orchestrator_run_id": f"run:orchestrator:{owner}",
+        "input_reader_intent_fingerprint": chain["intent"]["intent_fingerprint"],
+        "input_writer_input_fingerprint": chain["reader_brief"]["writer_input_fingerprint"],
+        "input_artifact_fingerprint": chain["artifact_map"]["artifact_fingerprint"],
+        "rubric_fingerprint": fingerprint({"profile": owner, "protocol_only": True}),
+        "model_id": "synthetic-protocol-only",
+        "settings_fingerprint": fingerprint({"protocol_only": True}),
+        "started_at": NOW,
+        "finished_at": NOW,
+        "terminal_status": "completed",
+        "output_fingerprint": fingerprint({"judgment": owner, "protocol_only": True}),
+        "provider_completion_ref": f"synthetic://protocol-only/{owner}",
+        "independence_status": "verified",
+        "evaluation_mode": "single",
+        "pair_inputs": [],
+        "pair_input_fingerprint": None,
+    }
+    judge_execution["record_fingerprint"] = fingerprint(judge_execution)
     scores = {key: 5 if pass_quality else 3 for key in (
         "clarity", "structure_fidelity", "coherence", "naturalness", "reader_fit",
         "content_fidelity", "genre_fit", "instruction_fidelity",
@@ -445,20 +522,8 @@ def complete_chain(
         "deterministic_audit_fingerprint": chain["deterministic_audit"]["audit_fingerprint"],
         "route_audit_fingerprint": route_review["review_fingerprint"],
         "artifact_fingerprint": chain["artifact_map"]["artifact_fingerprint"],
-        "reverse_outline": [{
-            "artifact_unit_id": chain["paragraph"]["artifact_unit_id"],
-            "parent_unit_id": chain["paragraph"]["parent_unit_id"],
-            "observed_job": "解释中心答案及其结构理由。",
-            "main_point": "完整写作依赖整篇推进而不是小点拼接。",
-            "support_or_action": "实际文本说明段落职责、支撑和收束。",
-            "content_unit_ids": ["content:answer"],
-            "carries_from_unit_ids": [],
-            "relation_to_previous": "由标题进入核心解释。",
-            "downstream_effect": "使结尾能够收束边界。",
-            "orphaned": False,
-            "overloaded": False,
-            "evidence": evidence,
-        }],
+        "execution_record_fingerprint": judge_execution["record_fingerprint"],
+        "reverse_outline": reverse_outline,
         "scores": scores,
         "defects": [] if pass_quality else [{
             "observation_id": "judge:defect",
@@ -504,6 +569,7 @@ def complete_chain(
         "revision_provenance": provenance,
         "native_receipt_fingerprints": [NATIVE_FP],
         "closure_id": f"closure:{owner}",
+        "reader_execution_records": [judge_execution],
     })
     return chain
 
@@ -515,4 +581,4 @@ def closure_input(chain: dict) -> dict:
             "artifact_map", "shared_writing", "deterministic_audit", "route_review",
             "judgment", "revision_provenance", "native_receipt_fingerprints",
         )
-    } | {"repair_results": chain.get("repair_results", [])}
+    } | {"repair_results": chain.get("repair_results", []), "reader_execution_records": chain.get("reader_execution_records", [])}

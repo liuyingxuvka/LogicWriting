@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/liuyingxuvka/LogicWriting/schemas/researchguard-logic-handoff.schema.json",
+  "title": "ResearchGuard LogicGuard to Logic Writing handoff",
+  "description": "A narrow, hash-bound reader projection around an opaque ResearchGuard synthesis plan.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "provider_id", "provider_version", "member_id", "primary_path_id",
+    "native_result_schema_version", "native_result_fingerprint", "native_result_locator",
+    "native_request_schema_version", "native_request_fingerprint", "model_id", "model_fingerprint",
+    "reader_intent_fingerprint", "composition_plan_fingerprint", "writer_input_fingerprint", "stage",
+    "status", "native_status", "blocking_gaps", "body_unit_order", "units",
+    "candidate_dispositions", "source_branch_bindings", "native_receipt_fingerprint", "native_receipt_locator",
+    "claim_boundary", "handoff_fingerprint"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "provider_id": { "const": "researchguard" },
+    "provider_version": { "const": "0.5.1" },
+    "member_id": { "const": "logicguard" },
+    "primary_path_id": { "const": "primary:researchguard:logic" },
+    "native_result_schema_version": { "const": "researchguard.logic.synthesis-plan.v1" },
+    "native_result_fingerprint": { "$ref": "#/$defs/fingerprint" },
+    "native_result_locator": { "type": "string", "minLength": 1 },
+    "native_request_schema_version": { "const": "researchguard.logic.synthesis-request.v1" },
+    "native_request_fingerprint": { "$ref": "#/$defs/fingerprint" },
+    "model_id": { "$ref": "#/$defs/identifier" },
+    "model_fingerprint": { "$ref": "#/$defs/fingerprint" },
+    "reader_intent_fingerprint": { "$ref": "#/$defs/fingerprint" },
+    "composition_plan_fingerprint": { "anyOf": [{ "$ref": "#/$defs/fingerprint" }, { "type": "null" }] },
+    "writer_input_fingerprint": { "anyOf": [{ "$ref": "#/$defs/fingerprint" }, { "type": "null" }] },
+    "stage": { "enum": ["semantic", "consumption_ready"] },
+    "status": { "enum": ["current_pass", "blocked"] },
+    "native_status": { "enum": ["research_handoff_ready", "blocked_invalid_request", "blocked_budget", "blocked_support_gap"] },
+    "blocking_gaps": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+    "body_unit_order": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true },
+    "units": { "type": "array", "items": { "$ref": "#/$defs/unit" }, "uniqueItems": true },
+    "candidate_dispositions": { "type": "array", "items": { "$ref": "#/$defs/disposition" }, "uniqueItems": true },
+    "source_branch_bindings": { "type": "array", "items": { "$ref": "#/$defs/sourceBranchBinding" }, "uniqueItems": true },
+    "native_receipt_fingerprint": {
+      "anyOf": [{ "type": "null" }, { "$ref": "#/$defs/fingerprint" }]
+    },
+    "native_receipt_locator": { "type": ["string", "null"], "minLength": 1 },
+    "claim_boundary": { "type": "string", "minLength": 1 },
+    "handoff_fingerprint": { "$ref": "#/$defs/fingerprint" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "current_pass" } } },
+      "then": {
+        "required": ["native_receipt_fingerprint", "native_receipt_locator"],
+        "properties": {
+          "native_receipt_fingerprint": { "$ref": "#/$defs/fingerprint" },
+          "native_receipt_locator": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "stage": { "const": "semantic" } } },
+      "then": {
+        "properties": {
+          "composition_plan_fingerprint": { "type": "null" },
+          "writer_input_fingerprint": { "type": "null" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "stage": { "const": "consumption_ready" } } },
+      "then": {
+        "required": ["composition_plan_fingerprint", "writer_input_fingerprint"],
+        "properties": {
+          "composition_plan_fingerprint": { "$ref": "#/$defs/fingerprint" },
+          "writer_input_fingerprint": { "$ref": "#/$defs/fingerprint" }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "identifier": { "type": "string", "minLength": 2, "maxLength": 160, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$" },
+    "fingerprint": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "unit": {
+      "type": "object", "additionalProperties": false,
+      "required": ["unit_id", "parent_unit_id", "reader_question", "unit_job", "claim_ids", "predecessor_unit_ids", "progression_relation", "editorial_prominence", "placement", "placement_reason", "required", "argument_closure", "role_bindings", "source_branch_ids", "research_importance"],
+      "properties": {
+        "unit_id": { "$ref": "#/$defs/identifier" },
+        "parent_unit_id": { "type": ["string", "null"] },
+        "reader_question": { "type": "string", "minLength": 1 },
+        "unit_job": { "type": "string", "minLength": 1 },
+        "claim_ids": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true },
+        "predecessor_unit_ids": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true },
+        "progression_relation": { "enum": ["establishes", "explains", "contrasts", "narrows", "applies", "concludes", "background"] },
+        "editorial_prominence": { "enum": ["lead", "normal", "brief"] },
+        "placement": { "enum": ["body", "note", "appendix", "omit"] },
+        "placement_reason": { "type": "string", "minLength": 1 },
+        "required": { "type": "boolean" },
+        "argument_closure": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true },
+        "role_bindings": { "type": "object", "additionalProperties": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true } },
+        "source_branch_ids": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true },
+        "source_branch_candidate_ids": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true },
+        "research_importance": { "type": "object", "additionalProperties": { "type": "number" } }
+      }
+    },
+    "disposition": {
+      "type": "object", "additionalProperties": false,
+      "required": ["candidate_id", "candidate_kind", "placement", "reason", "selected_unit_ids"],
+      "properties": {
+        "candidate_id": { "$ref": "#/$defs/identifier" },
+        "candidate_kind": { "$ref": "#/$defs/identifier" },
+        "placement": { "enum": ["body", "note", "appendix", "omit"] },
+        "reason": { "type": "string", "minLength": 1 },
+        "selected_unit_ids": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true },
+        "unit_placements": { "type": "object", "additionalProperties": { "enum": ["body", "note", "appendix", "omit"] } }
+      }
+    },
+    "sourceBranchBinding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["branch_id", "source_id", "destination_unit_id", "claim_ids", "current_native_evidence_ref"],
+      "properties": {
+        "branch_id": { "$ref": "#/$defs/identifier" },
+        "source_id": { "$ref": "#/$defs/identifier" },
+        "destination_unit_id": { "$ref": "#/$defs/identifier" },
+        "claim_ids": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true },
+        "current_native_evidence_ref": { "type": "string", "minLength": 1 },
+        "project_id": { "type": ["string", "null"] },
+        "source_model_fingerprint": { "type": ["string", "null"] },
+        "anchor_node_id": { "type": "string" },
+        "anchor_block_id": { "type": "string" },
+        "source_node_ids": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true }
+      }
+    }
+  }
+}

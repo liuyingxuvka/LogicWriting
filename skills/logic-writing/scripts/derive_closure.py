@@ -10,6 +10,7 @@ from typing import Any, Mapping
 from _common import ValidationError, dump_json, fingerprint, load_json, require_mapping, require_schema
 from reader_pipeline import (
     validate_artifact_map,
+    validate_reader_audit_current,
     validate_reader_judgment,
     validate_revision_provenance,
     validate_route_artifact_review,
@@ -96,6 +97,8 @@ def derive_closure(
         owner=owner,
         reader_intent_fingerprint=brief["reader_intent_fingerprint"],
         composition_plan_fingerprint=brief["composition_plan"]["plan_fingerprint"],
+        composition_plan=brief["composition_plan"],
+        content_boundaries=brief["content_boundaries"],
     )
     amap = validate_artifact_map(request["artifact_map"])
     shared = validate_shared_writing(
@@ -110,6 +113,8 @@ def derive_closure(
         artifact_map=amap,
         required_dimensions=REQUIRED_DIMENSIONS[owner],
     )
+    execution_records = [require_mapping(row, "ReaderExecutionRecord") for row in request.get("reader_execution_records", [])]
+    judge_execution = next((row for row in execution_records if row.get("role") == "judge"), None)
     judgment = validate_reader_judgment(
         request["judgment"],
         artifact_map=amap,
@@ -117,7 +122,11 @@ def derive_closure(
         shared_writing=shared,
         deterministic_audit=audit,
         route_review=route_review,
+        execution_record=judge_execution,
     )
+    if judge_execution is not None:
+        from reader_execution import validate_execution_record
+        validate_execution_record(judge_execution, lambda record: record.get("independence_status") == "verified")
     provenance = validate_revision_provenance(
         request["revision_provenance"],
         target_artifact_fingerprint=amap["artifact_fingerprint"],
@@ -137,7 +146,8 @@ def derive_closure(
         require_mapping(row, "ReaderRepairResult")
         for row in request.get("repair_results", [])
     ]
-    all_passed = audit["status"] == route_review["status"] == judgment["status"] == "passed"
+    validate_reader_audit_current(audit, artifact_map=amap, reader_brief=brief, shared_writing=shared)
+    all_passed = audit["status"] == route_review["status"] == judgment["status"] == "passed" and judge_execution is not None
     no_progress = _no_progress_terminal(repair_results, amap["artifact_fingerprint"])
     status = "passed" if all_passed else ("no_progress_blocked" if no_progress else "blocked")
 
@@ -177,6 +187,7 @@ def derive_closure(
         "deterministic_audit_fingerprint": audit["audit_fingerprint"],
         "route_audit_fingerprint": route_review["review_fingerprint"],
         "judgment_fingerprint": judgment["judgment_fingerprint"],
+        "reader_execution_record_fingerprints": [row["record_fingerprint"] for row in execution_records],
         "revision_provenance_fingerprint": provenance["provenance_fingerprint"],
         "repair_result_fingerprints": [row["result_fingerprint"] for row in repair_results],
         "native_receipt_fingerprints": native_receipts,

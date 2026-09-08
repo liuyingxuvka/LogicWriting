@@ -1,0 +1,61 @@
+{
+  "bindings": [
+    {
+      "model_ids": [
+        "behavior_commitment_ledger"
+      ],
+      "owner_route": "behavior_commitment_ledger",
+      "protected_failure_ids": [
+        "behavior_commitment_ledger:current_owner_identity",
+        "behavior_commitment_ledger:purpose_specific_good_bad_oracle"
+      ]
+    },
+    {
+      "model_ids": [
+        "logic_writing_models"
+      ],
+      "owner_route": "model_mesh_maintenance",
+      "protected_failure_ids": [
+        "logic_writing_models:current_owner_identity",
+        "logic_writing_models:purpose_specific_good_bad_oracle"
+      ]
+    },
+    {
+      "model_ids": [
+        "model_test_alignment"
+      ],
+      "owner_route": "model_test_alignment",
+      "protected_failure_ids": [
+        "model_test_alignment:current_owner_identity",
+        "model_test_alignment:purpose_specific_good_bad_oracle"
+      ]
+    }
+  ],
+  "candidate_model_ids": [
+    "academic_route_model",
+    "artifact_audit",
+    "behavior_commitment_ledger",
+    "composition_graph",
+    "development_process_flow",
+    "editorial_disposition",
+    "execution_binding",
+    "fiction_route_model",
+    "investigation_route_model",
+    "logic_writing_models",
+    "model_test_alignment",
+    "operation_freshness_closure_model",
+    "plan_detailing",
+    "primary_path_authority",
+    "reader_artifact_model",
+    "release_retirement_model",
+    "research_packet_model",
+    "researchguard_handoff",
+    "route_and_guard_model",
+    "test_mesh",
+    "travel_route_model",
+    "writer_projection"
+  ],
+  "claim_boundary": "Current Logic Writing native owner declaration covers the exact twenty-two registered model owners and their route-level protected failures. It licenses only the frozen current candidate and does not by itself prove authority activation, installation, publication, or future AI prose quality.",
+  "schema": "flowguard.native_owner_model_bindings.v1",
+  "system_id": "logic-writing"
+}

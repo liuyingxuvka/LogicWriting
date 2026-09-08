@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import importlib.util
 import sys
 from pathlib import Path
 
@@ -22,12 +23,24 @@ from models.frozen_source_contract_exhaustion import (  # noqa: E402
     CASE_IDS,
     review_frozen_source_name_family,
 )
-from model_test_alignment.model import (  # noqa: E402
+from models.owners.model_test_alignment.model import (  # noqa: E402
     aligned_plan,
     broken_missing_actual_artifact_plan,
 )
 from flowguard import review_model_test_alignment  # noqa: E402
-from run_models import _current_conformance_report  # noqa: E402
+
+# The executable model runner belongs to the canonical verification role.
+# Load it by path so the test cannot accidentally revive the retired flat
+# `.flowguard/run_models.py` compatibility location.
+RUNNER_PATH = FLOWGUARD_ROOT / "verification" / "run_models.py"
+_runner_spec = importlib.util.spec_from_file_location(
+    "logic_writing_verification_runner", RUNNER_PATH
+)
+assert _runner_spec and _runner_spec.loader
+_runner = importlib.util.module_from_spec(_runner_spec)
+sys.modules[_runner_spec.name] = _runner
+_runner_spec.loader.exec_module(_runner)
+_current_conformance_report = _runner._current_conformance_report
 
 
 def _step(workflow, state, event):
