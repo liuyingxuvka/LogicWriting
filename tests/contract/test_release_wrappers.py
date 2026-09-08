@@ -78,6 +78,17 @@ def test_pair_writer_input_fingerprint_is_json_serializable_and_order_independen
     assert first == second
 
 
+def test_judge_pair_order_uses_persisted_writer_versions():
+    benchmark = _load("run_writing_quality_benchmark")
+    assert benchmark._pair_order_for_writers(
+        ({"version": "repaired"}, {"version": "baseline"})
+    ) == ["repaired", "baseline"]
+    with pytest.raises(ValueError, match="one baseline and one repaired"):
+        benchmark._pair_order_for_writers(
+            ({"version": "baseline"}, {"version": "baseline"})
+        )
+
+
 def test_real_quality_runner_rejects_injected_backend_without_local_plan(tmp_path):
     benchmark = _load("run_writing_quality_benchmark")
 

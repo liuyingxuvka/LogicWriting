@@ -311,6 +311,20 @@ def _pair_writer_input_fingerprint(pair: list[Mapping[str, Any]]) -> str:
     return fingerprint(sorted(str(row["writer_input_fingerprint"]) for row in pair))
 
 
+def _pair_order_for_writers(order: tuple[Mapping[str, Any], Mapping[str, Any]]) -> list[str]:
+    """Return the blind order from persisted writer versions.
+
+    Writer rows may have crossed a process or serialization boundary before a
+    judge job is assembled.  Object identity is therefore not a stable way to
+    determine whether a pair is baseline-first or repaired-first.
+    """
+
+    pair_order = [str(writer.get("version")) for writer in order]
+    if sorted(pair_order) != sorted(VERSIONS):
+        raise ValueError("judge pair must contain one baseline and one repaired writer")
+    return pair_order
+
+
 def _execute_judge_job(
     *,
     case: Mapping[str, Any],
@@ -353,11 +367,12 @@ def _execute_judge_job(
         "settings": local_backend.settings() if local_backend else {},
         "prompt": prompt,
     }
+    pair_order = _pair_order_for_writers(order)
     row: dict[str, Any] = {
         "case_id": case["case_id"],
         "repeat": repeat,
         "judge_index": judge_index,
-        "pair_order": ["baseline" if item is order[0] else "repaired" for item in order],
+        "pair_order": pair_order,
         "request": request,
         "request_fingerprint": fingerprint(request),
         "status": "failed",
