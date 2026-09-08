@@ -64,6 +64,7 @@ def validate_judgment_receipt(
     route_review=None,
     execution_record=None,
     reader_execution_records=None,
+    execution_resolver=None,
     **_ignored,
 ):
     envelope = require_mapping(value, "ReaderJudgment validation request")
@@ -82,6 +83,27 @@ def validate_judgment_receipt(
         route_review=route_review or envelope.get("route_review"),
         execution_record=execution,
     )
+    # ``validate_reader_judgment`` checks the immutable envelope and the
+    # declared independence marker.  That marker alone is not execution
+    # evidence: a protocol fixture can carry the same shape and say
+    # ``verified``.  A current-pass receipt therefore needs the local
+    # capture resolver as a second, byte-level proof of the provider run.
+    if validated["status"] == "passed":
+        if execution is None:
+            raise ValidationError(
+                "current-pass ReaderJudgment requires one judge execution record"
+            )
+        if execution_resolver is None:
+            raise ValidationError(
+                "current-pass ReaderJudgment requires a local execution capture resolver"
+            )
+        from reader_execution import validate_execution_record
+
+        resolved = validate_execution_record(execution, execution_resolver)
+        if not resolved.get("verified"):
+            raise ValidationError(
+                "current-pass ReaderJudgment requires a verified local execution capture"
+            )
     return validation_result(
         status="current_pass" if validated["status"] == "passed" else "partial",
         reader_judgment=validated,

@@ -70,6 +70,21 @@ def _build_output_manifest(output_dir: Path, plan: dict[str, Any], result: dict[
         and isinstance(judges, list) and len(judges) == CASE_COUNT * REPEATS * 2
         and all(row.get("status") == "completed" for row in (*writers, *judges))
     )
+    capture_validation_error: str | None = None
+    if all_records_completed:
+        # Status flags are producer output, not proof that the files contain
+        # the captures they claim.  Re-run the same canonical row validators
+        # used by the quality consumer before advertising a completed
+        # producer manifest.  This also prevents aggregate-only reuse of a
+        # duplicated, stale, or protocol-shaped row set.
+        try:
+            from check_writing_quality_run import _validate_judge_rows, _validate_writer_rows
+
+            writer_index = _validate_writer_rows(output_dir, writers, plan=plan)
+            _validate_judge_rows(output_dir, judges, writers=writer_index, plan=plan)
+        except (OSError, UnicodeError, ValueError, TypeError, ImportError) as exc:
+            all_records_completed = False
+            capture_validation_error = str(exc)
     manifest: dict[str, Any] = {
         "schema_version": "logic-writing.execution-quality-output.v1",
         "producer_check_id": PRODUCER_ID,
@@ -85,6 +100,8 @@ def _build_output_manifest(output_dir: Path, plan: dict[str, Any], result: dict[
         "summary_path": "summary.json" if summary_path.is_file() else None,
         "summary_fingerprint": summary_fp,
     }
+    if capture_validation_error is not None:
+        manifest["capture_validation_error"] = capture_validation_error
     manifest["manifest_fingerprint"] = fingerprint(manifest)
     _write_json(output_dir / "output-manifest.json", manifest)
     return manifest

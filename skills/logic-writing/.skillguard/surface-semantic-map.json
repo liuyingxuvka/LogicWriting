@@ -2,7 +2,7 @@
   "schema_version": "skillguard.surface_semantic_map.v1",
   "map_id": "map:logic-writing:surface-semantics",
   "target_skill_id": "logic-writing",
-  "source_discovery_fingerprint": "sha256:ea85fe4fdf4d7bda851a28a21c3f4ced2ba52bdeaac7d13a3456722474f05870",
+  "source_discovery_fingerprint": "sha256:3be4491ba08ac75331d694ab4f2a14b094470d8959123a887b725757b10847cb",
   "full_surface_ids": [
     "api:routes/academic/scripts/validate_academic_artifact.py:validate_academic_artifact",
     "api:routes/fiction/guard-model/verify.py:GuardModelContractError",
@@ -925,6 +925,7 @@
     "fault:scripts/validate_adapter_request.py:validate_adapter_request",
     "fault:scripts/validate_adapter_result.py:validate_adapter_result",
     "fault:scripts/validate_claim_support.py:validate_claim_support",
+    "fault:scripts/validate_judgment_receipt.py:validate_judgment_receipt",
     "fault:scripts/validate_research_packet.py:assemble_research_packet",
     "fault:scripts/validate_research_packet.py:validate_research_packet",
     "fault:scripts/validate_source_registry.py:validate_source_registry",
@@ -11546,6 +11547,18 @@
       "decision": "explicit-author-component-group-closure"
     },
     {
+      "surface_id": "fault:scripts/validate_judgment_receipt.py:validate_judgment_receipt",
+      "model_obligation_ids": [
+        "obligation:logic-writing:final-closure",
+        "obligation:logic-writing:reader-actual-artifact"
+      ],
+      "rule_ids": [
+        "decision:logic-writing:final-closure",
+        "decision:logic-writing:reader-actual-artifact"
+      ],
+      "decision": "explicit-author-component-group-closure"
+    },
+    {
       "surface_id": "fault:scripts/validate_research_packet.py:assemble_research_packet",
       "model_obligation_ids": [
         "obligation:logic-writing:investigation-evidence",
@@ -13794,6 +13807,7 @@
         "fault:scripts/receipt_authority.py:resolve_latest_receipt_by_owner",
         "fault:scripts/receipt_authority.py:validate_receipt",
         "fault:scripts/receipt_store.py:store_receipt",
+        "fault:scripts/validate_judgment_receipt.py:validate_judgment_receipt",
         "recovery:scripts/reader_receipts.py:commit_repair_result_receipt",
         "script:scripts/derive_closure.py",
         "script:scripts/propagate_staleness.py",
@@ -14061,6 +14075,7 @@
         "fault:scripts/schema_validation.py:UnknownSchemaError",
         "fault:scripts/schema_validation.py:assert_schema_valid",
         "fault:scripts/text_extent.py:measure_text",
+        "fault:scripts/validate_judgment_receipt.py:validate_judgment_receipt",
         "provider:scripts/schema_validation.py:SchemaRuntimeConfigurationError",
         "provider:scripts/schema_validation.py:validate_schema",
         "recovery:scripts/build_reader_repair.py:validate_request",
@@ -14555,5 +14570,5 @@
     }
   ],
   "claim_boundary": "The inventory binds the current LogicWriting skill-root source observation to explicit target-owned obligations and checks. It proves neither domain correctness, provider quality, installation currentness, release, nor future prose behavior.",
-  "map_hash": "sha256:cfc9e9466fd0af69b4f44e5fb0744191c1ec238f05ab22e123ac094582a96989"
+  "map_hash": "sha256:3e1f332a2983df388d712ab630b1156887d767c548033f2df23e1cd3836d7199"
 }

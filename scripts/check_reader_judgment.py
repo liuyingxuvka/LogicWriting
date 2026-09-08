@@ -199,6 +199,7 @@ def check(
     *,
     input_path: Path | None = None,
     execution_record_path: Path | None = None,
+    execution_capture_root: Path | None = None,
     backend: Any = None,
     dependency_producer: str | None = None,
 ) -> dict[str, Any]:
@@ -218,6 +219,9 @@ def check(
     skill_scripts = root / "skills" / "logic-writing" / "scripts"
     if str(skill_scripts) not in sys.path:
         sys.path.insert(0, str(skill_scripts))
+    project_scripts = root / "scripts"
+    if str(project_scripts) not in sys.path:
+        sys.path.insert(0, str(project_scripts))
 
     if dependency_producer is not None:
         return _check_dependency_producer(root, runtime, dependency_producer)
@@ -325,13 +329,43 @@ def check(
             )
         record = dispatched["record"]
 
+    # Direct judgment validation must be able to re-open the immutable local
+    # capture.  A record-shaped object with ``independence_status=verified``
+    # is not enough; protocol fixtures use that shape deliberately.  The
+    # quality producer passes its capture root through the dependency-owner
+    # path below, while direct callers must state the root explicitly (or
+    # provide a backend exposing its owner run root).
+    capture_root = execution_capture_root.resolve() if execution_capture_root is not None else None
+    if capture_root is None and backend is not None:
+        candidate_root = getattr(backend, "run_root", None)
+        if candidate_root is not None:
+            capture_root = Path(candidate_root).expanduser().resolve()
+    execution_resolver = None
+    if capture_root is not None:
+        try:
+            from execution_record_resolver import LocalExecutionRecordResolver
+
+            execution_resolver = LocalExecutionRecordResolver(capture_root)
+        except (OSError, ValueError, TypeError) as exc:
+            return _unavailable_report(
+                reason=f"judge execution capture root is unavailable: {exc}",
+                runtime=runtime,
+                result_path=result_path,
+                preparation_status="provided",
+                input_path=input_path,
+            )
+
     envelope = dict(envelope)
     envelope["execution_record"] = record
     _write_json(request_path, envelope)
     try:
         from validate_judgment_receipt import validate_judgment_receipt
 
-        validation = validate_judgment_receipt(envelope, execution_record=record)
+        validation = validate_judgment_receipt(
+            envelope,
+            execution_record=record,
+            execution_resolver=execution_resolver,
+        )
     except (OSError, ValueError, TypeError, ImportError, json.JSONDecodeError) as exc:
         _write_json(
             result_path,
@@ -394,12 +428,22 @@ def _check_dependency_producer(root: Path, runtime: Path, producer_id: str) -> d
         index = _load_json(index_path)
         if not isinstance(index, dict) or index.get("consumer_check_id") != producer_id:
             raise ValueError("dependency index does not identify the requested producer")
+        from _common import fingerprint
+
+        if index.get("index_fingerprint") != fingerprint(
+            {key: value for key, value in index.items() if key != "index_fingerprint"}
+        ):
+            raise ValueError("producer dependency index fingerprint is stale")
         manifest_locator = index.get("producer_output_manifest_path") or "output-manifest.json"
         manifest_path = (index_path.parent / Path(str(manifest_locator))).resolve()
         manifest_path.relative_to(index_path.parent.resolve())
         manifest = _load_json(manifest_path)
         if not isinstance(manifest, dict) or manifest.get("producer_check_id") != producer_id:
             raise ValueError("producer output manifest is missing or belongs to another owner")
+        if manifest.get("manifest_fingerprint") != fingerprint(
+            {key: value for key, value in manifest.items() if key != "manifest_fingerprint"}
+        ):
+            raise ValueError("producer output manifest fingerprint is stale")
         if manifest.get("terminal_status") != "completed" or manifest.get("evidence_mode") != "real_execution":
             raise ValueError("producer output is incomplete or protocol-only")
         rows_path = manifest_path.parent / "judges.json"
@@ -410,15 +454,23 @@ def _check_dependency_producer(root: Path, runtime: Path, producer_id: str) -> d
             raise ValueError("producer must expose exactly 48 judge rows")
         if not isinstance(writers, list) or len(writers) != 48:
             raise ValueError("producer must expose exactly 48 writer rows")
-        from execution_record_resolver import LocalExecutionRecordResolver
-        from reader_execution import validate_execution_record
         capture_root = manifest_path.parent / "attempts"
-        resolver = LocalExecutionRecordResolver(capture_root)
-        for row in (*writers, *judges):
-            record = row.get("record") if isinstance(row, Mapping) else None
-            if not isinstance(record, Mapping) or record.get("terminal_status") != "completed":
-                raise ValueError("producer row has no completed execution record")
-            validate_execution_record(record, resolver)
+        plan = _load_json(manifest_path.parent / "benchmark_plan.json")
+        if not isinstance(plan, dict):
+            raise ValueError("producer benchmark plan is missing or invalid")
+        if plan.get("source_manifest_fingerprint") != manifest.get("source_manifest_fingerprint"):
+            raise ValueError("producer benchmark plan is stale for its source manifest")
+        # Reuse the quality consumer's canonical row validators here.  The
+        # reader owner must establish the same all-capture boundary as the
+        # quality consumer: exact case/repeat keys, unique writer contexts,
+        # artifact maps, blind pair bindings, raw judge JSON, and local
+        # execution captures.  Checking only 48 status flags would allow a
+        # duplicated or protocol-shaped row to masquerade as independent
+        # evidence.
+        from check_writing_quality_run import _validate_judge_rows, _validate_writer_rows
+
+        writer_index = _validate_writer_rows(manifest_path.parent, writers, plan=plan)
+        _validate_judge_rows(manifest_path.parent, judges, writers=writer_index, plan=plan)
         report = {
             "check": "reader-judgment-owner",
             "status": "passed",
@@ -452,6 +504,7 @@ def main() -> int:
     parser.add_argument("--runtime-root", type=Path)
     parser.add_argument("--input", type=Path, help="current judgment envelope JSON")
     parser.add_argument("--execution-record", type=Path, help="raw or dispatch_judge execution record JSON")
+    parser.add_argument("--execution-capture-root", type=Path, help="owner run root containing the immutable local execution capture")
     parser.add_argument("--backend", help="explicit authorized backend module:function")
     parser.add_argument("--dependency-producer", help="consume one current producer dependency index")
     parser.add_argument("--json", action="store_true")
@@ -463,6 +516,7 @@ def main() -> int:
             args.runtime_root,
             input_path=args.input,
             execution_record_path=args.execution_record,
+            execution_capture_root=args.execution_capture_root,
             backend=backend,
             dependency_producer=args.dependency_producer,
         )

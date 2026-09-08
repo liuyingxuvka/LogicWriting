@@ -24,10 +24,30 @@
       "model_ids": [
         "model_test_alignment"
       ],
+      "owner_route": "field_lifecycle_mesh",
+      "protected_failure_ids": [
+        "model_test_alignment:current_owner_identity",
+        "model_test_alignment:purpose_specific_good_bad_oracle"
+      ]
+    },
+    {
+      "model_ids": [
+        "model_test_alignment"
+      ],
       "owner_route": "model_test_alignment",
       "protected_failure_ids": [
         "model_test_alignment:current_owner_identity",
         "model_test_alignment:purpose_specific_good_bad_oracle"
+      ]
+    },
+    {
+      "model_ids": [
+        "test_mesh"
+      ],
+      "owner_route": "test_mesh_maintenance",
+      "protected_failure_ids": [
+        "test_mesh:current_owner_identity",
+        "test_mesh:purpose_specific_good_bad_oracle"
       ]
     }
   ],

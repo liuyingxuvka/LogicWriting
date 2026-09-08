@@ -78,6 +78,21 @@ def test_pair_writer_input_fingerprint_is_json_serializable_and_order_independen
     assert first == second
 
 
+def test_real_quality_runner_rejects_injected_backend_without_local_plan(tmp_path):
+    benchmark = _load("run_writing_quality_benchmark")
+
+    def shaped_backend(_request):
+        return {"artifact_fingerprint": "sha256:shaped"}
+
+    with pytest.raises(ValueError, match="injected backend cannot produce real_execution"):
+        benchmark.run_benchmark(
+            ROOT,
+            output_dir=tmp_path / "quality",
+            backend=shaped_backend,
+            backend_id="authorized-test-provider",
+        )
+
+
 def test_route_smoke_covers_both_owners_and_bounded_child():
     routes = _load("check_installed_routes")
     report = routes.check(ROOT / "skills" / "logic-writing")
@@ -196,7 +211,7 @@ def test_reader_judgment_owner_rejects_protocol_fixture_as_quality_evidence(tmp_
     assert "protocol-only" in result["errors"][0]
 
 
-def test_reader_judgment_owner_parses_external_judge_execution_record(tmp_path):
+def test_reader_judgment_owner_rejects_shaped_but_uncaptured_execution_record(tmp_path):
     judgment = _load("check_reader_judgment")
     from tests.v2_support import complete_chain
 
@@ -241,10 +256,9 @@ def test_reader_judgment_owner_parses_external_judge_execution_record(tmp_path):
         execution_record_path=dispatch_path,
     )
 
-    assert report["status"] == "passed"
-    assert report["judgment_status"] == "current_pass"
-    assert report["execution_status"] == "completed"
-    assert report["execution_record_fingerprint"] == record["record_fingerprint"]
+    assert report["status"] == "repair"
+    assert report["judgment_status"] == "repair"
+    assert report["execution_status"] == "record_invalid"
 
     raw_record_path = tmp_path / "raw-record.json"
     raw_record_path.write_text(json.dumps(record), encoding="utf-8")
@@ -254,8 +268,9 @@ def test_reader_judgment_owner_parses_external_judge_execution_record(tmp_path):
         input_path=input_path,
         execution_record_path=raw_record_path,
     )
-    assert raw_report["status"] == "passed"
-    assert raw_report["execution_record_fingerprint"] == record["record_fingerprint"]
+    assert raw_report["status"] == "repair"
+    assert raw_report["judgment_status"] == "repair"
+    assert raw_report["execution_status"] == "record_invalid"
 
 
 def test_reader_judgment_owner_missing_record_with_input_is_unavailable(tmp_path):

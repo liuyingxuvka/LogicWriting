@@ -229,3 +229,15 @@ def test_model_depth_checker_rejects_a_non_logic_writing_root(tmp_path):
     assert completed.returncode == 1
     assert result["status"] == "blocked"
     assert any(row["code"] == "wrong_repository_or_source" for row in result["findings"])
+
+
+def test_model_depth_source_bindings_use_canonical_text_identity(checker, tmp_path):
+    crlf = tmp_path / "crlf.py"
+    lf = tmp_path / "lf.py"
+    crlf.write_bytes(b"value = 1\r\n")
+    lf.write_bytes(b"value = 1\n")
+
+    # Authority source bindings use FlowGuard's canonical text identity, while
+    # native receipt envelopes continue to protect their exact artifact bytes.
+    assert checker._source_sha(crlf) == checker._source_sha(lf)
+    assert checker._sha(crlf) != checker._sha(lf)

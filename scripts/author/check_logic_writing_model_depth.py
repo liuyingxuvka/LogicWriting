@@ -49,6 +49,20 @@ def _sha(path: Path) -> str:
     return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def _source_sha(path: Path) -> str:
+    """Use FlowGuard's canonical source identity for text bindings.
+
+    Authority snapshots are built with ``canonical_source_bytes`` so an
+    equivalent CRLF/LF checkout has the same source identity.  Native
+    execution envelopes still use ``_sha`` for their immutable artifact bytes;
+    keeping the two helpers separate prevents a source-normalization rule from
+    weakening artifact-integrity checks.
+    """
+    from flowguard.source_identity import source_file_fingerprint
+
+    return source_file_fingerprint(path)
+
+
 def _fingerprint(value: Any) -> str:
     encoded = json.dumps(
         value,
@@ -122,7 +136,7 @@ def _source_inventory(root: Path, mesh: Any, checker_path: Path, findings: list[
             _finding(findings, "current_source_binding_unavailable", f"missing or symlink: {relative}")
             inventory[relative] = "missing"
         else:
-            inventory[relative] = _sha(path)
+            inventory[relative] = _source_sha(path)
     return inventory
 
 
@@ -197,7 +211,7 @@ def _snapshot(root: Path, mesh: Any, state: Any, findings: list[dict[str, str]])
             path = root / relative
             if not path.is_file() or path.is_symlink():
                 _finding(findings, "current_model_binding_missing", relative, model_id)
-            elif _sha(path) != declared:
+            elif _source_sha(path) != declared:
                 _finding(findings, "current_model_binding_stale", label, model_id)
         try:
             source_paths = set(mesh._source_paths(model_id, root))
@@ -212,7 +226,7 @@ def _snapshot(root: Path, mesh: Any, state: Any, findings: list[dict[str, str]])
             path = root / relative
             if not path.is_file() or path.is_symlink():
                 _finding(findings, "current_model_input_missing", relative, model_id)
-            elif _sha(path) != item.sha256:
+            elif _source_sha(path) != item.sha256:
                 _finding(findings, "current_model_input_stale", relative, model_id)
 
 
@@ -461,7 +475,7 @@ def run_check(root: Path) -> dict[str, Any]:
         if payload.get("status") not in {"pass", "pass_with_gaps"}:
             _finding(findings, "owner_receipt_not_terminal_pass", payload.get("status"), model_id)
         try:
-            if payload.get("model_fingerprint") != _sha(root / mesh.MODEL_PATHS[model_id]):
+            if payload.get("model_fingerprint") != _source_sha(root / mesh.MODEL_PATHS[model_id]):
                 _finding(findings, "owner_receipt_model_stale", model_id=model_id)
             if not mesh._current_hashes_match(payload, root):
                 _finding(findings, "owner_receipt_source_stale", model_id=model_id)

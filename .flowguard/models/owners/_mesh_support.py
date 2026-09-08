@@ -67,6 +67,7 @@ from flowguard import (
 from flowguard.native_case_protocol import NativeModelCaseResult, fingerprint_payload
 from flowguard.recursive_hierarchy import VerifiedSubtreeReceipt, descendant_universe_fingerprint
 from flowguard.runner import run_model_first_checks
+from flowguard.source_identity import source_file_fingerprint
 
 
 FLOWGUARD_ROOT = Path(__file__).resolve().parents[2]
@@ -175,6 +176,18 @@ def _sha(path: Path) -> str:
     return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def _source_sha(path: Path) -> str:
+    """Use FlowGuard's canonical identity for governed source files.
+
+    Source/model/input bindings must match the authority snapshot's
+    newline-normalized identity.  Terminal raw-result and native-case
+    envelopes continue to use ``_sha`` so their immutable artifact bytes are
+    checked exactly as written.
+    """
+
+    return source_file_fingerprint(path)
+
+
 def _fingerprint(value: Any) -> str:
     return fingerprint_payload(value)
 
@@ -205,7 +218,7 @@ def _source_paths(model_id: str, root: Path) -> tuple[str, ...]:
 
 
 def _source_hashes(model_id: str, root: Path) -> dict[str, str]:
-    return {path: _sha(root / path) for path in _source_paths(model_id, root)}
+    return {path: _source_sha(root / path) for path in _source_paths(model_id, root)}
 
 
 def _current_hashes_match(payload: Mapping[str, Any], root: Path) -> bool:
@@ -281,10 +294,33 @@ def _child_evidence(payload: Mapping[str, Any], parent_id: str, root: Path) -> C
     )
 
 
-def _subtree_receipt(payload: Mapping[str, Any], child_payloads: Sequence[Mapping[str, Any]]) -> dict[str, Any] | None:
+def _subtree_receipt(
+    payload: Mapping[str, Any],
+    child_payloads: Sequence[Mapping[str, Any]],
+    *,
+    native: Mapping[str, Any],
+    root: Path,
+) -> dict[str, Any] | None:
     child_ids = tuple(str(item["model_id"]) for item in child_payloads)
     if not child_ids:
         return None
+    # Recursive hierarchy v2 requires every non-leaf receipt to bind the
+    # exact partition, current model-authority head, and execution context.
+    # The previous producer only emitted the descendant universe, leaving a
+    # structurally passing receipt unverifiable by the strict current-depth
+    # checker.  Read the head through the typed authority loader and derive
+    # the partition from the same child payloads consumed by the parent.
+    from flowguard.model_authority_store import load_observed_model_system
+
+    authority_head, _ = load_observed_model_system(root)
+    partition, _ = _partition(str(payload["model_id"]), child_payloads, root)
+    native_result = native.get("result", {})
+    if not isinstance(native_result, Mapping):
+        raise ValueError("native terminal result is missing for subtree authority")
+    toolchain_fingerprint = str(native_result.get("toolchain_fingerprint", "")).strip()
+    environment_fingerprint = str(native_result.get("environment_fingerprint", "")).strip()
+    if not toolchain_fingerprint or not environment_fingerprint:
+        raise ValueError("native terminal result lacks toolchain or environment fingerprint")
     child_receipt_ids = tuple(str(item["receipt_id"]) for item in child_payloads)
     child_fingerprints = {str(item["receipt_id"]): str(item["receipt_fingerprint"]) for item in child_payloads}
     descendant_ids: list[str] = []
@@ -303,6 +339,10 @@ def _subtree_receipt(payload: Mapping[str, Any], child_payloads: Sequence[Mappin
         direct_child_ids=child_ids,
         descendant_model_ids=tuple(dict.fromkeys(descendant_ids)),
         descendant_universe_fingerprint=descendant_universe_fingerprint(tuple(dict.fromkeys(descendant_ids))),
+        partition_fingerprint=_fingerprint(partition.to_dict()),
+        model_authority_head_fingerprint=authority_head.fingerprint,
+        toolchain_fingerprint=toolchain_fingerprint,
+        environment_fingerprint=environment_fingerprint,
         child_receipt_fingerprints=child_fingerprints,
         status="passed",
         current=True,
@@ -441,7 +481,7 @@ def _write_native_results(model_id: str, status: str, summary: Mapping[str, Any]
     raw.write_text(json.dumps(raw_payload, ensure_ascii=False, sort_keys=True, indent=2) + "\n", encoding="utf-8")
     raw_fp = _sha(raw)
     input_fp = str(os.environ.get("FLOWGUARD_INPUT_FINGERPRINT", "")) or _fingerprint(source_hashes)
-    model_fp = _sha(_root() / MODEL_PATHS[model_id])
+    model_fp = _source_sha(_root() / MODEL_PATHS[model_id])
     code_fp = _fingerprint({"model": model_fp, "sources": dict(source_hashes)})
     test_fp = _fingerprint({"runner": source_hashes.get(RUNNER_PATHS[model_id], ""), "tests": [source_hashes.get(item, "") for item in TEST_PATHS.get(model_id, ())]})
     oracle_fp = _fingerprint({"model_id": model_id, "status": status, "oracle": "native-model-mesh"})
@@ -474,7 +514,7 @@ def _write_native_results(model_id: str, status: str, summary: Mapping[str, Any]
 
 def _write_receipt(model_id: str, parent_id: str, status: str, summary: Mapping[str, Any], child_payloads: Sequence[Mapping[str, Any]], source_hashes: Mapping[str, str], native: Mapping[str, Any], *, root: Path) -> dict[str, Any]:
     children = tuple(str(item["model_id"]) for item in child_payloads)
-    model_fp = _sha(root / MODEL_PATHS[model_id])
+    model_fp = _source_sha(root / MODEL_PATHS[model_id])
     evidence_id = f"mesh:{model_id}:{model_fp.split(':', 1)[1][:20]}"
     payload: dict[str, Any] = {
         "schema_version": "logic-writing.model-mesh-receipt.v1",
@@ -516,7 +556,7 @@ def _write_receipt(model_id: str, parent_id: str, status: str, summary: Mapping[
         "summary": dict(summary),
         "native_case": dict(native),
     }
-    subtree = _subtree_receipt(payload, child_payloads)
+    subtree = _subtree_receipt(payload, child_payloads, native=native, root=root)
     if subtree is not None:
         payload["subtree_receipt"] = subtree
     payload["receipt_id"] = f"receipt:{model_id}:{model_fp.split(':', 1)[1][:20]}"

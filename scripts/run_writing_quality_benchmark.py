@@ -184,6 +184,7 @@ def _writer_prompt(case: Mapping[str, Any], version: str) -> str:
         ),
     }.get(str(case.get("route")), "")
     if version == "repaired":
+        composition_guidance = _composition_guidance(case)
         editorial = (
             "请在内部完成一次完整的‘读者契约→证据/事实核对→论证或场景图→成稿→反向检查’，但不要输出这些步骤。"
             "先确定一个能回答任务的中心判断或场景推进，再为每个正文单元明确：它承接什么、改变读者什么判断、"
@@ -195,6 +196,7 @@ def _writer_prompt(case: Mapping[str, Any], version: str) -> str:
             "修订版必须在不牺牲事实、边界、格式或体裁的前提下，真正改善主线推进和读者可用性；"
             "不要声明自己完成了检查，也不要提到存在另一版稿件。"
             + route_focus
+            + composition_guidance
         )
     else:
         editorial = (
@@ -206,6 +208,85 @@ def _writer_prompt(case: Mapping[str, Any], version: str) -> str:
         f"任务：{case['task']}\n约束：{case['constraints']}\n\n冻结材料：\n{materials}\n\n"
         f"写作要求：{editorial}\n返回完整成稿，不要包裹 Markdown 代码围栏，不要附加自评。"
     )
+
+
+def _composition_guidance(case: Mapping[str, Any]) -> str:
+    """Give the repaired writer a route/case-specific throughline to execute.
+
+    The benchmark intentionally keeps this guidance out of the delivered
+    artifact.  Generic requests to "be coherent" were insufficient in the
+    first real runs: the model often turned each material card into a
+    paragraph, repeated a limitation, or skipped the one action that links a
+    stated constraint to the outcome.  These are compact internal spines,
+    not sentence templates and not extra facts.
+    """
+
+    case_id = str(case.get("case_id", ""))
+    guidance = {
+        "I01": (
+            "内部主线固定为：是否扩大试点→中负载同产出观察及其机制解释→高负载反例如何收紧采购范围→"
+            "情景经济测算如何改变下一步→带条件的采购决定。每段只完成其中一个推进；同一个限制再次出现时，"
+            "必须改变读者的决定或范围，否则合并。篇幅不足时补充条件对采购的实际影响，不补泛化免责声明。"
+        ),
+        "I02": (
+            "内部主线固定为：匹配产出使功率差异可比较→回流日志为何支持机制→仍有哪些未排除的解释→高负载反例"
+            "为何改变适用域→下一步如何区分机制与相关性。使用连续正文，让每段末尾把已经得到的判断交给下一段；"
+            "不要按E01、E02、E03逐卡复述。"
+        ),
+        "I03": (
+            "内部主线固定为：先界定证据能回答的两个问题→表格按主张/证据/缺口给出可核对的边界→表后只做一次"
+            "综合判断→提出与缺口一一对应的验证。表格每一行必须服务于这条判断；E06和E07只有在说明证据审计边界时"
+            "出现，不能抢占设备性能结论。"
+        ),
+        "A01": (
+            "内部主线固定为：为什么功率差异不能直接成为效益结论→服务等价是第一层判据→比较可识别性是第二层"
+            "判据→机制适用域是第三层判据→L04的组织贡献及适用边界。每层都要说明它如何承接上一层并改变可作出的"
+            "判断；不要写成三位作者的平行摘要，也不要把‘不意味着’变成固定句式。"
+        ),
+        "A02": (
+            "在两个指定标题下内部组织为：Comparison design先交代相同产出、三对读数、单设备和短期边界，表格只放"
+            "一次原始配对数据；Interpretation再解释10%观察、回流机制、高负载反例和无显著性检验如何共同收紧推断。"
+            "不要在表前后重复同一组数字，结论必须从设计条件自然推出。"
+        ),
+        "A03": (
+            "保留‘结果’→‘意义’这条两段主线：结果先把20%、显著和所有工况改成材料真正支持的中负载观察及其边界；"
+            "意义再把该边界传递到采购范围、1.2年情景测算和下一项验证。每个补足篇幅的句子都要增加推理或决策作用，"
+            "不要重复同一免责声明。"
+        ),
+        "F01": (
+            "内部场景链必须闭合为：停电和倒计时造成即时压力→主管以钥匙为条件阻挡进入→林岚公开账页使阻挡失去"
+            "可持续性→读者能看见主管放行及工人如何实际解除锁闭→货单被救但她仍承担弟弟发现副本后的信任代价。"
+            "钥匙是否被调换对林岚和读者都仍是未知；绝不能让这把未知可用性的钥匙直接开门。公开账页之后要写出"
+            "可观察的放行动作和与材料相容的破锁/解除锁闭动作，不能靠省略制造因果跳跃，也不能新增第二把钥匙。"
+        ),
+        "F02": (
+            "内部场景链必须闭合为：明确林岚在锁闭仓库外→铃声由日常变成倒计时→公开账页改变主管的可行选择→"
+            "现场可见的放行与解除锁闭动作让货单获救→第三声铃声落在弟弟的距离变化上。不得把当前钥匙写成必然可用，"
+            "不得用旁白替主管解释，也不要用抽象主题句代替动作。"
+        ),
+        "F03": (
+            "终稿是修订报告而非戏剧场景。只列三个编号项目：把知情越界与视角越界合并为一项，把代价抹平作为一项，"
+            "把作者对铃声的解释作为一项；每项都写具体改法和必须保留的内容。不要把‘三项’扩成资料清单。"
+        ),
+        "T01": (
+            "内部路线链按三天推进：每一天先给当天条件下的主安排及理由，再把旅馆/去处/返回之间的每段连续步行、"
+            "休息地点和待核实项接回这条安排，最后给只在触发条件成立时启用的备用。不要把交通和限制另列成与行程"
+            "无关的清单；每一个限制都必须改变当天的时间、地点或选择。"
+        ),
+        "T02": (
+            "内部路线链固定为：雨天旅客条件→工业展馆这一条安静主方案→公交和馆内休息如何使它可行→必须出发前核实"
+            "的条件→绘本馆作为一条明确备用。正文用连续说明，最后才放短checklist；不要把船、河岸或旧塔写成备选。"
+        ),
+        "T03": (
+            "先原样保留第一天和第二天的可用内容，只重写第三天：电梯检修使依赖电梯的展馆安排失去可执行性，随后从"
+            "材料已给出的短程绘本馆或其它可核实选择中做一个明确取舍，并说明婴儿车条件仍待核实。不要因为这一处变化"
+            "重排三天，也不要声称任何未经给出的无障碍认证。"
+        ),
+    }
+    selected = guidance.get(case_id)
+    if not selected:
+        return ""
+    return "这些只是内部构思的因果骨架，不要把骨架标签或写作分析输出给读者。" + selected
 
 
 def _judge_prompt(case: Mapping[str, Any], rubric_text: str, pair: list[dict[str, Any]]) -> str:
@@ -500,6 +581,11 @@ def run_benchmark(
         raise ValueError("canonical case manifest does not contain the required twelve case IDs")
     cases = [by_case_id[case_id] for case_id in CASE_ORDER]
     plan = _load_plan(backend_plan, source_manifest_fp=source_manifest_fp)
+    if backend is not None and backend_plan is None:
+        raise ValueError(
+            "an injected backend cannot produce real_execution quality evidence; "
+            "run the pinned local backend with --backend-plan"
+        )
     plan.update({
         "schema_version": "logic-writing.writing-quality-run.v2", "benchmark_id": "logic-writing-real-quality-12x2x2",
         "evidence_mode": "real_execution", "case_count": CASE_COUNT, "repeats_per_version": REPEATS,

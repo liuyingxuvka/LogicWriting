@@ -1333,6 +1333,7 @@
         "fault:scripts/receipt_authority.py:resolve_latest_receipt_by_owner",
         "fault:scripts/receipt_authority.py:validate_receipt",
         "fault:scripts/receipt_store.py:store_receipt",
+        "fault:scripts/validate_judgment_receipt.py:validate_judgment_receipt",
         "recovery:scripts/reader_receipts.py:commit_repair_result_receipt",
         "script:scripts/derive_closure.py",
         "script:scripts/propagate_staleness.py",
@@ -1600,6 +1601,7 @@
         "fault:scripts/schema_validation.py:UnknownSchemaError",
         "fault:scripts/schema_validation.py:assert_schema_valid",
         "fault:scripts/text_extent.py:measure_text",
+        "fault:scripts/validate_judgment_receipt.py:validate_judgment_receipt",
         "provider:scripts/schema_validation.py:SchemaRuntimeConfigurationError",
         "provider:scripts/schema_validation.py:validate_schema",
         "recovery:scripts/build_reader_repair.py:validate_request",
@@ -3015,6 +3017,7 @@
     "fault:scripts/validate_adapter_request.py:validate_adapter_request",
     "fault:scripts/validate_adapter_result.py:validate_adapter_result",
     "fault:scripts/validate_claim_support.py:validate_claim_support",
+    "fault:scripts/validate_judgment_receipt.py:validate_judgment_receipt",
     "fault:scripts/validate_research_packet.py:assemble_research_packet",
     "fault:scripts/validate_research_packet.py:validate_research_packet",
     "fault:scripts/validate_source_registry.py:validate_source_registry",
@@ -23663,7 +23666,7 @@
       "kind": "api",
       "name": "scripts.validate_judgment_receipt.validate_judgment_receipt",
       "source_path": "scripts/validate_judgment_receipt.py",
-      "source_fingerprint": "sha256:67661c53a094a783e51a6f11c2b5eab3268ad24d9b86a6a2b876a023df56b359",
+      "source_fingerprint": "sha256:0db9fadb9c7523a0db392383761d1f551c446a64658e6bef9beeda41befceb5a",
       "function_id": "scripts.validate_judgment_receipt.validate_judgment_receipt",
       "route_id": "api:scripts.validate_judgment_receipt.validate_judgment_receipt",
       "review_group_id": "group:surface:ccf3e5fb14882245d5063bd6",
@@ -31958,7 +31961,7 @@
       "kind": "component",
       "name": "scripts.validate_judgment_receipt.__private_components__",
       "source_path": "scripts/validate_judgment_receipt.py",
-      "source_fingerprint": "sha256:67661c53a094a783e51a6f11c2b5eab3268ad24d9b86a6a2b876a023df56b359",
+      "source_fingerprint": "sha256:0db9fadb9c7523a0db392383761d1f551c446a64658e6bef9beeda41befceb5a",
       "function_id": "component:scripts.validate_judgment_receipt",
       "route_id": "component:scripts.validate_judgment_receipt",
       "review_group_id": "group:component:f21ea473d0c9e63de3e9f7a8",
@@ -44245,6 +44248,54 @@
       "write_authority": "read-only-input"
     },
     {
+      "surface_id": "fault:scripts/validate_judgment_receipt.py:validate_judgment_receipt",
+      "kind": "fault",
+      "name": "scripts.validate_judgment_receipt.validate_judgment_receipt",
+      "source_path": "scripts/validate_judgment_receipt.py",
+      "source_fingerprint": "sha256:0db9fadb9c7523a0db392383761d1f551c446a64658e6bef9beeda41befceb5a",
+      "function_id": "scripts.validate_judgment_receipt.validate_judgment_receipt",
+      "route_id": "fault:scripts.validate_judgment_receipt.validate_judgment_receipt",
+      "review_group_id": "group:component:f21ea473d0c9e63de3e9f7a8",
+      "review_granularity": "component",
+      "disposition": "governed",
+      "intent_id": "intent:logic-writing:surface:bcf124062005c6143dfde95b",
+      "owner_id": "logic-writing",
+      "obligation_ids": [
+        "obligation:logic-writing:final-closure",
+        "obligation:logic-writing:reader-actual-artifact"
+      ],
+      "model_obligation_ids": [
+        "obligation:logic-writing:final-closure",
+        "obligation:logic-writing:reader-actual-artifact"
+      ],
+      "required_check_ids": [
+        "check:logic-writing:contract-calibration",
+        "check:logic-writing:final-closure",
+        "check:logic-writing:reader-artifact"
+      ],
+      "adequacy_check_ids": [
+        "check:logic-writing:contract-calibration",
+        "check:logic-writing:final-closure",
+        "check:logic-writing:model-depth",
+        "check:logic-writing:reader-artifact"
+      ],
+      "execution_owner_ids": [
+        "owner:logic-writing:contract-calibration",
+        "owner:logic-writing:final-closure",
+        "owner:logic-writing:model-depth",
+        "owner:logic-writing:reader-artifact"
+      ],
+      "evidence_subject_ids": [
+        "subject:logic-writing:contract-calibration",
+        "subject:logic-writing:final-closure",
+        "subject:logic-writing:model-depth",
+        "subject:logic-writing:reader-artifact"
+      ],
+      "lifecycle_phase": "consumer-use",
+      "consumer_exposure": "installed-consumer",
+      "write_authority": "read-only-input"
+    },
+    {
       "surface_id": "fault:scripts/validate_research_packet.py:assemble_research_packet",
       "kind": "fault",
       "name": "scripts.validate_research_packet.assemble_research_packet",
@@ -47087,7 +47138,7 @@
       "kind": "script",
       "name": "scripts/validate_judgment_receipt.py",
       "source_path": "scripts/validate_judgment_receipt.py",
-      "source_fingerprint": "sha256:67661c53a094a783e51a6f11c2b5eab3268ad24d9b86a6a2b876a023df56b359",
+      "source_fingerprint": "sha256:0db9fadb9c7523a0db392383761d1f551c446a64658e6bef9beeda41befceb5a",
       "function_id": "scripts.validate_judgment_receipt.main",
       "route_id": "entry:scripts/validate_judgment_receipt.py",
       "review_group_id": "group:surface:061f72babc9673791069fbba",
@@ -50227,7 +50278,7 @@
       "proof_ref": ".skillguard/surface-inventory.json#full_discovery_fingerprint"
     }
   },
-  "full_discovery_fingerprint": "sha256:ea85fe4fdf4d7bda851a28a21c3f4ced2ba52bdeaac7d13a3456722474f05870",
+  "full_discovery_fingerprint": "sha256:3be4491ba08ac75331d694ab4f2a14b094470d8959123a887b725757b10847cb",
   "adequacy_check_ids": [
     "check:logic-writing:academic",
     "check:logic-writing:contract-calibration",
@@ -50244,5 +50295,5 @@
   ],
   "model_deepening_check_id": "check:logic-writing:model-depth",
   "claim_boundary": "The inventory binds the current LogicWriting skill-root source observation to explicit target-owned obligations and checks. It proves neither domain correctness, provider quality, installation currentness, release, nor future prose behavior.",
-  "inventory_hash": "sha256:f8866d76c6c2b19ac735148664d1c841dd1a63a4858791370aa6ae7a378c5d91"
+  "inventory_hash": "sha256:c786894048f1a3d65c33b8034c50de8030b60f22a87fee8a649c7f917ac757c7"
 }
