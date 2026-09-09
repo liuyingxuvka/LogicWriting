@@ -13,7 +13,7 @@ import hashlib
 import importlib
 import json
 import sys
-from concurrent.futures import ThreadPoolExecutor, wait
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError, wait
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -61,7 +61,7 @@ def _write_json(path: Path, value: Any) -> None:
     path.write_text(json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
-def _parallel_jobs(executor: ThreadPoolExecutor, jobs: list[dict[str, Any]], worker: Callable[..., dict[str, Any]], *, timeout_seconds: int, role: str) -> list[dict[str, Any]]:
+def _parallel_jobs(executor: ThreadPoolExecutor, jobs: list[dict[str, Any]], worker: Callable[..., dict[str, Any]], *, timeout_seconds: int, role: str, startup_timeout_seconds: int = 180) -> list[dict[str, Any]]:
     """Collect parallel jobs with a bounded orchestration wait.
 
     A provider can fail to emit its terminal receipt while its worker remains
@@ -71,10 +71,18 @@ def _parallel_jobs(executor: ThreadPoolExecutor, jobs: list[dict[str, Any]], wor
     own process cleanup finish in the background.
     """
     futures = [executor.submit(worker, job) for job in jobs]
-    deadline = time.monotonic() + max(1, int(timeout_seconds))
+    started = time.monotonic()
+    deadline = started + max(1, int(timeout_seconds))
+    startup_deadline = started + max(1, int(startup_timeout_seconds))
     pending = set(futures)
     rows: list[dict[str, Any]] = []
     while pending and time.monotonic() < deadline:
+        if not rows and time.monotonic() >= startup_deadline:
+            for future, job in zip(futures, jobs):
+                if future in pending:
+                    rows.append({"status": "failed", "role": role, "case_id": job.get("case", {}).get("case_id"), "repeat": job.get("repeat"), "version": job.get("version"), "judge_index": job.get("judge_index"), "error": f"{role} startup/dispatch exceeded deadline", "error_event": {"type": "error_event", "role": role, "error_class": "StartupDispatchTimeout", "message": f"{role} startup/dispatch exceeded deadline", "terminal": True}})
+            pending.clear()
+            break
         done, pending = wait(pending, timeout=min(1.0, max(0.0, deadline - time.monotonic())))
         for future in done:
             try:
@@ -506,7 +514,7 @@ def _load_plan(plan_path: Path | None, *, source_manifest_fp: str) -> dict[str, 
             "schema_version": "logic-writing.local-backend-plan.v1", "backend_id": "local-codex:0.153.4:gpt-6-astra:xhigh",
             "model_id": DEFAULT_MODEL_ID, "reasoning_effort": DEFAULT_REASONING_EFFORT, "cli_version": DEFAULT_CLI_VERSION,
             "cli_sha256": DEFAULT_CLI_SHA256, "timeout_seconds": 900, "max_attempts": 1,
-            "source_manifest_fingerprint": source_manifest_fp,
+            "source_manifest_fingerprint": source_manifest_fp, "startup_timeout_seconds": 60,
         }
     value = _read_json(plan_path)
     if not isinstance(value, dict) or value.get("schema_version") != "logic-writing.local-backend-plan.v1":
@@ -528,6 +536,47 @@ def _unavailable_result(plan: Mapping[str, Any], *, source_manifest_fp: str, out
     }
     _write_json(output_dir / "run_result.json", result)
     return result
+
+
+def _initialize_local_backend(
+    output_dir: Path,
+    plan: Mapping[str, Any],
+    *,
+    startup_timeout_seconds: int,
+) -> tuple[LocalCodexBackend | None, LocalExecutionRecordResolver | None, str | None]:
+    """Initialize the pinned provider with a bounded startup/dispatch wait.
+
+    A provider can hang before its first child process (for example while
+    probing a desktop CLI or its local configuration).  That state is outside
+    ``LocalCodexBackend.run`` and therefore cannot be covered by the per-job
+    idle watchdog.  Keep initialization in a daemon worker and return a
+    durable startup failure to the caller instead of leaving the benchmark
+    owner alive indefinitely.
+    """
+    def _create() -> tuple[LocalCodexBackend, LocalExecutionRecordResolver]:
+        backend = LocalCodexBackend(
+            output_dir / "attempts", model_id=str(plan["model_id"]), reasoning_effort=str(plan["reasoning_effort"]),
+            timeout_seconds=int(plan.get("timeout_seconds", 900)), expected_cli_version=str(plan.get("cli_version", DEFAULT_CLI_VERSION)),
+            no_progress_seconds=int(plan.get("no_progress_seconds", 120)),
+            expected_executable_sha256=str(plan.get("cli_sha256", DEFAULT_CLI_SHA256)),
+        )
+        return backend, LocalExecutionRecordResolver(
+            backend.run_root, expected_cli_version=backend.cli_version,
+            expected_cli_sha256=backend.executable_sha256, expected_backend_id=backend.backend_id,
+        )
+
+    executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="logic-writing-backend-startup")
+    future = executor.submit(_create)
+    try:
+        backend, resolver = future.result(timeout=max(1, int(startup_timeout_seconds)))
+        executor.shutdown(wait=True)
+        return backend, resolver, None
+    except FuturesTimeoutError:
+        executor.shutdown(wait=False, cancel_futures=True)
+        return None, None, "startup_dispatch_timeout"
+    except Exception as exc:
+        executor.shutdown(wait=False, cancel_futures=True)
+        return None, None, f"startup_dispatch_failed:{type(exc).__name__}"
 
 
 def _copy_artifact(capture_root: Path, record: Mapping[str, Any], target: Path) -> tuple[Path, dict[str, Any]]:
@@ -678,13 +727,11 @@ def run_benchmark(
     local_backend: LocalCodexBackend | None = None
     resolver: LocalExecutionRecordResolver | None = None
     if backend_plan is not None:
-        local_backend = LocalCodexBackend(
-            output_dir / "attempts", model_id=str(plan["model_id"]), reasoning_effort=str(plan["reasoning_effort"]),
-            timeout_seconds=int(plan.get("timeout_seconds", 900)), expected_cli_version=str(plan.get("cli_version", DEFAULT_CLI_VERSION)),
-            no_progress_seconds=int(plan.get("no_progress_seconds", 120)),
-            expected_executable_sha256=str(plan.get("cli_sha256", DEFAULT_CLI_SHA256)),
+        local_backend, resolver, startup_failure = _initialize_local_backend(
+            output_dir, plan, startup_timeout_seconds=int(plan.get("startup_timeout_seconds", 60))
         )
-        resolver = LocalExecutionRecordResolver(local_backend.run_root, expected_cli_version=local_backend.cli_version, expected_cli_sha256=local_backend.executable_sha256, expected_backend_id=local_backend.backend_id)
+        if startup_failure:
+            return _unavailable_result(plan, source_manifest_fp=source_manifest_fp, output_dir=output_dir, reason=startup_failure)
     writers: list[dict[str, Any]] = []
     writer_index: dict[tuple[str, int, str], dict[str, Any]] = {}
     writer_dir = output_dir / "artifacts" / "writers"
@@ -708,7 +755,7 @@ def run_benchmark(
             rows = _parallel_jobs(executor, jobs, lambda job: _execute_writer_job(
                 case=job["case"], repeat=job["repeat"], version=job["version"], writer_dir=writer_dir,
                 local_backend=local_backend, backend=backend, resolver=resolver,
-            ), timeout_seconds=_orchestration_timeout(plan, len(jobs)), role="writer")
+            ), timeout_seconds=_orchestration_timeout(plan, len(jobs)), role="writer", startup_timeout_seconds=int(plan.get("startup_timeout_seconds", 180)))
         else:
             rows = [
                 _execute_writer_job(
@@ -759,7 +806,7 @@ def run_benchmark(
                 case=job["case"], repeat=job["repeat"], judge_index=job["judge_index"], order=job["order"],
                 rubric_text=rubric_text, cases_dir=cases_dir, judge_dir=judge_dir, local_backend=local_backend,
                 backend=backend, resolver=resolver,
-            ), timeout_seconds=_orchestration_timeout(plan, len(jobs)), role="judge")
+            ), timeout_seconds=_orchestration_timeout(plan, len(jobs)), role="judge", startup_timeout_seconds=int(plan.get("startup_timeout_seconds", 180)))
     else:
         for path in sorted(judge_dir.glob("**/judge.json")):
             row = _read_json(path)
