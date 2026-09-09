@@ -681,6 +681,7 @@ def run_benchmark(
         local_backend = LocalCodexBackend(
             output_dir / "attempts", model_id=str(plan["model_id"]), reasoning_effort=str(plan["reasoning_effort"]),
             timeout_seconds=int(plan.get("timeout_seconds", 900)), expected_cli_version=str(plan.get("cli_version", DEFAULT_CLI_VERSION)),
+            no_progress_seconds=int(plan.get("no_progress_seconds", 120)),
             expected_executable_sha256=str(plan.get("cli_sha256", DEFAULT_CLI_SHA256)),
         )
         resolver = LocalExecutionRecordResolver(local_backend.run_root, expected_cli_version=local_backend.cli_version, expected_cli_sha256=local_backend.executable_sha256, expected_backend_id=local_backend.backend_id)

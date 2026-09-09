@@ -10,5 +10,6 @@
   "concurrency": 2,
   "token_budget": null,
   "output_token_limit_supported": false,
-  "purpose": "Local desktop Codex execution only; executable path and authentication remain runtime observations."
+  "purpose": "Local desktop Codex execution only; executable path and authentication remain runtime observations.",
+  "no_progress_seconds": 120
 }

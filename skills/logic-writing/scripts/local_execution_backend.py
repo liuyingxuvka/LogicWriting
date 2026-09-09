@@ -15,6 +15,8 @@ import os
 import re
 import subprocess
 import sys
+import threading
+import time
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -173,6 +175,7 @@ class LocalCodexBackend:
         model_id: str = DEFAULT_MODEL_ID,
         reasoning_effort: str = DEFAULT_REASONING_EFFORT,
         timeout_seconds: int = 900,
+        no_progress_seconds: int = 120,
         expected_version: str = DEFAULT_CLI_VERSION,
         expected_sha256: str = DEFAULT_CLI_SHA256,
         expected_cli_version: str | None = None,
@@ -193,6 +196,11 @@ class LocalCodexBackend:
         self.model_id = model_id
         self.reasoning_effort = reasoning_effort
         self.timeout_seconds = int(timeout_seconds)
+        # A hard wall clock timeout alone can leave a local CLI that never
+        # emits an event occupying a worker for fifteen minutes.  This idle
+        # watchdog is deliberately separate from the hard timeout and is
+        # disabled only when explicitly set to zero (useful for diagnostics).
+        self.no_progress_seconds = max(0, int(no_progress_seconds))
         self.expected_version = expected_cli_version or expected_version
         self.expected_sha256 = expected_executable_sha256 or expected_sha256
         self.executable_sha256 = hashlib.sha256(self.executable.read_bytes()).hexdigest()
@@ -289,10 +297,46 @@ class LocalCodexBackend:
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
+                close_fds=True,
                 creationflags=getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0),
             )
             try:
-                stdout, stderr = process.communicate(prompt_bytes, timeout=self.timeout_seconds)
+                # Read both pipes continuously so a silent/stalled CLI can be
+                # distinguished from a healthy long-running turn.  Threads
+                # are used because Windows pipes are not selector-friendly.
+                stdout_parts: list[bytes] = []
+                stderr_parts: list[bytes] = []
+                last_progress = time.monotonic()
+                def _reader(stream: Any, parts: list[bytes]) -> None:
+                    nonlocal last_progress
+                    while True:
+                        chunk = stream.read(65536)
+                        if not chunk:
+                            return
+                        parts.append(chunk)
+                        last_progress = time.monotonic()
+                readers = [
+                    threading.Thread(target=_reader, args=(process.stdout, stdout_parts), daemon=True),
+                    threading.Thread(target=_reader, args=(process.stderr, stderr_parts), daemon=True),
+                ]
+                if process.stdin is not None:
+                    process.stdin.write(prompt_bytes)
+                    process.stdin.close()
+                for reader in readers:
+                    reader.start()
+                hard_deadline = time.monotonic() + max(1, int(self.timeout_seconds))
+                while process.poll() is None:
+                    now = time.monotonic()
+                    if now >= hard_deadline:
+                        raise subprocess.TimeoutExpired(argv, max(1, int(self.timeout_seconds)), output=b"".join(stdout_parts), stderr=b"".join(stderr_parts))
+                    if self.no_progress_seconds and now - last_progress >= self.no_progress_seconds:
+                        failure_reason = "no_progress_watchdog"
+                        raise subprocess.TimeoutExpired(argv, self.no_progress_seconds, output=b"".join(stdout_parts), stderr=b"".join(stderr_parts))
+                    time.sleep(0.1)
+                for reader in readers:
+                    reader.join(timeout=2)
+                stdout = b"".join(stdout_parts)
+                stderr = b"".join(stderr_parts)
                 exit_code = process.returncode
                 cleanup_confirmed = process.poll() is not None
             except subprocess.TimeoutExpired as exc:
@@ -306,9 +350,18 @@ class LocalCodexBackend:
                         stdout += tail_out or b""
                         stderr += tail_err or b""
                     except (OSError, subprocess.TimeoutExpired):
-                        pass
+                        # Do not let a descendant holding an inherited pipe
+                        # keep this owner blocked after taskkill.  The root
+                        # process has already been proven dead; close the
+                        # local handles and retain the captured prefix.
+                        for stream in (process.stdin, process.stdout, process.stderr):
+                            try:
+                                if stream is not None:
+                                    stream.close()
+                            except OSError:
+                                pass
                 exit_code = process.returncode
-                failure_reason = "timeout"
+                failure_reason = failure_reason or "timeout"
         except (OSError, ValueError) as exc:
             failure_reason = f"process_start_failed: {exc}"
             cleanup_confirmed = process is None or process.poll() is not None
