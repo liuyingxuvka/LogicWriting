@@ -98,7 +98,7 @@ def _record_from_result(request: Mapping[str, Any], result: Mapping[str, Any], *
 
 
 def _unavailable(request: Mapping[str, Any], role: str) -> dict[str, Any]:
-    return {"status": "execution_provider_unavailable", "role": role, "request_fingerprint": fingerprint(dict(request)), "record": None}
+    return {"status": "execution_provider_unavailable", "role": role, "request_fingerprint": fingerprint(dict(request)), "record": None, "failure_reason": "execution_provider_unavailable"}
 
 
 def dispatch_writer(request: Mapping[str, Any], backend: Any) -> dict[str, Any]:
