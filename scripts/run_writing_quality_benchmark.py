@@ -442,6 +442,9 @@ def _execute_judge_job(
         if local_backend is not None:
             dispatched = dispatch_judge(request, local_backend)
             row["dispatch_status"] = dispatched.get("status")
+            for key in ("failure_reason", "error", "error_event", "execution_status", "terminal_status"):
+                if dispatched.get(key) is not None:
+                    row[key] = dispatched.get(key)
             record = dispatched.get("record")
             row["record"] = record
             if isinstance(record, Mapping) and record.get("terminal_status") == "completed" and resolver is not None:
@@ -655,6 +658,9 @@ def _execute_writer_job(
         if local_backend is not None:
             dispatched = dispatch_writer(request, local_backend)
             row["dispatch_status"] = dispatched.get("status")
+            for key in ("failure_reason", "error", "error_event", "execution_status", "terminal_status"):
+                if dispatched.get(key) is not None:
+                    row[key] = dispatched.get(key)
             record = dispatched.get("record")
             row["record"] = record
             if isinstance(record, Mapping) and record.get("terminal_status") == "completed" and resolver is not None:
