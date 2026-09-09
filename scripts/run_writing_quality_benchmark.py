@@ -70,28 +70,42 @@ def _parallel_jobs(executor: ThreadPoolExecutor, jobs: list[dict[str, Any]], wor
     row for every future that has no terminal result, then lets the backend's
     own process cleanup finish in the background.
     """
-    futures = [executor.submit(worker, job) for job in jobs]
+    # Submit only one bounded wave at a time.  Submitting the entire batch at
+    # once makes queued work invisible to the startup watchdog and lets one
+    # stuck future consume the deadline for every later job.
+    max_workers = max(1, int(getattr(executor, "_max_workers", 1)))
+    waves = [jobs[offset:offset + max_workers] for offset in range(0, len(jobs), max_workers)]
     started = time.monotonic()
     deadline = started + max(1, int(timeout_seconds))
     startup_deadline = started + max(1, int(startup_timeout_seconds))
-    pending = set(futures)
     rows: list[dict[str, Any]] = []
-    while pending and time.monotonic() < deadline:
-        if not rows and time.monotonic() >= startup_deadline:
-            for future, job in zip(futures, jobs):
-                if future in pending:
-                    rows.append({"status": "failed", "role": role, "case_id": job.get("case", {}).get("case_id"), "repeat": job.get("repeat"), "version": job.get("version"), "judge_index": job.get("judge_index"), "error": f"{role} startup/dispatch exceeded deadline", "error_event": {"type": "error_event", "role": role, "error_class": "StartupDispatchTimeout", "message": f"{role} startup/dispatch exceeded deadline", "terminal": True}})
-            pending.clear()
-            break
-        done, pending = wait(pending, timeout=min(1.0, max(0.0, deadline - time.monotonic())))
-        for future in done:
-            try:
-                rows.append(future.result())
-            except Exception as exc:
-                rows.append({"status": "failed", "role": role, "error": str(exc), "error_event": {"type": "error_event", "role": role, "error_class": type(exc).__name__, "message": str(exc), "terminal": True}})
-    for future, job in zip(futures, jobs):
-        if future in pending:
-            rows.append({"status": "failed", "role": role, "case_id": job.get("case", {}).get("case_id"), "repeat": job.get("repeat"), "version": job.get("version"), "judge_index": job.get("judge_index"), "error": f"{role} job exceeded orchestration deadline", "error_event": {"type": "error_event", "role": role, "error_class": "OrchestrationTimeout", "message": f"{role} job exceeded orchestration deadline", "terminal": True}})
+    for wave_index, wave in enumerate(waves):
+        if time.monotonic() >= deadline:
+            error_class = "OrchestrationTimeout"
+            message = f"{role} job exceeded orchestration deadline"
+            for job in wave:
+                rows.append({"status": "failed", "role": role, "case_id": job.get("case", {}).get("case_id"), "repeat": job.get("repeat"), "version": job.get("version"), "judge_index": job.get("judge_index"), "error": message, "error_event": {"type": "error_event", "role": role, "error_class": error_class, "message": message, "terminal": True}})
+            continue
+        futures = [executor.submit(worker, job) for job in wave]
+        wave_deadline = min(deadline, time.monotonic() + max(1, int(timeout_seconds / max(1, len(waves)))))
+        pending = set(futures)
+        while pending and time.monotonic() < wave_deadline:
+            if wave_index == 0 and not rows and time.monotonic() >= startup_deadline:
+                message = f"{role} startup/dispatch exceeded deadline"
+                for job in wave:
+                    rows.append({"status": "failed", "role": role, "case_id": job.get("case", {}).get("case_id"), "repeat": job.get("repeat"), "version": job.get("version"), "judge_index": job.get("judge_index"), "error": message, "error_event": {"type": "error_event", "role": role, "error_class": "StartupDispatchTimeout", "message": message, "terminal": True}})
+                pending.clear()
+                break
+            done, pending = wait(pending, timeout=min(1.0, max(0.0, wave_deadline - time.monotonic())))
+            for future in done:
+                try:
+                    rows.append(future.result())
+                except Exception as exc:
+                    rows.append({"status": "failed", "role": role, "error": str(exc), "error_event": {"type": "error_event", "role": role, "error_class": type(exc).__name__, "message": str(exc), "terminal": True}})
+        for future, job in zip(futures, wave):
+            if future in pending:
+                message = f"{role} job exceeded orchestration deadline"
+                rows.append({"status": "failed", "role": role, "case_id": job.get("case", {}).get("case_id"), "repeat": job.get("repeat"), "version": job.get("version"), "judge_index": job.get("judge_index"), "error": message, "error_event": {"type": "error_event", "role": role, "error_class": "OrchestrationTimeout", "message": message, "terminal": True}})
     executor.shutdown(wait=False, cancel_futures=True)
     return rows
 
