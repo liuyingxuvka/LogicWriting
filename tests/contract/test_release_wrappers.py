@@ -4,6 +4,8 @@ import copy
 import importlib.util
 import json
 import sys
+import time
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -47,6 +49,15 @@ def test_quality_consumer_imports_from_repository_root():
     assert callable(quality.main)
 
 
+def test_quality_batch_deadline_scales_to_concurrency_waves():
+    benchmark = _load("run_writing_quality_benchmark")
+    plan = {"timeout_seconds": 900, "concurrency": 2}
+    assert benchmark._orchestration_timeout(plan, 48) == 21600
+    assert benchmark._orchestration_timeout(
+        {**plan, "orchestration_timeout_seconds": 120}, 48
+    ) == 120
+
+
 def test_reader_acceptance_owner_requires_explicit_aggregate_only_for_existing_captures():
     owner = _load("run_reader_acceptance_owner")
     assert owner.resolve_stage_selection(
@@ -87,6 +98,25 @@ def test_judge_pair_order_uses_persisted_writer_versions():
         benchmark._pair_order_for_writers(
             ({"version": "baseline"}, {"version": "baseline"})
         )
+
+
+def test_parallel_quality_jobs_close_missing_terminal_result():
+    benchmark = _load("run_writing_quality_benchmark")
+
+    def stuck(_job):
+        time.sleep(2)
+        return {"status": "completed"}
+
+    executor = ThreadPoolExecutor(max_workers=1)
+    started = time.monotonic()
+    rows = benchmark._parallel_jobs(
+        executor, [{"case": {"case_id": "T01"}, "repeat": 1}], stuck,
+        timeout_seconds=1, role="judge"
+    )
+    assert time.monotonic() - started < 1.8
+    assert rows[0]["status"] == "failed"
+    assert rows[0]["error_event"]["type"] == "error_event"
+    assert rows[0]["error_event"]["error_class"] == "OrchestrationTimeout"
 
 
 def test_real_quality_runner_rejects_injected_backend_without_local_plan(tmp_path):

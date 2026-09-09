@@ -13,11 +13,12 @@ import hashlib
 import importlib
 import json
 import sys
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, wait
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Mapping
+import time
 
 ROOT = Path(__file__).resolve().parents[1]
 SKILL_SCRIPTS = ROOT / "skills" / "logic-writing" / "scripts"
@@ -58,6 +59,44 @@ def _bytes_fp(data: bytes) -> str:
 def _write_json(path: Path, value: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def _parallel_jobs(executor: ThreadPoolExecutor, jobs: list[dict[str, Any]], worker: Callable[..., dict[str, Any]], *, timeout_seconds: int, role: str) -> list[dict[str, Any]]:
+    """Collect parallel jobs with a bounded orchestration wait.
+
+    A provider can fail to emit its terminal receipt while its worker remains
+    alive.  Waiting on a ``with ThreadPoolExecutor`` block in that situation
+    strands the aggregate owner forever.  The runner records a durable failed
+    row for every future that has no terminal result, then lets the backend's
+    own process cleanup finish in the background.
+    """
+    futures = [executor.submit(worker, job) for job in jobs]
+    deadline = time.monotonic() + max(1, int(timeout_seconds))
+    pending = set(futures)
+    rows: list[dict[str, Any]] = []
+    while pending and time.monotonic() < deadline:
+        done, pending = wait(pending, timeout=min(1.0, max(0.0, deadline - time.monotonic())))
+        for future in done:
+            try:
+                rows.append(future.result())
+            except Exception as exc:
+                rows.append({"status": "failed", "role": role, "error": str(exc), "error_event": {"type": "error_event", "role": role, "error_class": type(exc).__name__, "message": str(exc), "terminal": True}})
+    for future, job in zip(futures, jobs):
+        if future in pending:
+            rows.append({"status": "failed", "role": role, "case_id": job.get("case", {}).get("case_id"), "repeat": job.get("repeat"), "version": job.get("version"), "judge_index": job.get("judge_index"), "error": f"{role} job exceeded orchestration deadline", "error_event": {"type": "error_event", "role": role, "error_class": "OrchestrationTimeout", "message": f"{role} job exceeded orchestration deadline", "terminal": True}})
+    executor.shutdown(wait=False, cancel_futures=True)
+    return rows
+
+
+def _orchestration_timeout(plan: dict[str, Any], job_count: int) -> int:
+    """Scale the batch deadline to scheduled waves unless explicitly set."""
+    explicit = plan.get("orchestration_timeout_seconds")
+    if explicit is not None:
+        return max(1, int(explicit))
+    per_job = max(1, int(plan.get("timeout_seconds", 900)))
+    concurrency = max(1, int(plan.get("concurrency", 1)))
+    waves = max(1, (max(0, job_count) + concurrency - 1) // concurrency)
+    return per_job * waves
 
 
 def _read_json(path: Path) -> Any:
@@ -393,8 +432,18 @@ def _execute_judge_job(
             response = backend({"case": case, "pair": pair, "prompt": prompt})
             row["response"] = response
             row["status"] = "completed" if isinstance(response, Mapping) else "failed"
-    except (OSError, ValueError, ValidationError) as exc:
+    except Exception as exc:
+        # A single provider/schema failure must become a durable terminal row;
+        # it must never escape a worker and strand the aggregate owner waiting
+        # on an unobserved Future exception.
         row["error"] = str(exc)
+        row["error_event"] = {
+            "type": "error_event",
+            "role": "judge",
+            "error_class": type(exc).__name__,
+            "message": str(exc),
+            "terminal": True,
+        }
     path = judge_dir / str(case["case_id"]) / str(repeat) / str(judge_index) / "judge.json"
     _write_json(path, row)
     return row
@@ -567,8 +616,18 @@ def _execute_writer_job(
             response = backend({"case": case, "version": version, "repeat": repeat, "prompt": prompt})
             row["response"] = response
             row["status"] = "completed" if isinstance(response, Mapping) and response.get("artifact_fingerprint") else "failed"
-    except (OSError, ValueError, ValidationError) as exc:
+    except Exception as exc:
+        # Preserve writer failures as auditable terminal evidence.  This keeps
+        # the artifact out of the quality claim while allowing the parent run
+        # to finish and emit an incomplete result instead of waiting forever.
         row["error"] = str(exc)
+        row["error_event"] = {
+            "type": "error_event",
+            "role": "writer",
+            "error_class": type(exc).__name__,
+            "message": str(exc),
+            "terminal": True,
+        }
     row_path = writer_dir / str(case["case_id"]) / str(repeat) / version / "writer.json"
     _write_json(row_path, row)
     return row
@@ -644,21 +703,11 @@ def run_benchmark(
                     })
         writer_workers = max(1, min(int(plan.get("concurrency", 1)), len(jobs) or 1))
         if local_backend is not None and writer_workers > 1:
-            with ThreadPoolExecutor(max_workers=writer_workers, thread_name_prefix="logic-writing-writer") as executor:
-                futures = [
-                    executor.submit(
-                        _execute_writer_job,
-                        case=job["case"],
-                        repeat=job["repeat"],
-                        version=job["version"],
-                        writer_dir=writer_dir,
-                        local_backend=local_backend,
-                        backend=backend,
-                        resolver=resolver,
-                    )
-                    for job in jobs
-                ]
-                rows = [future.result() for future in futures]
+            executor = ThreadPoolExecutor(max_workers=writer_workers, thread_name_prefix="logic-writing-writer")
+            rows = _parallel_jobs(executor, jobs, lambda job: _execute_writer_job(
+                case=job["case"], repeat=job["repeat"], version=job["version"], writer_dir=writer_dir,
+                local_backend=local_backend, backend=backend, resolver=resolver,
+            ), timeout_seconds=_orchestration_timeout(plan, len(jobs)), role="writer")
         else:
             rows = [
                 _execute_writer_job(
@@ -704,17 +753,12 @@ def run_benchmark(
                 for job in jobs
             ]
         else:
-            with ThreadPoolExecutor(max_workers=max_workers, thread_name_prefix="logic-writing-judge") as executor:
-                futures = [
-                    executor.submit(
-                        _execute_judge_job,
-                        case=job["case"], repeat=job["repeat"], judge_index=job["judge_index"], order=job["order"],
-                        rubric_text=rubric_text, cases_dir=cases_dir, judge_dir=judge_dir, local_backend=local_backend,
-                        backend=backend, resolver=resolver,
-                    )
-                    for job in jobs
-                ]
-                judges = [future.result() for future in futures]
+            executor = ThreadPoolExecutor(max_workers=max_workers, thread_name_prefix="logic-writing-judge")
+            judges = _parallel_jobs(executor, jobs, lambda job: _execute_judge_job(
+                case=job["case"], repeat=job["repeat"], judge_index=job["judge_index"], order=job["order"],
+                rubric_text=rubric_text, cases_dir=cases_dir, judge_dir=judge_dir, local_backend=local_backend,
+                backend=backend, resolver=resolver,
+            ), timeout_seconds=_orchestration_timeout(plan, len(jobs)), role="judge")
     else:
         for path in sorted(judge_dir.glob("**/judge.json")):
             row = _read_json(path)
