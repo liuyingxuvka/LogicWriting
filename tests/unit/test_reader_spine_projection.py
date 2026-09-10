@@ -69,6 +69,102 @@ def test_reader_spine_is_minimal_ordered_and_keeps_full_input_private(tmp_path):
         pipeline.render_reader_spine_prompt({**spine, "writer_input": brief["writer_input"]})
 
 
+def test_reader_spine_projects_route_guidance_for_each_terminal_owner(tmp_path):
+    expected_keys = {
+        "investigation": {"mode", "profile", "bounded_answer", "evidence_strength", "alternatives", "recheck_conditions"},
+        "academic-writing": {"mode", "profile", "research_question", "central_contribution", "hierarchy", "figure_table_jobs"},
+        "fiction-writing": {"mode", "profile", "voice_contract", "movements", "unit_plans", "promises_and_reveals", "realization_boundaries"},
+        "travel-guide": {"mode", "profile", "traveler_conditions", "pace_and_timing", "local_names", "reachable_fallbacks", "source_and_recheck_placement"},
+    }
+    for owner in expected_keys:
+        chain = make_reader_chain(tmp_path / owner, owner)
+        spine = pipeline.build_reader_spine(chain["reader_brief"], composition_plan=chain["plan"])
+        guidance = spine["route_guidance"]
+        assert set(guidance) == expected_keys[owner]
+        assert guidance["mode"] == owner
+        assert "route_semantics" not in str(guidance)
+        assert "route_payloads" not in str(guidance)
+        assert "source_refs" not in str(guidance)
+        pipeline.validate_reader_spine(spine)
+
+
+def test_reader_spine_keeps_selected_constraints_without_authority_metadata(tmp_path):
+    chain = make_reader_chain(tmp_path / "constraints")
+    boundaries = copy.deepcopy(chain["reader_brief"]["content_boundaries"])
+    boundaries["citation_duties"] = [{
+        "citation_id": "citation:one",
+        "content_unit_ids": ["content:answer"],
+        "source_id": "source:synthetic",
+        "marker": "[1]",
+        "placement": "same_sentence",
+    }]
+    boundaries["must_preserve_tokens"] = [{
+        "token_id": "token:one",
+        "token": "ReaderIntent",
+        "reason": "产品名必须保持原样。",
+        "content_unit_ids": ["content:answer"],
+    }]
+    boundaries["verbatim_obligations"] = [{
+        "verbatim_id": "verbatim:one",
+        "text": "必须保留的原文",
+        "reason": "用户要求原文出现。",
+        "content_unit_ids": ["content:answer"],
+    }]
+    boundaries["prohibited_overclaims"] = [{
+        "overclaim_id": "overclaim:one",
+        "affected_content_unit_ids": ["content:answer"],
+        "forbidden_meaning": "不得把有限材料写成普遍规律。",
+        "reason": "当前证据范围不足以支持普遍化。",
+        "authority_refs": ["private:authority"],
+    }]
+    brief = _brief_with_boundaries(chain, boundaries)
+    spine = pipeline.build_reader_spine(brief, composition_plan=chain["plan"])
+
+    assert spine["reader_constraints"] == {
+        "citation_rules": [{
+            "citation_id": "citation:one",
+            "content_unit_ids": ["content:answer"],
+            "source_id": "source:synthetic",
+            "marker": "[1]",
+            "placement": "same_sentence",
+        }],
+        "exact_obligations": {
+            "must_preserve": [{
+                "token_id": "token:one",
+                "token": "ReaderIntent",
+                "reason": "产品名必须保持原样。",
+                "content_unit_ids": ["content:answer"],
+            }],
+            "verbatim": [{
+                "verbatim_id": "verbatim:one",
+                "text": "必须保留的原文",
+                "reason": "用户要求原文出现。",
+                "content_unit_ids": ["content:answer"],
+            }],
+        },
+        "claim_boundaries": [{
+            "overclaim_id": "overclaim:one",
+            "affected_content_unit_ids": ["content:answer"],
+            "forbidden_meaning": "不得把有限材料写成普遍规律。",
+            "reason": "当前证据范围不足以支持普遍化。",
+        }],
+    }
+    rendered = pipeline.render_reader_spine_prompt(spine)
+    assert "private:authority" not in rendered
+    assert '"authority_refs"' not in rendered
+    assert '"reader_constraints"' in rendered
+    pipeline.validate_reader_spine(spine)
+
+
+def test_reader_spine_rejects_private_route_payload_injection(tmp_path):
+    chain = make_reader_chain(tmp_path / "private-route")
+    spine = pipeline.build_reader_spine(chain["reader_brief"])
+    mutated = copy.deepcopy(spine)
+    mutated["route_guidance"]["route_payloads"] = []
+    with pytest.raises(pipeline.ProductionPipelineBlocked, match="reader_spine_private_field"):
+        pipeline.validate_reader_spine(mutated)
+
+
 def test_reader_spine_deduplicates_evidence_and_retains_material_limit(tmp_path):
     chain = make_reader_chain(tmp_path / "chain")
     boundaries = copy.deepcopy(chain["reader_brief"]["content_boundaries"])

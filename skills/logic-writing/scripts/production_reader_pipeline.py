@@ -116,6 +116,8 @@ _READER_SPINE_KEYS = {
     "evidence_anchors",
     "editorial_dispositions",
     "conclusion_sensitive_limitations",
+    "reader_constraints",
+    "route_guidance",
 }
 _READER_CONTEXT_KEYS = {
     "language", "audience", "purpose", "artifact_mode", "artifact_format",
@@ -131,7 +133,20 @@ _READER_SPINE_PRIVATE_KEYS = {
     "native_handoff", "native_handoff_mapping", "model_row_ids", "model_id",
     "model_ids", "status", "execution_record", "execution_records", "receipt",
     "receipts", "ledger", "ledgers", "citations", "private_receipt",
-    "private_receipts", "evidence_ledger", "authority_ledger",
+    "private_receipts", "evidence_ledger", "authority_ledger", "native_plan",
+    "native_receipt", "provider_identity", "source_fingerprint",
+    "writer_input_fingerprint", "reader_spine_fingerprint", "brief_fingerprint",
+    "authority_refs", "source_refs", "route_payloads", "traveler_fit",
+    "voice_contract_ref", "voice_contract_payload", "binding_id", "run_id",
+    "context_id", "backend_id", "rubric", "judge", "score", "model_revision",
+}
+_READER_ROUTE_MODES = {
+    "investigation", "academic-writing", "fiction-writing", "travel-guide",
+}
+_READER_VOICE_KEYS = {
+    "pov_policy", "tense_policy", "narration_distance", "diction",
+    "sentence_rhythm", "dialogue_policy", "exposition_policy", "pacing_policy",
+    "allowed_variation", "blocked_variation",
 }
 _READER_SPINE_LEAK = re.compile(
     r"\b(?:SourceGuard|LogicGuard|TraceGuard|FlowGuard|current_pass|"
@@ -901,6 +916,753 @@ def _spine_context(intent: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
+def _spine_text(value: Any, path: str) -> str:
+    """Validate a reader-facing string and reject process language."""
+    if not isinstance(value, str) or not value.strip():
+        raise ProductionPipelineBlocked("reader_spine_field_invalid", path)
+    if _READER_SPINE_LEAK.search(value):
+        raise ProductionPipelineBlocked("reader_spine_internal_leakage", path)
+    return value
+
+
+def _spine_string_list(value: Any, path: str, *, nonempty: bool = False) -> list[str]:
+    if not isinstance(value, list):
+        raise ProductionPipelineBlocked("reader_spine_field_invalid", path)
+    if nonempty and not value:
+        raise ProductionPipelineBlocked("reader_spine_field_invalid", path)
+    result: list[str] = []
+    for index, item in enumerate(value):
+        result.append(_spine_text(item, f"{path}[{index}]"))
+    if len(set(result)) != len(result):
+        raise ProductionPipelineBlocked("reader_spine_field_invalid", path)
+    return result
+
+
+def _spine_id_list(
+    value: Any,
+    path: str,
+    *,
+    known: set[str] | None = None,
+    nonempty: bool = False,
+) -> list[str]:
+    result = _spine_string_list(value, path, nonempty=nonempty)
+    if known is not None and any(item not in known for item in result):
+        unknown = sorted(item for item in result if item not in known)
+        raise ProductionPipelineBlocked("reader_spine_reference_invalid", {"path": path, "unknown": unknown})
+    return result
+
+
+def _spine_safe_value_list(value: Any, path: str) -> list[str]:
+    """Keep only scalar reader notes from route extensions.
+
+    Travel route extensions intentionally permit domain-owned payloads with an
+    open shape.  A reader spine cannot forward those payload objects.  The
+    projection therefore accepts only strings (or a string list) for timing,
+    transport, and rest notes; richer payloads remain in the private input.
+    """
+    if value is None:
+        return []
+    if isinstance(value, str):
+        return [_spine_text(value, path)] if value.strip() else []
+    if not isinstance(value, list):
+        return []
+    result: list[str] = []
+    for index, item in enumerate(value):
+        if isinstance(item, str) and item.strip():
+            result.append(_spine_text(item, f"{path}[{index}]"))
+    if len(set(result)) != len(result):
+        # Duplicate operational notes do not add a reader obligation.  Keep
+        # one deterministic copy while preserving the source order.
+        result = list(dict.fromkeys(result))
+    return result
+
+
+def _project_reader_constraints(
+    writer_input: Mapping[str, Any],
+    *,
+    selected_content_ids: set[str],
+) -> dict[str, Any]:
+    """Project only exact prose constraints that the writer must preserve.
+
+    The full WriterInput carries authority references and arbitrary overclaim
+    metadata.  Those fields are useful for validation and receipts, but they
+    make a writer prompt read like a card dump.  This allow-list keeps the
+    reader-visible part of each obligation and drops the authority plumbing.
+    """
+    citation_rules: list[dict[str, Any]] = []
+    for raw in writer_input.get("citations", []):
+        if not isinstance(raw, Mapping):
+            continue
+        content_ids = [
+            str(item) for item in raw.get("content_unit_ids", [])
+            if str(item) in selected_content_ids
+        ]
+        if not content_ids:
+            continue
+        citation_rules.append({
+            "citation_id": raw.get("citation_id"),
+            "content_unit_ids": content_ids,
+            "source_id": raw.get("source_id"),
+            "marker": raw.get("marker"),
+            "placement": raw.get("placement"),
+        })
+
+    exact_source = writer_input.get("exact_obligations", {})
+    exact_source = exact_source if isinstance(exact_source, Mapping) else {}
+    exact: dict[str, list[dict[str, Any]]] = {"must_preserve": [], "verbatim": []}
+    for kind, fields in (
+        ("must_preserve", ("token_id", "token", "reason")),
+        ("verbatim", ("verbatim_id", "text", "reason")),
+    ):
+        for raw in exact_source.get(kind, []):
+            if not isinstance(raw, Mapping):
+                continue
+            content_ids = [
+                str(item) for item in raw.get("content_unit_ids", [])
+                if str(item) in selected_content_ids
+            ]
+            if not content_ids:
+                continue
+            exact[kind].append({
+                **{field: raw.get(field) for field in fields},
+                "content_unit_ids": content_ids,
+            })
+
+    claim_boundaries: list[dict[str, Any]] = []
+    for raw in writer_input.get("forbidden_claims", []):
+        if not isinstance(raw, Mapping):
+            continue
+        content_ids = [
+            str(item) for item in raw.get("affected_content_unit_ids", [])
+            if str(item) in selected_content_ids
+        ]
+        if not content_ids:
+            continue
+        claim_boundaries.append({
+            "overclaim_id": raw.get("overclaim_id"),
+            "affected_content_unit_ids": content_ids,
+            "forbidden_meaning": raw.get("forbidden_meaning"),
+            "reason": raw.get("reason"),
+        })
+    return {
+        "citation_rules": citation_rules,
+        "exact_obligations": exact,
+        "claim_boundaries": claim_boundaries,
+    }
+
+
+def _project_route_guidance(
+    owner: str,
+    route: Mapping[str, Any],
+    *,
+    profile: str,
+    unit_ids: set[str],
+    content_ids: set[str],
+    anchor_ids: set[str],
+) -> dict[str, Any]:
+    """Compile route semantics into a small reader-native guidance object.
+
+    ``reader_pipeline._writer_route_projection`` is deliberately broader than
+    this object because it serves private validation and repair receipts.  The
+    production writer needs the route's causal obligations, not its payload
+    registries.  Every branch below is explicit so new private route fields
+    cannot cross the writer boundary accidentally.
+    """
+    if owner not in _READER_ROUTE_MODES:
+        raise ProductionPipelineBlocked("reader_spine_route_invalid", owner)
+    guidance: dict[str, Any] = {"mode": owner, "profile": _spine_text(profile, "route_guidance.profile")}
+
+    if owner == "investigation":
+        evidence_strength = []
+        for index, raw in enumerate(route.get("evidence_strength", [])):
+            if not isinstance(raw, Mapping):
+                continue
+            content_id = str(raw.get("content_unit_id", ""))
+            if content_id not in content_ids:
+                continue
+            evidence_strength.append({
+                "content_unit_id": content_id,
+                "strength": raw.get("strength"),
+                "reason": raw.get("reason"),
+            })
+        alternatives = []
+        for raw in route.get("alternatives", []):
+            if not isinstance(raw, Mapping):
+                continue
+            ids = [str(item) for item in raw.get("content_unit_ids", []) if str(item) in content_ids]
+            if not ids:
+                continue
+            alternatives.append({
+                "alternative_id": raw.get("alternative_id"),
+                "meaning": raw.get("meaning"),
+                "standing": raw.get("status"),
+                "content_unit_ids": ids,
+            })
+        rechecks = []
+        for raw in route.get("recheck_conditions", []):
+            if not isinstance(raw, Mapping):
+                continue
+            planned_id = str(raw.get("planned_unit_id", ""))
+            if planned_id not in unit_ids:
+                continue
+            rechecks.append({
+                "action_id": raw.get("action_id"),
+                "condition": raw.get("condition"),
+                "action": raw.get("action"),
+                "planned_unit_id": planned_id,
+            })
+        guidance.update({
+            "bounded_answer": list(route.get("answer", [])),
+            "evidence_strength": evidence_strength,
+            "alternatives": alternatives,
+            "recheck_conditions": rechecks,
+        })
+        return guidance
+
+    if owner == "academic-writing":
+        hierarchy = []
+        for raw in route.get("hierarchy", []):
+            if not isinstance(raw, Mapping):
+                continue
+            unit_id = str(raw.get("unit_id", ""))
+            if unit_id not in unit_ids:
+                continue
+            evidence_ids = [
+                str(item.get("anchor_id", ""))
+                for item in raw.get("evidence", [])
+                if isinstance(item, Mapping) and str(item.get("anchor_id", "")) in anchor_ids
+            ]
+            qualification = raw.get("qualification", {})
+            qualification = qualification if isinstance(qualification, Mapping) else {}
+            hierarchy.append({
+                "unit_id": unit_id,
+                "parent_unit_id": raw.get("parent_unit_id"),
+                "contribution": raw.get("contribution"),
+                "incoming_dependency": raw.get("incoming_dependency"),
+                "new_claim_or_warrant": raw.get("new_claim_or_warrant"),
+                "evidence_anchor_ids": list(dict.fromkeys(evidence_ids)),
+                "qualification": {
+                    "state": qualification.get("status"),
+                    "reason": qualification.get("reason"),
+                },
+                "downstream_consumer_ids": [
+                    str(item) for item in raw.get("downstream_consumer_ids", [])
+                    if str(item) in unit_ids
+                ],
+            })
+        jobs = []
+        for raw in route.get("method_and_figure_table_jobs", []):
+            if not isinstance(raw, Mapping):
+                continue
+            consumer_ids = [str(item) for item in raw.get("consumer_unit_ids", []) if str(item) in unit_ids]
+            artifact_id = str(raw.get("artifact_unit_id", ""))
+            if artifact_id not in unit_ids or not consumer_ids:
+                continue
+            jobs.append({
+                "artifact_unit_id": artifact_id,
+                "job": raw.get("job"),
+                "consumer_unit_ids": consumer_ids,
+            })
+        guidance.update({
+            "research_question": route.get("question"),
+            "central_contribution": route.get("contribution"),
+            "hierarchy": hierarchy,
+            "figure_table_jobs": jobs,
+        })
+        return guidance
+
+    if owner == "fiction-writing":
+        voice = route.get("voice", {})
+        if not isinstance(voice, Mapping):
+            voice = {}
+        safe_voice: dict[str, Any] = {}
+        for key in _READER_VOICE_KEYS:
+            if key not in voice:
+                continue
+            if key in {"allowed_variation", "blocked_variation"}:
+                safe_voice[key] = _spine_safe_value_list(voice[key], f"route_guidance.voice_contract.{key}")
+            elif isinstance(voice[key], str) and voice[key].strip():
+                safe_voice[key] = voice[key]
+        movements = []
+        for raw in route.get("movements", []):
+            if not isinstance(raw, Mapping):
+                continue
+            movement_ids = [str(item) for item in raw.get("unit_ids", []) if str(item) in unit_ids]
+            if not movement_ids:
+                continue
+            movements.append({
+                "movement_id": raw.get("movement_id"),
+                "unit_ids": movement_ids,
+                "entry_state": raw.get("entry_state"),
+                "pressure": raw.get("pressure"),
+                "reader_state_change": raw.get("reader_state_change"),
+                "irreversible_change": raw.get("irreversible_change"),
+                "exit_state": raw.get("exit_state"),
+                "downstream_unit_ids": [
+                    str(item) for item in raw.get("downstream_unit_ids", []) if str(item) in unit_ids
+                ],
+            })
+        unit_plans = []
+        for raw in route.get("unit_plans", []):
+            if not isinstance(raw, Mapping):
+                continue
+            unit_id = str(raw.get("unit_id", ""))
+            if unit_id not in unit_ids:
+                continue
+            unit_plans.append({
+                "unit_id": unit_id,
+                "contribution": raw.get("contribution"),
+                "entry_state": raw.get("entry_state"),
+                "exit_state": raw.get("exit_state"),
+                "desire": raw.get("desire"),
+                "pressure_or_cost": raw.get("pressure_or_cost"),
+                "reader_state_before": raw.get("reader_state_before"),
+                "reader_state_after": raw.get("reader_state_after"),
+                "open_questions_in": list(raw.get("open_questions_in", [])),
+                "open_questions_out": list(raw.get("open_questions_out", [])),
+                "voice_owner": raw.get("voice_owner"),
+                "rhythm_role": raw.get("rhythm_role"),
+                "prohibited_reveals": list(raw.get("prohibited_reveals", [])),
+                "downstream_unit_ids": [
+                    str(item) for item in raw.get("downstream_unit_ids", []) if str(item) in unit_ids
+                ],
+            })
+        promises = []
+        for raw in route.get("promises_and_reveals", []):
+            if not isinstance(raw, Mapping):
+                continue
+            promises.append({
+                "promise_or_reveal_id": raw.get("promise_or_reveal_id"),
+                "setup_unit_ids": [str(item) for item in raw.get("setup_unit_ids", []) if str(item) in unit_ids],
+                "movement_unit_ids": [str(item) for item in raw.get("movement_unit_ids", []) if str(item) in unit_ids],
+                "payoff_unit_ids": [str(item) for item in raw.get("payoff_unit_ids", []) if str(item) in unit_ids],
+                "resolution": raw.get("status"),
+            })
+        guidance.update({
+            "voice_contract": safe_voice,
+            "movements": movements,
+            "unit_plans": unit_plans,
+            "promises_and_reveals": promises,
+            "realization_boundaries": list(route.get("realization_boundaries", [])),
+        })
+        return guidance
+
+    # travel-guide
+    traveler_conditions = []
+    for raw in route.get("traveler_conditions", []):
+        if not isinstance(raw, Mapping):
+            continue
+        section_id = str(raw.get("section_id", ""))
+        if section_id not in unit_ids:
+            continue
+        traveler_conditions.append({
+            "section_id": section_id,
+            "section_role": raw.get("section_role"),
+            "incoming_state": raw.get("incoming_state"),
+            "outgoing_state": raw.get("outgoing_state"),
+        })
+    pace = []
+    for raw in route.get("pace_and_timing", []):
+        if not isinstance(raw, Mapping):
+            continue
+        section_id = str(raw.get("section_id", ""))
+        if section_id not in unit_ids:
+            continue
+        pace.append({
+            "section_id": section_id,
+            "section_kind": raw.get("section_kind"),
+            "section_role": raw.get("section_role"),
+            "timing": _spine_safe_value_list(raw.get("timing"), f"route_guidance.pace_and_timing[{section_id}].timing"),
+            "transport": _spine_safe_value_list(raw.get("transport"), f"route_guidance.pace_and_timing[{section_id}].transport"),
+            "rest": _spine_safe_value_list(raw.get("rest"), f"route_guidance.pace_and_timing[{section_id}].rest"),
+        })
+    local_names = []
+    for raw in route.get("local_names", []):
+        if not isinstance(raw, Mapping):
+            continue
+        intended = [str(item) for item in raw.get("intended_section_ids", []) if str(item) in unit_ids]
+        if not intended:
+            continue
+        local_names.append({
+            "candidate_id": raw.get("candidate_id"),
+            "canonical_name": raw.get("canonical_name"),
+            "local_name": raw.get("local_name"),
+            "accepted_aliases": list(raw.get("accepted_aliases", [])),
+            "category": raw.get("category"),
+            "intended_section_ids": intended,
+        })
+    fallbacks = []
+    for raw in route.get("reachable_fallbacks", []):
+        if not isinstance(raw, Mapping):
+            continue
+        affected = [str(item) for item in raw.get("affected_section_ids", []) if str(item) in unit_ids]
+        if not affected:
+            continue
+        fallbacks.append({
+            "risk_id": raw.get("risk_id"),
+            "affected_section_ids": affected,
+            "trigger": raw.get("trigger"),
+            "affected_travelers": list(raw.get("affected_travelers", [])),
+            "mitigation": raw.get("mitigation"),
+            "fallback_id": raw.get("fallback_id"),
+            "evidence_mode": raw.get("evidence_mode"),
+        })
+    placement = route.get("source_and_recheck_placement", {})
+    placement = placement if isinstance(placement, Mapping) else {}
+    appendix_jobs = []
+    for raw in placement.get("appendix_jobs", []):
+        if not isinstance(raw, Mapping):
+            continue
+        consumer_ids = [str(item) for item in raw.get("consumer_section_ids", []) if str(item) in unit_ids]
+        if not consumer_ids:
+            continue
+        appendix_jobs.append({
+            "section_id": raw.get("section_id"),
+            "operational_kinds": list(raw.get("operational_kinds", [])),
+            "consumer_section_ids": consumer_ids,
+        })
+    guidance.update({
+        "traveler_conditions": traveler_conditions,
+        "pace_and_timing": pace,
+        "local_names": local_names,
+        "reachable_fallbacks": fallbacks,
+        "source_and_recheck_placement": {
+            "source_boundary": placement.get("source_boundary"),
+            "recheck": placement.get("recheck"),
+            "appendix_jobs": appendix_jobs,
+        },
+    })
+    return guidance
+
+
+def _validate_reader_constraints(
+    value: Any,
+    *,
+    content_ids: set[str],
+) -> dict[str, Any]:
+    constraints = require_mapping(value, "reader_spine reader_constraints")
+    expected = {"citation_rules", "exact_obligations", "claim_boundaries"}
+    if set(constraints) != expected:
+        raise ProductionPipelineBlocked(
+            "reader_spine_constraints_invalid",
+            {"extra": sorted(set(constraints) - expected), "missing": sorted(expected - set(constraints))},
+        )
+    rows = constraints["citation_rules"]
+    if not isinstance(rows, list):
+        raise ProductionPipelineBlocked("reader_spine_constraints_invalid", "citation_rules")
+    seen: set[str] = set()
+    for index, raw in enumerate(rows):
+        row = require_mapping(raw, f"reader_spine citation_rules[{index}]")
+        keys = {"citation_id", "content_unit_ids", "source_id", "marker", "placement"}
+        if set(row) != keys:
+            raise ProductionPipelineBlocked("reader_spine_constraint_invalid", index)
+        citation_id = _spine_text(row["citation_id"], f"citation_rules[{index}].citation_id")
+        if citation_id in seen:
+            raise ProductionPipelineBlocked("reader_spine_constraint_invalid", citation_id)
+        seen.add(citation_id)
+        _spine_id_list(row["content_unit_ids"], f"citation_rules[{index}].content_unit_ids", known=content_ids, nonempty=True)
+        for field in ("source_id", "marker", "placement"):
+            _spine_text(row[field], f"citation_rules[{index}].{field}")
+
+    exact = require_mapping(constraints["exact_obligations"], "reader_spine exact_obligations")
+    if set(exact) != {"must_preserve", "verbatim"}:
+        raise ProductionPipelineBlocked("reader_spine_constraints_invalid", "exact_obligations")
+    for kind, fields in (
+        ("must_preserve", {"token_id", "token", "reason", "content_unit_ids"}),
+        ("verbatim", {"verbatim_id", "text", "reason", "content_unit_ids"}),
+    ):
+        rows = exact[kind]
+        if not isinstance(rows, list):
+            raise ProductionPipelineBlocked("reader_spine_constraints_invalid", f"exact_obligations.{kind}")
+        seen = set()
+        for index, raw in enumerate(rows):
+            row = require_mapping(raw, f"reader_spine exact_obligations.{kind}[{index}]")
+            if set(row) != fields:
+                raise ProductionPipelineBlocked("reader_spine_constraint_invalid", f"{kind}[{index}]")
+            identifier = _spine_text(row["token_id"] if kind == "must_preserve" else row["verbatim_id"], f"{kind}[{index}].id")
+            if identifier in seen:
+                raise ProductionPipelineBlocked("reader_spine_constraint_invalid", identifier)
+            seen.add(identifier)
+            _spine_text(row["token"] if kind == "must_preserve" else row["text"], f"{kind}[{index}].value")
+            _spine_text(row["reason"], f"{kind}[{index}].reason")
+            _spine_id_list(row["content_unit_ids"], f"{kind}[{index}].content_unit_ids", known=content_ids, nonempty=True)
+
+    rows = constraints["claim_boundaries"]
+    if not isinstance(rows, list):
+        raise ProductionPipelineBlocked("reader_spine_constraints_invalid", "claim_boundaries")
+    seen = set()
+    for index, raw in enumerate(rows):
+        row = require_mapping(raw, f"reader_spine claim_boundaries[{index}]")
+        keys = {"overclaim_id", "affected_content_unit_ids", "forbidden_meaning", "reason"}
+        if set(row) != keys:
+            raise ProductionPipelineBlocked("reader_spine_constraint_invalid", index)
+        identifier = _spine_text(row["overclaim_id"], f"claim_boundaries[{index}].overclaim_id")
+        if identifier in seen:
+            raise ProductionPipelineBlocked("reader_spine_constraint_invalid", identifier)
+        seen.add(identifier)
+        _spine_id_list(row["affected_content_unit_ids"], f"claim_boundaries[{index}].affected_content_unit_ids", known=content_ids, nonempty=True)
+        _spine_text(row["forbidden_meaning"], f"claim_boundaries[{index}].forbidden_meaning")
+        _spine_text(row["reason"], f"claim_boundaries[{index}].reason")
+    return constraints
+
+
+def _validate_route_guidance(
+    value: Any,
+    *,
+    unit_ids: set[str],
+    content_ids: set[str],
+    anchor_ids: set[str],
+) -> dict[str, Any]:
+    guidance = require_mapping(value, "reader_spine route_guidance")
+    mode = guidance.get("mode")
+    if mode not in _READER_ROUTE_MODES:
+        raise ProductionPipelineBlocked("reader_spine_route_invalid", "route_guidance.mode")
+    profile = _spine_text(guidance.get("profile"), "route_guidance.profile")
+    if mode == "investigation":
+        expected = {"mode", "profile", "bounded_answer", "evidence_strength", "alternatives", "recheck_conditions"}
+        if set(guidance) != expected:
+            raise ProductionPipelineBlocked("reader_spine_route_invalid", "investigation keys")
+        _spine_string_list(guidance["bounded_answer"], "route_guidance.bounded_answer")
+        rows = guidance["evidence_strength"]
+        if not isinstance(rows, list):
+            raise ProductionPipelineBlocked("reader_spine_route_invalid", "evidence_strength")
+        seen = set()
+        for index, raw in enumerate(rows):
+            row = require_mapping(raw, f"route_guidance.evidence_strength[{index}]")
+            if set(row) != {"content_unit_id", "strength", "reason"}:
+                raise ProductionPipelineBlocked("reader_spine_route_invalid", index)
+            content_id = _spine_text(row["content_unit_id"], f"evidence_strength[{index}].content_unit_id")
+            if content_id in seen:
+                raise ProductionPipelineBlocked("reader_spine_route_invalid", content_id)
+            seen.add(content_id)
+            if content_id not in content_ids:
+                raise ProductionPipelineBlocked("reader_spine_reference_invalid", content_id)
+            _spine_text(row["strength"], f"evidence_strength[{index}].strength")
+            _spine_text(row["reason"], f"evidence_strength[{index}].reason")
+        rows = guidance["alternatives"]
+        if not isinstance(rows, list):
+            raise ProductionPipelineBlocked("reader_spine_route_invalid", "alternatives")
+        seen = set()
+        for index, raw in enumerate(rows):
+            row = require_mapping(raw, f"route_guidance.alternatives[{index}]")
+            if set(row) != {"alternative_id", "meaning", "standing", "content_unit_ids"}:
+                raise ProductionPipelineBlocked("reader_spine_route_invalid", index)
+            identifier = _spine_text(row["alternative_id"], f"alternatives[{index}].alternative_id")
+            if identifier in seen:
+                raise ProductionPipelineBlocked("reader_spine_route_invalid", identifier)
+            seen.add(identifier)
+            _spine_text(row["meaning"], f"alternatives[{index}].meaning")
+            _spine_text(row["standing"], f"alternatives[{index}].standing")
+            _spine_id_list(row["content_unit_ids"], f"alternatives[{index}].content_unit_ids", known=content_ids, nonempty=True)
+        rows = guidance["recheck_conditions"]
+        if not isinstance(rows, list):
+            raise ProductionPipelineBlocked("reader_spine_route_invalid", "recheck_conditions")
+        seen = set()
+        for index, raw in enumerate(rows):
+            row = require_mapping(raw, f"route_guidance.recheck_conditions[{index}]")
+            if set(row) != {"action_id", "condition", "action", "planned_unit_id"}:
+                raise ProductionPipelineBlocked("reader_spine_route_invalid", index)
+            identifier = _spine_text(row["action_id"], f"recheck_conditions[{index}].action_id")
+            if identifier in seen:
+                raise ProductionPipelineBlocked("reader_spine_route_invalid", identifier)
+            seen.add(identifier)
+            _spine_text(row["condition"], f"recheck_conditions[{index}].condition")
+            _spine_text(row["action"], f"recheck_conditions[{index}].action")
+            _spine_id_list([row["planned_unit_id"]], f"recheck_conditions[{index}].planned_unit_id", known=unit_ids, nonempty=True)
+        return guidance
+
+    if mode == "academic-writing":
+        expected = {"mode", "profile", "research_question", "central_contribution", "hierarchy", "figure_table_jobs"}
+        if set(guidance) != expected:
+            raise ProductionPipelineBlocked("reader_spine_route_invalid", "academic keys")
+        _spine_text(guidance["research_question"], "route_guidance.research_question")
+        _spine_text(guidance["central_contribution"], "route_guidance.central_contribution")
+        rows = guidance["hierarchy"]
+        if not isinstance(rows, list) or not rows:
+            raise ProductionPipelineBlocked("reader_spine_route_invalid", "hierarchy")
+        seen = set()
+        for index, raw in enumerate(rows):
+            row = require_mapping(raw, f"route_guidance.hierarchy[{index}]")
+            keys = {"unit_id", "parent_unit_id", "contribution", "incoming_dependency", "new_claim_or_warrant", "evidence_anchor_ids", "qualification", "downstream_consumer_ids"}
+            if set(row) != keys:
+                raise ProductionPipelineBlocked("reader_spine_route_invalid", index)
+            unit_id = _spine_text(row["unit_id"], f"hierarchy[{index}].unit_id")
+            if unit_id in seen or unit_id not in unit_ids:
+                raise ProductionPipelineBlocked("reader_spine_reference_invalid", unit_id)
+            seen.add(unit_id)
+            parent = row["parent_unit_id"]
+            if parent is not None:
+                _spine_id_list([parent], f"hierarchy[{index}].parent_unit_id", known=unit_ids, nonempty=True)
+            for field in ("contribution", "incoming_dependency", "new_claim_or_warrant"):
+                _spine_text(row[field], f"hierarchy[{index}].{field}")
+            _spine_id_list(row["evidence_anchor_ids"], f"hierarchy[{index}].evidence_anchor_ids", known=anchor_ids)
+            qualification = require_mapping(row["qualification"], f"hierarchy[{index}].qualification")
+            if set(qualification) != {"state", "reason"}:
+                raise ProductionPipelineBlocked("reader_spine_route_invalid", f"hierarchy[{index}].qualification")
+            _spine_text(qualification["state"], f"hierarchy[{index}].qualification.state")
+            _spine_text(qualification["reason"], f"hierarchy[{index}].qualification.reason")
+            _spine_id_list(row["downstream_consumer_ids"], f"hierarchy[{index}].downstream_consumer_ids", known=unit_ids)
+        rows = guidance["figure_table_jobs"]
+        if not isinstance(rows, list):
+            raise ProductionPipelineBlocked("reader_spine_route_invalid", "figure_table_jobs")
+        for index, raw in enumerate(rows):
+            row = require_mapping(raw, f"route_guidance.figure_table_jobs[{index}]")
+            if set(row) != {"artifact_unit_id", "job", "consumer_unit_ids"}:
+                raise ProductionPipelineBlocked("reader_spine_route_invalid", index)
+            _spine_id_list([row["artifact_unit_id"]], f"figure_table_jobs[{index}].artifact_unit_id", known=unit_ids, nonempty=True)
+            _spine_text(row["job"], f"figure_table_jobs[{index}].job")
+            _spine_id_list(row["consumer_unit_ids"], f"figure_table_jobs[{index}].consumer_unit_ids", known=unit_ids, nonempty=True)
+        return guidance
+
+    if mode == "fiction-writing":
+        expected = {"mode", "profile", "voice_contract", "movements", "unit_plans", "promises_and_reveals", "realization_boundaries"}
+        if set(guidance) != expected:
+            raise ProductionPipelineBlocked("reader_spine_route_invalid", "fiction keys")
+        voice = require_mapping(guidance["voice_contract"], "route_guidance.voice_contract")
+        if not set(voice) <= _READER_VOICE_KEYS:
+            raise ProductionPipelineBlocked("reader_spine_route_invalid", "voice_contract")
+        for key, value in voice.items():
+            if key in {"allowed_variation", "blocked_variation"}:
+                _spine_string_list(value, f"voice_contract.{key}")
+            else:
+                _spine_text(value, f"voice_contract.{key}")
+        rows = guidance["movements"]
+        if not isinstance(rows, list):
+            raise ProductionPipelineBlocked("reader_spine_route_invalid", "movements")
+        seen = set()
+        for index, raw in enumerate(rows):
+            row = require_mapping(raw, f"route_guidance.movements[{index}]")
+            keys = {"movement_id", "unit_ids", "entry_state", "pressure", "reader_state_change", "irreversible_change", "exit_state", "downstream_unit_ids"}
+            if set(row) != keys:
+                raise ProductionPipelineBlocked("reader_spine_route_invalid", index)
+            identifier = _spine_text(row["movement_id"], f"movements[{index}].movement_id")
+            if identifier in seen:
+                raise ProductionPipelineBlocked("reader_spine_route_invalid", identifier)
+            seen.add(identifier)
+            _spine_id_list(row["unit_ids"], f"movements[{index}].unit_ids", known=unit_ids, nonempty=True)
+            for field in ("entry_state", "pressure", "reader_state_change", "irreversible_change", "exit_state"):
+                _spine_text(row[field], f"movements[{index}].{field}")
+            _spine_id_list(row["downstream_unit_ids"], f"movements[{index}].downstream_unit_ids", known=unit_ids)
+        rows = guidance["unit_plans"]
+        if not isinstance(rows, list):
+            raise ProductionPipelineBlocked("reader_spine_route_invalid", "unit_plans")
+        seen = set()
+        for index, raw in enumerate(rows):
+            row = require_mapping(raw, f"route_guidance.unit_plans[{index}]")
+            keys = {"unit_id", "contribution", "entry_state", "exit_state", "desire", "pressure_or_cost", "reader_state_before", "reader_state_after", "open_questions_in", "open_questions_out", "voice_owner", "rhythm_role", "prohibited_reveals", "downstream_unit_ids"}
+            if set(row) != keys:
+                raise ProductionPipelineBlocked("reader_spine_route_invalid", index)
+            unit_id = _spine_text(row["unit_id"], f"unit_plans[{index}].unit_id")
+            if unit_id in seen or unit_id not in unit_ids:
+                raise ProductionPipelineBlocked("reader_spine_reference_invalid", unit_id)
+            seen.add(unit_id)
+            for field in ("contribution", "entry_state", "exit_state", "desire", "pressure_or_cost", "reader_state_before", "reader_state_after", "voice_owner", "rhythm_role"):
+                _spine_text(row[field], f"unit_plans[{index}].{field}")
+            for field in ("open_questions_in", "open_questions_out", "prohibited_reveals"):
+                _spine_string_list(row[field], f"unit_plans[{index}].{field}")
+            _spine_id_list(row["downstream_unit_ids"], f"unit_plans[{index}].downstream_unit_ids", known=unit_ids)
+        rows = guidance["promises_and_reveals"]
+        if not isinstance(rows, list):
+            raise ProductionPipelineBlocked("reader_spine_route_invalid", "promises_and_reveals")
+        seen = set()
+        for index, raw in enumerate(rows):
+            row = require_mapping(raw, f"route_guidance.promises_and_reveals[{index}]")
+            keys = {"promise_or_reveal_id", "setup_unit_ids", "movement_unit_ids", "payoff_unit_ids", "resolution"}
+            if set(row) != keys:
+                raise ProductionPipelineBlocked("reader_spine_route_invalid", index)
+            identifier = _spine_text(row["promise_or_reveal_id"], f"promises_and_reveals[{index}].promise_or_reveal_id")
+            if identifier in seen:
+                raise ProductionPipelineBlocked("reader_spine_route_invalid", identifier)
+            seen.add(identifier)
+            for field in ("setup_unit_ids", "movement_unit_ids", "payoff_unit_ids"):
+                _spine_id_list(row[field], f"promises_and_reveals[{index}].{field}", known=unit_ids)
+            _spine_text(row["resolution"], f"promises_and_reveals[{index}].resolution")
+        _spine_string_list(guidance["realization_boundaries"], "route_guidance.realization_boundaries")
+        return guidance
+
+    expected = {"mode", "profile", "traveler_conditions", "pace_and_timing", "local_names", "reachable_fallbacks", "source_and_recheck_placement"}
+    if set(guidance) != expected:
+        raise ProductionPipelineBlocked("reader_spine_route_invalid", "travel keys")
+    rows = guidance["traveler_conditions"]
+    if not isinstance(rows, list):
+        raise ProductionPipelineBlocked("reader_spine_route_invalid", "traveler_conditions")
+    for index, raw in enumerate(rows):
+        row = require_mapping(raw, f"route_guidance.traveler_conditions[{index}]")
+        if set(row) != {"section_id", "section_role", "incoming_state", "outgoing_state"}:
+            raise ProductionPipelineBlocked("reader_spine_route_invalid", index)
+        _spine_id_list([row["section_id"]], f"traveler_conditions[{index}].section_id", known=unit_ids, nonempty=True)
+        for field in ("section_role", "incoming_state", "outgoing_state"):
+            _spine_text(row[field], f"traveler_conditions[{index}].{field}")
+    rows = guidance["pace_and_timing"]
+    if not isinstance(rows, list):
+        raise ProductionPipelineBlocked("reader_spine_route_invalid", "pace_and_timing")
+    for index, raw in enumerate(rows):
+        row = require_mapping(raw, f"route_guidance.pace_and_timing[{index}]")
+        if set(row) != {"section_id", "section_kind", "section_role", "timing", "transport", "rest"}:
+            raise ProductionPipelineBlocked("reader_spine_route_invalid", index)
+        _spine_id_list([row["section_id"]], f"pace_and_timing[{index}].section_id", known=unit_ids, nonempty=True)
+        for field in ("section_kind", "section_role"):
+            _spine_text(row[field], f"pace_and_timing[{index}].{field}")
+        for field in ("timing", "transport", "rest"):
+            _spine_string_list(row[field], f"pace_and_timing[{index}].{field}")
+    rows = guidance["local_names"]
+    if not isinstance(rows, list):
+        raise ProductionPipelineBlocked("reader_spine_route_invalid", "local_names")
+    seen = set()
+    for index, raw in enumerate(rows):
+        row = require_mapping(raw, f"route_guidance.local_names[{index}]")
+        keys = {"candidate_id", "canonical_name", "local_name", "accepted_aliases", "category", "intended_section_ids"}
+        if set(row) != keys:
+            raise ProductionPipelineBlocked("reader_spine_route_invalid", index)
+        identifier = _spine_text(row["candidate_id"], f"local_names[{index}].candidate_id")
+        if identifier in seen:
+            raise ProductionPipelineBlocked("reader_spine_route_invalid", identifier)
+        seen.add(identifier)
+        _spine_text(row["canonical_name"], f"local_names[{index}].canonical_name")
+        if not isinstance(row["local_name"], str):
+            raise ProductionPipelineBlocked("reader_spine_route_invalid", f"local_names[{index}].local_name")
+        if row["local_name"]:
+            _spine_text(row["local_name"], f"local_names[{index}].local_name")
+        _spine_string_list(row["accepted_aliases"], f"local_names[{index}].accepted_aliases")
+        _spine_text(row["category"], f"local_names[{index}].category")
+        _spine_id_list(row["intended_section_ids"], f"local_names[{index}].intended_section_ids", known=unit_ids, nonempty=True)
+    rows = guidance["reachable_fallbacks"]
+    if not isinstance(rows, list):
+        raise ProductionPipelineBlocked("reader_spine_route_invalid", "reachable_fallbacks")
+    seen = set()
+    for index, raw in enumerate(rows):
+        row = require_mapping(raw, f"route_guidance.reachable_fallbacks[{index}]")
+        keys = {"risk_id", "affected_section_ids", "trigger", "affected_travelers", "mitigation", "fallback_id", "evidence_mode"}
+        if set(row) != keys:
+            raise ProductionPipelineBlocked("reader_spine_route_invalid", index)
+        identifier = _spine_text(row["fallback_id"], f"reachable_fallbacks[{index}].fallback_id")
+        if identifier in seen:
+            raise ProductionPipelineBlocked("reader_spine_route_invalid", identifier)
+        seen.add(identifier)
+        _spine_text(row["risk_id"], f"reachable_fallbacks[{index}].risk_id")
+        _spine_id_list(row["affected_section_ids"], f"reachable_fallbacks[{index}].affected_section_ids", known=unit_ids, nonempty=True)
+        _spine_text(row["trigger"], f"reachable_fallbacks[{index}].trigger")
+        _spine_string_list(row["affected_travelers"], f"reachable_fallbacks[{index}].affected_travelers", nonempty=True)
+        _spine_text(row["mitigation"], f"reachable_fallbacks[{index}].mitigation")
+        _spine_text(row["evidence_mode"], f"reachable_fallbacks[{index}].evidence_mode")
+    placement = require_mapping(guidance["source_and_recheck_placement"], "route_guidance.source_and_recheck_placement")
+    if set(placement) != {"source_boundary", "recheck", "appendix_jobs"}:
+        raise ProductionPipelineBlocked("reader_spine_route_invalid", "source_and_recheck_placement")
+    _spine_text(placement["source_boundary"], "source_and_recheck_placement.source_boundary")
+    _spine_text(placement["recheck"], "source_and_recheck_placement.recheck")
+    rows = placement["appendix_jobs"]
+    if not isinstance(rows, list):
+        raise ProductionPipelineBlocked("reader_spine_route_invalid", "appendix_jobs")
+    for index, raw in enumerate(rows):
+        row = require_mapping(raw, f"route_guidance.appendix_jobs[{index}]")
+        if set(row) != {"section_id", "operational_kinds", "consumer_section_ids"}:
+            raise ProductionPipelineBlocked("reader_spine_route_invalid", index)
+        _spine_text(row["section_id"], f"appendix_jobs[{index}].section_id")
+        _spine_string_list(row["operational_kinds"], f"appendix_jobs[{index}].operational_kinds", nonempty=True)
+        _spine_id_list(row["consumer_section_ids"], f"appendix_jobs[{index}].consumer_section_ids", known=unit_ids, nonempty=True)
+    return guidance
+
+
 def validate_reader_spine(value: Any) -> dict[str, Any]:
     """Validate the minimal writer-facing reader-spine contract.
 
@@ -1114,6 +1876,21 @@ def validate_reader_spine(value: Any) -> dict[str, Any]:
         raise ProductionPipelineBlocked("reader_spine_evidence_unattached", "unit references unknown anchor")
     if any(str(limitation_id) not in limitation_ids for unit in units for limitation_id in unit["limitation_ids"]):
         raise ProductionPipelineBlocked("reader_spine_limitation_unattached", "unit references unknown limitation")
+    visible_content_ids = {
+        content_id
+        for content_id, row in disposition_by_content.items()
+        if row["disposition"] in {"support", "merge"}
+    }
+    _validate_reader_constraints(
+        spine["reader_constraints"],
+        content_ids=visible_content_ids,
+    )
+    _validate_route_guidance(
+        spine["route_guidance"],
+        unit_ids=set(unit_by_id),
+        content_ids=visible_content_ids,
+        anchor_ids=anchor_ids,
+    )
     return spine
 
 
@@ -1140,6 +1917,8 @@ def build_reader_spine(
     plan = require_mapping(composition_plan if composition_plan is not None else brief_plan, "CompositionPlan")
     if brief_plan is not None and dict(brief_plan) != dict(plan):
         raise ProductionPipelineBlocked("reader_spine_source_stale", "CompositionPlan does not match ReaderBrief")
+    if brief.get("final_owner") != plan.get("final_owner"):
+        raise ProductionPipelineBlocked("reader_spine_source_stale", "ReaderBrief final owner")
     if brief.get("writer_input_fingerprint") != fingerprint(writer_input):
         raise ProductionPipelineBlocked("reader_spine_source_stale", "ReaderBrief writer_input fingerprint")
     if plan.get("plan_fingerprint") != fingerprint_without(dict(plan), "plan_fingerprint"):
@@ -1216,6 +1995,11 @@ def build_reader_spine(
         evidence_content_ids.setdefault(anchor_id, set()).add(str(row.get("content_unit_id", "")))
 
     selected_content_ids = set(selected)
+    projected_content_ids = {
+        content_id
+        for content_id, row in plan_dispositions.items()
+        if content_id in selected and _spine_disposition(str(row["disposition"])) != "omit"
+    }
     for content_id, row in selected.items():
         if content_id not in boundary_content:
             raise ProductionPipelineBlocked("reader_spine_source_invalid", f"unknown selected content: {content_id}")
@@ -1223,10 +2007,54 @@ def build_reader_spine(
             if str(anchor_id) not in evidence_by_anchor:
                 raise ProductionPipelineBlocked("reader_spine_evidence_missing", str(anchor_id))
             evidence_content_ids.setdefault(str(anchor_id), set()).add(content_id)
+
+    # Academic route composition may carry an evidence anchor that is valid in
+    # the boundary inventory but is not repeated in selected_content's local
+    # anchor list.  Preserve that anchor once, attaching it to the selected
+    # planned unit that consumes the hierarchy row.  This keeps the
+    # reader-facing hierarchy bound to the same top-level evidence inventory
+    # without copying the route payload itself.
+    boundary_anchor_by_id = {
+        str(row["anchor_id"]): row
+        for row in boundaries.get("evidence_anchors", [])
+        if isinstance(row, Mapping) and row.get("anchor_id")
+    }
+    route_semantics = writer_input.get("route_semantics", {})
+    if isinstance(route_semantics, Mapping) and plan.get("final_owner") == "academic-writing":
+        for hierarchy_row in route_semantics.get("hierarchy", []):
+            if not isinstance(hierarchy_row, Mapping):
+                continue
+            planned_id = str(hierarchy_row.get("unit_id", ""))
+            plan_unit = unit_rows.get(planned_id)
+            if plan_unit is None:
+                continue
+            consuming_content_ids = {
+                str(item) for item in plan_unit.get("content_unit_ids", [])
+                if str(item) in projected_content_ids
+            }
+            if not consuming_content_ids:
+                continue
+            for raw_anchor in hierarchy_row.get("evidence", []):
+                if not isinstance(raw_anchor, Mapping):
+                    continue
+                anchor_id = str(raw_anchor.get("anchor_id", ""))
+                boundary_anchor = boundary_anchor_by_id.get(anchor_id)
+                if boundary_anchor is None:
+                    continue
+                comparable = {
+                    key: boundary_anchor.get(key)
+                    for key in ("anchor_id", "source_id", "locator", "relation", "observed_summary", "boundary")
+                }
+                previous = evidence_by_anchor.get(anchor_id)
+                if previous is not None and previous != comparable:
+                    raise ProductionPipelineBlocked("reader_spine_duplicate_evidence_conflict", anchor_id)
+                evidence_by_anchor[anchor_id] = comparable
+                evidence_content_ids.setdefault(anchor_id, set()).update(consuming_content_ids)
+
     evidence_anchors = []
     for anchor_id in sorted(evidence_by_anchor):
         row = evidence_by_anchor[anchor_id]
-        content_ids = sorted(item for item in evidence_content_ids.get(anchor_id, set()) if item in selected_content_ids)
+        content_ids = sorted(item for item in evidence_content_ids.get(anchor_id, set()) if item in projected_content_ids)
         if not content_ids:
             continue
         evidence_anchors.append({**row, "content_unit_ids": content_ids})
@@ -1318,6 +2146,23 @@ def build_reader_spine(
             "target_extent": plan_unit["target_extent"],
         })
 
+    route_envelope = require_mapping(brief.get("route_extension"), "ReaderBrief.route_extension")
+    profile = route_envelope.get("profile")
+    if not isinstance(profile, str) or not profile.strip():
+        raise ProductionPipelineBlocked("reader_spine_route_invalid", "ReaderBrief.route_extension.profile")
+    reader_constraints = _project_reader_constraints(
+        writer_input,
+        selected_content_ids=projected_content_ids,
+    )
+    route_guidance = _project_route_guidance(
+        str(plan["final_owner"]),
+        route_semantics if isinstance(route_semantics, Mapping) else {},
+        profile=profile,
+        unit_ids=set(unit_rows),
+        content_ids=projected_content_ids,
+        anchor_ids={str(row["anchor_id"]) for row in evidence_anchors},
+    )
+
     spine = {
         "schema_version": READER_SPINE_SCHEMA,
         "root_question": plan["central_question"],
@@ -1330,6 +2175,8 @@ def build_reader_spine(
         "evidence_anchors": evidence_anchors,
         "editorial_dispositions": editorial,
         "conclusion_sensitive_limitations": material_limitations,
+        "reader_constraints": reader_constraints,
+        "route_guidance": route_guidance,
     }
     return validate_reader_spine(spine)
 
@@ -1338,10 +2185,15 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
     """Render only the validated spine into the production writer prompt."""
     spine = validate_reader_spine(reader_spine)
     return (
-        "请只输出面向读者的最终成稿。按照以下 reader_spine 组织整篇文本：先回答根问题，"
-        "再按主要单元的阅读职责推进；同一单元中的多个材料只在确有独立阅读职责时分开，"
-        "否则按 support/merge/omit 处置。保留必要证据锚点，并把结论敏感限制附在受影响单元；"
-        "不要输出内部记录、模型标识、执行状态、缺口清单或流程说明。\n\n"
+        "请只输出面向读者的最终成稿，不要复述下面资料的字段名或逐条罗列材料。"
+        "先让读者看清根问题和文章要抵达的判断，再按 major_units 的先后关系推进；"
+        "每个主要单元都必须改变读者已经知道的内容，后一个单元承接前一个单元的结论、理由或代价，"
+        "不要把每条材料各写成一个段落，也不要为了覆盖资料制造并列小点。"
+        "同一单元中的材料只有在承担不同阅读职责时才分开，否则合并到同一条解释中；标为 omit 的材料不写。"
+        "使用 route_guidance 维持本类成品的论证、研究、叙事或旅行推进方式；"
+        "按 reader_constraints 保留必要引文、原文义务和不可越过的结论边界。"
+        "证据与限制应放在它们实际影响的句子或单元附近。"
+        "不要输出内部记录、模型标识、执行状态、缺口清单、流程说明或作者旁白。\n\n"
         + json.dumps(spine, ensure_ascii=False, sort_keys=True, indent=2)
     )
 

@@ -33,6 +33,30 @@ def _plan(**overrides):
     return {"concurrency": 1, "timeout_seconds": 1, **overrides}
 
 
+def test_summarize_only_reads_without_materializing_a_plan(tmp_path, monkeypatch):
+    output_dir = tmp_path / "existing-run"
+    output_dir.mkdir()
+    summary = {"status": "incomplete", "case_count": 0}
+    summary_path = output_dir / "summary.json"
+    summary_path.write_text(json.dumps(summary) + "\n", encoding="utf-8")
+    before = (summary_path.read_bytes(), summary_path.stat().st_mtime_ns)
+
+    def should_not_load_inputs(*args, **kwargs):
+        raise AssertionError("summary-only mode must not materialize benchmark inputs")
+
+    monkeypatch.setattr(benchmark, "_load_frozen_inputs", should_not_load_inputs)
+    result = benchmark.run_benchmark(
+        tmp_path,
+        output_dir=output_dir,
+        backend_plan=tmp_path / "missing-plan.json",
+        summarize_only=True,
+    )
+
+    assert result == summary
+    assert (summary_path.read_bytes(), summary_path.stat().st_mtime_ns) == before
+    assert not (output_dir / "benchmark_plan.json").exists()
+
+
 def test_job_failure_rows_carry_identity_and_cleanup_gate():
     row = benchmark._job_row(_jobs(1)[0], "writer", status="not_started_deadline", terminal_reason="batch_deadline")
     assert row["job_id"] == "writer:I01:1:baseline"

@@ -3111,6 +3111,12 @@ def run_benchmark(
     preflight_case: str | None = None,
     repeats_override: int | None = None,
 ) -> dict[str, Any]:
+    # Summary consumption is deliberately side-effect free.  Keep this guard
+    # before mode dispatch, input loading, output-directory creation, and plan
+    # materialisation so an aggregate-only review cannot silently rewrite a
+    # historical run's frozen identity.
+    if summarize_only:
+        return summarize_run(output_dir.resolve())
     if mode == "held_out":
         return _run_held_out_benchmark(
             root,
@@ -3201,8 +3207,6 @@ def run_benchmark(
     _write_json(output_dir / "case_requests.json", [{"case": case, "case_fingerprint": fingerprint(case)} for case in cases])
     planned_ledger = _build_planned_ledger(cases, plan, repeats_count=repeat_count, versions=versions, mode="pair")
     _write_json(output_dir / "planned-ledger.json", planned_ledger)
-    if summarize_only:
-        return summarize_run(output_dir)
     if backend is None and backend_plan is None:
         _finalize_planned_ledger(output_dir, planned_ledger, [])
         return _unavailable_result(plan, source_manifest_fp=source_manifest_fp, output_dir=output_dir, reason="execution_provider_unavailable")
@@ -3498,6 +3502,8 @@ def _run_held_out_benchmark(
     envelope separate.  It never creates a synthetic X/Y pair.
     """
 
+    if summarize_only:
+        return summarize_run(output_dir.resolve())
     root = root.resolve()
     cases_dir = (cases_dir or root / "tests/fixtures/writing_quality").resolve()
     output_dir = output_dir.resolve()
@@ -3564,8 +3570,6 @@ def _run_held_out_benchmark(
     _write_json(output_dir / "case_requests.json", [{"case": case, "case_fingerprint": fingerprint(case)} for case in public_requests])
     planned_ledger = _build_planned_ledger(cases, plan, repeats_count=repeat_count, versions=versions, mode="held_out")
     _write_json(output_dir / "planned-ledger.json", planned_ledger)
-    if summarize_only:
-        return summarize_run(output_dir)
     if backend is None and backend_plan is None:
         _finalize_planned_ledger(output_dir, planned_ledger, [])
         return _unavailable_result(plan, source_manifest_fp=source_manifest_fp, output_dir=output_dir, reason="execution_provider_unavailable")

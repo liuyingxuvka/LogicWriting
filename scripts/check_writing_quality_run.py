@@ -8,6 +8,7 @@ counts, and the explicit nine-of-twelve quality gate.
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import sys
 from pathlib import Path
@@ -62,6 +63,12 @@ def _path(root: Path, value: Any) -> Path:
     if not resolved.is_file():
         raise ValueError(f"producer manifest file is missing or symlinked: {value}")
     return resolved
+
+
+def _execution_capture_path(run_root: Path, locator: Any) -> Path:
+    """Resolve a backend capture locator below the owner run's attempts root."""
+
+    return _path((run_root / "attempts").resolve(), locator)
 
 
 def _manifest_fingerprint(manifest: Mapping[str, Any]) -> str:
@@ -307,6 +314,37 @@ def _validate_production_reader_lineage(
     if production.get("content_fingerprint") != fingerprint(dict(boundaries)):
         raise ValueError(f"writer production content boundary fingerprint is stale: {key}")
 
+    # Research runs before the native provider's selected Limitation rows are
+    # promoted into the reader boundary.  The request snapshot is refreshed
+    # after that promotion so compose sees the final boundary.  Reconstruct
+    # the research-stage view from the immutable promotion artifact instead of
+    # comparing both planner stages with the post-promotion snapshot.
+    research_boundaries = copy.deepcopy(dict(boundaries))
+    native_limitations_ref = refs.get("native_limitations")
+    if native_limitations_ref is not None:
+        native_limitations_path = _validate_production_ref(
+            native_limitations_ref,
+            production_root,
+            label="native_limitations",
+        )
+        native_limitations_doc = _read_json(native_limitations_path)
+        promoted_rows = native_limitations_doc.get("rows")
+        if not isinstance(promoted_rows, list):
+            raise ValueError(f"writer native limitations artifact is incomplete: {key}")
+        promoted_ids = {
+            str(row.get("limitation_id"))
+            for row in promoted_rows
+            if isinstance(row, Mapping) and str(row.get("limitation_id") or "").strip()
+        }
+        if len(promoted_ids) != len(promoted_rows):
+            raise ValueError(f"writer native limitations artifact has invalid ids: {key}")
+        research_boundaries["limitations"] = [
+            row
+            for row in research_boundaries.get("limitations", [])
+            if not isinstance(row, Mapping)
+            or str(row.get("limitation_id") or "") not in promoted_ids
+        ]
+
     brief = _production_json(production_root, "reader_brief.json")
     composition = _production_json(production_root, "composition_plan.json")
     handoff = _production_json(production_root, "semantic_handoff.json")
@@ -328,7 +366,13 @@ def _validate_production_reader_lineage(
     # The writer's captured prompt must contain the validated spine JSON and
     # no card-level or internal model projection.  This closes the consumer
     # boundary even when a caller writes a plausible production receipt.
-    prompt_path = _path(run_root, writer_record.get("input_prompt_locator"))
+    # Execution-capture locators are rooted at ``attempts``.  Production
+    # evidence paths are rooted at the writer's ``production-reader`` folder,
+    # while the backend prompt/events/output captures live beside the
+    # completion receipt under ``run_root/attempts``.  Resolving this locator
+    # from ``run_root`` silently points at a non-existent sibling and makes a
+    # valid held-out/full capture fail consumer validation.
+    prompt_path = _execution_capture_path(run_root, writer_record.get("input_prompt_locator"))
     prompt_text = prompt_path.read_text(encoding="utf-8")
     if any(token in prompt_text for token in (
         '"selected_content"', '"route_semantics"', '"gaps"', '"native_handoff"',
@@ -401,21 +445,40 @@ def _validate_production_reader_lineage(
         _validate_planner_record(
             by_stage[stage], stage=stage, production=production, production_root=production_root,
             attempts_root=attempts_root, writer_record=writer_record,
-            expected_writing_request=writing_request, expected_boundaries=boundaries,
+            expected_writing_request=writing_request,
+            expected_boundaries=research_boundaries if stage == "research" else boundaries,
             expected_composition=composition if stage == "compose" else None,
         )
 
 
 def _status_counts(items: Any) -> dict[str, int]:
     rows = list(items) if isinstance(items, list) else []
-    terminal = sum(str(item.get("status")) not in {"queued", "starting", "running"} for item in rows if isinstance(item, Mapping))
-    completed = sum(str(item.get("status")) == "completed" for item in rows if isinstance(item, Mapping))
+    statuses = [str(item.get("status")) for item in rows if isinstance(item, Mapping)]
+    not_started_statuses = {
+        "queued",
+        "not_started_dependency_failed",
+        "not_started_deadline",
+        "not_started_cleanup_blocked",
+    }
+    terminal_statuses = {
+        "completed",
+        "failed",
+        "timed_out",
+        "cancelled",
+        "not_started_dependency_failed",
+        "not_started_deadline",
+        "not_started_cleanup_blocked",
+    }
+    terminal = sum(status in terminal_statuses for status in statuses)
+    completed = sum(status == "completed" for status in statuses)
+    failed = sum(status in {"failed", "timed_out", "cancelled"} for status in statuses)
+    not_started = sum(status in not_started_statuses for status in statuses)
     return {
         "planned": len(rows),
         "terminal": terminal,
         "completed": completed,
-        "failed": terminal - completed,
-        "not_started": len(rows) - terminal,
+        "failed": failed,
+        "not_started": not_started,
     }
 
 

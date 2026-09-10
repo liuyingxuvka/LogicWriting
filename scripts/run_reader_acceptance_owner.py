@@ -54,7 +54,14 @@ def _file_entry(output_dir: Path, path: Path, *, role: str, case_id: str | None 
     return {"role": role, "case_id": case_id, "repeat": repeat, "version": version, "judge_index": judge_index, "path": relative, "sha256": _bytes_fp(path.read_bytes())}
 
 
-def _build_output_manifest(output_dir: Path, plan: dict[str, Any], result: dict[str, Any], *, root: Path | None = None) -> dict[str, Any]:
+def _build_output_manifest(
+    output_dir: Path,
+    plan: dict[str, Any],
+    result: dict[str, Any],
+    *,
+    root: Path | None = None,
+    write: bool = True,
+) -> dict[str, Any]:
     writers = _read_json(output_dir / "writers.json") if (output_dir / "writers.json").is_file() else []
     judges = _read_json(output_dir / "judges.json") if (output_dir / "judges.json").is_file() else []
     files: list[dict[str, Any]] = []
@@ -147,7 +154,8 @@ def _build_output_manifest(output_dir: Path, plan: dict[str, Any], result: dict[
     if capture_validation_error is not None:
         manifest["capture_validation_error"] = capture_validation_error
     manifest["manifest_fingerprint"] = fingerprint(manifest)
-    _write_json(output_dir / "output-manifest.json", manifest)
+    if write:
+        _write_json(output_dir / "output-manifest.json", manifest)
     return manifest
 
 
@@ -491,6 +499,159 @@ def _validate_preflight_dependency(
     }
 
 
+def _aggregate_existing(
+    root: Path,
+    *,
+    output_dir: Path,
+    backend_plan: Path | None,
+    mode: str,
+) -> dict[str, Any]:
+    """Read and revalidate an existing producer run without starting or writing.
+
+    Aggregate-only is a review of already captured evidence.  It must not
+    create a run root, rematerialize a plan, refresh timestamps, or publish a
+    replacement receipt.  The manifest is rebuilt in memory so capture
+    validation still runs, while the frozen plan and all on-disk metadata stay
+    byte-for-byte unchanged.
+    """
+
+    output_dir = output_dir.resolve()
+    base = {
+        "schema_version": "logic-writing.reader-acceptance-owner-result.v1",
+        "producer_check_id": PRODUCER_ID,
+        "mode": mode,
+        "aggregate_only": True,
+        "read_only": True,
+        "output_manifest_path": "output-manifest.json",
+        "claim_boundary": "Aggregate-only reopens existing local captures and performs no subprocess or filesystem write.",
+    }
+    if not output_dir.is_dir():
+        return {
+            **base,
+            "status": "incomplete",
+            "quality_claim_status": "incomplete",
+            "terminal_reason": "aggregate_only_output_missing",
+            "error": f"aggregate-only run root is missing: {output_dir}",
+        }
+    required = ("benchmark_plan.json", "output-manifest.json", "run_result.json", "summary.json")
+    missing = [name for name in required if not (output_dir / name).is_file()]
+    if missing:
+        return {
+            **base,
+            "status": "incomplete",
+            "quality_claim_status": "incomplete",
+            "terminal_reason": "aggregate_only_evidence_incomplete",
+            "error": "aggregate-only evidence is incomplete; missing " + ", ".join(missing),
+        }
+    try:
+        plan = _read_json(output_dir / "benchmark_plan.json")
+        manifest = _read_json(output_dir / "output-manifest.json")
+        result = _read_json(output_dir / "run_result.json")
+        summary = _read_json(output_dir / "summary.json")
+    except (OSError, UnicodeError, ValueError, TypeError, json.JSONDecodeError) as exc:
+        return {
+            **base,
+            "status": "incomplete",
+            "quality_claim_status": "incomplete",
+            "terminal_reason": "aggregate_only_evidence_unreadable",
+            "error": f"aggregate-only evidence is unreadable: {exc}",
+        }
+    if not all(isinstance(value, dict) for value in (plan, manifest, result, summary)):
+        return {
+            **base,
+            "status": "incomplete",
+            "quality_claim_status": "incomplete",
+            "terminal_reason": "aggregate_only_evidence_invalid",
+            "error": "aggregate-only plan, manifest, result, and summary must be JSON objects",
+        }
+
+    try:
+        cases_dir = (root.resolve() / "tests" / "fixtures" / "writing_quality").resolve()
+        if mode == "held_out":
+            _, _, _, current_source_fp, _ = _load_held_out_inputs(cases_dir)
+        else:
+            _, _, _, current_source_fp, _ = _load_frozen_inputs(cases_dir)
+        current_implementation_fp = fingerprint(_implementation_identity(root.resolve()))
+        expected_plan = _load_plan(backend_plan, source_manifest_fp=current_source_fp)
+    except (OSError, UnicodeError, ValueError, TypeError, json.JSONDecodeError) as exc:
+        return {
+            **base,
+            "status": "incomplete",
+            "quality_claim_status": "incomplete",
+            "terminal_reason": "aggregate_only_identity_unavailable",
+            "error": f"aggregate-only current identity is unavailable: {exc}",
+        }
+
+    stale: list[str] = []
+    if plan.get("mode") != mode:
+        stale.append("mode")
+    if plan.get("source_manifest_fingerprint") != current_source_fp:
+        stale.append("source_manifest_fingerprint")
+    if plan.get("implementation_fingerprint") != current_implementation_fp:
+        stale.append("implementation_fingerprint")
+    expected_policy_fp = fingerprint(_execution_policy(plan))
+    if plan.get("execution_policy_fingerprint") != expected_policy_fp:
+        stale.append("execution_policy_fingerprint")
+    for key in ("backend_id", "model_id", "reasoning_effort", "cli_version", "cli_sha256"):
+        if key in expected_plan and plan.get(key) != expected_plan.get(key):
+            stale.append(f"toolchain.{key}")
+    for payload_name, payload in (("manifest", manifest), ("run_result", result)):
+        if payload.get("source_manifest_fingerprint") != current_source_fp:
+            stale.append(f"{payload_name}.source_manifest_fingerprint")
+        if payload.get("implementation_fingerprint") != current_implementation_fp:
+            stale.append(f"{payload_name}.implementation_fingerprint")
+        if payload.get("execution_policy_fingerprint") != expected_policy_fp:
+            stale.append(f"{payload_name}.execution_policy_fingerprint")
+    if stale:
+        return {
+            **base,
+            "status": "stale",
+            "quality_claim_status": "incomplete",
+            "terminal_reason": "aggregate_only_identity_stale",
+            "stale_fields": sorted(set(stale)),
+            "error": "aggregate-only evidence is stale: " + ", ".join(sorted(set(stale))),
+            "source_manifest_fingerprint": current_source_fp,
+            "implementation_fingerprint": current_implementation_fp,
+        }
+
+    try:
+        rebuilt_manifest = _build_output_manifest(
+            output_dir,
+            plan,
+            result,
+            root=root.resolve(),
+            write=False,
+        )
+    except (OSError, UnicodeError, ValueError, TypeError, json.JSONDecodeError, ImportError) as exc:
+        return {
+            **base,
+            "status": "incomplete",
+            "quality_claim_status": "incomplete",
+            "terminal_reason": "aggregate_only_capture_validation_failed",
+            "error": f"aggregate-only capture validation failed: {exc}",
+        }
+    terminal_status = str(rebuilt_manifest.get("terminal_status") or "incomplete")
+    report = {
+        **base,
+        "status": "passed" if terminal_status == "completed" else "incomplete",
+        "benchmark_status": result.get("status"),
+        "quality_claim_status": result.get("quality_claim_status", "incomplete"),
+        "held_out_passed": bool(result.get("held_out_passed", False)) if mode == "held_out" else None,
+        "writer_count": rebuilt_manifest.get("writer_count", 0),
+        "judge_count": rebuilt_manifest.get("judge_count", 0),
+        "planner_count": rebuilt_manifest.get("planner_count", 0),
+        "terminal_status": terminal_status,
+        "output_manifest_fingerprint": rebuilt_manifest.get("manifest_fingerprint"),
+        "source_manifest_fingerprint": current_source_fp,
+        "implementation_fingerprint": current_implementation_fp,
+    }
+    if rebuilt_manifest.get("capture_validation_error"):
+        report["capture_validation_error"] = rebuilt_manifest["capture_validation_error"]
+    if terminal_status != "completed":
+        report["terminal_reason"] = "aggregate_only_capture_incomplete"
+    return report
+
+
 def run_owner(
     root: Path,
     *,
@@ -502,10 +663,18 @@ def run_owner(
     preflight_case: str | None = None,
     repeats: int | None = None,
     preflight_run_root: Path | None = None,
+    aggregate_only: bool = False,
 ) -> dict[str, Any]:
     if held_out_only and preflight_case is not None:
         raise ValueError("--held-out-only cannot be combined with --preflight-case")
-    mode = "held_out" if held_out_only else "pair"
+    mode = "held_out" if held_out_only else ("preflight" if preflight_case is not None else "pair")
+    if aggregate_only:
+        return _aggregate_existing(
+            root.resolve(),
+            output_dir=output_dir,
+            backend_plan=backend_plan,
+            mode=mode,
+        )
     # The I01 lane is the dependency producer and must remain runnable without
     # a preflight root. Aggregate-only is read-only and also keeps the old
     # behaviour. A normal quality lane with a usable backend plan is blocked
@@ -647,6 +816,7 @@ def main() -> int:
             preflight_case=preflight_case,
             repeats=repeats,
             preflight_run_root=args.preflight_run_root.resolve() if args.preflight_run_root else None,
+            aggregate_only=args.aggregate_only,
         )
     except (OSError, ValueError, TypeError, json.JSONDecodeError) as exc:
         report = {"schema_version": "logic-writing.reader-acceptance-owner-result.v1", "producer_check_id": PRODUCER_ID, "status": "failed", "error": str(exc)}

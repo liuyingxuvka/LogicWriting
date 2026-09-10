@@ -73,6 +73,17 @@ def test_quality_consumer_rejects_missing_production_reader_lineage(tmp_path):
         consumer._validate_production_reader_lineage(tmp_path, row)
 
 
+def test_quality_consumer_resolves_execution_prompt_below_attempts_root(tmp_path):
+    consumer = _load("check_writing_quality_run")
+    capture = tmp_path / "attempts" / "writer" / "one" / "input.txt"
+    capture.parent.mkdir(parents=True)
+    capture.write_text("captured prompt\n", encoding="utf-8")
+
+    resolved = consumer._execution_capture_path(tmp_path, "writer/one/input.txt")
+
+    assert resolved == capture.resolve()
+
+
 def test_quality_consumer_accounting_counts_nested_planners_in_total(tmp_path):
     benchmark = _load("run_writing_quality_benchmark")
     consumer = _load("check_writing_quality_run")
@@ -117,6 +128,25 @@ def test_quality_consumer_accounting_counts_nested_planners_in_total(tmp_path):
     benchmark._write_json(tmp_path / "planned-ledger.json", ledger)
     with pytest.raises(ValueError, match="total progress"):
         consumer._validate_execution_accounting(tmp_path, plan=plan, result=result, manifest=manifest)
+
+
+def test_quality_consumer_status_counts_match_not_started_dependency_semantics():
+    consumer = _load("check_writing_quality_run")
+
+    counts = consumer._status_counts([
+        {"status": "queued"},
+        {"status": "not_started_dependency_failed"},
+        {"status": "failed"},
+        {"status": "completed"},
+    ])
+
+    assert counts == {
+        "planned": 4,
+        "terminal": 3,
+        "completed": 1,
+        "failed": 1,
+        "not_started": 2,
+    }
 
 
 def test_planner_count_does_not_fall_back_to_legacy_fields_for_production_rows():
