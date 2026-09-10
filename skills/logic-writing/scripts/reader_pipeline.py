@@ -1043,6 +1043,14 @@ def build_reader_brief(
                 raise ValidationError("native-to-reader unit mapping has an invalid planned unit list")
             if any(str(item) not in planned_ids for item in row["planned_unit_ids"]):
                 raise ValidationError("native-to-reader unit mapping references an unknown planned unit")
+        mapped_planned = {
+            str(item)
+            for row in mapping_rows
+            if isinstance(row, Mapping)
+            for item in row.get("planned_unit_ids", [])
+        }
+        if mapped_planned != planned_ids:
+            raise ValidationError("native-to-reader unit mapping must cover every current planned unit")
     route = validate_route_composition(
         route_composition,
         owner=owner,
@@ -1159,6 +1167,14 @@ def validate_writer_input(value: Any, *, reader_brief: Mapping[str, Any] | None 
         mapped_ids = {str(row.get("native_unit_id")) for row in mapping if isinstance(row, Mapping)}
         if mapped_ids != native_ids:
             raise ValidationError("writer_input native handoff mapping is not exhaustive")
+        mapped_planned = {
+            str(item)
+            for row in mapping
+            if isinstance(row, Mapping)
+            for item in row.get("planned_unit_ids", [])
+        }
+        if mapped_planned != set(unit_ids):
+            raise ValidationError("writer_input native handoff mapping must cover every planned unit")
     if "exact_obligations" in writer_input:
         exact = require_mapping(writer_input["exact_obligations"], "writer_input exact_obligations")
         for kind in ("must_preserve", "verbatim"):

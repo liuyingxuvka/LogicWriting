@@ -35,7 +35,7 @@ For the LogicGuard artifact-synthesis route, the current native result is
 `scripts/researchguard_handoff.py` before building a ReaderBrief. The handoff
 copies only the ordered argument units, their closure/role bindings, source
 branch ids, and complete candidate dispositions into
-`researchguard-logic-handoff.schema.json`; it binds the ReaderIntent,
+`assets/schemas/researchguard-logic-handoff.schema.json`; it binds the ReaderIntent,
 CompositionPlan, and writer projection fingerprints. The native result and any
 native receipt remain opaque references. A blocked native status or support
 gap produces a blocked handoff and cannot enter the writer projection.
@@ -59,3 +59,12 @@ ReaderIntent, CompositionPlan, ReaderBrief, and writer projection fingerprints.
 Use `bind_handoff_consumption` and `validate_handoff_consumption`; an empty,
 partial, stale, blocked, or unknown-unit mapping cannot enter the writing
 workspace.
+
+The production reader's two planner calls have a separate execution boundary.
+Each call must return `logic-writing.planner-execution-record.v1` with a
+completed terminal status, an absolute byte-fingerprinted backend capture, and
+the capture's sibling `events.jsonl`. The production adapter accepts only one
+matching thread, a completed turn, an agent message, and no command, shell,
+browser, web, MCP, or function event. The planner input is a frozen projection
+of the WritingRequest and content boundaries; rubric, benchmark, judge, and
+expected-answer material is outside that projection and blocks the run.

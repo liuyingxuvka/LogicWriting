@@ -41,6 +41,7 @@ SUPPORTED_SCHEMA_NAMES = (
     "composition-plan.schema.json",
     "fiction-composition.schema.json",
     "investigation-composition.schema.json",
+    "local-single-judgment.schema.json",
     "obligation-manifest.schema.json",
     "reader-audit.schema.json",
     "reader-brief.schema.json",

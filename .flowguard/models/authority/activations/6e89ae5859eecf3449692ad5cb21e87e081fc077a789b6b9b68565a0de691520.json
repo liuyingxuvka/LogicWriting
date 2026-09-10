@@ -1,0 +1,12 @@
+{
+  "candidate_snapshot_fingerprint": "sha256:86ba099bd9ee1d5b66b3c89ad83a16bcd1dae4a7583fa76082d440ca192d76b1",
+  "expected_head_fingerprint": "sha256:1194ecddaa02a05fccfc1b8a13df790688607d1576505fa9b43054a37a742cba",
+  "fingerprint": "sha256:6e89ae5859eecf3449692ad5cb21e87e081fc077a789b6b9b68565a0de691520",
+  "next_generation": 6,
+  "previous_snapshot_fingerprint": "sha256:4f2a4cc8f592ba3dd4a8aa6bb89d99d5e62b6965cc9a79e5eb61d56283289458",
+  "receipt_id": "receipt:logic-writing-authority-activation:20260908-final10",
+  "revision_set_fingerprint": "sha256:5c657ef9933e8931d4bad5019b9b8d340652743014e56839170e9334a6ca853e",
+  "schema": "flowguard.model_activation_receipt.v1",
+  "subject_revision": "source-inventory:173b6bd8050ded63d06118df7b276ada74453dd60981a8cb522f3136ad56c338",
+  "system_id": "logic-writing"
+}

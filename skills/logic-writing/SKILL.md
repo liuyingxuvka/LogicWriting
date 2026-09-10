@@ -124,7 +124,7 @@ state; they do not re-run or reinterpret the specialist's native check.
 For LogicGuard artifact synthesis, map the current
 `researchguard.logic.synthesis-plan.v1` through
 `scripts/researchguard_handoff.py` and its
-`researchguard-logic-handoff.schema.json` contract before constructing the
+`assets/schemas/researchguard-logic-handoff.schema.json` contract before constructing the
 ReaderBrief. This bridge carries the reader-selected unit order, argument
 closure, source branch ids, and dispositions while retaining native result and
 receipt locators as opaque references. A blocked or stale native plan remains
@@ -134,6 +134,12 @@ Join the semantic handoff to the current ReaderBrief with
 `researchguard.logic.consumption-binding.v1` against its bundled schema. The
 binding must exhaustively cover native units and planned units while preserving
 all current input fingerprints.
+The production reader planner also requires a current
+`logic-writing.planner-execution-record.v1`: both planner calls must finish
+with a byte-bound backend capture and a sibling event stream proving one
+completed, tool-free local turn. Planner inputs are frozen facts only; judge,
+benchmark, expected-answer, and rubric metadata are rejected before the first
+call.
 
 Read [references/adapters/researchguard.md](references/adapters/researchguard.md)
 before a ResearchGuard handoff, then load only the selected member adapter

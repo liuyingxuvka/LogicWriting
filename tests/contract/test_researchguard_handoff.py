@@ -278,6 +278,40 @@ def test_ready_native_plan_with_gaps_is_rejected_before_mapping():
         )
 
 
+@pytest.mark.parametrize("parent", ["unit:missing", "unit:root"])
+def test_native_parent_hierarchy_rejects_dangling_or_cyclic_links(parent):
+    plan = _plan()
+    plan["units"][0]["parent_unit_id"] = parent
+    with pytest.raises(ValidationError, match="parent"):
+        build_researchguard_handoff(
+            plan,
+            **_inputs(),
+            native_result_locator="fixture://researchguard/logic/synthesis-plan-parent-invalid",
+        )
+
+
+def test_native_predecessor_graph_rejects_cycles_outside_body_order():
+    plan = _plan()
+    note = copy.deepcopy(plan["units"][0])
+    note.update({
+        "unit_id": "unit:note",
+        "parent_unit_id": None,
+        "predecessor_unit_ids": ["unit:root"],
+        "progression_relation": "background",
+        "editorial_prominence": "brief",
+        "placement": "note",
+        "required": False,
+    })
+    plan["units"][0]["predecessor_unit_ids"] = ["unit:note"]
+    plan["units"] = [plan["units"][0], note]
+    with pytest.raises(ValidationError, match="predecessor graph"):
+        build_researchguard_handoff(
+            plan,
+            **_inputs(),
+            native_result_locator="fixture://researchguard/logic/synthesis-plan-predecessor-cycle",
+        )
+
+
 def test_current_pass_requires_non_null_native_receipt_identity_in_schema():
     handoff = build_researchguard_handoff(
         _plan(),
@@ -329,6 +363,40 @@ def test_semantic_handoff_can_be_joined_only_by_an_exhaustive_reader_mapping():
         assert_schema_valid("researchguard-consumption-binding.schema.json", forged)
     with pytest.raises(ValidationError, match="unit_mapping"):
         bind_handoff_consumption(handoff, brief, [])
+
+
+def test_consumption_binding_rejects_partial_planned_unit_coverage():
+    plan = _plan()
+    native_inputs = {
+        "reader_intent_fingerprint": fingerprint({"intent": "intent-1"}),
+        "native_receipt_fingerprint": fingerprint({"receipt": "receipt-1"}),
+        "native_receipt_locator": "fixture://researchguard/logic/receipt-1",
+    }
+    handoff = build_researchguard_handoff(
+        plan,
+        **native_inputs,
+        native_result_locator="fixture://researchguard/logic/synthesis-plan-partial",
+    )
+    brief = {
+        "brief_fingerprint": "",
+        "reader_intent_fingerprint": native_inputs["reader_intent_fingerprint"],
+        "writer_input_fingerprint": fingerprint({"writer": "current"}),
+        "composition_plan": {
+            "planned_units": [
+                {"planned_unit_id": "planned:root"},
+                {"planned_unit_id": "planned:descendant"},
+            ],
+        },
+    }
+    brief["brief_fingerprint"] = fingerprint_without(brief, "brief_fingerprint")
+    mapping = [{
+        "native_unit_id": "unit:root",
+        "planned_unit_ids": ["planned:root"],
+        "disposition": "body",
+        "reason": "The central native unit is mapped to the lead planned unit.",
+    }]
+    with pytest.raises(ValidationError, match="every planned unit"):
+        bind_handoff_consumption(handoff, brief, mapping)
 
 
 def test_real_native_researchguard_plan_round_trips_into_reader_brief(tmp_path):

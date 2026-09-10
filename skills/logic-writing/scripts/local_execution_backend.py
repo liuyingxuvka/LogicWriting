@@ -13,8 +13,11 @@ import hashlib
 import json
 import os
 import re
+import signal
 import subprocess
 import sys
+import threading
+import time
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -90,9 +93,101 @@ def _write_json(path: Path, value: Any) -> None:
     )
 
 
-def _kill_tree(process: subprocess.Popen[bytes]) -> bool:
-    """Terminate a timed-out process tree and prove the root has exited."""
+def _write_json_atomic(path: Path, value: Any) -> None:
+    """Publish a JSON receipt as one complete file.
 
+    Completion is the boundary consumed by the resolver.  Writing it directly
+    leaves a short window in which a parent can observe a truncated JSON file,
+    especially when a process is interrupted during finalisation.
+    """
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(f".{path.name}.{os.getpid()}.{uuid.uuid4().hex}.tmp")
+    try:
+        _write_json(temporary, value)
+        os.replace(temporary, path)
+    finally:
+        try:
+            if temporary.exists():
+                temporary.unlink()
+        except OSError:
+            pass
+
+
+PIPE_CHUNK_SIZE = 64 * 1024
+# On Windows a CLI can exit before an inherited stdout handle is released by
+# the desktop host. Five seconds was short enough to close a still-draining
+# pipe and turn an otherwise complete JSON response into a cleanup failure.
+# Keep the wait bounded, but give the host a real grace window to release the
+# handle before the owner decides that cleanup is unconfirmed.
+READER_DRAIN_TIMEOUT_SECONDS = 15.0
+
+
+def _read_pipe_chunk(stream: Any) -> bytes:
+    """Read one promptly available pipe chunk.
+
+    ``BufferedReader.read(size)`` is allowed to wait for ``size`` bytes.  A
+    local CLI can therefore emit a small JSON event and then remain alive while
+    the reader waits for a full 64 KiB buffer.  ``read1`` asks the buffered
+    stream for the bytes currently available and is the important distinction
+    for the execution watchdog.  The fallback is kept for the tiny fake
+    streams used by contract tests.
+    """
+
+    read1 = getattr(stream, "read1", None)
+    if callable(read1):
+        return read1(PIPE_CHUNK_SIZE)
+    return stream.read(PIPE_CHUNK_SIZE)
+
+
+def _process_group_alive(process_group_id: int | None) -> bool | None:
+    """Return whether a process group still has members when observable."""
+
+    if process_group_id is None or os.name == "nt":
+        return None
+    try:
+        os.killpg(process_group_id, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return None
+    except OSError:
+        return False
+    return True
+
+
+def _terminate_process_tree(
+    process: subprocess.Popen[bytes],
+    *,
+    process_group_id: int | None = None,
+    root_creation_time: str | None = None,
+) -> dict[str, Any]:
+    """Terminate the owned process tree and retain an auditable receipt.
+
+    The old implementation only returned whether the root PID exited.  That
+    is insufficient when a child inherited stdout/stderr and kept the owner
+    blocked.  Windows uses ``taskkill /T``; POSIX launches each CLI in its own
+    session and kills that process group.  The returned evidence is deliberately
+    conservative: an unknown descendant state never becomes a clean proof.
+    """
+
+    requested_at = _now()
+    evidence: dict[str, Any] = {
+        "root_pid": int(getattr(process, "pid", 0) or 0) or None,
+        "root_creation_time": root_creation_time,
+        "process_group_id": process_group_id,
+        "termination_requested_at": requested_at,
+        "termination_method": "taskkill_tree" if os.name == "nt" else "process_group_kill",
+        "taskkill_returncode": None,
+        "root_exited": False,
+        "process_group_alive_before": _process_group_alive(process_group_id),
+        "process_group_alive_after": None,
+        "descendants_observed": False,
+        "descendant_pids": [],
+        "descendants_remaining": None,
+        "confirmed": False,
+        "error": None,
+    }
     try:
         if os.name == "nt":
             completed = subprocess.run(
@@ -101,15 +196,44 @@ def _kill_tree(process: subprocess.Popen[bytes]) -> bool:
                 check=False,
                 timeout=30,
             )
+            evidence["taskkill_returncode"] = completed.returncode
             if process.poll() is None:
                 process.kill()
-            process.wait(timeout=30)
-            return process.poll() is not None and completed.returncode in {0, 128, 255}
-        process.kill()
+        elif process_group_id is not None:
+            try:
+                os.killpg(process_group_id, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+        else:
+            process.kill()
         process.wait(timeout=30)
-        return process.poll() is not None
-    except (OSError, subprocess.TimeoutExpired):
-        return process.poll() is not None
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        evidence["error"] = f"{type(exc).__name__}: {exc}"
+        try:
+            if process.poll() is None:
+                process.kill()
+                process.wait(timeout=5)
+        except (OSError, subprocess.TimeoutExpired) as second_exc:
+            evidence["error"] = f"{evidence['error']}; {type(second_exc).__name__}: {second_exc}"
+    evidence["root_exited"] = process.poll() is not None
+    evidence["process_group_alive_after"] = _process_group_alive(process_group_id)
+    # A POSIX group that is still observable is explicit evidence that a
+    # descendant survived.  On Windows taskkill's tree result is the only
+    # supported ownership probe available without introducing a dependency.
+    group_clear = evidence["process_group_alive_after"] is False or process_group_id is None or os.name == "nt"
+    taskkill_clear = os.name != "nt" or evidence["taskkill_returncode"] in {0, 128, 255}
+    evidence["descendants_remaining"] = (
+        False if group_clear else True if evidence["process_group_alive_after"] is True else None
+    )
+    evidence["confirmed"] = bool(evidence["root_exited"] and group_clear and taskkill_clear and not evidence["error"])
+    evidence["cleanup_finished_at"] = _now()
+    return evidence
+
+
+def _kill_tree(process: subprocess.Popen[bytes], *, process_group_id: int | None = None) -> bool:
+    """Backward-compatible boolean wrapper around the auditable terminator."""
+
+    return bool(_terminate_process_tree(process, process_group_id=process_group_id)["confirmed"])
 
 
 def _event_type(item: Mapping[str, Any]) -> str:
@@ -163,7 +287,12 @@ def _tool_events(events: list[Mapping[str, Any]]) -> list[dict[str, Any]]:
 
 
 class LocalCodexBackend:
-    """The one production writer/judge backend permitted by this release."""
+    """The pinned local completion backend for writer, judge, and planner lanes.
+
+    Planner completions share the process/capture safeguards but are consumed
+    as planning artifacts; ``reader_execution`` only wraps writer and judge
+    calls in the ``ReaderExecutionRecord`` schema.
+    """
 
     def __init__(
         self,
@@ -173,6 +302,7 @@ class LocalCodexBackend:
         model_id: str = DEFAULT_MODEL_ID,
         reasoning_effort: str = DEFAULT_REASONING_EFFORT,
         timeout_seconds: int = 900,
+        no_progress_seconds: int = 0,
         expected_version: str = DEFAULT_CLI_VERSION,
         expected_sha256: str = DEFAULT_CLI_SHA256,
         expected_cli_version: str | None = None,
@@ -193,6 +323,11 @@ class LocalCodexBackend:
         self.model_id = model_id
         self.reasoning_effort = reasoning_effort
         self.timeout_seconds = int(timeout_seconds)
+        # A hard wall clock timeout is the portable liveness boundary.  The
+        # optional idle watchdog is retained for diagnostics, but its default
+        # is zero so a quiet model turn is never killed merely because the
+        # provider has not emitted a pipe chunk recently.
+        self.no_progress_seconds = max(0, int(no_progress_seconds))
         self.expected_version = expected_cli_version or expected_version
         self.expected_sha256 = expected_executable_sha256 or expected_sha256
         self.executable_sha256 = hashlib.sha256(self.executable.read_bytes()).hexdigest()
@@ -237,14 +372,21 @@ class LocalCodexBackend:
         }
 
     def run(self, role: str, request: Mapping[str, Any]) -> dict[str, Any]:
-        if role not in {"writer", "judge"}:
-            raise ValidationError("local Codex backend role must be writer or judge")
+        if role not in {"writer", "judge", "planner"}:
+            raise ValidationError("local Codex backend role must be writer, judge, or planner")
         prompt = request.get("prompt")
         if not isinstance(prompt, str) or not prompt.strip():
             raise ValidationError("local Codex backend requires a non-empty prompt")
         request_id = request.get("request_id") or request.get("run_id") or uuid.uuid4().hex
         run_id = str(request.get("run_id") or f"{role}:{_safe_name(request_id)}")
         attempt_root = self.run_root / role / _safe_name(run_id)
+        # A repeated request must never replace an earlier immutable capture.
+        # Keep the logical run id stable while allocating a fresh physical
+        # attempt directory when the expected path already contains data.
+        if attempt_root.is_symlink():
+            raise ValidationError("execution attempt path cannot be a symlink")
+        if attempt_root.exists() and any(attempt_root.iterdir()):
+            attempt_root = self.run_root / role / f"{_safe_name(run_id)}-{uuid.uuid4().hex[:12]}"
         attempt_root.mkdir(parents=True, exist_ok=True)
         prompt_path = attempt_root / "input.txt"
         events_path = attempt_root / "events.jsonl"
@@ -278,41 +420,279 @@ class LocalCodexBackend:
         process: subprocess.Popen[bytes] | None = None
         stdout = b""
         stderr = b""
+        stdout_parts: list[bytes] = []
+        stderr_parts: list[bytes] = []
         exit_code: int | None = None
         timed_out = False
         cleanup_confirmed = False
         failure_reason: str | None = None
-        try:
-            process = subprocess.Popen(
-                argv,
-                cwd=str(self.run_root),
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                creationflags=getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0),
-            )
+        failure_detail: str | None = None
+        timeout_kind: str | None = None
+        process_group_id: int | None = None
+        # A creation timestamp belongs to an observed process.  Keep it null
+        # for a start failure instead of manufacturing an identity for a PID
+        # that never existed.
+        process_creation_time: str | None = None
+        termination_evidence: dict[str, Any] = {}
+        lifecycle_events: list[dict[str, Any]] = []
+        lifecycle_lock = threading.Lock()
+        reader_errors: list[str] = []
+        stdin_errors: list[str] = []
+        readers: list[threading.Thread] = []
+        stdin_writer: threading.Thread | None = None
+        stdin_done = threading.Event()
+        reader_started = False
+        first_output_at: str | None = None
+        last_output_at: dict[str, str | None] = {"stdout": None, "stderr": None}
+        last_progress_monotonic = time.monotonic()
+        process_exited_at: str | None = None
+        cleanup_finished_at: str | None = None
+        reader_drain_confirmed = False
+        process_exited_recorded = False
+
+        def _lifecycle(event: str, **details: Any) -> None:
+            item: dict[str, Any] = {"event": event, "at": _now()}
+            item.update(details)
+            with lifecycle_lock:
+                lifecycle_events.append(item)
+
+        def _close_stream(stream: Any) -> None:
             try:
-                stdout, stderr = process.communicate(prompt_bytes, timeout=self.timeout_seconds)
-                exit_code = process.returncode
-                cleanup_confirmed = process.poll() is not None
-            except subprocess.TimeoutExpired as exc:
-                timed_out = True
-                stdout = exc.output or b""
-                stderr = exc.stderr or b""
-                cleanup_confirmed = _kill_tree(process)
-                if process.poll() is not None:
-                    try:
-                        tail_out, tail_err = process.communicate(timeout=30)
-                        stdout += tail_out or b""
-                        stderr += tail_err or b""
-                    except (OSError, subprocess.TimeoutExpired):
-                        pass
-                exit_code = process.returncode
-                failure_reason = "timeout"
+                if stream is not None:
+                    stream.close()
+            except (OSError, ValueError):
+                pass
+
+        def _reader(name: str, stream: Any, parts: list[bytes]) -> None:
+            nonlocal reader_started, first_output_at, last_progress_monotonic
+            # Keep a separate lifecycle event for the actual thread start;
+            # ``reader_started`` is the aggregate compatibility flag.
+            _lifecycle("thread_started", stream=name)
+            _lifecycle("reader_started", stream=name)
+            reader_started = True
+            capture_path = events_path if name == "stdout" else stderr_path
+            try:
+                while True:
+                    # ``read1`` avoids waiting for a full 64 KiB buffer after a
+                    # small JSON event.  The two reader threads are the only
+                    # consumers of the subprocess pipes for this run.
+                    chunk = _read_pipe_chunk(stream)
+                    if not chunk:
+                        break
+                    parts.append(bytes(chunk))
+                    # Persist each chunk while the child is still alive.  The
+                    # final drain rewrites the same bytes from the in-memory
+                    # aggregate, which gives the receipt a deterministic hash
+                    # while this append keeps liveness observable to an owner.
+                    with capture_path.open("ab") as capture:
+                        capture.write(bytes(chunk))
+                        capture.flush()
+                    last_progress_monotonic = time.monotonic()
+                    last_output_at[name] = _now()
+                    if first_output_at is None:
+                        first_output_at = _now()
+                        _lifecycle("first_output", stream=name)
+            except (AttributeError, OSError, TypeError, ValueError) as exc:
+                reader_errors.append(f"{name}: {type(exc).__name__}: {exc}")
+                _lifecycle("reader_error", stream=name, error=str(exc))
+            finally:
+                _lifecycle("reader_drained", stream=name)
+
+        def _write_stdin(stream: Any) -> None:
+            try:
+                if stream is not None:
+                    stream.write(prompt_bytes)
+                    flush = getattr(stream, "flush", None)
+                    if callable(flush):
+                        flush()
+                    _lifecycle("stdin_sent", bytes=len(prompt_bytes))
+            except (AttributeError, BrokenPipeError, OSError, TypeError, ValueError) as exc:
+                stdin_errors.append(f"{type(exc).__name__}: {exc}")
+                _lifecycle("stdin_error", error=str(exc))
+            finally:
+                _close_stream(stream)
+                stdin_done.set()
+                _lifecycle("stdin_finished", ok=not stdin_errors)
+
+        def _record_process_exited() -> None:
+            nonlocal process_exited_at, process_exited_recorded, exit_code
+            if process is None or process_exited_recorded or process.poll() is None:
+                return
+            exit_code = process.returncode
+            process_exited_at = _now()
+            process_exited_recorded = True
+            _lifecycle("process_exited", pid=process.pid, exit_code=exit_code)
+
+        def _drain_and_finalize() -> tuple[bytes, bytes, bool]:
+            """Close stdin and drain both readers exactly once.
+
+            No ``communicate`` call is permitted after reader threads start:
+            doing so races the readers and can deadlock on an inherited pipe.
+            This helper owns the one final drain/finalize phase for both normal
+            exit and abort paths.
+            """
+
+            nonlocal cleanup_finished_at, reader_drain_confirmed
+            _close_stream(process.stdin if process is not None else None)
+            if stdin_writer is not None:
+                stdin_writer.join(timeout=2.0)
+            # Closing stdin can release a writer blocked on a full input pipe;
+            # a still-live daemon writer is retained only as an explicit
+            # cleanup failure and never as completion evidence.
+            if stdin_writer is not None and stdin_writer.is_alive():
+                stdin_errors.append("stdin writer did not finish before drain deadline")
+                _lifecycle("stdin_unconfirmed")
+            drain_deadline = time.monotonic() + READER_DRAIN_TIMEOUT_SECONDS
+            for reader in readers:
+                reader.join(timeout=max(0.0, drain_deadline - time.monotonic()))
+            reader_drain_confirmed = all(not reader.is_alive() for reader in readers)
+            if not reader_drain_confirmed:
+                _lifecycle("reader_drain_unconfirmed")
+                _close_stream(process.stdout if process is not None else None)
+                _close_stream(process.stderr if process is not None else None)
+                for reader in readers:
+                    reader.join(timeout=1.0)
+                reader_drain_confirmed = all(not reader.is_alive() for reader in readers)
+            _close_stream(process.stdout if process is not None else None)
+            _close_stream(process.stderr if process is not None else None)
+            cleanup_finished_at = _now()
+            return b"".join(stdout_parts), b"".join(stderr_parts), reader_drain_confirmed
+
+        def _cancel_requested() -> bool:
+            if bool(request.get("cancelled") or request.get("cancel_requested")):
+                return True
+            event = request.get("cancel_event") or request.get("_cancel_event")
+            return bool(event is not None and callable(getattr(event, "is_set", None)) and event.is_set())
+
+        try:
+            popen_options: dict[str, Any] = {
+                "cwd": str(self.run_root),
+                "stdin": subprocess.PIPE,
+                "stdout": subprocess.PIPE,
+                "stderr": subprocess.PIPE,
+                "close_fds": True,
+            }
+            if os.name == "nt":
+                popen_options["creationflags"] = getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0)
+            else:
+                # Isolate the CLI and any descendants in a group that can be
+                # terminated without touching the benchmark owner.
+                popen_options["start_new_session"] = True
+            process = subprocess.Popen(argv, **popen_options)
+            process_creation_time = _now()
+            if os.name != "nt":
+                try:
+                    process_group_id = os.getpgid(process.pid)
+                except OSError:
+                    process_group_id = None
+            _lifecycle("process_started", pid=process.pid, creation_time=process_creation_time, process_group_id=process_group_id)
+
+            # Start readers before sending input.  This ordering prevents a
+            # large prompt or a verbose startup diagnostic from blocking the
+            # owner before its watchdog can observe the child.
+            readers = [
+                threading.Thread(target=_reader, args=("stdout", process.stdout, stdout_parts), daemon=True),
+                threading.Thread(target=_reader, args=("stderr", process.stderr, stderr_parts), daemon=True),
+            ]
+            for reader in readers:
+                reader.start()
+            stdin_writer = threading.Thread(target=_write_stdin, args=(process.stdin,), daemon=True)
+            stdin_writer.start()
+
+            hard_deadline = time.monotonic() + max(1, int(self.timeout_seconds))
+            # A separate bounded input deadline converts a child that never
+            # reads stdin into an explicit stdin_failed receipt.
+            stdin_deadline = min(hard_deadline, time.monotonic() + max(1, min(30, int(self.timeout_seconds))))
+            while process.poll() is None:
+                now = time.monotonic()
+                if _cancel_requested():
+                    failure_reason = "cancelled"
+                    _lifecycle("abort_requested", reason="cancelled")
+                    break
+                if stdin_errors:
+                    failure_reason = "stdin_failed"
+                    failure_detail = stdin_errors[-1]
+                    _lifecycle("abort_requested", reason="stdin_failed")
+                    break
+                if not stdin_done.is_set() and now >= stdin_deadline:
+                    failure_reason = "stdin_failed"
+                    failure_detail = "stdin write exceeded its bounded deadline"
+                    _lifecycle("abort_requested", reason="stdin_failed")
+                    break
+                if now >= hard_deadline:
+                    timed_out = True
+                    timeout_kind = "hard_deadline"
+                    failure_reason = "hard_timeout"
+                    _lifecycle("abort_requested", reason="hard_timeout")
+                    break
+                # ``last_progress_monotonic`` is refreshed from the reader
+                # threads only when a chunk arrives.  The optional watchdog is
+                # disabled by default (no_progress_seconds == 0).
+                if self.no_progress_seconds and now - last_progress_monotonic >= self.no_progress_seconds:
+                    timed_out = True
+                    timeout_kind = "no_progress_watchdog"
+                    failure_reason = "hard_timeout"
+                    _lifecycle("abort_requested", reason="no_progress_watchdog")
+                    break
+                time.sleep(0.05)
+
+            _record_process_exited()
+            if process.poll() is None and failure_reason in {"cancelled", "stdin_failed", "hard_timeout"}:
+                if failure_reason == "hard_timeout":
+                    timed_out = True
+                termination_evidence = _terminate_process_tree(
+                    process,
+                    process_group_id=process_group_id,
+                    root_creation_time=process_creation_time,
+                )
+                cleanup_confirmed = bool(termination_evidence.get("confirmed"))
+            if process.poll() is None:
+                try:
+                    process.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    failure_reason = failure_reason or "cleanup_unconfirmed"
+                    termination_evidence = _terminate_process_tree(
+                        process,
+                        process_group_id=process_group_id,
+                        root_creation_time=process_creation_time,
+                    )
+                    cleanup_confirmed = bool(termination_evidence.get("confirmed"))
+            _record_process_exited()
         except (OSError, ValueError) as exc:
-            failure_reason = f"process_start_failed: {exc}"
-            cleanup_confirmed = process is None or process.poll() is not None
+            failure_reason = "start_failed" if process is None else (failure_reason or "process_failed")
+            failure_detail = f"{type(exc).__name__}: {exc}"
+            _lifecycle("process_error", error=failure_detail)
+            if process is not None and process.poll() is None:
+                termination_evidence = _terminate_process_tree(
+                    process,
+                    process_group_id=process_group_id,
+                    root_creation_time=process_creation_time,
+                )
+                cleanup_confirmed = bool(termination_evidence.get("confirmed"))
+            _record_process_exited()
         finally:
+            if process is not None and process.poll() is None:
+                # Any unexpected exception must still leave an explicit abort
+                # and a bounded tree cleanup attempt before capture finalizes.
+                failure_reason = failure_reason or "cleanup_unconfirmed"
+                termination_evidence = _terminate_process_tree(
+                    process,
+                    process_group_id=process_group_id,
+                    root_creation_time=process_creation_time,
+                )
+                cleanup_confirmed = bool(termination_evidence.get("confirmed"))
+                _record_process_exited()
+            stdout, stderr, reader_drain_confirmed = _drain_and_finalize()
+            exit_code = process.returncode if process is not None else None
+            if process is not None and process.poll() is not None:
+                group_state = _process_group_alive(process_group_id)
+                normal_tree_clear = process_group_id is None or group_state is False or os.name == "nt"
+                if not termination_evidence:
+                    cleanup_confirmed = bool(process.poll() is not None and normal_tree_clear)
+                cleanup_confirmed = bool(cleanup_confirmed and reader_drain_confirmed and not stdin_errors)
+            else:
+                cleanup_confirmed = False
+            _lifecycle("cleanup_finished", readers_drained=reader_drain_confirmed, tree_confirmed=cleanup_confirmed)
             finished_at = _now()
             _write_bytes(events_path, stdout)
             _write_bytes(stderr_path, stderr)
@@ -340,11 +720,13 @@ class LocalCodexBackend:
         output_text = output_bytes.decode("utf-8", errors="replace") if output_bytes else ""
         if failure_reason is None:
             if timed_out:
-                failure_reason = "timeout"
+                failure_reason = "hard_timeout"
+            elif exit_code is None:
+                failure_reason = "start_failed"
             elif exit_code != 0:
-                failure_reason = f"codex_exit_{exit_code}"
-            elif parse_errors:
-                failure_reason = "invalid_jsonl_events"
+                failure_reason = "nonzero_exit"
+            elif parse_errors or reader_errors:
+                failure_reason = "parse_failed"
             elif len(thread_ids) != 1:
                 failure_reason = "thread_identity_not_unique"
             elif any(event.get("type") == "error" for event in events):
@@ -358,7 +740,18 @@ class LocalCodexBackend:
             elif not output_bytes.strip():
                 failure_reason = "output_missing_or_empty"
             elif not cleanup_confirmed:
-                failure_reason = "process_cleanup_unconfirmed"
+                failure_reason = "cleanup_unconfirmed"
+        terminal_observed = (turn_completed[-1] if turn_completed else None) or (turn_failed[-1] if turn_failed else None)
+        if terminal_observed is not None:
+            _lifecycle(
+                "terminal_event",
+                event_type=_event_type(terminal_observed),
+                line=terminal_observed.get("_line_index"),
+            )
+        if failure_reason == "stdin_failed" and failure_detail is None and stdin_errors:
+            failure_detail = stdin_errors[-1]
+        if failure_reason == "hard_timeout" and timeout_kind is None:
+            timeout_kind = "hard_deadline"
         completed = failure_reason is None
         terminal_status = "completed" if completed else ("unavailable" if failure_reason and "unavailable" in failure_reason else "failed")
         thread_id = thread_ids[0] if len(thread_ids) == 1 else ""
@@ -366,6 +759,44 @@ class LocalCodexBackend:
         # resolver can compare it without trusting a prefix or alias.
         context_id = thread_id if thread_id else f"context:unverified:{_safe_name(run_id)}"
         terminal_event = turn_completed[-1] if turn_completed else None
+        process_identity = {
+            "pid": process.pid if process is not None else None,
+            "creation_time": process_creation_time,
+            "owned_by_backend": process is not None,
+        }
+        if not termination_evidence:
+            termination_evidence = {
+                "root_pid": process.pid if process is not None else None,
+                "root_creation_time": process_creation_time,
+                "process_group_id": process_group_id,
+                "termination_requested_at": None,
+                "termination_method": "natural_exit" if process is not None else "not_started",
+                "taskkill_returncode": None,
+                "root_exited": bool(process is not None and process.poll() is not None),
+                "process_group_alive_before": None,
+                "process_group_alive_after": _process_group_alive(process_group_id),
+                "descendants_observed": False,
+                "descendant_pids": [],
+                "descendants_remaining": False if process is not None and cleanup_confirmed else None,
+                "confirmed": cleanup_confirmed,
+                "error": None,
+                "cleanup_finished_at": cleanup_finished_at,
+            }
+        lifecycle = {
+            "reader_started": bool(reader_started),
+            "first_output": first_output_at is not None,
+            "first_output_at": first_output_at,
+            "terminal_event": terminal_event is not None or bool(turn_failed),
+            "terminal_event_type": "turn.completed" if terminal_event else ("turn.failed" if turn_failed else None),
+            "process_exited": bool(process_exited_recorded),
+            "process_exited_at": process_exited_at,
+            "cleanup_finished": cleanup_finished_at is not None,
+            "cleanup_finished_at": cleanup_finished_at,
+            "reader_drain_confirmed": reader_drain_confirmed,
+            "stdin_finished": stdin_done.is_set() and not (stdin_writer and stdin_writer.is_alive()),
+            "stdin_sent": any(item.get("event") == "stdin_sent" for item in lifecycle_events),
+            "last_output_at": dict(last_output_at),
+        }
         completion = {
             "schema_version": "logic-writing.local-execution-completion.v1",
             "role": role,
@@ -381,10 +812,14 @@ class LocalCodexBackend:
             "model_id": self.model_id,
             "settings_fingerprint": settings_fingerprint,
             "process_id": process.pid if process is not None else None,
+            "process_creation_time": process_creation_time,
+            "process_identity": process_identity,
+            "process_group_id": process_group_id,
             "thread_id": thread_id or None,
             "context_id": context_id,
             "started_at": started_at,
             "finished_at": finished_at,
+            "last_output_at": dict(last_output_at),
             "exit_code": exit_code,
             "timed_out": timed_out,
             "descendant_cleanup_confirmed": cleanup_confirmed,
@@ -407,9 +842,14 @@ class LocalCodexBackend:
             "cost_actual": None,
             "terminal_status": terminal_status,
             "failure_reason": failure_reason,
+            "failure_detail": failure_detail,
+            "timeout_kind": timeout_kind,
+            "lifecycle": lifecycle,
+            "lifecycle_events": lifecycle_events,
+            "cleanup_evidence": termination_evidence,
         }
         completion["completion_fingerprint"] = fingerprint(completion)
-        _write_json(completion_path, completion)
+        _write_json_atomic(completion_path, completion)
         result: dict[str, Any] = {
             "backend_id": self.backend_id,
             "run_id": run_id,
@@ -447,7 +887,10 @@ class LocalCodexBackend:
             "cli_executable": str(self.executable),
             "cli_executable_fingerprint": _sha256_bytes(self.executable.read_bytes()),
             "cli_version": self.cli_version,
-            "process_id": process.pid if process is not None else 1,
+            "process_id": process.pid if process is not None else None,
+            "process_creation_time": process_creation_time,
+            "process_identity": process_identity,
+            "process_group_id": process_group_id,
             "thread_id": thread_id or context_id,
             "exit_code": exit_code if exit_code is not None else 1,
             "timed_out": timed_out,
@@ -457,6 +900,12 @@ class LocalCodexBackend:
             "tool_event_count": len(tools),
             "usage": completion["usage"],
             "cost_actual": None,
+            "failure_reason": failure_reason,
+            "failure_detail": failure_detail,
+            "timeout_kind": timeout_kind,
+            "lifecycle": lifecycle,
+            "lifecycle_events": lifecycle_events,
+            "cleanup_evidence": termination_evidence,
         }
         if completed:
             result["output_fingerprint"] = _sha256_bytes(output_bytes)

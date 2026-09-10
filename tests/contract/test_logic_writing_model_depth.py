@@ -241,3 +241,78 @@ def test_model_depth_source_bindings_use_canonical_text_identity(checker, tmp_pa
     # native receipt envelopes continue to protect their exact artifact bytes.
     assert checker._source_sha(crlf) == checker._source_sha(lf)
     assert checker._sha(crlf) != checker._sha(lf)
+
+
+def test_project_root_contract_declares_the_exact_logic_writing_mesh(checker):
+    contract = checker.load_logic_writing_model_root_contract(
+        ROOT,
+        expected_model_ids=checker.EXPECTED_MODEL_IDS,
+    )
+    assert contract.system_id == "logic-writing"
+    assert contract.root_model_id == "logic_writing_models"
+    assert contract.expected_model_ids == checker.EXPECTED_MODEL_IDS
+    assert len(contract.claim_boundary) >= 40
+
+
+def test_project_root_contract_rejects_a_foreign_root(checker, tmp_path):
+    contract_path = tmp_path / checker.ROOT_CONTRACT_RELATIVE_PATH
+    contract_path.parent.mkdir(parents=True)
+    value = json.loads(
+        (ROOT / checker.ROOT_CONTRACT_RELATIVE_PATH).read_text(encoding="utf-8")
+    )
+    value["root_model_id"] = "academic_route_model"
+    contract_path.write_text(
+        json.dumps(value, sort_keys=True, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="root_model_id must be logic_writing_models"):
+        checker.load_logic_writing_model_root_contract(
+            tmp_path,
+            expected_model_ids=checker.EXPECTED_MODEL_IDS,
+        )
+
+
+def test_native_project_root_builder_selects_logic_writing_models(checker):
+    snapshot = checker.build_logic_writing_model_snapshot(
+        ROOT,
+        snapshot_id="logic-writing-root-contract-test",
+    )
+    roots = {
+        item.logical_model_id
+        for item in snapshot.model_instances
+        if item.fingerprint in set(snapshot.root_instance_fingerprints)
+    }
+    assert roots == {"logic_writing_models"}
+
+
+def test_native_project_root_adapter_does_not_recurse(checker):
+    """The authority adapter may patch FlowGuard imports without self-calling."""
+
+    authority_path = ROOT / "scripts" / "author" / "logic_writing_model_authority.py"
+    spec = importlib.util.spec_from_file_location(
+        "logic_writing_model_authority_under_test", authority_path
+    )
+    assert spec is not None and spec.loader is not None
+    authority = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(authority)
+
+    import flowguard.model_system_inventory as inventory
+    from logic_writing_model_root import (
+        _GENERIC_BUILD_MANIFEST_MODEL_SYSTEM_SNAPSHOT,
+    )
+
+    assert inventory.build_manifest_model_system_snapshot is _GENERIC_BUILD_MANIFEST_MODEL_SYSTEM_SNAPSHOT
+    with authority.logic_writing_root_builder():
+        assert inventory.build_manifest_model_system_snapshot is authority.build_logic_writing_model_snapshot
+        snapshot = authority.build_logic_writing_model_snapshot(
+            ROOT,
+            snapshot_id="logic-writing-root-adapter-test",
+        )
+
+    roots = {
+        item.logical_model_id
+        for item in snapshot.model_instances
+        if item.fingerprint in set(snapshot.root_instance_fingerprints)
+    }
+    assert roots == {"logic_writing_models"}
+    assert inventory.build_manifest_model_system_snapshot is _GENERIC_BUILD_MANIFEST_MODEL_SYSTEM_SNAPSHOT

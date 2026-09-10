@@ -4,6 +4,7 @@ import copy
 import importlib.util
 import json
 import sys
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -56,6 +57,23 @@ def test_quality_batch_deadline_scales_to_concurrency_waves():
     assert benchmark._orchestration_timeout(
         {**plan, "orchestration_timeout_seconds": 120}, 48
     ) == 120
+
+
+def test_parallel_quality_jobs_close_startup_without_any_result():
+    benchmark = _load("run_writing_quality_benchmark")
+    executor = ThreadPoolExecutor(max_workers=1)
+    release = threading.Event()
+    try:
+        rows = benchmark._parallel_jobs(
+            executor, [{"case": {"case_id": "A01"}}],
+            lambda _job: release.wait(10), timeout_seconds=10,
+            startup_timeout_seconds=1, role="writer",
+        )
+    finally:
+        release.set()
+        executor.shutdown(wait=False, cancel_futures=True)
+    assert rows[0]["error_event"]["error_class"] == "StartupDispatchTimeout"
+    assert rows[0]["error_event"]["terminal"] is True
 
 
 def test_reader_acceptance_owner_requires_explicit_aggregate_only_for_existing_captures():

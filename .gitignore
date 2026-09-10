@@ -31,6 +31,7 @@ Thumbs.db
 .vscode/
 work/
 scratch/
+tmp-*/
 docs/coordination.md
 
 # Private or recovery material must remain outside the public repository.

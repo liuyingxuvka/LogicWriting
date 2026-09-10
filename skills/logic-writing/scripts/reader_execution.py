@@ -13,6 +13,9 @@ from typing import Any
 from _common import ValidationError, fingerprint, require_mapping, require_schema
 
 
+_TERMINAL_STATUSES = frozenset({"completed", "failed", "unavailable"})
+
+
 def _request(request: Mapping[str, Any], role: str) -> dict[str, Any]:
     value = dict(require_mapping(request, f"{role} request"))
     forbidden = {"terminal_status", "finished_at", "output_fingerprint", "provider_completion_ref", "record_fingerprint", "judge_output", "completed", "status"}
@@ -47,6 +50,11 @@ def _record_from_result(request: Mapping[str, Any], result: Mapping[str, Any], *
     missing = [key for key in required if not isinstance(result.get(key), str) or not result[key]]
     if missing:
         raise ValidationError(f"execution backend completion is missing {missing}")
+    terminal_status = result.get("terminal_status")
+    if not isinstance(terminal_status, str) or terminal_status not in _TERMINAL_STATUSES:
+        if terminal_status is None:
+            raise ValidationError("execution backend completion requires terminal_status")
+        raise ValidationError(f"execution backend completion has unknown terminal_status: {terminal_status!r}")
     evaluation_mode = request.get("evaluation_mode", "single")
     pair_inputs = list(request.get("pair_inputs", []))
     input_artifact = request.get("artifact_fingerprint")
@@ -70,7 +78,7 @@ def _record_from_result(request: Mapping[str, Any], result: Mapping[str, Any], *
         "input_reader_intent_fingerprint": request["reader_intent_fingerprint"], "input_writer_input_fingerprint": request["writer_input_fingerprint"],
         "input_artifact_fingerprint": input_artifact, "rubric_fingerprint": request.get("rubric_fingerprint"), "model_id": result["model_id"],
         "settings_fingerprint": request.get("settings_fingerprint") or fingerprint(request.get("settings", {})), "started_at": result["started_at"], "finished_at": result.get("finished_at"),
-        "terminal_status": result.get("terminal_status", "completed"), "output_fingerprint": output_fp, "provider_completion_ref": result["provider_completion_ref"],
+        "terminal_status": terminal_status, "output_fingerprint": output_fp, "provider_completion_ref": result["provider_completion_ref"],
         "independence_status": "not_applicable" if role == "writer" else judge_independence,
         "evaluation_mode": evaluation_mode, "pair_inputs": pair_inputs,
         "pair_input_fingerprint": fingerprint({"reader_intent_fingerprint": request["reader_intent_fingerprint"], "rubric_fingerprint": request.get("rubric_fingerprint"), "pair_inputs": pair_inputs}) if evaluation_mode == "pair" else None,
@@ -137,6 +145,8 @@ def validate_execution_record(record: Mapping[str, Any], resolver: Callable[[Map
             expected_pair = fingerprint({"reader_intent_fingerprint": value["input_reader_intent_fingerprint"], "rubric_fingerprint": value["rubric_fingerprint"], "pair_inputs": value["pair_inputs"]})
             if value["pair_input_fingerprint"] != expected_pair:
                 raise ValidationError("pair input fingerprint does not bind the current ordered pair")
+        if value["evaluation_mode"] == "single" and value["pair_inputs"]:
+            raise ValidationError("single judge record cannot bind pair inputs")
         if value["terminal_status"] == "completed":
             if callable(resolver):
                 verified = resolver(value)
@@ -150,6 +160,12 @@ def validate_execution_record(record: Mapping[str, Any], resolver: Callable[[Map
                 contexts = set(verified.get("writer_context_ids", []))
                 if value["context_id"] in contexts:
                     raise ValidationError("judge context must differ from every writer context")
+            if value["evaluation_mode"] == "single" and value["independence_status"] == "verified":
+                contexts = list(value.get("writer_context_ids", []))
+                if len(contexts) != 1 or not isinstance(contexts[0], str):
+                    raise ValidationError("single judge must bind one writer context")
+                if value["context_id"] == contexts[0]:
+                    raise ValidationError("single judge context must differ from its writer context")
     return value
 
 

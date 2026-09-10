@@ -73,6 +73,10 @@
   "assets/schemas/investigation-composition.schema.json": [
     "investigation-evidence"
   ],
+  "assets/schemas/local-single-judgment.schema.json": [
+    "reader-actual-artifact",
+    "shared-writing"
+  ],
   "assets/schemas/obligation-manifest.schema.json": [
     "reader-actual-artifact",
     "shared-writing"
@@ -1001,6 +1005,14 @@
   "scripts/local_execution_backend.py": [
     "final-closure",
     "reader-actual-artifact"
+  ],
+  "scripts/production_reader_pipeline.py": [
+    "routing",
+    "specialist-authority",
+    "investigation-evidence",
+    "reader-actual-artifact",
+    "shared-writing",
+    "final-closure"
   ],
   "scripts/reader_pipeline.py": [
     "academic-provenance",

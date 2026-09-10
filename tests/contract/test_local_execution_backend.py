@@ -40,6 +40,28 @@ def test_dispatch_propagates_failed_terminal_status():
     assert dispatched["record"]["terminal_status"] == "failed"
 
 
+@pytest.mark.parametrize("terminal_status", [None, "finished"])
+def test_record_from_result_requires_an_explicit_known_terminal_status(terminal_status):
+    request = {
+        "reader_intent_fingerprint": FP_A,
+        "writer_input_fingerprint": FP_B,
+    }
+    result = {
+        "run_id": "writer:missing-terminal",
+        "context_id": "context:missing-terminal",
+        "parent_orchestrator_run_id": "orchestrator:test",
+        "model_id": "test-model",
+        "started_at": "2026-09-08T00:00:00Z",
+        "finished_at": "2026-09-08T00:00:01Z",
+        "provider_completion_ref": "local-test:missing-terminal",
+        "output": "done",
+    }
+    if terminal_status is not None:
+        result["terminal_status"] = terminal_status
+    with pytest.raises(ValidationError, match="terminal_status"):
+        _record_from_result(request, result, role="writer", backend_id="local-test")
+
+
 def test_failed_judge_preserves_unverified_independence_status():
     request = {
         "reader_intent_fingerprint": FP_A,

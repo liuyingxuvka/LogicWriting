@@ -25,7 +25,7 @@ LogicGuard-native receipt.
 
 The artifact-synthesis handoff has one current typed bridge:
 `researchguard.logic.synthesis-plan.v1` →
-`researchguard-logic-handoff.schema.json` → `ReaderBrief.writer_input`.
+`assets/schemas/researchguard-logic-handoff.schema.json` → `ReaderBrief.writer_input`.
 `scripts/researchguard_handoff.py` verifies the native model/request identity,
 body-unit order, predecessor order, argument closure, and candidate
 dispositions before it emits the reader projection. The bridge preserves
@@ -34,3 +34,7 @@ dispositions before it emits the reader projection. The bridge preserves
 locators. It does not turn a native handoff into a quality or final-closure
 pass; `blocked_support_gap`, `blocked_budget`, `blocked_invalid_request`,
 stale identity, or missing provider evidence remain non-passing.
+The parent hierarchy is closed before this bridge is emitted: parent links and
+predecessor links must resolve to known units and contain no cycles. The
+consumer binding must also cover every current planned unit, so a mapping that
+mentions every native unit but leaves a reader unit unreachable is rejected.

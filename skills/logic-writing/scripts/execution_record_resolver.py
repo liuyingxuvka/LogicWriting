@@ -203,12 +203,27 @@ class LocalExecutionRecordResolver:
             if value.get("independence_status") != "verified":
                 raise ValidationError("judge record is not marked verified")
             pair_contexts = [row.get("writer_context_id") for row in value.get("pair_inputs", [])]
-            if len(pair_contexts) != 2 or any(not isinstance(item, str) for item in pair_contexts):
-                raise ValidationError("judge record does not bind two writer contexts")
-            if set(writer_context_ids) != set(pair_contexts):
-                raise ValidationError("judge capture writer contexts do not match the ordered pair")
-            if value.get("context_id") in set(pair_contexts):
-                raise ValidationError("judge context must differ from both writer contexts")
+            if value.get("evaluation_mode") == "pair":
+                if len(pair_contexts) != 2 or any(not isinstance(item, str) for item in pair_contexts):
+                    raise ValidationError("judge record does not bind two writer contexts")
+                if set(writer_context_ids) != set(pair_contexts):
+                    raise ValidationError("judge capture writer contexts do not match the ordered pair")
+                if value.get("context_id") in set(pair_contexts):
+                    raise ValidationError("judge context must differ from both writer contexts")
+            elif value.get("evaluation_mode") == "single":
+                # A holdout judge has one real article input.  The backend
+                # binds its writer context explicitly while this resolver
+                # proves that the judge received a separate context.  Treating
+                # a single article as an artificial X/Y pair would erase that
+                # distinction and make the holdout result non-auditable.
+                if value.get("pair_inputs"):
+                    raise ValidationError("single judge record cannot contain pair inputs")
+                if len(writer_context_ids) != 1 or not isinstance(writer_context_ids[0], str):
+                    raise ValidationError("single judge record does not bind one writer context")
+                if value.get("context_id") == writer_context_ids[0]:
+                    raise ValidationError("single judge context must differ from its writer context")
+            else:
+                raise ValidationError("judge record has an unsupported evaluation mode")
         return {
             "verified": True,
             "role": value["role"],

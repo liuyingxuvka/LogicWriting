@@ -75,3 +75,35 @@ success domain.
 #### Scenario: Same context is used for writer and judge
 - **WHEN** writer and judge records have different labels but the same execution context
 - **THEN** independence SHALL be unverified and closure SHALL remain blocked
+
+### Requirement: Reader-spine projection is the writer's primary structure
+
+The production writer input SHALL be compiled from the current
+`CompositionPlan` and `ReaderBrief` into a minimal, ordered reader-spine. The
+projection SHALL include the root reader question and conclusion, major units,
+each unit's predecessor or forward relation, necessary evidence anchors,
+editorial support/merge/omit dispositions, and conclusion-sensitive
+limitations. Raw model ledgers, model ids, execution status, complete gap
+inventories, private receipts, and duplicate evidence SHALL remain in the
+internal evidence record and SHALL NOT be passed as an equivalent parallel
+writer structure.
+
+#### Scenario: Card-level ledger is passed directly to the writer
+- **WHEN** the production prompt contains the complete card-level WriterInput
+  alongside the reader-spine
+- **THEN** the production projection SHALL be rejected as non-minimal
+- **AND** the run SHALL remain blocked until the writer receives only the
+  controlled spine plus permitted reader material
+
+#### Scenario: One finding is promoted to one paragraph
+- **WHEN** multiple findings support one reader unit and do not create separate
+  reader work
+- **THEN** the projection SHALL require a support, merge, or omit disposition
+- **AND** composition validation SHALL reject an implicit one-finding-one-
+  paragraph expansion
+
+#### Scenario: Material limitation is retained without disclaimer repetition
+- **WHEN** a limitation changes claim strength, scope, action, or conclusion
+- **THEN** it SHALL remain attached to the affected spine unit
+- **AND** process-only limitations without a reader duty SHALL be consolidated
+  in the internal disposition record rather than repeated in body prose

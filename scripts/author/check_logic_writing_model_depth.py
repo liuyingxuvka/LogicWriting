@@ -14,35 +14,24 @@ from pathlib import Path
 import sys
 from typing import Any, Mapping
 
+_AUTHOR_ROOT = Path(__file__).resolve().parent
+if str(_AUTHOR_ROOT) not in sys.path:
+    sys.path.insert(0, str(_AUTHOR_ROOT))
+
+from logic_writing_model_root import (  # noqa: E402
+    LOGIC_WRITING_MODEL_IDS,
+    ROOT_CONTRACT_RELATIVE_PATH,
+    LogicWritingModelRootContract,
+    build_logic_writing_model_snapshot,
+    load_logic_writing_model_root_contract,
+)
+
 
 SCHEMA_VERSION = "logic-writing.model-depth-check.v1"
 EXPECTED_SYSTEM_ID = "logic-writing"
 EXPECTED_OBLIGATION = "obligation:logic-writing:model-depth"
 EXPECTED_DIMENSIONS = ("input", "state", "output", "effect", "order", "completion")
-EXPECTED_MODEL_IDS = (
-    "academic_route_model",
-    "artifact_audit",
-    "behavior_commitment_ledger",
-    "composition_graph",
-    "development_process_flow",
-    "editorial_disposition",
-    "execution_binding",
-    "fiction_route_model",
-    "investigation_route_model",
-    "logic_writing_models",
-    "model_test_alignment",
-    "operation_freshness_closure_model",
-    "plan_detailing",
-    "primary_path_authority",
-    "reader_artifact_model",
-    "release_retirement_model",
-    "research_packet_model",
-    "researchguard_handoff",
-    "route_and_guard_model",
-    "test_mesh",
-    "travel_route_model",
-    "writer_projection",
-)
+EXPECTED_MODEL_IDS = LOGIC_WRITING_MODEL_IDS
 
 
 def _sha(path: Path) -> str:
@@ -129,7 +118,9 @@ def _source_inventory(root: Path, mesh: Any, checker_path: Path, findings: list[
     for path in (
         checker_path,
         root / "scripts" / "author" / "skillguard_contract_model.py",
+        root / "scripts" / "author" / "logic_writing_model_root.py",
         root / "skills" / "logic-writing" / ".skillguard" / "contract-source.json",
+        root / ROOT_CONTRACT_RELATIVE_PATH,
     ):
         relative = _relative(path, root)
         if not path.is_file() or path.is_symlink():
@@ -138,6 +129,24 @@ def _source_inventory(root: Path, mesh: Any, checker_path: Path, findings: list[
         else:
             inventory[relative] = _source_sha(path)
     return inventory
+
+
+def _root_contract(
+    root: Path,
+    findings: list[dict[str, str]],
+) -> LogicWritingModelRootContract | None:
+    try:
+        return load_logic_writing_model_root_contract(
+            root,
+            expected_model_ids=EXPECTED_MODEL_IDS,
+        )
+    except Exception as exc:
+        _finding(
+            findings,
+            "model_root_contract_invalid",
+            f"{type(exc).__name__}: {exc}",
+        )
+        return None
 
 
 def _authority(root: Path, findings: list[dict[str, str]]) -> tuple[Any, str, str]:
@@ -185,7 +194,13 @@ def _authority(root: Path, findings: list[dict[str, str]]) -> tuple[Any, str, st
     return state, revision_id, head_fp
 
 
-def _snapshot(root: Path, mesh: Any, state: Any, findings: list[dict[str, str]]) -> None:
+def _snapshot(
+    root: Path,
+    mesh: Any,
+    state: Any,
+    root_contract: LogicWritingModelRootContract | None,
+    findings: list[dict[str, str]],
+) -> None:
     if state is None:
         return
     snapshot = state.snapshot
@@ -194,8 +209,15 @@ def _snapshot(root: Path, mesh: Any, state: Any, findings: list[dict[str, str]])
     by_id = {_model_id(item.logical_model_id): item for item in instances}
     if set(by_id) != expected:
         _finding(findings, "current_model_topology_mismatch", {"missing": sorted(expected - set(by_id)), "unexpected": sorted(set(by_id) - expected)})
-    root_instance = by_id.get("logic_writing_models")
-    if root_instance is None or root_instance.fingerprint not in set(snapshot.root_instance_fingerprints):
+    root_model_id = (
+        root_contract.root_model_id
+        if root_contract is not None
+        else "logic_writing_models"
+    )
+    root_instance = by_id.get(root_model_id)
+    if root_instance is None or set(snapshot.root_instance_fingerprints) != {
+        root_instance.fingerprint
+    }:
         _finding(findings, "current_model_root_missing")
     for model_id in EXPECTED_MODEL_IDS:
         instance = by_id.get(model_id)
@@ -446,8 +468,9 @@ def run_check(root: Path) -> dict[str, Any]:
     if actual_ids != set(EXPECTED_MODEL_IDS):
         _finding(findings, "current_model_topology_mismatch", {"missing": sorted(set(EXPECTED_MODEL_IDS) - actual_ids), "unexpected": sorted(actual_ids - set(EXPECTED_MODEL_IDS))})
     inventory = _source_inventory(root, mesh, checker_path, findings)
+    root_contract = _root_contract(root, findings)
     state, revision_id, authority_head = _authority(root, findings)
-    _snapshot(root, mesh, state, findings)
+    _snapshot(root, mesh, state, root_contract, findings)
     payloads: dict[str, Mapping[str, Any]] = {}
     consumed: list[dict[str, str]] = []
     receipt_root = root / ".flowguard" / "evidence" / "model-mesh" / "current"
@@ -496,6 +519,17 @@ def run_check(root: Path) -> dict[str, Any]:
         "model_revision_set_id": revision_id,
         "checked_model_ids": list(EXPECTED_MODEL_IDS),
         "consumed_receipt_refs": sorted(consumed, key=lambda row: row["model_id"]),
+        "root_contract_fingerprint": (
+            _fingerprint(root_contract.fingerprint_payload)
+            if root_contract is not None
+            else ""
+        ),
+        "root_contract_path": str(ROOT_CONTRACT_RELATIVE_PATH).replace("\\", "/"),
+        "root_model_id": (
+            root_contract.root_model_id
+            if root_contract is not None
+            else "logic_writing_models"
+        ),
         "findings": findings,
         "status": "pass" if not findings else "blocked",
     }

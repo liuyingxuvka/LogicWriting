@@ -53,4 +53,4 @@ def test_current_reader_contracts_reject_unknown_fields(v2_examples, name):
 
 
 def test_schema_inventory_has_no_unregistered_files():
-    assert len(SUPPORTED_SCHEMA_NAMES) == 29
+    assert len(SUPPORTED_SCHEMA_NAMES) == 30

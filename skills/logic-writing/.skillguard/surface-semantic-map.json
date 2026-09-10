@@ -2,7 +2,7 @@
   "schema_version": "skillguard.surface_semantic_map.v1",
   "map_id": "map:logic-writing:surface-semantics",
   "target_skill_id": "logic-writing",
-  "source_discovery_fingerprint": "sha256:3be4491ba08ac75331d694ab4f2a14b094470d8959123a887b725757b10847cb",
+  "source_discovery_fingerprint": "sha256:a26a322a262286d70c60662dc84a1bbbba18a6b4fc3d945aa77eeed36362dab3",
   "full_surface_ids": [
     "api:routes/academic/scripts/validate_academic_artifact.py:validate_academic_artifact",
     "api:routes/fiction/guard-model/verify.py:GuardModelContractError",
@@ -411,6 +411,13 @@
     "api:scripts/derive_closure.py:main",
     "api:scripts/execution_record_resolver.py:LocalExecutionRecordResolver",
     "api:scripts/local_execution_backend.py:LocalCodexBackend",
+    "api:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+    "api:scripts/production_reader_pipeline.py:ProductionPipelineBlocked",
+    "api:scripts/production_reader_pipeline.py:build_reader_spine",
+    "api:scripts/production_reader_pipeline.py:diagnose_reader_output",
+    "api:scripts/production_reader_pipeline.py:prepare_production_reader_input",
+    "api:scripts/production_reader_pipeline.py:render_reader_spine_prompt",
+    "api:scripts/production_reader_pipeline.py:validate_reader_spine",
     "api:scripts/propagate_staleness.py:propagate_staleness",
     "api:scripts/provider_preflight.py:main",
     "api:scripts/provider_preflight.py:preflight",
@@ -646,6 +653,7 @@
     "component:scripts/derive_closure.py",
     "component:scripts/execution_record_resolver.py",
     "component:scripts/local_execution_backend.py",
+    "component:scripts/production_reader_pipeline.py",
     "component:scripts/provider_preflight.py",
     "component:scripts/reader_execution.py",
     "component:scripts/reader_pipeline.py",
@@ -671,6 +679,7 @@
     "config:assets/schemas/evidence-receipt.schema.json",
     "config:assets/schemas/fiction-composition.schema.json",
     "config:assets/schemas/investigation-composition.schema.json",
+    "config:assets/schemas/local-single-judgment.schema.json",
     "config:assets/schemas/obligation-manifest.schema.json",
     "config:assets/schemas/reader-audit.schema.json",
     "config:assets/schemas/reader-brief.schema.json",
@@ -712,6 +721,8 @@
     "effect:scripts/_common.py:dump_json",
     "effect:scripts/_common.py:fingerprint_text",
     "effect:scripts/local_execution_backend.py:LocalCodexBackend",
+    "effect:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+    "effect:scripts/production_reader_pipeline.py:prepare_production_reader_input",
     "effect:scripts/propagate_staleness.py:propagate_staleness",
     "effect:scripts/reader_pipeline.py:utc_now",
     "effect:scripts/receipt_store.py:store_receipt",
@@ -889,6 +900,9 @@
     "fault:scripts/derive_closure.py:derive_closure",
     "fault:scripts/execution_record_resolver.py:LocalExecutionRecordResolver",
     "fault:scripts/local_execution_backend.py:LocalCodexBackend",
+    "fault:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+    "fault:scripts/production_reader_pipeline.py:build_reader_spine",
+    "fault:scripts/production_reader_pipeline.py:diagnose_reader_output",
     "fault:scripts/propagate_staleness.py:propagate_staleness",
     "fault:scripts/reader_execution.py:validate_execution_record",
     "fault:scripts/reader_pipeline.py:build_artifact_map",
@@ -929,11 +943,14 @@
     "fault:scripts/validate_research_packet.py:assemble_research_packet",
     "fault:scripts/validate_research_packet.py:validate_research_packet",
     "fault:scripts/validate_source_registry.py:validate_source_registry",
+    "provider:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+    "provider:scripts/production_reader_pipeline.py:prepare_production_reader_input",
     "provider:scripts/provider_preflight.py:preflight",
     "provider:scripts/schema_validation.py:SchemaRuntimeConfigurationError",
     "provider:scripts/schema_validation.py:validate_schema",
     "provider:scripts/validate_adapter_result.py:validate_adapter_result",
     "recovery:scripts/build_reader_repair.py:validate_request",
+    "recovery:scripts/local_execution_backend.py:LocalCodexBackend",
     "recovery:scripts/reader_pipeline.py:build_repair_request",
     "recovery:scripts/reader_pipeline.py:record_repair_result",
     "recovery:scripts/reader_receipts.py:commit_repair_result_receipt",
@@ -1055,6 +1072,11 @@
     "ui:routes/fiction/scripts/installed_parity_check.py:select_projection",
     "ui:scripts/execution_record_resolver.py:LocalExecutionRecordResolver",
     "ui:scripts/local_execution_backend.py:LocalCodexBackend",
+    "ui:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+    "ui:scripts/production_reader_pipeline.py:build_reader_spine",
+    "ui:scripts/production_reader_pipeline.py:diagnose_reader_output",
+    "ui:scripts/production_reader_pipeline.py:prepare_production_reader_input",
+    "ui:scripts/production_reader_pipeline.py:render_reader_spine_prompt",
     "ui:scripts/reader_pipeline.py:build_writer_input",
     "ui:scripts/review_obligations.py:resolve_review_obligations",
     "ui:scripts/select_route.py:select_route",
@@ -1088,6 +1110,7 @@
         "assets/schemas/route-decision.schema.json",
         "assets/schemas/writing-request.schema.json",
         "references/router.md",
+        "scripts/production_reader_pipeline.py",
         "scripts/reader_pipeline.py",
         "scripts/select_route.py"
       ],
@@ -1125,6 +1148,7 @@
         "references/router.md",
         "references/shared/research-packet.md",
         "scripts/build_source_unit_manifest.py",
+        "scripts/production_reader_pipeline.py",
         "scripts/provider_preflight.py",
         "scripts/researchguard_handoff.py",
         "scripts/select_route.py",
@@ -1154,6 +1178,7 @@
         "references/shared/research-packet.md",
         "routes/investigation/scripts/validate_investigation_artifact.py",
         "scripts/build_source_unit_manifest.py",
+        "scripts/production_reader_pipeline.py",
         "scripts/reader_pipeline.py",
         "scripts/validate_claim_support.py",
         "scripts/validate_research_packet.py",
@@ -1462,6 +1487,7 @@
         ".skillguard/evidence-specs/semantic.json",
         "assets/schemas/artifact-map.schema.json",
         "assets/schemas/composition-plan.schema.json",
+        "assets/schemas/local-single-judgment.schema.json",
         "assets/schemas/obligation-manifest.schema.json",
         "assets/schemas/reader-audit.schema.json",
         "assets/schemas/reader-brief.schema.json",
@@ -1481,6 +1507,7 @@
         "scripts/build_reader_brief.py",
         "scripts/build_reader_brief_receipt.py",
         "scripts/build_reader_repair.py",
+        "scripts/production_reader_pipeline.py",
         "scripts/reader_pipeline.py",
         "scripts/record_reader_repair.py",
         "scripts/review_obligations.py",
@@ -1503,6 +1530,7 @@
         "assets/schemas/closure.schema.json",
         "assets/schemas/composition-plan.schema.json",
         "assets/schemas/evidence-receipt.schema.json",
+        "assets/schemas/local-single-judgment.schema.json",
         "assets/schemas/obligation-manifest.schema.json",
         "assets/schemas/reader-audit.schema.json",
         "assets/schemas/reader-brief.schema.json",
@@ -1527,6 +1555,7 @@
         "scripts/derive_closure.py",
         "scripts/execution_record_resolver.py",
         "scripts/local_execution_backend.py",
+        "scripts/production_reader_pipeline.py",
         "scripts/propagate_staleness.py",
         "scripts/reader_execution.py",
         "scripts/reader_pipeline.py",
@@ -1558,6 +1587,7 @@
         "scripts/derive_closure.py",
         "scripts/execution_record_resolver.py",
         "scripts/local_execution_backend.py",
+        "scripts/production_reader_pipeline.py",
         "scripts/propagate_staleness.py",
         "scripts/reader_execution.py",
         "scripts/reader_receipts.py",
@@ -5745,6 +5775,146 @@
       "decision": "explicit-author-rule"
     },
     {
+      "surface_id": "api:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+      "model_obligation_ids": [
+        "obligation:logic-writing:final-closure",
+        "obligation:logic-writing:investigation-evidence",
+        "obligation:logic-writing:reader-actual-artifact",
+        "obligation:logic-writing:routing",
+        "obligation:logic-writing:shared-writing",
+        "obligation:logic-writing:specialist-authority"
+      ],
+      "rule_ids": [
+        "decision:logic-writing:final-closure",
+        "decision:logic-writing:investigation-evidence",
+        "decision:logic-writing:reader-actual-artifact",
+        "decision:logic-writing:routing",
+        "decision:logic-writing:shared-writing",
+        "decision:logic-writing:specialist-authority"
+      ],
+      "decision": "explicit-author-rule"
+    },
+    {
+      "surface_id": "api:scripts/production_reader_pipeline.py:ProductionPipelineBlocked",
+      "model_obligation_ids": [
+        "obligation:logic-writing:final-closure",
+        "obligation:logic-writing:investigation-evidence",
+        "obligation:logic-writing:reader-actual-artifact",
+        "obligation:logic-writing:routing",
+        "obligation:logic-writing:shared-writing",
+        "obligation:logic-writing:specialist-authority"
+      ],
+      "rule_ids": [
+        "decision:logic-writing:final-closure",
+        "decision:logic-writing:investigation-evidence",
+        "decision:logic-writing:reader-actual-artifact",
+        "decision:logic-writing:routing",
+        "decision:logic-writing:shared-writing",
+        "decision:logic-writing:specialist-authority"
+      ],
+      "decision": "explicit-author-rule"
+    },
+    {
+      "surface_id": "api:scripts/production_reader_pipeline.py:build_reader_spine",
+      "model_obligation_ids": [
+        "obligation:logic-writing:final-closure",
+        "obligation:logic-writing:investigation-evidence",
+        "obligation:logic-writing:reader-actual-artifact",
+        "obligation:logic-writing:routing",
+        "obligation:logic-writing:shared-writing",
+        "obligation:logic-writing:specialist-authority"
+      ],
+      "rule_ids": [
+        "decision:logic-writing:final-closure",
+        "decision:logic-writing:investigation-evidence",
+        "decision:logic-writing:reader-actual-artifact",
+        "decision:logic-writing:routing",
+        "decision:logic-writing:shared-writing",
+        "decision:logic-writing:specialist-authority"
+      ],
+      "decision": "explicit-author-rule"
+    },
+    {
+      "surface_id": "api:scripts/production_reader_pipeline.py:diagnose_reader_output",
+      "model_obligation_ids": [
+        "obligation:logic-writing:final-closure",
+        "obligation:logic-writing:investigation-evidence",
+        "obligation:logic-writing:reader-actual-artifact",
+        "obligation:logic-writing:routing",
+        "obligation:logic-writing:shared-writing",
+        "obligation:logic-writing:specialist-authority"
+      ],
+      "rule_ids": [
+        "decision:logic-writing:final-closure",
+        "decision:logic-writing:investigation-evidence",
+        "decision:logic-writing:reader-actual-artifact",
+        "decision:logic-writing:routing",
+        "decision:logic-writing:shared-writing",
+        "decision:logic-writing:specialist-authority"
+      ],
+      "decision": "explicit-author-rule"
+    },
+    {
+      "surface_id": "api:scripts/production_reader_pipeline.py:prepare_production_reader_input",
+      "model_obligation_ids": [
+        "obligation:logic-writing:final-closure",
+        "obligation:logic-writing:investigation-evidence",
+        "obligation:logic-writing:reader-actual-artifact",
+        "obligation:logic-writing:routing",
+        "obligation:logic-writing:shared-writing",
+        "obligation:logic-writing:specialist-authority"
+      ],
+      "rule_ids": [
+        "decision:logic-writing:final-closure",
+        "decision:logic-writing:investigation-evidence",
+        "decision:logic-writing:reader-actual-artifact",
+        "decision:logic-writing:routing",
+        "decision:logic-writing:shared-writing",
+        "decision:logic-writing:specialist-authority"
+      ],
+      "decision": "explicit-author-rule"
+    },
+    {
+      "surface_id": "api:scripts/production_reader_pipeline.py:render_reader_spine_prompt",
+      "model_obligation_ids": [
+        "obligation:logic-writing:final-closure",
+        "obligation:logic-writing:investigation-evidence",
+        "obligation:logic-writing:reader-actual-artifact",
+        "obligation:logic-writing:routing",
+        "obligation:logic-writing:shared-writing",
+        "obligation:logic-writing:specialist-authority"
+      ],
+      "rule_ids": [
+        "decision:logic-writing:final-closure",
+        "decision:logic-writing:investigation-evidence",
+        "decision:logic-writing:reader-actual-artifact",
+        "decision:logic-writing:routing",
+        "decision:logic-writing:shared-writing",
+        "decision:logic-writing:specialist-authority"
+      ],
+      "decision": "explicit-author-rule"
+    },
+    {
+      "surface_id": "api:scripts/production_reader_pipeline.py:validate_reader_spine",
+      "model_obligation_ids": [
+        "obligation:logic-writing:final-closure",
+        "obligation:logic-writing:investigation-evidence",
+        "obligation:logic-writing:reader-actual-artifact",
+        "obligation:logic-writing:routing",
+        "obligation:logic-writing:shared-writing",
+        "obligation:logic-writing:specialist-authority"
+      ],
+      "rule_ids": [
+        "decision:logic-writing:final-closure",
+        "decision:logic-writing:investigation-evidence",
+        "decision:logic-writing:reader-actual-artifact",
+        "decision:logic-writing:routing",
+        "decision:logic-writing:shared-writing",
+        "decision:logic-writing:specialist-authority"
+      ],
+      "decision": "explicit-author-rule"
+    },
+    {
       "surface_id": "api:scripts/propagate_staleness.py:propagate_staleness",
       "model_obligation_ids": [
         "obligation:logic-writing:final-closure",
@@ -8393,6 +8563,26 @@
       "decision": "explicit-author-component-group-closure"
     },
     {
+      "surface_id": "component:scripts/production_reader_pipeline.py",
+      "model_obligation_ids": [
+        "obligation:logic-writing:final-closure",
+        "obligation:logic-writing:investigation-evidence",
+        "obligation:logic-writing:reader-actual-artifact",
+        "obligation:logic-writing:routing",
+        "obligation:logic-writing:shared-writing",
+        "obligation:logic-writing:specialist-authority"
+      ],
+      "rule_ids": [
+        "decision:logic-writing:final-closure",
+        "decision:logic-writing:investigation-evidence",
+        "decision:logic-writing:reader-actual-artifact",
+        "decision:logic-writing:routing",
+        "decision:logic-writing:shared-writing",
+        "decision:logic-writing:specialist-authority"
+      ],
+      "decision": "explicit-author-component-group-closure"
+    },
+    {
       "surface_id": "component:scripts/provider_preflight.py",
       "model_obligation_ids": [
         "obligation:logic-writing:specialist-authority"
@@ -8699,6 +8889,18 @@
       ],
       "rule_ids": [
         "decision:logic-writing:investigation-evidence"
+      ],
+      "decision": "explicit-author-rule"
+    },
+    {
+      "surface_id": "config:assets/schemas/local-single-judgment.schema.json",
+      "model_obligation_ids": [
+        "obligation:logic-writing:reader-actual-artifact",
+        "obligation:logic-writing:shared-writing"
+      ],
+      "rule_ids": [
+        "decision:logic-writing:reader-actual-artifact",
+        "decision:logic-writing:shared-writing"
       ],
       "decision": "explicit-author-rule"
     },
@@ -9145,6 +9347,46 @@
       "rule_ids": [
         "decision:logic-writing:final-closure",
         "decision:logic-writing:reader-actual-artifact"
+      ],
+      "decision": "explicit-author-component-group-closure"
+    },
+    {
+      "surface_id": "effect:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+      "model_obligation_ids": [
+        "obligation:logic-writing:final-closure",
+        "obligation:logic-writing:investigation-evidence",
+        "obligation:logic-writing:reader-actual-artifact",
+        "obligation:logic-writing:routing",
+        "obligation:logic-writing:shared-writing",
+        "obligation:logic-writing:specialist-authority"
+      ],
+      "rule_ids": [
+        "decision:logic-writing:final-closure",
+        "decision:logic-writing:investigation-evidence",
+        "decision:logic-writing:reader-actual-artifact",
+        "decision:logic-writing:routing",
+        "decision:logic-writing:shared-writing",
+        "decision:logic-writing:specialist-authority"
+      ],
+      "decision": "explicit-author-component-group-closure"
+    },
+    {
+      "surface_id": "effect:scripts/production_reader_pipeline.py:prepare_production_reader_input",
+      "model_obligation_ids": [
+        "obligation:logic-writing:final-closure",
+        "obligation:logic-writing:investigation-evidence",
+        "obligation:logic-writing:reader-actual-artifact",
+        "obligation:logic-writing:routing",
+        "obligation:logic-writing:shared-writing",
+        "obligation:logic-writing:specialist-authority"
+      ],
+      "rule_ids": [
+        "decision:logic-writing:final-closure",
+        "decision:logic-writing:investigation-evidence",
+        "decision:logic-writing:reader-actual-artifact",
+        "decision:logic-writing:routing",
+        "decision:logic-writing:shared-writing",
+        "decision:logic-writing:specialist-authority"
       ],
       "decision": "explicit-author-component-group-closure"
     },
@@ -10977,6 +11219,66 @@
       "decision": "explicit-author-component-group-closure"
     },
     {
+      "surface_id": "fault:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+      "model_obligation_ids": [
+        "obligation:logic-writing:final-closure",
+        "obligation:logic-writing:investigation-evidence",
+        "obligation:logic-writing:reader-actual-artifact",
+        "obligation:logic-writing:routing",
+        "obligation:logic-writing:shared-writing",
+        "obligation:logic-writing:specialist-authority"
+      ],
+      "rule_ids": [
+        "decision:logic-writing:final-closure",
+        "decision:logic-writing:investigation-evidence",
+        "decision:logic-writing:reader-actual-artifact",
+        "decision:logic-writing:routing",
+        "decision:logic-writing:shared-writing",
+        "decision:logic-writing:specialist-authority"
+      ],
+      "decision": "explicit-author-component-group-closure"
+    },
+    {
+      "surface_id": "fault:scripts/production_reader_pipeline.py:build_reader_spine",
+      "model_obligation_ids": [
+        "obligation:logic-writing:final-closure",
+        "obligation:logic-writing:investigation-evidence",
+        "obligation:logic-writing:reader-actual-artifact",
+        "obligation:logic-writing:routing",
+        "obligation:logic-writing:shared-writing",
+        "obligation:logic-writing:specialist-authority"
+      ],
+      "rule_ids": [
+        "decision:logic-writing:final-closure",
+        "decision:logic-writing:investigation-evidence",
+        "decision:logic-writing:reader-actual-artifact",
+        "decision:logic-writing:routing",
+        "decision:logic-writing:shared-writing",
+        "decision:logic-writing:specialist-authority"
+      ],
+      "decision": "explicit-author-component-group-closure"
+    },
+    {
+      "surface_id": "fault:scripts/production_reader_pipeline.py:diagnose_reader_output",
+      "model_obligation_ids": [
+        "obligation:logic-writing:final-closure",
+        "obligation:logic-writing:investigation-evidence",
+        "obligation:logic-writing:reader-actual-artifact",
+        "obligation:logic-writing:routing",
+        "obligation:logic-writing:shared-writing",
+        "obligation:logic-writing:specialist-authority"
+      ],
+      "rule_ids": [
+        "decision:logic-writing:final-closure",
+        "decision:logic-writing:investigation-evidence",
+        "decision:logic-writing:reader-actual-artifact",
+        "decision:logic-writing:routing",
+        "decision:logic-writing:shared-writing",
+        "decision:logic-writing:specialist-authority"
+      ],
+      "decision": "explicit-author-component-group-closure"
+    },
+    {
       "surface_id": "fault:scripts/propagate_staleness.py:propagate_staleness",
       "model_obligation_ids": [
         "obligation:logic-writing:final-closure",
@@ -11595,6 +11897,46 @@
       "decision": "explicit-author-component-group-closure"
     },
     {
+      "surface_id": "provider:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+      "model_obligation_ids": [
+        "obligation:logic-writing:final-closure",
+        "obligation:logic-writing:investigation-evidence",
+        "obligation:logic-writing:reader-actual-artifact",
+        "obligation:logic-writing:routing",
+        "obligation:logic-writing:shared-writing",
+        "obligation:logic-writing:specialist-authority"
+      ],
+      "rule_ids": [
+        "decision:logic-writing:final-closure",
+        "decision:logic-writing:investigation-evidence",
+        "decision:logic-writing:reader-actual-artifact",
+        "decision:logic-writing:routing",
+        "decision:logic-writing:shared-writing",
+        "decision:logic-writing:specialist-authority"
+      ],
+      "decision": "explicit-author-component-group-closure"
+    },
+    {
+      "surface_id": "provider:scripts/production_reader_pipeline.py:prepare_production_reader_input",
+      "model_obligation_ids": [
+        "obligation:logic-writing:final-closure",
+        "obligation:logic-writing:investigation-evidence",
+        "obligation:logic-writing:reader-actual-artifact",
+        "obligation:logic-writing:routing",
+        "obligation:logic-writing:shared-writing",
+        "obligation:logic-writing:specialist-authority"
+      ],
+      "rule_ids": [
+        "decision:logic-writing:final-closure",
+        "decision:logic-writing:investigation-evidence",
+        "decision:logic-writing:reader-actual-artifact",
+        "decision:logic-writing:routing",
+        "decision:logic-writing:shared-writing",
+        "decision:logic-writing:specialist-authority"
+      ],
+      "decision": "explicit-author-component-group-closure"
+    },
+    {
       "surface_id": "provider:scripts/provider_preflight.py:preflight",
       "model_obligation_ids": [
         "obligation:logic-writing:specialist-authority"
@@ -11647,6 +11989,18 @@
       "rule_ids": [
         "decision:logic-writing:reader-actual-artifact",
         "decision:logic-writing:shared-writing"
+      ],
+      "decision": "explicit-author-component-group-closure"
+    },
+    {
+      "surface_id": "recovery:scripts/local_execution_backend.py:LocalCodexBackend",
+      "model_obligation_ids": [
+        "obligation:logic-writing:final-closure",
+        "obligation:logic-writing:reader-actual-artifact"
+      ],
+      "rule_ids": [
+        "decision:logic-writing:final-closure",
+        "decision:logic-writing:reader-actual-artifact"
       ],
       "decision": "explicit-author-component-group-closure"
     },
@@ -12939,6 +13293,106 @@
       "decision": "explicit-author-rule"
     },
     {
+      "surface_id": "ui:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+      "model_obligation_ids": [
+        "obligation:logic-writing:final-closure",
+        "obligation:logic-writing:investigation-evidence",
+        "obligation:logic-writing:reader-actual-artifact",
+        "obligation:logic-writing:routing",
+        "obligation:logic-writing:shared-writing",
+        "obligation:logic-writing:specialist-authority"
+      ],
+      "rule_ids": [
+        "decision:logic-writing:final-closure",
+        "decision:logic-writing:investigation-evidence",
+        "decision:logic-writing:reader-actual-artifact",
+        "decision:logic-writing:routing",
+        "decision:logic-writing:shared-writing",
+        "decision:logic-writing:specialist-authority"
+      ],
+      "decision": "explicit-author-rule"
+    },
+    {
+      "surface_id": "ui:scripts/production_reader_pipeline.py:build_reader_spine",
+      "model_obligation_ids": [
+        "obligation:logic-writing:final-closure",
+        "obligation:logic-writing:investigation-evidence",
+        "obligation:logic-writing:reader-actual-artifact",
+        "obligation:logic-writing:routing",
+        "obligation:logic-writing:shared-writing",
+        "obligation:logic-writing:specialist-authority"
+      ],
+      "rule_ids": [
+        "decision:logic-writing:final-closure",
+        "decision:logic-writing:investigation-evidence",
+        "decision:logic-writing:reader-actual-artifact",
+        "decision:logic-writing:routing",
+        "decision:logic-writing:shared-writing",
+        "decision:logic-writing:specialist-authority"
+      ],
+      "decision": "explicit-author-rule"
+    },
+    {
+      "surface_id": "ui:scripts/production_reader_pipeline.py:diagnose_reader_output",
+      "model_obligation_ids": [
+        "obligation:logic-writing:final-closure",
+        "obligation:logic-writing:investigation-evidence",
+        "obligation:logic-writing:reader-actual-artifact",
+        "obligation:logic-writing:routing",
+        "obligation:logic-writing:shared-writing",
+        "obligation:logic-writing:specialist-authority"
+      ],
+      "rule_ids": [
+        "decision:logic-writing:final-closure",
+        "decision:logic-writing:investigation-evidence",
+        "decision:logic-writing:reader-actual-artifact",
+        "decision:logic-writing:routing",
+        "decision:logic-writing:shared-writing",
+        "decision:logic-writing:specialist-authority"
+      ],
+      "decision": "explicit-author-rule"
+    },
+    {
+      "surface_id": "ui:scripts/production_reader_pipeline.py:prepare_production_reader_input",
+      "model_obligation_ids": [
+        "obligation:logic-writing:final-closure",
+        "obligation:logic-writing:investigation-evidence",
+        "obligation:logic-writing:reader-actual-artifact",
+        "obligation:logic-writing:routing",
+        "obligation:logic-writing:shared-writing",
+        "obligation:logic-writing:specialist-authority"
+      ],
+      "rule_ids": [
+        "decision:logic-writing:final-closure",
+        "decision:logic-writing:investigation-evidence",
+        "decision:logic-writing:reader-actual-artifact",
+        "decision:logic-writing:routing",
+        "decision:logic-writing:shared-writing",
+        "decision:logic-writing:specialist-authority"
+      ],
+      "decision": "explicit-author-rule"
+    },
+    {
+      "surface_id": "ui:scripts/production_reader_pipeline.py:render_reader_spine_prompt",
+      "model_obligation_ids": [
+        "obligation:logic-writing:final-closure",
+        "obligation:logic-writing:investigation-evidence",
+        "obligation:logic-writing:reader-actual-artifact",
+        "obligation:logic-writing:routing",
+        "obligation:logic-writing:shared-writing",
+        "obligation:logic-writing:specialist-authority"
+      ],
+      "rule_ids": [
+        "decision:logic-writing:final-closure",
+        "decision:logic-writing:investigation-evidence",
+        "decision:logic-writing:reader-actual-artifact",
+        "decision:logic-writing:routing",
+        "decision:logic-writing:shared-writing",
+        "decision:logic-writing:specialist-authority"
+      ],
+      "decision": "explicit-author-rule"
+    },
+    {
       "surface_id": "ui:scripts/reader_pipeline.py:build_writer_input",
       "model_obligation_ids": [
         "obligation:logic-writing:academic-provenance",
@@ -13767,6 +14221,13 @@
         "api:scripts/derive_closure.py:main",
         "api:scripts/execution_record_resolver.py:LocalExecutionRecordResolver",
         "api:scripts/local_execution_backend.py:LocalCodexBackend",
+        "api:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+        "api:scripts/production_reader_pipeline.py:ProductionPipelineBlocked",
+        "api:scripts/production_reader_pipeline.py:build_reader_spine",
+        "api:scripts/production_reader_pipeline.py:diagnose_reader_output",
+        "api:scripts/production_reader_pipeline.py:prepare_production_reader_input",
+        "api:scripts/production_reader_pipeline.py:render_reader_spine_prompt",
+        "api:scripts/production_reader_pipeline.py:validate_reader_spine",
         "api:scripts/propagate_staleness.py:propagate_staleness",
         "api:scripts/reader_execution.py:dispatch_judge",
         "api:scripts/reader_execution.py:dispatch_writer",
@@ -13787,6 +14248,7 @@
         "component:scripts/derive_closure.py",
         "component:scripts/execution_record_resolver.py",
         "component:scripts/local_execution_backend.py",
+        "component:scripts/production_reader_pipeline.py",
         "component:scripts/reader_execution.py",
         "component:scripts/reader_receipts.py",
         "component:scripts/receipt_authority.py",
@@ -13796,11 +14258,16 @@
         "config:assets/schemas/evidence-receipt.schema.json",
         "config:assets/schemas/reader-execution-record.schema.json",
         "effect:scripts/local_execution_backend.py:LocalCodexBackend",
+        "effect:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+        "effect:scripts/production_reader_pipeline.py:prepare_production_reader_input",
         "effect:scripts/propagate_staleness.py:propagate_staleness",
         "effect:scripts/receipt_store.py:store_receipt",
         "fault:scripts/derive_closure.py:derive_closure",
         "fault:scripts/execution_record_resolver.py:LocalExecutionRecordResolver",
         "fault:scripts/local_execution_backend.py:LocalCodexBackend",
+        "fault:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+        "fault:scripts/production_reader_pipeline.py:build_reader_spine",
+        "fault:scripts/production_reader_pipeline.py:diagnose_reader_output",
         "fault:scripts/propagate_staleness.py:propagate_staleness",
         "fault:scripts/reader_execution.py:validate_execution_record",
         "fault:scripts/receipt_authority.py:resolve_content_object",
@@ -13808,6 +14275,9 @@
         "fault:scripts/receipt_authority.py:validate_receipt",
         "fault:scripts/receipt_store.py:store_receipt",
         "fault:scripts/validate_judgment_receipt.py:validate_judgment_receipt",
+        "provider:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+        "provider:scripts/production_reader_pipeline.py:prepare_production_reader_input",
+        "recovery:scripts/local_execution_backend.py:LocalCodexBackend",
         "recovery:scripts/reader_receipts.py:commit_repair_result_receipt",
         "script:scripts/derive_closure.py",
         "script:scripts/propagate_staleness.py",
@@ -13815,7 +14285,12 @@
         "script:scripts/validate_judgment_receipt.py",
         "template:references/shared/closure.md",
         "ui:scripts/execution_record_resolver.py:LocalExecutionRecordResolver",
-        "ui:scripts/local_execution_backend.py:LocalCodexBackend"
+        "ui:scripts/local_execution_backend.py:LocalCodexBackend",
+        "ui:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+        "ui:scripts/production_reader_pipeline.py:build_reader_spine",
+        "ui:scripts/production_reader_pipeline.py:diagnose_reader_output",
+        "ui:scripts/production_reader_pipeline.py:prepare_production_reader_input",
+        "ui:scripts/production_reader_pipeline.py:render_reader_spine_prompt"
       ],
       "reason": "The explicit author rule binds these current source observations to this target-owned obligation.",
       "proof_ref": ".skillguard/surface-semantic-map.json#decision_rules"
@@ -13832,6 +14307,13 @@
         "api:scripts/build_source_unit_manifest.py:main",
         "api:scripts/build_source_unit_manifest.py:read_text_artifact",
         "api:scripts/build_source_unit_manifest.py:validate_source_unit_manifest",
+        "api:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+        "api:scripts/production_reader_pipeline.py:ProductionPipelineBlocked",
+        "api:scripts/production_reader_pipeline.py:build_reader_spine",
+        "api:scripts/production_reader_pipeline.py:diagnose_reader_output",
+        "api:scripts/production_reader_pipeline.py:prepare_production_reader_input",
+        "api:scripts/production_reader_pipeline.py:render_reader_spine_prompt",
+        "api:scripts/production_reader_pipeline.py:validate_reader_spine",
         "api:scripts/reader_pipeline.py:build_artifact_map",
         "api:scripts/reader_pipeline.py:build_reader_audit",
         "api:scripts/reader_pipeline.py:build_reader_brief",
@@ -13857,6 +14339,7 @@
         "api:scripts/validate_source_registry.py:validate_source_registry",
         "artifact:.skillguard/evidence-specs/investigation.json",
         "component:scripts/build_source_unit_manifest.py",
+        "component:scripts/production_reader_pipeline.py",
         "component:scripts/reader_pipeline.py",
         "component:scripts/validate_claim_support.py",
         "component:scripts/validate_research_packet.py",
@@ -13867,11 +14350,16 @@
         "config:assets/schemas/research-packet.schema.json",
         "config:assets/schemas/source-registry.schema.json",
         "config:assets/schemas/source-unit-manifest.schema.json",
+        "effect:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+        "effect:scripts/production_reader_pipeline.py:prepare_production_reader_input",
         "effect:scripts/reader_pipeline.py:utc_now",
         "fault:scripts/build_source_unit_manifest.py:build_source_unit_manifest",
         "fault:scripts/build_source_unit_manifest.py:extract_visible_units",
         "fault:scripts/build_source_unit_manifest.py:read_text_artifact",
         "fault:scripts/build_source_unit_manifest.py:validate_source_unit_manifest",
+        "fault:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+        "fault:scripts/production_reader_pipeline.py:build_reader_spine",
+        "fault:scripts/production_reader_pipeline.py:diagnose_reader_output",
         "fault:scripts/reader_pipeline.py:build_artifact_map",
         "fault:scripts/reader_pipeline.py:build_reader_audit",
         "fault:scripts/reader_pipeline.py:build_reader_brief",
@@ -13891,6 +14379,8 @@
         "fault:scripts/validate_research_packet.py:assemble_research_packet",
         "fault:scripts/validate_research_packet.py:validate_research_packet",
         "fault:scripts/validate_source_registry.py:validate_source_registry",
+        "provider:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+        "provider:scripts/production_reader_pipeline.py:prepare_production_reader_input",
         "recovery:scripts/reader_pipeline.py:build_repair_request",
         "recovery:scripts/reader_pipeline.py:record_repair_result",
         "script:routes/investigation/scripts/validate_investigation_artifact.py",
@@ -13900,6 +14390,11 @@
         "script:scripts/validate_source_registry.py",
         "template:references/routes/investigation.md",
         "template:references/shared/research-packet.md",
+        "ui:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+        "ui:scripts/production_reader_pipeline.py:build_reader_spine",
+        "ui:scripts/production_reader_pipeline.py:diagnose_reader_output",
+        "ui:scripts/production_reader_pipeline.py:prepare_production_reader_input",
+        "ui:scripts/production_reader_pipeline.py:render_reader_spine_prompt",
         "ui:scripts/reader_pipeline.py:build_writer_input"
       ],
       "reason": "The explicit author rule binds these current source observations to this target-owned obligation.",
@@ -13952,6 +14447,13 @@
         "api:scripts/derive_closure.py:main",
         "api:scripts/execution_record_resolver.py:LocalExecutionRecordResolver",
         "api:scripts/local_execution_backend.py:LocalCodexBackend",
+        "api:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+        "api:scripts/production_reader_pipeline.py:ProductionPipelineBlocked",
+        "api:scripts/production_reader_pipeline.py:build_reader_spine",
+        "api:scripts/production_reader_pipeline.py:diagnose_reader_output",
+        "api:scripts/production_reader_pipeline.py:prepare_production_reader_input",
+        "api:scripts/production_reader_pipeline.py:render_reader_spine_prompt",
+        "api:scripts/production_reader_pipeline.py:validate_reader_spine",
         "api:scripts/propagate_staleness.py:propagate_staleness",
         "api:scripts/reader_execution.py:dispatch_judge",
         "api:scripts/reader_execution.py:dispatch_writer",
@@ -14003,6 +14505,7 @@
         "component:scripts/derive_closure.py",
         "component:scripts/execution_record_resolver.py",
         "component:scripts/local_execution_backend.py",
+        "component:scripts/production_reader_pipeline.py",
         "component:scripts/reader_execution.py",
         "component:scripts/reader_pipeline.py",
         "component:scripts/reader_receipts.py",
@@ -14015,6 +14518,7 @@
         "config:assets/schemas/closure.schema.json",
         "config:assets/schemas/composition-plan.schema.json",
         "config:assets/schemas/evidence-receipt.schema.json",
+        "config:assets/schemas/local-single-judgment.schema.json",
         "config:assets/schemas/obligation-manifest.schema.json",
         "config:assets/schemas/reader-audit.schema.json",
         "config:assets/schemas/reader-brief.schema.json",
@@ -14027,6 +14531,8 @@
         "effect:scripts/_common.py:dump_json",
         "effect:scripts/_common.py:fingerprint_text",
         "effect:scripts/local_execution_backend.py:LocalCodexBackend",
+        "effect:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+        "effect:scripts/production_reader_pipeline.py:prepare_production_reader_input",
         "effect:scripts/propagate_staleness.py:propagate_staleness",
         "effect:scripts/reader_pipeline.py:utc_now",
         "effect:scripts/receipt_store.py:store_receipt",
@@ -14047,6 +14553,9 @@
         "fault:scripts/derive_closure.py:derive_closure",
         "fault:scripts/execution_record_resolver.py:LocalExecutionRecordResolver",
         "fault:scripts/local_execution_backend.py:LocalCodexBackend",
+        "fault:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+        "fault:scripts/production_reader_pipeline.py:build_reader_spine",
+        "fault:scripts/production_reader_pipeline.py:diagnose_reader_output",
         "fault:scripts/propagate_staleness.py:propagate_staleness",
         "fault:scripts/reader_execution.py:validate_execution_record",
         "fault:scripts/reader_pipeline.py:build_artifact_map",
@@ -14076,9 +14585,12 @@
         "fault:scripts/schema_validation.py:assert_schema_valid",
         "fault:scripts/text_extent.py:measure_text",
         "fault:scripts/validate_judgment_receipt.py:validate_judgment_receipt",
+        "provider:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+        "provider:scripts/production_reader_pipeline.py:prepare_production_reader_input",
         "provider:scripts/schema_validation.py:SchemaRuntimeConfigurationError",
         "provider:scripts/schema_validation.py:validate_schema",
         "recovery:scripts/build_reader_repair.py:validate_request",
+        "recovery:scripts/local_execution_backend.py:LocalCodexBackend",
         "recovery:scripts/reader_pipeline.py:build_repair_request",
         "recovery:scripts/reader_pipeline.py:record_repair_result",
         "recovery:scripts/reader_receipts.py:commit_repair_result_receipt",
@@ -14100,6 +14612,11 @@
         "template:references/shared/writing-contract.md",
         "ui:scripts/execution_record_resolver.py:LocalExecutionRecordResolver",
         "ui:scripts/local_execution_backend.py:LocalCodexBackend",
+        "ui:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+        "ui:scripts/production_reader_pipeline.py:build_reader_spine",
+        "ui:scripts/production_reader_pipeline.py:diagnose_reader_output",
+        "ui:scripts/production_reader_pipeline.py:prepare_production_reader_input",
+        "ui:scripts/production_reader_pipeline.py:render_reader_spine_prompt",
         "ui:scripts/reader_pipeline.py:build_writer_input",
         "ui:scripts/review_obligations.py:resolve_review_obligations"
       ],
@@ -14119,6 +14636,13 @@
       "obligation_id": "obligation:logic-writing:routing",
       "disposition": "governed",
       "surface_ids": [
+        "api:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+        "api:scripts/production_reader_pipeline.py:ProductionPipelineBlocked",
+        "api:scripts/production_reader_pipeline.py:build_reader_spine",
+        "api:scripts/production_reader_pipeline.py:diagnose_reader_output",
+        "api:scripts/production_reader_pipeline.py:prepare_production_reader_input",
+        "api:scripts/production_reader_pipeline.py:render_reader_spine_prompt",
+        "api:scripts/production_reader_pipeline.py:validate_reader_spine",
         "api:scripts/reader_pipeline.py:build_artifact_map",
         "api:scripts/reader_pipeline.py:build_reader_audit",
         "api:scripts/reader_pipeline.py:build_reader_brief",
@@ -14141,12 +14665,18 @@
         "api:scripts/select_route.py:validate_request",
         "artifact:.skillguard/evidence-specs/route.json",
         "artifact:agents/openai.yaml",
+        "component:scripts/production_reader_pipeline.py",
         "component:scripts/reader_pipeline.py",
         "config:.skillguard/contract-source.json",
         "config:assets/schemas/reader-intent.schema.json",
         "config:assets/schemas/route-decision.schema.json",
         "config:assets/schemas/writing-request.schema.json",
+        "effect:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+        "effect:scripts/production_reader_pipeline.py:prepare_production_reader_input",
         "effect:scripts/reader_pipeline.py:utc_now",
+        "fault:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+        "fault:scripts/production_reader_pipeline.py:build_reader_spine",
+        "fault:scripts/production_reader_pipeline.py:diagnose_reader_output",
         "fault:scripts/reader_pipeline.py:build_artifact_map",
         "fault:scripts/reader_pipeline.py:build_reader_audit",
         "fault:scripts/reader_pipeline.py:build_reader_brief",
@@ -14163,11 +14693,18 @@
         "fault:scripts/reader_pipeline.py:validate_writer_input",
         "fault:scripts/reader_pipeline.py:validate_writing_request",
         "fault:scripts/select_route.py:select_route",
+        "provider:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+        "provider:scripts/production_reader_pipeline.py:prepare_production_reader_input",
         "recovery:scripts/reader_pipeline.py:build_repair_request",
         "recovery:scripts/reader_pipeline.py:record_repair_result",
         "script:scripts/select_route.py",
         "template:SKILL.md",
         "template:references/router.md",
+        "ui:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+        "ui:scripts/production_reader_pipeline.py:build_reader_spine",
+        "ui:scripts/production_reader_pipeline.py:diagnose_reader_output",
+        "ui:scripts/production_reader_pipeline.py:prepare_production_reader_input",
+        "ui:scripts/production_reader_pipeline.py:render_reader_spine_prompt",
         "ui:scripts/reader_pipeline.py:build_writer_input",
         "ui:scripts/select_route.py:select_route",
         "ui:scripts/select_route.py:validate_request"
@@ -14209,6 +14746,13 @@
         "api:scripts/build_reader_brief.py:validate_request",
         "api:scripts/build_reader_brief_receipt.py:build_reader_brief_receipt",
         "api:scripts/build_reader_repair.py:validate_request",
+        "api:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+        "api:scripts/production_reader_pipeline.py:ProductionPipelineBlocked",
+        "api:scripts/production_reader_pipeline.py:build_reader_spine",
+        "api:scripts/production_reader_pipeline.py:diagnose_reader_output",
+        "api:scripts/production_reader_pipeline.py:prepare_production_reader_input",
+        "api:scripts/production_reader_pipeline.py:render_reader_spine_prompt",
+        "api:scripts/production_reader_pipeline.py:validate_reader_spine",
         "api:scripts/reader_pipeline.py:build_artifact_map",
         "api:scripts/reader_pipeline.py:build_reader_audit",
         "api:scripts/reader_pipeline.py:build_reader_brief",
@@ -14241,12 +14785,14 @@
         "artifact:.skillguard/evidence-specs/semantic.json",
         "artifact:references/routes/required-resources.json",
         "component:scripts/build_obligation_manifest.py",
+        "component:scripts/production_reader_pipeline.py",
         "component:scripts/reader_pipeline.py",
         "component:scripts/review_obligations.py",
         "component:scripts/schema_validation.py",
         "config:.skillguard/contract-source.json",
         "config:assets/schemas/artifact-map.schema.json",
         "config:assets/schemas/composition-plan.schema.json",
+        "config:assets/schemas/local-single-judgment.schema.json",
         "config:assets/schemas/obligation-manifest.schema.json",
         "config:assets/schemas/reader-audit.schema.json",
         "config:assets/schemas/reader-brief.schema.json",
@@ -14257,6 +14803,8 @@
         "config:assets/schemas/shared-writing-contract.schema.json",
         "effect:scripts/_common.py:dump_json",
         "effect:scripts/_common.py:fingerprint_text",
+        "effect:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+        "effect:scripts/production_reader_pipeline.py:prepare_production_reader_input",
         "effect:scripts/reader_pipeline.py:utc_now",
         "fault:scripts/_common.py:ValidationError",
         "fault:scripts/_common.py:reject_unknown_keys",
@@ -14272,6 +14820,9 @@
         "fault:scripts/_common.py:require_unique",
         "fault:scripts/build_obligation_manifest.py:build_obligation_manifest",
         "fault:scripts/build_reader_brief_receipt.py:build_reader_brief_receipt",
+        "fault:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+        "fault:scripts/production_reader_pipeline.py:build_reader_spine",
+        "fault:scripts/production_reader_pipeline.py:diagnose_reader_output",
         "fault:scripts/reader_pipeline.py:build_artifact_map",
         "fault:scripts/reader_pipeline.py:build_reader_audit",
         "fault:scripts/reader_pipeline.py:build_reader_brief",
@@ -14294,6 +14845,8 @@
         "fault:scripts/schema_validation.py:UnknownSchemaError",
         "fault:scripts/schema_validation.py:assert_schema_valid",
         "fault:scripts/text_extent.py:measure_text",
+        "provider:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+        "provider:scripts/production_reader_pipeline.py:prepare_production_reader_input",
         "provider:scripts/schema_validation.py:SchemaRuntimeConfigurationError",
         "provider:scripts/schema_validation.py:validate_schema",
         "recovery:scripts/build_reader_repair.py:validate_request",
@@ -14310,6 +14863,11 @@
         "template:references/shared/human-writing.md",
         "template:references/shared/reader-brief.md",
         "template:references/shared/writing-contract.md",
+        "ui:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+        "ui:scripts/production_reader_pipeline.py:build_reader_spine",
+        "ui:scripts/production_reader_pipeline.py:diagnose_reader_output",
+        "ui:scripts/production_reader_pipeline.py:prepare_production_reader_input",
+        "ui:scripts/production_reader_pipeline.py:render_reader_spine_prompt",
         "ui:scripts/reader_pipeline.py:build_writer_input",
         "ui:scripts/review_obligations.py:resolve_review_obligations"
       ],
@@ -14327,6 +14885,13 @@
         "api:scripts/build_source_unit_manifest.py:main",
         "api:scripts/build_source_unit_manifest.py:read_text_artifact",
         "api:scripts/build_source_unit_manifest.py:validate_source_unit_manifest",
+        "api:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+        "api:scripts/production_reader_pipeline.py:ProductionPipelineBlocked",
+        "api:scripts/production_reader_pipeline.py:build_reader_spine",
+        "api:scripts/production_reader_pipeline.py:diagnose_reader_output",
+        "api:scripts/production_reader_pipeline.py:prepare_production_reader_input",
+        "api:scripts/production_reader_pipeline.py:render_reader_spine_prompt",
+        "api:scripts/production_reader_pipeline.py:validate_reader_spine",
         "api:scripts/provider_preflight.py:main",
         "api:scripts/provider_preflight.py:preflight",
         "api:scripts/researchguard_handoff.py:bind_handoff_consumption",
@@ -14346,6 +14911,7 @@
         "api:scripts/validate_source_registry.py:validate_source_registry",
         "artifact:agents/openai.yaml",
         "component:scripts/build_source_unit_manifest.py",
+        "component:scripts/production_reader_pipeline.py",
         "component:scripts/provider_preflight.py",
         "component:scripts/researchguard_handoff.py",
         "component:scripts/validate_adapter_request.py",
@@ -14365,10 +14931,15 @@
         "config:assets/schemas/source-registry.schema.json",
         "config:assets/schemas/source-unit-manifest.schema.json",
         "config:assets/schemas/writing-request.schema.json",
+        "effect:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+        "effect:scripts/production_reader_pipeline.py:prepare_production_reader_input",
         "fault:scripts/build_source_unit_manifest.py:build_source_unit_manifest",
         "fault:scripts/build_source_unit_manifest.py:extract_visible_units",
         "fault:scripts/build_source_unit_manifest.py:read_text_artifact",
         "fault:scripts/build_source_unit_manifest.py:validate_source_unit_manifest",
+        "fault:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+        "fault:scripts/production_reader_pipeline.py:build_reader_spine",
+        "fault:scripts/production_reader_pipeline.py:diagnose_reader_output",
         "fault:scripts/researchguard_handoff.py:bind_handoff_consumption",
         "fault:scripts/researchguard_handoff.py:build_researchguard_handoff",
         "fault:scripts/researchguard_handoff.py:validate_handoff_consumption",
@@ -14380,6 +14951,8 @@
         "fault:scripts/validate_research_packet.py:assemble_research_packet",
         "fault:scripts/validate_research_packet.py:validate_research_packet",
         "fault:scripts/validate_source_registry.py:validate_source_registry",
+        "provider:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+        "provider:scripts/production_reader_pipeline.py:prepare_production_reader_input",
         "provider:scripts/provider_preflight.py:preflight",
         "provider:scripts/validate_adapter_result.py:validate_adapter_result",
         "script:scripts/build_source_unit_manifest.py",
@@ -14401,6 +14974,11 @@
         "template:references/adapters/worldguard.md",
         "template:references/router.md",
         "template:references/shared/research-packet.md",
+        "ui:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
+        "ui:scripts/production_reader_pipeline.py:build_reader_spine",
+        "ui:scripts/production_reader_pipeline.py:diagnose_reader_output",
+        "ui:scripts/production_reader_pipeline.py:prepare_production_reader_input",
+        "ui:scripts/production_reader_pipeline.py:render_reader_spine_prompt",
         "ui:scripts/select_route.py:select_route",
         "ui:scripts/select_route.py:validate_request"
       ],
@@ -14570,5 +15148,5 @@
     }
   ],
   "claim_boundary": "The inventory binds the current LogicWriting skill-root source observation to explicit target-owned obligations and checks. It proves neither domain correctness, provider quality, installation currentness, release, nor future prose behavior.",
-  "map_hash": "sha256:3e1f332a2983df388d712ab630b1156887d767c548033f2df23e1cd3836d7199"
+  "map_hash": "sha256:693a807a20765445f02d3be088769ae15224e43abf36c816613e651f588c84e4"
 }

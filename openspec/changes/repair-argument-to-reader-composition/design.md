@@ -35,3 +35,62 @@ The candidate starts from LogicWriting `4.0.0` with one current route owner per 
 ## Migration Plan
 
 Build a clean candidate consumer stage from the source, run resource closure, then run protocol tests and invoke the benchmark runner without a backend to verify the terminal unavailable receipt. If formal admission later permits compilation, regenerate SkillGuard projections through the governed owner and rerun affected checks; do not copy this candidate into the daily installation.
+
+## Current implementation-round amendment (R00–R10, 2026-09-09)
+
+The context and non-goals above describe the earlier isolated candidate and
+remain as history. For the current implementation round, the integration
+boundary is the following:
+
+* `skills/logic-writing` is the only LogicWriting source authority. The
+  installed ResearchGuard console is the only ResearchGuard provider used by
+  the production path. The shared `D:\FlowGuard_20260427` checkout is an
+  external dependency and is never edited by this change.
+* R01–R03 own process lifecycle, job identity, evidence provenance, and the
+  single acceptance-owner entrypoint. R04 owns the generic
+  `prepare_production_reader_input` chain. R05–R06 consume and validate
+  ResearchGuard's native child/parent evidence and bound its suite checker.
+  R07–R10 own isolated projection, quality, final regression, installation,
+  and source publication in that order.
+* Planner calls are a distinct execution role. They write a re-openable raw
+  capture and execution record with their own run/context identity; they are
+  never counted as writers or judges. A writer receives the validated
+  `ReaderBrief.writer_input` projection only. An independent judge receives
+  only the submitted artifact and its declared evaluation contract.
+* Research importance, reader progression, and editorial prominence remain
+  separate dimensions. ResearchGuard may deepen an important unresolved
+  branch; LogicWriting decides which closed contribution belongs in the
+  reader line and in what order. A limitation is included only when its
+  materiality and reader duty require it, so the output does not become a
+  list of every model field.
+* The current production chain must be tested with the installed provider,
+  current schemas, and re-openable receipts. Synthetic planner/provider
+  doubles are permitted only at the process boundary of focused tests and
+  carry `protocol_only` semantics. They cannot support `quality_passed`,
+  `product_path_verified`, `installed_current`, or release claims.
+
+The acceptance matrix is intentionally five-dimensional and is maintained in
+the appended ledger: `implemented`, `protocol_tested`,
+`current_model_closed`, `real_quality_proved`, and `installed_current`. The
+first two can be green while the latter three remain open. Every final report
+must preserve that distinction and identify the exact first failing gate.
+
+## Current reader-spine hardening amendment (2026-09-10)
+
+The existing `ReaderBrief.writer_input` contract is retained, but the
+production compiler must now make its shape explicitly spine-first. It will
+derive one ordered reader graph from the current `CompositionPlan`: root
+question and conclusion, major units, predecessor/forward links, essential
+evidence anchors, editorial dispositions, and conclusion-sensitive limits.
+The complete model/receipt ledger remains available to internal audit only and
+is not an equivalent writer input. The writer prompt therefore consumes the
+spine and permitted reader material, while the producer receipt keeps the
+full ledger and a fingerprinted projection record for re-opening.
+
+This amendment is intentionally separate from model scoring. A deterministic
+projection validator and actual-text diagnostics must first establish that a
+finding is not promoted to a paragraph without reader work, that process-only
+limits are consolidated, and that material limits remain adjacent to the
+affected claim. Only after those checks pass may the real writer/judge quality
+sequence run. A provider or transport failure remains an explicit incomplete
+result.

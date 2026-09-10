@@ -168,6 +168,29 @@ def _native_plan(value: Any) -> dict[str, Any]:
         raise ValidationError("ResearchGuard synthesis unit ids must be unique")
     known_units = set(unit_ids)
     by_id = {row["unit_id"]: row for row in units}
+    # Parent links are part of the native hierarchy and must be closed before
+    # the plan is exposed to ReaderBrief.  Checking only that a parent is a
+    # string would allow a dangling branch or a parent cycle to reach the
+    # writer projection.
+    for unit_id, row in by_id.items():
+        parent = row.get("parent_unit_id")
+        if parent is None:
+            continue
+        if parent not in known_units:
+            raise ValidationError(f"ResearchGuard unit {unit_id} has an unknown parent {parent}")
+        if parent == unit_id:
+            raise ValidationError(f"ResearchGuard unit {unit_id} cannot parent itself")
+    for start in by_id:
+        seen: set[str] = set()
+        current = start
+        while True:
+            if current in seen:
+                raise ValidationError(f"ResearchGuard parent hierarchy contains a cycle at {current}")
+            seen.add(current)
+            parent = by_id[current].get("parent_unit_id")
+            if parent is None:
+                break
+            current = parent
     body_order = require_string_list(plan["body_unit_order"], "body_unit_order")
     body_ids = {row["unit_id"] for row in units if row["placement"] == "body"}
     if set(body_order) != body_ids or len(body_order) != len(body_ids):
@@ -179,6 +202,25 @@ def _native_plan(value: Any) -> dict[str, Any]:
                 raise ValidationError(f"ResearchGuard unit {unit_id} has an unknown predecessor {predecessor}")
             if predecessor in order and unit_id in order and order[predecessor] >= order[unit_id]:
                 raise ValidationError(f"ResearchGuard unit {unit_id} violates predecessor order for {predecessor}")
+
+    # A predecessor outside the body order (for example a note or appendix)
+    # still forms a directed dependency graph.  Close that graph explicitly;
+    # body order alone cannot detect a cycle that never enters the body.
+    predecessor_state: dict[str, int] = {}
+
+    def visit_predecessors(unit_id: str) -> None:
+        state = predecessor_state.get(unit_id, 0)
+        if state == 1:
+            raise ValidationError(f"ResearchGuard predecessor graph contains a cycle at {unit_id}")
+        if state == 2:
+            return
+        predecessor_state[unit_id] = 1
+        for predecessor in by_id[unit_id]["predecessor_unit_ids"]:
+            visit_predecessors(predecessor)
+        predecessor_state[unit_id] = 2
+
+    for unit_id in by_id:
+        visit_predecessors(unit_id)
 
     dispositions = plan["candidate_dispositions"]
     if not isinstance(dispositions, list):
@@ -393,6 +435,7 @@ def _validate_unit_mapping(
         raise ValidationError("ConsumptionBinding unit_mapping must be a non-empty array")
     native_units = {str(row["unit_id"]): row for row in handoff.get("units", [])}
     seen: set[str] = set()
+    mapped_planned: set[str] = set()
     normalized: list[dict[str, Any]] = []
     for index, row in enumerate(mapping):
         if not isinstance(row, Mapping):
@@ -411,6 +454,7 @@ def _validate_unit_mapping(
         unknown = sorted(set(targets) - set(planned_units))
         if unknown:
             raise ValidationError(f"ConsumptionBinding mapping for {native_id} references unknown planned units: {unknown}")
+        mapped_planned.update(targets)
         disposition = row.get("disposition")
         if disposition not in {"body", "note", "appendix", "omit", "merged", "implied_by_scope"}:
             raise ValidationError(f"ConsumptionBinding mapping for {native_id} has invalid disposition")
@@ -428,6 +472,13 @@ def _validate_unit_mapping(
     missing = sorted(set(native_units) - seen)
     if missing:
         raise ValidationError(f"ConsumptionBinding is missing native units: {missing}")
+    missing_planned = sorted(set(planned_units) - mapped_planned)
+    extra_planned = sorted(mapped_planned - set(planned_units))
+    if missing_planned or extra_planned:
+        raise ValidationError(
+            "ConsumptionBinding mapping must cover every planned unit "
+            f"(missing={missing_planned}, extra={extra_planned})"
+        )
     return normalized
 
 

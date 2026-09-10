@@ -1,0 +1,30 @@
+{
+  "claim_boundary": "The LogicWriting project owns one model-mesh root for its current 22 model instances. This contract selects that root for project checks and native authority materialization; it does not add a second model or change shared FlowGuard semantics.",
+  "expected_model_ids": [
+    "academic_route_model",
+    "artifact_audit",
+    "behavior_commitment_ledger",
+    "composition_graph",
+    "development_process_flow",
+    "editorial_disposition",
+    "execution_binding",
+    "fiction_route_model",
+    "investigation_route_model",
+    "logic_writing_models",
+    "model_test_alignment",
+    "operation_freshness_closure_model",
+    "plan_detailing",
+    "primary_path_authority",
+    "reader_artifact_model",
+    "release_retirement_model",
+    "research_packet_model",
+    "researchguard_handoff",
+    "route_and_guard_model",
+    "test_mesh",
+    "travel_route_model",
+    "writer_projection"
+  ],
+  "root_model_id": "logic_writing_models",
+  "schema_version": "logic-writing.model-root-contract.v1",
+  "system_id": "logic-writing"
+}

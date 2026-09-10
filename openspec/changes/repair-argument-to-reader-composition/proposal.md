@@ -46,3 +46,40 @@ references, SkillGuard contract-source metadata, focused unit/adversarial/e2e
 tests, and the candidate OpenSpec artifacts. The registered source checkout,
 installed projection, shared SkillGuard engine, and release state remain outside
 this candidate change while the A00 governance gate is blocked.
+
+## Current implementation-round amendment (R00–R10, 2026-09-09)
+
+The candidate framing above is retained as the historical A01 proposal. The
+current recovery round is authorised to carry the change through integration
+and verification on the local machine. It therefore extends the scope to the
+single installable `skills/logic-writing` source, the production reader
+pipeline, the local process executor, the quality producer and consumer, the
+ResearchGuard installed-console handoff, the temporary consumer projection,
+and the final source synchronisation gate. It does not change the shared
+FlowGuard checkout or create a second provider, solver, writer, or judge.
+
+The current contract has four separate claim surfaces. A source change can be
+implemented without proving the current FlowGuard model; a model receipt can
+be current without proving article quality; a real quality run can pass without
+proving daily installation; and a GitHub readback can prove only the pushed
+source commit. The R00–R10 ledger in `tasks.md` records each surface
+separately. A row is closed only when its named owner has a current receipt or
+test result; inherited `[x]` rows above describe the historical candidate and
+are not evidence of current closure.
+
+The production path is deliberately generic: ResearchGuard supplies bounded
+evidence and research handoff, while LogicWriting derives reader order,
+materiality, composition, and the final `writer_input`. Case labels, rubrics,
+expected answers, comparison labels, and judge preferences stay in the outer
+quality harness and never enter planner or writer input. Missing provider
+execution, incomplete process cleanup, stale model identity, missing
+installation projection, or incomplete held-out evidence remains an explicit
+non-passing state; no fixture score, copied answer, retry, or fallback may
+close it.
+
+The current recovery also makes the reader-spine boundary testable: the writer
+receives the minimal ordered projection of the CompositionPlan, while raw
+ledgers, model/status fields, complete gaps, private receipts, and duplicate
+evidence remain internal. This is the concrete product change that addresses
+fragmented card-by-card prose; changing model pricing or silently weakening
+quality gates is outside the proposal.

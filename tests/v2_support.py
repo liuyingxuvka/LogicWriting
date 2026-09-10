@@ -501,6 +501,10 @@ def complete_chain(
         "evaluation_mode": "single",
         "pair_inputs": [],
         "pair_input_fingerprint": None,
+        # The synthetic protocol chain models a single-article judge.  Keep
+        # its writer context explicit so the execution validator can enforce
+        # the same one-writer binding required by the native hold-out path.
+        "writer_context_ids": ["context:writer:synthetic"],
     }
     judge_execution["record_fingerprint"] = fingerprint(judge_execution)
     scores = {key: 5 if pass_quality else 3 for key in (
