@@ -25,6 +25,7 @@ import os
 from pathlib import Path
 import re
 import subprocess
+import tempfile
 from typing import Any, Mapping
 
 from _common import ValidationError, fingerprint, fingerprint_without, require_mapping
@@ -194,6 +195,33 @@ def _write(path: Path, value: Any) -> None:
     with path.open("x", encoding="utf-8", newline="\n") as stream:
         json.dump(value, stream, ensure_ascii=False, sort_keys=True, indent=2)
         stream.write("\n")
+
+
+def _replace(path: Path, value: Any) -> None:
+    """Atomically replace one already-created snapshot under our run root.
+
+    Evidence artifacts remain create-once by default.  The request snapshot is
+    the one intentional exception: native selection can promote a material
+    limitation before composition, so the snapshot must be refreshed before
+    the composition planner consumes it.  Replacing it through a sibling
+    temporary file keeps readers from observing a partially written JSON file
+    and refuses to follow a symlink at the destination.
+    """
+    if not path.is_file() or path.is_symlink():
+        raise ProductionPipelineBlocked("request_snapshot_invalid", str(path))
+    fd, temporary_name = tempfile.mkstemp(
+        prefix=f".{path.name}.", suffix=".tmp", dir=str(path.parent)
+    )
+    temporary = Path(temporary_name)
+    os.close(fd)
+    try:
+        with temporary.open("w", encoding="utf-8", newline="\n") as stream:
+            json.dump(value, stream, ensure_ascii=False, sort_keys=True, indent=2)
+            stream.write("\n")
+        os.replace(temporary, path)
+    except Exception:
+        temporary.unlink(missing_ok=True)
+        raise
 
 
 def _inside(value: Any, root: Path, *, directory: bool = False) -> Path:
@@ -1468,6 +1496,12 @@ def prepare_production_reader_input(request, *, native_provider, planner_backend
     # it only in the private native plan allows unsupported prose to leak out.
     boundaries, promoted_limitations = _merge_native_limitations(boundaries, native["plan"])
     context["content_boundaries"] = boundaries
+    # ``request.json`` is the immutable input snapshot consumed by the
+    # composition planner.  Native selection may promote a material
+    # limitation after the initial snapshot was written; refresh that
+    # snapshot before composing so every downstream artifact is bound to the
+    # same post-promotion boundary fingerprint.
+    _replace(root / "request.json", context)
     if promoted_limitations:
         _write(root / "native-limitations.json", {
             "schema_version": "logic-writing.native-limitations.v1",

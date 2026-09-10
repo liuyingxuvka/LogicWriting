@@ -134,6 +134,50 @@ def test_native_limitation_is_promoted_into_current_reader_boundary(scenario):
     assert case["boundaries"].get("limitations") == []
 
 
+def test_native_limitation_refreshes_request_snapshot_before_composition(scenario, tmp_path):
+    def place_promoted_limitation(stage, payload, inputs, root):
+        if stage != "compose":
+            return
+        plan = payload["composition_plan"]
+        unit = next(row for row in plan["planned_units"] if row["planned_unit_id"] == "unit:answer")
+        unit["limitation_ids"] = ["limitation:native:L1"]
+        plan["limitation_dispositions"] = [{
+            "limitation_id": "limitation:native:L1",
+            "affected_claim_ids": ["content:answer"],
+            "materiality": "changes_scope",
+            "materiality_reason": "读者需要知道受限视角材料的适用边界。",
+            "disposition": "body",
+            "destination_unit_ids": ["unit:answer"],
+            "merged_into_id": None,
+            "realization_requirement": "在核心回答中明确说明这一限制。",
+            "native_boundary_refs": ["limitation:native:L1"],
+        }]
+        plan["plan_fingerprint"] = fingerprint_without(plan, "plan_fingerprint")
+        route = payload["route_composition"]
+        route["composition_plan_fingerprint"] = plan["plan_fingerprint"]
+        route["extension_fingerprint"] = fingerprint_without(route, "extension_fingerprint")
+
+    case = scenario(mutation=place_promoted_limitation)
+    case["plan"]["selected_items"] = [{
+        "node_id": "L1",
+        "node_type": "Limitation",
+        "text": "材料没有提供受限视角人物获知结局的方式。",
+    }]
+    run_root = tmp_path / "run"
+
+    result = execute(case, run_root)
+
+    request = json.loads((run_root / "request.json").read_text(encoding="utf-8"))
+    brief = json.loads(
+        Path(result["refs"]["reader_brief"]["locator"]).read_text(encoding="utf-8")
+    )
+    assert request["content_boundaries"] == brief["content_boundaries"]
+    assert request["content_boundaries"]["limitations"][-1]["limitation_id"] == (
+        "limitation:native:L1"
+    )
+    assert result["content_fingerprint"] == fingerprint(request["content_boundaries"])
+
+
 @pytest.mark.parametrize("owner", ["investigation", "academic-writing", "fiction-writing", "travel-guide"])
 def test_unseen_request_runs_native_then_composition_and_exact_writer_projection(scenario, tmp_path, owner):
     case = scenario(owner)
