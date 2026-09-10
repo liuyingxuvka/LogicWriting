@@ -16,7 +16,7 @@ import os
 import re
 import subprocess
 import sys
-from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError, wait
+from concurrent.futures import wait
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
