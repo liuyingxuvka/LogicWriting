@@ -94,7 +94,24 @@ def activate_current_logic_writing_revision(
         )
 
 
+def audit_current_logic_writing_model_authority(root: str | Path):
+    """Audit current authority with LogicWriting's declared model root.
+
+    The shared FlowGuard CLI intentionally uses its generic root selection.
+    LogicWriting has a project-owned root contract, so its audit must run
+    through the same adapter used for revision and activation.  Keeping this
+    wrapper here makes the project-specific command fail closed instead of
+    reporting a false stale-snapshot finding for the generic lexical root.
+    """
+
+    import flowguard.model_authority_store as authority_store
+
+    with logic_writing_root_builder():
+        return authority_store.audit_model_authority(root)
+
+
 __all__ = [
+    "audit_current_logic_writing_model_authority",
     "activate_current_logic_writing_revision",
     "build_current_logic_writing_model_revision",
     "logic_writing_root_builder",

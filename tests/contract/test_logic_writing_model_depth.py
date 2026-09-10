@@ -316,3 +316,23 @@ def test_native_project_root_adapter_does_not_recurse(checker):
     }
     assert roots == {"logic_writing_models"}
     assert inventory.build_manifest_model_system_snapshot is _GENERIC_BUILD_MANIFEST_MODEL_SYSTEM_SNAPSHOT
+
+
+def test_target_authority_audit_uses_project_declared_root():
+    """The target audit must not inherit FlowGuard's lexical-root fallback."""
+
+    path = ROOT / "scripts" / "author" / "logic_writing_model_authority.py"
+    spec = importlib.util.spec_from_file_location(
+        "logic_writing_model_authority_audit_under_test", path
+    )
+    assert spec is not None and spec.loader is not None
+    authority = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(authority)
+
+    report = authority.audit_current_logic_writing_model_authority(ROOT)
+    assert report.ok, report.to_dict()
+    assert report.status in {"pass", "pass_with_gaps"}
+    assert not any(
+        finding.code == "observed_source_inventory_stale"
+        for finding in report.findings
+    )
