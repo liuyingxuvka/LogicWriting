@@ -16,7 +16,7 @@ import os
 import re
 import subprocess
 import sys
-from concurrent.futures import wait
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError, wait
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -2231,6 +2231,9 @@ def _execute_judge_job(
         if local_backend is not None:
             dispatched = dispatch_judge(request, local_backend)
             row["dispatch_status"] = dispatched.get("status")
+            for key in ("failure_reason", "error", "error_event", "execution_status", "terminal_status"):
+                if dispatched.get(key) is not None:
+                    row[key] = dispatched.get(key)
             record = dispatched.get("record")
             row["record"] = record
             if isinstance(record, Mapping):
@@ -2324,6 +2327,9 @@ def _execute_single_judge_job(
         if local_backend is not None:
             dispatched = dispatch_judge(request, local_backend)
             row["dispatch_status"] = dispatched.get("status")
+            for key in ("failure_reason", "error", "error_event", "execution_status", "terminal_status"):
+                if dispatched.get(key) is not None:
+                    row[key] = dispatched.get(key)
             record = dispatched.get("record")
             row["record"] = record
             if isinstance(record, Mapping):
@@ -3041,6 +3047,9 @@ def _execute_writer_job(
         if local_backend is not None:
             dispatched = dispatch_writer(request, local_backend)
             row["dispatch_status"] = dispatched.get("status")
+            for key in ("failure_reason", "error", "error_event", "execution_status", "terminal_status"):
+                if dispatched.get(key) is not None:
+                    row[key] = dispatched.get(key)
             record = dispatched.get("record")
             row["record"] = record
             if isinstance(record, Mapping):
