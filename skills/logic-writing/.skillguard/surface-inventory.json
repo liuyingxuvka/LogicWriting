@@ -21282,7 +21282,7 @@
       "kind": "api",
       "name": "scripts.reader_execution.dispatch_judge",
       "source_path": "scripts/reader_execution.py",
-      "source_fingerprint": "sha256:023b12dc29240e6564fc5c6f22a99da467b0b2db369ab4fe594076bceebd8218",
+      "source_fingerprint": "sha256:59a1d84f1b003f38fb8c1e0ea91c8dbf4874c21cca9d208b5e8c32dbbae79f83",
       "function_id": "scripts.reader_execution.dispatch_judge",
       "route_id": "api:scripts.reader_execution.dispatch_judge",
       "review_group_id": "group:surface:fcb84c55402ba8e10c76c5fb",
@@ -21330,7 +21330,7 @@
       "kind": "api",
       "name": "scripts.reader_execution.dispatch_writer",
       "source_path": "scripts/reader_execution.py",
-      "source_fingerprint": "sha256:023b12dc29240e6564fc5c6f22a99da467b0b2db369ab4fe594076bceebd8218",
+      "source_fingerprint": "sha256:59a1d84f1b003f38fb8c1e0ea91c8dbf4874c21cca9d208b5e8c32dbbae79f83",
       "function_id": "scripts.reader_execution.dispatch_writer",
       "route_id": "api:scripts.reader_execution.dispatch_writer",
       "review_group_id": "group:surface:8ba5fdc53df6b9d9f46cf55d",
@@ -21378,7 +21378,7 @@
       "kind": "api",
       "name": "scripts.reader_execution.validate_execution_record",
       "source_path": "scripts/reader_execution.py",
-      "source_fingerprint": "sha256:023b12dc29240e6564fc5c6f22a99da467b0b2db369ab4fe594076bceebd8218",
+      "source_fingerprint": "sha256:59a1d84f1b003f38fb8c1e0ea91c8dbf4874c21cca9d208b5e8c32dbbae79f83",
       "function_id": "scripts.reader_execution.validate_execution_record",
       "route_id": "api:scripts.reader_execution.validate_execution_record",
       "review_group_id": "group:surface:267c4a2c1d6a9a2f913637df",
@@ -32130,7 +32130,7 @@
       "kind": "component",
       "name": "scripts.reader_execution.__private_components__",
       "source_path": "scripts/reader_execution.py",
-      "source_fingerprint": "sha256:023b12dc29240e6564fc5c6f22a99da467b0b2db369ab4fe594076bceebd8218",
+      "source_fingerprint": "sha256:59a1d84f1b003f38fb8c1e0ea91c8dbf4874c21cca9d208b5e8c32dbbae79f83",
       "function_id": "component:scripts.reader_execution",
       "route_id": "component:scripts.reader_execution",
       "review_group_id": "group:component:c1f4b09484e201f85b9afdca",
@@ -43313,7 +43313,7 @@
       "kind": "fault",
       "name": "scripts.reader_execution.validate_execution_record",
       "source_path": "scripts/reader_execution.py",
-      "source_fingerprint": "sha256:023b12dc29240e6564fc5c6f22a99da467b0b2db369ab4fe594076bceebd8218",
+      "source_fingerprint": "sha256:59a1d84f1b003f38fb8c1e0ea91c8dbf4874c21cca9d208b5e8c32dbbae79f83",
       "function_id": "scripts.reader_execution.validate_execution_record",
       "route_id": "fault:scripts.reader_execution.validate_execution_record",
       "review_group_id": "group:component:c1f4b09484e201f85b9afdca",
@@ -51985,7 +51985,7 @@
       "proof_ref": ".skillguard/surface-inventory.json#full_discovery_fingerprint"
     }
   },
-  "full_discovery_fingerprint": "sha256:a26a322a262286d70c60662dc84a1bbbba18a6b4fc3d945aa77eeed36362dab3",
+  "full_discovery_fingerprint": "sha256:33f9b7cc3c934f3098b0a1c54e06daa0c416737fdb931e1a543904c5f8f45c7a",
   "adequacy_check_ids": [
     "check:logic-writing:academic",
     "check:logic-writing:contract-calibration",
@@ -52002,5 +52002,5 @@
   ],
   "model_deepening_check_id": "check:logic-writing:model-depth",
   "claim_boundary": "The inventory binds the current LogicWriting skill-root source observation to explicit target-owned obligations and checks. It proves neither domain correctness, provider quality, installation currentness, release, nor future prose behavior.",
-  "inventory_hash": "sha256:e62ce9f8955f9a68d74a476ccda1d4d3346c12bbe85ba4beae9784bffc11230c"
+  "inventory_hash": "sha256:e9807faf0958c0a5efb9894596dc94065231634248a2b6a587537c589f9df7b3"
 }
