@@ -442,4 +442,4 @@ __all__ = [
     "replay_reader_projection",
     "structural_alignment_result",
     "write_json",
-]\n
+]
