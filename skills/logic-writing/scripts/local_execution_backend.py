@@ -818,6 +818,13 @@ class LocalCodexBackend:
         reader_drain_confirmed = False
         stream_close_confirmed = True
         process_exited_recorded = False
+        # Capture the Windows ownership snapshot immediately after a natural
+        # root exit.  Draining the two output pipes can take long enough for
+        # the root PID to be reused; an empty early snapshot is the strongest
+        # observation available for that completed process.  ``None`` remains
+        # unknown and therefore cannot become cleanup proof.
+        early_descendants: list[int] | None = None
+        final_descendants: list[int] | None = None
 
         def _lifecycle(event: str, **details: Any) -> None:
             if capture_finalized.is_set() and event not in {"capture_finalized", "cleanup_finished", "terminal_event"}:
@@ -1080,6 +1087,16 @@ class LocalCodexBackend:
                 time.sleep(0.05)
 
             _record_process_exited()
+            if (
+                process is not None
+                and process.poll() is not None
+                and os.name == "nt"
+                and not termination_evidence
+            ):
+                early_descendants = _windows_descendant_pids_with_retry(
+                    process.pid,
+                    root_creation_time=process_creation_time,
+                )
             if process is not None and process.poll() is None and failure_reason in {"cancelled", "stdin_failed", "hard_timeout"}:
                 if failure_reason == "hard_timeout":
                     timed_out = True
@@ -1130,9 +1147,16 @@ class LocalCodexBackend:
             if process is not None and process.poll() is not None:
                 group_state = _process_group_alive(process_group_id)
                 if os.name == "nt":
-                    descendants = _windows_descendant_pids_with_retry(
-                        process.pid, root_creation_time=process_creation_time
-                    )
+                    if early_descendants == []:
+                        # The root had no owned descendants at the exact exit
+                        # boundary.  Do not replace that identity-fenced proof
+                        # with a later PID-reuse-prone query after pipe drain.
+                        descendants = []
+                    else:
+                        descendants = _windows_descendant_pids_with_retry(
+                            process.pid, root_creation_time=process_creation_time
+                        )
+                    final_descendants = descendants
                     normal_tree_clear = (
                         descendants is not None and not descendants
                     ) or (
@@ -1245,14 +1269,10 @@ class LocalCodexBackend:
             "owned_by_backend": process is not None,
         }
         if not termination_evidence:
-            fallback_descendants = (
-                _windows_descendant_pids_with_retry(
-                    process.pid,
-                    root_creation_time=process_creation_time,
-                )
-                if os.name == "nt" and process is not None
-                else None
-            )
+            # Reuse the post-exit observation already made in ``finally``.
+            # A second late WMI query adds PID-reuse risk without adding
+            # cleanup evidence, and an unknown observation must stay unknown.
+            fallback_descendants = final_descendants if os.name == "nt" else None
             fallback_group_state = _process_group_alive(process_group_id)
             termination_evidence = {
                 "root_pid": process.pid if process is not None else None,

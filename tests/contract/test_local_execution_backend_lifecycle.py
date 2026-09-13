@@ -224,6 +224,68 @@ def test_windows_descendant_probe_retries_transient_unknown(monkeypatch):
     ]
 
 
+@pytest.mark.parametrize(
+    ("early_descendants", "expected_status", "expected_reason", "expected_phases"),
+    [
+        ([], "completed", None, ["at_exit"]),
+        ([9999], "failed", "cleanup_unconfirmed", ["at_exit", "after_drain"]),
+    ],
+)
+def test_local_run_uses_exit_boundary_snapshot_without_weakening_unknown_rule(
+    monkeypatch,
+    tmp_path,
+    early_descendants,
+    expected_status,
+    expected_reason,
+    expected_phases,
+):
+    """An early empty snapshot survives a late WMI miss; nonempty stays unknown."""
+
+    real_popen = backend_module._REAL_SUBPROCESS_POPEN
+    code = (
+        "import json,pathlib,sys; "
+        "sys.stdin.buffer.read(); "
+        "events=[{'type':'thread.started','thread_id':'boundary-thread'},"
+        "{'type':'turn.started'},"
+        "{'type':'item.completed','item':{'type':'agent_message','text':'done'}},"
+        "{'type':'turn.completed'}]; "
+        "[ (sys.stdout.write(json.dumps(item)+'\\n'),sys.stdout.flush()) for item in events ]; "
+        "pathlib.Path(sys.argv[-1]).write_text('done\\n',encoding='utf-8')"
+    )
+
+    def real_child(_argv, **kwargs):
+        output_path = _argv[_argv.index("--output-last-message") + 1]
+        return real_popen([sys.executable, "-c", code, output_path], **kwargs)
+
+    monkeypatch.setattr(backend_module.subprocess, "Popen", real_child)
+    drain_started = False
+    phases = []
+    real_join = threading.Thread.join
+
+    def mark_drain_started(thread, *args, **kwargs):
+        nonlocal drain_started
+        drain_started = True
+        return real_join(thread, *args, **kwargs)
+
+    monkeypatch.setattr(threading.Thread, "join", mark_drain_started)
+
+    def observe(_root_pid, *, root_creation_time=None):
+        del root_creation_time
+        if drain_started:
+            phases.append("after_drain")
+            return None
+        phases.append("at_exit")
+        return list(early_descendants)
+
+    monkeypatch.setattr(backend_module, "_windows_descendant_pids_with_retry", observe)
+    result = _backend(tmp_path).run("writer", _request("writer:boundary-snapshot"))
+
+    assert result["terminal_status"] == expected_status
+    assert result["failure_reason"] == expected_reason
+    assert result["cleanup_evidence"]["confirmed"] is (expected_status == "completed")
+    assert phases == expected_phases
+
+
 def test_terminate_process_tree_passes_root_identity_to_each_windows_probe(monkeypatch):
     """Both cleanup probes must fence the root PID with its observed identity."""
 
