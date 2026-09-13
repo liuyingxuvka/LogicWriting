@@ -225,6 +225,7 @@ def test_production_planner_adapter_resolves_backend_capture_to_absolute_path(tm
             )
             (capture_dir / "events.jsonl").write_text(
                 '{"type":"thread.started","thread_id":"context:compose"}\n'
+                '{"type":"error","message":"Reconnecting... 2/5 (stream disconnected before completion: DNS)"}\n'
                 '{"item":{"type":"agent_message","text":"planner result"}}\n'
                 '{"type":"turn.completed"}\n',
                 encoding="utf-8",
@@ -237,6 +238,8 @@ def test_production_planner_adapter_resolves_backend_capture_to_absolute_path(tm
                 "raw_output_locator": "planner/compose-attempt/output.txt",
                 "raw_output_fingerprint": benchmark._bytes_fp(capture.read_bytes()),
                 "backend_id": "fake-local-codex",
+                "provider_errors_recoverable": True,
+                "recoverable_provider_error_count": 1,
             }
 
     inputs = {
@@ -262,6 +265,8 @@ def test_production_planner_adapter_resolves_backend_capture_to_absolute_path(tm
     assert capture.is_absolute()
     assert capture == (tmp_path / "backend-run" / "planner" / "compose-attempt" / "output.txt").resolve()
     assert record["backend_capture_fingerprint"] == benchmark._bytes_fp(capture.read_bytes())
+    assert record["provider_errors_recoverable"] is True
+    assert record["recoverable_provider_error_count"] == 1
     events_path, _ = production_pipeline._read_planner_events(record, "compose")
     assert events_path == capture.with_name("events.jsonl")
 

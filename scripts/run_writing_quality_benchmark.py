@@ -2483,6 +2483,13 @@ def _production_planner_backend(local_backend: LocalCodexBackend, *, token: str)
             "backend_capture_fingerprint": backend_capture_fingerprint,
             "terminal_status": response.get("terminal_status"),
             "claim_scope": "planner output normalized only after the native pipeline contract is applied",
+            # Preserve the backend's narrow reconnect classification so the
+            # production reader can independently reconcile the immutable
+            # event stream.  Dropping these fields turns an otherwise
+            # completed planner into a false metadata failure whenever a
+            # transient provider reconnect precedes the final turn.
+            "provider_errors_recoverable": response.get("provider_errors_recoverable", False),
+            "recoverable_provider_error_count": response.get("recoverable_provider_error_count", 0),
         }
         return {"payload": payload, "execution_record": record}
 
