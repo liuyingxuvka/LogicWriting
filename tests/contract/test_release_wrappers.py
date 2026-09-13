@@ -438,6 +438,8 @@ def test_frozen_boundary_excludes_runtime_inputs_and_internal_records():
         "scripts/check_reader_judgment.py",
         "--root",
         ".",
+        "--runtime-root",
+        "{owner_run_root}",
         "--dependency-producer",
         "check.reader.execution-quality-producer",
         "--json",
@@ -448,12 +450,22 @@ def test_frozen_boundary_excludes_runtime_inputs_and_internal_records():
         ".",
         "--backend-plan",
         "tests/fixtures/writing_quality/local-backend-plan.json",
+        "--preflight-run-root",
+        "{dependency:check.reader.preflight-producer:run_root}",
+        "--held-out-run-root",
+        "{dependency:check.reader.heldout-producer:run_root}",
+        "--output-dir",
+        "{owner_run_root}",
         "--json",
     ]
     assert checks["check.writing.quality-benchmark"]["args"] == [
         "scripts/check_writing_quality_run.py",
         "--root",
         ".",
+        "--run-root",
+        "{owner_run_root}",
+        "--held-out-run-root",
+        "{dependency:check.reader.heldout-producer:run_root}",
         "--dependency-producer",
         "check.reader.execution-quality-producer",
         "--json",
@@ -470,6 +482,32 @@ def test_frozen_boundary_excludes_runtime_inputs_and_internal_records():
         "docs/coordination.md",
         "docs/flowguard_adoption_log.md",
     }.issubset(exclusions)
+
+
+def test_reader_quality_contract_has_one_six_node_chain_and_two_terminal_consumers():
+    contract = yaml.safe_load(
+        (ROOT / "openspec" / "verification-contract.yaml").read_text(encoding="utf-8")
+    )
+    checks = {str(item["id"]): item for item in contract["checks"]}
+    expected = {
+        "check.reader.preflight-producer": ["check.tests.archive-lifecycle"],
+        "check.reader.heldout-producer": ["check.reader.preflight-producer"],
+        "check.reader.execution-quality-producer": ["check.reader.heldout-producer"],
+        "check.reader.judgment": ["check.reader.execution-quality-producer"],
+        "check.writing.quality-benchmark": ["check.reader.execution-quality-producer"],
+    }
+    # The release subgraph is the archive node plus these five reader nodes:
+    # three producers and two read-only consumers.
+    assert set(expected).issubset(checks)
+    for check_id, dependencies in expected.items():
+        assert checks[check_id]["depends_on_receipts"] == dependencies
+    assert "--preflight-case" in checks["check.reader.preflight-producer"]["args"]
+    assert "--held-out-only" in checks["check.reader.heldout-producer"]["args"]
+    assert "--preflight-run-root" in checks["check.reader.execution-quality-producer"]["args"]
+    assert "--held-out-run-root" in checks["check.reader.execution-quality-producer"]["args"]
+    assert "{owner_run_root}" in checks["check.reader.judgment"]["args"]
+    assert "{owner_run_root}" in checks["check.writing.quality-benchmark"]["args"]
+    assert "--held-out-run-root" in checks["check.writing.quality-benchmark"]["args"]
 
 
 def test_frozen_public_checks_bind_concrete_admitted_source_manifests():
@@ -525,6 +563,209 @@ def test_frozen_public_checks_bind_concrete_admitted_source_manifests():
         "source",
         "--json",
     ]
+
+
+def _minimal_frozen_contract() -> dict[str, object]:
+    return {
+        "contract_version": "test-v1",
+        "freshness": {"watch": ["source.txt"], "exclude": []},
+        "checks": [
+            {
+                "id": "check.one",
+                "kind": "command",
+                "semantic_check_id": "test.one",
+                "execution_id": "test-one-v1",
+                "toolchain_identity": "python-test-runtime",
+                "input_selectors": ["source.txt"],
+                "depends_on_receipts": [],
+                "command": "python",
+                "args": ["-c", "pass", "--output-dir", "{owner_run_root}"],
+                "timeout_seconds": 30,
+                "expected": {"exit_code": 0},
+            }
+        ],
+    }
+
+
+def _write_json_file(path: Path, value: object) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def _minimal_frozen_receipts(runner, root: Path, receipts: Path, contract: dict[str, object]) -> None:
+    check = contract["checks"][0]
+    assert isinstance(check, dict)
+    snapshot_id, snapshot_manifest = runner._global_snapshot(root, contract)
+    revision = runner._inventory_revision(contract)
+    inputs = runner._check_manifest(root, check)
+    attempt_root = receipts / "attempts" / "check.one" / "attempt-1"
+    run_root = attempt_root / "run"
+    run_root.mkdir(parents=True)
+    result = {
+        "check_id": "check.one",
+        "execution_fingerprint": "sha256:" + "a" * 64,
+        "exit_code": 0,
+        "timed_out": False,
+        "cleanup_confirmed": True,
+    }
+    result["result_fingerprint"] = runner._hash(result)
+    result_path = attempt_root / "result.json"
+    _write_json_file(result_path, result)
+    receipt = {
+        "schema_version": "logic_writing_validation_receipt.v1",
+        "check_id": "check.one",
+        "semantic_check_id": "test.one",
+        "execution_id": "test-one-v1",
+        "execution_fingerprint": result["execution_fingerprint"],
+        "status": "passed",
+        "terminal_status": "passed",
+        "exit_code": 0,
+        "inventory_revision": revision,
+        "artifact_version": snapshot_id,
+        "verifier_version": runner.VERIFIER_VERSION,
+        "input_manifest_hash": runner._hash(inputs),
+        "dependency_receipt_hashes": {},
+        "covered_obligation_ids": [],
+        "result_path": result_path.relative_to(receipts).as_posix(),
+        "result_fingerprint": result["result_fingerprint"],
+        "timed_out": False,
+        "cleanup_confirmed": True,
+        "owner_context": {
+            "owner_id": "check.one",
+            "attempt_root": attempt_root.relative_to(receipts).as_posix(),
+            "run_root": run_root.relative_to(receipts).as_posix(),
+        },
+        "claim_boundary": "test",
+    }
+    receipt["receipt_hash"] = runner._receipt_hash(receipt)
+    success_path = receipts / "success" / "check.one" / ("a" * 64 + ".json")
+    _write_json_file(success_path, receipt)
+    mesh_payload = {"status": "passed", "owner_count": 1}
+    mesh_path = receipts / "test-mesh-terminal.json"
+    _write_json_file(mesh_path, mesh_payload)
+    parent = {
+        "schema_version": "logic_writing_validation_index.v1",
+        "status": "passed",
+        "verifier_version": runner.VERIFIER_VERSION,
+        "inventory_revision": revision,
+        "frozen_snapshot_id": snapshot_id,
+        "frozen_snapshot_file_count": len(snapshot_manifest),
+        "execution_owner_count": 1,
+        "receipt_consumer_count": 0,
+        "git_clean_required": False,
+        "git_clean_observed": False,
+        "toolchain_observations": {},
+        "executed_check_ids": ["check.one"],
+        "reused_check_ids": [],
+        "receipts": {"check.one": receipt},
+        "consumer_owners": {},
+        "test_mesh": {
+            "status": "passed",
+            "result_path": mesh_path.relative_to(receipts).as_posix(),
+            "result_hash": runner._hash(mesh_payload),
+        },
+        "claim_boundary": "test",
+    }
+    parent["index_hash"] = runner._hash(parent)
+    _write_json_file(receipts / "index.json", parent)
+
+
+def test_frozen_audit_only_is_pure_read_and_revalidates_existing_parent(monkeypatch, tmp_path):
+    runner = _load("run_frozen_validation")
+    root = tmp_path / "repo"
+    (root / "openspec").mkdir(parents=True)
+    (root / "source.txt").write_text("source\n", encoding="utf-8")
+    contract = _minimal_frozen_contract()
+    _write_json_file(root / "openspec" / "verification-contract.yaml", contract)
+    # The custom helper writes JSON, which is valid YAML for this focused
+    # contract and keeps the audit fixture deterministic.
+    receipts = tmp_path / "receipts"
+    _minimal_frozen_receipts(runner, root, receipts, contract)
+    before = {
+        path.relative_to(tmp_path).as_posix(): path.read_bytes()
+        for path in tmp_path.rglob("*")
+        if path.is_file()
+    }
+    monkeypatch.setattr(runner, "_execute", lambda *args, **kwargs: pytest.fail("audit must not start a child"))
+    monkeypatch.setattr(runner, "_toolchain_observation", lambda *args, **kwargs: pytest.fail("audit must not probe a tool"))
+    monkeypatch.setattr(runner, "_single_owner_lock", lambda *args, **kwargs: pytest.fail("audit must not acquire a lock"))
+    report = runner.run_validation(
+        root,
+        Path("openspec/verification-contract.yaml"),
+        receipts,
+        audit_only=True,
+        require_clean_git=False,
+    )
+    after = {
+        path.relative_to(tmp_path).as_posix(): path.read_bytes()
+        for path in tmp_path.rglob("*")
+        if path.is_file()
+    }
+    assert report["status"] == "passed"
+    assert report["audit_only"] is True
+    assert report["executed_check_ids"] == []
+    assert before == after
+
+
+def test_frozen_validation_creates_private_attempt_and_passes_owner_context(monkeypatch, tmp_path):
+    runner = _load("run_frozen_validation")
+    root = tmp_path / "repo"
+    (root / "openspec").mkdir(parents=True)
+    (root / "source.txt").write_text("source\n", encoding="utf-8")
+    contract = _minimal_frozen_contract()
+    _write_json_file(root / "openspec" / "verification-contract.yaml", contract)
+    receipts = tmp_path / "receipts"
+    calls: list[dict[str, object]] = []
+
+    monkeypatch.setattr(
+        runner,
+        "_toolchain_observation",
+        lambda check: {"declared_identity": check["toolchain_identity"], "observation_hash": "sha256:" + "b" * 64},
+    )
+
+    def fake_execute(command, *, cwd, timeout, env=None):
+        calls.append({"command": command, "env": env})
+        if ".flowguard/test_mesh/run_checks.py" in command:
+            assert env is None
+            return {
+                "exit_code": 0,
+                "stdout": json.dumps({"status": "passed", "owner_count": 1}),
+                "stderr": "",
+                "timed_out": False,
+                "cleanup_confirmed": True,
+                "remaining_process_ids": [],
+                "elapsed_seconds": 0.01,
+            }
+        assert env is not None
+        owner_root = Path(env["LW_VALIDATION_OWNER_RUN_ROOT"])
+        attempt_root = Path(env["LW_VALIDATION_OWNER_ATTEMPT_ROOT"])
+        assert owner_root.is_dir()
+        assert attempt_root.is_dir()
+        assert owner_root != attempt_root
+        assert command[-1] == str(owner_root)
+        return {
+            "exit_code": 0,
+            "stdout": "owner ok",
+            "stderr": "",
+            "timed_out": False,
+            "cleanup_confirmed": True,
+            "remaining_process_ids": [],
+            "elapsed_seconds": 0.01,
+        }
+
+    monkeypatch.setattr(runner, "_execute", fake_execute)
+    report = runner.run_validation(
+        root,
+        Path("openspec/verification-contract.yaml"),
+        receipts,
+        audit_only=False,
+        require_clean_git=False,
+    )
+    assert report["status"] == "passed"
+    assert len(calls) == 2
+    owner_attempts = list((receipts / "attempts" / "check.one").iterdir())
+    assert len(owner_attempts) == 1
+    assert (owner_attempts[0] / "run").is_dir()
 
 
 def test_public_docs_frozen_fallback_uses_contract_admission(tmp_path, monkeypatch):

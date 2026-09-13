@@ -20,7 +20,7 @@ from concurrent.futures import wait
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Callable, Mapping
+from typing import Any, Callable, Mapping, Sequence
 import time
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -28,7 +28,15 @@ SKILL_SCRIPTS = ROOT / "skills" / "logic-writing" / "scripts"
 if str(SKILL_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SKILL_SCRIPTS))
 
-from _common import ValidationError, fingerprint, fingerprint_text, fingerprint_without, require_mapping, require_schema  # noqa: E402
+from _common import (  # noqa: E402
+    ValidationError,
+    fingerprint,
+    fingerprint_text,
+    fingerprint_without,
+    logic_writing_source_identity,
+    require_mapping,
+    require_schema,
+)
 from execution_record_resolver import LocalExecutionRecordResolver  # noqa: E402
 from local_execution_backend import (  # noqa: E402
     DEFAULT_CLI_SHA256,
@@ -38,6 +46,7 @@ from local_execution_backend import (  # noqa: E402
     LocalCodexBackend,
     _process_group_alive,
     _terminate_process_tree,
+    _windows_descendant_pids,
 )
 from reader_execution import dispatch_judge, dispatch_writer, validate_execution_record  # noqa: E402
 from reader_pipeline import build_artifact_map  # noqa: E402
@@ -197,6 +206,124 @@ def _job_identity(job: Mapping[str, Any], role: str) -> dict[str, Any]:
     }
 
 
+_JOB_IDENTITY_FIELDS = (
+    "job_id", "role", "case_id", "repeat", "attempt_id", "version", "judge_index",
+)
+
+
+def _identity_mismatches(
+    expected: Mapping[str, Any],
+    observed: Mapping[str, Any],
+) -> dict[str, dict[str, Any]]:
+    """Return every planned/observed identity difference.
+
+    The parent owns the canonical row, so it must never silently overwrite a
+    child identity before checking it.  In particular, a wrong version or
+    judge index can otherwise make a late or cross-job candidate look valid.
+    """
+
+    return {
+        key: {"expected": expected.get(key), "observed": observed.get(key)}
+        for key in _JOB_IDENTITY_FIELDS
+        if expected.get(key) != observed.get(key)
+    }
+
+
+def _running_marker_error(
+    marker: Any,
+    expected_identity: Mapping[str, Any],
+    process: Any,
+) -> str | None:
+    """Validate the worker admission marker before starting the execution clock.
+
+    The marker is the worker's admission signal, rather than evidence supplied
+    by the child after it has finished.  A marker for another job, a recycled
+    PID, or a marker without an observed creation token must remain in the
+    startup state and eventually become a dependency failure.
+    """
+
+    if not isinstance(marker, Mapping):
+        return "worker_marker_not_object"
+    if marker.get("schema_version") != "logic-writing.quality-job-marker.v1":
+        return "worker_marker_schema_invalid"
+    if marker.get("status") != "running":
+        return "worker_marker_status_invalid"
+    if _identity_mismatches(expected_identity, marker):
+        return "worker_marker_identity_mismatch"
+    expected_pid = getattr(process, "pid", None)
+    observed_pid = marker.get("process_id")
+    if isinstance(expected_pid, bool) or isinstance(observed_pid, bool):
+        return "worker_marker_pid_invalid"
+    try:
+        if int(observed_pid) <= 0 or int(observed_pid) != int(expected_pid):
+            return "worker_marker_pid_mismatch"
+    except (TypeError, ValueError):
+        return "worker_marker_pid_invalid"
+    creation_time = marker.get("process_creation_time")
+    if not isinstance(creation_time, str) or not creation_time.strip():
+        return "worker_marker_creation_time_missing"
+    started_at = marker.get("started_at")
+    if not isinstance(started_at, str) or not started_at.strip():
+        return "worker_marker_started_at_missing"
+    if not isinstance(marker.get("role_execution_started"), bool):
+        return "worker_marker_role_started_invalid"
+    return None
+
+
+def _candidate_identity_error(
+    candidate: Mapping[str, Any],
+    expected_identity: Mapping[str, Any],
+    marker: Mapping[str, Any] | None,
+) -> str | None:
+    """Reject a candidate whose identity was not established by its marker."""
+
+    if _identity_mismatches(expected_identity, candidate):
+        return "worker_candidate_identity_mismatch"
+    worker_pid = candidate.get("worker_process_id")
+    worker_creation_time = candidate.get("worker_process_creation_time")
+    if isinstance(worker_pid, bool):
+        return "worker_candidate_pid_invalid"
+    try:
+        if int(worker_pid) <= 0:
+            return "worker_candidate_pid_missing"
+    except (TypeError, ValueError):
+        return "worker_candidate_pid_missing"
+    if not isinstance(worker_creation_time, str) or not worker_creation_time.strip():
+        return "worker_candidate_creation_time_missing"
+    if marker is not None:
+        if worker_pid != marker.get("process_id"):
+            return "worker_candidate_pid_mismatch"
+        if worker_creation_time != marker.get("process_creation_time"):
+            return "worker_candidate_creation_time_mismatch"
+    return None
+
+
+def _validate_job_batch(jobs: Sequence[Mapping[str, Any]], role: str) -> None:
+    """Reject duplicate logical jobs before any child can be dispatched.
+
+    ``active`` is keyed by ``job_id`` and canonical paths are keyed by the
+    role/case/repeat/version-or-judge target.  Allowing either key to repeat
+    would silently replace an active state row or turn the second result into
+    an avoidable publication conflict after work had already run.
+    """
+
+    seen_job_ids: set[str] = set()
+    seen_capture_keys: set[tuple[Any, ...]] = set()
+    for job in jobs:
+        identity = _job_identity(job, role)
+        job_id = str(identity["job_id"])
+        if job_id in seen_job_ids:
+            raise ValidationError(f"duplicate {role} job identity: {job_id}")
+        seen_job_ids.add(job_id)
+        capture_key = (
+            identity["role"], identity["case_id"], identity["repeat"],
+            identity["version"], identity["judge_index"],
+        )
+        if capture_key in seen_capture_keys:
+            raise ValidationError(f"duplicate {role} canonical capture target: {capture_key}")
+        seen_capture_keys.add(capture_key)
+
+
 def _job_row(job: Mapping[str, Any], role: str, *, status: str = "queued", terminal_reason: str | None = None) -> dict[str, Any]:
     identity = _job_identity(job, role)
     now = _now()
@@ -215,6 +342,8 @@ def _job_row(job: Mapping[str, Any], role: str, *, status: str = "queued", termi
         "process_identity": {"pid": None, "creation_time": None, "owned_by_aggregator": False},
         "cleanup_confirmed": False,
         "cleanup_evidence": {"required": True, "confirmed": False, "root_pid": None, "root_creation_time": None},
+        "role_execution_started": False,
+        "role_execution_started_at": None,
     }
     if terminal_reason is not None:
         row["error"] = terminal_reason
@@ -234,6 +363,7 @@ _JOB_NOT_STARTED_STATUSES = frozenset({
     "not_started_dependency_failed",
     "not_started_deadline",
     "not_started_cleanup_blocked",
+    "not_started_source_changed",
 })
 _JOB_TERMINAL_STATUSES = frozenset({
     "completed",
@@ -243,15 +373,23 @@ _JOB_TERMINAL_STATUSES = frozenset({
     "not_started_dependency_failed",
     "not_started_deadline",
     "not_started_cleanup_blocked",
+    "not_started_source_changed",
 })
 _JOB_ALLOWED_TRANSITIONS: dict[str, frozenset[str]] = {
-    "queued": frozenset({"starting", "failed", "cancelled", "not_started_dependency_failed", "not_started_deadline", "not_started_cleanup_blocked"}),
-    "starting": frozenset({"running", "failed", "timed_out", "cancelled", "not_started_dependency_failed", "not_started_cleanup_blocked"}),
+    "queued": frozenset({"starting", "failed", "cancelled", "not_started_dependency_failed", "not_started_deadline", "not_started_cleanup_blocked", "not_started_source_changed"}),
+    "starting": frozenset({"running", "failed", "timed_out", "cancelled", "not_started_dependency_failed", "not_started_cleanup_blocked", "not_started_source_changed"}),
     "running": frozenset({"completed", "failed", "timed_out", "cancelled"}),
 }
 
 
-def _job_transition(row: dict[str, Any], status: str, *, reason: str | None = None, at: str | None = None) -> None:
+def _job_transition(
+    row: dict[str, Any],
+    status: str,
+    *,
+    reason: str | None = None,
+    at: str | None = None,
+    allow_terminal_reclassification: bool = False,
+) -> None:
     """Append one legal lifecycle state and reject late/duplicate terminal data.
 
     A child can finish after the parent has timed it out.  Treating that late
@@ -276,6 +414,20 @@ def _job_transition(row: dict[str, Any], status: str, *, reason: str | None = No
             raise ValidationError(f"active job transition cannot carry terminal reason: {status}")
         return
     if current in _JOB_TERMINAL_STATUSES:
+        if (
+            allow_terminal_reclassification
+            and status == "failed"
+            and reason == "canonical_publication_failed"
+        ):
+            history.append({
+                "status": status,
+                "at": at or _now(),
+                "transition": "canonical_publication",
+            })
+            row["status"] = status
+            row["terminal_reason"] = reason
+            row["finished_at"] = at or _now()
+            return
         raise ValidationError(f"late job transition after terminal state {current}: {status}")
     if current is not None and status not in _JOB_ALLOWED_TRANSITIONS.get(current, frozenset()):
         raise ValidationError(f"illegal job transition {current} -> {status}")
@@ -303,16 +455,38 @@ def _append_jsonl(path: Path, value: Mapping[str, Any]) -> None:
             pass
 
 
-def _dependency_judge_row(job: Mapping[str, Any], *, reason: str = "dependency_failed") -> dict[str, Any]:
-    """Materialise a judge outcome when its writer pair was not runnable."""
+def _dependency_judge_row(
+    job: Mapping[str, Any],
+    *,
+    dependency_writer_job_ids: Sequence[str] | None = None,
+    reason: str = "dependency_failed",
+) -> dict[str, Any]:
+    """Materialise a judge outcome with an explicit writer dependency set.
+
+    Pair and held-out lanes have different writer universes.  The caller must
+    therefore provide the exact dependency ids instead of letting this helper
+    guess a version pair that may not exist in the current lane.
+    """
+
+    if dependency_writer_job_ids is None:
+        # Legacy direct callers are kept source-compatible; production pair
+        # and held-out call sites must provide their exact lane-specific set.
+        case_id = str(job.get("case", {}).get("case_id", "unknown"))
+        repeat = int(job.get("repeat", 0) or 0)
+        dependency_writer_job_ids = (
+            f"writer:{case_id}:{repeat}:baseline",
+            f"writer:{case_id}:{repeat}:repaired",
+        )
+    dependency_ids = [str(item) for item in dependency_writer_job_ids]
+    if not dependency_ids or any(not item.startswith("writer:") for item in dependency_ids):
+        raise ValueError("judge dependency_writer_job_ids must contain one or more writer job ids")
+    if len(dependency_ids) != len(set(dependency_ids)):
+        raise ValueError("judge dependency_writer_job_ids must be unique")
 
     row = _job_row(job, "judge", status="not_started_dependency_failed", terminal_reason=reason)
     row.update({
         "dependency_status": "failed",
-        "dependency_writer_jobs": [
-            f"writer:{job.get('case', {}).get('case_id', 'unknown')}:{int(job.get('repeat', 0) or 0)}:baseline",
-            f"writer:{job.get('case', {}).get('case_id', 'unknown')}:{int(job.get('repeat', 0) or 0)}:repaired",
-        ],
+        "dependency_writer_jobs": dependency_ids,
         "error_event": {
             "type": "error_event",
             "role": "judge",
@@ -335,6 +509,25 @@ def _job_started(row: Mapping[str, Any]) -> bool:
         return int(process_id) > 0
     except (TypeError, ValueError):
         return False
+
+
+def _role_execution_started(row: Mapping[str, Any]) -> bool:
+    """Return whether the business role reached provider dispatch.
+
+    A job-worker PID proves only that the wrapper process was created.  A
+    dependency failure after process creation must remain ``not_started`` for
+    writer/judge accounting even though its wrapper was observable.
+    """
+
+    return row.get("role_execution_started") is True
+
+
+def _worker_process_started_count(rows: Sequence[Mapping[str, Any]]) -> int:
+    return sum(_job_started(row) for row in rows if isinstance(row, Mapping))
+
+
+def _role_execution_started_count(rows: Sequence[Mapping[str, Any]]) -> int:
+    return sum(_role_execution_started(row) for row in rows if isinstance(row, Mapping))
 
 
 def _execution_progress(rows: Mapping[str, Mapping[str, Any]], planned: int) -> dict[str, int]:
@@ -367,6 +560,7 @@ def _backend_config(backend: LocalCodexBackend) -> dict[str, Any]:
         "no_progress_seconds": backend.no_progress_seconds,
         "expected_cli_version": backend.cli_version,
         "expected_executable_sha256": backend.executable_sha256,
+        "startup_timeout_seconds": getattr(backend, "startup_timeout_seconds", 30.0),
     }
 
 
@@ -376,7 +570,48 @@ def _write_json_atomic(path: Path, value: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_name(f".{path.name}.{os.getpid()}.tmp")
     _write_json(temporary, value)
-    os.replace(temporary, path)
+    # Windows can briefly deny the replace while a read-only observer is
+    # releasing the previous progress file.  Keep the atomic publication
+    # boundary, but absorb a short sharing race instead of aborting the whole
+    # benchmark after all of the work up to that point has completed.
+    for attempt in range(8):
+        try:
+            os.replace(temporary, path)
+            break
+        except PermissionError:
+            if attempt == 7:
+                raise
+            time.sleep(0.05 * (attempt + 1))
+
+
+def _write_json_exclusive(path: Path, value: Any) -> None:
+    """Publish a canonical result exactly once.
+
+    Only the aggregate parent may call this function.  A late child therefore
+    cannot replace a timeout or cleanup-failure row that was already published.
+    ``O_EXCL`` also makes a repeated parent publication an explicit protocol
+    error instead of a silent overwrite.
+    """
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    data = json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+    flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY | getattr(os, "O_BINARY", 0)
+    descriptor = os.open(str(path), flags, 0o600)
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8", newline="\n") as stream:
+            descriptor = -1
+            stream.write(data)
+            stream.flush()
+            try:
+                os.fsync(stream.fileno())
+            except OSError:
+                pass
+    finally:
+        if descriptor != -1:
+            try:
+                os.close(descriptor)
+            except OSError:
+                pass
 
 
 def _job_process_options() -> dict[str, Any]:
@@ -399,6 +634,8 @@ def _job_worker_main(payload_path: Path) -> int:
     payload: dict[str, Any] = {}
     role = "writer"
     row_path: Path | None = None
+    role_execution_started = False
+    worker_process_creation_time: str | None = None
     try:
         value = _read_json(payload_path)
         if not isinstance(value, dict):
@@ -410,9 +647,20 @@ def _job_worker_main(payload_path: Path) -> int:
         marker_path = Path(str(payload["marker_path"])).resolve()
         identity = _job_identity(job, role)
         worker_started_at = _now()
+        # This is the worker's own observation token.  The parent cannot know
+        # it before Popen, and the dispatch payload timestamp is therefore not
+        # a valid worker creation time.  Reuse one value in the marker and the
+        # candidate so the parent can verify that both artifacts came from the
+        # same worker identity.
+        worker_process_creation_time = _now()
         backend_config = payload.get("backend_config")
         if not isinstance(backend_config, Mapping):
             raise ValueError("local backend dependency is missing")
+        expected_implementation_fingerprint = payload.get("implementation_fingerprint")
+        if expected_implementation_fingerprint is not None:
+            observed_implementation_fingerprint = fingerprint(_implementation_identity(ROOT))
+            if observed_implementation_fingerprint != expected_implementation_fingerprint:
+                raise ValueError("source_changed_before_execution")
         backend = LocalCodexBackend(**dict(backend_config))
         resolver = LocalExecutionRecordResolver(
             backend.run_root,
@@ -432,13 +680,15 @@ def _job_worker_main(payload_path: Path) -> int:
             **identity,
             "status": "running",
             "process_id": os.getpid(),
-            "process_creation_time": _now(),
+            "process_creation_time": worker_process_creation_time,
             "started_at": worker_started_at,
+            "role_execution_started": False,
         })
         if role == "writer":
             row = _execute_writer_job(
                 case=job["case"], repeat=int(job["repeat"]), version=str(job["version"]),
                 writer_dir=Path(str(payload["writer_dir"])), local_backend=backend, backend=None, resolver=resolver,
+                result_path=row_path,
             )
         elif role == "judge":
             if job.get("evaluation_mode") == "single":
@@ -446,24 +696,34 @@ def _job_worker_main(payload_path: Path) -> int:
                     case=job["case"], repeat=int(job["repeat"]), judge_index=int(job["judge_index"]),
                     writer=job["writer"], rubric_text=str(payload["rubric_text"]),
                     cases_dir=Path(str(payload["cases_dir"])), judge_dir=Path(str(payload["judge_dir"])),
-                    local_backend=backend, backend=None, resolver=resolver,
+                    local_backend=backend, backend=None, resolver=resolver, result_path=row_path,
                 )
             else:
                 row = _execute_judge_job(
                     case=job["case"], repeat=int(job["repeat"]), judge_index=int(job["judge_index"]), order=job["order"],
                     rubric_text=str(payload["rubric_text"]), cases_dir=Path(str(payload["cases_dir"])),
                     judge_dir=Path(str(payload["judge_dir"])), local_backend=backend, backend=None, resolver=resolver,
+                    result_path=row_path,
                 )
         else:
             raise ValueError(f"unsupported job role: {role}")
         if not isinstance(row, dict):
             raise ValueError("job worker returned no row")
+        # A valid worker marker only proves that the pinned backend and
+        # resolver were constructed.  Count the business role as started once
+        # the role produced an execution record; a planner/preflight failure
+        # before provider dispatch must remain not-started in the parent
+        # accounting even though the wrapper process existed.
+        role_execution_started = isinstance(row.get("record"), Mapping)
+        role_execution_started_at = _now() if role_execution_started else None
         row.update({
             "schema_version": "logic-writing.quality-job-result.v1",
             **identity,
             "worker_process_id": os.getpid(),
-            "worker_process_creation_time": payload.get("worker_process_creation_time"),
+            "worker_process_creation_time": worker_process_creation_time,
             "dependency_status": "ready",
+            "role_execution_started": role_execution_started,
+            "role_execution_started_at": role_execution_started_at if role_execution_started else None,
         })
         row.setdefault("status_history", [{"status": "running", "at": worker_started_at}])
         _job_transition(row, str(row.get("status") or "failed"), at=_now())
@@ -474,8 +734,9 @@ def _job_worker_main(payload_path: Path) -> int:
             row = _job_row(payload.get("job", {}), role, status="not_started_dependency_failed", terminal_reason="dependency_failed")
             row.update({
                 "dependency_status": "failed",
+                "role_execution_started": role_execution_started,
                 "worker_process_id": os.getpid(),
-                "worker_process_creation_time": payload.get("worker_process_creation_time"),
+                "worker_process_creation_time": worker_process_creation_time,
                 "error": str(exc),
                 "error_event": {
                     "type": "error_event", "role": role, "job_id": row["job_id"],
@@ -514,12 +775,61 @@ def _decorate_job_row(
         _job_transition(result, status, reason=reason)
     elif reason is not None:
         result["terminal_reason"] = reason
-    if result.get("status") in {"failed", "timed_out", "cancelled", "not_started_dependency_failed", "not_started_deadline"} and "error_event" not in result:
+    if result.get("status") in {"failed", "timed_out", "cancelled", "not_started_dependency_failed", "not_started_deadline", "not_started_source_changed"} and "error_event" not in result:
         result["error_event"] = {
             "type": "error_event", "role": identity["role"], "job_id": identity["job_id"],
             "error_class": str(result.get("terminal_reason") or result.get("status")),
             "message": str(result.get("terminal_reason") or result.get("status")), "terminal": True,
         }
+    return result
+
+
+def _effective_cleanup_evidence(
+    worker_evidence: Mapping[str, Any],
+    child_row: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Combine worker-tree and backend cleanup proof for one terminal child.
+
+    The aggregate process launches a short-lived worker, while the worker
+    launches the pinned Codex CLI.  On Windows the worker can exit before the
+    parent can enumerate its descendants, so an empty/unknown worker tree is
+    not by itself proof that the backend CLI leaked.  The worker's execution
+    record is produced by ``LocalCodexBackend`` and already carries the
+    backend-owned cleanup result; when that result is confirmed, retain both
+    observations and use it as the effective cleanup gate.
+    """
+
+    result = dict(worker_evidence)
+    worker_confirmed = bool(worker_evidence.get("confirmed"))
+    result["worker_cleanup_confirmed"] = worker_confirmed
+    record = child_row.get("record")
+    backend_confirmed = False
+    backend_cleanup: dict[str, Any] | None = None
+    if isinstance(record, Mapping):
+        raw_cleanup = record.get("cleanup_evidence")
+        if isinstance(raw_cleanup, Mapping) and raw_cleanup.get("confirmed") is True:
+            backend_confirmed = True
+            backend_cleanup = dict(raw_cleanup)
+            confirmation_source = "execution_record.cleanup_evidence"
+        elif record.get("descendant_cleanup_confirmed") is True:
+            backend_confirmed = True
+            confirmation_source = "execution_record.descendant_cleanup_confirmed"
+        else:
+            confirmation_source = None
+        if backend_confirmed:
+            result["backend_cleanup_confirmed"] = True
+            result["backend_cleanup_source"] = confirmation_source
+            result["backend_process_id"] = record.get("process_id")
+            result["backend_process_creation_time"] = record.get("process_creation_time")
+            if backend_cleanup is not None:
+                result["backend_cleanup_evidence"] = backend_cleanup
+    if backend_confirmed:
+        result["confirmed"] = True
+        result["confirmation_source"] = "backend_execution_record"
+    elif worker_confirmed:
+        result["confirmation_source"] = "aggregator_worker_tree"
+    else:
+        result["confirmation_source"] = "unconfirmed"
     return result
 
 
@@ -537,32 +847,47 @@ def _run_isolated_jobs(
     timeout_seconds: int,
     startup_timeout_seconds: int,
 ) -> list[dict[str, Any]]:
-    """Run jobs as independently terminable children and aggregate rows.
+    """Run jobs in independently terminable children with one parent ledger.
 
-    The parent owns the shared ledger.  A child owns only its job directory;
-    every state transition is copied into the parent row after the child has
-    exited and its cleanup evidence has been checked.  Queued jobs are never
-    submitted once the batch deadline is stale, and a slot is released only
-    after the child process cleanup phase returns.
+    A child may write only a dispatch candidate.  The parent owns every
+    canonical result and publishes it exactly once after the child has exited
+    and cleanup has been observed.  The dispatch clock covers bootstrap and
+    marker publication; the execution clock starts at the running marker and
+    is the only clock used for a real job timeout.
     """
 
     if not jobs:
         return []
+    _validate_job_batch(jobs, role)
     dispatch_root = output_dir / "job-dispatch" / role
     dispatch_root.mkdir(parents=True, exist_ok=True)
     concurrency = max(1, min(int(plan.get("concurrency", 1)), len(jobs)))
-    per_job_timeout = max(1, int(plan.get("timeout_seconds", 900)))
+    # ``timeout_seconds`` is the budget for one backend/native invocation.
+    # A repaired writer first prepares the full production reader input and
+    # only then dispatches the writer, so the parent job needs its own wall
+    # clock budget.  Keep the fallback for older test plans/receipts, while
+    # current plans must declare ``job_timeout_seconds`` explicitly.
+    per_job_timeout = max(1, int(plan.get("job_timeout_seconds", plan.get("timeout_seconds", 900))))
     batch_deadline = time.monotonic() + max(1, int(timeout_seconds))
+    expected_implementation_fingerprint = plan.get("implementation_fingerprint")
     rows: list[dict[str, Any]] = []
     pending = list(jobs)
     active: dict[str, dict[str, Any]] = {}
     lane_stopped = False
-    # The parent is the sole writer for these live progress surfaces.  Child
-    # processes only publish their marker and terminal row in their own job
-    # directory; this avoids concurrent JSONL/progress corruption.
+    lane_stop_reason = "cleanup_unconfirmed"
+    lane_stop_status = "not_started_cleanup_blocked"
     state_events_path = output_dir / "job-state-events.jsonl"
     progress_path = output_dir / "progress-summary.json"
     state_rows: dict[str, dict[str, Any]] = {}
+
+    def _current_implementation_fingerprint() -> str | None:
+        if expected_implementation_fingerprint is None:
+            return None
+        return fingerprint(_implementation_identity(ROOT))
+
+    def _source_is_current() -> tuple[bool, str | None]:
+        observed = _current_implementation_fingerprint()
+        return observed is None or observed == expected_implementation_fingerprint, observed
 
     def _record_state(row: Mapping[str, Any], *, event: str) -> None:
         identity = {
@@ -583,6 +908,10 @@ def _run_isolated_jobs(
                 "process_id": row.get("process_id"),
                 "process_creation_time": row.get("process_creation_time"),
                 "cleanup_confirmed": bool(row.get("cleanup_confirmed")),
+                "role_execution_started": bool(row.get("role_execution_started")),
+                "canonical_result_path": row.get("canonical_result_path"),
+                "canonical_publication_status": row.get("canonical_publication_status"),
+                "canonical_publication_error": row.get("canonical_publication_error"),
             },
         )
         progress = _execution_progress(state_rows, len(jobs))
@@ -596,80 +925,271 @@ def _run_isolated_jobs(
             },
         )
 
-    # Materialise every planned key before the first child is launched.
     for planned_job in jobs:
         _record_state(_job_row(planned_job, role), event="planned")
 
-    def _stop_pending(reason: str) -> None:
-        nonlocal lane_stopped
-        lane_stopped = True
-        while pending:
-            job = pending.pop(0)
-            row = _job_row(job, role, status="not_started_cleanup_blocked", terminal_reason=reason)
-            row["dependency_status"] = "not_started"
-            rows.append(row)
-            _record_state(row, event="not_started")
-
-    def _paths(identity: Mapping[str, Any]) -> tuple[Path, Path, Path]:
+    def _paths(identity: Mapping[str, Any]) -> tuple[Path, Path, Path, Path]:
         case_id, repeat = str(identity["case_id"]), str(identity["repeat"])
         if role == "writer":
             leaf = writer_dir / case_id / repeat / str(identity["version"])
-            row_path = leaf / "writer.json"
+            canonical_path = leaf / "writer.json"
         else:
             leaf = judge_dir / case_id / repeat / str(identity["judge_index"])
-            row_path = leaf / "judge.json"
+            canonical_path = leaf / "judge.json"
         token = _safe_dispatch_name(str(identity["job_id"]))
-        return row_path, dispatch_root / f"{token}.payload.json", dispatch_root / f"{token}.marker.json"
+        candidate_path = dispatch_root / f"{token}.candidate-result.json"
+        return canonical_path, candidate_path, dispatch_root / f"{token}.payload.json", dispatch_root / f"{token}.marker.json"
+
+    def _publish_canonical(row: dict[str, Any], canonical_path: Path) -> None:
+        """Publish one terminal parent row without replacing existing evidence."""
+
+        row["canonical_result_path"] = str(canonical_path.resolve())
+        row["canonical_publication_status"] = "published"
+        try:
+            _write_json_exclusive(canonical_path, row)
+        except FileExistsError:
+            publication_error = "canonical_result_already_exists"
+        except Exception as exc:
+            publication_error = f"{type(exc).__name__}: {exc}"
+        else:
+            return
+
+        # The execution outcome is no longer consumable when its canonical
+        # row cannot be published.  Reclassify it before the parent appends
+        # the row/state event so callers cannot mistake a completed child for
+        # a durable completed job.  Preserve the child outcome separately for
+        # diagnosis, while making the publication failure the terminal owner
+        # decision.
+        previous_status = row.get("status")
+        previous_reason = row.get("terminal_reason")
+        row["canonical_publication_status"] = "failed"
+        row["canonical_publication_error"] = publication_error
+        row["execution_status_before_canonical_publication"] = previous_status
+        row["execution_terminal_reason_before_canonical_publication"] = previous_reason
+        publication_message = f"canonical result publication failed: {publication_error}"
+        if previous_status == "failed":
+            row["terminal_reason"] = "canonical_publication_failed"
+            row["finished_at"] = row.get("finished_at") or _now()
+        else:
+            _job_transition(
+                row,
+                "failed",
+                reason="canonical_publication_failed",
+                allow_terminal_reclassification=True,
+            )
+        row["error"] = publication_message
+        row["error_event"] = {
+            "type": "error_event",
+            "role": row.get("role"),
+            "job_id": row.get("job_id"),
+            "error_class": "canonical_publication_failed",
+            "message": publication_message,
+            "terminal": True,
+            "canonical_result_path": row["canonical_result_path"],
+            "canonical_publication_error": publication_error,
+            "previous_status": previous_status,
+            "previous_terminal_reason": previous_reason,
+        }
+
+    def _record_terminal(row: dict[str, Any], *, canonical_path: Path, event: str = "terminal") -> None:
+        _publish_canonical(row, canonical_path)
+        rows.append(row)
+        _record_state(row, event=event)
+
+    def _stop_pending(reason: str, *, status: str = "not_started_cleanup_blocked") -> None:
+        nonlocal lane_stopped, lane_stop_reason, lane_stop_status
+        lane_stopped = True
+        lane_stop_reason = reason
+        lane_stop_status = status
+        while pending:
+            job = pending.pop(0)
+            identity = _job_identity(job, role)
+            canonical_path, _candidate_path, _payload_path, _marker_path = _paths(identity)
+            row = _job_row(job, role, status=status, terminal_reason=reason)
+            row["dependency_status"] = "not_started"
+            if status == "not_started_source_changed":
+                row["source_identity_expected"] = expected_implementation_fingerprint
+                row["source_identity_observed"] = _current_implementation_fingerprint()
+            _record_terminal(row, canonical_path=canonical_path, event="not_started")
+
+    def _fail_fast_policy(row: Mapping[str, Any]) -> tuple[str, str] | None:
+        """Return the lane stop reason/status for a terminal failed row.
+
+        A dependency-failed row intentionally has no cleanup proof because no
+        owned provider process was admitted.  Check its terminal status before
+        applying the cleanup gate so a launch/bootstrap failure is reported as
+        the cause that stopped the lane.  Rows with an owned process still
+        require cleanup proof; an unknown descendant tree becomes the stronger
+        cleanup-blocked stop reason.
+        """
+
+        status = str(row.get("status") or "")
+        terminal_reason = str(row.get("terminal_reason") or "")
+        if status == "not_started_source_changed" or "source_changed" in terminal_reason:
+            return "source_changed_during_execution", "not_started_source_changed"
+        if status == "not_started_deadline" or terminal_reason == "batch_deadline":
+            return "batch_deadline", "not_started_deadline"
+        if status == "not_started_cleanup_blocked" or terminal_reason == "cleanup_unconfirmed":
+            return "cleanup_unconfirmed", "not_started_cleanup_blocked"
+        if status == "not_started_dependency_failed":
+            return f"batch_stopped_after_failed_job:{row.get('job_id')}", "not_started_dependency_failed"
+        if status in {"failed", "timed_out", "cancelled"}:
+            if row.get("process_id") is not None and row.get("cleanup_confirmed") is not True:
+                return "cleanup_unconfirmed", "not_started_cleanup_blocked"
+            return f"batch_stopped_after_failed_job:{row.get('job_id')}", "not_started_dependency_failed"
+        if row.get("process_id") is not None and row.get("cleanup_confirmed") is not True:
+            return "cleanup_unconfirmed", "not_started_cleanup_blocked"
+        return None
+
+    def _stop_active(reason: str, *, exclude_job_id: str | None = None) -> bool:
+        """Terminate every still-running sibling after a fail-fast event.
+
+        A sibling that already exited is left for the normal natural-exit
+        path in this loop, preserving any valid terminal result it produced
+        before the failure was observed.  A live sibling is cancelled through
+        the same owned process-tree helper used by timeout handling, and its
+        cleanup receipt is published before it leaves ``active``.
+
+        Return whether every cancellation had confirmed cleanup.  The caller
+        upgrades the pending-row status to cleanup-blocked when any ownership
+        probe remains unknown.
+        """
+
+        cleanup_confirmed = True
+        for sibling_id, state in list(active.items()):
+            if sibling_id == exclude_job_id:
+                continue
+            process = state["process"]
+            try:
+                running = process.poll() is None
+            except (OSError, ValueError):
+                running = True
+            if not running:
+                continue
+            try:
+                evidence = dict(
+                    _terminate_process_tree(
+                        process,
+                        process_group_id=(process.pid if os.name != "nt" else None),
+                        root_creation_time=state["child_started"],
+                    )
+                )
+            except Exception as exc:
+                evidence = {
+                    "required": True,
+                    "confirmed": False,
+                    "root_pid": getattr(process, "pid", None),
+                    "root_creation_time": state["child_started"],
+                    "termination_method": "parent_termination_error",
+                    "error": f"{type(exc).__name__}: {exc}",
+                }
+            if not evidence.get("confirmed"):
+                cleanup_confirmed = False
+            sibling_row = _decorate_job_row(
+                state["base"], state["identity"],
+                process_id=getattr(process, "pid", None),
+                process_creation_time=state["child_started"],
+                cleanup_evidence=evidence,
+                status="cancelled",
+                reason=f"cancelled_after_{reason}",
+            )
+            if not evidence.get("confirmed"):
+                sibling_row["terminal_reason"] = "cleanup_unconfirmed"
+                sibling_row["error"] = "cleanup_unconfirmed"
+                sibling_row["error_event"] = {
+                    "type": "error_event",
+                    "role": role,
+                    "job_id": state["identity"]["job_id"],
+                    "error_class": "cleanup_unconfirmed",
+                    "message": "owned process cleanup was not confirmed after fail-fast cancellation",
+                    "terminal": True,
+                }
+            _record_terminal(sibling_row, canonical_path=state["canonical_path"])
+            del active[sibling_id]
+        return cleanup_confirmed
+
+    def _fail_fast_after_terminal(row: Mapping[str, Any]) -> None:
+        """Stop the lane once a required terminal row cannot be consumed."""
+
+        nonlocal lane_stopped, lane_stop_reason, lane_stop_status
+        policy = _fail_fast_policy(row)
+        if policy is None:
+            return
+        reason, status = policy
+        lane_stopped = True
+        lane_stop_reason = reason
+        lane_stop_status = status
+        siblings_clean = _stop_active(reason, exclude_job_id=str(row.get("job_id")))
+        if not siblings_clean:
+            lane_stop_reason = "cleanup_unconfirmed"
+            lane_stop_status = "not_started_cleanup_blocked"
+        _stop_pending(lane_stop_reason, status=lane_stop_status)
 
     while pending or active:
-        now = time.monotonic()
         if lane_stopped and pending:
-            _stop_pending("cleanup_unconfirmed")
+            _stop_pending(lane_stop_reason, status=lane_stop_status)
+
         while not lane_stopped and pending and len(active) < concurrency and time.monotonic() < batch_deadline:
+            source_current, observed_source = _source_is_current()
+            if not source_current:
+                _stop_pending("source_changed_before_dispatch", status="not_started_source_changed")
+                break
             job = pending.pop(0)
             identity = _job_identity(job, role)
             base = _job_row(job, role, status="starting")
-            base["started_at"] = _now()
+            dispatch_started_at = _now()
+            base["dispatch_started_at"] = dispatch_started_at
+            base["source_identity_expected"] = expected_implementation_fingerprint
+            base["source_identity_observed"] = observed_source
             _record_state(base, event="starting")
-            row_path, payload_path, marker_path = _paths(identity)
-            # Existing job directories are immutable evidence from an earlier
-            # run.  Do not let a late/repeated child overwrite them.
-            if row_path.parent.exists() and any(row_path.parent.iterdir()):
+            canonical_path, candidate_path, payload_path, marker_path = _paths(identity)
+            if canonical_path.parent.exists() and any(canonical_path.parent.iterdir()):
                 _job_transition(base, "failed", reason="run_root_not_empty")
                 base["dependency_status"] = "blocked_existing_capture"
                 base["error_event"] = {
                     "type": "error_event", "role": role, "job_id": identity["job_id"],
                     "error_class": "run_root_not_empty", "message": "job capture directory already contains evidence", "terminal": True,
                 }
-                rows.append(base)
-                _record_state(base, event="terminal")
+                _record_terminal(base, canonical_path=canonical_path)
+                _fail_fast_after_terminal(base)
                 continue
             payload = {
                 "schema_version": "logic-writing.quality-job-payload.v1",
                 "role": role,
                 "job": job,
-                "row_path": str(row_path.resolve()),
+                "row_path": str(candidate_path.resolve()),
+                "candidate_path": str(candidate_path.resolve()),
+                "canonical_path": str(canonical_path.resolve()),
                 "marker_path": str(marker_path.resolve()),
                 "writer_dir": str(writer_dir.resolve()),
                 "judge_dir": str(judge_dir.resolve()),
                 "cases_dir": str(cases_dir.resolve()),
                 "rubric_text": rubric_text,
                 "backend_config": _backend_config(local_backend),
-                "worker_process_creation_time": _now(),
+                "implementation_fingerprint": expected_implementation_fingerprint,
+                # The worker fills its own creation observation into both the
+                # marker and candidate.  A parent-side pre-Popen timestamp
+                # would be an inaccurate identity and could not defend
+                # against PID reuse.
+                "worker_process_creation_time": None,
             }
             _write_json_atomic(payload_path, payload)
+            dispatch_started_monotonic = time.monotonic()
             try:
-                process = subprocess.Popen([sys.executable, str(Path(__file__).resolve()), "--_job-worker", str(payload_path)], **_job_process_options())
+                process = subprocess.Popen(
+                    [sys.executable, str(Path(__file__).resolve()), "--_job-worker", str(payload_path)],
+                    **_job_process_options(),
+                )
             except (OSError, ValueError) as exc:
                 _job_transition(base, "not_started_dependency_failed", reason="start_failed")
                 base.update({
                     "dependency_status": "failed", "error": str(exc),
                     "error_event": {"type": "error_event", "role": role, "job_id": identity["job_id"], "error_class": type(exc).__name__, "message": str(exc), "terminal": True},
                 })
-                rows.append(base)
-                _record_state(base, event="terminal")
+                _record_terminal(base, canonical_path=canonical_path)
+                _fail_fast_after_terminal(base)
                 continue
-            pid = int(process.pid)
+            pid = int(getattr(process, "pid", 0) or 0) or None
             child_started = _now()
             base["process_id"] = pid
             base["process_creation_time"] = child_started
@@ -678,132 +1198,251 @@ def _run_isolated_jobs(
             _record_state(base, event="process_started")
             active[identity["job_id"]] = {
                 "job": job, "identity": identity, "base": base, "process": process,
-                "row_path": row_path, "marker_path": marker_path, "payload_path": payload_path,
-                "started_monotonic": time.monotonic(), "child_started": child_started,
+                "row_path": candidate_path, "candidate_path": candidate_path, "canonical_path": canonical_path,
+                "marker_path": marker_path, "payload_path": payload_path,
+                "dispatch_started_monotonic": dispatch_started_monotonic,
+                "execution_started_monotonic": None,
+                "child_started": child_started,
+                "marker_admitted": False,
+                "marker_identity": None,
+                "marker_validation_error": None,
+                "marker_error_reported": False,
             }
-            now = time.monotonic()
-        # Let active children reach their batch-deadline terminal state before
-        # classifying queued work.  This matters when child cleanup is
-        # unconfirmed: the cleanup gate must convert the remaining queue to
-        # ``not_started_cleanup_blocked`` rather than allowing this earlier
-        # queue pass to hide that safety failure as ``not_started_deadline``.
+
         if pending and not active and time.monotonic() >= batch_deadline:
-            while pending:
-                job = pending.pop(0)
-                row = _job_row(job, role, status="not_started_deadline", terminal_reason="batch_deadline")
-                row["dependency_status"] = "not_started"
-                rows.append(row)
+            _stop_pending("batch_deadline", status="not_started_deadline")
+
         for job_id, state in list(active.items()):
             process = state["process"]
             base = state["base"]
             marker_path = state["marker_path"]
+            try:
+                process_running = process.poll() is None
+            except (OSError, ValueError):
+                process_running = False
             if marker_path.is_file() and base.get("dependency_status") == "starting":
                 try:
                     marker = _read_json(marker_path)
                 except (OSError, ValueError, TypeError):
                     marker = {}
-                if isinstance(marker, Mapping) and marker.get("status") == "running":
+                marker_error = _running_marker_error(marker, state["identity"], process)
+                if marker_error is None:
+                    now = time.monotonic()
+                    state["marker_admitted"] = True
+                    state["marker_identity"] = dict(marker)
+                    state["marker_validation_error"] = None
                     base["dependency_status"] = "ready"
                     base["started_at"] = marker.get("started_at") or base.get("started_at")
+                    base["role_execution_started"] = bool(marker.get("role_execution_started"))
+                    if state["execution_started_monotonic"] is None:
+                        state["execution_started_monotonic"] = now
+                        base["execution_started_at"] = _now()
                     _job_transition(base, "running", at=str(base.get("started_at") or _now()))
                     _record_state(base, event="running")
-            elapsed = time.monotonic() - float(state["started_monotonic"])
+                else:
+                    # Keep the dispatch clock active until a valid marker is
+                    # observed.  A malformed marker is diagnostic while the
+                    # process is alive; if it exits without admission, the
+                    # candidate cannot be promoted to a completed job.
+                    state["marker_validation_error"] = marker_error
+                    base["marker_validation_error"] = marker_error
+                    if not state["marker_error_reported"]:
+                        state["marker_error_reported"] = True
+                        _record_state(base, event="marker_invalid")
+            now = time.monotonic()
+            dispatch_elapsed = now - float(state["dispatch_started_monotonic"])
+            execution_started_monotonic = state.get("execution_started_monotonic")
+            execution_elapsed = (
+                now - float(execution_started_monotonic)
+                if execution_started_monotonic is not None
+                else None
+            )
             reason: str | None = None
             terminal_status: str | None = None
-            if process.poll() is None and time.monotonic() >= batch_deadline:
+            if process_running and now >= batch_deadline:
                 reason, terminal_status = "batch_deadline", "timed_out"
-            elif process.poll() is None and base.get("dependency_status") == "starting" and elapsed >= max(1, int(startup_timeout_seconds)):
-                # A worker that never reaches the ready marker has not
-                # started the requested job.  Keep the public terminal reason
-                # in the dependency-failure vocabulary used by the child
-                # path; retain the more specific watchdog diagnosis on the
-                # row for operators.
-                reason, terminal_status = "dependency_failed", "not_started_dependency_failed"
-                base["dependency_failure_reason"] = "startup_timeout"
+            elif process_running and base.get("dependency_status") == "starting" and dispatch_elapsed >= max(1, int(startup_timeout_seconds)):
+                reason = str(state.get("marker_validation_error") or "dependency_failed")
+                terminal_status = "not_started_dependency_failed"
+                base["dependency_failure_reason"] = state.get("marker_validation_error") or "startup_timeout"
                 base["dependency_status"] = "failed"
-                base["dependency_status"] = "failed"
-            # A job timeout is meaningful only after the child has passed the
-            # dependency/startup gate.  On Windows process startup can take
-            # longer than a deliberately tiny contract-test job timeout; if
-            # we applied ``per_job_timeout`` while the child is still marked
-            # ``starting``, a dependency-construction failure would be
-            # mislabeled as ``timed_out`` before its terminal row could be
-            # published.  Let the startup watchdog own that interval and let
-            # the batch deadline remain the outer bound.
-            elif (
-                process.poll() is None
-                and (
-                    base.get("dependency_status") != "starting"
-                    # Contract tests use a small in-memory process double to
-                    # exercise cleanup failure.  It has no child bootstrap
-                    # boundary, so its per-job timeout must remain the hard
-                    # liveness limit.  Real subprocess workers get the
-                    # dedicated startup watchdog above, which gives a slow
-                    # interpreter enough time to publish a dependency row.
-                    or not isinstance(process, _SUBPROCESS_POPEN_TYPE)
-                )
-                and elapsed >= per_job_timeout
-            ):
+            elif process_running and base.get("dependency_status") == "starting" and not isinstance(process, _SUBPROCESS_POPEN_TYPE) and dispatch_elapsed >= per_job_timeout:
+                # In-memory process doubles do not expose the child bootstrap
+                # marker.  Keep their direct hard timeout for contract tests;
+                # real subprocesses are governed by the startup watchdog.
                 reason, terminal_status = "hard_timeout", "timed_out"
-            if process.poll() is None and terminal_status is not None:
-                evidence = _terminate_process_tree(process, process_group_id=(process.pid if os.name != "nt" else None))
-                evidence = dict(evidence)
+            elif process_running and base.get("dependency_status") != "starting" and execution_elapsed is not None and execution_elapsed >= per_job_timeout:
+                reason, terminal_status = "hard_timeout", "timed_out"
+            if process_running and terminal_status is not None:
+                try:
+                    evidence = dict(
+                        _terminate_process_tree(
+                            process,
+                            process_group_id=(process.pid if os.name != "nt" else None),
+                            root_creation_time=state["child_started"],
+                        )
+                    )
+                except Exception as exc:
+                    evidence = {
+                        "required": True, "confirmed": False, "root_pid": getattr(process, "pid", None),
+                        "termination_method": "parent_termination_error", "error": f"{type(exc).__name__}: {exc}",
+                    }
                 evidence.setdefault("root_creation_time", state["child_started"])
-                row = _decorate_job_row(base, state["identity"], process_id=process.pid, process_creation_time=state["child_started"], cleanup_evidence=evidence, status=terminal_status, reason=reason)
-                rows.append(row)
-                _record_state(row, event="terminal")
-                if not evidence.get("confirmed"):
-                    _stop_pending("cleanup_unconfirmed")
+                row = _decorate_job_row(
+                    base, state["identity"], process_id=getattr(process, "pid", None),
+                    process_creation_time=state["child_started"], cleanup_evidence=evidence,
+                    status=terminal_status, reason=reason,
+                )
+                _record_terminal(row, canonical_path=state["canonical_path"])
                 del active[job_id]
+                _fail_fast_after_terminal(row)
                 continue
-            if process.poll() is None:
+            if process_running:
                 continue
-            returncode = process.returncode
-            # The process has exited.  Check its process group once more and
-            # use the same tree receipt shape as the abort path.
+
+            returncode = getattr(process, "returncode", None)
             group_state = _process_group_alive(process.pid if os.name != "nt" else None)
+            descendant_pids = (
+                _windows_descendant_pids(
+                    process.pid,
+                    root_creation_time=state["child_started"],
+                )
+                if os.name == "nt"
+                else None
+            )
+            if os.name == "nt":
+                descendants_observed = descendant_pids is not None
+                descendants_remaining = list(descendant_pids or []) if descendants_observed else None
+                tree_confirmed = descendants_observed and not descendants_remaining
+            else:
+                descendants_observed = group_state is not None
+                descendants_remaining = [] if group_state is False else None
+                tree_confirmed = group_state is False
             evidence = {
-                "required": True, "confirmed": bool(returncode is not None and (group_state is False or group_state is None or os.name == "nt")),
-                "root_pid": process.pid, "root_creation_time": state["child_started"],
+                "required": True,
+                "confirmed": bool(returncode is not None and tree_confirmed),
+                "root_pid": getattr(process, "pid", None),
+                "root_creation_time": state["child_started"],
                 "process_group_id": process.pid if os.name != "nt" else None,
-                "termination_method": "natural_exit", "root_exited": returncode is not None,
-                "process_group_alive_after": group_state, "returncode": returncode, "cleanup_finished_at": _now(),
+                "termination_method": "natural_exit",
+                "root_exited": returncode is not None,
+                "process_group_alive_after": group_state,
+                "descendants_observed": descendants_observed,
+                "descendant_pids": list(descendant_pids or []) if descendant_pids is not None else [],
+                "descendants_remaining": descendants_remaining,
+                "returncode": returncode,
+                "cleanup_finished_at": _now(),
             }
             try:
-                child_row = _read_json(state["row_path"]) if state["row_path"].is_file() else None
+                child_row = _read_json(state["candidate_path"]) if state["candidate_path"].is_file() else None
             except (OSError, ValueError, TypeError) as exc:
                 child_row = None
                 read_error = str(exc)
             else:
                 read_error = None
-            if not isinstance(child_row, dict):
-                row = _decorate_job_row(base, state["identity"], process_id=process.pid, process_creation_time=state["child_started"], cleanup_evidence=evidence, status="failed", reason="worker_no_terminal_result")
+            source_current, observed_source = _source_is_current()
+            if not source_current:
+                row = _decorate_job_row(
+                    base, state["identity"], process_id=getattr(process, "pid", None),
+                    process_creation_time=state["child_started"], cleanup_evidence=evidence,
+                    status="failed", reason="source_changed_during_execution",
+                )
+                row["source_identity_expected"] = expected_implementation_fingerprint
+                row["source_identity_observed"] = observed_source
+                row["candidate_quarantined"] = True
+                lane_stopped = True
+                lane_stop_reason = "source_changed_during_execution"
+                lane_stop_status = "not_started_source_changed"
+            elif not isinstance(child_row, dict):
+                row = _decorate_job_row(
+                    base, state["identity"], process_id=getattr(process, "pid", None),
+                    process_creation_time=state["child_started"], cleanup_evidence=evidence,
+                    status="failed", reason="worker_no_terminal_result",
+                )
                 row["error"] = read_error or "job worker exited without a terminal row"
             elif returncode != 0 and child_row.get("status") == "completed":
-                row = _decorate_job_row(base, state["identity"], process_id=process.pid, process_creation_time=state["child_started"], cleanup_evidence=evidence, status="failed", reason="nonzero_exit")
+                row = _decorate_job_row(
+                    base, state["identity"], process_id=getattr(process, "pid", None),
+                    process_creation_time=state["child_started"], cleanup_evidence=evidence,
+                    status="failed", reason="nonzero_exit",
+                )
                 row["error"] = f"job worker exited with code {returncode}"
             else:
                 child_row.setdefault("status_history", base.get("status_history", []))
-                row = _decorate_job_row(child_row, state["identity"], process_id=process.pid, process_creation_time=state["child_started"], cleanup_evidence=evidence)
-                if not evidence.get("confirmed"):
-                    # The process has already reached a terminal child state;
-                    # a duplicate terminal transition is rejected.  Preserve
-                    # that state and attach the cleanup failure as the reason
-                    # that stops the lane.
+                child_status = str(child_row.get("status") or "failed")
+                marker_error = state.get("marker_validation_error")
+                candidate_error = _candidate_identity_error(
+                    child_row,
+                    state["identity"],
+                    state.get("marker_identity") if state.get("marker_admitted") else None,
+                )
+                if not state.get("marker_admitted"):
+                    # Backend/bootstrap failures are allowed to publish their
+                    # own dependency-failed row even when no running marker
+                    # could be emitted.  A terminal candidate that claims
+                    # execution without admission is quarantined instead of
+                    # being promoted by the parent.
+                    if child_status == "not_started_dependency_failed" and candidate_error is None:
+                        row = _decorate_job_row(
+                            child_row, state["identity"], process_id=getattr(process, "pid", None),
+                            process_creation_time=state["child_started"], cleanup_evidence=evidence,
+                        )
+                        row["dependency_status"] = "failed"
+                        row["marker_validation_error"] = marker_error or "worker_marker_missing"
+                    else:
+                        row = _decorate_job_row(
+                            base, state["identity"], process_id=getattr(process, "pid", None),
+                            process_creation_time=state["child_started"], cleanup_evidence=evidence,
+                            status="not_started_dependency_failed",
+                            reason=marker_error or "worker_marker_missing",
+                        )
+                        row["dependency_status"] = "failed"
+                        row["candidate_quarantined"] = True
+                        row["candidate_status"] = child_status
+                        if candidate_error:
+                            row["candidate_identity_error"] = candidate_error
+                elif candidate_error:
+                    row = _decorate_job_row(
+                        base, state["identity"], process_id=getattr(process, "pid", None),
+                        process_creation_time=state["child_started"], cleanup_evidence=evidence,
+                        status="failed", reason=candidate_error,
+                    )
+                    row["candidate_quarantined"] = True
+                    row["candidate_identity_error"] = candidate_error
+                elif child_status in {"queued", "starting", "running"}:
+                    row = _decorate_job_row(
+                        base, state["identity"], process_id=getattr(process, "pid", None),
+                        process_creation_time=state["child_started"], cleanup_evidence=evidence,
+                        status="failed", reason="worker_nonterminal_result",
+                    )
+                elif child_status not in _JOB_TERMINAL_STATUSES:
+                    row = _decorate_job_row(
+                        base, state["identity"], process_id=getattr(process, "pid", None),
+                        process_creation_time=state["child_started"], cleanup_evidence=evidence,
+                        status="failed", reason="worker_invalid_terminal_result",
+                    )
+                    row["candidate_quarantined"] = True
+                    row["candidate_status"] = child_status
+                else:
+                    effective_evidence = _effective_cleanup_evidence(evidence, child_row)
+                    row = _decorate_job_row(
+                        child_row, state["identity"], process_id=getattr(process, "pid", None),
+                        process_creation_time=state["child_started"], cleanup_evidence=effective_evidence,
+                    )
+                if not row.get("cleanup_confirmed"):
                     row["terminal_reason"] = "cleanup_unconfirmed"
                     row["error"] = "cleanup_unconfirmed"
                     row["error_event"] = {
                         "type": "error_event", "role": role, "job_id": state["identity"]["job_id"],
                         "error_class": "cleanup_unconfirmed", "message": "owned process cleanup was not confirmed", "terminal": True,
                     }
-                    lane_stopped = True
-            rows.append(row)
-            _record_state(row, event="terminal")
+            _record_terminal(row, canonical_path=state["canonical_path"])
             del active[job_id]
+            _fail_fast_after_terminal(row)
         if active:
             time.sleep(0.05)
     if lane_stopped and pending:
-        _stop_pending("cleanup_unconfirmed")
+        _stop_pending(lane_stop_reason, status=lane_stop_status)
     order = {str(_job_identity(job, role)["job_id"]): index for index, job in enumerate(jobs)}
     return sorted(rows, key=lambda row: order.get(str(row.get("job_id")), len(order)))
 
@@ -817,7 +1456,7 @@ def _orchestration_timeout(plan: dict[str, Any], job_count: int) -> int:
     explicit = plan.get("orchestration_timeout_seconds")
     if explicit is not None:
         return max(1, int(explicit))
-    per_job = max(1, int(plan.get("timeout_seconds", 900)))
+    per_job = max(1, int(plan.get("job_timeout_seconds", plan.get("timeout_seconds", 900))))
     concurrency = max(1, int(plan.get("concurrency", 1)))
     waves = max(1, (max(0, job_count) + concurrency - 1) // concurrency)
     return per_job * waves
@@ -1091,6 +1730,9 @@ def _production_compose_prompt(inputs: Mapping[str, Any]) -> str:
         "请根据读者意图、冻结材料和已经通过 native depth 的 ResearchGuard plan，给出四个字段："
         "central_question、central_throughline、opening_job、conclusion_job。每个字段都是具体的一句话，"
         "说明段落如何承接、限制如何改变结论或行动；不要罗列资料卡片。"
+        "冻结材料和其中明确列出的约束是唯一的事实来源；native plan 中的 Assumption、Rebuttal、Warrant 或派生说明只是推理线索，"
+        "不是新的观察或已被证实的限制。材料没有提供的条件必须保持未知，不得把‘没有说明’改写成‘尚待确认’或当前研究的事实缺口；"
+        "这类条件只能在确有必要时作为后续验证的条件性要求出现，并且要和当前已知限制分开。"
         "如果受限视角下的结尾缺少合法的知情路径，必须在 conclusion_job 中明确写出需要用户决定或补充材料，"
         "不能把无解要求继续包装成可直接成稿。旅行方案的每个失败分支必须给出材料支持的动作，或明确收束为出发前核实门槛，"
         "不能只写‘不能/不可’。不要添加其它字段。\n\n"
@@ -1966,7 +2608,11 @@ def _writer_prompt(case: Mapping[str, Any], version: str) -> str:
         "investigation": (
             "调查/简报要先给读者可执行的回答，再用最少但足够的证据推进判断；"
             "每个限制都要说明它改变了结论、范围或下一步什么，不要把资料目录逐项复述。"
-            "按任务声明的篇幅单位做最后一次长度核对，超出或不足都要用有信息作用的删改解决。"
+            "按任务声明的篇幅单位做最后一次长度核对，超出或不足都要用有信息作用的删改解决；"
+            "若任务要求600—800个汉字，正文必须落在该区间，低于下限时增加具体的采购判断、条件、"
+            "算式或验证动作，不用重复限制和泛化免责声明填充。先完成正文再按汉字口径计数；"
+            "若计数低于下限，必须继续补入改变采购范围、试点条件、测算或验证顺序的具体句子，"
+            "直到达到下限后才返回，不要把数字、英文单位、标点或内部说明当作汉字补足。"
         ),
         "academic-writing": (
             "学术文本要让中心论点统领证据：每一段都应有新的论证工作，并说明证据如何支持、"
@@ -1985,7 +2631,8 @@ def _writer_prompt(case: Mapping[str, Any], version: str) -> str:
             "行程要围绕旅客当天的体力、时间和天气决策组织；先说明安排为何可行，再给出触发条件和可执行备用，"
             "未知的开放时间、路线、票价或无障碍属性必须写成待核实，不能补造。"
             "把每一段必要接驳、连续步行上限和实际休息地点逐一接回默认方案；时间表的比较理由只能使用已知时刻，"
-            "未知班次必须转成出发前核查与明确替代方案。只改任务要求的受影响安排，不为显得全面而扩展风险清单。"
+            "未知班次必须转成出发前核查与明确替代方案。只改任务要求的受影响安排，不为显得全面而扩展风险清单；"
+            "未参与当天主方案或备用取舍的地点、认证、票价和全局免责声明直接省略，不要把资料审查句重复成清单。"
         ),
     }.get(str(case.get("route")), "")
     if version == "repaired":
@@ -1998,6 +2645,11 @@ def _writer_prompt(case: Mapping[str, Any], version: str) -> str:
             "删掉无新信息的重复限制、机械的对称转折、泛化的安全措辞、资料卡片式并列、作者自我说明和内部流程词。"
             "用自然的连续段落推进，让每个段落有明确功能和下一步去向；不要为了显得严谨堆叠‘这不意味着’、"
             "‘尽管如此’或‘需要指出’，不要解释你的写作流程。"
+            "材料没有提供某项核实结果时，不要把缺失信息改写成研究过程已经发生但‘目前尚未确认’；"
+            "只在它改变结论时，用‘现有材料不足以判断’或‘决策前需要核实’准确表达边界。"
+            "不要把补材料的责任交给作者或读者，不要写‘须由你补充材料’这类内部交接；"
+            "把缺口改成读者可以执行的核验、条件或明确退路。结尾收束为一个当前判断或选择及其触发条件，"
+            "删除重复的未知项清单。"
             "修订版必须在不牺牲事实、边界、格式或体裁的前提下，真正改善主线推进和读者可用性；"
             "不要声明自己完成了检查，也不要提到存在另一版稿件。"
             + route_focus
@@ -2061,8 +2713,11 @@ def _composition_guidance(case: Mapping[str, Any]) -> str:
         "F01": (
             "内部场景链必须闭合为：停电和倒计时造成即时压力→主管以钥匙为条件阻挡进入→林岚公开账页使阻挡失去"
             "可持续性→读者能看见主管放行及工人如何实际解除锁闭→货单被救但她仍承担弟弟发现副本后的信任代价。"
-            "钥匙是否被调换对林岚和读者都仍是未知；绝不能让这把未知可用性的钥匙直接开门。公开账页之后要写出"
-            "可观察的放行动作和与材料相容的破锁/解除锁闭动作，不能靠省略制造因果跳跃，也不能新增第二把钥匙。"
+            "当前目标明确选择公开账页逼主管开门；等待和砸锁只是材料列出的备选，不能让它们承担本场实际开门。"
+            "公开账页之后要写出主管放行、交钥匙或工人进入等可观察的连续动作；材料未给出锁具失败时，"
+            "不要自行补造撬锁或砸锁理由。钥匙是否被调换对林岚和读者都仍是未知；不能让这把未知可用性的钥匙直接开门，"
+            "不能新增第二把钥匙，也不能把白漆直接解释为调钥匙事实。三声船铃必须作为三声重复意象出现，"
+            "分别承载日常秩序、倒计时压力和救单后的关系变化，不要把三声拆成三个单声。"
         ),
         "F02": (
             "内部场景链必须闭合为：明确林岚在锁闭仓库外→铃声由日常变成倒计时→公开账页改变主管的可行选择→"
@@ -2071,21 +2726,27 @@ def _composition_guidance(case: Mapping[str, Any]) -> str:
         ),
         "F03": (
             "终稿是修订报告而非戏剧场景。只列三个编号项目：把知情越界与视角越界合并为一项，把代价抹平作为一项，"
-            "把作者对铃声的解释作为一项；每项都写具体改法和必须保留的内容。不要把‘三项’扩成资料清单。"
+            "把作者对铃声的解释作为一项；每项都写具体改法和必须保留的内容。公开账页是目标场景的既定动作，"
+            "砸锁只是F04列出的备选，报告不得把砸锁写成实际开门机制，也不要把材料没有要求的用户决定或补充材料交接写进正文。"
+            "不要把‘三项’扩成资料清单。"
         ),
         "T01": (
             "内部路线链按三天推进：每一天先给当天条件下的主安排及理由，再把旅馆/去处/返回之间的每段连续步行、"
             "休息地点和待核实项接回这条安排，最后给只在触发条件成立时启用的备用。不要把交通和限制另列成与行程"
-            "无关的清单；每一个限制都必须改变当天的时间、地点或选择。"
+            "无关的清单；每一个限制都必须改变当天的时间、地点或选择。主方案的返回旅馆要明确写出；"
+            "未改变三天安排的票价、认证或全局天气说明省略，不要在结尾重复总结。"
         ),
         "T02": (
             "内部路线链固定为：雨天旅客条件→工业展馆这一条安静主方案→公交和馆内休息如何使它可行→必须出发前核实"
-            "的条件→绘本馆作为一条明确备用。正文用连续说明，最后才放短checklist；不要把船、河岸或旧塔写成备选。"
+            "的条件→绘本馆作为一条明确备用。正文用连续说明，最后才放短checklist；清单只写短行动（核对公交、"
+            "座位和电梯、限制连续步行、条件不合适时改去绘本馆），不要重复证明式限制、平坦地面认证、泛指票价或天气来源。"
+            "不要把船、河岸或旧塔写成备选。"
         ),
         "T03": (
             "先原样保留第一天和第二天的可用内容，只重写第三天：电梯检修使依赖电梯的展馆安排失去可执行性，随后从"
             "材料已给出的短程绘本馆或其它可核实选择中做一个明确取舍，并说明婴儿车条件仍待核实。不要因为这一处变化"
-            "重排三天，也不要声称任何未经给出的无障碍认证。"
+            "重排三天；第三天只保留参与绘本馆/展馆取舍、返程或婴儿车核实的条件，不要插入河岸、全局天气、票价或"
+            "泛化无障碍认证说明，也不要把后续规划交给读者。不要声称任何未经给出的无障碍认证。"
         ),
     }
     selected = guidance.get(case_id)
@@ -2142,8 +2803,11 @@ def _single_judge_prompt(case: Mapping[str, Any], rubric_text: str, article: Map
         "不要猜测版本或作者，不要补写资料没有给出的事实。只返回一个 JSON 对象，格式示例："
         f"{schema_hint}。scores 的八个维度必须都是1到5的整数；核心维度 content_fidelity、"
         "instruction_fidelity、structure_fidelity 低于4必须在 defects 中指出具体原文定位、原因和修复；"
-        "每个 defect 必须包含 unit、excerpt、reason；需要给出修复动作时可在 defect 中加入 repair，"
-        "并可加入 obligation_id 和 severity；"
+        "每个 defect 必须包含 unit、excerpt、reason；severity 如填写只能使用 blocking、repair、observation 或 minor，"
+        "不得使用其它自造标签；需要给出修复动作时可在 defect 中加入 repair，并可加入 obligation_id；"
+        "只影响措辞顺滑、而不改变事实、判断或结构的轻微问题，应使用 minor 或 observation，"
+        "并且不要把它写入 required_repairs；只有影响任务完成、事实边界、逻辑结构或读者判断的问题才使用 blocking 或 repair，"
+        "并在 required_repairs 中给出对应修复；"
         "required_repairs 只能是对象数组，每项只能包含 unit 和 repair 两个字段，且两者都必须是非空字符串；"
         "required_repairs 中不要使用 action、defect_id、excerpt 或其它字段代替 repair。没有缺陷时 defects 和 required_repairs 必须为空；"
         "不得添加 X、Y、preference 或其它比较字段。\n\n"
@@ -2186,6 +2850,7 @@ def _execute_judge_job(
     local_backend: LocalCodexBackend | None,
     backend: Callable[..., Any] | None,
     resolver: LocalExecutionRecordResolver | None,
+    result_path: Path | None = None,
 ) -> dict[str, Any]:
     pair: list[dict[str, Any]] = []
     for label, writer in zip(("X", "Y"), order, strict=True):
@@ -2225,6 +2890,8 @@ def _execute_judge_job(
         "request": request,
         "request_fingerprint": fingerprint(request),
         "status": "failed",
+        "role_execution_started": True,
+        "role_execution_started_at": _now(),
     }
     job_id = _job_identity({"case": case, "repeat": repeat, "judge_index": judge_index}, "judge")["job_id"]
     try:
@@ -2263,8 +2930,9 @@ def _execute_judge_job(
             "message": str(exc),
             "terminal": True,
         }
-    path = judge_dir / str(case["case_id"]) / str(repeat) / str(judge_index) / "judge.json"
-    _write_json(path, row)
+    if result_path is None:
+        path = judge_dir / str(case["case_id"]) / str(repeat) / str(judge_index) / "judge.json"
+        _write_json(path, row)
     return row
 
 
@@ -2280,6 +2948,7 @@ def _execute_single_judge_job(
     local_backend: LocalCodexBackend | None,
     backend: Callable[..., Any] | None,
     resolver: LocalExecutionRecordResolver | None,
+    result_path: Path | None = None,
 ) -> dict[str, Any]:
     """Review one held-out artifact in an independent judge context."""
 
@@ -2321,6 +2990,8 @@ def _execute_single_judge_job(
         "request": request,
         "request_fingerprint": fingerprint(request),
         "status": "failed",
+        "role_execution_started": True,
+        "role_execution_started_at": _now(),
     }
     job_id = _job_identity({"case": case, "repeat": repeat, "judge_index": judge_index}, "judge")["job_id"]
     try:
@@ -2367,8 +3038,9 @@ def _execute_single_judge_job(
             "message": str(exc),
             "terminal": True,
         }
-    path = judge_dir / str(case["case_id"]) / str(repeat) / str(judge_index) / "judge.json"
-    _write_json(path, row)
+    if result_path is None:
+        path = judge_dir / str(case["case_id"]) / str(repeat) / str(judge_index) / "judge.json"
+        _write_json(path, row)
     return row
 
 
@@ -2507,12 +3179,17 @@ def _request_metadata(case: Mapping[str, Any], version: str, repeat: int, prompt
     return intent, writer_input
 
 
-def _load_plan(plan_path: Path | None, *, source_manifest_fp: str) -> dict[str, Any]:
+def _load_plan(
+    plan_path: Path | None,
+    *,
+    source_manifest_fp: str,
+    allow_source_manifest_mismatch: bool = False,
+) -> dict[str, Any]:
     if plan_path is None:
         return {
-            "schema_version": "logic-writing.local-backend-plan.v1", "backend_id": "local-codex:0.153.4:gpt-6-astra:xhigh",
+            "schema_version": "logic-writing.local-backend-plan.v1", "backend_id": f"local-codex:{DEFAULT_CLI_VERSION}:{DEFAULT_MODEL_ID}:{DEFAULT_REASONING_EFFORT}",
             "model_id": DEFAULT_MODEL_ID, "reasoning_effort": DEFAULT_REASONING_EFFORT, "cli_version": DEFAULT_CLI_VERSION,
-            "cli_sha256": DEFAULT_CLI_SHA256, "timeout_seconds": 900, "max_attempts": 1,
+            "cli_sha256": DEFAULT_CLI_SHA256, "timeout_seconds": 900, "job_timeout_seconds": 1800, "max_attempts": 1,
             "source_manifest_fingerprint": source_manifest_fp, "startup_timeout_seconds": 60,
             "no_progress_seconds": 0,
         }
@@ -2522,12 +3199,16 @@ def _load_plan(plan_path: Path | None, *, source_manifest_fp: str) -> dict[str, 
     if value.get("model_id") != DEFAULT_MODEL_ID or value.get("reasoning_effort") != DEFAULT_REASONING_EFFORT:
         raise ValueError("local backend plan does not use the frozen model/settings")
     declared_source = value.get("source_manifest_fingerprint")
-    if declared_source is not None and declared_source != source_manifest_fp:
+    if (
+        declared_source is not None
+        and declared_source != source_manifest_fp
+        and not allow_source_manifest_mismatch
+    ):
         raise ValueError("local backend plan source manifest fingerprint is stale")
     for key, expected in (("cli_version", DEFAULT_CLI_VERSION), ("cli_sha256", DEFAULT_CLI_SHA256)):
         if key in value and value.get(key) != expected:
             raise ValueError(f"local backend plan {key} is not the frozen local toolchain")
-    for key, minimum in (("timeout_seconds", 1), ("startup_timeout_seconds", 1), ("max_attempts", 1), ("concurrency", 1), ("no_progress_seconds", 0)):
+    for key, minimum in (("timeout_seconds", 1), ("job_timeout_seconds", 1), ("startup_timeout_seconds", 1), ("max_attempts", 1), ("concurrency", 1), ("no_progress_seconds", 0)):
         if key in value:
             try:
                 parsed = int(value[key])
@@ -2541,34 +3222,22 @@ def _load_plan(plan_path: Path | None, *, source_manifest_fp: str) -> dict[str, 
 
 
 def _implementation_identity(root: Path) -> dict[str, str]:
-    """Fingerprint the current product components used by this run."""
+    """Fingerprint every current reader component and its benchmark harness."""
 
-    candidates = (
+    root = root.resolve()
+    identity = {
+        f"skills/logic-writing/{relative}": digest
+        for relative, digest in logic_writing_source_identity(root / "skills" / "logic-writing").items()
+    }
+    harnesses = (
         root / "scripts" / "run_reader_acceptance_owner.py",
         root / "scripts" / "run_writing_quality_benchmark.py",
         root / "scripts" / "check_writing_quality_run.py",
-        root / "skills" / "logic-writing" / "scripts" / "local_execution_backend.py",
-        root / "skills" / "logic-writing" / "scripts" / "reader_execution.py",
-        root / "skills" / "logic-writing" / "scripts" / "execution_record_resolver.py",
-        root / "skills" / "logic-writing" / "scripts" / "reader_pipeline.py",
-        root / "skills" / "logic-writing" / "scripts" / "production_reader_pipeline.py",
-        root / "skills" / "logic-writing" / "scripts" / "researchguard_handoff.py",
-        root / "skills" / "logic-writing" / "scripts" / "provider_preflight.py",
-        root / "skills" / "logic-writing" / "scripts" / "build_source_unit_manifest.py",
-        root / "skills" / "logic-writing" / "scripts" / "select_route.py",
-        root / "skills" / "logic-writing" / "scripts" / "schema_validation.py",
-        root / "skills" / "logic-writing" / "assets" / "schemas" / "reader-execution-record.schema.json",
-        root / "skills" / "logic-writing" / "assets" / "schemas" / "local-single-judgment.schema.json",
-        root / "skills" / "logic-writing" / "assets" / "schemas" / "reader-brief.schema.json",
-        root / "skills" / "logic-writing" / "assets" / "schemas" / "writing-request.schema.json",
-        root / "skills" / "logic-writing" / "assets" / "schemas" / "researchguard-logic-handoff.schema.json",
-        root / "skills" / "logic-writing" / "assets" / "schemas" / "researchguard-consumption-binding.schema.json",
     )
-    identity: dict[str, str] = {}
-    for path in candidates:
+    for path in harnesses:
         if path.is_file() and not path.is_symlink():
             identity[path.relative_to(root).as_posix()] = _bytes_fp(path.read_bytes())
-    return identity
+    return dict(sorted(identity.items()))
 
 
 def _execution_policy(plan: Mapping[str, Any]) -> dict[str, Any]:
@@ -2579,6 +3248,7 @@ def _execution_policy(plan: Mapping[str, Any]) -> dict[str, Any]:
         "cli_version": plan.get("cli_version"),
         "cli_sha256": plan.get("cli_sha256"),
         "timeout_seconds": int(plan.get("timeout_seconds", 900)),
+        "job_timeout_seconds": int(plan.get("job_timeout_seconds", plan.get("timeout_seconds", 900))),
         "no_progress_seconds": int(plan.get("no_progress_seconds", 0)),
         "startup_timeout_seconds": int(plan.get("startup_timeout_seconds", 60)),
         "concurrency": int(plan.get("concurrency", 1)),
@@ -2601,7 +3271,12 @@ def _status_progress(items: list[Mapping[str, Any]]) -> dict[str, int]:
     not_started = sum(status in _JOB_NOT_STARTED_STATUSES for status in statuses)
     failed = sum(status in {"failed", "timed_out", "cancelled"} for status in statuses)
     terminal = completed + failed + sum(
-        status in {"not_started_dependency_failed", "not_started_deadline", "not_started_cleanup_blocked"}
+        status in {
+            "not_started_dependency_failed",
+            "not_started_deadline",
+            "not_started_cleanup_blocked",
+            "not_started_source_changed",
+        }
         for status in statuses
     )
     return {
@@ -2820,18 +3495,22 @@ def _initialize_local_backend(
     exceeds the plan, while avoiding a thread-pool that cannot be terminated.
     """
     started = time.monotonic()
+    startup_budget = max(1.0, float(startup_timeout_seconds))
+    startup_deadline = started + startup_budget
     try:
+        remaining_budget = max(0.1, startup_deadline - time.monotonic())
         backend = LocalCodexBackend(
             output_dir / "attempts", model_id=str(plan["model_id"]), reasoning_effort=str(plan["reasoning_effort"]),
             timeout_seconds=int(plan.get("timeout_seconds", 900)), expected_cli_version=str(plan.get("cli_version", DEFAULT_CLI_VERSION)),
             no_progress_seconds=int(plan.get("no_progress_seconds", 0)),
             expected_executable_sha256=str(plan.get("cli_sha256", DEFAULT_CLI_SHA256)),
+            startup_timeout_seconds=remaining_budget,
         )
         resolver = LocalExecutionRecordResolver(
             backend.run_root, expected_cli_version=backend.cli_version,
             expected_cli_sha256=backend.executable_sha256, expected_backend_id=backend.backend_id,
         )
-        if time.monotonic() - started > max(1, int(startup_timeout_seconds)):
+        if time.monotonic() >= startup_deadline:
             return None, None, "startup_timeout"
         return backend, resolver, None
     except Exception as exc:
@@ -2962,6 +3641,7 @@ def _execute_writer_job(
     local_backend: LocalCodexBackend | None,
     backend: Callable[..., Any] | None,
     resolver: LocalExecutionRecordResolver | None,
+    result_path: Path | None = None,
 ) -> dict[str, Any]:
     """Execute one writer job and persist only its own artifact directory.
 
@@ -3019,6 +3699,8 @@ def _execute_writer_job(
         "status": "failed",
         "artifact_path": None,
         "artifact_fingerprint": None,
+        "role_execution_started": True,
+        "role_execution_started_at": _now(),
     }
     job_id = _job_identity({"case": case, "repeat": repeat, "version": version}, "writer")["job_id"]
     if production_result is not None:
@@ -3091,8 +3773,9 @@ def _execute_writer_job(
             "message": str(exc),
             "terminal": True,
         }
-    row_path = writer_dir / str(case["case_id"]) / str(repeat) / version / "writer.json"
-    _write_json(row_path, row)
+    if result_path is None:
+        row_path = writer_dir / str(case["case_id"]) / str(repeat) / version / "writer.json"
+        _write_json(row_path, row)
     return row
 
 
@@ -3292,7 +3975,15 @@ def run_benchmark(
                             "evaluation_mode": "pair",
                         }
                         all_judge_jobs.append(dependency_job)
-                        dependency_rows.append(_dependency_judge_row(dependency_job))
+                        dependency_rows.append(
+                            _dependency_judge_row(
+                                dependency_job,
+                                dependency_writer_job_ids=[
+                                    f"writer:{case['case_id']}:{repeat}:baseline",
+                                    f"writer:{case['case_id']}:{repeat}:repaired",
+                                ],
+                            )
+                        )
                     continue
                 for judge_index, order in enumerate(((baseline, repaired), (repaired, baseline)), start=1):
                     runnable_job = {"case": case, "repeat": repeat, "judge_index": judge_index, "order": order, "evaluation_mode": "pair"}
@@ -3354,9 +4045,12 @@ def run_benchmark(
         "terminal_reason": "all_jobs_completed" if complete else "jobs_incomplete",
         "quality_claim_status": "passed" if summary["status"] == "passed" else ("failed" if summary["status"] == "failed" else "incomplete"),
         "planned_writer_count": plan["planned_writer_count"], "planned_judge_count": plan["planned_judge_count"], "planned_execution_count": plan["planned_execution_count"],
-        "actual_writer_count": _started_row_count(writers), "actual_judge_count": _started_row_count(judges),
+        "worker_process_started_writer_count": _worker_process_started_count(writers),
+        "worker_process_started_judge_count": _worker_process_started_count(judges),
+        "actual_writer_count": _role_execution_started_count(writers),
+        "actual_judge_count": _role_execution_started_count(judges),
         "actual_planner_count": _planner_count(writers, completed_only=False),
-        "actual_execution_count": _started_row_count(writers) + _started_row_count(judges) + _planner_count(writers, completed_only=False),
+        "actual_execution_count": _role_execution_started_count(writers) + _role_execution_started_count(judges) + _planner_count(writers, completed_only=False),
         "successful_artifact_count": sum(row.get("status") == "completed" for row in writers), "successful_judge_count": sum(row.get("status") == "completed" for row in judges),
         "backend_id": local_backend.backend_id if local_backend else backend_id, "source_manifest_fingerprint": source_manifest_fp, "created_at": _now(),
         "implementation_fingerprint": plan.get("implementation_fingerprint"),
@@ -3632,7 +4326,13 @@ def _run_held_out_benchmark(
                         "evaluation_mode": "single",
                     }
                     all_judge_jobs.append(dependency_job)
-                    dependency_rows.append(_dependency_judge_row(dependency_job, reason="dependency_failed"))
+                    dependency_rows.append(
+                        _dependency_judge_row(
+                            dependency_job,
+                            dependency_writer_job_ids=[f"writer:{case['case_id']}:1:{HELD_OUT_VERSION}"],
+                            reason="dependency_failed",
+                        )
+                    )
                 continue
             for judge_index in (1, 2):
                 runnable_job = {
@@ -3694,10 +4394,12 @@ def _run_held_out_benchmark(
         "planned_judge_count": plan["planned_judge_count"],
         "planned_planner_count": plan["planned_planner_count"],
         "planned_execution_count": plan["planned_execution_count"],
-        "actual_writer_count": _started_row_count(writers),
-        "actual_judge_count": _started_row_count(judges),
+        "worker_process_started_writer_count": _worker_process_started_count(writers),
+        "worker_process_started_judge_count": _worker_process_started_count(judges),
+        "actual_writer_count": _role_execution_started_count(writers),
+        "actual_judge_count": _role_execution_started_count(judges),
         "actual_planner_count": _planner_count(writers, completed_only=False),
-        "actual_execution_count": _started_row_count(writers) + _started_row_count(judges) + _planner_count(writers, completed_only=False),
+        "actual_execution_count": _role_execution_started_count(writers) + _role_execution_started_count(judges) + _planner_count(writers, completed_only=False),
         "successful_artifact_count": sum(row.get("status") == "completed" for row in writers),
         "successful_judge_count": sum(row.get("status") == "completed" for row in judges),
         "backend_id": local_backend.backend_id if local_backend else backend_id,

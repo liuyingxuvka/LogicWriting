@@ -187,12 +187,23 @@ def _record_initialization_failure(
     reason = terminal_reason or f"producer_initialization_failed:{type(error).__name__}"
     message = str(error)
     held_out = mode == "held_out"
-    planned_writer_count = 4 if held_out else CASE_COUNT * REPEATS * len(VERSIONS)
-    planned_judge_count = 8 if held_out else CASE_COUNT * REPEATS * 2
-    planned_planner_count = 8 if held_out else CASE_COUNT * REPEATS * 2
+    preflight = mode == "preflight"
+    planned_writer_count = (
+        2 if preflight else (4 if held_out else CASE_COUNT * REPEATS * len(VERSIONS))
+    )
+    planned_judge_count = (
+        2 if preflight else (8 if held_out else CASE_COUNT * REPEATS * 2)
+    )
+    planned_planner_count = (
+        2 if preflight else (8 if held_out else CASE_COUNT * REPEATS * 2)
+    )
     plan = {
         "schema_version": "logic-writing.writing-quality-run.v2",
-        "benchmark_id": "logic-writing-held-out-4x1x2" if held_out else "logic-writing-real-quality-12x2x2",
+        "benchmark_id": (
+            "logic-writing-preflight-1x1x2"
+            if preflight
+            else ("logic-writing-held-out-4x1x2" if held_out else "logic-writing-real-quality-12x2x2")
+        ),
         "mode": mode,
         "evidence_mode": "real_execution",
         "source_manifest_fingerprint": None,
@@ -205,9 +216,9 @@ def _record_initialization_failure(
         "error": message,
     }
     plan.update({
-        "case_count": 4 if held_out else CASE_COUNT,
-        "repeats_per_version": 1 if held_out else REPEATS,
-        "versions": ["current"] if held_out else list(VERSIONS),
+        "case_count": 1 if preflight else (4 if held_out else CASE_COUNT),
+        "repeats_per_version": 1 if preflight or held_out else REPEATS,
+        "versions": list(VERSIONS) if preflight or not held_out else ["current"],
         "planned_writer_count": planned_writer_count,
         "planned_judge_count": planned_judge_count,
         "planned_planner_count": planned_planner_count,
@@ -262,7 +273,7 @@ def _record_initialization_failure(
         "status": "incomplete",
         "mode": mode,
         "held_out_passed": False if held_out else None,
-        "case_count": 4 if held_out else CASE_COUNT,
+        "case_count": 1 if preflight else (4 if held_out else CASE_COUNT),
         "improved_case_count": 0,
         "required_improved_case_count": 0 if held_out else 9,
         "cases": [],
@@ -278,12 +289,15 @@ def _record_initialization_failure(
     placeholder_cases = (
         [{"case_id": case_id} for case_id in HELD_OUT_CASE_IDS]
         if held_out
-        else [{"case_id": case_id} for case_id in ("I01", "A01", "F01", "T01", "I02", "A02", "F02", "T02", "I03", "A03", "F03", "T03")]
+        else ([{"case_id": "I01"}] if preflight else [
+            {"case_id": case_id}
+            for case_id in ("I01", "A01", "F01", "T01", "I02", "A02", "F02", "T02", "I03", "A03", "F03", "T03")
+        ])
     )
     placeholder_ledger = _build_planned_ledger(
         placeholder_cases,
         plan,
-        repeats_count=1 if held_out else REPEATS,
+        repeats_count=1 if preflight or held_out else REPEATS,
         versions=("current",) if held_out else VERSIONS,
         mode="held_out" if held_out else "pair",
     )
@@ -384,7 +398,16 @@ def _current_preflight_identity(root: Path, backend_plan: Path | None) -> dict[s
 
     cases_dir = (root / "tests" / "fixtures" / "writing_quality").resolve()
     _, _, _, source_manifest_fp, _ = _load_frozen_inputs(cases_dir)
-    plan = _load_plan(backend_plan, source_manifest_fp=source_manifest_fp)
+    # A downstream held-out lane has its own source manifest, but its
+    # preflight dependency is always the canonical I01 pair corpus. Read the
+    # supplied plan's toolchain and policy fields while validating them
+    # against the canonical source identity; the held-out run itself still
+    # performs its normal source-manifest check in ``run_benchmark``.
+    plan = _load_plan(
+        backend_plan,
+        source_manifest_fp=source_manifest_fp,
+        allow_source_manifest_mismatch=True,
+    )
     implementation_identity = _implementation_identity(root)
     policy_identity = _execution_policy(plan)
     return {
@@ -420,7 +443,15 @@ def _validate_preflight_dependency(
     except (OSError, UnicodeError, ValueError, TypeError, json.JSONDecodeError) as exc:
         return {"status": "preflight_required", "error": f"current preflight identity unavailable: {exc}"}
 
-    required = ("benchmark_plan.json", "output-manifest.json", "run_result.json", "producer-result.json")
+    required = (
+        "benchmark_plan.json",
+        "output-manifest.json",
+        "run_result.json",
+        "producer-result.json",
+        "summary.json",
+        "writers.json",
+        "judges.json",
+    )
     missing = [name for name in required if not (run_root / name).is_file()]
     if missing:
         return {"status": "preflight_required", "error": f"preflight evidence is incomplete; missing {', '.join(missing)}"}
@@ -429,16 +460,19 @@ def _validate_preflight_dependency(
         manifest = _read_json(run_root / "output-manifest.json")
         result = _read_json(run_root / "run_result.json")
         producer = _read_json(run_root / "producer-result.json")
+        summary = _read_json(run_root / "summary.json")
     except (OSError, UnicodeError, ValueError, TypeError, json.JSONDecodeError) as exc:
         return {"status": "preflight_required", "error": f"preflight evidence is unreadable: {exc}"}
-    if not all(isinstance(value, dict) for value in (plan, manifest, result, producer)):
-        return {"status": "preflight_required", "error": "preflight evidence must contain four JSON objects"}
+    if not all(isinstance(value, dict) for value in (plan, manifest, result, producer, summary)):
+        return {"status": "preflight_required", "error": "preflight evidence metadata must contain JSON objects"}
 
     checks: list[str] = []
     if plan.get("mode") != "preflight" or plan.get("benchmark_id") != "logic-writing-preflight-1x1x2":
         checks.append("mode/benchmark_id")
     if plan.get("claim") != "smoke_only" or plan.get("case_order") != ["I01"]:
         checks.append("I01 smoke declaration")
+    if plan.get("evidence_mode") != "real_execution":
+        checks.append("plan evidence mode")
     if plan.get("source_manifest_fingerprint") != expected["source_manifest_fingerprint"]:
         checks.append("source_manifest_fingerprint")
     if plan.get("implementation_fingerprint") != expected["implementation_fingerprint"]:
@@ -451,6 +485,12 @@ def _validate_preflight_dependency(
         checks.append("execution_policy_fingerprint")
     if manifest.get("source_manifest_fingerprint") != expected["source_manifest_fingerprint"]:
         checks.append("manifest.source_manifest_fingerprint")
+    if manifest.get("producer_check_id") != PRODUCER_ID:
+        checks.append("manifest producer owner")
+    if manifest.get("manifest_fingerprint") != fingerprint(
+        {key: value for key, value in manifest.items() if key != "manifest_fingerprint"}
+    ):
+        checks.append("manifest_fingerprint")
     if manifest.get("toolchain_fingerprint") != expected["toolchain_fingerprint"]:
         checks.append("toolchain_fingerprint")
     if manifest.get("mode") != "preflight" or manifest.get("evidence_mode") != "real_execution":
@@ -459,22 +499,75 @@ def _validate_preflight_dependency(
         checks.append("manifest terminal_status")
     if result.get("status") != "completed":
         checks.append("run_result terminal status")
+    if result.get("mode") != "preflight":
+        checks.append("run_result mode")
     if result.get("source_manifest_fingerprint") != expected["source_manifest_fingerprint"]:
         checks.append("run_result.source_manifest_fingerprint")
     if result.get("implementation_fingerprint") != expected["implementation_fingerprint"]:
         checks.append("run_result.implementation_fingerprint")
     if result.get("execution_policy_fingerprint") != expected["execution_policy_fingerprint"]:
         checks.append("run_result.execution_policy_fingerprint")
+    if result.get("summary_fingerprint") != fingerprint(summary):
+        checks.append("run_result.summary_fingerprint")
+    if summary.get("mode") != "preflight" or summary.get("status") != "smoke_only":
+        checks.append("preflight summary status")
     try:
         actual_writer_count = int(result.get("actual_writer_count", 0) or 0)
         actual_judge_count = int(result.get("actual_judge_count", 0) or 0)
+        actual_planner_count = int(result.get("actual_planner_count", 0) or 0)
     except (TypeError, ValueError):
-        actual_writer_count = actual_judge_count = 0
+        actual_writer_count = actual_judge_count = actual_planner_count = 0
         checks.append("writer/judge smoke counts")
-    if actual_writer_count < 2 or actual_judge_count < 2:
+    if actual_writer_count != 2 or actual_judge_count != 2 or actual_planner_count != 2:
         checks.append("writer/judge smoke counts")
+    if plan.get("planned_writer_count") != 2 or plan.get("planned_judge_count") != 2 or plan.get("planned_planner_count") != 2:
+        checks.append("planned smoke counts")
+    if manifest.get("writer_count") != 2 or manifest.get("judge_count") != 2 or manifest.get("planner_count") != 2:
+        checks.append("manifest smoke counts")
+    try:
+        writers = _read_json(run_root / "writers.json")
+        judges = _read_json(run_root / "judges.json")
+    except (OSError, UnicodeError, ValueError, TypeError, json.JSONDecodeError):
+        writers = judges = None
+    if not isinstance(writers, list) or len(writers) != actual_writer_count:
+        checks.append("writer capture rows")
+    if not isinstance(judges, list) or len(judges) != actual_judge_count:
+        checks.append("judge capture rows")
+    identities: set[tuple[str, str]] = set()
+    for role, rows in (("writer", writers), ("judge", judges)):
+        if not isinstance(rows, list):
+            continue
+        for row in rows:
+            if not isinstance(row, dict) or row.get("status") != "completed" or not isinstance(row.get("record"), dict):
+                checks.append(f"{role} capture row")
+                continue
+            record = row["record"]
+            identity = (str(record.get("run_id") or ""), str(record.get("context_id") or ""))
+            if not all(identity) or identity in identities:
+                checks.append(f"{role} independent context")
+            identities.add(identity)
+    files = manifest.get("files")
+    if not isinstance(files, list) or not files:
+        checks.append("manifest files")
+    else:
+        for item in files:
+            if not isinstance(item, dict):
+                checks.append("manifest file entry")
+                continue
+            try:
+                relative = Path(str(item.get("path")))
+                if relative.is_absolute() or ".." in relative.parts:
+                    raise ValueError("manifest file path escaped run root")
+                path = (run_root / relative).resolve()
+                path.relative_to(run_root)
+                if path.is_symlink() or item.get("sha256") != _bytes_fp(path.read_bytes()):
+                    raise ValueError("manifest file hash mismatch")
+            except (OSError, ValueError, UnicodeError):
+                checks.append(f"manifest file hash:{item.get('path')}")
     if producer.get("status") != "passed":
         checks.append("producer status")
+    if producer.get("mode") != "preflight" or producer.get("producer_check_id") != PRODUCER_ID:
+        checks.append("producer identity")
     if checks:
         return {
             "status": "preflight_required",
@@ -496,6 +589,43 @@ def _validate_preflight_dependency(
         "source_manifest_fingerprint": expected["source_manifest_fingerprint"],
         "implementation_fingerprint": expected["implementation_fingerprint"],
         "toolchain_fingerprint": expected["toolchain_fingerprint"],
+    }
+
+
+def _validate_held_out_dependency(
+    root: Path,
+    held_out_run_root: Path | None,
+    backend_plan: Path | None,
+) -> dict[str, Any]:
+    """Validate the current four-case holdout before a full pair run starts."""
+
+    if held_out_run_root is None:
+        return {"status": "held_out_required", "error": "held-out run root was not provided"}
+    run_root = Path(held_out_run_root).resolve()
+    if not run_root.is_dir():
+        return {"status": "held_out_required", "error": f"held-out run root is missing: {run_root}"}
+    if backend_plan is None or not backend_plan.is_file():
+        return {"status": "held_out_required", "error": "held-out validation requires the frozen backend plan"}
+    try:
+        from check_writing_quality_run import _check_held_out_run
+
+        report = _check_held_out_run(
+            root.resolve(),
+            plan_path=backend_plan.resolve(),
+            run_root=run_root,
+            pair_plan=None,
+        )
+    except (OSError, UnicodeError, ValueError, TypeError, ImportError, json.JSONDecodeError) as exc:
+        return {"status": "held_out_required", "error": f"held-out evidence is unreadable: {exc}"}
+    if not isinstance(report, dict) or report.get("status") != "passed" or report.get("held_out_passed") is not True:
+        errors = report.get("errors", []) if isinstance(report, dict) else []
+        detail = ", ".join(str(item) for item in errors) or "held-out evidence did not pass"
+        return {"status": "held_out_required", "error": detail, "observed": report}
+    return {
+        "status": "passed",
+        "run_root": str(run_root),
+        "held_out_passed": True,
+        "summary_fingerprint": report.get("summary_fingerprint"),
     }
 
 
@@ -663,6 +793,7 @@ def run_owner(
     preflight_case: str | None = None,
     repeats: int | None = None,
     preflight_run_root: Path | None = None,
+    held_out_run_root: Path | None = None,
     aggregate_only: bool = False,
 ) -> dict[str, Any]:
     if held_out_only and preflight_case is not None:
@@ -694,6 +825,19 @@ def run_owner(
                     error=ValueError(detail),
                     mode=mode,
                     terminal_reason="preflight_required",
+                )
+        if not held_out_only:
+            held_out_dependency = _validate_held_out_dependency(
+                root.resolve(), held_out_run_root, backend_plan
+            )
+            if held_out_dependency.get("status") != "passed":
+                detail = str(held_out_dependency.get("error") or "held-out evidence is required")
+                return _record_initialization_failure(
+                    output_dir.resolve(),
+                    root=root.resolve(),
+                    error=ValueError(detail),
+                    mode=mode,
+                    terminal_reason="held_out_required",
                 )
     try:
         result = run_benchmark(
@@ -796,6 +940,7 @@ def main() -> int:
     parser.add_argument("--preflight-case", help="Run one canonical case as smoke-only preflight evidence")
     parser.add_argument("--repeats", type=int, help="Preflight repeat count; requires --preflight-case")
     parser.add_argument("--preflight-run-root", type=Path, help="Completed I01 preflight evidence required by held-out/full pair runs")
+    parser.add_argument("--held-out-run-root", type=Path, help="Completed four-case held-out evidence required by full pair runs")
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
     output_dir = (args.output_dir or Path(__import__("os").environ.get("LW_VALIDATION_ATTEMPT_ROOT", str(args.root / "run-artifacts" / "reader-execution-quality-producer")))).resolve()
@@ -816,6 +961,7 @@ def main() -> int:
             preflight_case=preflight_case,
             repeats=repeats,
             preflight_run_root=args.preflight_run_root.resolve() if args.preflight_run_root else None,
+            held_out_run_root=args.held_out_run_root.resolve() if args.held_out_run_root else None,
             aggregate_only=args.aggregate_only,
         )
     except (OSError, ValueError, TypeError, json.JSONDecodeError) as exc:

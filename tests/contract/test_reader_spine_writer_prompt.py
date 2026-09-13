@@ -7,7 +7,11 @@ from pathlib import Path
 
 import pytest
 
-from production_reader_pipeline import ProductionPipelineBlocked, build_reader_spine
+from production_reader_pipeline import (
+    ProductionPipelineBlocked,
+    build_reader_spine,
+    validate_reader_spine_prompt,
+)
 from tests.v2_support import make_reader_chain
 
 
@@ -27,13 +31,123 @@ def test_production_writer_prompt_serializes_only_validated_reader_spine(tmp_pat
 
     prompt = benchmark._production_writer_prompt(spine)
 
-    assert '"reader_context"' in prompt
-    assert '"major_units"' in prompt
+    assert "文章要回答" in prompt
+    assert "推进线路是" in prompt
+    assert "材料中必须保留的条件和作用" in prompt
+    assert '"reader_context"' not in prompt
+    assert '"major_units"' not in prompt
     assert '"selected_content"' not in prompt
     assert '"route_semantics"' not in prompt
     assert '"gaps"' not in prompt
     assert '"native_handoff"' not in prompt
     assert "WriterInput" not in prompt
+    assert "schema_version" not in prompt
+    assert "planned_unit_id" not in prompt
+    assert "content_unit_id" not in prompt
+    assert not any(line.lstrip().startswith(("-", "*")) for line in prompt.splitlines())
+    assert validate_reader_spine_prompt(prompt, spine) is True
+    with pytest.raises(ProductionPipelineBlocked, match="reader_prompt_projection_mismatch"):
+        validate_reader_spine_prompt(prompt + "\n", spine)
 
     with pytest.raises(ProductionPipelineBlocked, match="reader_spine_non_minimal"):
         benchmark._production_writer_prompt(chain["reader_brief"]["writer_input"])
+
+
+def test_repaired_writer_prompt_converts_missing_material_into_reader_action():
+    benchmark = _load_benchmark()
+    case = {
+        "case_id": "H-T",
+        "route": "travel-guide",
+        "task": "安排雨天半日行程",
+        "constraints": "连续步行不得超过10分钟",
+        "material_records": [
+            {"id": "E01", "text": "馆B单程步行8分钟，开放时间未提供。"},
+        ],
+    }
+
+    prompt = benchmark._writer_prompt(case, "repaired")
+
+    assert "不要把缺失信息改写成研究过程已经发生但‘目前尚未确认’" in prompt
+    assert "不要把补材料的责任交给作者或读者" in prompt
+    assert "决策前需要核实" in prompt
+    assert "删除重复的未知项清单" in prompt
+
+
+def test_production_reader_prompt_enforces_extent_and_fiction_information_boundary(tmp_path):
+    benchmark = _load_benchmark()
+    chain = make_reader_chain(tmp_path / "fiction", "fiction-writing")
+    spine = build_reader_spine(chain["reader_brief"], composition_plan=chain["plan"])
+    spine["reader_context"]["extent"] = {
+        "unit": "characters",
+        "minimum": 800,
+        "target": 950,
+        "maximum": 1100,
+    }
+    spine["root_question"] = "如何沿公开账页逼主管放行并承担信任代价？"
+    spine["root_conclusion"] = "目标已选公开账页；砸锁仅为备选，先造成压力，再由主管放行完成开门，未知调换事实保持未知。"
+
+    prompt = benchmark._production_writer_prompt(spine)
+
+    assert "篇幅是硬约束" in prompt
+    assert "范围为 800—1100" in prompt
+    assert "在材料给出的合法知情路径出现前" in prompt
+    assert "当前任务目的已经选定公开账页" in prompt
+    assert "不得把砸锁、撬锁或铁锤改写成当前场景的实际开门手段" in prompt
+    assert "不得新增第二把钥匙" in prompt
+
+
+def test_production_reader_prompt_closes_restricted_starting_knowledge(tmp_path):
+    benchmark = _load_benchmark()
+    chain = make_reader_chain(tmp_path / "restricted-fiction", "fiction-writing")
+    spine = build_reader_spine(chain["reader_brief"], composition_plan=chain["plan"])
+    spine["reader_context"]["purpose"] = "按给定信息写受限视角场景；人物只知道门从内反锁和搭档在屋内。"
+    spine["major_units"][0]["content"][0]["meaning"] = (
+        "场景开始时人物只知道门从内反锁和搭档在屋内；账本的位置要等他看见后才能确认。"
+    )
+
+    prompt = benchmark._production_writer_prompt(spine)
+
+    assert "受限/近距离视角的起始知情集合是封闭的" in prompt
+    assert "不得把任务目标、场景常识、后文结果或逻辑上可能存在的事实倒推成已知" in prompt
+    assert "集合外的事实必须等到视角人物通过材料允许的看见、听见、阅读、对话或其它可观察事件取得后才能写出" in prompt
+
+
+def test_production_travel_prompt_requires_explicit_origin_fallback_when_none_is_supported(tmp_path):
+    benchmark = _load_benchmark()
+    chain = make_reader_chain(tmp_path / "travel-no-fallback", "travel-guide")
+    spine = build_reader_spine(chain["reader_brief"], composition_plan=chain["plan"])
+    spine["route_guidance"]["reachable_fallbacks"] = []
+
+    prompt = benchmark._production_writer_prompt(spine)
+
+    assert "如果材料没有支持的可达备用路线" in prompt
+    assert "必须把留在起点、停止出发或原地休息写成明确可执行的退回方案" in prompt
+    assert "不得把退回路径写成要求读者补资料的开放任务" in prompt
+    assert "appendix:checks" not in prompt
+
+
+def test_direct_repaired_prompt_keeps_f01_action_source_and_i01_length_contract():
+    benchmark = _load_benchmark()
+    f01 = {
+        "case_id": "F01",
+        "route": "fiction-writing",
+        "task": "按F包写800—1100字完整仓库场景",
+        "constraints": "不能提前揭示钥匙被调换；必须公开账页并保留信任代价。",
+        "material_records": [{"id": "F04", "text": "可以公开账页逼开门，也可以砸锁；目标选择公开账页。"}],
+    }
+    i01 = {
+        "case_id": "I01",
+        "route": "investigation",
+        "task": "写600—800个汉字的采购试点建议",
+        "constraints": "回答是否扩大试点。",
+        "material_records": [{"id": "E01", "text": "中负载匹配产出观察到10%。"}],
+    }
+
+    f_prompt = benchmark._writer_prompt(f01, "repaired")
+    i_prompt = benchmark._writer_prompt(i01, "repaired")
+
+    assert "当前目标明确选择公开账页逼主管开门" in f_prompt
+    assert "砸锁只是材料列出的备选" in f_prompt
+    assert "不能新增第二把钥匙" in f_prompt
+    assert "正文必须落在该区间" in i_prompt
+    assert "具体的采购判断、条件" in i_prompt

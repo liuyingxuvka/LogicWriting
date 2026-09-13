@@ -28,7 +28,13 @@ import subprocess
 import tempfile
 from typing import Any, Mapping
 
-from _common import ValidationError, fingerprint, fingerprint_without, require_mapping
+from _common import (
+    ValidationError,
+    fingerprint,
+    fingerprint_without,
+    logic_writing_source_identity,
+    require_mapping,
+)
 from build_source_unit_manifest import fingerprint_bytes
 import provider_preflight
 from reader_pipeline import (
@@ -285,21 +291,7 @@ def _destination(relative: Any, root: Path) -> Path:
 
 
 def _source_identity() -> dict[str, str]:
-    skill = Path(__file__).parents[1]
-    paths = (
-        [skill / "SKILL.md"]
-        + sorted((skill / "scripts").glob("*.py"))
-        + sorted((skill / "assets" / "schemas").glob("*.json"))
-        + sorted((skill / "references").rglob("*.md"))
-        + sorted((skill / "references").rglob("*.json"))
-        + sorted((skill / "routes").rglob("*.md"))
-        + sorted((skill / "routes").rglob("*.json"))
-    )
-    unique_paths = dict.fromkeys(path.resolve() for path in paths if path.is_file())
-    return {
-        path.relative_to(skill).as_posix(): fingerprint_bytes(path.read_bytes())
-        for path in unique_paths
-    }
+    return logic_writing_source_identity(Path(__file__).parents[1])
 
 
 def _validate_planner_facts(value: Any) -> dict[str, Any]:
@@ -2182,21 +2174,499 @@ def build_reader_spine(
 
 
 def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
-    """Render only the validated spine into the production writer prompt."""
+    """Render a compact semantic projection for the production writer.
+
+    The validated ``ReaderSpine`` remains private lineage.  The provider gets
+    the reader's question, ordered movement, usable facts, claim boundaries,
+    and route-specific obligations, while internal ids, locators, schema
+    fields, and per-unit byte budgets stay out of the prompt.  This keeps the
+    writing task organized around a throughline instead of a field-by-field
+    transcription of the planning ledger.
+    """
     spine = validate_reader_spine(reader_spine)
-    return (
-        "请只输出面向读者的最终成稿，不要复述下面资料的字段名或逐条罗列材料。"
-        "先让读者看清根问题和文章要抵达的判断，再按 major_units 的先后关系推进；"
-        "每个主要单元都必须改变读者已经知道的内容，后一个单元承接前一个单元的结论、理由或代价，"
-        "不要把每条材料各写成一个段落，也不要为了覆盖资料制造并列小点。"
-        "同一单元中的材料只有在承担不同阅读职责时才分开，否则合并到同一条解释中；标为 omit 的材料不写。"
-        "使用 route_guidance 维持本类成品的论证、研究、叙事或旅行推进方式；"
-        "按 reader_constraints 保留必要引文、原文义务和不可越过的结论边界。"
-        "证据与限制应放在它们实际影响的句子或单元附近。"
-        "不要输出内部记录、模型标识、执行状态、缺口清单、流程说明或作者旁白。\n\n"
-        + json.dumps(spine, ensure_ascii=False, sort_keys=True, indent=2)
+    context = spine["reader_context"]
+    mode = str(spine["route_guidance"].get("mode") or "")
+    purpose = str(context.get("purpose") or "")
+    paragraphs: list[str] = []
+
+    paragraphs.append(
+        "请只输出面向读者的最终成稿。把材料转化为一条能让读者继续理解、判断或行动的主线；"
+        "不要复述内部字段、来源编号、执行记录或逐条清点材料，同一作用的内容合并表达，标为省略的内容不写。"
     )
 
+    root_question = _prompt_clean_text(spine["root_question"])
+    root_conclusion = _prompt_clean_text(spine["root_conclusion"])
+    opening_job = _prompt_clean_text(spine["opening_job"])
+    conclusion_job = _prompt_clean_text(spine["conclusion_job"])
+    paragraphs.append(
+        f"文章要回答“{root_question}”，并抵达“{root_conclusion}”。"
+        f"开头{opening_job}结尾{conclusion_job}"
+    )
+
+    audience = _prompt_clean_text(context.get("audience"))
+    context_purpose = _prompt_clean_text(purpose).rstrip("。！？!?；; ")
+    artifact_form = _prompt_clean_text(spine.get("artifact_form"))
+    context_clause = ""
+    if audience and context_purpose:
+        context_clause = f"面向{audience}，完成{context_purpose}"
+    elif context_purpose:
+        context_clause = f"完成{context_purpose}"
+    if artifact_form:
+        context_clause += f"，交付形式为{artifact_form}"
+    if context_clause:
+        paragraphs.append(context_clause + "。")
+
+    units = spine["major_units"]
+    unit_fragments: list[str] = []
+    for index, unit in enumerate(units):
+        title = _prompt_clean_text(unit["title"])
+        job = _prompt_clean_text(unit["reader_job"])
+        incoming = _prompt_clean_text(unit["incoming_reader_state"])
+        outgoing = _prompt_clean_text(unit["forward_link"]["outgoing_reader_state"])
+        prefix = "先处理" if index == 0 else ("最后收束" if index == len(units) - 1 else "随后转入")
+        fragment = f"{prefix}“{title}”：{_prompt_core(job)}"
+        if incoming and outgoing:
+            fragment += f"，让读者从“{_prompt_core(incoming)}”走到“{_prompt_core(outgoing)}”"
+        elif outgoing:
+            fragment += f"，并让读者走到“{_prompt_core(outgoing)}”"
+        unit_fragments.append(fragment)
+    if unit_fragments:
+        paragraphs.append(
+            "推进线路是" + "；".join(unit_fragments) +
+            "。每一步都要改变读者的判断、可行行动或代价，后一步承接前一步的结果；不要把步骤机械地拆成同样长度的段落。"
+        )
+
+    # Content meanings contain the safe material boundary.  User-task prose
+    # is already represented by the root/context paragraph, so only retain
+    # constraints here; evidence anchors carry the factual observations.
+    anchor_summaries = {
+        _prompt_key(anchor.get("observed_summary"))
+        for anchor in spine["evidence_anchors"]
+        if isinstance(anchor, Mapping) and anchor.get("observed_summary")
+    }
+    content_parts: list[str] = []
+    for unit in units:
+        for row in unit["content"]:
+            if not isinstance(row, Mapping) or row.get("disposition") == "omit":
+                continue
+            raw = str(row.get("meaning") or "")
+            constraint_text = _prompt_labeled_segment(raw, "用户约束")
+            if constraint_text:
+                _prompt_add(content_parts, constraint_text)
+                continue
+            if re.search(r"(?:^|\n)\s*(?:用户任务|冻结材料|材料事实)\s*[：:]", raw):
+                continue
+            cleaned = _prompt_clean_text(raw)
+            if cleaned and _prompt_key(cleaned) not in anchor_summaries:
+                _prompt_add(content_parts, cleaned)
+    if content_parts:
+        paragraphs.append(
+            "材料中必须保留的条件和作用是：" + _prompt_join(content_parts) + "。"
+        )
+
+    fact_parts: list[str] = []
+    for anchor in spine["evidence_anchors"]:
+        if not isinstance(anchor, Mapping):
+            continue
+        summary = _prompt_clean_text(anchor.get("observed_summary"))
+        boundary = _prompt_clean_text(anchor.get("boundary"))
+        if summary:
+            _prompt_add(fact_parts, summary)
+        if boundary and not re.search(r"只能支持其中明确写出的事实|仅支持明确写出的事实", boundary):
+            _prompt_add(fact_parts, boundary)
+    if fact_parts:
+        paragraphs.append(
+            "可使用的事实依据是：" + _prompt_join(fact_parts) +
+            "。这些事实只支持明确写出的范围，不得外推。"
+        )
+
+    limit_parts: list[str] = []
+    for limitation in spine["conclusion_sensitive_limitations"]:
+        if not isinstance(limitation, Mapping):
+            continue
+        meaning = _prompt_clean_text(limitation.get("meaning"))
+        placement = _prompt_clean_text(limitation.get("realization_requirement"))
+        if meaning:
+            item = meaning
+            if placement:
+                item += f"；把它放在{placement}"
+            _prompt_add(limit_parts, item)
+
+    constraints = spine["reader_constraints"]
+    for row in constraints["citation_rules"]:
+        if isinstance(row, Mapping):
+            marker = _prompt_clean_text(row.get("marker"), preserve_internal=True)
+            placement = _prompt_clean_text(row.get("placement"))
+            if marker:
+                item = f"相关句使用引用标记{marker}"
+                if placement:
+                    item += f"，放在{placement}"
+                _prompt_add(limit_parts, item, preserve_internal=True)
+    exact = constraints["exact_obligations"]
+    for row in exact["must_preserve"]:
+        if isinstance(row, Mapping):
+            token = _prompt_clean_text(row.get("token"), preserve_internal=True)
+            reason = _prompt_clean_text(row.get("reason"))
+            if token:
+                item = f"保留术语“{token}”"
+                if reason:
+                    item += f"，因为{reason}"
+                _prompt_add(limit_parts, item, preserve_internal=True)
+    for row in exact["verbatim"]:
+        if isinstance(row, Mapping):
+            original = _prompt_clean_text(row.get("text"), preserve_internal=True)
+            reason = _prompt_clean_text(row.get("reason"))
+            if original:
+                item = f"保留原文“{original}”"
+                if reason:
+                    item += f"，因为{reason}"
+                _prompt_add(limit_parts, item, preserve_internal=True)
+    for row in constraints["claim_boundaries"]:
+        if isinstance(row, Mapping):
+            forbidden = _prompt_clean_text(row.get("forbidden_meaning"))
+            reason = _prompt_clean_text(row.get("reason"))
+            if forbidden:
+                item = f"不要把结论写成{forbidden}"
+                if reason:
+                    item += f"；原因是{reason}"
+                _prompt_add(limit_parts, item)
+    if limit_parts:
+        paragraphs.append(
+            "结论边界和必须保留的要求是：" + _prompt_join(limit_parts) +
+            "。每条边界只在它第一次改变判断、行动或代价的位置出现。"
+        )
+
+    route = spine["route_guidance"]
+    route_parts: list[str] = []
+    if mode == "fiction-writing":
+        spine_text = json.dumps(spine, ensure_ascii=False)
+        _prompt_add(
+            route_parts,
+            "叙事中的信息边界是硬约束：材料标出的未知或受限事实，在材料给出的合法知情路径出现前，"
+            "不得通过旁白、对白、动作结果、暗示或角色反应提前确认；沿选定行动路线推进，不要把备选行动互相替换，"
+            "每个关键结果都要有材料支持的可观察来源。",
+        )
+        if re.search(
+            r"只知道|仅知道|只能知道|不得写[^。！？;；]{0,24}不知道|不知道|无法知道|"
+            r"only\s+knows|does\s+not\s+know|cannot\s+know|restricted\s+(?:viewpoint|pov)|close\s+third",
+            spine_text,
+            re.IGNORECASE,
+        ):
+            _prompt_add(
+                route_parts,
+                "受限/近距离视角的起始知情集合是封闭的：任务和材料明确列出的‘只知道/仅知道’内容，"
+                "就是开场可用的知识上限；不得把任务目标、场景常识、后文结果或逻辑上可能存在的事实倒推成已知。"
+                "集合外的事实必须等到视角人物通过材料允许的看见、听见、阅读、对话或其它可观察事件取得后才能写出；"
+                "在此之前只能写目标、疑问或可见线索，不能用确定语气写出该事实。",
+            )
+        if "砸锁" in spine_text and "公开账页" in spine_text:
+            _prompt_add(
+                route_parts,
+                "材料虽然列出‘等待’、‘公开账页’和‘砸锁’等备选，但当前任务目的已经选定公开账页；"
+                "只能沿公开账页造成压力、主管放行、现场开门、救单和信任代价这条路线推进，"
+                "不得把砸锁、撬锁或铁锤改写成当前场景的实际开门手段，也不得把备选动作串接进主线。"
+                "若材料没有给出具体开门细节，只写可观察的放行、交钥匙或工人进入，不自行补造锁具失败。"
+                "不得写未知钥匙成功开门，不得新增第二把钥匙，也不得把白漆直接解释为调钥匙事实。",
+            )
+        for value in _prompt_mapping_texts(route.get("voice_contract")):
+            _prompt_add(route_parts, value)
+        # Unit jobs already carry pressure and irreversible change.  Retain
+        # only route values that add a distinct reveal boundary, avoiding a
+        # second field-by-field copy of the same movement ledger.
+        for row in route.get("unit_plans", []):
+            if isinstance(row, Mapping):
+                for value in row.get("prohibited_reveals", []):
+                    _prompt_add(route_parts, value)
+        for value in route.get("realization_boundaries", []):
+            _prompt_add(route_parts, value)
+
+    elif mode == "investigation":
+        for row in route.get("evidence_strength", []):
+            if isinstance(row, Mapping):
+                strength = _prompt_clean_text(row.get("strength"))
+                reason = _prompt_clean_text(row.get("reason"))
+                if strength:
+                    item = f"当前证据强度为{strength}"
+                    if reason:
+                        item += f"，因为{reason}"
+                    _prompt_add(route_parts, item)
+        for row in route.get("alternatives", []):
+            if isinstance(row, Mapping):
+                meaning = _prompt_clean_text(row.get("meaning"))
+                standing = _prompt_clean_text(row.get("standing"))
+                if meaning:
+                    item = f"保留替代解释：{meaning}"
+                    if standing:
+                        item += f"；当前处理为{standing}"
+                    _prompt_add(route_parts, item)
+        for row in route.get("recheck_conditions", []):
+            if isinstance(row, Mapping):
+                condition = _prompt_clean_text(row.get("condition"))
+                action = _prompt_clean_text(row.get("action"))
+                if condition and action:
+                    _prompt_add(route_parts, f"如果{condition}，{action}")
+
+    elif mode == "academic-writing":
+        for row in route.get("hierarchy", []):
+            if isinstance(row, Mapping):
+                contribution = _prompt_clean_text(row.get("contribution"))
+                warrant = _prompt_clean_text(row.get("new_claim_or_warrant"))
+                qualification = row.get("qualification")
+                qualification_reason = (
+                    _prompt_clean_text(qualification.get("reason"))
+                    if isinstance(qualification, Mapping) else ""
+                )
+                parts = [item for item in (contribution, warrant, qualification_reason) if item]
+                if parts:
+                    _prompt_add(route_parts, "；".join(_prompt_core(item) for item in parts))
+        for row in route.get("figure_table_jobs", []):
+            if isinstance(row, Mapping):
+                for key in ("job", "purpose", "description", "caption"):
+                    if row.get(key):
+                        _prompt_add(route_parts, row[key])
+
+    elif mode == "travel-guide":
+        for row in route.get("pace_and_timing", []):
+            if isinstance(row, Mapping):
+                parts: list[str] = []
+                for key, label in (("timing", "时间"), ("transport", "交通"), ("rest", "休息")):
+                    values = [
+                        _prompt_clean_text(item)
+                        for item in row.get(key, [])
+                        if _prompt_clean_text(item)
+                    ]
+                    if values:
+                        parts.append(label + "安排为" + "、".join(values))
+                if parts:
+                    _prompt_add(route_parts, "；".join(parts))
+        for row in route.get("local_names", []):
+            if isinstance(row, Mapping):
+                name = _prompt_clean_text(row.get("canonical_name"))
+                local = _prompt_clean_text(row.get("local_name"))
+                if name:
+                    _prompt_add(route_parts, f"地点名称使用{name}{('（' + local + '）') if local else ''}")
+        for row in route.get("reachable_fallbacks", []):
+            if isinstance(row, Mapping):
+                trigger = _prompt_clean_text(row.get("trigger"))
+                mitigation = _prompt_clean_text(row.get("mitigation"))
+                travelers = [
+                    _prompt_clean_text(item)
+                    for item in row.get("affected_travelers", [])
+                    if _prompt_clean_text(item)
+                ]
+                if trigger and mitigation:
+                    item = f"如果{trigger}，{mitigation}"
+                    if travelers:
+                        item += "，照顾" + "、".join(travelers)
+                    _prompt_add(route_parts, item)
+        if not route.get("reachable_fallbacks"):
+            _prompt_add(
+                route_parts,
+                "如果材料没有支持的可达备用路线，遇到出发前或途中条件不满足时，必须把留在起点、停止出发或原地休息写成明确可执行的退回方案。"
+                "不得把退回路径写成要求读者补资料的开放任务，也不得用未知的休息点、接驳或现场服务补造路线。",
+            )
+
+    if route_parts:
+        paragraphs.append("本类成品还要保持这些推进要求：" + _prompt_join(route_parts) + "。")
+
+    extent = context["extent"]
+    extent_unit = {"characters": "汉字", "words": "单词"}.get(str(extent["unit"]), str(extent["unit"]))
+    paragraphs.append(
+        f"篇幅是硬约束。篇幅按{extent_unit}统计，范围为 {extent['minimum']}—{extent['maximum']}，目标为 {extent['target']}。"
+        "低于下限时，只补入直接推进问题、判断、行动或代价的具体内容；超过上限时，删去不改变读者判断的句子。"
+        "不要用重复材料、泛化免责声明、作者说明或流程说明填充篇幅。"
+    )
+
+    if mode == "investigation" and "汉字" in purpose:
+        paragraphs.append(
+            "返回前逐字核对正文汉字数，必须达到给定下限且不超过上限；数字、英文字母、标点、空白和内部核对语句不计入汉字数。"
+            "若不足，只补入改变采购判断、适用范围、情景测算或验证顺序的具体推理，不用免责声明或重复材料补字数。"
+        )
+    if mode == "investigation" and "主张/证据/缺口" in purpose:
+        paragraphs.append(
+            "用户明确要求开篇解释后提供一张‘主张/证据/缺口’表；必须真的输出一张表，把实测、机制、负载边界、长期或跨设备外推、经济情景和宣传依据放在最相关的行，表后只写一次综合判断和下一项验证。"
+        )
+    if mode == "academic-writing":
+        paragraphs.append(
+            "学术任务若指定标题或表格，严格保留其结构；相同数字或限制只在承担新的论证工作时再次出现，不要把表格要求改写成散文，也不要用平行材料清单代替层间递进。"
+        )
+    if mode == "fiction-writing" and "公开账页" in purpose and "砸锁" in json.dumps(spine, ensure_ascii=False):
+        paragraphs.append(
+            "当前任务目的选定公开账页；砸锁是材料中的备选，不能写成当前场景的实际开门手段。"
+            "公开账页必须通过主管放行、交钥匙或工人进入等可观察动作接到救单；未知调钥匙事实只能保留为白漆线索，不能在本场直接揭示；三声船铃按材料作为三声重复意象出现。"
+        )
+    if mode == "fiction-writing" and "修订报告" in purpose:
+        paragraphs.append(
+            "这是修订报告时，不要重写成戏剧场景；只列任务要求的改动和各自必须保留的内容，不要把材料没有要求的决定或后续交接写进报告。"
+        )
+    if mode == "travel-guide":
+        paragraphs.append(
+            "旅行任务只保留会改变当天时间、地点、交通、休息或备用选择的条件；未参与取舍的地点、认证、票价、天气来源声明和泛化未知项省略。"
+        )
+
+    style = context.get("style") if isinstance(context.get("style"), Mapping) else {}
+    style_parts: list[str] = []
+    voice = _prompt_clean_text(style.get("voice"))
+    if voice:
+        mapped_voice = {"neutral": "中性", "scholarly": "学术、克制", "formal": "正式"}.get(voice.casefold(), voice)
+        style_parts.append(mapped_voice)
+    formality = _prompt_clean_text(style.get("formality"))
+    if formality and formality.casefold() not in {"neutral", "scholarly", "formal"}:
+        style_parts.append(formality)
+    required_traits = []
+    for item in style.get("required_traits", []):
+        cleaned = _prompt_clean_text(item)
+        if cleaned:
+            required_traits.append(cleaned)
+    forbidden_traits = []
+    for item in style.get("forbidden_traits", []):
+        cleaned = _prompt_clean_text(item)
+        if cleaned:
+            forbidden_traits.append(cleaned)
+    if style_parts:
+        paragraphs.append("表达保持" + "；".join(dict.fromkeys(style_parts)) + "。")
+    if required_traits:
+        paragraphs.append("表达要" + "、".join(dict.fromkeys(required_traits)) + "。")
+    if forbidden_traits:
+        paragraphs.append("避免" + "、".join(dict.fromkeys(forbidden_traits)) + "。")
+
+    list_policy = str(context.get("list_policy") or "")
+    if list_policy == "prose_default":
+        paragraphs.append(
+            "正文默认使用连续段落和自然过渡，不要把材料拆成项目符号、编号清单或一行一项；只有用户明确要求的标题、表格或操作清单才保留相应结构。"
+        )
+    elif list_policy == "lists_required":
+        paragraphs.append("只有承担明确功能的地方使用列表，其余内容仍用连续解释；不得把每条材料各变成一个列表项。")
+    elif list_policy == "lists_allowed":
+        paragraphs.append("列表只有在能帮助读者执行或核对时才使用，其余内容用连续解释；不得按材料编号平行罗列。")
+    else:
+        paragraphs.append("按任务明确的结构组织成稿，列表和表格只在确有阅读功能时使用。")
+    if context.get("heading_policy") in {"preserve_requested", "route_selected"}:
+        paragraphs.append("保留任务明确要求的标题或结构；没有明确要求时不要为了显示完整而增加平行小标题。")
+    if context.get("table_policy") == "forbidden":
+        paragraphs.append("不要使用表格。")
+    elif context.get("table_policy") == "allowed":
+        paragraphs.append("只有表格能明显帮助读者比较或执行时才使用表格。")
+
+    required = [_prompt_clean_text(item) for item in context.get("required_content", []) if _prompt_clean_text(item)]
+    forbidden = [_prompt_clean_text(item) for item in context.get("forbidden_content", []) if _prompt_clean_text(item)]
+    if required:
+        paragraphs.append("成稿必须完成" + "、".join(dict.fromkeys(required)) + "。")
+    if forbidden:
+        forbidden_display = list(dict.fromkeys(forbidden))
+        for generic in ("内部工作流", "模型标签", "评分过程", "内部记录", "作者旁白"):
+            if generic not in forbidden_display:
+                forbidden_display.append(generic)
+        paragraphs.append("成稿不得出现" + "、".join(forbidden_display) + "。")
+    paragraphs.append(
+        "成稿前只在内部核对事实、边界、顺序和篇幅，不输出核对过程；沿一条主线收束，让最后一句承接前文的判断或下一步。"
+    )
+    return "\n\n".join(paragraphs)
+
+
+_PROMPT_INTERNAL_BRACKET_REF = re.compile(r"\[(?:[A-Z]{1,3}(?:-[A-Z]{1,3})?[-_:]?\d{1,4})\]")
+_PROMPT_INTERNAL_TOKEN = re.compile(
+    r"\b(?:source|evidence|content|unit|action|limitation|movement|candidate|outline|appendix|section):[A-Za-z0-9_.:-]+\b",
+    re.IGNORECASE,
+)
+_PROMPT_LOCATOR = re.compile(
+    r"\b[\w.-]+\.(?:json|md|txt|csv|yaml|yml|py):(?:line|lines?|row|page|cell):?\s*\d+(?:[-:]\d+)*\b",
+    re.IGNORECASE,
+)
+_PROMPT_INTERNAL_FIELD = re.compile(
+    r"(?<!\w)(?:schema_version|root_question|major_units|reader_context|route_guidance|"
+    r"content_unit_id|planned_unit_id|source_id|locator|reader_constraints|route_semantics|"
+    r"native_handoff|selected_content|gaps|appendix:checks)(?!\w)",
+    re.IGNORECASE,
+)
+_PROMPT_WORKFLOW_ONLY = {"内部工作流", "模型标签", "评分过程", "内部记录", "作者旁白"}
+_PROMPT_LABEL_PREFIX = re.compile(
+    r"(?m)^\s*(?:用户任务|用户约束|冻结材料(?:（[^）]*）?)|材料事实)\s*[：:]\s*"
+)
+
+
+def _prompt_clean_text(value: Any, *, preserve_internal: bool = False) -> str:
+    text = str(value or "").replace("\r\n", "\n").replace("\r", "\n").strip()
+    if not preserve_internal:
+        text = _PROMPT_INTERNAL_BRACKET_REF.sub("", text)
+        text = _PROMPT_INTERNAL_TOKEN.sub("", text)
+        text = _PROMPT_LOCATOR.sub("", text)
+        text = _PROMPT_INTERNAL_FIELD.sub("", text)
+    text = _PROMPT_LABEL_PREFIX.sub("", text)
+    text = re.sub(r"\s+", " ", text).strip()
+    text = re.sub(r"\s+([，。；：？！,.!?;:])", r"\1", text)
+    text = re.sub(r"([。！？!?；;])\s*([。！？!?；;])+", r"\1", text)
+    return text
+
+
+def _prompt_core(value: Any) -> str:
+    return _prompt_clean_text(value).rstrip("。！？!?；; ")
+
+
+def _prompt_key(value: Any) -> str:
+    return re.sub(r"[\W_]+", "", _prompt_clean_text(value).casefold())
+
+
+def _prompt_add(bucket: list[str], value: Any, *, preserve_internal: bool = False) -> None:
+    cleaned = _prompt_clean_text(value, preserve_internal=preserve_internal)
+    if not cleaned:
+        return
+    if not preserve_internal and cleaned.casefold() in _PROMPT_WORKFLOW_ONLY:
+        return
+    key = _prompt_key(cleaned) if not preserve_internal else re.sub(r"[\W_]+", "", cleaned.casefold())
+    if not key:
+        return
+    existing = {
+        _prompt_key(item) if not preserve_internal else re.sub(r"[\W_]+", "", item.casefold())
+        for item in bucket
+    }
+    if key not in existing:
+        bucket.append(cleaned)
+
+
+def _prompt_join(values: list[str]) -> str:
+    # Values have already passed through ``_prompt_add``.  Do not clean them
+    # again here: exact user-requested verbatim text may intentionally contain
+    # a bracketed token that resembles an internal id.
+    return "；".join(str(value).rstrip("。！？!?；; ") for value in values if str(value).strip())
+
+
+def _prompt_labeled_segment(value: Any, label: str) -> str:
+    text = str(value or "")
+    labels = r"用户任务|用户约束|冻结材料(?:（[^）]*）?)|材料事实"
+    match = re.search(
+        rf"(?:^|\n)\s*{re.escape(label)}\s*[：:]\s*(.*?)(?=\n\s*(?:{labels})\s*[：:]|\Z)",
+        text,
+        flags=re.IGNORECASE | re.DOTALL,
+    )
+    return match.group(1).strip() if match else ""
+
+
+def _prompt_mapping_texts(value: Any) -> list[str]:
+    values: list[str] = []
+    if isinstance(value, Mapping):
+        for item in value.values():
+            values.extend(_prompt_mapping_texts(item))
+    elif isinstance(value, list):
+        for item in value:
+            values.extend(_prompt_mapping_texts(item))
+    elif isinstance(value, str) and value.strip():
+        values.append(value)
+    return values
+
+
+def validate_reader_spine_prompt(value: Any, reader_spine: Mapping[str, Any]) -> bool:
+    """Verify that a captured writer prompt is the current compact projection."""
+    if not isinstance(value, str):
+        raise ProductionPipelineBlocked("reader_prompt_projection_invalid", "prompt must be text")
+    spine = validate_reader_spine(reader_spine)
+    expected = render_reader_spine_prompt(spine)
+    if value != expected:
+        raise ProductionPipelineBlocked(
+            "reader_prompt_projection_mismatch",
+            {"actual_fingerprint": fingerprint(value), "expected_fingerprint": fingerprint(expected)},
+        )
+    return True
 
 def _paragraphs_for_diagnostic(text: str) -> list[str]:
     return [block.strip() for block in re.split(r"\n\s*\n+", text.replace("\r\n", "\n").replace("\r", "\n")) if block.strip()]
@@ -2408,6 +2878,6 @@ def prepare_production_reader_input(request, *, native_provider, planner_backend
 __all__ = [
     "InstalledResearchGuardProvider", "ProductionPipelineBlocked", "READER_SPINE_SCHEMA",
     "READER_DIAGNOSTIC_SCHEMA", "build_reader_spine", "compile_reader_spine",
-    "validate_reader_spine", "render_reader_spine_prompt", "diagnose_reader_output",
+    "validate_reader_spine", "render_reader_spine_prompt", "validate_reader_spine_prompt", "diagnose_reader_output",
     "diagnose_reader_quality", "prepare_production_reader_input",
 ]

@@ -8,7 +8,12 @@ import pytest
 
 from _common import ValidationError, fingerprint, fingerprint_text
 from execution_record_resolver import LocalExecutionRecordResolver
-from local_execution_backend import _parse_events, _tool_events
+from local_execution_backend import (
+    _parse_events,
+    _provider_error_events,
+    _recoverable_provider_error_lines,
+    _tool_events,
+)
 from reader_execution import _record_from_result, dispatch_judge, dispatch_writer
 
 
@@ -237,3 +242,67 @@ def test_informational_item_error_does_not_count_as_tool_event():
         {"type": "turn.completed"},
     ]
     assert _tool_events(events) == []
+
+
+def test_agent_message_text_is_not_scanned_as_a_tool_event():
+    events = [
+        {"type": "thread.started", "thread_id": "t"},
+        {
+            "type": "item.completed",
+            "item": {
+                "type": "agent_message",
+                "text": "mcp_tool_call shell browser_use function command_execution",
+            },
+        },
+        {"type": "turn.completed"},
+    ]
+    assert _tool_events(events) == []
+
+
+def test_provider_error_projection_is_separate_from_tool_events_and_fails_closed():
+    recoverable_events, parse_errors = _parse_events(
+        b'{"type":"thread.started","thread_id":"t"}\n'
+        b'{"type":"turn.started"}\n'
+        b'{"type":"error","message":"Reconnecting... 2/5 (stream disconnected)"}\n'
+        b'{"type":"item.completed","item":{"type":"agent_message","text":"done"}}\n'
+        b'{"type":"turn.completed"}\n'
+    )
+    assert parse_errors == []
+    assert _tool_events(recoverable_events) == []
+    assert _provider_error_events(recoverable_events) == [
+        {
+            "event_type": "error",
+            "line": 2,
+            "message": "Reconnecting... 2/5 (stream disconnected)",
+        }
+    ]
+    assert _recoverable_provider_error_lines(
+        recoverable_events,
+        thread_ids=["t"],
+        parse_errors=[],
+        reader_errors=[],
+        exit_code=0,
+        output_bytes=b"done\n",
+        agent_message_count=1,
+        cleanup_confirmed=True,
+    ) == {2}
+
+    fatal_events, parse_errors = _parse_events(
+        b'{"type":"thread.started","thread_id":"t"}\n'
+        b'{"type":"turn.started"}\n'
+        b'{"type":"error","message":"provider failed"}\n'
+        b'{"type":"item.completed","item":{"type":"agent_message","text":"done"}}\n'
+        b'{"type":"turn.completed"}\n'
+    )
+    assert parse_errors == []
+    assert _tool_events(fatal_events) == []
+    assert _recoverable_provider_error_lines(
+        fatal_events,
+        thread_ids=["t"],
+        parse_errors=[],
+        reader_errors=[],
+        exit_code=0,
+        output_bytes=b"done\n",
+        agent_message_count=1,
+        cleanup_confirmed=True,
+    ) == set()

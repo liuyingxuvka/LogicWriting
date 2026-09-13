@@ -8,7 +8,6 @@ evidence.
 from __future__ import annotations
 
 import copy
-
 import pytest
 
 from _common import fingerprint, fingerprint_without
@@ -58,6 +57,14 @@ def test_reader_spine_is_minimal_ordered_and_keeps_full_input_private(tmp_path):
     assert '"selected_content"' not in prompt
     assert '"route_semantics"' not in prompt
     assert '"gaps"' not in prompt
+    assert 'schema_version' not in prompt
+    assert 'root_question' not in prompt
+    assert 'major_units' not in prompt
+    assert 'reader_context' not in prompt
+    assert 'content_unit_id' not in prompt
+    assert '[T01]' not in prompt
+    assert not any(line.lstrip().startswith(("-", "*")) for line in prompt.splitlines())
+    assert pipeline.validate_reader_spine_prompt(prompt, spine) is True
 
     # The immutable card-level input is still available for the private
     # receipt, but it cannot be mistaken for a reader-spine source.
@@ -152,7 +159,8 @@ def test_reader_spine_keeps_selected_constraints_without_authority_metadata(tmp_
     rendered = pipeline.render_reader_spine_prompt(spine)
     assert "private:authority" not in rendered
     assert '"authority_refs"' not in rendered
-    assert '"reader_constraints"' in rendered
+    assert "结论边界和必须保留的要求" in rendered
+    assert "私有" not in rendered
     pipeline.validate_reader_spine(spine)
 
 

@@ -1014,6 +1014,12 @@
     "shared-writing",
     "final-closure"
   ],
+  "scripts/reader_projection_conformance.py": [
+    "reader-actual-artifact",
+    "shared-writing",
+    "final-closure",
+    "model-depth"
+  ],
   "scripts/reader_pipeline.py": [
     "academic-provenance",
     "fiction-native",

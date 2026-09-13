@@ -149,6 +149,26 @@ checks:
     covers: [req.release.stable-contract, req.release.post-archive]
     expected: {exit_code: 0}
 
+  - id: check.reader.projection-conformance
+    kind: command
+    semantic_check_id: logic-writing.reader-projection.current
+    execution_id: logic-writing-release.reader-projection.v1
+    validation_scope: focused
+    snapshot_policy: frozen
+    toolchain_identity: flowguard-0.69.0-python
+    input_selectors:
+      - scripts/run_reader_projection_conformance.py
+      - skills/logic-writing/scripts/reader_projection_conformance.py
+      - skills/logic-writing/scripts/production_reader_pipeline.py
+      - tests/v2_support.py
+    depends_on_receipts: [check.tests.archive-lifecycle]
+    command: python
+    args: [scripts/run_reader_projection_conformance.py, --root, ., --json]
+    timeout_seconds: 300
+    required: true
+    covers: [req.release.post-archive]
+    expected: {exit_code: 0}
+
   - id: check.models.alignment
     kind: command
     semantic_check_id: logic-writing.flowguard.model-test-alignment
@@ -197,17 +217,49 @@ checks:
     covers: [req.release.stable-contract, req.release.post-archive]
     expected: {exit_code: 0}
 
+  - id: check.reader.preflight-producer
+    kind: command
+    semantic_check_id: logic-writing.reader-execution-quality.preflight-producer
+    execution_id: logic-writing-release.reader-execution-quality-preflight.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: codex-cli-0.154.0-gpt-6-astra-xhigh
+    input_selectors: [scripts/run_reader_acceptance_owner.py, scripts/run_writing_quality_benchmark.py, skills/logic-writing/scripts/**, skills/logic-writing/assets/schemas/**, tests/fixtures/writing_quality/**, skills/logic-writing/references/**]
+    depends_on_receipts: [check.tests.archive-lifecycle]
+    command: python
+    args: [scripts/run_reader_acceptance_owner.py, --root, ., --backend-plan, tests/fixtures/writing_quality/local-backend-plan.json, --preflight-case, I01, --repeats, 1, --output-dir, "{owner_run_root}", --json]
+    timeout_seconds: 90000
+    required: true
+    covers: [req.release.post-archive]
+    expected: {exit_code: 0}
+
+  - id: check.reader.heldout-producer
+    kind: command
+    semantic_check_id: logic-writing.reader-execution-quality.heldout-producer
+    execution_id: logic-writing-release.reader-execution-quality-heldout.v1
+    validation_scope: full
+    snapshot_policy: frozen
+    toolchain_identity: codex-cli-0.154.0-gpt-6-astra-xhigh
+    input_selectors: [scripts/run_reader_acceptance_owner.py, scripts/run_writing_quality_benchmark.py, scripts/check_writing_quality_run.py, skills/logic-writing/scripts/**, skills/logic-writing/assets/schemas/**, tests/fixtures/writing_quality/**, skills/logic-writing/references/**]
+    depends_on_receipts: [check.reader.preflight-producer]
+    command: python
+    args: [scripts/run_reader_acceptance_owner.py, --root, ., --backend-plan, tests/fixtures/writing_quality/local-backend-plan.json, --held-out-only, --preflight-run-root, "{dependency:check.reader.preflight-producer:run_root}", --output-dir, "{owner_run_root}", --json]
+    timeout_seconds: 90000
+    required: true
+    covers: [req.release.post-archive]
+    expected: {exit_code: 0}
+
   - id: check.reader.execution-quality-producer
     kind: command
     semantic_check_id: logic-writing.reader-execution-quality.real-producer
     execution_id: logic-writing-release.reader-execution-quality.v1
     validation_scope: full
     snapshot_policy: frozen
-    toolchain_identity: codex-cli-0.153.4-gpt-6-astra-xhigh
+    toolchain_identity: codex-cli-0.154.0-gpt-6-astra-xhigh
     input_selectors: [scripts/run_reader_acceptance_owner.py, scripts/run_writing_quality_benchmark.py, skills/logic-writing/scripts/**, skills/logic-writing/assets/schemas/**, tests/fixtures/writing_quality/**, skills/logic-writing/references/**]
-    depends_on_receipts: [check.tests.archive-lifecycle]
+    depends_on_receipts: [check.reader.heldout-producer]
     command: python
-    args: [scripts/run_reader_acceptance_owner.py, --root, ., --backend-plan, tests/fixtures/writing_quality/local-backend-plan.json, --json]
+    args: [scripts/run_reader_acceptance_owner.py, --root, ., --backend-plan, tests/fixtures/writing_quality/local-backend-plan.json, --preflight-run-root, "{dependency:check.reader.preflight-producer:run_root}", --held-out-run-root, "{dependency:check.reader.heldout-producer:run_root}", --output-dir, "{owner_run_root}", --json]
     timeout_seconds: 90000
     required: true
     covers: [req.release.post-archive]
@@ -223,7 +275,7 @@ checks:
     input_selectors: [scripts/check_reader_judgment.py, skills/logic-writing/scripts/**, skills/logic-writing/assets/schemas/**, tests/fixtures/writing_quality/rubric.machine.json]
     depends_on_receipts: [check.reader.execution-quality-producer]
     command: python
-    args: [scripts/check_reader_judgment.py, --root, ., --dependency-producer, check.reader.execution-quality-producer, --json]
+    args: [scripts/check_reader_judgment.py, --root, ., --runtime-root, "{owner_run_root}", --dependency-producer, check.reader.execution-quality-producer, --json]
     timeout_seconds: 300
     required: true
     covers: [req.release.post-archive]
@@ -239,7 +291,7 @@ checks:
     input_selectors: [scripts/check_writing_quality_run.py, scripts/run_writing_quality_benchmark.py, tests/fixtures/writing_quality/**]
     depends_on_receipts: [check.reader.execution-quality-producer]
     command: python
-    args: [scripts/check_writing_quality_run.py, --root, ., --dependency-producer, check.reader.execution-quality-producer, --json]
+    args: [scripts/check_writing_quality_run.py, --root, ., --run-root, "{owner_run_root}", --held-out-run-root, "{dependency:check.reader.heldout-producer:run_root}", --dependency-producer, check.reader.execution-quality-producer, --json]
     timeout_seconds: 300
     required: true
     covers: [req.release.post-archive]

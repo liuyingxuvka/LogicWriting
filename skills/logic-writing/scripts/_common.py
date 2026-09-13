@@ -105,6 +105,34 @@ def fingerprint_without(value: dict[str, Any], *keys: str) -> str:
     return fingerprint({key: item for key, item in value.items() if key not in set(keys)})
 
 
+def logic_writing_source_identity(skill_root: str | Path | None = None) -> dict[str, str]:
+    """Return the complete byte identity used by the production reader.
+
+    The quality harness and the production reader must agree on the source
+    surface that can change a writing decision.  Keeping this inventory in the
+    shared helper prevents a harness-only allowlist from silently missing a
+    schema, reference, route, or runtime helper.
+    """
+
+    skill = Path(skill_root).expanduser().resolve() if skill_root is not None else Path(__file__).resolve().parents[1]
+    paths: list[Path] = []
+    entry = skill / "SKILL.md"
+    if entry.is_file() and not entry.is_symlink():
+        paths.append(entry)
+    for directory, patterns in (
+        (skill / "scripts", ("*.py",)),
+        (skill / "assets" / "schemas", ("*.json",)),
+        (skill / "references", ("*.md", "*.json")),
+        (skill / "routes", ("*.md", "*.json")),
+    ):
+        for pattern in patterns:
+            paths.extend(path for path in directory.rglob(pattern) if path.is_file() and not path.is_symlink())
+    identity: dict[str, str] = {}
+    for path in sorted(set(path.resolve() for path in paths), key=lambda item: item.as_posix()):
+        identity[path.relative_to(skill).as_posix()] = "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
+    return identity
+
+
 def require_mapping(value: Any, label: str = "value") -> dict[str, Any]:
     if not isinstance(value, dict):
         raise ValidationError(f"{label} must be an object")

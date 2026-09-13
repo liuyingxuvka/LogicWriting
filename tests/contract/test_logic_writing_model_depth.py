@@ -185,6 +185,98 @@ def test_model_depth_parent_review_preserves_a_typed_missing_parent_finding(chec
     assert any(row["code"] == "missing_parent_receipt" for row in findings)
 
 
+def test_logic_writing_model_mesh_has_one_complete_root_and_negative_oracles(checker):
+    """Keep the declared 22-model tree rooted and fail closed on bad meshes."""
+
+    mesh = checker._mesh(ROOT)
+    root_id = "logic_writing_models"
+    model_ids = set(mesh.MODEL_PATHS)
+
+    roots = model_ids - set(mesh.PARENTS)
+    assert roots == {root_id}
+    assert set(mesh.PARENTS) == model_ids - {root_id}
+    assert set(mesh.PARENTS.values()) <= model_ids
+    assert len(model_ids) == 22
+
+    def reachable_from(model_id, children, *, visiting=None, reachable=None):
+        visiting = set() if visiting is None else visiting
+        reachable = set() if reachable is None else reachable
+        if model_id in visiting:
+            raise AssertionError(f"cycle detected at {model_id}")
+        if model_id in reachable:
+            return reachable
+        visiting.add(model_id)
+        reachable.add(model_id)
+        for child_id in children.get(model_id, ()):
+            reachable_from(
+                child_id,
+                children,
+                visiting=visiting,
+                reachable=reachable,
+            )
+        visiting.remove(model_id)
+        return reachable
+
+    root_children = tuple(mesh.CHILDREN[root_id])
+    assert len(root_children) == 14
+    assert reachable_from(root_id, mesh.CHILDREN) == model_ids
+
+    descendants = checker._descendants(root_id, mesh.CHILDREN)
+    assert len(descendants) == 21
+    assert len(set(descendants)) == 21
+    assert set(descendants) == model_ids - {root_id}
+
+    # Exercise the real target-owned partition and FlowGuard reviewers with
+    # current source bindings, while keeping all generated evidence in memory.
+    child_payloads = []
+    for child_id in root_children:
+        source_hashes = mesh._source_hashes(child_id, ROOT)
+        child_payloads.append({
+            "model_id": child_id,
+            "status": "pass",
+            "model_fingerprint": source_hashes[mesh.MODEL_PATHS[child_id]],
+            "source_hashes": source_hashes,
+            "evidence_id": f"mesh:{child_id}:topology-regression",
+            "owner_id": f"owner:{child_id}",
+            "parent_model_id": root_id,
+            "claim_scope": "full",
+            "inputs_accepted": (f"{root_id}:input",),
+            "outputs_emitted": (f"{child_id}:result",),
+            "state_owned": (f"{child_id}:state",),
+            "side_effects_owned": (f"{child_id}:effect",),
+            "functional_areas": (f"{child_id}:area",),
+            "contracts_out": (f"{child_id}:result",),
+            "functions_owned": (f"{child_id}:entry",),
+            "invariants_owned": (f"{child_id}:invariant",),
+            "risk_classes": (f"{child_id}:risk",),
+            "validation_evidence": (
+                f"native:{child_id}:current",
+                f"negative:{child_id}:matrix",
+            ),
+            "evidence_tier": mesh.EVIDENCE_ABSTRACT_GREEN,
+            "child_model_ids": (),
+        })
+    partition, _ = mesh._partition(root_id, child_payloads, ROOT)
+    negative = mesh._negative_oracles(partition)
+    for code in (
+        "missing_child",
+        "missing_join_input",
+        "duplicate_function_owner",
+        "cycle",
+        "stale_child_receipt",
+    ):
+        assert negative[code] is True
+    assert negative["negative_matrix_complete"] is True
+
+    cyclic_children = {
+        parent_id: tuple(children)
+        for parent_id, children in mesh.CHILDREN.items()
+    }
+    cyclic_children["reader_artifact_model"] += (root_id,)
+    with pytest.raises(AssertionError, match="cycle detected"):
+        reachable_from(root_id, cyclic_children)
+
+
 def test_model_depth_checker_emits_the_fixed_receipt_shape():
     completed = subprocess.run(
         [
@@ -297,13 +389,16 @@ def test_native_project_root_adapter_does_not_recurse(checker):
     spec.loader.exec_module(authority)
 
     import flowguard.model_system_inventory as inventory
+    import flowguard.self_path_quality as self_path_quality
     from logic_writing_model_root import (
         _GENERIC_BUILD_MANIFEST_MODEL_SYSTEM_SNAPSHOT,
     )
 
     assert inventory.build_manifest_model_system_snapshot is _GENERIC_BUILD_MANIFEST_MODEL_SYSTEM_SNAPSHOT
+    generic_self_path_quality_builder = self_path_quality.build_manifest_model_system_snapshot
     with authority.logic_writing_root_builder():
         assert inventory.build_manifest_model_system_snapshot is authority.build_logic_writing_model_snapshot
+        assert self_path_quality.build_manifest_model_system_snapshot is authority.build_logic_writing_model_snapshot
         snapshot = authority.build_logic_writing_model_snapshot(
             ROOT,
             snapshot_id="logic-writing-root-adapter-test",
@@ -316,6 +411,7 @@ def test_native_project_root_adapter_does_not_recurse(checker):
     }
     assert roots == {"logic_writing_models"}
     assert inventory.build_manifest_model_system_snapshot is _GENERIC_BUILD_MANIFEST_MODEL_SYSTEM_SNAPSHOT
+    assert self_path_quality.build_manifest_model_system_snapshot is generic_self_path_quality_builder
 
 
 def test_target_authority_audit_uses_project_declared_root():

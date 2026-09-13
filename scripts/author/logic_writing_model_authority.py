@@ -17,7 +17,10 @@ from logic_writing_model_root import build_logic_writing_model_snapshot
 
 
 @contextmanager
-def logic_writing_root_builder() -> Iterator[None]:
+def logic_writing_root_builder(
+    *,
+    force_current_subject_revision: bool = False,
+) -> Iterator[None]:
     """Temporarily bind every imported native builder to the project root.
 
     FlowGuard imports its inventory builder in a few native modules.  The
@@ -30,13 +33,43 @@ def logic_writing_root_builder() -> Iterator[None]:
     import flowguard.model_revision_owner_evidence as owner_evidence
     import flowguard.model_revision_plan as revision_plan
     import flowguard.model_system_inventory as inventory
+    import flowguard.self_path_quality as self_path_quality
 
     target = build_logic_writing_model_snapshot
+    if force_current_subject_revision:
+        # ``model_revision_owner_evidence`` builds its frozen candidate without
+        # an explicit subject revision, which makes the native builder derive
+        # the current source-inventory identity.  The generic revision builder
+        # passes the observed (possibly older) subject revision explicitly.
+        # Both operations must therefore use the same candidate identity or
+        # their otherwise valid receipts cannot be composed.  Keep this
+        # normalization local to the target adapter; it does not change the
+        # shared FlowGuard builder or create a compatibility path.
+        def target(
+            root: str | Path,
+            *,
+            snapshot_id: str,
+            system_id: str = "logic-writing",
+            subject_lane: str = "observed_implementation",
+            lifecycle: str = "active",
+            subject_revision: str = "",
+            accepted_boundary_contract: Any = None,
+        ):
+            return build_logic_writing_model_snapshot(
+                root,
+                snapshot_id=snapshot_id,
+                system_id=system_id,
+                subject_lane=subject_lane,
+                lifecycle=lifecycle,
+                subject_revision="",
+                accepted_boundary_contract=accepted_boundary_contract,
+            )
     refs: list[tuple[Any, str, Any]] = [
         (inventory, "build_manifest_model_system_snapshot", inventory.build_manifest_model_system_snapshot),
         (revision_builder, "build_manifest_model_system_snapshot", revision_builder.build_manifest_model_system_snapshot),
         (owner_evidence, "build_manifest_model_system_snapshot", owner_evidence.build_manifest_model_system_snapshot),
         (revision_plan, "build_manifest_model_system_snapshot", revision_plan.build_manifest_model_system_snapshot),
+        (self_path_quality, "build_manifest_model_system_snapshot", self_path_quality.build_manifest_model_system_snapshot),
     ]
     for module, name, original in refs:
         setattr(module, name, target)
@@ -55,7 +88,7 @@ def build_current_logic_writing_model_revision(
 
     import flowguard.model_revision_builder as revision_builder
 
-    with logic_writing_root_builder():
+    with logic_writing_root_builder(force_current_subject_revision=True):
         return revision_builder.build_current_model_revision(root, **kwargs)
 
 

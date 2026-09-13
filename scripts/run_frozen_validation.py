@@ -8,6 +8,7 @@ import hashlib
 import importlib
 import json
 import os
+import re
 import shutil
 import signal
 import subprocess
@@ -23,7 +24,7 @@ import yaml
 from _release_common import RELEASE_CONTRACT_RELATIVE
 
 
-VERIFIER_VERSION = "logic-writing-frozen-validation.v2"
+VERIFIER_VERSION = "logic-writing-frozen-validation.v3"
 DEFAULT_CONTRACT = RELEASE_CONTRACT_RELATIVE
 DEFAULT_RECEIPTS = Path("run-artifacts/validation-receipts")
 IGNORED_PARTS = {
@@ -174,19 +175,54 @@ def _selector_files(root: Path, selector: str) -> list[Path]:
     wildcard = any(character in normalized for character in "*?[")
     matches = [Path(item) for item in glob.glob(str(root / normalized), recursive=True)]
     files: list[Path] = []
+
+    def admit(path: Path) -> None:
+        """Admit one file while pruning known runtime trees before resolve.
+
+        The release contract intentionally watches broad source globs, while
+        `_is_ignored` excludes evidence and other runtime output.  Resolving
+        every historical evidence file first made a cold source snapshot very
+        expensive on Windows.  A lexical check is safe as an early prune; the
+        resolved path is still checked afterwards so a symlink cannot escape
+        the repository or smuggle an ignored target back into the manifest.
+        """
+
+        try:
+            lexical = path.relative_to(root)
+        except ValueError:
+            return
+        if _is_ignored(lexical, explicit=not wildcard):
+            return
+        try:
+            resolved = path.resolve()
+            relative = resolved.relative_to(root)
+        except (OSError, RuntimeError, ValueError):
+            return
+        if _is_ignored(relative, explicit=not wildcard) or not resolved.is_file():
+            return
+        files.append(resolved)
+
     for match in matches:
         if match.is_dir():
-            files.extend(path for path in match.rglob("*") if path.is_file())
+            for directory, dirnames, filenames in os.walk(
+                match, topdown=True, followlinks=False
+            ):
+                directory_path = Path(directory)
+                dirnames[:] = [
+                    name
+                    for name in dirnames
+                    if not _is_ignored(
+                        directory_path.joinpath(name).relative_to(root),
+                        explicit=not wildcard,
+                    )
+                ]
+                for filename in filenames:
+                    admit(directory_path / filename)
         elif match.is_file():
-            files.append(match)
-    admitted = []
-    for path in sorted(set(item.resolve() for item in files)):
-        relative = path.relative_to(root)
-        if not _is_ignored(relative, explicit=not wildcard):
-            admitted.append(path)
-    if not admitted:
+            admit(match)
+    if not files:
         raise ValueError(f"input_selector_has_no_files:{selector}")
-    return admitted
+    return sorted(set(files))
 
 
 def _manifest(root: Path, selectors: Iterable[str]) -> dict[str, str]:
@@ -398,7 +434,13 @@ def _terminate_and_confirm(process: subprocess.Popen[str]) -> tuple[bool, list[i
         return True, []
 
 
-def _execute(command: list[str], *, cwd: Path, timeout: int) -> dict[str, Any]:
+def _execute(
+    command: list[str],
+    *,
+    cwd: Path,
+    timeout: int,
+    env: Mapping[str, str] | None = None,
+) -> dict[str, Any]:
     resolved = [_resolve_executable(command[0]), *command[1:]]
     flags = subprocess.CREATE_NEW_PROCESS_GROUP if os.name == "nt" else 0
     started = time.monotonic()
@@ -412,6 +454,7 @@ def _execute(command: list[str], *, cwd: Path, timeout: int) -> dict[str, Any]:
         stderr=subprocess.PIPE,
         creationflags=flags,
         start_new_session=os.name != "nt",
+        env=dict(env) if env is not None else None,
     )
     try:
         stdout, stderr = process.communicate(timeout=timeout)
@@ -436,6 +479,294 @@ def _execute(command: list[str], *, cwd: Path, timeout: int) -> dict[str, Any]:
             "remaining_process_ids": remaining,
             "elapsed_seconds": round(time.monotonic() - started, 3),
         }
+
+
+def _read_json(path: Path) -> Any:
+    """Read one JSON evidence file without creating or normalising it."""
+
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _safe_evidence_path(root: Path, relative: Any, *, field: str) -> Path:
+    """Resolve a receipt-owned relative path and reject escapes/symlinks."""
+
+    if not isinstance(relative, (str, Path)) or not str(relative).strip():
+        raise ValueError(f"{field}_missing")
+    candidate_relative = Path(relative)
+    if candidate_relative.is_absolute():
+        raise ValueError(f"{field}_must_be_relative")
+    base = root.resolve()
+    candidate = (base / candidate_relative).resolve()
+    try:
+        candidate.relative_to(base)
+    except ValueError as exc:
+        raise ValueError(f"{field}_escaped_receipt_root") from exc
+    current = base
+    for part in candidate_relative.parts:
+        current = current / part
+        if current.is_symlink():
+            raise ValueError(f"{field}_contains_symlink")
+    return candidate
+
+
+def _owner_context_paths(receipt: Mapping[str, Any], receipts: Path, *, check_id: str) -> tuple[Path, Path]:
+    """Return the attempt and run roots recorded by one execution owner."""
+
+    context = receipt.get("owner_context")
+    if not isinstance(context, Mapping):
+        raise ValueError(f"owner_context_missing:{check_id}")
+    attempt_root = _safe_evidence_path(receipts, context.get("attempt_root"), field=f"owner_context.attempt_root:{check_id}")
+    run_root = _safe_evidence_path(receipts, context.get("run_root"), field=f"owner_context.run_root:{check_id}")
+    try:
+        run_root.relative_to(attempt_root)
+    except ValueError as exc:
+        raise ValueError(f"owner_context.run_root_outside_attempt:{check_id}") from exc
+    if not attempt_root.is_dir() or not run_root.is_dir():
+        raise ValueError(f"owner_context_directory_missing:{check_id}")
+    if context.get("owner_id") != check_id:
+        raise ValueError(f"owner_context.owner_id_mismatch:{check_id}")
+    return attempt_root, run_root
+
+
+def _dependency_owner_run_root(
+    dependency: str,
+    *,
+    index: Mapping[str, Mapping[str, Any]],
+    consumers: Mapping[str, str],
+    receipts: Path,
+) -> Path:
+    owner_id = consumers.get(str(dependency), str(dependency))
+    receipt = index.get(owner_id)
+    if not isinstance(receipt, Mapping):
+        raise ValueError(f"dependency_owner_missing:{dependency}")
+    _, run_root = _owner_context_paths(receipt, receipts, check_id=owner_id)
+    return run_root
+
+
+def _materialize_owner_argument(
+    value: Any,
+    *,
+    attempt_root: Path,
+    run_root: Path,
+    receipts: Path,
+    index: Mapping[str, Mapping[str, Any]],
+    consumers: Mapping[str, str],
+) -> str:
+    """Expand only the release runner's explicit owner-context placeholders."""
+
+    text = str(value)
+    replacements = {
+        "{owner_attempt_root}": str(attempt_root),
+        "{owner_run_root}": str(run_root),
+        "{receipt_root}": str(receipts),
+    }
+    for token, replacement in replacements.items():
+        text = text.replace(token, replacement)
+
+    dependency_token = re.compile(r"\{dependency:([^{}:]+(?:\.[^{}:]+)*):run_root\}")
+
+    def replace_dependency(match: re.Match[str]) -> str:
+        dependency = match.group(1)
+        return str(
+            _dependency_owner_run_root(
+                dependency,
+                index=index,
+                consumers=consumers,
+                receipts=receipts,
+            )
+        )
+
+    text = dependency_token.sub(replace_dependency, text)
+    if "{" in text or "}" in text:
+        raise ValueError(f"unresolved_owner_context_argument:{text}")
+    return text
+
+
+def _owner_environment(
+    *,
+    check_id: str,
+    attempt_root: Path,
+    run_root: Path,
+    receipts: Path,
+    dependencies: Iterable[str],
+    index: Mapping[str, Mapping[str, Any]],
+    consumers: Mapping[str, str],
+) -> dict[str, str]:
+    """Build a private child environment for one validation owner."""
+
+    environment = {str(key): str(value) for key, value in os.environ.items()}
+    environment.update(
+        {
+            # Existing owner CLIs consume this variable as their output root.
+            "LW_VALIDATION_ATTEMPT_ROOT": str(run_root),
+            "LW_VALIDATION_OWNER_ATTEMPT_ROOT": str(attempt_root),
+            "LW_VALIDATION_OWNER_RUN_ROOT": str(run_root),
+            "LW_VALIDATION_OWNER_ID": check_id,
+            "LW_VALIDATION_RECEIPT_ROOT": str(receipts),
+        }
+    )
+    for dependency in dependencies:
+        owner_id = consumers.get(str(dependency), str(dependency))
+        dependency_root = _dependency_owner_run_root(
+            str(dependency), index=index, consumers=consumers, receipts=receipts
+        )
+        key = "LW_VALIDATION_DEPENDENCY_" + re.sub(r"[^A-Za-z0-9]", "_", owner_id).upper() + "_ROOT"
+        environment[key] = str(dependency_root)
+        if owner_id == "check.reader.execution-quality-producer":
+            environment["LW_VALIDATION_DEPENDENCY_INDEX"] = str(dependency_root / "dependency-index.json")
+    return environment
+
+
+def _audit_existing_validation(
+    root: Path,
+    receipts: Path,
+    *,
+    contract: Mapping[str, Any],
+    ordered: list[dict[str, Any]],
+    consumers: Mapping[str, str],
+    revision: str,
+    snapshot_id: str,
+    snapshot_manifest: Mapping[str, str],
+    require_clean_git: bool,
+) -> dict[str, Any]:
+    """Audit one already-written frozen result without starting or writing anything.
+
+    This branch deliberately performs no executable lookup, version probe, lock
+    acquisition, directory creation, or semantic child execution.  It verifies
+    the current source snapshot and every persisted owner/consumer artifact
+    against the existing parent index only.
+    """
+
+    base = {
+        "schema_version": "logic_writing_validation_index.v1",
+        "audit_only": True,
+        "executed_check_ids": [],
+        "reused_check_ids": [],
+        "claim_boundary": "Read-only audit of one existing frozen-validation parent index; no owner was started and no evidence was rewritten.",
+    }
+    if require_clean_git:
+        return {
+            **base,
+            "status": "failed",
+            "error": "audit_only_cannot_verify_git_clean_without_starting_a_git_probe",
+        }
+    if not receipts.is_dir():
+        return {**base, "status": "failed", "error": "validation_receipt_root_missing"}
+    index_path = receipts / "index.json"
+    if not index_path.is_file():
+        return {**base, "status": "failed", "error": "validation_parent_index_missing"}
+    try:
+        parent = _read_json(index_path)
+    except (OSError, UnicodeError, ValueError, TypeError, json.JSONDecodeError) as exc:
+        return {**base, "status": "failed", "error": f"validation_parent_index_unreadable:{exc}"}
+    if not isinstance(parent, Mapping):
+        return {**base, "status": "failed", "error": "validation_parent_index_not_object"}
+    if parent.get("index_hash") != _hash({key: value for key, value in parent.items() if key != "index_hash"}):
+        return {**base, "status": "failed", "error": "validation_parent_index_hash_mismatch"}
+    if parent.get("status") != "passed":
+        return {**base, "status": "failed", "error": "validation_parent_index_not_passed"}
+    if parent.get("verifier_version") != VERIFIER_VERSION:
+        return {**base, "status": "failed", "error": "validation_parent_index_verifier_stale"}
+    if parent.get("inventory_revision") != revision:
+        return {**base, "status": "failed", "error": "validation_parent_index_inventory_stale"}
+    if parent.get("frozen_snapshot_id") != snapshot_id:
+        return {**base, "status": "failed", "error": "validation_parent_index_source_snapshot_stale"}
+    if parent.get("frozen_snapshot_file_count") != len(snapshot_manifest):
+        return {**base, "status": "failed", "error": "validation_parent_index_source_file_count_stale"}
+    if parent.get("execution_owner_count") != len(ordered) or parent.get("receipt_consumer_count") != len(consumers):
+        return {**base, "status": "failed", "error": "validation_parent_index_plan_counts_mismatch"}
+
+    indexed = parent.get("receipts")
+    if not isinstance(indexed, Mapping) or set(indexed) != {str(item["id"]) for item in ordered}:
+        return {**base, "status": "failed", "error": "validation_parent_index_owner_set_mismatch"}
+    indexed_consumers = parent.get("consumer_owners")
+    if indexed_consumers != dict(consumers):
+        return {**base, "status": "failed", "error": "validation_parent_index_consumer_set_mismatch"}
+
+    validated: dict[str, Mapping[str, Any]] = {}
+    try:
+        for check in ordered:
+            check_id = str(check["id"])
+            receipt = indexed[check_id]
+            if not isinstance(receipt, Mapping):
+                raise ValueError(f"owner_receipt_not_object:{check_id}")
+            if receipt.get("status") != "passed" or receipt.get("terminal_status") != "passed" or receipt.get("exit_code") != 0:
+                raise ValueError(f"owner_receipt_not_passed:{check_id}")
+            if receipt.get("verifier_version") != VERIFIER_VERSION:
+                raise ValueError(f"owner_receipt_verifier_stale:{check_id}")
+            if receipt.get("check_id") != check_id:
+                raise ValueError(f"owner_receipt_check_identity_mismatch:{check_id}")
+            for field in ("semantic_check_id", "execution_id"):
+                if receipt.get(field) != check.get(field):
+                    raise ValueError(f"owner_receipt_{field}_mismatch:{check_id}")
+            if receipt.get("inventory_revision") != revision or receipt.get("artifact_version") != snapshot_id:
+                raise ValueError(f"owner_receipt_source_identity_stale:{check_id}")
+            if receipt.get("timed_out") or receipt.get("cleanup_confirmed") is not True:
+                raise ValueError(f"owner_receipt_cleanup_or_timeout_invalid:{check_id}")
+            if receipt.get("receipt_hash") != _receipt_hash(receipt):
+                raise ValueError(f"owner_receipt_hash_mismatch:{check_id}")
+            expected_inputs = _check_manifest(root, check)
+            if receipt.get("input_manifest_hash") != _hash(expected_inputs):
+                raise ValueError(f"owner_receipt_input_identity_stale:{check_id}")
+            dependency_hashes = {
+                str(dependency): validated[consumers.get(str(dependency), str(dependency))]["receipt_hash"]
+                for dependency in check.get("depends_on_receipts", [])
+            }
+            if receipt.get("dependency_receipt_hashes") != dependency_hashes:
+                raise ValueError(f"owner_receipt_dependency_identity_mismatch:{check_id}")
+            _owner_context_paths(receipt, receipts, check_id=check_id)
+
+            result_path = _safe_evidence_path(receipts, receipt.get("result_path"), field=f"result_path:{check_id}")
+            if not result_path.is_file():
+                raise ValueError(f"owner_result_missing:{check_id}")
+            result = _read_json(result_path)
+            if not isinstance(result, Mapping):
+                raise ValueError(f"owner_result_not_object:{check_id}")
+            if result.get("result_fingerprint") != receipt.get("result_fingerprint"):
+                raise ValueError(f"owner_result_fingerprint_mismatch:{check_id}")
+            if result.get("result_fingerprint") != _hash(
+                {key: value for key, value in result.items() if key != "result_fingerprint"}
+            ):
+                raise ValueError(f"owner_result_hash_mismatch:{check_id}")
+            if result.get("check_id") != check_id or result.get("execution_fingerprint") != receipt.get("execution_fingerprint"):
+                raise ValueError(f"owner_result_identity_mismatch:{check_id}")
+
+            success_path = _safe_evidence_path(
+                receipts,
+                Path("success") / check_id / (str(receipt.get("execution_fingerprint", "")).removeprefix("sha256:") + ".json").replace("\\", "/"),
+                field=f"success_path:{check_id}",
+            )
+            if not success_path.is_file() or _read_json(success_path) != dict(receipt):
+                raise ValueError(f"owner_success_receipt_missing_or_mismatched:{check_id}")
+            validated[check_id] = receipt
+    except (OSError, UnicodeError, ValueError, TypeError, json.JSONDecodeError) as exc:
+        return {**base, "status": "failed", "error": str(exc)}
+
+    mesh_info = parent.get("test_mesh")
+    if not isinstance(mesh_info, Mapping) or mesh_info.get("status") != "passed":
+        return {**base, "status": "failed", "error": "test_mesh_terminal_receipt_missing"}
+    try:
+        mesh_path = _safe_evidence_path(receipts, mesh_info.get("result_path"), field="test_mesh.result_path")
+        mesh_payload = _read_json(mesh_path)
+    except (OSError, UnicodeError, ValueError, TypeError, json.JSONDecodeError) as exc:
+        return {**base, "status": "failed", "error": f"test_mesh_terminal_receipt_invalid:{exc}"}
+    if not isinstance(mesh_payload, Mapping) or mesh_payload.get("status") != "passed":
+        return {**base, "status": "failed", "error": "test_mesh_terminal_receipt_not_passed"}
+    if mesh_info.get("result_hash") != _hash(mesh_payload):
+        return {**base, "status": "failed", "error": "test_mesh_terminal_receipt_hash_mismatch"}
+    return {
+        **base,
+        "status": "passed",
+        "verifier_version": VERIFIER_VERSION,
+        "inventory_revision": revision,
+        "frozen_snapshot_id": snapshot_id,
+        "frozen_snapshot_file_count": len(snapshot_manifest),
+        "execution_owner_count": len(ordered),
+        "receipt_consumer_count": len(consumers),
+        "reused_check_ids": [str(item["id"]) for item in ordered],
+        "consumer_owners": dict(consumers),
+        "test_mesh": {"status": "passed", "result_path": mesh_info.get("result_path")},
+    }
 
 
 @contextmanager
@@ -487,6 +818,21 @@ def run_validation(
     ordered, consumers = _validate_plan(contract)
     revision = _inventory_revision(contract)
     snapshot_id, snapshot_manifest = _global_snapshot(root, contract)
+    # Read-only audit is intentionally isolated before any executable lookup,
+    # git probe, lock acquisition, directory creation, or child process.  The
+    # audit must be safe to run against a live release receipt root.
+    if audit_only:
+        return _audit_existing_validation(
+            root,
+            receipts,
+            contract=contract,
+            ordered=ordered,
+            consumers=consumers,
+            revision=revision,
+            snapshot_id=snapshot_id,
+            snapshot_manifest=snapshot_manifest,
+            require_clean_git=require_clean_git,
+        )
     toolchain_observations = {
         str(check["id"]): _toolchain_observation(check) for check in ordered
     }
@@ -519,14 +865,51 @@ def run_validation(
                 index[check_id] = current
                 reused.append(check_id)
                 continue
-            if audit_only:
-                raise ValueError(f"current_terminal_success_missing:{check_id}")
-
-            command = [str(check["command"]), *(str(item) for item in check.get("args", []))]
-            result = _execute(command, cwd=root, timeout=int(check.get("timeout_seconds", 300)))
             attempt_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S.%fZ")
             attempt_root = receipts / "attempts" / check_id / attempt_id
             attempt_root.mkdir(parents=True, exist_ok=False)
+            owner_run_root = attempt_root / "run"
+            owner_run_root.mkdir(parents=True, exist_ok=False)
+            owner_environment = _owner_environment(
+                check_id=check_id,
+                attempt_root=attempt_root,
+                run_root=owner_run_root,
+                receipts=receipts,
+                dependencies=(str(item) for item in check.get("depends_on_receipts", [])),
+                index=index,
+                consumers=consumers,
+            )
+            command = [
+                str(check["command"]),
+                *(
+                    _materialize_owner_argument(
+                        item,
+                        attempt_root=attempt_root,
+                        run_root=owner_run_root,
+                        receipts=receipts,
+                        index=index,
+                        consumers=consumers,
+                    )
+                    for item in check.get("args", [])
+                ),
+            ]
+            try:
+                result = _execute(
+                    command,
+                    cwd=root,
+                    timeout=int(check.get("timeout_seconds", 300)),
+                    env=owner_environment,
+                )
+            except (OSError, ValueError, RuntimeError) as exc:
+                result = {
+                    "exit_code": None,
+                    "stdout": "",
+                    "stderr": f"owner_execution_error:{type(exc).__name__}:{exc}",
+                    "timed_out": False,
+                    "cleanup_confirmed": True,
+                    "remaining_process_ids": [],
+                    "elapsed_seconds": 0.0,
+                }
             stdout_path = attempt_root / "stdout.txt"
             stderr_path = attempt_root / "stderr.txt"
             stdout_path.write_text(result["stdout"], encoding="utf-8")
@@ -570,6 +953,11 @@ def run_validation(
                 "result_fingerprint": result_payload["result_fingerprint"],
                 "timed_out": result["timed_out"],
                 "cleanup_confirmed": result["cleanup_confirmed"],
+                "owner_context": {
+                    "owner_id": check_id,
+                    "attempt_root": attempt_root.relative_to(receipts).as_posix(),
+                    "run_root": owner_run_root.relative_to(receipts).as_posix(),
+                },
                 "recorded_at": _utc_now(),
                 "claim_boundary": "This receipt proves only the exact declared command, inputs, dependencies, exit status, and captured result for this validation owner.",
             }
@@ -604,6 +992,9 @@ def run_validation(
             "frozen_snapshot_file_count": len(snapshot_manifest),
             "execution_owner_count": len(ordered),
             "receipt_consumer_count": len(consumers),
+            "git_clean_required": require_clean_git,
+            "git_clean_observed": require_clean_git,
+            "toolchain_observations": toolchain_observations,
             "executed_check_ids": executed,
             "reused_check_ids": reused,
             "receipts": index,

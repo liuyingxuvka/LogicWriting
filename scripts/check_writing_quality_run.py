@@ -23,7 +23,7 @@ from _common import fingerprint, fingerprint_without  # noqa: E402
 from execution_record_resolver import LocalExecutionRecordResolver  # noqa: E402
 from reader_execution import validate_execution_record  # noqa: E402
 from reader_pipeline import validate_artifact_map, validate_writer_input  # noqa: E402
-from production_reader_pipeline import validate_reader_spine  # noqa: E402
+from production_reader_pipeline import validate_reader_spine, validate_reader_spine_prompt  # noqa: E402
 from researchguard_handoff import validate_handoff_consumption  # noqa: E402
 from run_writing_quality_benchmark import (  # noqa: E402
     CASE_COUNT,
@@ -363,9 +363,11 @@ def _validate_production_reader_lineage(
     if request.get("reader_spine_fingerprint") != production.get("reader_spine_fingerprint"):
         raise ValueError(f"writer request is not bound to its ReaderSpine: {key}")
 
-    # The writer's captured prompt must contain the validated spine JSON and
-    # no card-level or internal model projection.  This closes the consumer
-    # boundary even when a caller writes a plausible production receipt.
+    # The writer's captured prompt must be the current compact reader
+    # projection and must not contain a card-level or internal model
+    # projection.  The ReaderSpine itself remains the immutable private
+    # lineage artifact; exact renderer validation closes the consumer binding
+    # without exposing its JSON fields to the provider.
     # Execution-capture locators are rooted at ``attempts``.  Production
     # evidence paths are rooted at the writer's ``production-reader`` folder,
     # while the backend prompt/events/output captures live beside the
@@ -374,17 +376,10 @@ def _validate_production_reader_lineage(
     # valid held-out/full capture fail consumer validation.
     prompt_path = _execution_capture_path(run_root, writer_record.get("input_prompt_locator"))
     prompt_text = prompt_path.read_text(encoding="utf-8")
-    if any(token in prompt_text for token in (
-        '"selected_content"', '"route_semantics"', '"gaps"', '"native_handoff"',
-        '"model_row_ids"', 'WriterInput', "LogicGuard", "FlowGuard",
-    )):
-        raise ValueError(f"writer production prompt contains private/card-level fields: {key}")
     try:
-        prompt_spine = json.loads(prompt_text.rsplit("\n\n", 1)[-1])
-    except (TypeError, ValueError, json.JSONDecodeError) as exc:
-        raise ValueError(f"writer production prompt does not end with ReaderSpine JSON: {key}") from exc
-    if prompt_spine != reader_spine:
-        raise ValueError(f"writer production prompt ReaderSpine differs from receipt: {key}")
+        validate_reader_spine_prompt(prompt_text, reader_spine)
+    except (OSError, UnicodeError, ValueError, TypeError) as exc:
+        raise ValueError(f"writer production prompt is not the current compact reader projection: {key}") from exc
     if brief.get("composition_plan") != composition:
         raise ValueError(f"writer ReaderBrief embeds a different CompositionPlan: {key}")
     if brief.get("writer_input") != production_doc.get("writer_input"):
@@ -459,6 +454,7 @@ def _status_counts(items: Any) -> dict[str, int]:
         "not_started_dependency_failed",
         "not_started_deadline",
         "not_started_cleanup_blocked",
+        "not_started_source_changed",
     }
     terminal_statuses = {
         "completed",
@@ -468,6 +464,7 @@ def _status_counts(items: Any) -> dict[str, int]:
         "not_started_dependency_failed",
         "not_started_deadline",
         "not_started_cleanup_blocked",
+        "not_started_source_changed",
     }
     terminal = sum(status in terminal_statuses for status in statuses)
     completed = sum(status == "completed" for status in statuses)

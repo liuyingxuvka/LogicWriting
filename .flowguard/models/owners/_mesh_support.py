@@ -89,6 +89,12 @@ PARENTS: dict[str, str] = {
     "investigation_route_model": "logic_writing_models",
     "academic_route_model": "logic_writing_models",
     "operation_freshness_closure_model": "logic_writing_models",
+    "development_process_flow": "logic_writing_models",
+    "test_mesh": "logic_writing_models",
+    "behavior_commitment_ledger": "logic_writing_models",
+    "primary_path_authority": "logic_writing_models",
+    "model_test_alignment": "logic_writing_models",
+    "plan_detailing": "logic_writing_models",
     "release_retirement_model": "development_process_flow",
     "writer_projection": "reader_artifact_model",
     "editorial_disposition": "reader_artifact_model",
@@ -430,6 +436,21 @@ def _partition(parent_id: str, child_payloads: Sequence[Mapping[str, Any]], root
     )
 
 
+def _parent_graph_has_cycle(parents: Mapping[str, str]) -> bool:
+    """Detect a cycle in a one-parent model hierarchy declaration."""
+
+    nodes = set(parents) | set(parents.values())
+    for start in nodes:
+        visited: set[str] = set()
+        current = start
+        while current in parents:
+            if current in visited:
+                return True
+            visited.add(current)
+            current = parents[current]
+    return False
+
+
 def _negative_oracles(partition: HierarchyPartitionMap) -> dict[str, bool]:
     """Run typed negative probes against the same native hierarchy reviewer."""
 
@@ -464,6 +485,13 @@ def _negative_oracles(partition: HierarchyPartitionMap) -> dict[str, bool]:
             required_outputs=closure.required_outputs,
         )
         results["missing_join_input"] = not review_mesh_closure_model(broken_join, partition.child_models).ok
+    if partition.parent_model_id == "logic_writing_models":
+        # The root topology must reject a forged back-edge.  Keep this probe
+        # independent from child receipts so a stale child cannot mask a
+        # parent-graph cycle.
+        cyclic_parents = dict(PARENTS)
+        cyclic_parents["logic_writing_models"] = "reader_artifact_model"
+        results["cycle"] = _parent_graph_has_cycle(cyclic_parents)
     results["negative_matrix_complete"] = bool(results) and all(results.values())
     return results
 

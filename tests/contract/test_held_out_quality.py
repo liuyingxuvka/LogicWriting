@@ -162,6 +162,28 @@ def test_research_and_compose_planner_payloads_fail_closed_on_missing_or_extra_f
         benchmark._normalise_research_payload({"candidate_model": candidate}, token="missing-goal", request=request)
 
 
+def test_compose_prompt_keeps_derived_assumptions_outside_the_fact_boundary():
+    benchmark = _load("run_writing_quality_benchmark")
+    prompt = benchmark._production_compose_prompt(
+        {
+            "writing_request": {"reader_intent": {"purpose": "写一篇有边界的报告"}},
+            "content_boundaries": {
+                "content_units": [{"content_unit_id": "content:materials", "safe_meaning": "材料事实"}],
+                "limitations": [],
+            },
+            "native_plan": {
+                "selected_items": [
+                    {"node_type": "Assumption", "text": "派生前提"},
+                    {"node_type": "Limitation", "text": "模型限制"},
+                ]
+            },
+        }
+    )
+    assert "唯一的事实来源" in prompt
+    assert "不是新的观察或已被证实的限制" in prompt
+    assert "没有说明" in prompt
+
+
 def test_compose_compiler_projects_route_reader_spine_and_preserves_explicit_structure():
     benchmark = _load("run_writing_quality_benchmark")
     from reader_pipeline import validate_composition_plan, validate_route_composition
@@ -441,6 +463,23 @@ def test_single_judge_prompt_declares_exact_repair_fields():
     assert '"required_repairs":[{"unit":"paragraph-1","repair"' in prompt
     assert "只能包含 unit 和 repair 两个字段" in prompt
     assert "不要使用 action" in prompt
+
+
+def test_single_judge_prompt_declares_canonical_defect_severity_and_minor_rule():
+    benchmark = _load("run_writing_quality_benchmark")
+    cases, rubric, *_ = benchmark._load_held_out_inputs(ROOT / "tests" / "fixtures" / "writing_quality")
+    prompt = benchmark._single_judge_prompt(
+        cases[0],
+        rubric,
+        {
+            "artifact_text": "一段真实成稿。",
+            "artifact_fingerprint": "sha256:" + "a" * 64,
+        },
+    )
+    assert "blocking、repair、observation 或 minor" in prompt
+    assert "不得使用其它自造标签" in prompt
+    assert "轻微问题，应使用 minor 或 observation" in prompt
+    assert "不要把它写入 required_repairs" in prompt
 
 
 def test_held_out_quality_gate_requires_both_independent_reviews_and_core_scores():
