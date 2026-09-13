@@ -19,6 +19,7 @@ if str(SKILL_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SKILL_SCRIPTS))
 
 import production_reader_pipeline as production_pipeline
+from build_source_unit_manifest import fingerprint_bytes
 
 
 def _load(name: str):
@@ -263,3 +264,78 @@ def test_production_planner_adapter_resolves_backend_capture_to_absolute_path(tm
     assert record["backend_capture_fingerprint"] == benchmark._bytes_fp(capture.read_bytes())
     events_path, _ = production_pipeline._read_planner_events(record, "compose")
     assert events_path == capture.with_name("events.jsonl")
+
+
+def _planner_event_record(tmp_path: Path, events: list[dict], **metadata) -> dict:
+    capture = tmp_path / "backend" / "planner" / "compose" / "output.txt"
+    capture.parent.mkdir(parents=True)
+    capture.write_text('{"composition_plan": {}}\n', encoding="utf-8")
+    events_path = capture.with_name("events.jsonl")
+    events_path.write_text(
+        "".join(json.dumps(event, ensure_ascii=False) + "\n" for event in events),
+        encoding="utf-8",
+    )
+    return {
+        "schema_version": "logic-writing.planner-execution-record.v1",
+        "backend_capture_locator": str(capture),
+        "backend_capture_fingerprint": fingerprint_bytes(capture.read_bytes()),
+        "context_id": "ctx-compose",
+        "terminal_status": "completed",
+        "provider_errors_recoverable": False,
+        "recoverable_provider_error_count": 0,
+        **metadata,
+    }
+
+
+def test_planner_allows_recoverable_reconnect_before_completed_turn(tmp_path):
+    events = [
+        {"type": "thread.started", "thread_id": "ctx-compose"},
+        {"type": "error", "message": "Reconnecting... 2/5 (stream disconnected before completion: DNS)"},
+        {"type": "item.completed", "item": {"type": "agent_message", "text": "planner result"}},
+        {"type": "turn.completed"},
+    ]
+    record = _planner_event_record(
+        tmp_path,
+        events,
+        provider_errors_recoverable=True,
+        recoverable_provider_error_count=1,
+    )
+
+    events_path, _ = production_pipeline._read_planner_events(record, "compose")
+    assert events_path.name == "events.jsonl"
+
+
+def test_planner_keeps_generic_provider_error_fail_closed(tmp_path):
+    events = [
+        {"type": "thread.started", "thread_id": "ctx-compose"},
+        {"type": "error", "message": "provider failed permanently"},
+        {"type": "item.completed", "item": {"type": "agent_message", "text": "planner result"}},
+        {"type": "turn.completed"},
+    ]
+    record = _planner_event_record(
+        tmp_path,
+        events,
+        provider_errors_recoverable=True,
+        recoverable_provider_error_count=1,
+    )
+
+    with pytest.raises(production_pipeline.ProductionPipelineBlocked, match="planner_execution_failed"):
+        production_pipeline._read_planner_events(record, "compose")
+
+
+def test_planner_keeps_reconnect_after_completed_turn_fail_closed(tmp_path):
+    events = [
+        {"type": "thread.started", "thread_id": "ctx-compose"},
+        {"type": "item.completed", "item": {"type": "agent_message", "text": "planner result"}},
+        {"type": "turn.completed"},
+        {"type": "error", "message": "Reconnecting... 2/5 (stream disconnected before completion: DNS)"},
+    ]
+    record = _planner_event_record(
+        tmp_path,
+        events,
+        provider_errors_recoverable=True,
+        recoverable_provider_error_count=1,
+    )
+
+    with pytest.raises(production_pipeline.ProductionPipelineBlocked, match="planner_execution_failed"):
+        production_pipeline._read_planner_events(record, "compose")

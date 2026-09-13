@@ -104,6 +104,10 @@ _PLANNER_EVENT_RISK_TOKENS = {
     "function_call",
     "function.call",
 }
+# LocalCodexBackend preserves a transient provider reconnect diagnostic in the
+# raw event stream.  It is admissible only when the backend has proved a
+# complete, successful turn; a generic provider error remains fatal.
+_RECOVERABLE_PROVIDER_ERROR_RE = re.compile(r"^Reconnecting\.\.\.\s+\d+/\d+\b")
 
 # The production writer receives this projection.  The immutable full
 # WriterInput remains in the private ReaderBrief/evidence record and is
@@ -420,6 +424,7 @@ def _read_planner_events(record: Mapping[str, Any], stage: str) -> tuple[Path, b
     events_path = _external_file(capture.with_name("events.jsonl"), "backend events")
     events_bytes = events_path.read_bytes()
     events: list[Mapping[str, Any]] = []
+    provider_error_positions: list[tuple[int, Mapping[str, Any]]] = []
     for index, line in enumerate(events_bytes.splitlines()):
         if not line.strip():
             continue
@@ -434,6 +439,13 @@ def _read_planner_events(record: Mapping[str, Any], stage: str) -> tuple[Path, b
         item = event.get("item")
         item_type = str(item.get("type", "")).casefold() if isinstance(item, Mapping) else ""
         if event_type in {"turn.failed", "turn.error", "turn.aborted", "error"}:
+            if event_type == "error":
+                # A reconnect diagnostic can precede a successful completed
+                # turn.  Keep it in the immutable capture and defer the
+                # decision until the complete lifecycle is available; this
+                # prevents a partial or forged success from being admitted.
+                provider_error_positions.append((index, event))
+                continue
             raise ProductionPipelineBlocked("planner_execution_failed", {"stage": stage, "event": event_type})
         if event_type in {"item.started", "item.completed"} and not item_type:
             raise ProductionPipelineBlocked("planner_lineage_invalid", {"stage": stage, "reason": "typed item required"})
@@ -462,6 +474,33 @@ def _read_planner_events(record: Mapping[str, Any], stage: str) -> tuple[Path, b
         for event in events
     ):
         raise ProductionPipelineBlocked("planner_lineage_invalid", {"stage": stage, "reason": "agent message required"})
+    if provider_error_positions:
+        # The backend's completion projection is part of the planner record,
+        # but the event message and ordering are rechecked here independently.
+        # This keeps a generic provider error fail-closed and admits only the
+        # exact reconnect diagnostic that completed before the final turn.
+        if (
+            record.get("provider_errors_recoverable") is not True
+            or record.get("recoverable_provider_error_count") != len(provider_error_positions)
+        ):
+            raise ProductionPipelineBlocked(
+                "planner_execution_failed",
+                {"stage": stage, "event": "error", "reason": "provider recovery metadata invalid"},
+            )
+        final_turn_index = max(
+            index for index, event in enumerate(events) if event.get("type") == "turn.completed"
+        )
+        for index, event in provider_error_positions:
+            message = event.get("message")
+            if (
+                not isinstance(message, str)
+                or _RECOVERABLE_PROVIDER_ERROR_RE.match(message) is None
+                or index >= final_turn_index
+            ):
+                raise ProductionPipelineBlocked(
+                    "planner_execution_failed",
+                    {"stage": stage, "event": "error", "reason": "provider error not recoverable"},
+                )
     return events_path, events_bytes
 
 
