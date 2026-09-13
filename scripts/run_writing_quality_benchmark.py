@@ -1724,6 +1724,13 @@ def _production_compose_prompt(inputs: Mapping[str, Any]) -> str:
     intent = request["reader_intent"]
     boundaries = inputs["content_boundaries"]
     native = inputs["native_plan"]
+    travel_route_rule = ""
+    if str(intent.get("route") or "") == "travel-guide":
+        travel_route_rule = (
+            "旅行路线若同时存在默认路线和备用路线，必须把每条路线的启用条件、失败条件和退回动作分别绑定到该路线；"
+            "备用路线未核实或不可行时，不得因此取消已经满足条件的默认路线；只有实际选择的那条路线条件失败，才触发该路线的退回动作。"
+            "不要用一个跨路线的‘或’或‘且’条件表达全局留馆或停止出发。"
+        )
     return (
         "你是最终成稿前的组合规划器。这是纯粹的离线 JSON 变换；严禁调用工具、浏览网页、读取文件、运行命令或向其它代理发消息。"
         "所有事实只能来自下文，不要尝试外部研究。只返回一个 JSON 对象，不要 Markdown、评分、案例标签、rubric 或成稿。"
@@ -1735,7 +1742,9 @@ def _production_compose_prompt(inputs: Mapping[str, Any]) -> str:
         "这类条件只能在确有必要时作为后续验证的条件性要求出现，并且要和当前已知限制分开。"
         "如果受限视角下的结尾缺少合法的知情路径，必须在 conclusion_job 中明确写出需要用户决定或补充材料，"
         "不能把无解要求继续包装成可直接成稿。旅行方案的每个失败分支必须给出材料支持的动作，或明确收束为出发前核实门槛，"
-        "不能只写‘不能/不可’。不要添加其它字段。\n\n"
+        "不能只写‘不能/不可’。"
+        + travel_route_rule
+        + "不要添加其它字段。\n\n"
         f"读者意图：{json.dumps(intent, ensure_ascii=False, sort_keys=True)}\n"
         f"冻结内容边界：{json.dumps(boundaries, ensure_ascii=False, sort_keys=True)}\n"
         f"Native plan：{json.dumps(native, ensure_ascii=False, sort_keys=True)}"
@@ -2050,7 +2059,7 @@ def _route_composition_specs(owner: str, *, language: str, throughline: str, cen
                 ("默认安排", "先给出满足旅客条件的默认选择，并说明它为什么在当前天气和体力边界内可行。", "旅行者知道目的，却还没有可执行的安排。", "旅行者得到一个可行的主方案。"),
                 ("接驳与休息", "把每段接驳、连续步行和实际休息地点接回主方案，说明它们怎样保持可行。", "旅行者有主方案，却不知道途中如何承受和衔接。", "旅行者知道如何移动、休息和继续。"),
                 ("出发前核实", "把未知的班次、开放、无障碍或设备状态转成出发前核验，不把未知写成已确认。", "旅行者需要知道哪些条件会改变主方案。", "旅行者知道出发前要核实什么。"),
-                ("触发式退回", "在条件不成立时给出明确、可执行且满足步行边界的退回或备用动作。", "旅行者知道主方案可能失效，却没有退路。", "旅行者知道何时停止并怎样安全返回。"),
+                ("触发式退回", "在条件不成立时给出明确、可执行且满足步行边界的退回或备用动作；若有多条路线，退回条件只绑定实际选择的那条路线，备用路线失败不能取消已满足条件的默认路线。", "旅行者知道主方案可能失效，却没有退路。", "旅行者知道何时停止并怎样安全返回。"),
             ])
         return _rows(common)
 
@@ -2079,7 +2088,7 @@ def _route_composition_specs(owner: str, *, language: str, throughline: str, cen
             ("Default plan", "Give a default choice that satisfies the traveler constraints and explain why it is feasible in the stated weather and capacity boundary.", "The traveler has a goal but no executable arrangement.", "The traveler has a feasible main plan."),
             ("Transfers and rest", "Connect every transfer, continuous walking limit, and actual rest point to the main plan.", "The traveler has a plan but not its physical handoffs.", "The traveler knows how to move, rest, and continue."),
             ("Pre-departure checks", "Turn unknown service, opening, accessibility, or equipment states into checks before departure.", "The traveler needs to know which conditions can change the plan.", "The traveler knows what to verify before leaving."),
-            ("Triggered return", "When a condition fails, give a clear executable return or fallback that still satisfies the walking boundary.", "The main plan may fail but there is no reachable alternative.", "The traveler knows when to stop and how to return."),
+            ("Triggered return", "When a condition fails, give a clear executable return or fallback that still satisfies the walking boundary; if there are multiple routes, bind the return condition to the route actually selected so a failed backup cannot cancel a feasible default.", "The main plan may fail but there is no reachable alternative.", "The traveler knows when to stop and how to return."),
         ])
     return _rows(common)
 

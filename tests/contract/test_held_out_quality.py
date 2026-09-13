@@ -183,6 +183,17 @@ def test_compose_prompt_keeps_derived_assumptions_outside_the_fact_boundary():
     assert "不是新的观察或已被证实的限制" in prompt
     assert "没有说明" in prompt
 
+    travel_prompt = benchmark._production_compose_prompt(
+        {
+            "writing_request": {"reader_intent": {"route": "travel-guide", "purpose": "写一份路线方案"}},
+            "content_boundaries": {"content_units": [{"content_unit_id": "content:materials", "safe_meaning": "材料事实"}], "limitations": []},
+            "native_plan": {"selected_items": []},
+        }
+    )
+    assert "旅行路线若同时存在默认路线和备用路线" in travel_prompt
+    assert "备用路线未核实或不可行时，不得因此取消已经满足条件的默认路线" in travel_prompt
+    assert "不要用一个跨路线的‘或’或‘且’条件表达全局留馆或停止出发" in travel_prompt
+
 
 def test_compose_compiler_projects_route_reader_spine_and_preserves_explicit_structure():
     benchmark = _load("run_writing_quality_benchmark")
@@ -216,6 +227,9 @@ def test_compose_compiler_projects_route_reader_spine_and_preserves_explicit_str
             unit["downstream_unit_ids"] == ([units[index + 1]["planned_unit_id"]] if index + 1 < len(units) else [])
             for index, unit in enumerate(units)
         )
+        if case_id == "H-T":
+            assert "退回条件只绑定实际选择的那条路线" in units[-1]["reader_job"]
+            assert "备用路线失败不能取消已满足条件的默认路线" in units[-1]["reader_job"]
         assert payload["native_handoff_mapping"][0]["planned_unit_ids"] == [unit["planned_unit_id"] for unit in units]
         validate_composition_plan(
             plan,
