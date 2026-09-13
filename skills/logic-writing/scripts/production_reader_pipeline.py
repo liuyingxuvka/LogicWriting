@@ -2504,6 +2504,11 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
                 "如果材料没有支持的可达备用路线，遇到出发前或途中条件不满足时，必须把留在起点、停止出发或原地休息写成明确可执行的退回方案。"
                 "不得把退回路径写成要求读者补资料的开放任务，也不得用未知的休息点、接驳或现场服务补造路线。",
             )
+        _prompt_add(
+            route_parts,
+            "如果同时存在默认路线和备用路线，分别写清每条路线自己的启用条件与退回条件；"
+            "一条备用路线未通过核实时，不能因此取消已经满足条件的默认路线，不能把不同路线的条件合并成一个全局退回判断。",
+        )
 
     if route_parts:
         paragraphs.append("本类成品还要保持这些推进要求：" + _prompt_join(route_parts) + "。")
@@ -2541,6 +2546,8 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
     if mode == "travel-guide":
         paragraphs.append(
             "旅行任务只保留会改变当天时间、地点、交通、休息或备用选择的条件；未参与取舍的地点、认证、票价、天气来源声明和泛化未知项省略。"
+            "若材料同时有默认路线和备用路线，结尾必须按‘实际选择的路线→该路线条件不满足→留在起点’分别写出分支；"
+            "备用路线核实失败不能取消已经满足条件的默认路线，不得把多条路线的条件合并成一个全局退回判断。"
         )
 
     style = context.get("style") if isinstance(context.get("style"), Mapping) else {}

@@ -71,6 +71,11 @@ def test_repaired_writer_prompt_converts_missing_material_into_reader_action():
     assert "不要把补材料的责任交给作者或读者" in prompt
     assert "决策前需要核实" in prompt
     assert "删除重复的未知项清单" in prompt
+    assert "默认路线的可行条件和每条备用路线的退回条件必须分别绑定到所选路线" in prompt
+    assert "某条备用路线核实失败不能否决已经核实可行的默认路线" in prompt
+    assert "馆B作为默认" in prompt
+    assert "公交去馆A作为独立备用" in prompt
+    assert "不可把两条路线合成一个全局的‘或’或‘且’退回条件" in prompt
 
 
 def test_production_reader_prompt_enforces_extent_and_fiction_information_boundary(tmp_path):
@@ -123,6 +128,9 @@ def test_production_travel_prompt_requires_explicit_origin_fallback_when_none_is
     assert "如果材料没有支持的可达备用路线" in prompt
     assert "必须把留在起点、停止出发或原地休息写成明确可执行的退回方案" in prompt
     assert "不得把退回路径写成要求读者补资料的开放任务" in prompt
+    assert "如果同时存在默认路线和备用路线，分别写清每条路线自己的启用条件与退回条件" in prompt
+    assert "一条备用路线未通过核实时，不能因此取消已经满足条件的默认路线" in prompt
+    assert "结尾必须按‘实际选择的路线→该路线条件不满足→留在起点’分别写出分支" in prompt
     assert "appendix:checks" not in prompt
 
 
