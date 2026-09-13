@@ -19,7 +19,7 @@
       "check_name": "traceguard-storyline-contract",
       "status": "passed",
       "required": true,
-      "evidence_ref": "file:handoffs/traceguard.json;sha256:bff54d3938c737d263148aac2a558ca4ffb7f6466b2121f22b79ea1858324837",
+      "evidence_ref": "file:handoffs/traceguard.json;sha256:f741847dd82cb4ae7746ae592071915576b8eed968f708a62dd8f5a13e5888a7",
       "input_fingerprint": "sha256:4033424e51858c783e89acb8b5eb760a7b698757caf86bf000fefcb8b312c216"
     },
     {
@@ -35,7 +35,7 @@
       "check_name": "logicguard-theme-contract",
       "status": "not_applicable_with_reason",
       "required": true,
-      "evidence_ref": "file:handoffs/logicguard.json;sha256:7539704ce62a8ca2f5d4e0a7093dd59dfe4eecf01d20f49531e515b2ce613a5a",
+      "evidence_ref": "file:handoffs/logicguard.json;sha256:3bf6e327b74c4086cafe59d5db91625d82735920860d3105a43898d6601fb6d1",
       "input_fingerprint": "sha256:b8a700a5c74b3793451391acc76d2fc7153e389e752c8285ec42a51c7b93a07b",
       "not_applicable_reason": "No material theme, moral, or ending-interpretation claim is made by this fixture.",
       "blocks_closure": false,
@@ -46,7 +46,7 @@
       "check_name": "sourceguard-canon-contract",
       "status": "not_applicable_with_reason",
       "required": true,
-      "evidence_ref": "file:handoffs/sourceguard.json;sha256:1be150cc5f6c543da65d7a6fd83e8ec7efa69359d6c6ec3b00859562ac7ee018",
+      "evidence_ref": "file:handoffs/sourceguard.json;sha256:22269d225ad45735cb603a33273ab59b1820f2a33cbb14b9473a48e05209ab81",
       "input_fingerprint": "sha256:d46f9afebfa242ba7991beabcfe78ba3fcbffdf920f106313b72f08ae887f901",
       "not_applicable_reason": "No user canon, prior draft, adaptation source, historical fact, or external source constrains this fixture.",
       "blocks_closure": false,

@@ -9,7 +9,7 @@
   "receipt_schema_version": "traceguard.native_terminal_receipt.v1",
   "input_fingerprint": "sha256:4033424e51858c783e89acb8b5eb760a7b698757caf86bf000fefcb8b312c216",
   "terminal_receipt_id": "compact-guard-pass-traceguard-terminal",
-  "terminal_receipt_ref": "file:../receipts/traceguard-terminal.json;sha256:bc61e5bb9985dc1f45be897276a844669f770586ea3a4a2b916d2ff4dfb46a79",
+  "terminal_receipt_ref": "file:../receipts/traceguard-terminal.json;sha256:b4af7551f53aa376791feeaf12e9d9342be7770becfbc138c2622a7abd966e5e",
   "terminal_status": "passed",
   "claim_boundary": "TraceGuard terminal receipt covers the compact fixture chronology and reader-revelation input only."
 }
