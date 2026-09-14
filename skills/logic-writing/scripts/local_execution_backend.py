@@ -125,7 +125,13 @@ def _write_json_atomic(path: Path, value: Any) -> None:
     """
 
     path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_name(f".{path.name}.{os.getpid()}.{uuid.uuid4().hex}.tmp")
+    # Keep the temporary basename short.  Windows still reports a generic
+    # ``FileNotFoundError`` when the full path crosses its legacy MAX_PATH
+    # boundary, which used to make a repeated planner attempt fail only after
+    # the parent had already created the longer collision-suffixed directory.
+    # A process id plus 16 random hex characters remains unique for this
+    # short-lived writer while leaving room for deep private evidence roots.
+    temporary = path.with_name(f".{path.stem}.{os.getpid()}.{uuid.uuid4().hex[:16]}.tmp")
     try:
         _write_json(temporary, value)
         os.replace(temporary, path)

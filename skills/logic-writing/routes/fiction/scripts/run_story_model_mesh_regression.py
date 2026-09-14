@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import shutil
 import sys
 import tempfile
@@ -23,6 +24,15 @@ def read(path: Path) -> dict[str, Any]:
 
 def write(path: Path, payload: dict[str, Any]) -> None:
     path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def _scratch_parent() -> Path:
+    """Return a local scratch parent for copied model-mesh cases."""
+
+    configured = os.environ.get("LOGIC_WRITING_MODEL_MESH_TMP", "").strip()
+    parent = Path(configured).expanduser() if configured else Path(tempfile.gettempdir())
+    parent.mkdir(parents=True, exist_ok=True)
+    return parent
 
 
 def mutate_project_id(root: Path) -> None:
@@ -66,8 +76,14 @@ def case_result(
     expected_codes: set[str],
     repository_root: Path,
 ) -> dict[str, Any]:
-    with tempfile.TemporaryDirectory(prefix=".storyline-mesh-", dir=repository_root) as temp:
-        target = Path(temp) / "project"
+    # The fixture is self-contained: every referenced surface and receipt is
+    # copied below the temporary project root.  Keeping the copy on the local
+    # scratch volume avoids multi-minute archive-drive latency during the
+    # mutation matrix.  The copied root is also the containment boundary
+    # passed to native owners, so no evidence outside the case can be used.
+    with tempfile.TemporaryDirectory(prefix="logic-writing-model-mesh-", dir=_scratch_parent()) as temp:
+        temp_root = Path(temp)
+        target = temp_root / "project"
         shutil.copytree(source, target)
         if mutation is not None:
             mutation(target)
@@ -75,7 +91,7 @@ def case_result(
         report = validate_manifest(
             read(manifest_path),
             manifest_path,
-            repository_root=repository_root,
+            repository_root=temp_root,
         )
         codes = {row["code"] for row in report["issues"]}
         expected_pass = mutation is None

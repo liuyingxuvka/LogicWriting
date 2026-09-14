@@ -2420,12 +2420,23 @@ def _normalise_compose_payload(value: Mapping[str, Any], inputs: Mapping[str, An
     return {"composition_plan": plan, "route_composition": extension, "native_handoff_mapping": [{"native_unit_id": str(row["unit_id"]), "planned_unit_ids": list(route_unit_ids), "disposition": "body", "reason": "把已通过 native depth 的结论单元接入按阅读顺序排列的正文单元。"} for row in native.get("units", [])]}
 
 
-def _production_planner_backend(local_backend: LocalCodexBackend, *, token: str):
+def _production_planner_backend(
+    local_backend: LocalCodexBackend,
+    *,
+    token: str,
+    execution_token: str | None = None,
+):
     """Adapt one real local planner execution to the pipeline's raw-capture contract."""
+
+    # ``token`` is the stable logical request identity used in the normalized
+    # model/contract payload.  Repeated quality jobs must get a separate
+    # physical backend run id, otherwise LocalCodexBackend allocates a longer
+    # collision-suffixed directory and can cross Windows' path-length limit.
+    run_token = execution_token or token
 
     def planner(*, stage: str, inputs: dict[str, Any], evidence_root: Path) -> dict[str, Any]:
         prompt = _production_research_prompt(inputs) if stage == "research" else _production_compose_prompt(inputs)
-        run_id = f"planner:{stage}:{token}"
+        run_id = f"planner:{stage}:{run_token}"
         response = local_backend.run("planner", {
             "request_id": run_id,
             "run_id": run_id,
@@ -3686,7 +3697,11 @@ def _execute_writer_job(
         production_result = prepare_production_reader_input(
             production_request,
             native_provider=InstalledResearchGuardProvider(timeout_seconds=min(900, max(30, int(local_backend.timeout_seconds)))),
-            planner_backend=_production_planner_backend(local_backend, token=token),
+            planner_backend=_production_planner_backend(
+                local_backend,
+                token=token,
+                execution_token=f"{token}-r{repeat}",
+            ),
             frozen_content_boundaries=boundaries,
             evidence_root=production_root,
         )

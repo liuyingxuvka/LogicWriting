@@ -15,6 +15,7 @@ import subprocess
 import sys
 import time
 from contextlib import contextmanager
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Mapping
@@ -142,6 +143,17 @@ def _is_ignored(relative: Path, *, explicit: bool) -> bool:
     parts = relative.as_posix().split("/")
     if relative.name == "verification-report.json":
         return True
+    if parts[:2] == [".flowguard", "history"]:
+        return True
+    if parts[:3] == [".flowguard", "structure", "reverse-surfaces"]:
+        return True
+    if parts[:2] == ["kb", "history"]:
+        return True
+    if relative.parts and (
+        relative.parts[0].startswith(".storyline-")
+        or relative.parts[0].startswith(".probe-")
+    ):
+        return True
     if any(
         part
         in {
@@ -225,12 +237,59 @@ def _selector_files(root: Path, selector: str) -> list[Path]:
     return sorted(set(files))
 
 
-def _manifest(root: Path, selectors: Iterable[str]) -> dict[str, str]:
+def _manifest(
+    root: Path,
+    selectors: Iterable[str],
+    *,
+    known_hashes: Mapping[str, str] | None = None,
+    selector_cache: dict[str, list[Path]] | None = None,
+) -> dict[str, str]:
+    """Build one admitted input manifest.
+
+    A frozen validation first hashes the complete public source snapshot.  The
+    per-owner input manifests are subsets of that same snapshot, so reading
+    each file again only adds I/O and can make a Windows run appear hung.  A
+    caller may provide the already-frozen map; paths outside it are hashed once
+    and added to the local cache.  The content identity is unchanged because
+    cached values come from the frozen snapshot itself.
+    """
     files: dict[str, Path] = {}
     for selector in selectors:
-        for path in _selector_files(root, str(selector)):
+        selector_text = str(selector)
+        if selector_cache is not None and selector_text in selector_cache:
+            admitted_paths = selector_cache[selector_text]
+        else:
+            admitted_paths = _selector_files(root, selector_text)
+            if selector_cache is not None:
+                selector_cache[selector_text] = admitted_paths
+        for path in admitted_paths:
             files[path.relative_to(root).as_posix()] = path
-    return {relative: _file_hash(path) for relative, path in sorted(files.items())}
+    manifest: dict[str, str] = {}
+    pending: dict[str, Path] = {}
+    for relative, path in sorted(files.items()):
+        if known_hashes is not None and relative in known_hashes:
+            manifest[relative] = str(known_hashes[relative])
+        else:
+            pending[relative] = path
+
+    # Archive-backed Windows workspaces have high per-file latency.  Hash a
+    # bounded batch concurrently, then merge in lexical order so the manifest
+    # and its fingerprint remain deterministic.  Small manifests stay serial
+    # to avoid thread overhead in focused unit tests.
+    if len(pending) <= 4:
+        computed = {relative: _file_hash(path) for relative, path in pending.items()}
+    else:
+        workers = min(8, len(pending))
+        with ThreadPoolExecutor(max_workers=workers, thread_name_prefix="frozen-hash") as pool:
+            futures = {
+                relative: pool.submit(_file_hash, path)
+                for relative, path in pending.items()
+            }
+            computed = {relative: futures[relative].result() for relative in sorted(futures)}
+    manifest.update(computed)
+    if known_hashes is not None and isinstance(known_hashes, dict):
+        known_hashes.update(computed)
+    return manifest
 
 
 def _global_snapshot(root: Path, contract: Mapping[str, Any]) -> tuple[str, dict[str, str]]:
@@ -333,11 +392,22 @@ def _toolchain_observation(check: Mapping[str, Any]) -> dict[str, Any]:
     return observation
 
 
-def _check_manifest(root: Path, check: Mapping[str, Any]) -> dict[str, str]:
+def _check_manifest(
+    root: Path,
+    check: Mapping[str, Any],
+    *,
+    known_hashes: Mapping[str, str] | None = None,
+    selector_cache: dict[str, list[Path]] | None = None,
+) -> dict[str, str]:
     selectors = [str(item) for item in check.get("input_selectors", [])]
     if not selectors:
         raise ValueError(f"check_input_selectors_missing:{check.get('id')}")
-    return _manifest(root, selectors)
+    return _manifest(
+        root,
+        selectors,
+        known_hashes=known_hashes,
+        selector_cache=selector_cache,
+    )
 
 
 def _receipt_hash(receipt: Mapping[str, Any]) -> str:
@@ -684,6 +754,8 @@ def _audit_existing_validation(
         return {**base, "status": "failed", "error": "validation_parent_index_consumer_set_mismatch"}
 
     validated: dict[str, Mapping[str, Any]] = {}
+    known_hashes: dict[str, str] = dict(snapshot_manifest)
+    selector_cache: dict[str, list[Path]] = {}
     try:
         for check in ordered:
             check_id = str(check["id"])
@@ -705,7 +777,12 @@ def _audit_existing_validation(
                 raise ValueError(f"owner_receipt_cleanup_or_timeout_invalid:{check_id}")
             if receipt.get("receipt_hash") != _receipt_hash(receipt):
                 raise ValueError(f"owner_receipt_hash_mismatch:{check_id}")
-            expected_inputs = _check_manifest(root, check)
+            expected_inputs = _check_manifest(
+                root,
+                check,
+                known_hashes=known_hashes,
+                selector_cache=selector_cache,
+            )
             if receipt.get("input_manifest_hash") != _hash(expected_inputs):
                 raise ValueError(f"owner_receipt_input_identity_stale:{check_id}")
             dependency_hashes = {
@@ -841,11 +918,18 @@ def run_validation(
     index: dict[str, dict[str, Any]] = {}
     executed: list[str] = []
     reused: list[str] = []
+    known_hashes: dict[str, str] = dict(snapshot_manifest)
+    selector_cache: dict[str, list[Path]] = {}
 
     with _single_owner_lock(receipts):
         for check in ordered:
             check_id = str(check["id"])
-            inputs = _check_manifest(root, check)
+            inputs = _check_manifest(
+                root,
+                check,
+                known_hashes=known_hashes,
+                selector_cache=selector_cache,
+            )
             dependency_hashes = {
                 dependency: index[consumers.get(str(dependency), str(dependency))]["receipt_hash"]
                 for dependency in check.get("depends_on_receipts", [])

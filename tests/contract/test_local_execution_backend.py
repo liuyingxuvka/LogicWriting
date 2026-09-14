@@ -227,6 +227,89 @@ def test_local_resolver_rejects_changed_output(tmp_path):
         resolver.resolve(record)
 
 
+def test_local_resolver_allows_only_proven_recoverable_provider_error(tmp_path):
+    run_root, record = _make_capture(tmp_path)
+    attempt = run_root / "writer" / "one"
+    events_path = attempt / "events.jsonl"
+    events_path.write_text(
+        '{"type":"thread.started","thread_id":"thread-one"}\n'
+        '{"type":"turn.started"}\n'
+        '{"type":"error","message":"Reconnecting... 2/5 (stream disconnected)"}\n'
+        '{"type":"item.completed","item":{"type":"agent_message","text":"done"}}\n'
+        '{"type":"turn.completed","usage":{"output_tokens":1}}\n',
+        encoding="utf-8",
+        newline="",
+    )
+    completion_path = attempt / "completion.json"
+    completion = json.loads(completion_path.read_text(encoding="utf-8"))
+    events_fingerprint = "sha256:" + hashlib.sha256(events_path.read_bytes()).hexdigest()
+    provider_error = {
+        "event_type": "error",
+        "line": 2,
+        "message": "Reconnecting... 2/5 (stream disconnected)",
+        "recoverable": True,
+    }
+    completion.update(
+        {
+            "events_fingerprint": events_fingerprint,
+            "provider_error_count": 1,
+            "recoverable_provider_error_count": 1,
+            "provider_errors_recoverable": True,
+            "provider_error_events": [provider_error],
+        }
+    )
+    completion["completion_fingerprint"] = fingerprint(
+        {key: item for key, item in completion.items() if key != "completion_fingerprint"}
+    )
+    completion_path.write_text(json.dumps(completion, indent=2), encoding="utf-8")
+    record["events_fingerprint"] = events_fingerprint
+    resolver = LocalExecutionRecordResolver(run_root, expected_cli_version="0.153.4")
+    verified = resolver.resolve(record)
+    assert verified["verified"] is True
+
+
+def test_local_resolver_keeps_generic_provider_error_fail_closed(tmp_path):
+    run_root, record = _make_capture(tmp_path)
+    attempt = run_root / "writer" / "one"
+    events_path = attempt / "events.jsonl"
+    events_path.write_text(
+        '{"type":"thread.started","thread_id":"thread-one"}\n'
+        '{"type":"turn.started"}\n'
+        '{"type":"error","message":"provider failed"}\n'
+        '{"type":"item.completed","item":{"type":"agent_message","text":"done"}}\n'
+        '{"type":"turn.completed","usage":{"output_tokens":1}}\n',
+        encoding="utf-8",
+        newline="",
+    )
+    completion_path = attempt / "completion.json"
+    completion = json.loads(completion_path.read_text(encoding="utf-8"))
+    events_fingerprint = "sha256:" + hashlib.sha256(events_path.read_bytes()).hexdigest()
+    completion.update(
+        {
+            "events_fingerprint": events_fingerprint,
+            "provider_error_count": 1,
+            "recoverable_provider_error_count": 0,
+            "provider_errors_recoverable": False,
+            "provider_error_events": [
+                {
+                    "event_type": "error",
+                    "line": 2,
+                    "message": "provider failed",
+                    "recoverable": False,
+                }
+            ],
+        }
+    )
+    completion["completion_fingerprint"] = fingerprint(
+        {key: item for key, item in completion.items() if key != "completion_fingerprint"}
+    )
+    completion_path.write_text(json.dumps(completion, indent=2), encoding="utf-8")
+    record["events_fingerprint"] = events_fingerprint
+    resolver = LocalExecutionRecordResolver(run_root, expected_cli_version="0.153.4")
+    with pytest.raises(ValidationError, match="contains a tool event"):
+        resolver.resolve(record)
+
+
 def test_event_parser_requires_objects_and_detects_tools():
     events, errors = _parse_events(b'{"type":"thread.started","thread_id":"t"}\nnot-json\n')
     assert len(events) == 1

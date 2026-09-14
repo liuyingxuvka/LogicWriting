@@ -12,6 +12,7 @@ build/
 # Runtime evidence is reproducible and is not source authority.
 .flowguard/evidence/
 .flowguard/history/
+.flowguard/structure/reverse-surfaces/
 .flowguard/adoption_log.jsonl
 docs/flowguard_adoption_log.md
 .logicguard/evidence/
@@ -32,6 +33,9 @@ Thumbs.db
 work/
 scratch/
 tmp-*/
+.storyline-*/
+.probe-*/
+kb/history/
 docs/coordination.md
 
 # Private or recovery material must remain outside the public repository.

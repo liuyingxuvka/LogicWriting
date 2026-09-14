@@ -11,11 +11,19 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Mapping
 
 from _common import ValidationError, fingerprint, fingerprint_text
+
+
+# The local backend records a very narrow class of provider diagnostics as
+# recoverable: a reconnect notice emitted before a later successful turn.  A
+# resolver must preserve that distinction.  Generic errors (and reconnect
+# notices that do not satisfy the completion contract) remain fatal.
+_RECOVERABLE_PROVIDER_ERROR_RE = re.compile(r"^Reconnecting\.\.\.\s+\d+/\d+\b")
 
 
 def _sha256_bytes(data: bytes) -> str:
@@ -98,9 +106,82 @@ class LocalExecutionRecordResolver:
         return events
 
     @staticmethod
-    def _has_tool_event(events: list[Mapping[str, Any]]) -> bool:
+    def _event_position(event: Mapping[str, Any], fallback: int) -> int:
+        """Return a stable event position for parsed and forged event data."""
+
+        value = event.get("_line_index")
+        try:
+            position = int(value)
+        except (TypeError, ValueError):
+            return fallback
+        return position if position >= 0 else fallback
+
+    @staticmethod
+    def _recoverable_provider_error_lines(
+        events: list[Mapping[str, Any]],
+        completion: Mapping[str, Any],
+    ) -> set[int]:
+        """Return only provider-error lines proven recoverable by the capture.
+
+        ``LocalCodexBackend`` already computes this metadata while it owns the
+        process lifecycle.  Recheck the event ordering and the bounded message
+        shape here before allowing those top-level diagnostics through the
+        input-isolation gate.  This prevents a caller from simply asserting a
+        boolean in a forged completion envelope.
+        """
+
+        provider_errors = [
+            event for event in events if event.get("type") == "error"
+        ]
+        if not provider_errors:
+            return set()
+        if completion.get("provider_errors_recoverable") is not True:
+            return set()
+        if completion.get("recoverable_provider_error_count") != len(provider_errors):
+            return set()
+        metadata = completion.get("provider_error_events")
+        if not isinstance(metadata, list) or len(metadata) != len(provider_errors):
+            return set()
+        completed_positions = [
+            LocalExecutionRecordResolver._event_position(event, index)
+            for index, event in enumerate(events)
+            if event.get("type") == "turn.completed"
+        ]
+        if not completed_positions:
+            return set()
+        final_completed = max(completed_positions)
+        recoverable: set[int] = set()
+        for index, (event, item) in enumerate(zip(provider_errors, metadata)):
+            line = LocalExecutionRecordResolver._event_position(event, index)
+            message = event.get("message")
+            if (
+                line < 0
+                or line >= final_completed
+                or not isinstance(message, str)
+                or _RECOVERABLE_PROVIDER_ERROR_RE.match(message) is None
+                or not isinstance(item, Mapping)
+                or item.get("line") != line
+                or item.get("recoverable") is not True
+            ):
+                return set()
+            recoverable.add(line)
+        return recoverable
+
+    @staticmethod
+    def _has_tool_event(
+        events: list[Mapping[str, Any]],
+        *,
+        recoverable_provider_error_lines: set[int] | None = None,
+    ) -> bool:
+        allowed_errors = recoverable_provider_error_lines or set()
         for event in events:
-            if event.get("type") in {"error", "turn.failed", "turn.error", "turn.aborted"}:
+            event_type = event.get("type")
+            if event_type == "error":
+                line = event.get("_line_index")
+                if line in allowed_errors:
+                    continue
+                return True
+            if event_type in {"turn.failed", "turn.error", "turn.aborted"}:
                 return True
             item = event.get("item")
             item_type = item.get("type") if isinstance(item, Mapping) else None
@@ -180,7 +261,13 @@ class LocalExecutionRecordResolver:
         ]
         if not agent_messages:
             raise ValidationError("execution capture has no agent_message event")
-        if self._has_tool_event(events):
+        recoverable_provider_error_lines = self._recoverable_provider_error_lines(
+            events, completion
+        )
+        if self._has_tool_event(
+            events,
+            recoverable_provider_error_lines=recoverable_provider_error_lines,
+        ):
             raise ValidationError("execution capture contains a tool event")
         cli_sha = completion.get("executable_sha256")
         if not isinstance(cli_sha, str) or not cli_sha.startswith("sha256:"):

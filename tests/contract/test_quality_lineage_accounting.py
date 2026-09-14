@@ -19,6 +19,7 @@ if str(SKILL_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SKILL_SCRIPTS))
 
 import production_reader_pipeline as production_pipeline
+import local_execution_backend as execution_backend
 from build_source_unit_manifest import fingerprint_bytes
 
 
@@ -269,6 +270,113 @@ def test_production_planner_adapter_resolves_backend_capture_to_absolute_path(tm
     assert record["recoverable_provider_error_count"] == 1
     events_path, _ = production_pipeline._read_planner_events(record, "compose")
     assert events_path == capture.with_name("events.jsonl")
+
+
+def test_production_planner_adapter_separates_physical_repeat_identity(tmp_path):
+    benchmark = _load("run_writing_quality_benchmark")
+
+    class FakeBackend:
+        run_root = tmp_path / "backend-run"
+
+        def __init__(self):
+            self.run_ids = []
+
+        def settings(self):
+            return {"model": "fake", "reasoning_effort": "minimal"}
+
+        def run(self, role, request):
+            assert role == "planner"
+            run_id = str(request["run_id"])
+            self.run_ids.append(run_id)
+            capture_dir = self.run_root / "planner" / run_id.replace(":", "_")
+            capture_dir.mkdir(parents=True)
+            capture = capture_dir / "output.txt"
+            capture.write_text(
+                json.dumps(
+                    {
+                        "central_question": "问题",
+                        "central_throughline": "主线",
+                        "opening_job": "开篇",
+                        "conclusion_job": "结尾",
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            (capture_dir / "events.jsonl").write_text(
+                '{"type":"thread.started","thread_id":"context:compose"}\n'
+                '{"type":"agent_message","text":"planner result"}\n'
+                '{"type":"turn.completed"}\n',
+                encoding="utf-8",
+            )
+            return {
+                "run_id": run_id,
+                "context_id": "context:compose",
+                "terminal_status": "completed",
+                "output": capture.read_text(encoding="utf-8"),
+                "raw_output_locator": str(capture.relative_to(self.run_root)),
+                "raw_output_fingerprint": benchmark._bytes_fp(capture.read_bytes()),
+                "backend_id": "fake-local-codex",
+            }
+
+    inputs = {
+        "writing_request": {
+            "reader_intent": {
+                "intent_fingerprint": "sha256:" + "a" * 64,
+                "artifact_mode": "create_new",
+                "extent": {"target": 800},
+                "list_policy": "prose_default",
+                "purpose": "说明一个有边界的判断。",
+            }
+        },
+        "route_decision": {"final_owner": "investigation"},
+        "content_boundaries": {"evidence_anchors": []},
+        "native_plan": {"units": []},
+    }
+    backend = FakeBackend()
+    records = []
+    for repeat in (1, 2):
+        records.append(
+            benchmark._production_planner_backend(
+                backend,
+                token="stable-request",
+                execution_token=f"stable-request-r{repeat}",
+            )(
+                stage="compose",
+                inputs=inputs,
+                evidence_root=tmp_path / f"evidence-{repeat}",
+            )["execution_record"]
+        )
+
+    assert backend.run_ids == [
+        "planner:compose:stable-request-r1",
+        "planner:compose:stable-request-r2",
+    ]
+    assert [row["run_id"] for row in records] == backend.run_ids
+
+
+def test_atomic_receipt_temp_name_fits_deep_windows_paths(tmp_path, monkeypatch):
+    parent = tmp_path
+    while len(str(parent / "completion.json")) < 226:
+        parent = parent / "x"
+    parent.mkdir(parents=True)
+    target = parent / "completion.json"
+    assert len(str(target)) < 260
+
+    replaced = []
+    original_replace = execution_backend.os.replace
+
+    def capture_replace(source, destination):
+        replaced.append((str(source), str(destination)))
+        return original_replace(source, destination)
+
+    monkeypatch.setattr(execution_backend.os, "replace", capture_replace)
+    execution_backend._write_json_atomic(target, {"status": "completed"})
+
+    assert target.is_file()
+    assert replaced
+    assert len(replaced[0][0]) < 260
+    assert len(Path(replaced[0][0]).name) <= 48
 
 
 def _planner_event_record(tmp_path: Path, events: list[dict], **metadata) -> dict:

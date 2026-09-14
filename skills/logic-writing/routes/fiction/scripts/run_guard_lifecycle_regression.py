@@ -14,6 +14,20 @@ from pathlib import Path
 from typing import Any
 
 
+# The static cases below intentionally exercise the command line entrypoint.
+# The generated matrix contains more than 150 small mutations, however, and
+# starting a new Python interpreter for every mutation made the regression
+# exceed its finite owner budget on Windows.  The closure checker is pure for
+# one input, so the matrix can call its native validator in this process while
+# retaining the same JSON report and issue-code assertions.
+try:
+    from storyline_closure_check import load_json as _load_closure_json
+    from storyline_closure_check import validate_closure as _validate_closure
+except ImportError:  # pragma: no cover - direct module loading fallback
+    _load_closure_json = None
+    _validate_closure = None
+
+
 UNIVERSAL_GUARD_SURFACES = [
     "flowguard_process",
     "traceguard_storyline",
@@ -328,6 +342,64 @@ def run_argv(case_id: str, argv: list[str], cwd: Path, expected_exit_code: int, 
     }
 
 
+def run_closure_in_process(
+    case_id: str,
+    input_path: Path,
+    repository_root: Path,
+    expected_exit_code: int,
+    expected_issue_codes: set[str] | None = None,
+) -> dict[str, Any]:
+    """Run one generated closure case without paying a process-start cost.
+
+    This path is used only by the generated mutation matrix.  Static cases
+    still execute the public CLI through :func:`run_argv`, so command-line
+    argument and serialization behavior remain covered separately.
+    """
+
+    if _load_closure_json is None or _validate_closure is None:  # pragma: no cover - defensive import guard
+        return {
+            "id": case_id,
+            "argv": [],
+            "expected_exit_code": expected_exit_code,
+            "actual_exit_code": None,
+            "passed": False,
+            "expected_issue_codes": sorted(expected_issue_codes or set()),
+            "observed_issue_codes": [],
+            "stdout_json": None,
+            "stderr": "in_process_closure_validator_unavailable",
+        }
+    try:
+        payload = _load_closure_json(input_path)
+        report = _validate_closure(payload, str(input_path), repository_root)
+        actual_exit_code = 0 if report.get("passed") else 1
+        stderr = ""
+    except (OSError, json.JSONDecodeError, ValueError) as exc:
+        report = None
+        actual_exit_code = 1
+        stderr = f"{type(exc).__name__}: {exc}"
+    observed_codes: set[str] = set()
+    if isinstance(report, dict) and isinstance(report.get("issues"), list):
+        observed_codes = {
+            str(issue.get("code"))
+            for issue in report["issues"]
+            if isinstance(issue, dict) and issue.get("code")
+        }
+    passed = actual_exit_code == expected_exit_code
+    if expected_issue_codes and not (observed_codes & expected_issue_codes):
+        passed = False
+    return {
+        "id": case_id,
+        "argv": ["in-process", str(input_path)],
+        "expected_exit_code": expected_exit_code,
+        "actual_exit_code": actual_exit_code,
+        "passed": passed,
+        "expected_issue_codes": sorted(expected_issue_codes or set()),
+        "observed_issue_codes": sorted(observed_codes),
+        "stdout_json": report,
+        "stderr": stderr,
+    }
+
+
 def static_cases(repo_root: Path, skill_root: Path) -> list[dict[str, Any]]:
     storyline = script(skill_root, "storyline_closure_check.py")
     longform = script(skill_root, "longform_closure_check.py")
@@ -400,24 +472,26 @@ def static_cases(repo_root: Path, skill_root: Path) -> list[dict[str, Any]]:
 def dynamic_matrix_cases(repo_root: Path, skill_root: Path) -> list[dict[str, Any]]:
     storyline = script(skill_root, "storyline_closure_check.py")
     results: list[dict[str, Any]] = []
-    with tempfile.TemporaryDirectory(prefix=".storyline-guard-matrix-", dir=repo_root) as temp_dir:
+    # Generated cases are self-contained (their handoffs and receipts are
+    # copied into the same temporary tree), so keep them on the local scratch
+    # volume instead of the repository's slow/archive volume.  The old
+    # repository-local temp directory made each content-addressed read pay a
+    # multi-second network/drive round trip and caused false owner timeouts.
+    scratch_parent = Path(
+        os.environ.get("LOGIC_WRITING_FICTION_MATRIX_TMP", tempfile.gettempdir())
+    ).expanduser()
+    scratch_parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="logic-writing-guard-matrix-", dir=scratch_parent) as temp_dir:
         temp_root = Path(temp_dir)
         for artifact, required_surfaces in ARTIFACT_MATRIX:
             positive_root = temp_root / f"{artifact}-positive"
             positive_path = positive_root / "closure.json"
             write_json(positive_path, base_storyline_bundle(artifact, required_surfaces, positive_root))
             results.append(
-                run_argv(
+                run_closure_in_process(
                     f"positive.matrix_{artifact}",
-                    [
-                        sys.executable,
-                        storyline,
-                        str(positive_path),
-                        "--repository-root",
-                        str(repo_root),
-                        "--json",
-                    ],
-                    repo_root,
+                    positive_path,
+                    temp_root,
                     0,
                 )
             )
@@ -447,17 +521,10 @@ def dynamic_matrix_cases(repo_root: Path, skill_root: Path) -> list[dict[str, An
                     elif mutation == "receipt_hash":
                         expected_codes = {"guard_receipt_content_hash_mismatch"}
                     results.append(
-                        run_argv(
+                        run_closure_in_process(
                             f"negative.matrix_{artifact}.{surface}.{mutation}",
-                            [
-                                sys.executable,
-                                storyline,
-                                str(path),
-                                "--repository-root",
-                                str(repo_root),
-                                "--json",
-                            ],
-                            repo_root,
+                            path,
+                            temp_root,
                             1,
                             expected_codes,
                         )
@@ -474,17 +541,10 @@ def dynamic_matrix_cases(repo_root: Path, skill_root: Path) -> list[dict[str, An
         fiction_payload["worldguard_claims"] = []
         write_json(fiction_path, fiction_payload)
         results.append(
-            run_argv(
+            run_closure_in_process(
                 "negative.matrix_worldguard_fiction_only_scopeout",
-                [
-                    sys.executable,
-                    storyline,
-                    str(fiction_path),
-                    "--repository-root",
-                    str(repo_root),
-                    "--json",
-                ],
-                repo_root,
+                fiction_path,
+                temp_root,
                 1,
                 {"fictional_world_auto_scopeout"},
             )
