@@ -1,7 +1,7 @@
 # investigation-route Specification
 
 ## Purpose
-TBD - created by archiving change create-logic-writing. Update Purpose after archive.
+Define the investigation route that turns a bounded claim into a source-backed evidence packet with explicit provenance, uncertainty, and handoff limits.
 ## Requirements
 ### Requirement: Investigation begins with a claim and evidence contract
 Before broad search, the investigation route SHALL record the question, scope, target audience, requested conclusion strength, time and geographic boundaries, source-access policy, critical claims, and required evidence roles.

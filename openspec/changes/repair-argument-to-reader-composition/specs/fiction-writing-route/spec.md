@@ -19,6 +19,10 @@ Chapter interfaces, semantic review, model-prose bindings, promises, reveals, co
 - **WHEN** an interface or review points to a draft path or span absent from the current manuscript map
 - **THEN** validation fails even if the JSON declares pass
 
+#### Scenario: Manuscript edit moves a scene
+- **WHEN** current bytes or unit boundaries change
+- **THEN** affected fiction bindings and reviews become stale
+
 #### Scenario: Required prose reference is missing in a stage
 - **WHEN** final prose is selected and `prose-native-contract.md` is absent from the staged consumer
 - **THEN** consumer closure fails before route success can be reported

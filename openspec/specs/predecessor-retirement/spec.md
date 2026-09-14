@@ -1,7 +1,7 @@
 # predecessor-retirement Specification
 
 ## Purpose
-TBD - created by archiving change expand-logic-writing-four-routes. Update Purpose after archive.
+Define the evidence and recovery conditions required before an old route, artifact, or implementation is retired in favor of a replacement.
 ## Requirements
 ### Requirement: Replacement is recoverable before predecessor retirement
 The system SHALL preserve source and release identities, validate the `2.1.1` source, activate a recoverable installed projection, refresh one global route, publish the GitHub release, and pass fresh-clone validation before changing predecessor visibility.

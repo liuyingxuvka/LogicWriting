@@ -1,7 +1,7 @@
 # academic-writing-route Specification
 
 ## Purpose
-TBD - created by archiving change create-logic-writing. Update Purpose after archive.
+Define the academic route for constructing source-backed arguments with explicit claims, evidence, counterarguments, limitations, and reader-facing conclusions.
 ## Requirements
 ### Requirement: Academic route owns academic final artifacts
 The academic-writing route SHALL be the sole final owner for new or revised papers, theses, dissertations, academic chapters, proposals, and formal literature reviews.

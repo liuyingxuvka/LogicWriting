@@ -1,7 +1,7 @@
 # travel-guide-route Specification
 
 ## Purpose
-TBD - created by archiving change expand-logic-writing-four-routes. Update Purpose after archive.
+Define the travel route for producing current, traveler-facing guides whose recommendations, alternatives, constraints, and source evidence remain explicitly bound.
 ## Requirements
 ### Requirement: Travel route owns deep traveler-facing guides
 The `travel-guide` route SHALL own substantive itineraries, route alternatives, destination guides, lodging strategy, traveler-fit recommendations, traveler-native prose, and final-guide closure.

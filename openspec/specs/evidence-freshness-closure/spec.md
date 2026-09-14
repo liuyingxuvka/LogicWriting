@@ -1,7 +1,7 @@
 # evidence-freshness-closure Specification
 
 ## Purpose
-TBD - created by archiving change create-logic-writing. Update Purpose after archive.
+Define how LogicWriting derives evidence freshness and closure from current identities, ownership, dependencies, and explicit unresolved gaps.
 ## Requirements
 ### Requirement: Closure status is verifier-derived
 The system SHALL derive closure from current specialist receipts and artifact identities. Caller-authored status fields SHALL be treated as claims, not evidence.

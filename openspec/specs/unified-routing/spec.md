@@ -1,7 +1,7 @@
 # unified-routing Specification
 
 ## Purpose
-TBD - created by archiving change create-logic-writing. Update Purpose after archive.
+Define how LogicWriting selects one final route owner, preserves route boundaries, and records explicit handoffs and blocked outcomes across research, planning, and writing workflows.
 ## Requirements
 ### Requirement: Exactly one final owner
 The system SHALL assign exactly one `final_owner` to every non-trivial run. Allowed final owners SHALL be `investigation`, `academic-writing`, `fiction-writing`, and `travel-guide`; child routes, shared kernels, and adapters SHALL NOT become co-owners.

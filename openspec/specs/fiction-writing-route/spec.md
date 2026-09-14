@@ -1,7 +1,7 @@
 # fiction-writing-route Specification
 
 ## Purpose
-TBD - created by archiving change expand-logic-writing-four-routes. Update Purpose after archive.
+Define the fiction route's ownership, story-state interfaces, manuscript bindings, continuity checks, and bounded semantic review for planning and reader-native prose.
 ## Requirements
 ### Requirement: Fiction route owns fiction artifacts
 The `fiction-writing` route SHALL own story plans, short stories, chapters, novels, series structures, substantive fiction revisions, and final-manuscript closure.

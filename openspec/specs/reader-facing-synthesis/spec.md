@@ -1,7 +1,7 @@
 # reader-facing-synthesis Specification
 
 ## Purpose
-TBD - created by archiving change create-logic-writing. Update Purpose after archive.
+Define the reader-facing synthesis boundary that projects a verified argument into ordered prose while keeping private ledgers, diagnostics, and unsupported claims out of the output.
 ## Requirements
 ### Requirement: Reader-facing synthesis uses a two-room boundary
 The system SHALL separate internal diagnostic material from reader-facing writing. The prose writer SHALL receive a sanitized ReaderBrief rather than the complete internal ledger.

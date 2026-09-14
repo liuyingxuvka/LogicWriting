@@ -1958,10 +1958,10 @@
     "require_current_evidence": false,
     "require_risk_gates_for_broad_claim": true,
     "source_inventory_evidence_ids": [
-      "source-inventory-discovery:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e"
+      "source-inventory-discovery:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce"
     ],
-    "source_inventory_fingerprint": "sha256:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e",
-    "source_inventory_revision": "source-inventory:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e",
+    "source_inventory_fingerprint": "sha256:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce",
+    "source_inventory_revision": "source-inventory:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce",
     "source_surfaces": [
       {
         "business_intent_ids": [
@@ -1971,18 +1971,18 @@
         "commitment_ids": [
           "C01:select-one-final-owner"
         ],
-        "content_fingerprint": "sha256:3f1074395425462801b4d31cabdb921bc61bf2e91d9fc7ac7776b4dc6a253d62",
+        "content_fingerprint": "sha256:8fd43eaaad16c2340e85e64001466f5d9fd4cf6179caa511015ee346285dd523",
         "coverage_disposition": "modeled",
         "declared_semantics_fingerprint": "sha256:4e532b8894c37002a0365e8ebb38b4704253852e598504dfd73aba7e62146888",
         "delegated_owner_inventory_id": "",
         "delegates_to_primary_path": false,
         "delegation_relation_type": "",
         "discovery_evidence_ids": [
-          "source-inventory-discovery:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e"
+          "source-inventory-discovery:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce"
         ],
         "freshness_state": "current",
         "in_scope": true,
-        "inventory_revision": "source-inventory:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e",
+        "inventory_revision": "source-inventory:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce",
         "label": "OpenSpec capability and verification contract: select exactly one final owner",
         "metadata": {
           "live_source_identity": {
@@ -2034,11 +2034,11 @@
         "delegates_to_primary_path": false,
         "delegation_relation_type": "",
         "discovery_evidence_ids": [
-          "source-inventory-discovery:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e"
+          "source-inventory-discovery:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce"
         ],
         "freshness_state": "current",
         "in_scope": true,
-        "inventory_revision": "source-inventory:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e",
+        "inventory_revision": "source-inventory:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce",
         "label": "single Logic Writing skill entrypoint: select exactly one final owner",
         "metadata": {
           "live_source_identity": {
@@ -2073,18 +2073,18 @@
         "commitment_ids": [
           "C02:preserve-specialist-authority"
         ],
-        "content_fingerprint": "sha256:3f1074395425462801b4d31cabdb921bc61bf2e91d9fc7ac7776b4dc6a253d62",
+        "content_fingerprint": "sha256:8fd43eaaad16c2340e85e64001466f5d9fd4cf6179caa511015ee346285dd523",
         "coverage_disposition": "modeled",
         "declared_semantics_fingerprint": "sha256:2cb39b8146338e241e0424ae134283e28ab32ead1f96be4b96fd7397e9870608",
         "delegated_owner_inventory_id": "",
         "delegates_to_primary_path": false,
         "delegation_relation_type": "",
         "discovery_evidence_ids": [
-          "source-inventory-discovery:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e"
+          "source-inventory-discovery:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce"
         ],
         "freshness_state": "current",
         "in_scope": true,
-        "inventory_revision": "source-inventory:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e",
+        "inventory_revision": "source-inventory:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce",
         "label": "OpenSpec capability and verification contract: preserve specialist Guard authority",
         "metadata": {
           "live_source_identity": {
@@ -2136,11 +2136,11 @@
         "delegates_to_primary_path": false,
         "delegation_relation_type": "",
         "discovery_evidence_ids": [
-          "source-inventory-discovery:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e"
+          "source-inventory-discovery:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce"
         ],
         "freshness_state": "current",
         "in_scope": true,
-        "inventory_revision": "source-inventory:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e",
+        "inventory_revision": "source-inventory:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce",
         "label": "single Logic Writing skill entrypoint: preserve specialist Guard authority",
         "metadata": {
           "live_source_identity": {
@@ -2175,18 +2175,18 @@
         "commitment_ids": [
           "C03:build-current-research-packet"
         ],
-        "content_fingerprint": "sha256:3f1074395425462801b4d31cabdb921bc61bf2e91d9fc7ac7776b4dc6a253d62",
+        "content_fingerprint": "sha256:8fd43eaaad16c2340e85e64001466f5d9fd4cf6179caa511015ee346285dd523",
         "coverage_disposition": "modeled",
         "declared_semantics_fingerprint": "sha256:6111739a76a2ba3952f7302824440fe7b2d745f815fd0ae38602818fdc979e69",
         "delegated_owner_inventory_id": "",
         "delegates_to_primary_path": false,
         "delegation_relation_type": "",
         "discovery_evidence_ids": [
-          "source-inventory-discovery:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e"
+          "source-inventory-discovery:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce"
         ],
         "freshness_state": "current",
         "in_scope": true,
-        "inventory_revision": "source-inventory:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e",
+        "inventory_revision": "source-inventory:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce",
         "label": "OpenSpec capability and verification contract: assemble a verifier-derived ResearchPacket",
         "metadata": {
           "live_source_identity": {
@@ -2238,11 +2238,11 @@
         "delegates_to_primary_path": false,
         "delegation_relation_type": "",
         "discovery_evidence_ids": [
-          "source-inventory-discovery:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e"
+          "source-inventory-discovery:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce"
         ],
         "freshness_state": "current",
         "in_scope": true,
-        "inventory_revision": "source-inventory:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e",
+        "inventory_revision": "source-inventory:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce",
         "label": "single Logic Writing skill entrypoint: assemble a verifier-derived ResearchPacket",
         "metadata": {
           "live_source_identity": {
@@ -2277,18 +2277,18 @@
         "commitment_ids": [
           "C04:build-reader-brief"
         ],
-        "content_fingerprint": "sha256:3f1074395425462801b4d31cabdb921bc61bf2e91d9fc7ac7776b4dc6a253d62",
+        "content_fingerprint": "sha256:8fd43eaaad16c2340e85e64001466f5d9fd4cf6179caa511015ee346285dd523",
         "coverage_disposition": "modeled",
         "declared_semantics_fingerprint": "sha256:87ed1d384f54b54255e55a065a15f110a629b2bbb1226593e10bb989af3c9c79",
         "delegated_owner_inventory_id": "",
         "delegates_to_primary_path": false,
         "delegation_relation_type": "",
         "discovery_evidence_ids": [
-          "source-inventory-discovery:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e"
+          "source-inventory-discovery:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce"
         ],
         "freshness_state": "current",
         "in_scope": true,
-        "inventory_revision": "source-inventory:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e",
+        "inventory_revision": "source-inventory:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce",
         "label": "OpenSpec capability and verification contract: translate evidence into a ReaderBrief",
         "metadata": {
           "live_source_identity": {
@@ -2340,11 +2340,11 @@
         "delegates_to_primary_path": false,
         "delegation_relation_type": "",
         "discovery_evidence_ids": [
-          "source-inventory-discovery:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e"
+          "source-inventory-discovery:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce"
         ],
         "freshness_state": "current",
         "in_scope": true,
-        "inventory_revision": "source-inventory:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e",
+        "inventory_revision": "source-inventory:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce",
         "label": "single Logic Writing skill entrypoint: translate evidence into a ReaderBrief",
         "metadata": {
           "live_source_identity": {
@@ -2379,18 +2379,18 @@
         "commitment_ids": [
           "C05:audit-actual-artifact"
         ],
-        "content_fingerprint": "sha256:3f1074395425462801b4d31cabdb921bc61bf2e91d9fc7ac7776b4dc6a253d62",
+        "content_fingerprint": "sha256:8fd43eaaad16c2340e85e64001466f5d9fd4cf6179caa511015ee346285dd523",
         "coverage_disposition": "modeled",
         "declared_semantics_fingerprint": "sha256:c804c68520fa89ede07cd2d3afd0cf1c4eb461a1e10d20b9726327943e160039",
         "delegated_owner_inventory_id": "",
         "delegates_to_primary_path": false,
         "delegation_relation_type": "",
         "discovery_evidence_ids": [
-          "source-inventory-discovery:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e"
+          "source-inventory-discovery:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce"
         ],
         "freshness_state": "current",
         "in_scope": true,
-        "inventory_revision": "source-inventory:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e",
+        "inventory_revision": "source-inventory:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce",
         "label": "OpenSpec capability and verification contract: audit the actual reader artifact",
         "metadata": {
           "live_source_identity": {
@@ -2442,11 +2442,11 @@
         "delegates_to_primary_path": false,
         "delegation_relation_type": "",
         "discovery_evidence_ids": [
-          "source-inventory-discovery:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e"
+          "source-inventory-discovery:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce"
         ],
         "freshness_state": "current",
         "in_scope": true,
-        "inventory_revision": "source-inventory:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e",
+        "inventory_revision": "source-inventory:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce",
         "label": "single Logic Writing skill entrypoint: audit the actual reader artifact",
         "metadata": {
           "live_source_identity": {
@@ -2481,18 +2481,18 @@
         "commitment_ids": [
           "C06:issue-final-artifact-closure"
         ],
-        "content_fingerprint": "sha256:3f1074395425462801b4d31cabdb921bc61bf2e91d9fc7ac7776b4dc6a253d62",
+        "content_fingerprint": "sha256:8fd43eaaad16c2340e85e64001466f5d9fd4cf6179caa511015ee346285dd523",
         "coverage_disposition": "modeled",
         "declared_semantics_fingerprint": "sha256:453daaa38bdc06b837c0bfa4a10f8b85c7da03af8172ec3dca78f3ed9a5d76dc",
         "delegated_owner_inventory_id": "",
         "delegates_to_primary_path": false,
         "delegation_relation_type": "",
         "discovery_evidence_ids": [
-          "source-inventory-discovery:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e"
+          "source-inventory-discovery:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce"
         ],
         "freshness_state": "current",
         "in_scope": true,
-        "inventory_revision": "source-inventory:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e",
+        "inventory_revision": "source-inventory:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce",
         "label": "OpenSpec capability and verification contract: derive final closure with one owner",
         "metadata": {
           "live_source_identity": {
@@ -2544,11 +2544,11 @@
         "delegates_to_primary_path": false,
         "delegation_relation_type": "",
         "discovery_evidence_ids": [
-          "source-inventory-discovery:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e"
+          "source-inventory-discovery:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce"
         ],
         "freshness_state": "current",
         "in_scope": true,
-        "inventory_revision": "source-inventory:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e",
+        "inventory_revision": "source-inventory:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce",
         "label": "single Logic Writing skill entrypoint: derive final closure with one owner",
         "metadata": {
           "live_source_identity": {
@@ -2583,18 +2583,18 @@
         "commitment_ids": [
           "C07:freeze-one-validation-owner"
         ],
-        "content_fingerprint": "sha256:3f1074395425462801b4d31cabdb921bc61bf2e91d9fc7ac7776b4dc6a253d62",
+        "content_fingerprint": "sha256:8fd43eaaad16c2340e85e64001466f5d9fd4cf6179caa511015ee346285dd523",
         "coverage_disposition": "modeled",
         "declared_semantics_fingerprint": "sha256:e1cf32616f8ad294f9acf6e5d277407d234155e4feaa40816183ab4e4a53c3a1",
         "delegated_owner_inventory_id": "",
         "delegates_to_primary_path": false,
         "delegation_relation_type": "",
         "discovery_evidence_ids": [
-          "source-inventory-discovery:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e"
+          "source-inventory-discovery:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce"
         ],
         "freshness_state": "current",
         "in_scope": true,
-        "inventory_revision": "source-inventory:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e",
+        "inventory_revision": "source-inventory:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce",
         "label": "OpenSpec capability and verification contract: freeze the final validation owner",
         "metadata": {
           "live_source_identity": {
@@ -2646,11 +2646,11 @@
         "delegates_to_primary_path": false,
         "delegation_relation_type": "",
         "discovery_evidence_ids": [
-          "source-inventory-discovery:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e"
+          "source-inventory-discovery:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce"
         ],
         "freshness_state": "current",
         "in_scope": true,
-        "inventory_revision": "source-inventory:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e",
+        "inventory_revision": "source-inventory:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce",
         "label": "release and retirement process contract: freeze the final validation owner",
         "metadata": {
           "live_source_identity": {
@@ -2686,18 +2686,18 @@
         "commitment_ids": [
           "C08:activate-recoverable-install"
         ],
-        "content_fingerprint": "sha256:3f1074395425462801b4d31cabdb921bc61bf2e91d9fc7ac7776b4dc6a253d62",
+        "content_fingerprint": "sha256:8fd43eaaad16c2340e85e64001466f5d9fd4cf6179caa511015ee346285dd523",
         "coverage_disposition": "modeled",
         "declared_semantics_fingerprint": "sha256:c8f3b7efef4f0eef7379615c0136045585ca452b31629a45b9886a3a8125db52",
         "delegated_owner_inventory_id": "",
         "delegates_to_primary_path": false,
         "delegation_relation_type": "",
         "discovery_evidence_ids": [
-          "source-inventory-discovery:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e"
+          "source-inventory-discovery:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce"
         ],
         "freshness_state": "current",
         "in_scope": true,
-        "inventory_revision": "source-inventory:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e",
+        "inventory_revision": "source-inventory:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce",
         "label": "OpenSpec capability and verification contract: activate a recoverable Logic Writing installation",
         "metadata": {
           "live_source_identity": {
@@ -2749,11 +2749,11 @@
         "delegates_to_primary_path": false,
         "delegation_relation_type": "",
         "discovery_evidence_ids": [
-          "source-inventory-discovery:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e"
+          "source-inventory-discovery:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce"
         ],
         "freshness_state": "current",
         "in_scope": true,
-        "inventory_revision": "source-inventory:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e",
+        "inventory_revision": "source-inventory:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce",
         "label": "release and retirement process contract: activate a recoverable Logic Writing installation",
         "metadata": {
           "live_source_identity": {
@@ -2789,18 +2789,18 @@
         "commitment_ids": [
           "C09:project-one-global-route"
         ],
-        "content_fingerprint": "sha256:3f1074395425462801b4d31cabdb921bc61bf2e91d9fc7ac7776b4dc6a253d62",
+        "content_fingerprint": "sha256:8fd43eaaad16c2340e85e64001466f5d9fd4cf6179caa511015ee346285dd523",
         "coverage_disposition": "modeled",
         "declared_semantics_fingerprint": "sha256:ee25aeef42d55353cda1925608e060a0ce4a264c99219320757ef439aa21eb07",
         "delegated_owner_inventory_id": "",
         "delegates_to_primary_path": false,
         "delegation_relation_type": "",
         "discovery_evidence_ids": [
-          "source-inventory-discovery:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e"
+          "source-inventory-discovery:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce"
         ],
         "freshness_state": "current",
         "in_scope": true,
-        "inventory_revision": "source-inventory:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e",
+        "inventory_revision": "source-inventory:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce",
         "label": "OpenSpec capability and verification contract: project one global Logic Writing route",
         "metadata": {
           "live_source_identity": {
@@ -2852,11 +2852,11 @@
         "delegates_to_primary_path": false,
         "delegation_relation_type": "",
         "discovery_evidence_ids": [
-          "source-inventory-discovery:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e"
+          "source-inventory-discovery:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce"
         ],
         "freshness_state": "current",
         "in_scope": true,
-        "inventory_revision": "source-inventory:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e",
+        "inventory_revision": "source-inventory:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce",
         "label": "release and retirement process contract: project one global Logic Writing route",
         "metadata": {
           "live_source_identity": {
@@ -2892,18 +2892,18 @@
         "commitment_ids": [
           "C10:publish-logic-writing-release"
         ],
-        "content_fingerprint": "sha256:3f1074395425462801b4d31cabdb921bc61bf2e91d9fc7ac7776b4dc6a253d62",
+        "content_fingerprint": "sha256:8fd43eaaad16c2340e85e64001466f5d9fd4cf6179caa511015ee346285dd523",
         "coverage_disposition": "modeled",
         "declared_semantics_fingerprint": "sha256:c1eb22e068ca3fa45f331ba2e25d625387a7edbfca90b63f8251f75fd2282d04",
         "delegated_owner_inventory_id": "",
         "delegates_to_primary_path": false,
         "delegation_relation_type": "",
         "discovery_evidence_ids": [
-          "source-inventory-discovery:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e"
+          "source-inventory-discovery:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce"
         ],
         "freshness_state": "current",
         "in_scope": true,
-        "inventory_revision": "source-inventory:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e",
+        "inventory_revision": "source-inventory:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce",
         "label": "OpenSpec capability and verification contract: publish the verified Logic Writing release",
         "metadata": {
           "live_source_identity": {
@@ -2955,11 +2955,11 @@
         "delegates_to_primary_path": false,
         "delegation_relation_type": "",
         "discovery_evidence_ids": [
-          "source-inventory-discovery:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e"
+          "source-inventory-discovery:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce"
         ],
         "freshness_state": "current",
         "in_scope": true,
-        "inventory_revision": "source-inventory:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e",
+        "inventory_revision": "source-inventory:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce",
         "label": "release and retirement process contract: publish the verified Logic Writing release",
         "metadata": {
           "live_source_identity": {
@@ -2995,18 +2995,18 @@
         "commitment_ids": [
           "C11:retire-predecessors-safely"
         ],
-        "content_fingerprint": "sha256:3f1074395425462801b4d31cabdb921bc61bf2e91d9fc7ac7776b4dc6a253d62",
+        "content_fingerprint": "sha256:8fd43eaaad16c2340e85e64001466f5d9fd4cf6179caa511015ee346285dd523",
         "coverage_disposition": "modeled",
         "declared_semantics_fingerprint": "sha256:5f47022b7cec31fd9f4bbcc93b12c59c39b34f528990492013eef41b3e4104d5",
         "delegated_owner_inventory_id": "",
         "delegates_to_primary_path": false,
         "delegation_relation_type": "",
         "discovery_evidence_ids": [
-          "source-inventory-discovery:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e"
+          "source-inventory-discovery:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce"
         ],
         "freshness_state": "current",
         "in_scope": true,
-        "inventory_revision": "source-inventory:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e",
+        "inventory_revision": "source-inventory:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce",
         "label": "OpenSpec capability and verification contract: retire Travel and Storyline predecessor skills and public repository surfaces sequentially",
         "metadata": {
           "live_source_identity": {
@@ -3058,11 +3058,11 @@
         "delegates_to_primary_path": false,
         "delegation_relation_type": "",
         "discovery_evidence_ids": [
-          "source-inventory-discovery:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e"
+          "source-inventory-discovery:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce"
         ],
         "freshness_state": "current",
         "in_scope": true,
-        "inventory_revision": "source-inventory:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e",
+        "inventory_revision": "source-inventory:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce",
         "label": "release and retirement process contract: retire Travel and Storyline predecessor skills and public repository surfaces sequentially",
         "metadata": {
           "live_source_identity": {
@@ -3098,18 +3098,18 @@
         "commitment_ids": [
           "C12:produce-fiction-artifact"
         ],
-        "content_fingerprint": "sha256:3f1074395425462801b4d31cabdb921bc61bf2e91d9fc7ac7776b4dc6a253d62",
+        "content_fingerprint": "sha256:8fd43eaaad16c2340e85e64001466f5d9fd4cf6179caa511015ee346285dd523",
         "coverage_disposition": "modeled",
         "declared_semantics_fingerprint": "sha256:d8931f7a79ca74e34c97e48bc3d903a84c46c3d885b0a16e82000ab6c3b97094",
         "delegated_owner_inventory_id": "",
         "delegates_to_primary_path": false,
         "delegation_relation_type": "",
         "discovery_evidence_ids": [
-          "source-inventory-discovery:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e"
+          "source-inventory-discovery:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce"
         ],
         "freshness_state": "current",
         "in_scope": true,
-        "inventory_revision": "source-inventory:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e",
+        "inventory_revision": "source-inventory:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce",
         "label": "OpenSpec capability and verification contract: produce a model-bound fiction artifact",
         "metadata": {
           "live_source_identity": {
@@ -3161,11 +3161,11 @@
         "delegates_to_primary_path": false,
         "delegation_relation_type": "",
         "discovery_evidence_ids": [
-          "source-inventory-discovery:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e"
+          "source-inventory-discovery:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce"
         ],
         "freshness_state": "current",
         "in_scope": true,
-        "inventory_revision": "source-inventory:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e",
+        "inventory_revision": "source-inventory:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce",
         "label": "single Logic Writing skill entrypoint: produce a model-bound fiction artifact",
         "metadata": {
           "live_source_identity": {
@@ -3200,18 +3200,18 @@
         "commitment_ids": [
           "C13:produce-travel-guide"
         ],
-        "content_fingerprint": "sha256:3f1074395425462801b4d31cabdb921bc61bf2e91d9fc7ac7776b4dc6a253d62",
+        "content_fingerprint": "sha256:8fd43eaaad16c2340e85e64001466f5d9fd4cf6179caa511015ee346285dd523",
         "coverage_disposition": "modeled",
         "declared_semantics_fingerprint": "sha256:e5c3ef78b7788d1e905d6e4ec340f3d4f0d0b15c9385e14b5abbeb07f7812026",
         "delegated_owner_inventory_id": "",
         "delegates_to_primary_path": false,
         "delegation_relation_type": "",
         "discovery_evidence_ids": [
-          "source-inventory-discovery:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e"
+          "source-inventory-discovery:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce"
         ],
         "freshness_state": "current",
         "in_scope": true,
-        "inventory_revision": "source-inventory:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e",
+        "inventory_revision": "source-inventory:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce",
         "label": "OpenSpec capability and verification contract: produce a verified traveler-native guide",
         "metadata": {
           "live_source_identity": {
@@ -3263,11 +3263,11 @@
         "delegates_to_primary_path": false,
         "delegation_relation_type": "",
         "discovery_evidence_ids": [
-          "source-inventory-discovery:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e"
+          "source-inventory-discovery:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce"
         ],
         "freshness_state": "current",
         "in_scope": true,
-        "inventory_revision": "source-inventory:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e",
+        "inventory_revision": "source-inventory:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce",
         "label": "single Logic Writing skill entrypoint: produce a verified traveler-native guide",
         "metadata": {
           "live_source_identity": {
@@ -3302,18 +3302,18 @@
         "commitment_ids": [
           "C14:bind-model-to-reader-artifact"
         ],
-        "content_fingerprint": "sha256:3f1074395425462801b4d31cabdb921bc61bf2e91d9fc7ac7776b4dc6a253d62",
+        "content_fingerprint": "sha256:8fd43eaaad16c2340e85e64001466f5d9fd4cf6179caa511015ee346285dd523",
         "coverage_disposition": "modeled",
         "declared_semantics_fingerprint": "sha256:9aa91390d7df9e0b6e7849025a95c5451856a9da0f5909bfacdbcf102d14e5aa",
         "delegated_owner_inventory_id": "",
         "delegates_to_primary_path": false,
         "delegation_relation_type": "",
         "discovery_evidence_ids": [
-          "source-inventory-discovery:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e"
+          "source-inventory-discovery:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce"
         ],
         "freshness_state": "current",
         "in_scope": true,
-        "inventory_revision": "source-inventory:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e",
+        "inventory_revision": "source-inventory:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce",
         "label": "OpenSpec capability and verification contract: bind model work to the actual reader artifact",
         "metadata": {
           "live_source_identity": {
@@ -3365,11 +3365,11 @@
         "delegates_to_primary_path": false,
         "delegation_relation_type": "",
         "discovery_evidence_ids": [
-          "source-inventory-discovery:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e"
+          "source-inventory-discovery:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce"
         ],
         "freshness_state": "current",
         "in_scope": true,
-        "inventory_revision": "source-inventory:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e",
+        "inventory_revision": "source-inventory:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce",
         "label": "single Logic Writing skill entrypoint: bind model work to the actual reader artifact",
         "metadata": {
           "live_source_identity": {
@@ -3411,11 +3411,11 @@
         "delegates_to_primary_path": false,
         "delegation_relation_type": "",
         "discovery_evidence_ids": [
-          "source-inventory-discovery:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e"
+          "source-inventory-discovery:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce"
         ],
         "freshness_state": "current",
         "in_scope": true,
-        "inventory_revision": "source-inventory:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e",
+        "inventory_revision": "source-inventory:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce",
         "label": "OpenSpec: produce a profile-aware actual investigation report",
         "metadata": {
           "live_source_identity": {
@@ -3459,11 +3459,11 @@
         "delegates_to_primary_path": false,
         "delegation_relation_type": "",
         "discovery_evidence_ids": [
-          "source-inventory-discovery:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e"
+          "source-inventory-discovery:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce"
         ],
         "freshness_state": "current",
         "in_scope": true,
-        "inventory_revision": "source-inventory:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e",
+        "inventory_revision": "source-inventory:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce",
         "label": "Logic Writing entry: produce a profile-aware actual investigation report",
         "metadata": {
           "live_source_identity": {
@@ -3505,11 +3505,11 @@
         "delegates_to_primary_path": false,
         "delegation_relation_type": "",
         "discovery_evidence_ids": [
-          "source-inventory-discovery:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e"
+          "source-inventory-discovery:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce"
         ],
         "freshness_state": "current",
         "in_scope": true,
-        "inventory_revision": "source-inventory:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e",
+        "inventory_revision": "source-inventory:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce",
         "label": "OpenSpec: produce a hierarchical actual academic artifact",
         "metadata": {
           "live_source_identity": {
@@ -3553,11 +3553,11 @@
         "delegates_to_primary_path": false,
         "delegation_relation_type": "",
         "discovery_evidence_ids": [
-          "source-inventory-discovery:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e"
+          "source-inventory-discovery:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce"
         ],
         "freshness_state": "current",
         "in_scope": true,
-        "inventory_revision": "source-inventory:ef0b8747f4a95ffd8b7930ce123b0abefb02d19737786c280a373247a989969e",
+        "inventory_revision": "source-inventory:955a10e7294a46389780312ef4a31192d79b45f830a0a9a304d84c38b1563bce",
         "label": "Logic Writing entry: produce a hierarchical actual academic artifact",
         "metadata": {
           "live_source_identity": {
