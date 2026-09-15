@@ -1655,6 +1655,26 @@ def _requested_citation_material_ids(
     return result
 
 
+_TABLE_REQUEST = re.compile(
+    r"(?:\btable\b|\bmatrix\b|\bchecklist\b|表格|"
+    r"(?:一张|一份|提供|包含|保留)[^。！？!?\n]{0,60}表(?:格)?(?=$|[。！？!?\s,:：，、]))",
+    re.IGNORECASE,
+)
+
+
+def _task_requests_table(task: str) -> bool:
+    """Recognize a user-requested table without treating prose as a table.
+
+    Chinese requests often end with ``一张“主张/证据/缺口”表`` rather than
+    ``表格``.  The old substring check missed that form and later projected a
+    contradictory ``不要使用表格`` instruction into the writer prompt.
+    Keep the detector narrow so ordinary words such as ``表达`` do not opt a
+    task into tabular output.
+    """
+
+    return _TABLE_REQUEST.search(str(task or "")) is not None
+
+
 def _production_request_and_boundaries(case: Mapping[str, Any]) -> tuple[dict[str, Any], dict[str, Any], str]:
     """Build a current WritingRequest and reader-facing material boundary.
 
@@ -1674,6 +1694,7 @@ def _production_request_and_boundaries(case: Mapping[str, Any]) -> tuple[dict[st
     if maximum < minimum:
         minimum, maximum = maximum, minimum
     target = max(1, (minimum + maximum) // 2)
+    table_requested = _task_requests_table(task)
     outline_label = "正文"
     if "结果" in task and "意义" in task:
         outline_label = "结果与意义"
@@ -1705,7 +1726,7 @@ def _production_request_and_boundaries(case: Mapping[str, Any]) -> tuple[dict[st
             }],
         },
         "heading_policy": "preserve_requested" if ("标题" in task or "heading" in task.casefold()) else "route_selected",
-        "list_policy": "lists_allowed" if any(word in task for word in ("列表", "清单", "表格", "table", "checklist")) else "prose_default",
+        "list_policy": "lists_allowed" if any(word in task for word in ("列表", "清单", "表格", "table", "matrix", "checklist")) or table_requested else "prose_default",
         "style": {
             "voice": "自然、清楚、连续推进，不把材料卡片逐项复述",
             "formality": "scholarly" if route == "academic-writing" else "neutral",
@@ -1715,7 +1736,7 @@ def _production_request_and_boundaries(case: Mapping[str, Any]) -> tuple[dict[st
         "extent": {"unit": "words" if language.casefold().startswith("en") else "characters", "minimum": minimum, "target": target, "maximum": maximum},
         "artifact_format": "markdown",
         "citation_policy": "inline" if ("引用" in task or "cite" in task.casefold()) else "none",
-        "table_policy": "allowed" if any(word in task for word in ("表格", "table")) else "forbidden",
+        "table_policy": "allowed" if table_requested else "forbidden",
         "required_content": ["完成任务并让正文按因果或场景关系向前推进"],
         "forbidden_content": ["内部工作流", "模型标签", "评分过程"],
         "reference_examples": [],

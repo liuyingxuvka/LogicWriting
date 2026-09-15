@@ -2483,6 +2483,10 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
                         _prompt_add(route_parts, _prompt_clean_text(row[key], preserve_citations=citation_markers))
 
     elif mode == "travel-guide":
+        _prompt_add(
+            route_parts,
+            "旅行任务只保留会改变当天时间、地点、交通、休息或备用选择的条件；未参与取舍的地点、认证、票价、天气来源声明和泛化未知项省略。",
+        )
         for row in route.get("pace_and_timing", []):
             if isinstance(row, Mapping):
                 parts: list[str] = []
@@ -2520,13 +2524,23 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
             _prompt_add(
                 route_parts,
                 "如果材料没有支持的可达备用路线，遇到出发前或途中条件不满足时，必须把留在起点、停止出发或原地休息写成明确可执行的退回方案。"
-                "不得把退回路径写成要求读者补资料的开放任务，也不得用未知的休息点、接驳或现场服务补造路线。",
+                "不得把退回路径写成要求读者补资料的开放任务，也不得用未知的休息点、接驳或现场服务补造路线。"
+                "不要自行新增返程中断、现场服务或其它材料没有给出的故障分支；若必要条件无法在出发前确认，"
+                "只写停止出发、留在起点或在已知地点原地休息。",
             )
         _prompt_add(
             route_parts,
-            "如果同时存在默认路线和备用路线，分别写清每条路线自己的启用条件与退回条件；"
-            "一条备用路线未通过核实时，不能因此取消已经满足条件的默认路线，不能把不同路线的条件合并成一个全局退回判断。",
+            "每天的开放、交通、休息和天气条件放回对应日期的段落；结尾只收束全局边界，"
+            "不要把每天的条件集中重列。如果同时存在默认路线和备用路线，分别写清每条路线自己的启用条件与退回条件；"
+            "一条备用路线未通过核实时，不能因此取消已经满足条件的默认路线，不能把不同路线的条件合并成一个全局退回判断；"
+            "结尾必须按‘实际选择的路线→该路线条件不满足→留在起点’分别写出分支。",
         )
+        if re.search(r"只改|受影响|局部修订|revision|revise", purpose, re.IGNORECASE):
+            _prompt_add(
+                route_parts,
+                "如果任务是局部修订，只改变题目明确受影响的日期或安排，其余已经合理的行程原样保留；"
+                "不要为尚未核实的通达条件另加整日留馆门槛，也不要在正文解释修改范围。",
+            )
 
     if route_parts:
         paragraphs.append("本类成品还要保持这些推进要求：" + _prompt_join(route_parts) + "。")
@@ -2538,6 +2552,11 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
         "低于下限时，只补入直接推进问题、判断、行动或代价的具体内容；超过上限时，删去不改变读者判断的句子。"
         "不要用重复材料、泛化免责声明、作者说明或流程说明填充篇幅。"
     )
+    if extent_unit == "汉字" and not (mode == "investigation" and "汉字" in purpose):
+        paragraphs.append(
+            "返回前按正文实际可见字符（标题和空白不计）核对一次长度；超过上限就合并重复限制或删去不改变判断的句子，"
+            "不要返回超出上限的草稿，也不要用内部说明填充下限。"
+        )
 
     if mode == "investigation" and "汉字" in purpose:
         paragraphs.append(
@@ -2552,24 +2571,6 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
         paragraphs.append(
             "学术任务若指定标题或表格，严格保留其结构；相同数字或限制只在承担新的论证工作时再次出现，不要把表格要求改写成散文，也不要用平行材料清单代替层间递进。"
         )
-    if mode == "fiction-writing" and "公开账页" in purpose and "砸锁" in json.dumps(spine, ensure_ascii=False):
-        paragraphs.append(
-            "当前任务目的选定公开账页；砸锁是材料中的备选，不能写成当前场景的实际开门手段。"
-            "公开账页必须通过主管放行、交钥匙、门锁解除和工人进入等可观察动作接到救单；"
-            "不能只跳到工人进入。未知调钥匙事实只能保留为白漆线索，不能在本场直接揭示；"
-            "船铃意象出现三次，每次都是连续三声，分别承载日常秩序、倒计时压力和关系变化。"
-        )
-    if mode == "fiction-writing" and "修订报告" in purpose:
-        paragraphs.append(
-            "这是修订报告时，不要重写成戏剧场景；只列任务要求的改动和各自必须保留的内容，不要把材料没有要求的决定或后续交接写进报告。"
-        )
-    if mode == "travel-guide":
-        paragraphs.append(
-            "旅行任务只保留会改变当天时间、地点、交通、休息或备用选择的条件；未参与取舍的地点、认证、票价、天气来源声明和泛化未知项省略。"
-            "若材料同时有默认路线和备用路线，结尾必须按‘实际选择的路线→该路线条件不满足→留在起点’分别写出分支；"
-            "备用路线核实失败不能取消已经满足条件的默认路线，不得把多条路线的条件合并成一个全局退回判断。"
-        )
-
     style = context.get("style") if isinstance(context.get("style"), Mapping) else {}
     style_parts: list[str] = []
     voice = _prompt_clean_text(style.get("voice"))
@@ -2605,6 +2606,11 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
         paragraphs.append("只有承担明确功能的地方使用列表，其余内容仍用连续解释；不得把每条材料各变成一个列表项。")
     elif list_policy == "lists_allowed":
         paragraphs.append("列表只有在能帮助读者执行或核对时才使用，其余内容用连续解释；不得按材料编号平行罗列。")
+        if re.search(r"简短|short", purpose, re.IGNORECASE) and re.search(r"清单|checklist|列表", purpose, re.IGNORECASE):
+            paragraphs.append(
+                "任务要求简短清单时，清单只保留可直接执行的短动作；正文已经解释过的理由、边界和备用路线不要在清单重复，"
+                "备用方案只写切换动作。"
+            )
     else:
         paragraphs.append("按任务明确的结构组织成稿，列表和表格只在确有阅读功能时使用。")
     if context.get("heading_policy") in {"preserve_requested", "route_selected"}:

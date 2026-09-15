@@ -99,6 +99,7 @@ def test_production_reader_prompt_enforces_extent_and_fiction_information_bounda
     assert "当前任务目的已经选定公开账页" in prompt
     assert "不得把砸锁、撬锁或铁锤改写成当前场景的实际开门手段" in prompt
     assert "不得新增第二把钥匙" in prompt
+    assert "按正文实际可见字符（标题和空白不计）核对一次长度" in prompt
 
 
 def test_production_reader_prompt_closes_restricted_starting_knowledge(tmp_path):
@@ -131,6 +132,8 @@ def test_production_travel_prompt_requires_explicit_origin_fallback_when_none_is
     assert "如果同时存在默认路线和备用路线，分别写清每条路线自己的启用条件与退回条件" in prompt
     assert "一条备用路线未通过核实时，不能因此取消已经满足条件的默认路线" in prompt
     assert "结尾必须按‘实际选择的路线→该路线条件不满足→留在起点’分别写出分支" in prompt
+    assert "不要自行新增返程中断、现场服务或其它材料没有给出的故障分支" in prompt
+    assert "每天的开放、交通、休息和天气条件放回对应日期的段落" in prompt
     assert "appendix:checks" not in prompt
 
 
@@ -184,6 +187,65 @@ def test_production_boundaries_compile_only_explicit_citation_ranges():
     ]
     assert all(row["content_unit_ids"] == ["content:materials"] for row in boundaries["citation_duties"])
     assert all(row["placement"] == "same_paragraph" for row in boundaries["citation_duties"])
+
+
+def test_production_boundaries_recognize_a_requested_table_noun():
+    benchmark = _load_benchmark()
+    case = {
+        "case_id": "I03",
+        "route": "investigation",
+        "language": "zh-CN",
+        "task": "写700—900字证据审计，先解释能回答什么，再提供一张“主张/证据/缺口”表，最后写应补哪个验证。",
+        "constraints": "表格允许且有用途。",
+        "material_records": [{"id": "E01", "text": "一条冻结事实。"}],
+    }
+
+    request, _boundaries, _token = benchmark._production_request_and_boundaries(case)
+    intent = request["reader_intent"]
+
+    assert benchmark._task_requests_table(case["task"]) is True
+    assert intent["table_policy"] == "allowed"
+    assert intent["list_policy"] == "lists_allowed"
+
+
+def test_production_travel_prompt_does_not_repeat_global_route_rules(tmp_path):
+    benchmark = _load_benchmark()
+    chain = make_reader_chain(tmp_path / "travel-dedup", "travel-guide")
+    spine = build_reader_spine(chain["reader_brief"], composition_plan=chain["plan"])
+    spine["route_guidance"]["reachable_fallbacks"] = []
+
+    prompt = benchmark._production_writer_prompt(spine)
+
+    # The route-specific block is the single owner of these rules.  Repeating
+    # them after the extent/style clauses made the writer treat the guide as a
+    # validation checklist and encouraged unclosed side branches.
+    assert prompt.count("旅行任务只保留") == 1
+    assert prompt.count("如果同时存在默认路线和备用路线") == 1
+
+
+def test_production_travel_revision_prompt_keeps_unaffected_days(tmp_path):
+    benchmark = _load_benchmark()
+    chain = make_reader_chain(tmp_path / "travel-revision", "travel-guide")
+    spine = build_reader_spine(chain["reader_brief"], composition_plan=chain["plan"])
+    spine["reader_context"]["purpose"] = "局部修订行程，只改题目明确受影响的安排。"
+
+    prompt = benchmark._production_writer_prompt(spine)
+
+    assert "只改变题目明确受影响的日期或安排" in prompt
+    assert "不要为尚未核实的通达条件另加整日留馆门槛" in prompt
+
+
+def test_production_short_checklist_prompt_keeps_actions_short(tmp_path):
+    benchmark = _load_benchmark()
+    chain = make_reader_chain(tmp_path / "travel-checklist", "travel-guide")
+    spine = build_reader_spine(chain["reader_brief"], composition_plan=chain["plan"])
+    spine["reader_context"]["purpose"] = "完成行程并附一个简短的checklist。"
+    spine["reader_context"]["list_policy"] = "lists_allowed"
+
+    prompt = benchmark._production_writer_prompt(spine)
+
+    assert "任务要求简短清单时，清单只保留可直接执行的短动作" in prompt
+    assert "正文已经解释过的理由、边界和备用路线不要在清单重复" in prompt
 
 
 def test_reader_prompt_preserves_declared_citations_and_compacts_job_labels(tmp_path):
