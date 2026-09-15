@@ -806,6 +806,16 @@ def run_owner(
             backend_plan=backend_plan,
             mode=mode,
         )
+    if backend_plan is not None and not backend_plan.is_file():
+        # An explicitly supplied plan path is an initialization input.  Keep
+        # its failure distinct from a missing preflight/held-out dependency so
+        # downstream consumers can tell setup failure from an incomplete lane.
+        return _record_initialization_failure(
+            output_dir.resolve(),
+            root=root.resolve(),
+            error=ValueError(f"backend plan is missing: {backend_plan}"),
+            mode=mode,
+        )
     # The I01 lane is the dependency producer and must remain runnable without
     # a preflight root. Aggregate-only is read-only and also keeps the old
     # behaviour. A normal quality lane with a usable backend plan is blocked

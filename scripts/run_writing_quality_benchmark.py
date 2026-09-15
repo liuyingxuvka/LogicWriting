@@ -499,6 +499,33 @@ def _dependency_judge_row(
     return row
 
 
+def _writer_lane_failure_reason(
+    writers: Sequence[Mapping[str, Any]],
+    *,
+    expected_count: int,
+    indexed_count: int | None = None,
+) -> str | None:
+    """Return a stable reason when the writer lane cannot feed any judge.
+
+    Judges are a downstream batch, so a partial or failed writer lane must
+    block the whole judge dispatch.  Checking only the two writers for the
+    current pair allows an unrelated pair to run after a writer failure and
+    weakens the fail-fast contract.  The optional index count catches duplicate
+    or missing identities that happen to leave the list length unchanged.
+    """
+
+    if len(writers) != int(expected_count):
+        return f"writer_lane_incomplete:{len(writers)}/{int(expected_count)}"
+    if indexed_count is not None and int(indexed_count) != int(expected_count):
+        return f"writer_lane_identity_incomplete:{int(indexed_count)}/{int(expected_count)}"
+    for row in writers:
+        status = str(row.get("status") or "missing_status")
+        if status != "completed":
+            job_id = str(row.get("job_id") or "unknown_writer")
+            return f"writer_lane_failed:{job_id}:{status}"
+    return None
+
+
 def _job_started(row: Mapping[str, Any]) -> bool:
     """Return whether a scheduled child process actually started."""
 
@@ -4002,6 +4029,11 @@ def run_benchmark(
             if isinstance(row, dict):
                 writers.append(row)
                 writer_index[(str(row.get("case_id")), int(row.get("repeat", 0)), str(row.get("version")))] = row
+    writer_lane_failure = _writer_lane_failure_reason(
+        writers,
+        expected_count=planned_writer_count,
+        indexed_count=len(writer_index),
+    )
     judges: list[dict[str, Any]] = []
     judge_dir = output_dir / "artifacts" / "judges"
     if run_judges:
@@ -4012,7 +4044,7 @@ def run_benchmark(
             for case in cases:
                 baseline = writer_index.get((case["case_id"], repeat, "baseline"))
                 repaired = writer_index.get((case["case_id"], repeat, "repaired"))
-                if not baseline or not repaired or baseline.get("status") != "completed" or repaired.get("status") != "completed":
+                if writer_lane_failure is not None or not baseline or not repaired or baseline.get("status") != "completed" or repaired.get("status") != "completed":
                     for judge_index in (1, 2):
                         dependency_job = {
                             "case": case,
@@ -4028,6 +4060,7 @@ def run_benchmark(
                                     f"writer:{case['case_id']}:{repeat}:baseline",
                                     f"writer:{case['case_id']}:{repeat}:repaired",
                                 ],
+                                reason=writer_lane_failure or "dependency_failed",
                             )
                         )
                     continue
@@ -4355,6 +4388,11 @@ def _run_held_out_benchmark(
             if isinstance(row, dict):
                 writers.append(row)
                 writer_index[(str(row.get("case_id")), int(row.get("repeat", 0)), str(row.get("version")))] = row
+    writer_lane_failure = _writer_lane_failure_reason(
+        writers,
+        expected_count=planned_writer_count,
+        indexed_count=len(writer_index),
+    )
     judge_dir = output_dir / "artifacts" / "judges"
     judges: list[dict[str, Any]] = []
     if run_judges:
@@ -4363,7 +4401,7 @@ def _run_held_out_benchmark(
         all_judge_jobs: list[dict[str, Any]] = []
         for case in cases:
             writer = writer_index.get((str(case["case_id"]), 1, HELD_OUT_VERSION))
-            if not writer or writer.get("status") != "completed":
+            if writer_lane_failure is not None or not writer or writer.get("status") != "completed":
                 for judge_index in (1, 2):
                     dependency_job = {
                         "case": case,
@@ -4376,7 +4414,7 @@ def _run_held_out_benchmark(
                         _dependency_judge_row(
                             dependency_job,
                             dependency_writer_job_ids=[f"writer:{case['case_id']}:1:{HELD_OUT_VERSION}"],
-                            reason="dependency_failed",
+                            reason=writer_lane_failure or "dependency_failed",
                         )
                     )
                 continue

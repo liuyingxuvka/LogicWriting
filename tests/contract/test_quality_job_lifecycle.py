@@ -806,6 +806,115 @@ def test_dependency_judge_row_preserves_planned_identity():
     assert row["dependency_status"] == "failed"
 
 
+def test_writer_lane_failure_reason_reports_partial_or_failed_lanes():
+    failed_job = _jobs(1)[0] | {"version": "repaired"}
+    failed = benchmark._job_row(failed_job, "writer", status="failed", terminal_reason="provider_failed")
+
+    assert benchmark._writer_lane_failure_reason(
+        [failed], expected_count=1, indexed_count=1
+    ) == "writer_lane_failed:writer:I01:1:repaired:failed"
+    assert benchmark._writer_lane_failure_reason(
+        [benchmark._job_row(_jobs(1)[0], "writer", status="completed")],
+        expected_count=2,
+        indexed_count=1,
+    ) == "writer_lane_incomplete:1/2"
+
+
+def test_failed_writer_blocks_the_entire_pair_judge_lane(monkeypatch, tmp_path):
+    """A single failed writer must prevent every downstream judge dispatch."""
+
+    root = Path(__file__).resolve().parents[2]
+    calls: list[str] = []
+
+    def fake_initialize(*args, **kwargs):
+        return SimpleNamespace(backend_id="fake-backend"), None, None
+
+    def fake_isolated(jobs, *, role, **kwargs):
+        calls.append(role)
+        if role == "judge":
+            raise AssertionError("a failed writer lane must not dispatch any judge")
+        rows = []
+        for job in jobs:
+            failed = (
+                str(job["case"]["case_id"]) == "I01"
+                and int(job["repeat"]) == 1
+                and str(job["version"]) == "repaired"
+            )
+            rows.append(
+                benchmark._job_row(
+                    job,
+                    role,
+                    status="failed" if failed else "completed",
+                    terminal_reason="provider_failed" if failed else None,
+                )
+            )
+        return rows
+
+    monkeypatch.setattr(benchmark, "_initialize_local_backend", fake_initialize)
+    monkeypatch.setattr(benchmark, "_run_isolated_jobs", fake_isolated)
+
+    result = benchmark.run_benchmark(
+        root,
+        output_dir=tmp_path / "quality-output",
+        backend_plan=root / "tests/fixtures/writing_quality/local-backend-plan.json",
+        run_writers=True,
+        run_judges=True,
+    )
+
+    assert calls == ["writer"]
+    assert result["actual_judge_count"] == 0
+    judges = json.loads((tmp_path / "quality-output" / "judges.json").read_text(encoding="utf-8"))
+    assert len(judges) == result["planned_judge_count"]
+    assert all(row["status"] == "not_started_dependency_failed" for row in judges)
+    assert all(row["terminal_reason"].startswith("writer_lane_failed:") for row in judges)
+
+
+def test_failed_writer_blocks_the_entire_held_out_judge_lane(monkeypatch, tmp_path):
+    """The held-out downstream batch obeys the same fail-fast boundary."""
+
+    root = Path(__file__).resolve().parents[2]
+    calls: list[str] = []
+
+    def fake_initialize(*args, **kwargs):
+        return SimpleNamespace(backend_id="fake-backend"), None, None
+
+    def fake_isolated(jobs, *, role, **kwargs):
+        calls.append(role)
+        if role == "judge":
+            raise AssertionError("a failed held-out writer lane must not dispatch any judge")
+        rows = []
+        for job in jobs:
+            failed = str(job["case"]["case_id"]) == "H-I"
+            rows.append(
+                benchmark._job_row(
+                    job,
+                    role,
+                    status="failed" if failed else "completed",
+                    terminal_reason="provider_failed" if failed else None,
+                )
+            )
+        return rows
+
+    monkeypatch.setattr(benchmark, "_initialize_local_backend", fake_initialize)
+    monkeypatch.setattr(benchmark, "_run_isolated_jobs", fake_isolated)
+
+    result = benchmark.run_benchmark(
+        root,
+        output_dir=tmp_path / "held-out-output",
+        backend_plan=root / "tests/fixtures/writing_quality/local-backend-plan.json",
+        run_writers=True,
+        run_judges=True,
+        mode="held_out",
+    )
+
+    assert calls == ["writer"]
+    assert result["actual_judge_count"] == 0
+    judges = json.loads((tmp_path / "held-out-output" / "judges.json").read_text(encoding="utf-8"))
+    assert len(judges) == result["planned_judge_count"]
+    assert all(row["status"] == "not_started_dependency_failed" for row in judges)
+    assert all(row["terminal_reason"].startswith("writer_lane_failed:") for row in judges)
+
+
 def test_local_provider_error_event_is_preserved_in_judge_row(tmp_path):
     """A terminal provider error remains visible in the per-job receipt."""
 
