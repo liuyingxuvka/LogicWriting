@@ -65,6 +65,17 @@ class LocalExecutionRecordResolver:
         self.expected_cli_version = expected_cli_version
         self.expected_cli_sha256 = expected_cli_sha256
         self.expected_backend_id = expected_backend_id
+        self._bytes_cache: dict[tuple[str, int, int], bytes] = {}
+
+    def _read_cached(self, path: Path) -> bytes:
+        stat = path.stat()
+        key = (str(path), int(stat.st_size), int(stat.st_mtime_ns))
+        cached = self._bytes_cache.get(key)
+        if cached is not None:
+            return cached
+        data = path.read_bytes()
+        self._bytes_cache[key] = data
+        return data
 
     def _path(self, locator: Any, label: str) -> Path:
         if not isinstance(locator, str) or not locator.strip():
@@ -241,7 +252,7 @@ class LocalExecutionRecordResolver:
         ):
             if _sha256_bytes(path.read_bytes()) != completion.get(field):
                 raise ValidationError(f"{field} does not match the captured bytes")
-        prompt_bytes = prompt_path.read_bytes()
+        prompt_bytes = self._read_cached(prompt_path)
         if _sha256_bytes(prompt_bytes) != completion.get("input_prompt_fingerprint"):
             raise ValidationError("input prompt bytes do not match the capture")
         output_bytes = output_path.read_bytes()

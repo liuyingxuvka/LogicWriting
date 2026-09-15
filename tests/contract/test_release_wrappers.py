@@ -816,7 +816,7 @@ def test_frozen_validation_creates_private_attempt_and_passes_owner_context(monk
         require_clean_git=False,
     )
     assert report["status"] == "passed"
-    assert len(calls) == 2
+    assert len(calls) == 1
     owner_attempts = list((receipts / "attempts" / "check.one").iterdir())
     assert len(owner_attempts) == 1
     assert (owner_attempts[0] / "run").is_dir()

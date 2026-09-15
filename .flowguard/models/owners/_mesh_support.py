@@ -166,6 +166,7 @@ FACTORY_MODULES: dict[str, str] = {
     "travel_route_model": "models.owners.travel_route_model.model",
     "investigation_route_model": "models.owners.investigation_route_model.model",
     "academic_route_model": "models.owners.academic_route_model.model",
+    "execution_binding": "models.owners.execution_binding.model",
     "operation_freshness_closure_model": "models.owners.operation_freshness_closure_model.model",
     "release_retirement_model": "models.owners.release_retirement_model.model",
 }
@@ -238,7 +239,12 @@ def _current_hashes_match(payload: Mapping[str, Any], root: Path) -> bool:
 
 
 def receipt_path(model_id: str) -> Path:
-    return CURRENT_ROOT / f"{model_id}.json"
+    configured = os.environ.get("FLOWGUARD_MODEL_RECEIPT_ROOT", "").strip()
+    if not configured:
+        configured = str(CURRENT_ROOT)
+    base = Path(configured).resolve() if configured else CURRENT_ROOT
+    base.mkdir(parents=True, exist_ok=True)
+    return base / f"{model_id}.json"
 
 
 def _payload_fingerprint(payload: Mapping[str, Any]) -> str:
@@ -247,7 +253,17 @@ def _payload_fingerprint(payload: Mapping[str, Any]) -> str:
 
 def load_child_receipt(model_id: str, root: Path | None = None) -> dict[str, Any]:
     root = root or _root()
-    path = root / ".flowguard" / "evidence" / "model-mesh" / "current" / f"{model_id}.json"
+    configured = os.environ.get("FLOWGUARD_MODEL_RECEIPT_ROOT", "").strip()
+    if not configured:
+        configured = str(CURRENT_ROOT)
+    base = Path(configured).resolve() if configured else CURRENT_ROOT
+    path = base / f"{model_id}.json"
+    if not path.is_file():
+        output = os.environ.get("FLOWGUARD_OUTPUT_DIR", "").strip()
+        if output:
+            matches = list(Path(output).resolve().parent.glob(f"{model_id}-*/model-report.json"))
+            if len(matches) == 1:
+                path = matches[0]
     if not path.is_file() or path.is_symlink():
         raise FileNotFoundError(f"current child receipt is missing: {model_id}")
     payload = json.loads(path.read_text(encoding="utf-8"))
@@ -540,7 +556,7 @@ def _write_native_results(model_id: str, status: str, summary: Mapping[str, Any]
     return {"path": str(envelope), "fingerprint": _sha(envelope), "result": result.to_dict()}
 
 
-def _write_receipt(model_id: str, parent_id: str, status: str, summary: Mapping[str, Any], child_payloads: Sequence[Mapping[str, Any]], source_hashes: Mapping[str, str], native: Mapping[str, Any], *, root: Path) -> dict[str, Any]:
+def _write_receipt(model_id: str, parent_id: str, status: str, summary: Mapping[str, Any], child_payloads: Sequence[Mapping[str, Any]], source_hashes: Mapping[str, str], native: Mapping[str, Any], *, root: Path, receipt_root: Path | None = None) -> dict[str, Any]:
     children = tuple(str(item["model_id"]) for item in child_payloads)
     model_fp = _source_sha(root / MODEL_PATHS[model_id])
     evidence_id = f"mesh:{model_id}:{model_fp.split(':', 1)[1][:20]}"
@@ -589,10 +605,9 @@ def _write_receipt(model_id: str, parent_id: str, status: str, summary: Mapping[
         payload["subtree_receipt"] = subtree
     payload["receipt_id"] = f"receipt:{model_id}:{model_fp.split(':', 1)[1][:20]}"
     payload["receipt_fingerprint"] = _payload_fingerprint(payload)
-    current = root / ".flowguard" / "evidence" / "model-mesh" / "current"
-    receipts = root / ".flowguard" / "evidence" / "model-mesh" / "receipts"
-    current.mkdir(parents=True, exist_ok=True)
-    receipts.mkdir(parents=True, exist_ok=True)
+    configured = os.environ.get("FLOWGUARD_MODEL_RECEIPT_ROOT", "").strip()
+    current = Path(receipt_root).resolve() if receipt_root is not None else (Path(configured).resolve() if configured else root / ".flowguard" / "evidence" / "model-mesh" / "current")
+    receipts = current.parent / "receipts"
     encoded = json.dumps(payload, ensure_ascii=False, sort_keys=True, indent=2) + "\n"
     immutable = receipts / f"{payload['receipt_fingerprint'].split(':', 1)[1]}.json"
     if immutable.exists() and immutable.read_text(encoding="utf-8") != encoded:

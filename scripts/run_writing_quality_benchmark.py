@@ -1215,6 +1215,12 @@ def _run_isolated_jobs(
         for job_id, state in list(active.items()):
             process = state["process"]
             base = state["base"]
+            # A fail-fast cancellation can remove a sibling from ``active``
+            # while this snapshot of the loop is already in progress.  The
+            # sibling's terminal row is authoritative; never admit a late
+            # marker or candidate by transitioning that row back to running.
+            if job_id not in active:
+                continue
             marker_path = state["marker_path"]
             try:
                 process_running = process.poll() is None
@@ -1266,7 +1272,7 @@ def _run_isolated_jobs(
                 terminal_status = "not_started_dependency_failed"
                 base["dependency_failure_reason"] = state.get("marker_validation_error") or "startup_timeout"
                 base["dependency_status"] = "failed"
-            elif process_running and base.get("dependency_status") == "starting" and not isinstance(process, _SUBPROCESS_POPEN_TYPE) and dispatch_elapsed >= per_job_timeout:
+            elif process_running and base.get("dependency_status") == "starting" and not isinstance(process, _SUBPROCESS_POPEN_TYPE) and dispatch_elapsed >= per_job_timeout and not state.get("marker_admitted"):
                 # In-memory process doubles do not expose the child bootstrap
                 # marker.  Keep their direct hard timeout for contract tests;
                 # real subprocesses are governed by the startup watchdog.

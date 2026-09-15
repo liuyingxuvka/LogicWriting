@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 from pathlib import Path
+import sys
 from typing import Any, Iterator
 
 from logic_writing_model_root import build_logic_writing_model_snapshot
@@ -71,11 +72,65 @@ def logic_writing_root_builder(
         (revision_plan, "build_manifest_model_system_snapshot", revision_plan.build_manifest_model_system_snapshot),
         (self_path_quality, "build_manifest_model_system_snapshot", self_path_quality.build_manifest_model_system_snapshot),
     ]
+    # Child-bound aggregate verification already receives the exact immutable
+    # child set from the model-regression parent.  Scope the canonical-store
+    # lookup to that set when the shared verifier is called without an
+    # explicit list; otherwise unrelated historical receipts can poison the
+    # aggregate's currentness result with an environment-metadata error.  The
+    # shared API exposes this optional boundary, so this target adapter keeps
+    # the repair local while preserving the generic FlowGuard package.
+    original_child_context = owner_evidence.build_child_bound_owner_receipt_context
+
+    def scoped_child_context(
+        current: Any,
+        receipt: Any,
+        root: str | Path,
+        receipt_root: str | Path,
+        *,
+        child_receipts: Any,
+        child_verification_results: Any,
+        receipt_store_receipt_ids: Any = (),
+    ) -> Any:
+        scoped_ids = tuple(receipt_store_receipt_ids)
+        if not scoped_ids:
+            scoped_ids = (
+                receipt.receipt_id,
+                *(item.receipt_id for item in child_receipts),
+            )
+        return original_child_context(
+            current,
+            receipt,
+            root,
+            receipt_root,
+            child_receipts=child_receipts,
+            child_verification_results=child_verification_results,
+            receipt_store_receipt_ids=scoped_ids,
+        )
+
+    owner_evidence.build_child_bound_owner_receipt_context = scoped_child_context
+    # LogicWriting's executable model providers import the target-local
+    # ``models`` package (for example ``from models.common import ...``).
+    # Native model execution exposes ``.flowguard`` as the package root, but
+    # the generic self-path-quality loader only adds the repository root and
+    # the individual model directory.  Keep this import-path repair local to
+    # the target adapter and restore it with the other temporary bindings.
+    # The adapter is always loaded from the LogicWriting repository, whose
+    # current working directory is not guaranteed to be that repository.
+    target_model_root = str((Path(__file__).resolve().parents[2] / ".flowguard").resolve())
+    added_model_root = target_model_root not in sys.path
+    if added_model_root:
+        sys.path.insert(0, target_model_root)
     for module, name, original in refs:
         setattr(module, name, target)
     try:
         yield
     finally:
+        owner_evidence.build_child_bound_owner_receipt_context = original_child_context
+        if added_model_root:
+            try:
+                sys.path.remove(target_model_root)
+            except ValueError:
+                pass
         for module, name, original in refs:
             setattr(module, name, original)
 

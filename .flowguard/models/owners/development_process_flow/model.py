@@ -9,6 +9,8 @@ Run: python .flowguard/verification/owners/development_process_flow/run_checks.p
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from flowguard import (
     PROCESS_ARTIFACT_CODE,
     PROCESS_ARTIFACT_BUG_REPAIR_CLOSURE,
@@ -50,7 +52,7 @@ def proof_artifact(artifact_id: str, *covered: str) -> ProofArtifactRef:
     # Keep the positive lifecycle proof grounded in a checked-in fixture.  The
     # previous ``tmp/...`` path made the supposedly healthy plan fail whenever
     # the model was run from a clean checkout because no result bytes existed.
-    result_path = "tests/fixtures/flowguard/proof_unit_pass.json"
+    result_path = str((Path(__file__).resolve().parents[4] / "tests" / "fixtures" / "flowguard" / "proof_unit_pass.json").resolve())
     return ProofArtifactRef(
         artifact_id,
         producer_route="test_mesh_maintenance",
@@ -67,7 +69,7 @@ def proof_artifact(artifact_id: str, *covered: str) -> ProofArtifactRef:
     )
 
 
-def artifacts(code_version: str = "2", test_version: str = "1", requirement_version: str = "1"):
+def artifacts(code_version: str = "1", test_version: str = "1", requirement_version: str = "1"):
     return (
         ProcessArtifact("requirements.checkout", PROCESS_ARTIFACT_REQUIREMENT, requirement_version),
         ProcessArtifact(
@@ -90,7 +92,7 @@ def routine_plan() -> DevelopmentProcessPlan:
     return DevelopmentProcessPlan(
         "checkout-development-lifecycle",
         require_proof_artifacts=True,
-        artifacts=artifacts(code_version="2"),
+        artifacts=artifacts(code_version="1"),
         actions=(
             ProcessAction("edit-code", writes_artifacts=("code.checkout",)),
             ProcessAction("run-unit", produced_evidence_ids=("unit-pass",)),
@@ -104,7 +106,7 @@ def routine_plan() -> DevelopmentProcessPlan:
                 status=PROCESS_EVIDENCE_PASSED,
                 covers_artifacts=("code.checkout",),
                 verifier_artifacts=("tests.checkout",),
-                covered_versions={"code.checkout": "2", "tests.checkout": "1"},
+                covered_versions={"code.checkout": "1", "tests.checkout": "1"},
                 validation_requirement_ids=("unit-current",),
                 produced_by_action_id="run-unit",
                 command="python -m unittest tests.test_checkout",

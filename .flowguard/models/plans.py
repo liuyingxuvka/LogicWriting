@@ -243,6 +243,7 @@ def _topology_hazard_plan(model_id, workflow, initial_states, external_inputs):
         "academic_route_model": "C16",
         "operation_freshness_closure_model": "C08",
         "release_retirement_model": "C10",
+        "execution_binding": "C07-execution-binding",
     }[model_id]
     proof_ids = (
         f"flowguard:function-contracts:{model_id}",

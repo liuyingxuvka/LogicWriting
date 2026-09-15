@@ -74,6 +74,16 @@ def _utc_now() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 
+def _text(value: str | bytes | None) -> str:
+    """Normalize partial subprocess output for a durable terminal receipt."""
+
+    if value is None:
+        return ""
+    if isinstance(value, bytes):
+        return value.decode("utf-8", errors="replace")
+    return value
+
+
 def _load_contract(path: Path) -> dict[str, Any]:
     value = yaml.safe_load(path.read_text(encoding="utf-8"))
     if not isinstance(value, dict) or not isinstance(value.get("checks"), list):
@@ -470,21 +480,27 @@ def _terminate_and_confirm(process: subprocess.Popen[str]) -> tuple[bool, list[i
                 check=False,
             )
         except (OSError, subprocess.TimeoutExpired):
-            return False, ids or []
-        process.wait(timeout=20)
+            return False, ids or [process.pid]
+        try:
+            process.wait(timeout=20)
+        except (OSError, subprocess.TimeoutExpired):
+            return False, ids or [process.pid]
         if ids is None:
-            return False, []
+            return False, [process.pid]
         remaining = []
         for pid in ids:
-            probe = subprocess.run(
-                [_resolve_executable("tasklist"), "/FI", f"PID eq {pid}", "/FO", "CSV", "/NH"],
-                text=True,
-                encoding="utf-8",
-                errors="replace",
-                capture_output=True,
-                timeout=10,
-                check=False,
-            )
+            try:
+                probe = subprocess.run(
+                    [_resolve_executable("tasklist"), "/FI", f"PID eq {pid}", "/FO", "CSV", "/NH"],
+                    text=True,
+                    encoding="utf-8",
+                    errors="replace",
+                    capture_output=True,
+                    timeout=10,
+                    check=False,
+                )
+            except (OSError, subprocess.TimeoutExpired):
+                return False, ids
             if probe.returncode == 0 and not probe.stdout.lstrip().startswith("INFO:") and f'"{pid}"' in probe.stdout:
                 remaining.append(pid)
         return not remaining, remaining
@@ -537,10 +553,30 @@ def _execute(
             "remaining_process_ids": [],
             "elapsed_seconds": round(time.monotonic() - started, 3),
         }
-    except subprocess.TimeoutExpired:
-        confirmed, remaining = _terminate_and_confirm(process)
-        stdout, stderr = process.communicate(timeout=10)
-        return {
+    except subprocess.TimeoutExpired as timeout_exc:
+        stdout = _text(timeout_exc.stdout)
+        stderr = _text(timeout_exc.stderr)
+        cleanup_error: str | None = None
+        try:
+            confirmed, remaining = _terminate_and_confirm(process)
+        except Exception as exc:  # pragma: no cover - defensive receipt path
+            confirmed = False
+            remaining = [int(getattr(process, "pid", 0) or 0)]
+            cleanup_error = f"{type(exc).__name__}: {exc}"
+        pipe_drain_timeout = False
+        try:
+            tail_stdout, tail_stderr = process.communicate(timeout=10)
+            stdout += _text(tail_stdout)
+            stderr += _text(tail_stderr)
+        except subprocess.TimeoutExpired as drain_exc:
+            stdout += _text(drain_exc.stdout)
+            stderr += _text(drain_exc.stderr)
+            pipe_drain_timeout = True
+            confirmed = False
+        except Exception as exc:  # pragma: no cover - defensive receipt path
+            cleanup_error = cleanup_error or f"pipe_drain:{type(exc).__name__}: {exc}"
+            confirmed = False
+        result = {
             "exit_code": None,
             "stdout": stdout,
             "stderr": stderr,
@@ -549,6 +585,11 @@ def _execute(
             "remaining_process_ids": remaining,
             "elapsed_seconds": round(time.monotonic() - started, 3),
         }
+        if cleanup_error is not None:
+            result["cleanup_error"] = cleanup_error
+        if pipe_drain_timeout:
+            result["pipe_drain_timeout"] = True
+        return result
 
 
 def _read_json(path: Path) -> Any:
@@ -984,6 +1025,17 @@ def run_validation(
                     timeout=int(check.get("timeout_seconds", 300)),
                     env=owner_environment,
                 )
+            except subprocess.TimeoutExpired as exc:
+                result = {
+                    "exit_code": None,
+                    "stdout": _text(getattr(exc, "stdout", None)),
+                    "stderr": f"owner_execution_timeout:{_text(getattr(exc, 'stderr', None))}",
+                    "timed_out": True,
+                    "cleanup_confirmed": False,
+                    "remaining_process_ids": [],
+                    "elapsed_seconds": 0.0,
+                    "cleanup_error": "unhandled_timeout_from_owner_executor",
+                }
             except (OSError, ValueError, RuntimeError) as exc:
                 result = {
                     "exit_code": None,
@@ -1008,7 +1060,21 @@ def run_validation(
                 "elapsed_seconds": result["elapsed_seconds"],
                 "stdout_hash": _file_hash(stdout_path),
                 "stderr_hash": _file_hash(stderr_path),
+                # This artifact is consumed by the read-only mesh audit.  Its
+                # semantic terminal status must be persisted explicitly so a
+                # consumer does not have to infer it from transport fields.
+                "status": (
+                    "passed"
+                    if result["exit_code"] == int((check.get("expected") or {}).get("exit_code", 0))
+                    and not result["timed_out"]
+                    and result["cleanup_confirmed"]
+                    else "failed"
+                ),
             }
+            if result.get("cleanup_error") is not None:
+                result_payload["cleanup_error"] = str(result["cleanup_error"])
+            if result.get("pipe_drain_timeout"):
+                result_payload["pipe_drain_timeout"] = True
             result_payload["result_fingerprint"] = _hash(result_payload)
             result_path = attempt_root / "result.json"
             _write_json(result_path, result_payload)
@@ -1037,6 +1103,8 @@ def run_validation(
                 "result_fingerprint": result_payload["result_fingerprint"],
                 "timed_out": result["timed_out"],
                 "cleanup_confirmed": result["cleanup_confirmed"],
+                "cleanup_error": result.get("cleanup_error"),
+                "pipe_drain_timeout": bool(result.get("pipe_drain_timeout", False)),
                 "owner_context": {
                     "owner_id": check_id,
                     "attempt_root": attempt_root.relative_to(receipts).as_posix(),
@@ -1089,32 +1157,23 @@ def run_validation(
         index_path = receipts / "index.json"
         _write_json(index_path, summary)
 
-        mesh = _execute(
-            [sys.executable, ".flowguard/test_mesh/run_checks.py", "--receipts", str(index_path), "--json"],
-            cwd=root,
-            timeout=300,
-        )
-        mesh_path = receipts / "test-mesh-terminal.json"
-        if mesh["exit_code"] != 0 or mesh["timed_out"] or not mesh["cleanup_confirmed"]:
-            _write_json(
-                mesh_path,
-                {
-                    "status": "failed",
-                    "exit_code": mesh["exit_code"],
-                    "timed_out": mesh["timed_out"],
-                    "cleanup_confirmed": mesh["cleanup_confirmed"],
-                    "stdout_hash": _hash(mesh["stdout"]),
-                    "stderr_hash": _hash(mesh["stderr"]),
-                },
-            )
-            raise RuntimeError("test_mesh_terminal_receipt_review_failed")
-        mesh_payload = json.loads(mesh["stdout"])
-        _write_json(mesh_path, mesh_payload)
-        summary["test_mesh"] = {
-            "status": "passed",
-            "result_path": mesh_path.relative_to(receipts).as_posix(),
-            "result_hash": _hash(mesh_payload),
-        }
+        mesh_owner = "check.testmesh.plan"
+        mesh_receipt = index.get(mesh_owner)
+        if mesh_receipt is not None:
+            if mesh_receipt.get("status") != "passed":
+                raise RuntimeError("test_mesh_contract_owner_failed")
+            mesh_result_path = _safe_evidence_path(receipts, mesh_receipt.get("result_path"), field="test_mesh.owner_result_path")
+            mesh_payload = _read_json(mesh_result_path)
+            if not isinstance(mesh_payload, Mapping) or mesh_payload.get("status") != "passed":
+                raise RuntimeError("test_mesh_contract_owner_result_not_passed")
+            summary["test_mesh"] = {
+                "status": "passed",
+                "owner_check_id": mesh_owner,
+                "result_path": mesh_receipt.get("result_path"),
+                "result_hash": _hash(mesh_payload),
+            }
+        elif "test_mesh" in contract:
+            raise RuntimeError("test_mesh_contract_owner_missing_or_failed")
         summary["index_hash"] = _hash({key: value for key, value in summary.items() if key != "index_hash"})
         _write_json(index_path, summary)
         return summary

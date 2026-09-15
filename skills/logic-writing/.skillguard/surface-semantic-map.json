@@ -2,7 +2,7 @@
   "schema_version": "skillguard.surface_semantic_map.v1",
   "map_id": "map:logic-writing:surface-semantics",
   "target_skill_id": "logic-writing",
-  "source_discovery_fingerprint": "sha256:3e538d9a236ca954dc8545ba78ec73cbf3659c2169ba3af7867b44982d5daac2",
+  "source_discovery_fingerprint": "sha256:35a74638f9194678be4dfd66a931417656913b3001610e39e847c4ca12af8426",
   "full_surface_ids": [
     "api:routes/academic/scripts/validate_academic_artifact.py:validate_academic_artifact",
     "api:routes/fiction/guard-model/verify.py:GuardModelContractError",
@@ -158,6 +158,7 @@
     "api:routes/fiction/scripts/run_guard_lifecycle_regression.py:mutate_bundle",
     "api:routes/fiction/scripts/run_guard_lifecycle_regression.py:parse_json",
     "api:routes/fiction/scripts/run_guard_lifecycle_regression.py:run_argv",
+    "api:routes/fiction/scripts/run_guard_lifecycle_regression.py:run_closure_in_process",
     "api:routes/fiction/scripts/run_guard_lifecycle_regression.py:script",
     "api:routes/fiction/scripts/run_guard_lifecycle_regression.py:sha256_file",
     "api:routes/fiction/scripts/run_guard_lifecycle_regression.py:static_cases",
@@ -656,6 +657,7 @@
     "component:routes/fiction/scripts/evidence_identity.py",
     "component:routes/fiction/scripts/guard_handoff_check.py",
     "component:routes/fiction/scripts/run_route_regression.py",
+    "component:routes/fiction/scripts/run_story_model_mesh_regression.py",
     "component:routes/fiction/scripts/storyline_route_check.py",
     "component:routes/travel/scripts/fixture_mutation.py",
     "component:routes/travel/scripts/travel_contract.py",
@@ -718,6 +720,7 @@
     "effect:routes/fiction/scripts/promise_payoff_check.py:normalize_code",
     "effect:routes/fiction/scripts/run_guard_lifecycle_regression.py:build_guard_check",
     "effect:routes/fiction/scripts/run_guard_lifecycle_regression.py:check_for_surface",
+    "effect:routes/fiction/scripts/run_guard_lifecycle_regression.py:dynamic_matrix_cases",
     "effect:routes/fiction/scripts/run_guard_lifecycle_regression.py:mutate_bundle",
     "effect:routes/fiction/scripts/run_guard_lifecycle_regression.py:run_argv",
     "effect:routes/fiction/scripts/run_guard_lifecycle_regression.py:write_json",
@@ -958,6 +961,8 @@
     "fault:scripts/validate_research_packet.py:assemble_research_packet",
     "fault:scripts/validate_research_packet.py:validate_research_packet",
     "fault:scripts/validate_source_registry.py:validate_source_registry",
+    "provider:scripts/execution_record_resolver.py:LocalExecutionRecordResolver",
+    "provider:scripts/local_execution_backend.py:LocalCodexBackend",
     "provider:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
     "provider:scripts/production_reader_pipeline.py:prepare_production_reader_input",
     "provider:scripts/provider_preflight.py:preflight",
@@ -966,6 +971,7 @@
     "provider:scripts/schema_validation.py:validate_schema",
     "provider:scripts/validate_adapter_result.py:validate_adapter_result",
     "recovery:scripts/build_reader_repair.py:validate_request",
+    "recovery:scripts/execution_record_resolver.py:LocalExecutionRecordResolver",
     "recovery:scripts/local_execution_backend.py:LocalCodexBackend",
     "recovery:scripts/reader_pipeline.py:build_repair_request",
     "recovery:scripts/reader_pipeline.py:record_repair_result",
@@ -1086,7 +1092,6 @@
     "ui:routes/fiction/guard-model/verify.py:validate_bundle",
     "ui:routes/fiction/scripts/installed_parity_check.py:build_report",
     "ui:routes/fiction/scripts/installed_parity_check.py:select_projection",
-    "ui:scripts/execution_record_resolver.py:LocalExecutionRecordResolver",
     "ui:scripts/local_execution_backend.py:LocalCodexBackend",
     "ui:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
     "ui:scripts/production_reader_pipeline.py:build_reader_spine",
@@ -3175,6 +3180,16 @@
     },
     {
       "surface_id": "api:routes/fiction/scripts/run_guard_lifecycle_regression.py:run_argv",
+      "model_obligation_ids": [
+        "obligation:logic-writing:fiction-native"
+      ],
+      "rule_ids": [
+        "decision:logic-writing:fiction-native"
+      ],
+      "decision": "explicit-author-rule"
+    },
+    {
+      "surface_id": "api:routes/fiction/scripts/run_guard_lifecycle_regression.py:run_closure_in_process",
       "model_obligation_ids": [
         "obligation:logic-writing:fiction-native"
       ],
@@ -8670,6 +8685,16 @@
       "decision": "explicit-author-component-group-closure"
     },
     {
+      "surface_id": "component:routes/fiction/scripts/run_story_model_mesh_regression.py",
+      "model_obligation_ids": [
+        "obligation:logic-writing:fiction-native"
+      ],
+      "rule_ids": [
+        "decision:logic-writing:fiction-native"
+      ],
+      "decision": "explicit-author-component-group-closure"
+    },
+    {
       "surface_id": "component:routes/fiction/scripts/storyline_route_check.py",
       "model_obligation_ids": [
         "obligation:logic-writing:fiction-native"
@@ -9399,6 +9424,16 @@
     },
     {
       "surface_id": "effect:routes/fiction/scripts/run_guard_lifecycle_regression.py:check_for_surface",
+      "model_obligation_ids": [
+        "obligation:logic-writing:fiction-native"
+      ],
+      "rule_ids": [
+        "decision:logic-writing:fiction-native"
+      ],
+      "decision": "explicit-author-component-group-closure"
+    },
+    {
+      "surface_id": "effect:routes/fiction/scripts/run_guard_lifecycle_regression.py:dynamic_matrix_cases",
       "model_obligation_ids": [
         "obligation:logic-writing:fiction-native"
       ],
@@ -12158,6 +12193,30 @@
       "decision": "explicit-author-component-group-closure"
     },
     {
+      "surface_id": "provider:scripts/execution_record_resolver.py:LocalExecutionRecordResolver",
+      "model_obligation_ids": [
+        "obligation:logic-writing:final-closure",
+        "obligation:logic-writing:reader-actual-artifact"
+      ],
+      "rule_ids": [
+        "decision:logic-writing:final-closure",
+        "decision:logic-writing:reader-actual-artifact"
+      ],
+      "decision": "explicit-author-component-group-closure"
+    },
+    {
+      "surface_id": "provider:scripts/local_execution_backend.py:LocalCodexBackend",
+      "model_obligation_ids": [
+        "obligation:logic-writing:final-closure",
+        "obligation:logic-writing:reader-actual-artifact"
+      ],
+      "rule_ids": [
+        "decision:logic-writing:final-closure",
+        "decision:logic-writing:reader-actual-artifact"
+      ],
+      "decision": "explicit-author-component-group-closure"
+    },
+    {
       "surface_id": "provider:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
       "model_obligation_ids": [
         "obligation:logic-writing:final-closure",
@@ -12266,6 +12325,18 @@
       "rule_ids": [
         "decision:logic-writing:reader-actual-artifact",
         "decision:logic-writing:shared-writing"
+      ],
+      "decision": "explicit-author-component-group-closure"
+    },
+    {
+      "surface_id": "recovery:scripts/execution_record_resolver.py:LocalExecutionRecordResolver",
+      "model_obligation_ids": [
+        "obligation:logic-writing:final-closure",
+        "obligation:logic-writing:reader-actual-artifact"
+      ],
+      "rule_ids": [
+        "decision:logic-writing:final-closure",
+        "decision:logic-writing:reader-actual-artifact"
       ],
       "decision": "explicit-author-component-group-closure"
     },
@@ -13546,18 +13617,6 @@
       "decision": "explicit-author-rule"
     },
     {
-      "surface_id": "ui:scripts/execution_record_resolver.py:LocalExecutionRecordResolver",
-      "model_obligation_ids": [
-        "obligation:logic-writing:final-closure",
-        "obligation:logic-writing:reader-actual-artifact"
-      ],
-      "rule_ids": [
-        "decision:logic-writing:final-closure",
-        "decision:logic-writing:reader-actual-artifact"
-      ],
-      "decision": "explicit-author-rule"
-    },
-    {
       "surface_id": "ui:scripts/local_execution_backend.py:LocalCodexBackend",
       "model_obligation_ids": [
         "obligation:logic-writing:final-closure",
@@ -13961,6 +14020,7 @@
         "api:routes/fiction/scripts/run_guard_lifecycle_regression.py:mutate_bundle",
         "api:routes/fiction/scripts/run_guard_lifecycle_regression.py:parse_json",
         "api:routes/fiction/scripts/run_guard_lifecycle_regression.py:run_argv",
+        "api:routes/fiction/scripts/run_guard_lifecycle_regression.py:run_closure_in_process",
         "api:routes/fiction/scripts/run_guard_lifecycle_regression.py:script",
         "api:routes/fiction/scripts/run_guard_lifecycle_regression.py:sha256_file",
         "api:routes/fiction/scripts/run_guard_lifecycle_regression.py:static_cases",
@@ -14261,6 +14321,7 @@
         "component:routes/fiction/scripts/evidence_identity.py",
         "component:routes/fiction/scripts/guard_handoff_check.py",
         "component:routes/fiction/scripts/run_route_regression.py",
+        "component:routes/fiction/scripts/run_story_model_mesh_regression.py",
         "component:routes/fiction/scripts/storyline_route_check.py",
         "component:scripts/reader_pipeline.py",
         "config:.skillguard/contract-source.json",
@@ -14272,6 +14333,7 @@
         "effect:routes/fiction/scripts/promise_payoff_check.py:normalize_code",
         "effect:routes/fiction/scripts/run_guard_lifecycle_regression.py:build_guard_check",
         "effect:routes/fiction/scripts/run_guard_lifecycle_regression.py:check_for_surface",
+        "effect:routes/fiction/scripts/run_guard_lifecycle_regression.py:dynamic_matrix_cases",
         "effect:routes/fiction/scripts/run_guard_lifecycle_regression.py:mutate_bundle",
         "effect:routes/fiction/scripts/run_guard_lifecycle_regression.py:run_argv",
         "effect:routes/fiction/scripts/run_guard_lifecycle_regression.py:write_json",
@@ -14586,9 +14648,12 @@
         "fault:scripts/receipt_authority.py:validate_receipt",
         "fault:scripts/receipt_store.py:store_receipt",
         "fault:scripts/validate_judgment_receipt.py:validate_judgment_receipt",
+        "provider:scripts/execution_record_resolver.py:LocalExecutionRecordResolver",
+        "provider:scripts/local_execution_backend.py:LocalCodexBackend",
         "provider:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
         "provider:scripts/production_reader_pipeline.py:prepare_production_reader_input",
         "provider:scripts/reader_projection_conformance.py:ReaderProjectionReplayAdapter",
+        "recovery:scripts/execution_record_resolver.py:LocalExecutionRecordResolver",
         "recovery:scripts/local_execution_backend.py:LocalCodexBackend",
         "recovery:scripts/reader_receipts.py:commit_repair_result_receipt",
         "script:scripts/derive_closure.py",
@@ -14596,7 +14661,6 @@
         "script:scripts/receipt_store.py",
         "script:scripts/validate_judgment_receipt.py",
         "template:references/shared/closure.md",
-        "ui:scripts/execution_record_resolver.py:LocalExecutionRecordResolver",
         "ui:scripts/local_execution_backend.py:LocalCodexBackend",
         "ui:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
         "ui:scripts/production_reader_pipeline.py:build_reader_spine",
@@ -14929,12 +14993,15 @@
         "fault:scripts/schema_validation.py:assert_schema_valid",
         "fault:scripts/text_extent.py:measure_text",
         "fault:scripts/validate_judgment_receipt.py:validate_judgment_receipt",
+        "provider:scripts/execution_record_resolver.py:LocalExecutionRecordResolver",
+        "provider:scripts/local_execution_backend.py:LocalCodexBackend",
         "provider:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
         "provider:scripts/production_reader_pipeline.py:prepare_production_reader_input",
         "provider:scripts/reader_projection_conformance.py:ReaderProjectionReplayAdapter",
         "provider:scripts/schema_validation.py:SchemaRuntimeConfigurationError",
         "provider:scripts/schema_validation.py:validate_schema",
         "recovery:scripts/build_reader_repair.py:validate_request",
+        "recovery:scripts/execution_record_resolver.py:LocalExecutionRecordResolver",
         "recovery:scripts/local_execution_backend.py:LocalCodexBackend",
         "recovery:scripts/reader_pipeline.py:build_repair_request",
         "recovery:scripts/reader_pipeline.py:record_repair_result",
@@ -14955,7 +15022,6 @@
         "template:references/shared/human-writing.md",
         "template:references/shared/reader-brief.md",
         "template:references/shared/writing-contract.md",
-        "ui:scripts/execution_record_resolver.py:LocalExecutionRecordResolver",
         "ui:scripts/local_execution_backend.py:LocalCodexBackend",
         "ui:scripts/production_reader_pipeline.py:InstalledResearchGuardProvider",
         "ui:scripts/production_reader_pipeline.py:build_reader_spine",
@@ -15515,5 +15581,5 @@
     }
   ],
   "claim_boundary": "The inventory binds the current LogicWriting skill-root source observation to explicit target-owned obligations and checks. It proves neither domain correctness, provider quality, installation currentness, release, nor future prose behavior.",
-  "map_hash": "sha256:7008ba226f2ed7c00be4a6c5b11ace3a4443b45fa635e22d3827fa3e3f9ef50b"
+  "map_hash": "sha256:209c9a7e1d5ed2a6a6baee7c1785b835de7d282725b0d05ccee8bc64fb18fe91"
 }
