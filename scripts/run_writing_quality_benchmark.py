@@ -1689,6 +1689,7 @@ def _production_request_and_boundaries(case: Mapping[str, Any]) -> tuple[dict[st
     revision = case.get("revision_input")
     task = str(case.get("task") or "")
     constraints = str(case.get("constraints") or "")
+    request_text = f"{task}\n{constraints}"
     extent_match = re.search(r"(\d+)\s*[—–-]\s*(\d+)", task)
     minimum, maximum = (int(extent_match.group(1)), int(extent_match.group(2))) if extent_match else (120, 600)
     if maximum < minimum:
@@ -1735,7 +1736,7 @@ def _production_request_and_boundaries(case: Mapping[str, Any]) -> tuple[dict[st
         },
         "extent": {"unit": "words" if language.casefold().startswith("en") else "characters", "minimum": minimum, "target": target, "maximum": maximum},
         "artifact_format": "markdown",
-        "citation_policy": "inline" if ("引用" in task or "cite" in task.casefold()) else "none",
+        "citation_policy": "inline" if re.search(r"(?:引用|引文|cite|citation)", request_text, re.IGNORECASE) else "none",
         "table_policy": "allowed" if table_requested else "forbidden",
         "required_content": ["完成任务并让正文按因果或场景关系向前推进"],
         "forbidden_content": ["内部工作流", "模型标签", "评分过程"],
@@ -1792,7 +1793,7 @@ def _production_request_and_boundaries(case: Mapping[str, Any]) -> tuple[dict[st
             "marker": f"[{material_id}]",
             "placement": "same_paragraph",
         }
-        for material_id in _requested_citation_material_ids(task, material_records)
+        for material_id in _requested_citation_material_ids(request_text, material_records)
     ]
     boundaries = {
         "content_units": [{

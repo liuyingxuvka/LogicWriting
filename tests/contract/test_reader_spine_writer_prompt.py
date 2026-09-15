@@ -189,6 +189,26 @@ def test_production_boundaries_compile_only_explicit_citation_ranges():
     assert all(row["placement"] == "same_paragraph" for row in boundaries["citation_duties"])
 
 
+def test_production_boundaries_honor_explicit_citations_in_constraints():
+    benchmark = _load_benchmark()
+    case = {
+        "case_id": "A04",
+        "route": "academic-writing",
+        "language": "zh-CN",
+        "task": "写一段有边界的概念说明。",
+        "constraints": "引用[L01]并把引文放在使用该材料的同段。",
+        "material_records": [
+            {"id": "L01", "text": "第一条材料。"},
+            {"id": "L02", "text": "未被点名的材料。"},
+        ],
+    }
+
+    request, boundaries, _token = benchmark._production_request_and_boundaries(case)
+
+    assert request["reader_intent"]["citation_policy"] == "inline"
+    assert [row["marker"] for row in boundaries["citation_duties"]] == ["[L01]"]
+
+
 def test_production_boundaries_recognize_a_requested_table_noun():
     benchmark = _load_benchmark()
     case = {
