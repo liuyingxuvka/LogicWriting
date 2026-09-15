@@ -26,7 +26,7 @@ from pathlib import Path
 import re
 import subprocess
 import tempfile
-from typing import Any, Mapping
+from typing import Any, Iterable, Mapping
 
 from _common import (
     ValidationError,
@@ -2226,6 +2226,11 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
     context = spine["reader_context"]
     mode = str(spine["route_guidance"].get("mode") or "")
     purpose = str(context.get("purpose") or "")
+    citation_markers = {
+        str(row.get("marker"))
+        for row in spine["reader_constraints"].get("citation_rules", [])
+        if isinstance(row, Mapping) and str(row.get("marker") or "").strip()
+    }
     paragraphs: list[str] = []
 
     paragraphs.append(
@@ -2233,18 +2238,18 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
         "不要复述内部字段、来源编号、执行记录或逐条清点材料，同一作用的内容合并表达，标为省略的内容不写。"
     )
 
-    root_question = _prompt_clean_text(spine["root_question"])
-    root_conclusion = _prompt_clean_text(spine["root_conclusion"])
-    opening_job = _prompt_clean_text(spine["opening_job"])
-    conclusion_job = _prompt_clean_text(spine["conclusion_job"])
+    root_question = _prompt_clean_text(spine["root_question"], preserve_citations=citation_markers)
+    root_conclusion = _prompt_clean_text(spine["root_conclusion"], preserve_citations=citation_markers)
+    opening_job = _prompt_job_clause("开头", spine["opening_job"], citation_markers)
+    conclusion_job = _prompt_job_clause("结尾", spine["conclusion_job"], citation_markers)
     paragraphs.append(
         f"文章要回答“{root_question}”，并抵达“{root_conclusion}”。"
         f"开头{opening_job}结尾{conclusion_job}"
     )
 
-    audience = _prompt_clean_text(context.get("audience"))
-    context_purpose = _prompt_clean_text(purpose).rstrip("。！？!?；; ")
-    artifact_form = _prompt_clean_text(spine.get("artifact_form"))
+    audience = _prompt_clean_text(context.get("audience"), preserve_citations=citation_markers)
+    context_purpose = _prompt_clean_text(purpose, preserve_citations=citation_markers).rstrip("。！？!?；; ")
+    artifact_form = _prompt_clean_text(spine.get("artifact_form"), preserve_citations=citation_markers)
     context_clause = ""
     if audience and context_purpose:
         context_clause = f"面向{audience}，完成{context_purpose}"
@@ -2258,16 +2263,16 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
     units = spine["major_units"]
     unit_fragments: list[str] = []
     for index, unit in enumerate(units):
-        title = _prompt_clean_text(unit["title"])
-        job = _prompt_clean_text(unit["reader_job"])
-        incoming = _prompt_clean_text(unit["incoming_reader_state"])
-        outgoing = _prompt_clean_text(unit["forward_link"]["outgoing_reader_state"])
+        title = _prompt_clean_text(unit["title"], preserve_citations=citation_markers)
+        job = _prompt_clean_text(unit["reader_job"], preserve_citations=citation_markers)
+        incoming = _prompt_clean_text(unit["incoming_reader_state"], preserve_citations=citation_markers)
+        outgoing = _prompt_clean_text(unit["forward_link"]["outgoing_reader_state"], preserve_citations=citation_markers)
         prefix = "先处理" if index == 0 else ("最后收束" if index == len(units) - 1 else "随后转入")
-        fragment = f"{prefix}“{title}”：{_prompt_core(job)}"
+        fragment = f"{prefix}“{title}”：{_prompt_core(job, citation_markers)}"
         if incoming and outgoing:
-            fragment += f"，让读者从“{_prompt_core(incoming)}”走到“{_prompt_core(outgoing)}”"
+            fragment += f"，让读者从“{_prompt_core(incoming, citation_markers)}”走到“{_prompt_core(outgoing, citation_markers)}”"
         elif outgoing:
-            fragment += f"，并让读者走到“{_prompt_core(outgoing)}”"
+            fragment += f"，并让读者走到“{_prompt_core(outgoing, citation_markers)}”"
         unit_fragments.append(fragment)
     if unit_fragments:
         paragraphs.append(
@@ -2295,7 +2300,7 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
                 continue
             if re.search(r"(?:^|\n)\s*(?:用户任务|冻结材料|材料事实)\s*[：:]", raw):
                 continue
-            cleaned = _prompt_clean_text(raw)
+            cleaned = _prompt_clean_text(raw, preserve_citations=citation_markers)
             if cleaned and _prompt_key(cleaned) not in anchor_summaries:
                 _prompt_add(content_parts, cleaned)
     if content_parts:
@@ -2307,8 +2312,8 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
     for anchor in spine["evidence_anchors"]:
         if not isinstance(anchor, Mapping):
             continue
-        summary = _prompt_clean_text(anchor.get("observed_summary"))
-        boundary = _prompt_clean_text(anchor.get("boundary"))
+        summary = _prompt_clean_text(anchor.get("observed_summary"), preserve_citations=citation_markers)
+        boundary = _prompt_clean_text(anchor.get("boundary"), preserve_citations=citation_markers)
         if summary:
             _prompt_add(fact_parts, summary)
         if boundary and not re.search(r"只能支持其中明确写出的事实|仅支持明确写出的事实", boundary):
@@ -2323,11 +2328,11 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
     for limitation in spine["conclusion_sensitive_limitations"]:
         if not isinstance(limitation, Mapping):
             continue
-        meaning = _prompt_clean_text(limitation.get("meaning"))
-        placement = _prompt_clean_text(limitation.get("realization_requirement"))
+        meaning = _prompt_clean_text(limitation.get("meaning"), preserve_citations=citation_markers)
+        placement = _prompt_clean_text(limitation.get("realization_requirement"), preserve_citations=citation_markers)
         if meaning:
             item = meaning
-            if placement:
+            if placement and _prompt_key(placement) not in _prompt_key(meaning) and _prompt_key(meaning) not in _prompt_key(placement):
                 item += f"；把它放在{placement}"
             _prompt_add(limit_parts, item)
 
@@ -2404,11 +2409,18 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
                 "材料虽然列出‘等待’、‘公开账页’和‘砸锁’等备选，但当前任务目的已经选定公开账页；"
                 "只能沿公开账页造成压力、主管放行、现场开门、救单和信任代价这条路线推进，"
                 "不得把砸锁、撬锁或铁锤改写成当前场景的实际开门手段，也不得把备选动作串接进主线。"
-                "若材料没有给出具体开门细节，只写可观察的放行、交钥匙或工人进入，不自行补造锁具失败。"
+                "至少明确写出主管放行或交钥匙后门锁解除、门打开、工人进入的可见动作桥；"
+                "不能只跳到‘工人进入’，也不自行补造锁具失败。"
                 "不得写未知钥匙成功开门，不得新增第二把钥匙，也不得把白漆直接解释为调钥匙事实。",
             )
         for value in _prompt_mapping_texts(route.get("voice_contract")):
             _prompt_add(route_parts, value)
+        if re.search(r"三声船铃|三声铃|ship\s+bell\s+three\s+times|bell\s+three\s+times", spine_text, re.IGNORECASE):
+            _prompt_add(
+                route_parts,
+                "若材料要求船铃意象出现三次，三次都保留连续三声的成组声音；"
+                "第一次建立日常，第二次加重压力，第三次落到关系变化，不要改成三个单声或只在说明中提及。",
+            )
         # Unit jobs already carry pressure and irreversible change.  Retain
         # only route values that add a distinct reveal boundary, avoiding a
         # second field-by-field copy of the same movement ledger.
@@ -2422,8 +2434,8 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
     elif mode == "investigation":
         for row in route.get("evidence_strength", []):
             if isinstance(row, Mapping):
-                strength = _prompt_clean_text(row.get("strength"))
-                reason = _prompt_clean_text(row.get("reason"))
+                strength = _prompt_clean_text(row.get("strength"), preserve_citations=citation_markers)
+                reason = _prompt_clean_text(row.get("reason"), preserve_citations=citation_markers)
                 if strength:
                     item = f"当前证据强度为{strength}"
                     if reason:
@@ -2431,8 +2443,8 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
                     _prompt_add(route_parts, item)
         for row in route.get("alternatives", []):
             if isinstance(row, Mapping):
-                meaning = _prompt_clean_text(row.get("meaning"))
-                standing = _prompt_clean_text(row.get("standing"))
+                meaning = _prompt_clean_text(row.get("meaning"), preserve_citations=citation_markers)
+                standing = _prompt_clean_text(row.get("standing"), preserve_citations=citation_markers)
                 if meaning:
                     item = f"保留替代解释：{meaning}"
                     if standing:
@@ -2440,21 +2452,27 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
                     _prompt_add(route_parts, item)
         for row in route.get("recheck_conditions", []):
             if isinstance(row, Mapping):
-                condition = _prompt_clean_text(row.get("condition"))
-                action = _prompt_clean_text(row.get("action"))
+                condition = _prompt_clean_text(row.get("condition"), preserve_citations=citation_markers)
+                action = _prompt_clean_text(row.get("action"), preserve_citations=citation_markers)
                 if condition and action:
                     _prompt_add(route_parts, f"如果{condition}，{action}")
 
     elif mode == "academic-writing":
+        root_conclusion_key = _prompt_key(root_conclusion)
         for row in route.get("hierarchy", []):
             if isinstance(row, Mapping):
-                contribution = _prompt_clean_text(row.get("contribution"))
-                warrant = _prompt_clean_text(row.get("new_claim_or_warrant"))
+                contribution = _prompt_clean_text(row.get("contribution"), preserve_citations=citation_markers)
+                warrant = _prompt_clean_text(row.get("new_claim_or_warrant"), preserve_citations=citation_markers)
                 qualification = row.get("qualification")
                 qualification_reason = (
-                    _prompt_clean_text(qualification.get("reason"))
+                    _prompt_clean_text(qualification.get("reason"), preserve_citations=citation_markers)
                     if isinstance(qualification, Mapping) else ""
                 )
+                # ``central_contribution`` is often copied into both the root
+                # conclusion and every hierarchy row by the planner.  Keep the
+                # root statement once and retain only new qualification here.
+                if warrant and _prompt_key(warrant) == root_conclusion_key:
+                    warrant = ""
                 parts = [item for item in (contribution, warrant, qualification_reason) if item]
                 if parts:
                     _prompt_add(route_parts, "；".join(_prompt_core(item) for item in parts))
@@ -2462,7 +2480,7 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
             if isinstance(row, Mapping):
                 for key in ("job", "purpose", "description", "caption"):
                     if row.get(key):
-                        _prompt_add(route_parts, row[key])
+                        _prompt_add(route_parts, _prompt_clean_text(row[key], preserve_citations=citation_markers))
 
     elif mode == "travel-guide":
         for row in route.get("pace_and_timing", []):
@@ -2537,7 +2555,9 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
     if mode == "fiction-writing" and "公开账页" in purpose and "砸锁" in json.dumps(spine, ensure_ascii=False):
         paragraphs.append(
             "当前任务目的选定公开账页；砸锁是材料中的备选，不能写成当前场景的实际开门手段。"
-            "公开账页必须通过主管放行、交钥匙或工人进入等可观察动作接到救单；未知调钥匙事实只能保留为白漆线索，不能在本场直接揭示；三声船铃按材料作为三声重复意象出现。"
+            "公开账页必须通过主管放行、交钥匙、门锁解除和工人进入等可观察动作接到救单；"
+            "不能只跳到工人进入。未知调钥匙事实只能保留为白漆线索，不能在本场直接揭示；"
+            "船铃意象出现三次，每次都是连续三声，分别承载日常秩序、倒计时压力和关系变化。"
         )
     if mode == "fiction-writing" and "修订报告" in purpose:
         paragraphs.append(
@@ -2631,9 +2651,23 @@ _PROMPT_LABEL_PREFIX = re.compile(
 )
 
 
-def _prompt_clean_text(value: Any, *, preserve_internal: bool = False) -> str:
+def _prompt_clean_text(
+    value: Any,
+    *,
+    preserve_internal: bool = False,
+    preserve_citations: Iterable[str] | None = None,
+) -> str:
     text = str(value or "").replace("\r\n", "\n").replace("\r", "\n").strip()
+    protected_citations: dict[str, str] = {}
     if not preserve_internal:
+        # Internal bracket references and user-facing citation markers share a
+        # visual shape.  Protect only the markers declared by the current
+        # ReaderSpine, then apply the normal internal-reference scrubber.
+        for index, marker in enumerate(sorted({str(item) for item in (preserve_citations or ()) if str(item)}, key=len, reverse=True)):
+            sentinel = f"\ue000CIT{index}\ue001"
+            if marker in text:
+                text = text.replace(marker, sentinel)
+                protected_citations[sentinel] = marker
         text = _PROMPT_INTERNAL_BRACKET_REF.sub("", text)
         text = _PROMPT_INTERNAL_TOKEN.sub("", text)
         text = _PROMPT_LOCATOR.sub("", text)
@@ -2642,11 +2676,25 @@ def _prompt_clean_text(value: Any, *, preserve_internal: bool = False) -> str:
     text = re.sub(r"\s+", " ", text).strip()
     text = re.sub(r"\s+([，。；：？！,.!?;:])", r"\1", text)
     text = re.sub(r"([。！？!?；;])\s*([。！？!?；;])+", r"\1", text)
+    for sentinel, marker in protected_citations.items():
+        text = text.replace(sentinel, marker)
     return text
 
 
-def _prompt_core(value: Any) -> str:
-    return _prompt_clean_text(value).rstrip("。！？!?；; ")
+def _prompt_job_clause(label: str, value: Any, citation_markers: Iterable[str] | None = None) -> str:
+    """Remove an accidental label repeat such as ``开头开篇…``."""
+
+    text = _prompt_clean_text(value, preserve_citations=citation_markers)
+    prefixes = (label, "开篇") if label == "开头" else (label, "收束", "最后")
+    for prefix in prefixes:
+        if text.startswith(prefix):
+            text = text[len(prefix):].lstrip(" ：:，,、")
+            break
+    return text
+
+
+def _prompt_core(value: Any, citation_markers: Iterable[str] | None = None) -> str:
+    return _prompt_clean_text(value, preserve_citations=citation_markers).rstrip("。！？!?；; ")
 
 
 def _prompt_key(value: Any) -> str:

@@ -465,7 +465,7 @@ def test_frozen_boundary_excludes_runtime_inputs_and_internal_records():
         "--root",
         ".",
         "--run-root",
-        "{owner_run_root}",
+        "{dependency:check.reader.execution-quality-producer:run_root}",
         "--held-out-run-root",
         "{dependency:check.reader.heldout-producer:run_root}",
         "--dependency-producer",
@@ -547,7 +547,7 @@ def test_reader_quality_contract_has_one_six_node_chain_and_two_terminal_consume
     assert "--preflight-run-root" in checks["check.reader.execution-quality-producer"]["args"]
     assert "--held-out-run-root" in checks["check.reader.execution-quality-producer"]["args"]
     assert "{owner_run_root}" in checks["check.reader.judgment"]["args"]
-    assert "{owner_run_root}" in checks["check.writing.quality-benchmark"]["args"]
+    assert "{dependency:check.reader.execution-quality-producer:run_root}" in checks["check.writing.quality-benchmark"]["args"]
     assert "--held-out-run-root" in checks["check.writing.quality-benchmark"]["args"]
 
 

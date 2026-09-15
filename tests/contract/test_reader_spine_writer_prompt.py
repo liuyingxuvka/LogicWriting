@@ -159,3 +159,54 @@ def test_direct_repaired_prompt_keeps_f01_action_source_and_i01_length_contract(
     assert "不能新增第二把钥匙" in f_prompt
     assert "正文必须落在该区间" in i_prompt
     assert "具体的采购判断、条件" in i_prompt
+
+
+def test_production_boundaries_compile_only_explicit_citation_ranges():
+    benchmark = _load_benchmark()
+    cited = {
+        "case_id": "A01",
+        "route": "academic-writing",
+        "language": "zh-CN",
+        "task": "使用L包写1000—1400字概念论证，引用[L01]—[L03]。",
+        "constraints": "不新增研究数据。",
+        "material_records": [
+            {"id": "L01", "text": "第一条材料。"},
+            {"id": "L02", "text": "第二条材料。"},
+            {"id": "L03", "text": "第三条材料。"},
+            {"id": "L04", "text": "未被点名的材料。"},
+        ],
+    }
+
+    _request, boundaries, _token = benchmark._production_request_and_boundaries(cited)
+
+    assert [row["marker"] for row in boundaries["citation_duties"]] == [
+        "[L01]", "[L02]", "[L03]"
+    ]
+    assert all(row["content_unit_ids"] == ["content:materials"] for row in boundaries["citation_duties"])
+    assert all(row["placement"] == "same_paragraph" for row in boundaries["citation_duties"])
+
+
+def test_reader_prompt_preserves_declared_citations_and_compacts_job_labels(tmp_path):
+    chain = make_reader_chain(tmp_path / "chain", "academic-writing")
+    spine = build_reader_spine(chain["reader_brief"], composition_plan=chain["plan"])
+    spine["reader_constraints"]["citation_rules"] = [{
+        "citation_id": "citation:L01",
+        "content_unit_ids": ["content:answer"],
+        "source_id": "source:L01",
+        "marker": "[L01]",
+        "placement": "same_paragraph",
+    }]
+    spine["root_conclusion"] = "中心判断依据[L01]收束。"
+    spine["opening_job"] = "开篇先建立问题。"
+    spine["conclusion_job"] = "结尾再给出边界。"
+
+    from production_reader_pipeline import render_reader_spine_prompt
+
+    prompt = render_reader_spine_prompt(spine)
+
+    assert "依据[L01]收束" in prompt
+    assert "相关句使用引用标记[L01]" in prompt
+    assert "开头先建立问题" in prompt
+    assert "结尾再给出边界" in prompt
+    assert "开头开篇" not in prompt
+    assert "结尾结尾" not in prompt

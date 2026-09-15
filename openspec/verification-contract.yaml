@@ -291,7 +291,7 @@ checks:
     input_selectors: [scripts/check_writing_quality_run.py, scripts/run_writing_quality_benchmark.py, tests/fixtures/writing_quality/**]
     depends_on_receipts: [check.reader.execution-quality-producer]
     command: python
-    args: [scripts/check_writing_quality_run.py, --root, ., --run-root, "{owner_run_root}", --held-out-run-root, "{dependency:check.reader.heldout-producer:run_root}", --dependency-producer, check.reader.execution-quality-producer, --json]
+    args: [scripts/check_writing_quality_run.py, --root, ., --run-root, "{dependency:check.reader.execution-quality-producer:run_root}", --held-out-run-root, "{dependency:check.reader.heldout-producer:run_root}", --dependency-producer, check.reader.execution-quality-producer, --json]
     timeout_seconds: 300
     required: true
     covers: [req.release.post-archive]

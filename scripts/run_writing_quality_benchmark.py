@@ -1601,6 +1601,60 @@ def _production_token(case: Mapping[str, Any]) -> str:
     })[7:23]
 
 
+_EXPLICIT_CITATION_MARKER = re.compile(r"\[([A-Za-z]{1,3}\d{1,4})\]")
+_EXPLICIT_CITATION_RANGE = re.compile(
+    r"\[([A-Za-z]{1,3})(\d{1,4})\]\s*[—–-]\s*\[([A-Za-z]{1,3})(\d{1,4})\]"
+)
+
+
+def _requested_citation_material_ids(
+    task: str,
+    material_records: Sequence[Mapping[str, Any]],
+) -> list[str]:
+    """Return material ids that the user explicitly asks to cite.
+
+    A citation obligation is created only for an explicit ``引用``/``cite``
+    request.  Plain bracketed material labels are kept as private source
+    references and do not silently become reader-facing citations.  Ranges
+    such as ``[L01]—[L03]`` expand only when both endpoints use the same
+    prefix, are numeric, and every member exists in the frozen material pack.
+    """
+
+    if not re.search(r"(?:引用|引文|cite|citation)", str(task), re.IGNORECASE):
+        return []
+    canonical = {
+        str(row.get("id")): str(row.get("id"))
+        for row in material_records
+        if isinstance(row, Mapping) and str(row.get("id") or "").strip()
+    }
+    folded = {key.casefold(): value for key, value in canonical.items()}
+    result: list[str] = []
+    covered_spans: list[tuple[int, int]] = []
+
+    def add(material_id: str) -> None:
+        resolved = folded.get(str(material_id).casefold())
+        if resolved and resolved not in result:
+            result.append(resolved)
+
+    for match in _EXPLICIT_CITATION_RANGE.finditer(str(task)):
+        prefix_a, start_text, prefix_b, end_text = match.groups()
+        start, end = int(start_text), int(end_text)
+        if prefix_a.casefold() != prefix_b.casefold() or end < start or end - start > 100:
+            continue
+        expanded = [f"{prefix_a}{number:0{max(len(start_text), len(end_text))}d}" for number in range(start, end + 1)]
+        if not all(item.casefold() in folded for item in expanded):
+            continue
+        covered_spans.append(match.span())
+        for item in expanded:
+            add(item)
+
+    for match in _EXPLICIT_CITATION_MARKER.finditer(str(task)):
+        if any(start <= match.start() < end for start, end in covered_spans):
+            continue
+        add(match.group(1))
+    return result
+
+
 def _production_request_and_boundaries(case: Mapping[str, Any]) -> tuple[dict[str, Any], dict[str, Any], str]:
     """Build a current WritingRequest and reader-facing material boundary.
 
@@ -1684,7 +1738,10 @@ def _production_request_and_boundaries(case: Mapping[str, Any]) -> tuple[dict[st
     anchors = []
     material_texts = []
     anchor_ids = []
-    for index, material in enumerate(case.get("material_records", []), start=1):
+    material_records = [
+        row for row in case.get("material_records", []) if isinstance(row, Mapping)
+    ]
+    for index, material in enumerate(material_records, start=1):
         material_id = str(material.get("id") or f"material-{index}")
         text = str(material.get("text") or "")
         anchor_id = f"evidence:{material_id}"
@@ -1706,6 +1763,16 @@ def _production_request_and_boundaries(case: Mapping[str, Any]) -> tuple[dict[st
         f"用户任务：{task}\n用户约束：{constraints}\n冻结材料（逐条事实）：\n"
         + "\n".join(material_texts)
     )
+    citation_duties = [
+        {
+            "citation_id": f"citation:{material_id}",
+            "content_unit_ids": ["content:materials"],
+            "source_id": f"source:{material_id}",
+            "marker": f"[{material_id}]",
+            "placement": "same_paragraph",
+        }
+        for material_id in _requested_citation_material_ids(task, material_records)
+    ]
     boundaries = {
         "content_units": [{
             "content_unit_id": "content:materials",
@@ -1719,7 +1786,7 @@ def _production_request_and_boundaries(case: Mapping[str, Any]) -> tuple[dict[st
         "evidence_anchors": anchors,
         "alternatives": [],
         "limitations": [],
-        "citation_duties": [],
+        "citation_duties": citation_duties,
         "must_preserve_tokens": [],
         "verbatim_obligations": [],
         "prohibited_overclaims": [],
