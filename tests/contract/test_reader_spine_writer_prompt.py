@@ -102,6 +102,35 @@ def test_production_reader_prompt_enforces_extent_and_fiction_information_bounda
     assert "按正文实际可见字符（标题和空白不计）核对一次长度" in prompt
 
 
+def test_production_fiction_prompt_counts_bell_events_and_closes_door_action(tmp_path):
+    chain = make_reader_chain(tmp_path / "fiction-bell", "fiction-writing")
+    spine = build_reader_spine(chain["reader_brief"], composition_plan=chain["plan"])
+    spine["major_units"][0]["content"][0]["meaning"] = "重复意象是三声船铃；材料列出公开账页和砸锁两种开门路径。"
+
+    prompt = _load_benchmark()._production_writer_prompt(spine)
+
+    assert "正文总共写三次船铃响起，每个节点只写一次铃声" in prompt
+    assert "不要每次再写三下而累计成九声" in prompt
+    assert "由谁实际解除锁闭并开门" in prompt
+
+
+def test_academic_prompt_drops_repeated_hierarchy_boilerplate(tmp_path):
+    chain = make_reader_chain(tmp_path / "academic-compact", "academic-writing")
+    spine = build_reader_spine(chain["reader_brief"], composition_plan=chain["plan"])
+    hierarchy = spine["route_guidance"]["hierarchy"][0]
+    hierarchy["contribution"] = "回答任务的中心问题。"
+    hierarchy["new_claim_or_warrant"] = "回答任务的中心问题。"
+    hierarchy["qualification"] = {
+        "state": "not_applicable",
+        "reason": "当前请求没有要求新实验方法。",
+    }
+
+    prompt = _load_benchmark()._production_writer_prompt(spine)
+
+    assert "回答任务的中心问题" not in prompt
+    assert "当前请求没有要求新实验方法" not in prompt
+
+
 def test_production_reader_prompt_closes_restricted_starting_knowledge(tmp_path):
     benchmark = _load_benchmark()
     chain = make_reader_chain(tmp_path / "restricted-fiction", "fiction-writing")
@@ -135,6 +164,17 @@ def test_production_travel_prompt_requires_explicit_origin_fallback_when_none_is
     assert "不要自行新增返程中断、现场服务或其它材料没有给出的故障分支" in prompt
     assert "每天的开放、交通、休息和天气条件放回对应日期的段落" in prompt
     assert "appendix:checks" not in prompt
+
+
+def test_production_travel_prompt_does_not_deny_material_fallback(tmp_path):
+    chain = make_reader_chain(tmp_path / "travel-material-fallback", "travel-guide")
+    spine = build_reader_spine(chain["reader_brief"], composition_plan=chain["plan"])
+    spine["major_units"][0]["content"][0]["meaning"] = "默认安排可行；绘本馆是材料给出的备用。"
+    spine["route_guidance"]["reachable_fallbacks"] = []
+
+    prompt = _load_benchmark()._production_writer_prompt(spine)
+
+    assert "如果材料没有支持的可达备用路线" not in prompt
 
 
 def test_direct_repaired_prompt_keeps_f01_action_source_and_i01_length_contract():

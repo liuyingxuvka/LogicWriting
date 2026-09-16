@@ -2262,17 +2262,16 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
 
     units = spine["major_units"]
     unit_fragments: list[str] = []
+    # Reader-state labels stay in the validated spine for lineage and reverse
+    # review.  They are deliberately omitted from the provider prompt: the
+    # root throughline and ordered unit jobs already carry the actionable
+    # progression, while repeating labels such as “读者需要先知道…” make
+    # prose generation sound like a planning checklist.
     for index, unit in enumerate(units):
         title = _prompt_clean_text(unit["title"], preserve_citations=citation_markers)
         job = _prompt_clean_text(unit["reader_job"], preserve_citations=citation_markers)
-        incoming = _prompt_clean_text(unit["incoming_reader_state"], preserve_citations=citation_markers)
-        outgoing = _prompt_clean_text(unit["forward_link"]["outgoing_reader_state"], preserve_citations=citation_markers)
         prefix = "先处理" if index == 0 else ("最后收束" if index == len(units) - 1 else "随后转入")
         fragment = f"{prefix}“{title}”：{_prompt_core(job, citation_markers)}"
-        if incoming and outgoing:
-            fragment += f"，让读者从“{_prompt_core(incoming, citation_markers)}”走到“{_prompt_core(outgoing, citation_markers)}”"
-        elif outgoing:
-            fragment += f"，并让读者走到“{_prompt_core(outgoing, citation_markers)}”"
         unit_fragments.append(fragment)
     if unit_fragments:
         paragraphs.append(
@@ -2410,16 +2409,17 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
                 "只能沿公开账页造成压力、主管放行、现场开门、救单和信任代价这条路线推进，"
                 "不得把砸锁、撬锁或铁锤改写成当前场景的实际开门手段，也不得把备选动作串接进主线。"
                 "至少明确写出主管放行或交钥匙后门锁解除、门打开、工人进入的可见动作桥；"
-                "不能只跳到‘工人进入’，也不自行补造锁具失败。"
-                "不得写未知钥匙成功开门，不得新增第二把钥匙，也不得把白漆直接解释为调钥匙事实。",
+                "要写清由谁实际解除锁闭并开门，不能只写‘门开了’或跳到‘工人进入’，也不自行补造锁具失败。"
+                "不得让林岚或其它角色用未知钥匙无来源地开门，不得新增第二把钥匙，也不得把白漆直接解释为调钥匙事实。",
             )
         for value in _prompt_mapping_texts(route.get("voice_contract")):
             _prompt_add(route_parts, value)
         if re.search(r"三声船铃|三声铃|ship\s+bell\s+three\s+times|bell\s+three\s+times", spine_text, re.IGNORECASE):
             _prompt_add(
                 route_parts,
-                "若材料要求船铃意象出现三次，三次都保留连续三声的成组声音；"
-                "第一次建立日常，第二次加重压力，第三次落到关系变化，不要改成三个单声或只在说明中提及。",
+                "若材料要求船铃意象出现三次，这里的三次按铃声事件计数：正文总共写三次船铃响起，每个节点只写一次铃声，"
+                "不要每次再写三下而累计成九声；第一次建立日常，第二次加重压力，第三次落到关系变化，"
+                "也不要把三次事件拆成孤立的说明。",
             )
         # Unit jobs already carry pressure and irreversible change.  Retain
         # only route values that add a distinct reveal boundary, avoiding a
@@ -2459,6 +2459,11 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
 
     elif mode == "academic-writing":
         root_conclusion_key = _prompt_key(root_conclusion)
+        unit_job_keys = {
+            _prompt_key(unit.get("reader_job"))
+            for unit in units
+            if isinstance(unit, Mapping) and unit.get("reader_job")
+        }
         for row in route.get("hierarchy", []):
             if isinstance(row, Mapping):
                 contribution = _prompt_clean_text(row.get("contribution"), preserve_citations=citation_markers)
@@ -2468,12 +2473,33 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
                     _prompt_clean_text(qualification.get("reason"), preserve_citations=citation_markers)
                     if isinstance(qualification, Mapping) else ""
                 )
-                # ``central_contribution`` is often copied into both the root
-                # conclusion and every hierarchy row by the planner.  Keep the
-                # root statement once and retain only new qualification here.
-                if warrant and _prompt_key(warrant) == root_conclusion_key:
-                    warrant = ""
-                parts = [item for item in (contribution, warrant, qualification_reason) if item]
+                # The planner often copies a unit's reader job into both
+                # ``contribution`` and ``new_claim_or_warrant``.  Those fields
+                # are useful for the private graph, but repeating them in the
+                # writer prompt turns a throughline into a checklist.  Keep
+                # only a genuinely new warrant and omit generic
+                # not-applicable qualification boilerplate.
+                parts: list[str] = []
+                part_keys: set[str] = set()
+                for item in (contribution, warrant):
+                    key = _prompt_key(item)
+                    if not key or key == root_conclusion_key or key in unit_job_keys:
+                        continue
+                    if re.fullmatch(r"回答任务(?:的)?中心问题[。.!！]?", item):
+                        continue
+                    if key not in part_keys:
+                        parts.append(item)
+                        part_keys.add(key)
+                qualification_state = (
+                    str(qualification.get("state") or "")
+                    if isinstance(qualification, Mapping) else ""
+                )
+                if (
+                    qualification_reason
+                    and qualification_state.casefold() not in {"not_applicable", "not-applicable"}
+                    and "当前请求没有要求新实验方法" not in qualification_reason
+                ):
+                    parts.append(qualification_reason)
                 if parts:
                     _prompt_add(route_parts, "；".join(_prompt_core(item) for item in parts))
         for row in route.get("figure_table_jobs", []):
@@ -2483,6 +2509,10 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
                         _prompt_add(route_parts, _prompt_clean_text(row[key], preserve_citations=citation_markers))
 
     elif mode == "travel-guide":
+        # A fallback may be carried by the selected material rather than by
+        # the route extension.  Do not tell the writer that no reachable
+        # fallback exists when the reader-facing facts already name one.
+        reader_text = " ".join(_prompt_mapping_texts(spine))
         _prompt_add(
             route_parts,
             "旅行任务只保留会改变当天时间、地点、交通、休息或备用选择的条件；未参与取舍的地点、认证、票价、天气来源声明和泛化未知项省略。",
@@ -2520,7 +2550,10 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
                     if travelers:
                         item += "，照顾" + "、".join(travelers)
                     _prompt_add(route_parts, item)
-        if not route.get("reachable_fallbacks"):
+        has_material_fallback = bool(
+            re.search(r"备用|备选|替换|绘本馆|留在(?:旅馆|起点)", reader_text, re.IGNORECASE)
+        )
+        if not route.get("reachable_fallbacks") and not has_material_fallback:
             _prompt_add(
                 route_parts,
                 "如果材料没有支持的可达备用路线，遇到出发前或途中条件不满足时，必须把留在起点、停止出发或原地休息写成明确可执行的退回方案。"
@@ -2633,7 +2666,7 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
     paragraphs.append(
         "成稿前只在内部核对事实、边界、顺序和篇幅，不输出核对过程；沿一条主线收束，让最后一句承接前文的判断或下一步。"
     )
-    return "\n\n".join(paragraphs)
+    return "\n\n".join(_dedupe_prompt_paragraphs(paragraphs, citation_markers))
 
 
 _PROMPT_INTERNAL_BRACKET_REF = re.compile(r"\[(?:[A-Z]{1,3}(?:-[A-Z]{1,3})?[-_:]?\d{1,4})\]")
@@ -2705,6 +2738,37 @@ def _prompt_core(value: Any, citation_markers: Iterable[str] | None = None) -> s
 
 def _prompt_key(value: Any) -> str:
     return re.sub(r"[\W_]+", "", _prompt_clean_text(value).casefold())
+
+
+def _prompt_paragraph_key(value: Any, citation_markers: Iterable[str] | None = None) -> str:
+    """Build a comparison key without changing the text sent to the writer.
+
+    Citation markers are part of the reader contract, so the key preserves
+    the markers declared by the current spine while still ignoring harmless
+    whitespace and punctuation differences.
+    """
+
+    cleaned = _prompt_clean_text(value, preserve_citations=citation_markers)
+    return re.sub(r"[\W_]+", "", cleaned.casefold())
+
+
+def _dedupe_prompt_paragraphs(
+    paragraphs: Iterable[str],
+    citation_markers: Iterable[str] | None = None,
+) -> list[str]:
+    """Remove only exact repeated prompt paragraphs, preserving first order."""
+
+    result: list[str] = []
+    seen: set[str] = set()
+    for paragraph in paragraphs:
+        if not isinstance(paragraph, str) or not paragraph.strip():
+            continue
+        key = _prompt_paragraph_key(paragraph, citation_markers)
+        if not key or key in seen:
+            continue
+        seen.add(key)
+        result.append(paragraph)
+    return result
 
 
 def _prompt_add(bucket: list[str], value: Any, *, preserve_internal: bool = False) -> None:
