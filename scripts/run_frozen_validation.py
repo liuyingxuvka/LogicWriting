@@ -480,20 +480,83 @@ def _receipt_hash(receipt: Mapping[str, Any]) -> str:
     return _hash({key: value for key, value in receipt.items() if key != "receipt_hash"})
 
 
-def _load_current_success(path: Path, execution_fingerprint: str) -> dict[str, Any] | None:
+def _load_current_success(
+    path: Path,
+    execution_fingerprint: str,
+    *,
+    receipts: Path | None = None,
+    check_id: str | None = None,
+) -> dict[str, Any] | None:
+    """Load one reusable success receipt only after reopening its evidence.
+
+    A success file is an index entry, not proof by itself.  In particular, a
+    copied receipt must not be able to point at a result outside its attempt
+    directory (or at a result whose bytes no longer match the recorded
+    fingerprint).  The old loader checked only the receipt's own hash, which
+    allowed a self-consistent but foreign result path to be reused by a later
+    frozen run.
+
+    Invalid or stale cached evidence is treated as a cache miss.  The current
+    execution then gets a new private attempt and records the failure or
+    success under the current maintenance unit.
+    """
+
     if not path.is_file():
         return None
-    value = json.loads(path.read_text(encoding="utf-8"))
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, TypeError, ValueError, json.JSONDecodeError):
+        return None
+    if not isinstance(value, dict):
+        return None
+
+    owner_id = check_id or str(value.get("check_id") or "")
     if (
-        not isinstance(value, dict)
+        not owner_id
         or value.get("status") != "passed"
+        or value.get("terminal_status") != "passed"
         or value.get("exit_code") != 0
+        or value.get("timed_out") is True
+        or value.get("cleanup_confirmed") is not True
+        or value.get("check_id") != owner_id
         or value.get("execution_fingerprint") != execution_fingerprint
         or value.get("receipt_hash") != _receipt_hash(value)
     ):
         return None
-    result_path = path.parents[2] / str(value.get("result_path", ""))
-    if not result_path.is_file():
+
+    receipt_root = (receipts or path.parents[2]).resolve()
+    try:
+        # A success receipt must live in this check's success namespace and
+        # its attempt must be below the same private receipt root.
+        path.resolve().relative_to((receipt_root / "success" / owner_id).resolve())
+        attempt_root, run_root = _owner_context_paths(value, receipt_root, check_id=owner_id)
+        attempt_root.relative_to((receipt_root / "attempts" / owner_id).resolve())
+        result_path = _safe_evidence_path(
+            receipt_root,
+            value.get("result_path"),
+            field=f"result_path:{owner_id}",
+        )
+        result_path.relative_to(attempt_root)
+        result = _read_json(result_path)
+    except (OSError, UnicodeError, ValueError, TypeError, json.JSONDecodeError):
+        return None
+    if not isinstance(result, Mapping):
+        return None
+    if (
+        result.get("status") != "passed"
+        or result.get("check_id") != owner_id
+        or result.get("execution_fingerprint") != execution_fingerprint
+        or result.get("exit_code") != 0
+        or result.get("timed_out") is True
+        or result.get("cleanup_confirmed") is not True
+        or result.get("result_fingerprint") != value.get("result_fingerprint")
+        or result.get("result_fingerprint")
+        != _hash({key: item for key, item in result.items() if key != "result_fingerprint"})
+    ):
+        return None
+    # Keep the local binding explicit even though ``_owner_context_paths``
+    # already checked that the run directory is below the attempt directory.
+    if not run_root.is_dir():
         return None
     return value
 
@@ -706,7 +769,39 @@ def _dependency_owner_run_root(
     receipt = index.get(owner_id)
     if not isinstance(receipt, Mapping):
         raise ValueError(f"dependency_owner_missing:{dependency}")
-    _, run_root = _owner_context_paths(receipt, receipts, check_id=owner_id)
+    if (
+        receipt.get("status") != "passed"
+        or receipt.get("terminal_status") != "passed"
+        or receipt.get("exit_code") != 0
+        or receipt.get("timed_out") is True
+        or receipt.get("cleanup_confirmed") is not True
+        or receipt.get("check_id") != owner_id
+        or receipt.get("receipt_hash") != _receipt_hash(receipt)
+    ):
+        raise ValueError(f"dependency_owner_not_passed:{dependency}")
+    attempt_root, run_root = _owner_context_paths(receipt, receipts, check_id=owner_id)
+    result_path = _safe_evidence_path(
+        receipts,
+        receipt.get("result_path"),
+        field=f"dependency.result_path:{dependency}",
+    )
+    try:
+        result_path.relative_to(attempt_root)
+    except ValueError as exc:
+        raise ValueError(f"dependency_result_outside_attempt:{dependency}") from exc
+    if not result_path.is_file():
+        raise ValueError(f"dependency_result_missing:{dependency}")
+    result = _read_json(result_path)
+    if (
+        not isinstance(result, Mapping)
+        or result.get("status") != "passed"
+        or result.get("check_id") != owner_id
+        or result.get("execution_fingerprint") != receipt.get("execution_fingerprint")
+        or result.get("result_fingerprint") != receipt.get("result_fingerprint")
+        or result.get("result_fingerprint")
+        != _hash({key: value for key, value in result.items() if key != "result_fingerprint"})
+    ):
+        raise ValueError(f"dependency_result_identity_mismatch:{dependency}")
     return run_root
 
 
@@ -1041,7 +1136,12 @@ def run_validation(
             }
             execution_fingerprint = _hash(execution_identity)
             success_path = receipts / "success" / check_id / f"{execution_fingerprint.removeprefix('sha256:')}.json"
-            current = _load_current_success(success_path, execution_fingerprint)
+            current = _load_current_success(
+                success_path,
+                execution_fingerprint,
+                receipts=receipts,
+                check_id=check_id,
+            )
             if current is not None:
                 index[check_id] = current
                 reused.append(check_id)

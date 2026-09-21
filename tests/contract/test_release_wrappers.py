@@ -822,6 +822,131 @@ def test_frozen_validation_creates_private_attempt_and_passes_owner_context(monk
     assert (owner_attempts[0] / "run").is_dir()
 
 
+def test_frozen_success_reuse_rejects_result_outside_its_attempt(tmp_path):
+    runner = _load("run_frozen_validation")
+    receipts = tmp_path / "receipts"
+    attempt_root = receipts / "attempts" / "check.one" / "attempt-1"
+    run_root = attempt_root / "run"
+    run_root.mkdir(parents=True)
+    foreign = tmp_path / "foreign"
+    foreign.mkdir()
+    execution_fingerprint = "sha256:" + "a" * 64
+    result = {
+        "check_id": "check.one",
+        "execution_fingerprint": execution_fingerprint,
+        "exit_code": 0,
+        "timed_out": False,
+        "cleanup_confirmed": True,
+        "status": "passed",
+    }
+    result["result_fingerprint"] = runner._hash(result)
+    foreign_result = foreign / "result.json"
+    _write_json_file(foreign_result, result)
+    receipt = {
+        "check_id": "check.one",
+        "status": "passed",
+        "terminal_status": "passed",
+        "exit_code": 0,
+        "timed_out": False,
+        "cleanup_confirmed": True,
+        "execution_fingerprint": execution_fingerprint,
+        "result_fingerprint": result["result_fingerprint"],
+        # This is deliberately a self-consistent path that escapes the
+        # private attempt.  A receipt hash alone must not make it reusable.
+        "result_path": "../../../../foreign/result.json",
+        "owner_context": {
+            "owner_id": "check.one",
+            "attempt_root": attempt_root.relative_to(receipts).as_posix(),
+            "run_root": run_root.relative_to(receipts).as_posix(),
+        },
+    }
+    receipt["receipt_hash"] = runner._receipt_hash(receipt)
+    success = receipts / "success" / "check.one" / ("a" * 64 + ".json")
+    _write_json_file(success, receipt)
+
+    assert runner._load_current_success(
+        success,
+        execution_fingerprint,
+        receipts=receipts,
+        check_id="check.one",
+    ) is None
+
+
+def test_frozen_dependency_path_requires_passed_result_with_matching_hash(tmp_path):
+    runner = _load("run_frozen_validation")
+    receipts = tmp_path / "receipts"
+    attempt_root = receipts / "attempts" / "check.one" / "attempt-1"
+    run_root = attempt_root / "run"
+    run_root.mkdir(parents=True)
+    result = {
+        "check_id": "check.one",
+        "execution_fingerprint": "sha256:" + "b" * 64,
+        "exit_code": 0,
+        "timed_out": False,
+        "cleanup_confirmed": True,
+        "status": "passed",
+    }
+    result["result_fingerprint"] = runner._hash(result)
+    result_path = attempt_root / "result.json"
+    _write_json_file(result_path, result)
+    receipt = {
+        "check_id": "check.one",
+        "status": "failed",
+        "terminal_status": "failed",
+        "exit_code": 1,
+        "timed_out": False,
+        "cleanup_confirmed": True,
+        "execution_fingerprint": result["execution_fingerprint"],
+        "result_fingerprint": result["result_fingerprint"],
+        "result_path": result_path.relative_to(receipts).as_posix(),
+        "owner_context": {
+            "owner_id": "check.one",
+            "attempt_root": attempt_root.relative_to(receipts).as_posix(),
+            "run_root": run_root.relative_to(receipts).as_posix(),
+        },
+    }
+    receipt["receipt_hash"] = runner._receipt_hash(receipt)
+    with pytest.raises(ValueError, match="dependency_owner_not_passed"):
+        runner._dependency_owner_run_root(
+            "check.one",
+            index={"check.one": receipt},
+            consumers={},
+            receipts=receipts,
+        )
+
+
+def test_quality_dependency_index_binds_manifest_hash(tmp_path):
+    quality = _load("check_writing_quality_run")
+    run_root = tmp_path / "producer"
+    run_root.mkdir()
+    manifest = {
+        "producer_check_id": "check.reader.execution-quality-producer",
+        "manifest_fingerprint": "sha256:" + "m" * 64,
+        "source_manifest_fingerprint": "sha256:" + "s" * 64,
+        "toolchain_fingerprint": "sha256:" + "t" * 64,
+    }
+    _write_json_file(run_root / "output-manifest.json", manifest)
+    index = {
+        "schema_version": "logic-writing.validation-dependency-index.v1",
+        "consumer_check_id": "check.reader.execution-quality-producer",
+        "current_source_fingerprint": manifest["source_manifest_fingerprint"],
+        "current_toolchain_fingerprint": manifest["toolchain_fingerprint"],
+        "dependencies": [],
+        "producer_output_manifest_path": "output-manifest.json",
+        "producer_output_manifest_fingerprint": "sha256:" + "x" * 64,
+    }
+    index["index_fingerprint"] = quality.fingerprint(
+        {key: value for key, value in index.items() if key != "index_fingerprint"}
+    )
+    _write_json_file(run_root / "dependency-index.json", index)
+    with pytest.raises(ValueError, match="manifest fingerprint does not match"):
+        quality._validate_dependency_index(
+            run_root,
+            producer_id="check.reader.execution-quality-producer",
+            manifest=manifest,
+        )
+
+
 def test_public_docs_frozen_fallback_uses_contract_admission(tmp_path, monkeypatch):
     public_docs = _load("check_public_docs")
     monkeypatch.setattr(public_docs, "git_lines", lambda *_args: [])

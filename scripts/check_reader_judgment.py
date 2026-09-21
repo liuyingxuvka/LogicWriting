@@ -13,6 +13,8 @@ from __future__ import annotations
 import argparse
 import importlib
 import json
+import os
+import re
 import sys
 from collections.abc import Callable, Mapping
 from pathlib import Path
@@ -422,11 +424,34 @@ def _check_dependency_producer(root: Path, runtime: Path, producer_id: str) -> d
 
     result_path = runtime / "reader-quality-judgment-result.json"
     output_root = runtime
-    index_path = Path(__import__("os").environ.get("LW_VALIDATION_DEPENDENCY_INDEX", str(runtime / "dependency-index.json"))).expanduser().resolve()
+    dependency_key = "LW_VALIDATION_DEPENDENCY_" + re.sub(r"[^A-Za-z0-9]", "_", producer_id).upper() + "_ROOT"
+    declared_dependency_root = os.environ.get(dependency_key)
+    index_path = Path(
+        os.environ.get("LW_VALIDATION_DEPENDENCY_INDEX", str(runtime / "dependency-index.json"))
+    ).expanduser().resolve()
     errors: list[str] = []
     try:
+        # The release runner supplies both the dependency root and the exact
+        # index path.  Bind the consumer to that owner context before reading
+        # anything so a copied environment cannot silently select a sibling
+        # run or a "latest" directory.  Direct callers without the runner
+        # environment retain the portable fallback below.
+        if declared_dependency_root is not None:
+            producer_root = Path(declared_dependency_root).expanduser().resolve()
+            index_path.relative_to(producer_root)
+            if index_path != producer_root / "dependency-index.json":
+                raise ValueError("producer dependency index is outside its declared owner run")
+            if producer_root == runtime:
+                raise ValueError("producer dependency run must be separate from the consumer runtime")
+        else:
+            producer_root = index_path.parent.resolve()
+            index_path.relative_to(producer_root)
         index = _load_json(index_path)
-        if not isinstance(index, dict) or index.get("consumer_check_id") != producer_id:
+        if (
+            not isinstance(index, dict)
+            or index.get("schema_version") != "logic-writing.validation-dependency-index.v1"
+            or index.get("consumer_check_id") != producer_id
+        ):
             raise ValueError("dependency index does not identify the requested producer")
         from _common import fingerprint
 
@@ -444,6 +469,12 @@ def _check_dependency_producer(root: Path, runtime: Path, producer_id: str) -> d
             {key: value for key, value in manifest.items() if key != "manifest_fingerprint"}
         ):
             raise ValueError("producer output manifest fingerprint is stale")
+        if index.get("producer_output_manifest_fingerprint") != manifest.get("manifest_fingerprint"):
+            raise ValueError("producer dependency index points at a different output manifest")
+        if index.get("current_source_fingerprint") != manifest.get("source_manifest_fingerprint"):
+            raise ValueError("producer dependency index source identity is stale")
+        if index.get("current_toolchain_fingerprint") != manifest.get("toolchain_fingerprint"):
+            raise ValueError("producer dependency index toolchain identity is stale")
         if manifest.get("terminal_status") != "completed" or manifest.get("evidence_mode") != "real_execution":
             raise ValueError("producer output is incomplete or protocol-only")
         rows_path = manifest_path.parent / "judges.json"

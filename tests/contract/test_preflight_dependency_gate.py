@@ -179,6 +179,76 @@ def test_preflight_gate_blocks_full_pair_before_run(tmp_path: Path, monkeypatch)
     assert persisted["terminal_reason"] == "preflight_required"
 
 
+def test_full_gate_blocks_before_run_when_held_out_dependency_is_missing(tmp_path: Path, monkeypatch):
+    calls: list[str] = []
+
+    monkeypatch.setattr(
+        owner,
+        "_validate_preflight_dependency",
+        lambda *_args, **_kwargs: {"status": "passed"},
+    )
+    monkeypatch.setattr(
+        owner,
+        "_validate_held_out_dependency",
+        lambda *_args, **_kwargs: {
+            "status": "held_out_required",
+            "error": "held-out evidence is missing",
+        },
+    )
+
+    def should_not_run(*_args, **_kwargs):
+        calls.append("run")
+        raise AssertionError("full quality run must not start without held-out evidence")
+
+    monkeypatch.setattr(owner, "run_benchmark", should_not_run)
+    result = owner.run_owner(
+        ROOT,
+        output_dir=tmp_path / "pair",
+        backend_plan=BACKEND_PLAN,
+        preflight_run_root=tmp_path / "preflight",
+        run_writers=True,
+        run_judges=True,
+    )
+
+    assert calls == []
+    assert result["status"] == "incomplete"
+    assert result["terminal_reason"] == "held_out_required"
+    assert "held-out evidence" in result["error"]
+
+
+def test_full_gate_enters_benchmark_only_after_both_dependencies_pass(tmp_path: Path, monkeypatch):
+    calls: list[str] = []
+
+    monkeypatch.setattr(
+        owner,
+        "_validate_preflight_dependency",
+        lambda *_args, **_kwargs: calls.append("preflight") or {"status": "passed"},
+    )
+    monkeypatch.setattr(
+        owner,
+        "_validate_held_out_dependency",
+        lambda *_args, **_kwargs: calls.append("held_out") or {"status": "passed"},
+    )
+
+    def fake_run(*_args, **_kwargs):
+        calls.append("benchmark")
+        raise ValueError("short fake benchmark setup")
+
+    monkeypatch.setattr(owner, "run_benchmark", fake_run)
+    result = owner.run_owner(
+        ROOT,
+        output_dir=tmp_path / "pair",
+        backend_plan=BACKEND_PLAN,
+        preflight_run_root=tmp_path / "preflight",
+        held_out_run_root=tmp_path / "held-out",
+        run_writers=True,
+        run_judges=True,
+    )
+
+    assert calls == ["preflight", "held_out", "benchmark"]
+    assert result["status"] == "incomplete"
+
+
 def test_preflight_lane_skips_its_own_dependency_gate(tmp_path: Path, monkeypatch):
     called = {}
 

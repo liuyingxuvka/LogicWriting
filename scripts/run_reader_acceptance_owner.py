@@ -609,11 +609,26 @@ def _validate_held_out_dependency(
     try:
         from check_writing_quality_run import _check_held_out_run
 
+        # The held-out consumer validates its own corpus and capture hashes,
+        # but the dependency gate must also bind that receipt to the source
+        # snapshot and execution policy that the *next* full lane will use.
+        # Without this expected identity, an otherwise valid four-case run
+        # from an older implementation could satisfy today's full producer
+        # gate merely because its backend settings still match.
+        current = _current_preflight_identity(root.resolve(), backend_plan)
+        expected_pair_plan = dict(current["plan"])
+        expected_pair_plan.update(
+            {
+                "implementation_fingerprint": current["implementation_fingerprint"],
+                "execution_policy_fingerprint": current["execution_policy_fingerprint"],
+            }
+        )
+
         report = _check_held_out_run(
             root.resolve(),
             plan_path=backend_plan.resolve(),
             run_root=run_root,
-            pair_plan=None,
+            pair_plan=expected_pair_plan,
         )
     except (OSError, UnicodeError, ValueError, TypeError, ImportError, json.JSONDecodeError) as exc:
         return {"status": "held_out_required", "error": f"held-out evidence is unreadable: {exc}"}
@@ -945,7 +960,11 @@ def main() -> int:
     parser.add_argument("--backend-plan", type=Path)
     parser.add_argument("--run-writers", action="store_true")
     parser.add_argument("--run-judges", action="store_true")
-    parser.add_argument("--aggregate-only", action="store_true", help="Rebuild producer metadata from existing captures without starting writers or judges")
+    parser.add_argument(
+        "--aggregate-only",
+        action="store_true",
+        help="Read and validate existing captures without starting processes or writing metadata",
+    )
     parser.add_argument("--held-out-only", action="store_true", help="Run the four-case single-article holdout lane")
     parser.add_argument("--preflight-case", help="Run one canonical case as smoke-only preflight evidence")
     parser.add_argument("--repeats", type=int, help="Preflight repeat count; requires --preflight-case")

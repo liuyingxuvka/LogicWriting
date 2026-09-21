@@ -1,6 +1,6 @@
 ## Context
 
-The candidate starts from LogicWriting `4.0.2` with one current route owner per request and a managed source contract whose compiled contract and check manifest are generated artifacts. The A00 governance gate is blocked, so this work is an isolated candidate only. Existing route packs already contain the runtime references and examples, but their consumer closure is implicit; the reader-v2 fixture currently exercises a synthetic complete chain and labels it as blind quality evidence.
+The candidate starts from LogicWriting `4.0.3` with one current route owner per request and a managed source contract whose compiled contract and check manifest are generated artifacts. The A00 governance gate is blocked, so this work is an isolated candidate only. Existing route packs already contain the runtime references and examples, but their consumer closure is implicit; the reader-v2 fixture currently exercises a synthetic complete chain and labels it as blind quality evidence.
 
 ## Goals / Non-Goals
 

@@ -6,6 +6,17 @@ releases, tags, package publications, installations, or predecessor deletions.
 The format follows the main ideas of Keep a Changelog, and the source version
 line follows semantic versioning.
 
+## [4.0.3]
+
+### Fixed
+
+- Hardened frozen-validation receipt reuse so a cached result must remain under
+  its own owner attempt and match the current result identity before reuse.
+- Bound reader-quality consumers to one producer dependency index, held-out
+  implementation/policy pair, and current source/toolchain fingerprints.
+- Added release-wrapper and preflight dependency counterexamples while keeping
+  real model quality batches explicitly out of this patch release.
+
 ## [Unreleased]
 
 - Hosted release metadata is intentionally not asserted by this source file.

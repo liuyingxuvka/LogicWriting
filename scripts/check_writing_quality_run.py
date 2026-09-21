@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import copy
 import json
+import os
 import sys
 from pathlib import Path
 from typing import Any, Mapping
@@ -77,6 +78,112 @@ def _manifest_fingerprint(manifest: Mapping[str, Any]) -> str:
     return fingerprint(
         {key: value for key, value in manifest.items() if key != "manifest_fingerprint"}
     )
+
+
+def _dependency_index_path(run_root: Path, explicit: Path | None = None) -> Path:
+    """Resolve the producer dependency index inside the supplied run root.
+
+    The quality consumer is deliberately a read-only consumer of one exact
+    producer attempt.  An environment override is useful when the frozen
+    validation parent has already resolved a dependency path, but it must
+    still point below ``run_root``.  In particular, this helper never falls
+    back to a "latest" run directory or accepts a foreign maintenance unit.
+    """
+
+    root = run_root.resolve()
+    raw = explicit
+    if raw is None:
+        environment_value = os.environ.get("LW_VALIDATION_DEPENDENCY_INDEX")
+        raw = Path(environment_value) if environment_value else Path("dependency-index.json")
+    candidate = Path(raw).expanduser()
+    if not candidate.is_absolute():
+        candidate = root / candidate
+    if _is_link(candidate) or any(_is_link(parent) for parent in candidate.parents):
+        raise ValueError("quality dependency index is symlinked")
+    resolved = candidate.resolve()
+    try:
+        resolved.relative_to(root)
+    except ValueError as exc:
+        raise ValueError("quality dependency index escaped the producer run root") from exc
+    if not resolved.is_file():
+        raise ValueError(f"quality dependency index is missing: {resolved}")
+    return resolved
+
+
+def _validate_dependency_index(
+    run_root: Path,
+    *,
+    producer_id: str,
+    manifest: Mapping[str, Any],
+    explicit_path: Path | None = None,
+) -> dict[str, Any]:
+    """Validate the producer-owned dependency index before consuming rows.
+
+    ``output-manifest.json`` and the row validators establish the quality
+    capture boundary.  This separate check establishes that the consumer is
+    reading the exact producer receipt selected by the frozen dependency
+    graph, with the same source, toolchain, unit and manifest fingerprints.
+    It intentionally performs no writes and never launches a producer.
+    """
+
+    root = run_root.resolve()
+    index_path = _dependency_index_path(root, explicit_path)
+    try:
+        index = _read_json(index_path)
+    except (OSError, UnicodeError, json.JSONDecodeError, ValueError) as exc:
+        raise ValueError(f"quality dependency index is unreadable: {exc}") from exc
+    if not isinstance(index, Mapping):
+        raise ValueError("quality dependency index must be an object")
+    if index.get("schema_version") != "logic-writing.validation-dependency-index.v1":
+        raise ValueError("quality dependency index schema is not current")
+    if index.get("consumer_check_id") != producer_id:
+        raise ValueError("quality dependency index belongs to another producer")
+    expected_index_fingerprint = fingerprint(
+        {key: value for key, value in index.items() if key != "index_fingerprint"}
+    )
+    if index.get("index_fingerprint") != expected_index_fingerprint:
+        raise ValueError("quality dependency index fingerprint is stale")
+    dependencies = index.get("dependencies")
+    if not isinstance(dependencies, list):
+        raise ValueError("quality dependency index dependencies must be an array")
+    manifest_locator = index.get("producer_output_manifest_path")
+    if not isinstance(manifest_locator, str) or not manifest_locator:
+        raise ValueError("quality dependency index has no producer manifest path")
+    try:
+        manifest_path = _path(root, manifest_locator)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"quality dependency producer manifest path is invalid: {exc}") from exc
+    if manifest_path.name != "output-manifest.json":
+        raise ValueError("quality dependency index does not point to output-manifest.json")
+    if index.get("producer_output_manifest_fingerprint") != manifest.get("manifest_fingerprint"):
+        raise ValueError("quality dependency index manifest fingerprint does not match the loaded manifest")
+    if manifest_path != (root / "output-manifest.json").resolve():
+        raise ValueError("quality dependency index points outside the selected producer output")
+    manifest_fingerprint = manifest.get("manifest_fingerprint")
+    if not isinstance(manifest_fingerprint, str) or not manifest_fingerprint:
+        raise ValueError("loaded producer manifest has no fingerprint")
+    if manifest_fingerprint != _manifest_fingerprint(manifest):
+        raise ValueError("loaded producer manifest fingerprint is stale")
+    for key in ("current_source_fingerprint", "current_toolchain_fingerprint"):
+        observed = index.get(key)
+        expected = manifest.get(
+            "source_manifest_fingerprint" if key == "current_source_fingerprint" else "toolchain_fingerprint"
+        )
+        if not isinstance(observed, str) or not observed or not isinstance(expected, str) or not expected:
+            raise ValueError(f"quality dependency index {key} is incomplete")
+        if observed != expected:
+            raise ValueError(f"quality dependency index {key} is stale")
+    if "unit_id" in index and index.get("unit_id") != manifest.get("unit_id", "unit:logic-writing"):
+        raise ValueError("quality dependency index maintenance unit is stale")
+    if manifest.get("unit_id") not in (None, "unit:logic-writing"):
+        raise ValueError("quality producer manifest belongs to another maintenance unit")
+    return {
+        "status": "passed",
+        "path": str(index_path),
+        "fingerprint": index.get("index_fingerprint"),
+        "producer_output_manifest_path": str(manifest_path),
+        "producer_output_manifest_fingerprint": manifest.get("manifest_fingerprint"),
+    }
 
 
 def _record_request_matches(record: Mapping[str, Any], request: Mapping[str, Any], *, role: str) -> None:
@@ -1094,6 +1201,7 @@ def check(
     run_root: Path,
     dependency_producer: str | None = None,
     held_out_run_root: Path | None = None,
+    dependency_index_path: Path | None = None,
 ) -> dict[str, Any]:
     root = root.resolve()
     run_root = run_root.resolve()
@@ -1165,8 +1273,20 @@ def check(
             errors.append(f"producer manifest {key} is stale")
         if result.get(key) != expected:
             errors.append(f"producer run result {key} is stale")
-    if dependency_producer and dependency_producer != manifest.get("producer_check_id"):
-        errors.append("dependency producer does not match the current output")
+    dependency_report: dict[str, Any] | None = None
+    if dependency_producer:
+        if dependency_producer != manifest.get("producer_check_id"):
+            errors.append("dependency producer does not match the current output")
+        else:
+            try:
+                dependency_report = _validate_dependency_index(
+                    run_root,
+                    producer_id=dependency_producer,
+                    manifest=manifest,
+                    explicit_path=dependency_index_path,
+                )
+            except (OSError, UnicodeError, ValueError, TypeError, json.JSONDecodeError) as exc:
+                errors.append(f"producer dependency index is invalid: {exc}")
     try:
         _validate_execution_accounting(
             run_root,
@@ -1241,6 +1361,7 @@ def check(
         "improved_case_count": summary.get("improved_case_count"),
         "producer_output_manifest_fingerprint": manifest.get("manifest_fingerprint"),
         "claim_boundary": "This consumer checks one bounded twelve-case local comparison; it does not generalize the result to arbitrary topics or models.",
+        "dependency_index": dependency_report,
         # Without a holdout root this is intentionally the only quality
         # conclusion exposed by the consumer.
         "pair_comparison": pair_report,
@@ -1273,6 +1394,7 @@ def main() -> int:
     parser.add_argument("--run-root", type=Path, required=False)
     parser.add_argument("--held-out-run-root", type=Path, required=False)
     parser.add_argument("--dependency-producer")
+    parser.add_argument("--dependency-index", type=Path)
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
     plan = args.plan or (args.root / "tests/fixtures/writing_quality/local-backend-plan.json")
@@ -1283,6 +1405,7 @@ def main() -> int:
         run_root=run_root,
         dependency_producer=args.dependency_producer,
         held_out_run_root=args.held_out_run_root,
+        dependency_index_path=args.dependency_index,
     )
     if args.json:
         print(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True))

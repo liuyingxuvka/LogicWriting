@@ -33,7 +33,7 @@ def scenario(tmp_path, monkeypatch):
         receipt = {"receipt_version": "researchguard.logic.depth.v3", "status": "pass", "model_id": plan["model_id"],
                    "model_fingerprint": plan["model_fingerprint"], "unresolved_gaps": [], "untested_high_impact_node_ids": [],
                    "claim_boundary": "Synthetic protocol fixture only."}
-        monkeypatch.setattr(pipeline.InstalledResearchGuardProvider, "_console", lambda self: ("synthetic-console", {"provider_id": "researchguard", "version": "0.5.3", "test_mode": "protocol_only"}))
+        monkeypatch.setattr(pipeline.InstalledResearchGuardProvider, "_console", lambda self: ("synthetic-console", {"provider_id": "researchguard", "version": "0.5.4", "test_mode": "protocol_only"}))
 
         def fake_run(self, console, args, output, *, cwd):
             calls.append(args[1] if args[0] == "guard-contract" else args[0])
