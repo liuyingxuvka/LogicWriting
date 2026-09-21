@@ -32,7 +32,7 @@ EXPECTED_GUARD_BY_SURFACE = {
     "sourceguard_canon_support": "sourceguard",
 }
 RESEARCHGUARD_GUARDS = {"traceguard", "logicguard", "sourceguard"}
-RESEARCHGUARD_VERSION = "0.5.2"
+RESEARCHGUARD_VERSION = "0.5.3"
 IDENTITY_FIELDS = {
     "surface": "surface",
     "guard_id": "guard_id",

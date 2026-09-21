@@ -342,6 +342,17 @@ def test_agent_message_text_is_not_scanned_as_a_tool_event():
     assert _tool_events(events) == []
 
 
+def test_unknown_item_event_is_structurally_unclear_and_fails_closed():
+    events, errors = _parse_events(
+        b'{"type":"thread.started","thread_id":"t"}\n'
+        b'{"type":"item.completed","item":{"type":"future_item"}}\n'
+    )
+    assert errors == []
+    assert _tool_events(events) == [
+        {"event_type": "item.completed", "item_type": "future_item", "line": 1}
+    ]
+
+
 def test_provider_error_projection_is_separate_from_tool_events_and_fails_closed():
     recoverable_events, parse_errors = _parse_events(
         b'{"type":"thread.started","thread_id":"t"}\n'

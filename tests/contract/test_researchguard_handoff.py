@@ -31,7 +31,7 @@ def _native_researchguard_ready_plan(tmp_path: Path) -> tuple[dict, str, str]:
     candidates = []
     if configured:
         candidates.append(Path(configured))
-    candidates.append(Path(r"D:\Documents_Archive_20260824\workflow-state-projects\ResearchGuard"))
+    candidates.append(Path(__file__).resolve().parents[2].parent / "ResearchGuard")
     rg_root = next(
         (candidate.resolve() for candidate in candidates if (candidate / "src" / "researchguard").is_dir()),
         None,

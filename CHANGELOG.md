@@ -10,6 +10,18 @@ line follows semantic versioning.
 
 - Hosted release metadata is intentionally not asserted by this source file.
 
+## [4.0.2]
+
+### Fixed
+
+- Hardened the local execution backend so provider errors and structured tool
+  events remain separate, the fixed disable list is deterministic, and failed
+  attempts preserve their original evidence.
+- Added direct counterexample coverage for unknown event shapes and non-zero
+  provider exits.
+- Added the current ResearchGuard behavior-commitment candidate boundary while
+  keeping incomplete native evidence explicitly blocked.
+
 ## [4.0.1]
 
 ### Fixed

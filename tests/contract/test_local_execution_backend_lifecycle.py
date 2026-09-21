@@ -67,6 +67,18 @@ def _install_fake_child(monkeypatch, *, mode: str = "complete", argv_capture=Non
         )
     elif mode == "timeout":
         code = "import time; time.sleep(30)"
+    elif mode == "failed":
+        code = (
+            "import json,pathlib,sys; "
+            "sys.stdin.buffer.read(); "
+            "events=[{'type':'thread.started','thread_id':'failed-thread'},"
+            "{'type':'turn.started'},"
+            "{'type':'error','message':'provider failed before completion'}]; "
+            "[(sys.stdout.write(json.dumps(item)+'\\n'),sys.stdout.flush()) for item in events]; "
+            "sys.stderr.write('raw provider stderr\\n'); sys.stderr.flush(); "
+            "pathlib.Path(sys.argv[-1]).write_text('partial\\n',encoding='utf-8'); "
+            "sys.exit(23)"
+        )
     else:
         raise AssertionError(mode)
 
@@ -517,3 +529,25 @@ def test_local_run_start_failure_is_explicit_and_never_claims_completion(monkeyp
     assert result["process_identity"]["pid"] is None
     assert result["process_creation_time"] is None
     assert result["cleanup_evidence"]["confirmed"] is False
+
+
+def test_local_run_preserves_raw_capture_for_nonzero_provider_failure(monkeypatch, tmp_path):
+    _install_fake_child(monkeypatch, mode="failed")
+    backend = _backend(tmp_path)
+
+    result = backend.run("writer", _request("writer:nonzero"))
+
+    assert result["terminal_status"] == "failed"
+    assert result["failure_reason"] == "nonzero_exit"
+    attempt = backend.run_root / result["execution_capture_ref"]
+    completion = json.loads(attempt.read_text(encoding="utf-8"))
+    events = backend.run_root / result["events_locator"]
+    output = backend.run_root / result["raw_output_locator"]
+    stderr = backend.run_root / result["stderr_locator"]
+    assert completion["terminal_status"] == "failed"
+    assert completion["failure_reason"] == "nonzero_exit"
+    assert b"provider failed before completion" in events.read_bytes()
+    assert output.read_text(encoding="utf-8") == "partial\n"
+    assert stderr.read_bytes().replace(b"\r\n", b"\n") == b"raw provider stderr\n"
+    assert result["events_fingerprint"].startswith("sha256:")
+    assert result["raw_output_fingerprint"].startswith("sha256:")

@@ -504,7 +504,12 @@ def _parse_events(stdout: bytes) -> tuple[list[dict[str, Any]], list[str]]:
 
 def _tool_events(events: list[Mapping[str, Any]]) -> list[dict[str, Any]]:
     found: list[dict[str, Any]] = []
-    safe_types = {"agent_message", "reasoning", "turn.started", "turn.completed", "thread.started"}
+    # These are the only item payloads known to be non-executing output in
+    # the pinned JSON event protocol.  An item event with an unrecognised
+    # type is intentionally treated as an isolation violation: accepting an
+    # unknown future item would silently expand the tool allow-list.
+    non_tool_item_types = {"agent_message", "reasoning", "error"}
+    item_event_types = {"item.started", "item.completed"}
     for event in events:
         event_type = _event_type(event)
         item = event.get("item")
@@ -521,11 +526,12 @@ def _tool_events(events: list[Mapping[str, Any]]) -> list[dict[str, Any]]:
         # look like an input-isolation violation.
         if event_type in {"error", "turn.failed", "turn.error", "turn.aborted"}:
             continue
-        if item_type and item_type not in safe_types:
+        is_item_event = event_type in item_event_types or "item" in event_type.casefold()
+        if item_type and item_type not in non_tool_item_types:
             lowered = item_type.casefold()
-            if any(token in lowered for token in ("command", "tool", "mcp", "shell", "web", "function")):
+            if is_item_event or any(token in lowered for token in ("command", "tool", "mcp", "shell", "web", "function")):
                 found.append({"event_type": event_type, "item_type": item_type, "line": event.get("_line_index")})
-        if event_type in {"item.started", "item.completed"} and not item_type:
+        if is_item_event and not item_type:
             # An item event without a typed payload cannot prove isolation.
             found.append({"event_type": event_type, "item_type": "missing", "line": event.get("_line_index")})
     return found

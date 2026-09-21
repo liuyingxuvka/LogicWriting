@@ -84,7 +84,7 @@ GUARD_SPECS = {
         "native_owner": "traceguard",
         "route_id": "primary:researchguard:trace",
         "check_id": "traceguard.storyline_terminal",
-        "tool_version": "0.5.2",
+        "tool_version": "0.5.3",
         "status": "passed",
     },
     "worldguard_story_claims": {
@@ -100,7 +100,7 @@ GUARD_SPECS = {
         "native_owner": "logicguard",
         "route_id": "primary:researchguard:logic",
         "check_id": "logicguard.theme_support_applicability",
-        "tool_version": "0.5.2",
+        "tool_version": "0.5.3",
         "status": "not_applicable_with_reason",
     },
     "sourceguard_canon_support": {
@@ -108,7 +108,7 @@ GUARD_SPECS = {
         "native_owner": "sourceguard",
         "route_id": "primary:researchguard:source",
         "check_id": "sourceguard.canon_support_applicability",
-        "tool_version": "0.5.2",
+        "tool_version": "0.5.3",
         "status": "not_applicable_with_reason",
     },
 }
