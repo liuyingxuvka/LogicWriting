@@ -5,11 +5,11 @@
   "native_owner": "logicguard",
   "native_route_id": "primary:researchguard:logic",
   "native_check_id": "logicguard.theme_support_applicability",
-  "tool_version": "0.5.1",
+  "tool_version": "0.5.2",
   "receipt_schema_version": "logicguard.native_terminal_receipt.v1",
   "input_fingerprint": "sha256:644dd863244fd0e739c622abe2593e70685b551305088d3b8f7c15c922da737c",
   "terminal_receipt_id": "lantern-map-logicguard-terminal",
-  "terminal_receipt_ref": "file:../guard_receipts/logicguard-terminal.json;sha256:332d616711902c5d6a220b0831db7774bba5713d02220397c555a938966fbc78",
+  "terminal_receipt_ref": "file:../guard_receipts/logicguard-terminal.json;sha256:e7dd6a66245bee4b22da7041244b999fb4016e34475132b589f7ef056daca65f",
   "terminal_status": "not_applicable_with_reason",
   "claim_boundary": "The Lantern Map fixture claims structural readiness, not a material theme, moral, or ending-interpretation conclusion."
 }

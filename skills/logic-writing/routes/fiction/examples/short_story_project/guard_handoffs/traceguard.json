@@ -5,11 +5,11 @@
   "native_owner": "traceguard",
   "native_route_id": "primary:researchguard:trace",
   "native_check_id": "traceguard.storyline_terminal",
-  "tool_version": "0.5.1",
+  "tool_version": "0.5.2",
   "receipt_schema_version": "traceguard.native_terminal_receipt.v1",
   "input_fingerprint": "sha256:9d69656be94f538157e409f350e305909b6b8ef0c5041c816cb41b55b8c382a4",
   "terminal_receipt_id": "lantern-map-traceguard-terminal",
-  "terminal_receipt_ref": "file:../guard_receipts/traceguard-terminal.json;sha256:8b310273a4ec9288b2856122ba3bcecbe08467c48748ad1fb010a25148eafade",
+  "terminal_receipt_ref": "file:../guard_receipts/traceguard-terminal.json;sha256:eefbba45b8f62898890a92b2e5c535a869ee97892e1ceed06e7d9488897f34d7",
   "terminal_status": "passed",
   "claim_boundary": "TraceGuard terminal receipt covers the Lantern Map chronology and reader-revelation input only."
 }

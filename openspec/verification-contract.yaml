@@ -223,7 +223,7 @@ checks:
     execution_id: logic-writing-release.reader-execution-quality-preflight.v1
     validation_scope: full
     snapshot_policy: frozen
-    toolchain_identity: codex-cli-0.154.0-gpt-6-astra-xhigh
+    toolchain_identity: codex-cli-0.155.0-gpt-6-astra-xhigh
     input_selectors: [scripts/run_reader_acceptance_owner.py, scripts/run_writing_quality_benchmark.py, skills/logic-writing/scripts/**, skills/logic-writing/assets/schemas/**, tests/fixtures/writing_quality/**, skills/logic-writing/references/**]
     depends_on_receipts: [check.tests.archive-lifecycle]
     command: python
@@ -239,7 +239,7 @@ checks:
     execution_id: logic-writing-release.reader-execution-quality-heldout.v1
     validation_scope: full
     snapshot_policy: frozen
-    toolchain_identity: codex-cli-0.154.0-gpt-6-astra-xhigh
+    toolchain_identity: codex-cli-0.155.0-gpt-6-astra-xhigh
     input_selectors: [scripts/run_reader_acceptance_owner.py, scripts/run_writing_quality_benchmark.py, scripts/check_writing_quality_run.py, skills/logic-writing/scripts/**, skills/logic-writing/assets/schemas/**, tests/fixtures/writing_quality/**, skills/logic-writing/references/**]
     depends_on_receipts: [check.reader.preflight-producer]
     command: python
@@ -255,7 +255,7 @@ checks:
     execution_id: logic-writing-release.reader-execution-quality.v1
     validation_scope: full
     snapshot_policy: frozen
-    toolchain_identity: codex-cli-0.154.0-gpt-6-astra-xhigh
+    toolchain_identity: codex-cli-0.155.0-gpt-6-astra-xhigh
     input_selectors: [scripts/run_reader_acceptance_owner.py, scripts/run_writing_quality_benchmark.py, skills/logic-writing/scripts/**, skills/logic-writing/assets/schemas/**, tests/fixtures/writing_quality/**, skills/logic-writing/references/**]
     depends_on_receipts: [check.reader.heldout-producer]
     command: python

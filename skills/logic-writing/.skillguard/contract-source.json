@@ -1,979 +1,2792 @@
 {
-  "artifacts": [],
   "checks": [
     {
+      "args": [
+        ".skillguard/checks/run_logic_writing_check.py",
+        "routing"
+      ],
       "check_id": "check:logic-writing:routing",
-      "coverage_rationale": "The current router freezes WritingRequest and ReaderIntent, selects one terminal owner, preserves intent conflicts, and binds one whole-artifact composition authority.",
-      "coverage_scope": "declared_obligations",
-      "covers_obligation_ids": [
-        "obligation:logic-writing:routing"
+      "command": "{{python}}",
+      "expected": {
+        "exit_code": 0
+      },
+      "input_ids": [
+        "input:wrapper",
+        "input:334",
+        "input:324",
+        "input:040"
       ],
-      "depends_on_check_ids": [],
-      "evidence_class": "hard",
-      "evidence_domain_id": "evidence-domain:logic-writing:routing",
-      "evidence_subject_id": "subject:logic-writing:routing",
-      "execution_owner_id": "owner:logic-writing:routing",
-      "input_selectors": [
-        {
-          "kind": "path",
-          "path": "scripts/author/skillguard_contract_model.py"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/scripts/select_route.py"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/references/router.md"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/assets/schemas/writing-request.schema.json"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/assets/schemas/reader-intent.schema.json"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/assets/schemas/composition-plan.schema.json"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/scripts/reader_pipeline.py"
-        }
-      ],
-      "kind": "model_assertion",
-      "maintenance_unit_id": "unit:logic-writing",
-      "member_skill_id": "logic-writing",
-      "native_route_id": "route:logic-writing:router",
-      "semantic_check_id": "semantic:logic-writing:routing",
-      "timeout_seconds": 60
+      "kind": "command",
+      "timeout_seconds": 180
     },
     {
       "args": [
-        "scripts/check_researchguard_topology.py",
-        "--root",
-        ".",
-        "--json"
+        ".skillguard/checks/run_logic_writing_check.py",
+        "specialist-authority"
       ],
       "check_id": "check:logic-writing:specialist-authority",
-      "command": "python",
-      "coverage_rationale": "The target-owned topology checker preserves LogicGuard, SourceGuard, and TraceGuard semantic ownership through one ResearchGuard console and rejects retired ids, old module commands, direct imports, bare executable routes, and alternate-success paths.",
-      "coverage_scope": "declared_obligations",
-      "covers_obligation_ids": [
-        "obligation:logic-writing:specialist-authority"
-      ],
-      "cwd_token": "repository_root",
-      "depends_on_check_ids": [
-        "check:logic-writing:routing"
-      ],
-      "evidence_class": "hard",
-      "evidence_domain_id": "evidence-domain:logic-writing:specialist-authority",
-      "evidence_subject_id": "subject:logic-writing:specialist-authority",
-      "execution_owner_id": "owner:logic-writing:specialist-authority",
+      "command": "{{python}}",
       "expected": {
         "exit_code": 0
       },
-      "input_selectors": [
-        {
-          "kind": "subtree",
-          "path": "skills/logic-writing/references/adapters"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/scripts/provider_preflight.py"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/scripts/validate_adapter_request.py"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/scripts/validate_adapter_result.py"
-        },
-        {
-          "kind": "path",
-          "path": "scripts/check_researchguard_topology.py"
-        }
+      "input_ids": [
+        "input:wrapper",
+        "input:334",
+        "input:036"
       ],
       "kind": "command",
-      "maintenance_unit_id": "unit:logic-writing",
-      "member_skill_id": "logic-writing",
-      "native_route_id": "route:logic-writing:router",
-      "semantic_check_id": "semantic:logic-writing:specialist-authority",
-      "timeout_seconds": 60
-    },
-    {
-      "check_id": "check:logic-writing:investigation",
-      "coverage_rationale": "The investigation route binds evidence to a report-level composition profile and validates the actual current report spans for alternatives, limits, conditions, and conclusion scope.",
-      "coverage_scope": "declared_obligations",
-      "covers_obligation_ids": [
-        "obligation:logic-writing:investigation-evidence"
-      ],
-      "depends_on_check_ids": [
-        "check:logic-writing:specialist-authority"
-      ],
-      "evidence_class": "hard",
-      "evidence_domain_id": "evidence-domain:logic-writing:investigation",
-      "evidence_subject_id": "subject:logic-writing:investigation",
-      "execution_owner_id": "owner:logic-writing:investigation",
-      "input_selectors": [
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/references/routes/investigation.md"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/scripts/validate_source_registry.py"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/scripts/validate_claim_support.py"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/scripts/validate_research_packet.py"
-        },
-        {
-          "kind": "subtree",
-          "path": "skills/logic-writing/routes/investigation"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/assets/schemas/investigation-composition.schema.json"
-        }
-      ],
-      "kind": "model_assertion",
-      "maintenance_unit_id": "unit:logic-writing",
-      "member_skill_id": "logic-writing",
-      "native_route_id": "route:logic-writing:investigation",
-      "semantic_check_id": "semantic:logic-writing:investigation",
-      "timeout_seconds": 60
-    },
-    {
-      "check_id": "check:logic-writing:academic",
-      "coverage_rationale": "The academic route binds evidence and provenance to an artifact-mode composition profile and validates hierarchy, paragraph contribution, methods, citations, qualification, and actual current spans.",
-      "coverage_scope": "declared_obligations",
-      "covers_obligation_ids": [
-        "obligation:logic-writing:academic-provenance"
-      ],
-      "depends_on_check_ids": [
-        "check:logic-writing:specialist-authority"
-      ],
-      "evidence_class": "hard",
-      "evidence_domain_id": "evidence-domain:logic-writing:academic",
-      "evidence_subject_id": "subject:logic-writing:academic",
-      "execution_owner_id": "owner:logic-writing:academic",
-      "input_selectors": [
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/references/routes/academic-writing.md"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/scripts/build_source_unit_manifest.py"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/scripts/validate_revision_provenance.py"
-        },
-        {
-          "kind": "subtree",
-          "path": "skills/logic-writing/routes/academic"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/assets/schemas/academic-composition.schema.json"
-        }
-      ],
-      "kind": "model_assertion",
-      "maintenance_unit_id": "unit:logic-writing",
-      "member_skill_id": "logic-writing",
-      "native_route_id": "route:logic-writing:academic-writing",
-      "semantic_check_id": "semantic:logic-writing:academic",
-      "timeout_seconds": 60
-    },
-    {
-      "check_id": "check:logic-writing:fiction",
-      "coverage_rationale": "The fiction route owns story movement, resistance and cost, promises and reveals, continuity, point of view, voice, reader-state change, and actual manuscript spans.",
-      "coverage_scope": "declared_obligations",
-      "covers_obligation_ids": [
-        "obligation:logic-writing:fiction-native"
-      ],
-      "depends_on_check_ids": [
-        "check:logic-writing:specialist-authority"
-      ],
-      "evidence_class": "hard",
-      "evidence_domain_id": "evidence-domain:logic-writing:fiction",
-      "evidence_subject_id": "subject:logic-writing:fiction",
-      "execution_owner_id": "owner:logic-writing:fiction",
-      "input_selectors": [
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/references/routes/fiction-writing.md"
-        },
-        {
-          "kind": "subtree",
-          "path": "skills/logic-writing/routes/fiction"
-        },
-        {
-          "kind": "path",
-          "path": "scripts/run_fiction_regression.py"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/assets/schemas/fiction-composition.schema.json"
-        }
-      ],
-      "kind": "model_assertion",
-      "maintenance_unit_id": "unit:logic-writing",
-      "member_skill_id": "logic-writing",
-      "native_route_id": "route:logic-writing:fiction-writing",
-      "semantic_check_id": "semantic:logic-writing:fiction",
-      "timeout_seconds": 180
-    },
-    {
-      "check_id": "check:logic-writing:travel",
-      "coverage_rationale": "The travel route owns traveler fit, guide-kind composition, narrative body, operational appendix, risk, fallback, source recheck, local texture, and actual guide spans.",
-      "coverage_scope": "declared_obligations",
-      "covers_obligation_ids": [
-        "obligation:logic-writing:travel-native"
-      ],
-      "depends_on_check_ids": [
-        "check:logic-writing:specialist-authority"
-      ],
-      "evidence_class": "hard",
-      "evidence_domain_id": "evidence-domain:logic-writing:travel",
-      "evidence_subject_id": "subject:logic-writing:travel",
-      "execution_owner_id": "owner:logic-writing:travel",
-      "input_selectors": [
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/references/routes/travel-guide.md"
-        },
-        {
-          "kind": "subtree",
-          "path": "skills/logic-writing/routes/travel"
-        },
-        {
-          "kind": "path",
-          "path": "scripts/run_travel_regression.py"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/assets/schemas/travel-composition.schema.json"
-        }
-      ],
-      "kind": "model_assertion",
-      "maintenance_unit_id": "unit:logic-writing",
-      "member_skill_id": "logic-writing",
-      "native_route_id": "route:logic-writing:travel-guide",
-      "semantic_check_id": "semantic:logic-writing:travel",
-      "timeout_seconds": 180
-    },
-    {
-      "check_id": "check:logic-writing:shared-writing",
-      "coverage_rationale": "The shared writing contract binds the complete CompositionPlan and ArtifactMap to the exact current bytes; content findings never become automatic document units.",
-      "coverage_scope": "declared_obligations",
-      "covers_obligation_ids": [
-        "obligation:logic-writing:shared-writing"
-      ],
-      "depends_on_check_ids": [
-        "check:logic-writing:routing"
-      ],
-      "evidence_class": "hard",
-      "evidence_domain_id": "evidence-domain:logic-writing:shared-writing",
-      "evidence_subject_id": "subject:logic-writing:shared-writing",
-      "execution_owner_id": "owner:logic-writing:shared-writing",
-      "input_selectors": [
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/references/shared/writing-contract.md"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/assets/schemas/shared-writing-contract.schema.json"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/scripts/validate_shared_writing.py"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/assets/schemas/composition-plan.schema.json"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/assets/schemas/artifact-map.schema.json"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/scripts/build_artifact_map.py"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/scripts/reader_pipeline.py"
-        }
-      ],
-      "kind": "model_assertion",
-      "maintenance_unit_id": "unit:logic-writing",
-      "member_skill_id": "logic-writing",
-      "native_route_id": "route:logic-writing:router",
-      "semantic_check_id": "semantic:logic-writing:shared-writing",
-      "timeout_seconds": 60
-    },
-    {
-      "check_id": "check:logic-writing:reader-artifact",
-      "coverage_rationale": "The current artifact is checked by deterministic audit, route-native semantic review, and an independent judgment bound to real excerpts and exact fingerprints.",
-      "coverage_scope": "declared_obligations",
-      "covers_obligation_ids": [
-        "obligation:logic-writing:reader-actual-artifact"
-      ],
-      "depends_on_check_ids": [
-        "check:logic-writing:investigation",
-        "check:logic-writing:academic",
-        "check:logic-writing:fiction",
-        "check:logic-writing:travel",
-        "check:logic-writing:shared-writing"
-      ],
-      "evidence_class": "hard",
-      "evidence_domain_id": "evidence-domain:logic-writing:reader-artifact",
-      "evidence_subject_id": "subject:logic-writing:reader-artifact",
-      "execution_owner_id": "owner:logic-writing:reader-artifact",
-      "input_selectors": [
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/references/shared/reader-brief.md"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/references/shared/human-writing.md"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/scripts/build_reader_brief.py"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/scripts/audit_reader_output.py"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/scripts/validate_judgment_receipt.py"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/assets/schemas/reader-audit.schema.json"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/assets/schemas/reader-judgment.schema.json"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/assets/schemas/route-artifact-review.schema.json"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/scripts/reader_pipeline.py"
-        }
-      ],
-      "kind": "model_assertion",
-      "maintenance_unit_id": "unit:logic-writing",
-      "member_skill_id": "logic-writing",
-      "native_route_id": "route:logic-writing:router",
-      "semantic_check_id": "semantic:logic-writing:reader-artifact",
-      "timeout_seconds": 60
-    },
-    {
-      "check_id": "check:logic-writing:final-closure",
-      "coverage_rationale": "Closure consumes one exact current chain and real typed repair attempts; repeated closure calls are not progress and stale evidence cannot close the artifact.",
-      "coverage_scope": "declared_obligations",
-      "covers_obligation_ids": [
-        "obligation:logic-writing:final-closure"
-      ],
-      "depends_on_check_ids": [
-        "check:logic-writing:reader-artifact"
-      ],
-      "evidence_class": "hard",
-      "evidence_domain_id": "evidence-domain:logic-writing:final-closure",
-      "evidence_subject_id": "subject:logic-writing:final-closure",
-      "execution_owner_id": "owner:logic-writing:final-closure",
-      "input_selectors": [
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/references/shared/closure.md"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/scripts/receipt_authority.py"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/scripts/derive_closure.py"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/scripts/propagate_staleness.py"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/assets/schemas/reader-repair-request.schema.json"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/assets/schemas/reader-repair-result.schema.json"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/assets/schemas/revision-provenance.schema.json"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/scripts/build_reader_repair.py"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/scripts/record_reader_repair.py"
-        }
-      ],
-      "kind": "model_assertion",
-      "maintenance_unit_id": "unit:logic-writing",
-      "member_skill_id": "logic-writing",
-      "native_route_id": "route:logic-writing:router",
-      "semantic_check_id": "semantic:logic-writing:final-closure",
-      "timeout_seconds": 60
+      "timeout_seconds": 240
     },
     {
       "args": [
-        "scripts/author/evaluate_contract_calibration.py",
-        "--positive",
-        "skills/logic-writing/.skillguard/fixtures/contract-depth-positive.json",
-        "--shallow",
-        "skills/logic-writing/.skillguard/fixtures/contract-depth-shallow.json"
+        ".skillguard/checks/run_logic_writing_check.py",
+        "investigation"
+      ],
+      "check_id": "check:logic-writing:investigation",
+      "command": "{{python}}",
+      "expected": {
+        "exit_code": 0
+      },
+      "input_ids": [
+        "input:wrapper",
+        "input:043"
+      ],
+      "kind": "command",
+      "timeout_seconds": 180
+    },
+    {
+      "args": [
+        ".skillguard/checks/run_logic_writing_check.py",
+        "academic"
+      ],
+      "check_id": "check:logic-writing:academic",
+      "command": "{{python}}",
+      "expected": {
+        "exit_code": 0
+      },
+      "input_ids": [
+        "input:wrapper",
+        "input:041"
+      ],
+      "kind": "command",
+      "timeout_seconds": 180
+    },
+    {
+      "args": [
+        ".skillguard/checks/run_logic_writing_check.py",
+        "fiction"
+      ],
+      "check_id": "check:logic-writing:fiction",
+      "command": "{{python}}",
+      "expected": {
+        "exit_code": 0
+      },
+      "input_ids": [
+        "input:wrapper",
+        "input:042"
+      ],
+      "kind": "command",
+      "timeout_seconds": 180
+    },
+    {
+      "args": [
+        ".skillguard/checks/run_logic_writing_check.py",
+        "travel"
+      ],
+      "check_id": "check:logic-writing:travel",
+      "command": "{{python}}",
+      "expected": {
+        "exit_code": 0
+      },
+      "input_ids": [
+        "input:wrapper",
+        "input:045"
+      ],
+      "kind": "command",
+      "timeout_seconds": 180
+    },
+    {
+      "args": [
+        ".skillguard/checks/run_logic_writing_check.py",
+        "shared-writing"
+      ],
+      "check_id": "check:logic-writing:shared-writing",
+      "command": "{{python}}",
+      "expected": {
+        "exit_code": 0
+      },
+      "input_ids": [
+        "input:wrapper",
+        "input:050"
+      ],
+      "kind": "command",
+      "timeout_seconds": 180
+    },
+    {
+      "args": [
+        ".skillguard/checks/run_logic_writing_check.py",
+        "reader-artifact"
+      ],
+      "check_id": "check:logic-writing:reader-artifact",
+      "command": "{{python}}",
+      "expected": {
+        "exit_code": 0
+      },
+      "input_ids": [
+        "input:wrapper",
+        "input:048",
+        "input:315"
+      ],
+      "kind": "command",
+      "timeout_seconds": 240
+    },
+    {
+      "args": [
+        ".skillguard/checks/run_logic_writing_check.py",
+        "final-closure"
+      ],
+      "check_id": "check:logic-writing:final-closure",
+      "command": "{{python}}",
+      "expected": {
+        "exit_code": 0
+      },
+      "input_ids": [
+        "input:wrapper",
+        "input:046"
+      ],
+      "kind": "command",
+      "timeout_seconds": 180
+    },
+    {
+      "args": [
+        ".skillguard/checks/run_logic_writing_check.py",
+        "contract-calibration"
       ],
       "check_id": "check:logic-writing:contract-calibration",
-      "command": "python",
-      "coverage_rationale": "The target evaluator accepts the complete obligation fixture, rejects the exact reader-artifact omission, and compares the current independently scanned source inventory with explicit target semantic rules.",
-      "coverage_scope": "suite",
-      "covers_obligation_ids": [
-        "obligation:logic-writing:routing",
-        "obligation:logic-writing:specialist-authority",
-        "obligation:logic-writing:investigation-evidence",
-        "obligation:logic-writing:academic-provenance",
-        "obligation:logic-writing:fiction-native",
-        "obligation:logic-writing:travel-native",
-        "obligation:logic-writing:shared-writing",
-        "obligation:logic-writing:reader-actual-artifact",
-        "obligation:logic-writing:final-closure",
-        "obligation:logic-writing:release-integrity"
-      ],
-      "cwd_token": "repository_root",
-      "depends_on_check_ids": [],
-      "evidence_class": "hard",
-      "evidence_domain_id": "evidence-domain:logic-writing:fixture-calibration",
-      "evidence_subject_id": "subject:logic-writing:contract-calibration",
-      "execution_owner_id": "owner:logic-writing:contract-calibration",
+      "command": "{{python}}",
       "expected": {
         "exit_code": 0
       },
-      "input_selectors": [
-        {
-          "kind": "path",
-          "path": "scripts/author/evaluate_contract_calibration.py"
-        },
-        {
-          "kind": "subtree",
-          "path": "skills/logic-writing/.skillguard/fixtures"
-        },
-        {
-          "kind": "path",
-          "path": "scripts/author/build_skillguard_surface_inventory.py"
-        },
-        {
-          "kind": "path",
-          "path": "scripts/author/logic_writing_surface_rules.json"
-        },
-        {
-          "kind": "path",
-          "path": "tests/contract/test_skillguard_surface_inventory.py"
-        }
+      "input_ids": [
+        "input:wrapper",
+        "input:334"
       ],
       "kind": "command",
-      "maintenance_unit_id": "unit:logic-writing",
-      "member_skill_id": "logic-writing",
-      "native_route_id": "route:logic-writing:router",
-      "semantic_check_id": "semantic:logic-writing:contract-calibration",
-      "timeout_seconds": 120
-    },
-    {
-      "check_id": "check:logic-writing:release-integrity",
-      "coverage_rationale": "The release projection retains one current v3 entrypoint, current-only contracts, the fixed bilingual route benchmark, portable metadata, and no v1 runtime authority.",
-      "coverage_scope": "declared_obligations",
-      "covers_obligation_ids": [
-        "obligation:logic-writing:release-integrity"
-      ],
-      "depends_on_check_ids": [
-        "check:logic-writing:contract-calibration"
-      ],
-      "evidence_class": "hard",
-      "evidence_domain_id": "evidence-domain:logic-writing:release-integrity",
-      "evidence_subject_id": "subject:logic-writing:release-integrity",
-      "execution_owner_id": "owner:logic-writing:release-integrity",
-      "input_selectors": [
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/SKILL.md"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/agents/openai.yaml"
-        },
-        {
-          "kind": "path",
-          "path": "skills/logic-writing/.skillguard/contract-source.json"
-        },
-        {
-          "kind": "role",
-          "role": "runtime_source"
-        },
-        {
-          "kind": "role",
-          "role": "documentation_model"
-        }
-      ],
-      "kind": "model_assertion",
-      "maintenance_unit_id": "unit:logic-writing",
-      "member_skill_id": "logic-writing",
-      "native_route_id": "route:logic-writing:router",
-      "semantic_check_id": "semantic:logic-writing:release-integrity",
-      "timeout_seconds": 60
+      "timeout_seconds": 180
     },
     {
       "args": [
-        "scripts/author/check_logic_writing_model_depth.py",
-        "--root",
-        ".",
-        "--json"
+        ".skillguard/checks/run_logic_writing_check.py",
+        "release-integrity"
       ],
-      "check_id": "check:logic-writing:model-depth",
-      "command": "python",
-      "coverage_rationale": "The target-owned native check verifies the exact 22-owner model hierarchy, every runner/test binding, and current immutable owner receipts.",
-      "coverage_scope": "declared_obligations",
-      "covers_obligation_ids": [
-        "obligation:logic-writing:model-depth"
-      ],
-      "cwd_token": "repository_root",
-      "depends_on_check_ids": [],
-      "evidence_class": "hard",
-      "evidence_domain_id": "evidence-domain:logic-writing:model-depth",
-      "evidence_subject_id": "subject:logic-writing:model-depth",
-      "execution_owner_id": "owner:logic-writing:model-depth",
+      "check_id": "check:logic-writing:release-integrity",
+      "command": "{{python}}",
       "expected": {
         "exit_code": 0
       },
-      "input_selectors": [
-        {
-          "kind": "path",
-          "path": "scripts/author/check_logic_writing_model_depth.py"
-        },
-        {
-          "kind": "path",
-          "path": "scripts/author/skillguard_contract_model.py"
-        },
-        {
-          "kind": "subtree",
-          "path": ".flowguard/models"
-        },
-        {
-          "kind": "subtree",
-          "path": ".flowguard/verification"
-        },
-        {
-          "kind": "subtree",
-          "path": "skills/logic-writing/scripts"
-        },
-        {
-          "kind": "subtree",
-          "path": "tests/flowguard"
-        },
-        {
-          "kind": "path",
-          "path": "tests/contract/test_logic_writing_model_depth.py"
-        }
+      "input_ids": [
+        "input:wrapper",
+        "input:334"
       ],
       "kind": "command",
-      "maintenance_unit_id": "unit:logic-writing",
-      "member_skill_id": "logic-writing",
-      "native_route_id": "route:logic-writing:router",
-      "semantic_check_id": "semantic:logic-writing:model-depth",
-      "timeout_seconds": 600
-    }
-  ],
-  "claim_boundary": "LogicWriting owns the current route-native writing contract and its 22-owner FlowGuard model mesh. SkillGuard supervises declared checks and source closure; it does not claim provider quality or future prose quality.",
-  "closure_profiles": [
+      "timeout_seconds": 180
+    },
     {
-      "profile_id": "enforced",
-      "required_obligation_ids": [
-        "obligation:logic-writing:routing",
-        "obligation:logic-writing:specialist-authority",
-        "obligation:logic-writing:investigation-evidence",
-        "obligation:logic-writing:academic-provenance",
-        "obligation:logic-writing:fiction-native",
-        "obligation:logic-writing:travel-native",
-        "obligation:logic-writing:shared-writing",
-        "obligation:logic-writing:reader-actual-artifact",
-        "obligation:logic-writing:final-closure",
-        "obligation:logic-writing:release-integrity",
-        "obligation:logic-writing:model-depth"
-      ]
+      "args": [
+        ".skillguard/checks/run_logic_writing_check.py",
+        "model-depth"
+      ],
+      "check_id": "check:logic-writing:model-depth",
+      "command": "{{python}}",
+      "expected": {
+        "exit_code": 0
+      },
+      "input_ids": [
+        "input:wrapper",
+        "input:334"
+      ],
+      "kind": "command",
+      "timeout_seconds": 900
     }
   ],
-  "confirmed": true,
   "consumer_projection": {
-    "prohibited_path_prefixes": [
-      ".skillguard/"
-    ],
-    "prohibited_prompt_tokens": [
-      "SkillGuard",
-      ".skillguard",
-      "skillguard.py"
+    "file_paths": [
+      "agents/openai.yaml",
+      "assets/schemas/academic-composition.schema.json",
+      "assets/schemas/adapter-request.schema.json",
+      "assets/schemas/adapter-result.schema.json",
+      "assets/schemas/artifact-map.schema.json",
+      "assets/schemas/claim-support.schema.json",
+      "assets/schemas/closure.schema.json",
+      "assets/schemas/composition-plan.schema.json",
+      "assets/schemas/evidence-receipt.schema.json",
+      "assets/schemas/fiction-composition.schema.json",
+      "assets/schemas/investigation-composition.schema.json",
+      "assets/schemas/local-single-judgment.schema.json",
+      "assets/schemas/obligation-manifest.schema.json",
+      "assets/schemas/reader-audit.schema.json",
+      "assets/schemas/reader-brief.schema.json",
+      "assets/schemas/reader-execution-record.schema.json",
+      "assets/schemas/reader-intent.schema.json",
+      "assets/schemas/reader-judgment.schema.json",
+      "assets/schemas/reader-repair-request.schema.json",
+      "assets/schemas/reader-repair-result.schema.json",
+      "assets/schemas/research-packet.schema.json",
+      "assets/schemas/researchguard-consumption-binding.schema.json",
+      "assets/schemas/researchguard-logic-handoff.schema.json",
+      "assets/schemas/revision-provenance.schema.json",
+      "assets/schemas/route-artifact-review.schema.json",
+      "assets/schemas/route-decision.schema.json",
+      "assets/schemas/shared-writing-contract.schema.json",
+      "assets/schemas/source-registry.schema.json",
+      "assets/schemas/source-unit-manifest.schema.json",
+      "assets/schemas/travel-composition.schema.json",
+      "assets/schemas/writing-request.schema.json",
+      "references/adapters/documents.md",
+      "references/adapters/flowguard.md",
+      "references/adapters/logicguard.md",
+      "references/adapters/pdf.md",
+      "references/adapters/researchguard.md",
+      "references/adapters/sourceguard.md",
+      "references/adapters/traceguard.md",
+      "references/adapters/worldguard.md",
+      "references/router.md",
+      "references/routes/academic-writing.md",
+      "references/routes/fiction-writing.md",
+      "references/routes/investigation.md",
+      "references/routes/required-resources.json",
+      "references/routes/travel-guide.md",
+      "references/shared/closure.md",
+      "references/shared/human-writing.md",
+      "references/shared/reader-brief.md",
+      "references/shared/research-packet.md",
+      "references/shared/writing-contract.md",
+      "routes/academic/scripts/validate_academic_artifact.py",
+      "routes/fiction/examples/execution-depth/intentionally-shallow.json",
+      "routes/fiction/examples/execution-depth/representative-positive.json",
+      "routes/fiction/examples/guard_lifecycle_cases/compact-bad-worldguard-scopeout.json",
+      "routes/fiction/examples/guard_lifecycle_cases/compact-missing-flowguard.json",
+      "routes/fiction/examples/guard_lifecycle_cases/compact-missing-logicguard.json",
+      "routes/fiction/examples/guard_lifecycle_cases/compact-missing-sourceguard.json",
+      "routes/fiction/examples/guard_lifecycle_cases/compact-missing-traceguard.json",
+      "routes/fiction/examples/guard_lifecycle_cases/compact-pass.json",
+      "routes/fiction/examples/guard_lifecycle_cases/compact-prose-only-evidence.json",
+      "routes/fiction/examples/guard_lifecycle_cases/compact-stale-flowguard.json",
+      "routes/fiction/examples/guard_lifecycle_cases/handoffs/flowguard.json",
+      "routes/fiction/examples/guard_lifecycle_cases/handoffs/logicguard.json",
+      "routes/fiction/examples/guard_lifecycle_cases/handoffs/sourceguard.json",
+      "routes/fiction/examples/guard_lifecycle_cases/handoffs/traceguard.json",
+      "routes/fiction/examples/guard_lifecycle_cases/handoffs/worldguard.json",
+      "routes/fiction/examples/guard_lifecycle_cases/receipts/flowguard-terminal.json",
+      "routes/fiction/examples/guard_lifecycle_cases/receipts/logicguard-terminal.json",
+      "routes/fiction/examples/guard_lifecycle_cases/receipts/sourceguard-terminal.json",
+      "routes/fiction/examples/guard_lifecycle_cases/receipts/traceguard-terminal.json",
+      "routes/fiction/examples/guard_lifecycle_cases/receipts/worldguard-terminal.json",
+      "routes/fiction/examples/longform_failure_cases/duplicate-binding-without-delta.json",
+      "routes/fiction/examples/longform_failure_cases/fake-chapter-interface.json",
+      "routes/fiction/examples/longform_failure_cases/final-chapter-prose-bypass.json",
+      "routes/fiction/examples/longform_failure_cases/final-prose-fake-ai-review.json",
+      "routes/fiction/examples/longform_failure_cases/final-prose-hash-mismatch.json",
+      "routes/fiction/examples/longform_failure_cases/final-prose-missing-artifact.json",
+      "routes/fiction/examples/longform_failure_cases/final-prose-missing-model-prose-binding.json",
+      "routes/fiction/examples/longform_failure_cases/final-prose-missing-source-requirements.json",
+      "routes/fiction/examples/longform_failure_cases/final-prose-nonexistent-manuscript.json",
+      "routes/fiction/examples/longform_failure_cases/final-prose-stale-model-binding.json",
+      "routes/fiction/examples/longform_failure_cases/final-prose-stale-semantic-review.json",
+      "routes/fiction/examples/longform_failure_cases/final-volume-prose-bypass.json",
+      "routes/fiction/examples/longform_failure_cases/length-outlier-without-binding-review.json",
+      "routes/fiction/examples/longform_failure_cases/longform-closure-missing-interface.json",
+      "routes/fiction/examples/longform_failure_cases/markdown-model-surface-substitution.json",
+      "routes/fiction/examples/longform_failure_cases/missing-material-continuity.json",
+      "routes/fiction/examples/longform_failure_cases/orphan-chapter.json",
+      "routes/fiction/examples/longform_failure_cases/pov-drift.json",
+      "routes/fiction/examples/longform_failure_cases/premature-hypothesis-collapse.json",
+      "routes/fiction/examples/longform_failure_cases/semantic-review-incomplete-contract.json",
+      "routes/fiction/examples/longform_failure_cases/smooth-reveal-without-resistance.json",
+      "routes/fiction/examples/longform_failure_cases/stale-model-prose-binding.json",
+      "routes/fiction/examples/longform_failure_cases/stale-semantic-review.json",
+      "routes/fiction/examples/longform_failure_cases/substitute-reverse-outline-as-ledger.json",
+      "routes/fiction/examples/longform_failure_cases/term-register-owner-drift.json",
+      "routes/fiction/examples/longform_failure_cases/unbound-prose-span.json",
+      "routes/fiction/examples/longform_failure_cases/unrealized-model-ref.json",
+      "routes/fiction/examples/longform_failure_cases/unresolved-key-promise.json",
+      "routes/fiction/examples/longform_failure_cases/weak-reverse-outline.json",
+      "routes/fiction/examples/longform_novel_project/chapter-interfaces.json",
+      "routes/fiction/examples/longform_novel_project/drafts/book-01-final.txt",
+      "routes/fiction/examples/longform_novel_project/guard_handoffs/flowguard-planning.json",
+      "routes/fiction/examples/longform_novel_project/guard_handoffs/flowguard.json",
+      "routes/fiction/examples/longform_novel_project/guard_handoffs/logicguard-planning.json",
+      "routes/fiction/examples/longform_novel_project/guard_handoffs/logicguard.json",
+      "routes/fiction/examples/longform_novel_project/guard_handoffs/sourceguard-planning.json",
+      "routes/fiction/examples/longform_novel_project/guard_handoffs/sourceguard.json",
+      "routes/fiction/examples/longform_novel_project/guard_handoffs/traceguard-planning.json",
+      "routes/fiction/examples/longform_novel_project/guard_handoffs/traceguard.json",
+      "routes/fiction/examples/longform_novel_project/guard_handoffs/worldguard-planning.json",
+      "routes/fiction/examples/longform_novel_project/guard_handoffs/worldguard.json",
+      "routes/fiction/examples/longform_novel_project/guard_receipts/flowguard-planning.json",
+      "routes/fiction/examples/longform_novel_project/guard_receipts/flowguard.json",
+      "routes/fiction/examples/longform_novel_project/guard_receipts/logicguard-planning.json",
+      "routes/fiction/examples/longform_novel_project/guard_receipts/logicguard.json",
+      "routes/fiction/examples/longform_novel_project/guard_receipts/sourceguard-planning.json",
+      "routes/fiction/examples/longform_novel_project/guard_receipts/sourceguard.json",
+      "routes/fiction/examples/longform_novel_project/guard_receipts/traceguard-planning.json",
+      "routes/fiction/examples/longform_novel_project/guard_receipts/traceguard.json",
+      "routes/fiction/examples/longform_novel_project/guard_receipts/worldguard-planning.json",
+      "routes/fiction/examples/longform_novel_project/guard_receipts/worldguard.json",
+      "routes/fiction/examples/longform_novel_project/longform-closure.json",
+      "routes/fiction/examples/longform_novel_project/longform-final-prose-closure.json",
+      "routes/fiction/examples/longform_novel_project/model-prose-binding.json",
+      "routes/fiction/examples/longform_novel_project/novel-ledger.json",
+      "routes/fiction/examples/longform_novel_project/project-mesh.json",
+      "routes/fiction/examples/longform_novel_project/promise-payoff.json",
+      "routes/fiction/examples/longform_novel_project/semantic-review.json",
+      "routes/fiction/examples/longform_novel_project/source-requirements.json",
+      "routes/fiction/examples/longform_novel_project/voice-style-report.json",
+      "routes/fiction/examples/reader_room_failure_cases/author_forecast_chapter_ending.md",
+      "routes/fiction/examples/reader_room_failure_cases/duplicate_chapter_contribution.md",
+      "routes/fiction/examples/reader_room_failure_cases/exposition_pressure_over_scene.md",
+      "routes/fiction/examples/reader_room_failure_cases/intentional_repetition_with_escalation.md",
+      "routes/fiction/examples/reader_room_failure_cases/late_payoff_without_prior_support.md",
+      "routes/fiction/examples/reader_room_failure_cases/location_changes_without_pressure_change.md",
+      "routes/fiction/examples/reader_room_failure_cases/premature_reveal_without_support.md",
+      "routes/fiction/examples/reader_room_failure_cases/reader_room_planning_leak.md",
+      "routes/fiction/examples/reader_room_failure_cases/repeated_event_function.md",
+      "routes/fiction/examples/reader_room_failure_cases/same_voice_cast.md",
+      "routes/fiction/examples/route_cases/compact-final-prose-blocked.json",
+      "routes/fiction/examples/route_cases/compact-micro-story.json",
+      "routes/fiction/examples/route_cases/explicit-alias-short-story.json",
+      "routes/fiction/examples/route_cases/final-chapter-prose.json",
+      "routes/fiction/examples/route_cases/final-volume-prose.json",
+      "routes/fiction/examples/route_cases/missing-prose-phase.json",
+      "routes/fiction/examples/route_cases/novella-post-draft.json",
+      "routes/fiction/examples/route_cases/pre-draft-chapter-plan.json",
+      "routes/fiction/examples/route_cases/unknown-artifact.json",
+      "routes/fiction/examples/short_story_project/.gitkeep",
+      "routes/fiction/examples/short_story_project/expected-closure.json",
+      "routes/fiction/examples/short_story_project/guard_handoffs/flowguard.json",
+      "routes/fiction/examples/short_story_project/guard_handoffs/logicguard.json",
+      "routes/fiction/examples/short_story_project/guard_handoffs/sourceguard.json",
+      "routes/fiction/examples/short_story_project/guard_handoffs/traceguard.json",
+      "routes/fiction/examples/short_story_project/guard_handoffs/worldguard.json",
+      "routes/fiction/examples/short_story_project/guard_receipts/flowguard-terminal.json",
+      "routes/fiction/examples/short_story_project/guard_receipts/logicguard-terminal.json",
+      "routes/fiction/examples/short_story_project/guard_receipts/sourceguard-terminal.json",
+      "routes/fiction/examples/short_story_project/guard_receipts/traceguard-terminal.json",
+      "routes/fiction/examples/short_story_project/guard_receipts/worldguard-terminal.json",
+      "routes/fiction/examples/short_story_project/scene-cards.yaml",
+      "routes/fiction/examples/short_story_project/story-ledger.yaml",
+      "routes/fiction/examples/short_story_project/worldguard-claims.yaml",
+      "routes/fiction/guard-model/contract.json",
+      "routes/fiction/guard-model/known-bad.json",
+      "routes/fiction/guard-model/known-good.json",
+      "routes/fiction/guard-model/oracles.json",
+      "routes/fiction/guard-model/verify.py",
+      "routes/fiction/references/.gitkeep",
+      "routes/fiction/references/artifact-taxonomy.json",
+      "routes/fiction/references/chapter-interface-prose-blueprint.md",
+      "routes/fiction/references/closure-report.md",
+      "routes/fiction/references/depth-closure-evidence.json",
+      "routes/fiction/references/depth-route-evidence.json",
+      "routes/fiction/references/depth-validation-evidence.json",
+      "routes/fiction/references/depth-workflow-evidence.json",
+      "routes/fiction/references/guard-depth-policy.md",
+      "routes/fiction/references/guard-receipt-handoff.md",
+      "routes/fiction/references/logicguard-theme-contract.md",
+      "routes/fiction/references/longform-closure.md",
+      "routes/fiction/references/longform-lifecycle.md",
+      "routes/fiction/references/novel-ledger.md",
+      "routes/fiction/references/project-model-mesh.md",
+      "routes/fiction/references/promise-payoff-ledger.md",
+      "routes/fiction/references/prose-native-contract.md",
+      "routes/fiction/references/scene-contract.md",
+      "routes/fiction/references/semantic-review-contract.md",
+      "routes/fiction/references/sourceguard-canon-contract.md",
+      "routes/fiction/references/story-artifact-lifecycle.md",
+      "routes/fiction/references/story-contribution-contract.md",
+      "routes/fiction/references/story-development-flowgraph.md",
+      "routes/fiction/references/story-engineering-ledger.md",
+      "routes/fiction/references/structure-turning-points.md",
+      "routes/fiction/references/traceguard-storyline-contract.md",
+      "routes/fiction/references/voice-style-continuity.md",
+      "routes/fiction/references/workflow.md",
+      "routes/fiction/references/worldguard-adapter.md",
+      "routes/fiction/scripts/.gitkeep",
+      "routes/fiction/scripts/build_manuscript_artifact_map.py",
+      "routes/fiction/scripts/chapter_interface_check.py",
+      "routes/fiction/scripts/doc_contract_check.py",
+      "routes/fiction/scripts/evidence_identity.py",
+      "routes/fiction/scripts/final_closure_text_check.py",
+      "routes/fiction/scripts/guard_handoff_check.py",
+      "routes/fiction/scripts/installed_parity_check.py",
+      "routes/fiction/scripts/longform_closure_check.py",
+      "routes/fiction/scripts/model_prose_binding_check.py",
+      "routes/fiction/scripts/novel_ledger_check.py",
+      "routes/fiction/scripts/promise_payoff_check.py",
+      "routes/fiction/scripts/reader_room_guidance_check.py",
+      "routes/fiction/scripts/run_guard_lifecycle_regression.py",
+      "routes/fiction/scripts/run_installed_parity_regression.py",
+      "routes/fiction/scripts/run_longform_regression.py",
+      "routes/fiction/scripts/run_native_regression.py",
+      "routes/fiction/scripts/run_route_regression.py",
+      "routes/fiction/scripts/run_story_model_mesh_regression.py",
+      "routes/fiction/scripts/scene_contract_check.py",
+      "routes/fiction/scripts/semantic_review_check.py",
+      "routes/fiction/scripts/story_contribution_check.py",
+      "routes/fiction/scripts/story_ledger_check.py",
+      "routes/fiction/scripts/storyline_closure_check.py",
+      "routes/fiction/scripts/storyline_project_mesh_check.py",
+      "routes/fiction/scripts/storyline_route_check.py",
+      "routes/fiction/scripts/turning_point_check.py",
+      "routes/fiction/scripts/validate_fiction_artifact.py",
+      "routes/fiction/scripts/voice_style_continuity_check.py",
+      "routes/investigation/scripts/validate_investigation_artifact.py",
+      "routes/travel/examples/failure_cases/accessibility_review_missing.json",
+      "routes/travel/examples/failure_cases/candidate_dangling_risk.json",
+      "routes/travel/examples/failure_cases/candidate_source_role_mismatch.json",
+      "routes/travel/examples/failure_cases/candidate_unknown_source.json",
+      "routes/travel/examples/failure_cases/candidate_wrong_world_target.json",
+      "routes/travel/examples/failure_cases/child_protection_missing.json",
+      "routes/travel/examples/failure_cases/claim_level_overreach.json",
+      "routes/travel/examples/failure_cases/date_relation_lie.json",
+      "routes/travel/examples/failure_cases/day_interface_chain_mismatch.json",
+      "routes/travel/examples/failure_cases/fallback_unknown_replacement.json",
+      "routes/travel/examples/failure_cases/fallback_unreachable.json",
+      "routes/travel/examples/failure_cases/final_artifact_hash_drift.json",
+      "routes/travel/examples/failure_cases/final_artifact_missing.json",
+      "routes/travel/examples/failure_cases/fit_input_drift.json",
+      "routes/travel/examples/failure_cases/lodging_nonhotel.json",
+      "routes/travel/examples/failure_cases/promise_class_mismatch.json",
+      "routes/travel/examples/failure_cases/reverse_review_hash_drift.json",
+      "routes/travel/examples/failure_cases/reverse_review_observation_drift.json",
+      "routes/travel/examples/failure_cases/route_edge_chain_broken.json",
+      "routes/travel/examples/failure_cases/route_wrong_world_target.json",
+      "routes/travel/examples/failure_cases/scene_unknown_day.json",
+      "routes/travel/examples/failure_cases/upstream_nonpass_overwritten.json",
+      "routes/travel/examples/failure_cases/walking_tolerance_exceeded.json",
+      "routes/travel/examples/failure_cases/weather_chronology_mismatch.json",
+      "routes/travel/examples/good_city_couple_trip/guide.md",
+      "routes/travel/examples/good_city_couple_trip/plan.json",
+      "routes/travel/examples/good_text_outputs/city_couple_native_guide.review.json",
+      "routes/travel/examples/good_text_outputs/city_couple_native_guide.txt",
+      "routes/travel/examples/positive_cases/accessibility-guide.md",
+      "routes/travel/examples/positive_cases/accessibility.json",
+      "routes/travel/examples/positive_cases/day-of-guide.md",
+      "routes/travel/examples/positive_cases/day_of.json",
+      "routes/travel/examples/positive_cases/family-child-guide.md",
+      "routes/travel/examples/positive_cases/family_child.json",
+      "routes/travel/examples/positive_cases/low-stamina-guide.md",
+      "routes/travel/examples/positive_cases/low_stamina.json",
+      "routes/travel/examples/positive_cases/near-future-bookable-guide.md",
+      "routes/travel/examples/positive_cases/near_future_bookable.json",
+      "routes/travel/examples/positive_cases/past-observed-guide.md",
+      "routes/travel/examples/positive_cases/past_observed.json",
+      "routes/travel/examples/text_failure_cases/artifact_hash_drift.json",
+      "routes/travel/examples/text_failure_cases/bullet_list_only.json",
+      "routes/travel/examples/text_failure_cases/internal_jargon_leak.json",
+      "routes/travel/examples/text_failure_cases/missing_day_headings.json",
+      "routes/travel/examples/text_failure_cases/missing_reverse_review.json",
+      "routes/travel/examples/text_failure_cases/named_fallback_drift.json",
+      "routes/travel/examples/text_failure_cases/observation_drift.json",
+      "routes/travel/examples/text_failure_cases/weather_evidence_missing.json",
+      "routes/travel/examples/text_failure_cases/weather_mode_missing.json",
+      "routes/travel/references/closure-report.md",
+      "routes/travel/references/experience-candidate-pool.md",
+      "routes/travel/references/flowguard-development-process.md",
+      "routes/travel/references/guard-role-map.md",
+      "routes/travel/references/negative-evidence-and-fallback.md",
+      "routes/travel/references/route-mesh.md",
+      "routes/travel/references/runtime-workflow.md",
+      "routes/travel/references/source-portfolio.md",
+      "routes/travel/references/story-output-contract.md",
+      "routes/travel/references/traveler-native-guide-compiler.md",
+      "routes/travel/references/traveler-profile.md",
+      "routes/travel/references/trip-fit-review.md",
+      "routes/travel/references/world-feasibility.md",
+      "routes/travel/scripts/build_guide_artifact_map.py",
+      "routes/travel/scripts/fixture_mutation.py",
+      "routes/travel/scripts/travel_contract.py",
+      "routes/travel/scripts/validate_failure_cases.py",
+      "routes/travel/scripts/validate_positive_cases.py",
+      "routes/travel/scripts/validate_travel_artifact.py",
+      "routes/travel/scripts/validate_travel_plan.py",
+      "routes/travel/scripts/validate_travel_text_outputs.py",
+      "scripts/_common.py",
+      "scripts/audit_reader_output.py",
+      "scripts/build_artifact_map.py",
+      "scripts/build_obligation_manifest.py",
+      "scripts/build_reader_brief.py",
+      "scripts/build_reader_brief_receipt.py",
+      "scripts/build_reader_repair.py",
+      "scripts/build_source_unit_manifest.py",
+      "scripts/derive_closure.py",
+      "scripts/execution_record_resolver.py",
+      "scripts/local_execution_backend.py",
+      "scripts/production_reader_pipeline.py",
+      "scripts/propagate_staleness.py",
+      "scripts/provider_preflight.py",
+      "scripts/reader_execution.py",
+      "scripts/reader_pipeline.py",
+      "scripts/reader_projection_conformance.py",
+      "scripts/reader_receipts.py",
+      "scripts/receipt_authority.py",
+      "scripts/receipt_store.py",
+      "scripts/record_reader_repair.py",
+      "scripts/researchguard_handoff.py",
+      "scripts/review_obligations.py",
+      "scripts/schema_validation.py",
+      "scripts/select_route.py",
+      "scripts/text_extent.py",
+      "scripts/validate_adapter_request.py",
+      "scripts/validate_adapter_result.py",
+      "scripts/validate_claim_support.py",
+      "scripts/validate_judgment_receipt.py",
+      "scripts/validate_research_packet.py",
+      "scripts/validate_revision_provenance.py",
+      "scripts/validate_shared_writing.py",
+      "scripts/validate_source_registry.py",
+      "SKILL.md"
     ],
     "projection_id": "projection:consumer-distribution",
     "release_manifest_path": "consumer-release.json"
   },
-  "content_impact_policy": {
-    "full_admission_reason_codes": [
-      "explicit_final_gate",
-      "explicit_release_gate",
-      "impact_policy_or_compiler_changed",
-      "shared_validation_runtime_changed",
-      "all_owner_component_changed"
-    ],
-    "owner_receipt_root_ref": {
-      "path_token": "owner_evidence_root",
-      "relative_path": "check-executions"
-    },
-    "policy_id": "skillguard.content_impact_policy.current",
-    "unknown_mapping_disposition": "block"
-  },
-  "content_role_overrides": [
+  "inputs": [
     {
-      "path": "skills/logic-writing/routes/fiction/references",
-      "role": "runtime_source",
-      "install_disposition": "copy",
-      "reason": "Selected fiction route execution requires these references."
+      "id": "input:001",
+      "path": "agents/openai.yaml",
+      "required": true,
+      "role": "instructions"
     },
     {
-      "path": "skills/logic-writing/routes/travel/references",
-      "role": "runtime_source",
-      "install_disposition": "copy",
-      "reason": "Selected travel route execution requires these references."
+      "id": "input:002",
+      "path": "assets/schemas/academic-composition.schema.json",
+      "required": true,
+      "role": "runtime_source"
     },
     {
-      "path": "skills/logic-writing/routes/fiction/examples",
-      "role": "fixture_reference",
-      "install_disposition": "copy",
-      "reason": "Keep existing consumer examples with their required text payloads."
+      "id": "input:003",
+      "path": "assets/schemas/adapter-request.schema.json",
+      "required": true,
+      "role": "runtime_source"
     },
     {
-      "path": "skills/logic-writing/routes/travel/examples",
-      "role": "fixture_reference",
-      "install_disposition": "copy",
-      "reason": "Keep existing consumer examples with their required guide payloads."
+      "id": "input:004",
+      "path": "assets/schemas/adapter-result.schema.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:005",
+      "path": "assets/schemas/artifact-map.schema.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:006",
+      "path": "assets/schemas/claim-support.schema.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:007",
+      "path": "assets/schemas/closure.schema.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:008",
+      "path": "assets/schemas/composition-plan.schema.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:009",
+      "path": "assets/schemas/evidence-receipt.schema.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:010",
+      "path": "assets/schemas/fiction-composition.schema.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:011",
+      "path": "assets/schemas/investigation-composition.schema.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:012",
+      "path": "assets/schemas/local-single-judgment.schema.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:013",
+      "path": "assets/schemas/obligation-manifest.schema.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:014",
+      "path": "assets/schemas/reader-audit.schema.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:015",
+      "path": "assets/schemas/reader-brief.schema.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:016",
+      "path": "assets/schemas/reader-execution-record.schema.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:017",
+      "path": "assets/schemas/reader-intent.schema.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:018",
+      "path": "assets/schemas/reader-judgment.schema.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:019",
+      "path": "assets/schemas/reader-repair-request.schema.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:020",
+      "path": "assets/schemas/reader-repair-result.schema.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:021",
+      "path": "assets/schemas/research-packet.schema.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:022",
+      "path": "assets/schemas/researchguard-consumption-binding.schema.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:023",
+      "path": "assets/schemas/researchguard-logic-handoff.schema.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:024",
+      "path": "assets/schemas/revision-provenance.schema.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:025",
+      "path": "assets/schemas/route-artifact-review.schema.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:026",
+      "path": "assets/schemas/route-decision.schema.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:027",
+      "path": "assets/schemas/shared-writing-contract.schema.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:028",
+      "path": "assets/schemas/source-registry.schema.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:029",
+      "path": "assets/schemas/source-unit-manifest.schema.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:030",
+      "path": "assets/schemas/travel-composition.schema.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:031",
+      "path": "assets/schemas/writing-request.schema.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:032",
+      "path": "references/adapters/documents.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:033",
+      "path": "references/adapters/flowguard.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:034",
+      "path": "references/adapters/logicguard.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:035",
+      "path": "references/adapters/pdf.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:036",
+      "path": "references/adapters/researchguard.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:037",
+      "path": "references/adapters/sourceguard.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:038",
+      "path": "references/adapters/traceguard.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:039",
+      "path": "references/adapters/worldguard.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:040",
+      "path": "references/router.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:041",
+      "path": "references/routes/academic-writing.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:042",
+      "path": "references/routes/fiction-writing.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:043",
+      "path": "references/routes/investigation.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:044",
+      "path": "references/routes/required-resources.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:045",
+      "path": "references/routes/travel-guide.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:046",
+      "path": "references/shared/closure.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:047",
+      "path": "references/shared/human-writing.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:048",
+      "path": "references/shared/reader-brief.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:049",
+      "path": "references/shared/research-packet.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:050",
+      "path": "references/shared/writing-contract.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:051",
+      "path": "routes/academic/scripts/validate_academic_artifact.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:052",
+      "path": "routes/fiction/examples/execution-depth/intentionally-shallow.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:053",
+      "path": "routes/fiction/examples/execution-depth/representative-positive.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:054",
+      "path": "routes/fiction/examples/guard_lifecycle_cases/compact-bad-worldguard-scopeout.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:055",
+      "path": "routes/fiction/examples/guard_lifecycle_cases/compact-missing-flowguard.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:056",
+      "path": "routes/fiction/examples/guard_lifecycle_cases/compact-missing-logicguard.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:057",
+      "path": "routes/fiction/examples/guard_lifecycle_cases/compact-missing-sourceguard.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:058",
+      "path": "routes/fiction/examples/guard_lifecycle_cases/compact-missing-traceguard.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:059",
+      "path": "routes/fiction/examples/guard_lifecycle_cases/compact-pass.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:060",
+      "path": "routes/fiction/examples/guard_lifecycle_cases/compact-prose-only-evidence.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:061",
+      "path": "routes/fiction/examples/guard_lifecycle_cases/compact-stale-flowguard.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:062",
+      "path": "routes/fiction/examples/guard_lifecycle_cases/handoffs/flowguard.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:063",
+      "path": "routes/fiction/examples/guard_lifecycle_cases/handoffs/logicguard.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:064",
+      "path": "routes/fiction/examples/guard_lifecycle_cases/handoffs/sourceguard.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:065",
+      "path": "routes/fiction/examples/guard_lifecycle_cases/handoffs/traceguard.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:066",
+      "path": "routes/fiction/examples/guard_lifecycle_cases/handoffs/worldguard.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:067",
+      "path": "routes/fiction/examples/guard_lifecycle_cases/receipts/flowguard-terminal.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:068",
+      "path": "routes/fiction/examples/guard_lifecycle_cases/receipts/logicguard-terminal.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:069",
+      "path": "routes/fiction/examples/guard_lifecycle_cases/receipts/sourceguard-terminal.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:070",
+      "path": "routes/fiction/examples/guard_lifecycle_cases/receipts/traceguard-terminal.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:071",
+      "path": "routes/fiction/examples/guard_lifecycle_cases/receipts/worldguard-terminal.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:072",
+      "path": "routes/fiction/examples/longform_failure_cases/duplicate-binding-without-delta.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:073",
+      "path": "routes/fiction/examples/longform_failure_cases/fake-chapter-interface.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:074",
+      "path": "routes/fiction/examples/longform_failure_cases/final-chapter-prose-bypass.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:075",
+      "path": "routes/fiction/examples/longform_failure_cases/final-prose-fake-ai-review.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:076",
+      "path": "routes/fiction/examples/longform_failure_cases/final-prose-hash-mismatch.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:077",
+      "path": "routes/fiction/examples/longform_failure_cases/final-prose-missing-artifact.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:078",
+      "path": "routes/fiction/examples/longform_failure_cases/final-prose-missing-model-prose-binding.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:079",
+      "path": "routes/fiction/examples/longform_failure_cases/final-prose-missing-source-requirements.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:080",
+      "path": "routes/fiction/examples/longform_failure_cases/final-prose-nonexistent-manuscript.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:081",
+      "path": "routes/fiction/examples/longform_failure_cases/final-prose-stale-model-binding.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:082",
+      "path": "routes/fiction/examples/longform_failure_cases/final-prose-stale-semantic-review.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:083",
+      "path": "routes/fiction/examples/longform_failure_cases/final-volume-prose-bypass.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:084",
+      "path": "routes/fiction/examples/longform_failure_cases/length-outlier-without-binding-review.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:085",
+      "path": "routes/fiction/examples/longform_failure_cases/longform-closure-missing-interface.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:086",
+      "path": "routes/fiction/examples/longform_failure_cases/markdown-model-surface-substitution.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:087",
+      "path": "routes/fiction/examples/longform_failure_cases/missing-material-continuity.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:088",
+      "path": "routes/fiction/examples/longform_failure_cases/orphan-chapter.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:089",
+      "path": "routes/fiction/examples/longform_failure_cases/pov-drift.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:090",
+      "path": "routes/fiction/examples/longform_failure_cases/premature-hypothesis-collapse.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:091",
+      "path": "routes/fiction/examples/longform_failure_cases/semantic-review-incomplete-contract.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:092",
+      "path": "routes/fiction/examples/longform_failure_cases/smooth-reveal-without-resistance.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:093",
+      "path": "routes/fiction/examples/longform_failure_cases/stale-model-prose-binding.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:094",
+      "path": "routes/fiction/examples/longform_failure_cases/stale-semantic-review.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:095",
+      "path": "routes/fiction/examples/longform_failure_cases/substitute-reverse-outline-as-ledger.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:096",
+      "path": "routes/fiction/examples/longform_failure_cases/term-register-owner-drift.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:097",
+      "path": "routes/fiction/examples/longform_failure_cases/unbound-prose-span.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:098",
+      "path": "routes/fiction/examples/longform_failure_cases/unrealized-model-ref.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:099",
+      "path": "routes/fiction/examples/longform_failure_cases/unresolved-key-promise.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:100",
+      "path": "routes/fiction/examples/longform_failure_cases/weak-reverse-outline.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:101",
+      "path": "routes/fiction/examples/longform_novel_project/chapter-interfaces.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:102",
+      "path": "routes/fiction/examples/longform_novel_project/drafts/book-01-final.txt",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:103",
+      "path": "routes/fiction/examples/longform_novel_project/guard_handoffs/flowguard-planning.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:104",
+      "path": "routes/fiction/examples/longform_novel_project/guard_handoffs/flowguard.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:105",
+      "path": "routes/fiction/examples/longform_novel_project/guard_handoffs/logicguard-planning.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:106",
+      "path": "routes/fiction/examples/longform_novel_project/guard_handoffs/logicguard.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:107",
+      "path": "routes/fiction/examples/longform_novel_project/guard_handoffs/sourceguard-planning.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:108",
+      "path": "routes/fiction/examples/longform_novel_project/guard_handoffs/sourceguard.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:109",
+      "path": "routes/fiction/examples/longform_novel_project/guard_handoffs/traceguard-planning.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:110",
+      "path": "routes/fiction/examples/longform_novel_project/guard_handoffs/traceguard.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:111",
+      "path": "routes/fiction/examples/longform_novel_project/guard_handoffs/worldguard-planning.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:112",
+      "path": "routes/fiction/examples/longform_novel_project/guard_handoffs/worldguard.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:113",
+      "path": "routes/fiction/examples/longform_novel_project/guard_receipts/flowguard-planning.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:114",
+      "path": "routes/fiction/examples/longform_novel_project/guard_receipts/flowguard.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:115",
+      "path": "routes/fiction/examples/longform_novel_project/guard_receipts/logicguard-planning.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:116",
+      "path": "routes/fiction/examples/longform_novel_project/guard_receipts/logicguard.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:117",
+      "path": "routes/fiction/examples/longform_novel_project/guard_receipts/sourceguard-planning.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:118",
+      "path": "routes/fiction/examples/longform_novel_project/guard_receipts/sourceguard.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:119",
+      "path": "routes/fiction/examples/longform_novel_project/guard_receipts/traceguard-planning.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:120",
+      "path": "routes/fiction/examples/longform_novel_project/guard_receipts/traceguard.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:121",
+      "path": "routes/fiction/examples/longform_novel_project/guard_receipts/worldguard-planning.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:122",
+      "path": "routes/fiction/examples/longform_novel_project/guard_receipts/worldguard.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:123",
+      "path": "routes/fiction/examples/longform_novel_project/longform-closure.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:124",
+      "path": "routes/fiction/examples/longform_novel_project/longform-final-prose-closure.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:125",
+      "path": "routes/fiction/examples/longform_novel_project/model-prose-binding.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:126",
+      "path": "routes/fiction/examples/longform_novel_project/novel-ledger.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:127",
+      "path": "routes/fiction/examples/longform_novel_project/project-mesh.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:128",
+      "path": "routes/fiction/examples/longform_novel_project/promise-payoff.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:129",
+      "path": "routes/fiction/examples/longform_novel_project/semantic-review.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:130",
+      "path": "routes/fiction/examples/longform_novel_project/source-requirements.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:131",
+      "path": "routes/fiction/examples/longform_novel_project/voice-style-report.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:132",
+      "path": "routes/fiction/examples/reader_room_failure_cases/author_forecast_chapter_ending.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:133",
+      "path": "routes/fiction/examples/reader_room_failure_cases/duplicate_chapter_contribution.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:134",
+      "path": "routes/fiction/examples/reader_room_failure_cases/exposition_pressure_over_scene.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:135",
+      "path": "routes/fiction/examples/reader_room_failure_cases/intentional_repetition_with_escalation.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:136",
+      "path": "routes/fiction/examples/reader_room_failure_cases/late_payoff_without_prior_support.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:137",
+      "path": "routes/fiction/examples/reader_room_failure_cases/location_changes_without_pressure_change.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:138",
+      "path": "routes/fiction/examples/reader_room_failure_cases/premature_reveal_without_support.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:139",
+      "path": "routes/fiction/examples/reader_room_failure_cases/reader_room_planning_leak.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:140",
+      "path": "routes/fiction/examples/reader_room_failure_cases/repeated_event_function.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:141",
+      "path": "routes/fiction/examples/reader_room_failure_cases/same_voice_cast.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:142",
+      "path": "routes/fiction/examples/route_cases/compact-final-prose-blocked.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:143",
+      "path": "routes/fiction/examples/route_cases/compact-micro-story.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:144",
+      "path": "routes/fiction/examples/route_cases/explicit-alias-short-story.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:145",
+      "path": "routes/fiction/examples/route_cases/final-chapter-prose.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:146",
+      "path": "routes/fiction/examples/route_cases/final-volume-prose.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:147",
+      "path": "routes/fiction/examples/route_cases/missing-prose-phase.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:148",
+      "path": "routes/fiction/examples/route_cases/novella-post-draft.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:149",
+      "path": "routes/fiction/examples/route_cases/pre-draft-chapter-plan.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:150",
+      "path": "routes/fiction/examples/route_cases/unknown-artifact.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:151",
+      "path": "routes/fiction/examples/short_story_project/.gitkeep",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:152",
+      "path": "routes/fiction/examples/short_story_project/expected-closure.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:153",
+      "path": "routes/fiction/examples/short_story_project/guard_handoffs/flowguard.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:154",
+      "path": "routes/fiction/examples/short_story_project/guard_handoffs/logicguard.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:155",
+      "path": "routes/fiction/examples/short_story_project/guard_handoffs/sourceguard.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:156",
+      "path": "routes/fiction/examples/short_story_project/guard_handoffs/traceguard.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:157",
+      "path": "routes/fiction/examples/short_story_project/guard_handoffs/worldguard.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:158",
+      "path": "routes/fiction/examples/short_story_project/guard_receipts/flowguard-terminal.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:159",
+      "path": "routes/fiction/examples/short_story_project/guard_receipts/logicguard-terminal.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:160",
+      "path": "routes/fiction/examples/short_story_project/guard_receipts/sourceguard-terminal.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:161",
+      "path": "routes/fiction/examples/short_story_project/guard_receipts/traceguard-terminal.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:162",
+      "path": "routes/fiction/examples/short_story_project/guard_receipts/worldguard-terminal.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:163",
+      "path": "routes/fiction/examples/short_story_project/scene-cards.yaml",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:164",
+      "path": "routes/fiction/examples/short_story_project/story-ledger.yaml",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:165",
+      "path": "routes/fiction/examples/short_story_project/worldguard-claims.yaml",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:166",
+      "path": "routes/fiction/guard-model/contract.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:167",
+      "path": "routes/fiction/guard-model/known-bad.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:168",
+      "path": "routes/fiction/guard-model/known-good.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:169",
+      "path": "routes/fiction/guard-model/oracles.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:170",
+      "path": "routes/fiction/guard-model/verify.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:171",
+      "path": "routes/fiction/references/.gitkeep",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:172",
+      "path": "routes/fiction/references/artifact-taxonomy.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:173",
+      "path": "routes/fiction/references/chapter-interface-prose-blueprint.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:174",
+      "path": "routes/fiction/references/closure-report.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:175",
+      "path": "routes/fiction/references/depth-closure-evidence.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:176",
+      "path": "routes/fiction/references/depth-route-evidence.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:177",
+      "path": "routes/fiction/references/depth-validation-evidence.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:178",
+      "path": "routes/fiction/references/depth-workflow-evidence.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:179",
+      "path": "routes/fiction/references/guard-depth-policy.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:180",
+      "path": "routes/fiction/references/guard-receipt-handoff.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:181",
+      "path": "routes/fiction/references/logicguard-theme-contract.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:182",
+      "path": "routes/fiction/references/longform-closure.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:183",
+      "path": "routes/fiction/references/longform-lifecycle.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:184",
+      "path": "routes/fiction/references/novel-ledger.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:185",
+      "path": "routes/fiction/references/project-model-mesh.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:186",
+      "path": "routes/fiction/references/promise-payoff-ledger.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:187",
+      "path": "routes/fiction/references/prose-native-contract.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:188",
+      "path": "routes/fiction/references/scene-contract.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:189",
+      "path": "routes/fiction/references/semantic-review-contract.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:190",
+      "path": "routes/fiction/references/sourceguard-canon-contract.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:191",
+      "path": "routes/fiction/references/story-artifact-lifecycle.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:192",
+      "path": "routes/fiction/references/story-contribution-contract.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:193",
+      "path": "routes/fiction/references/story-development-flowgraph.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:194",
+      "path": "routes/fiction/references/story-engineering-ledger.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:195",
+      "path": "routes/fiction/references/structure-turning-points.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:196",
+      "path": "routes/fiction/references/traceguard-storyline-contract.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:197",
+      "path": "routes/fiction/references/voice-style-continuity.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:198",
+      "path": "routes/fiction/references/workflow.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:199",
+      "path": "routes/fiction/references/worldguard-adapter.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:200",
+      "path": "routes/fiction/scripts/.gitkeep",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:201",
+      "path": "routes/fiction/scripts/build_manuscript_artifact_map.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:202",
+      "path": "routes/fiction/scripts/chapter_interface_check.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:203",
+      "path": "routes/fiction/scripts/doc_contract_check.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:204",
+      "path": "routes/fiction/scripts/evidence_identity.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:205",
+      "path": "routes/fiction/scripts/final_closure_text_check.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:206",
+      "path": "routes/fiction/scripts/guard_handoff_check.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:207",
+      "path": "routes/fiction/scripts/installed_parity_check.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:208",
+      "path": "routes/fiction/scripts/longform_closure_check.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:209",
+      "path": "routes/fiction/scripts/model_prose_binding_check.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:210",
+      "path": "routes/fiction/scripts/novel_ledger_check.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:211",
+      "path": "routes/fiction/scripts/promise_payoff_check.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:212",
+      "path": "routes/fiction/scripts/reader_room_guidance_check.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:213",
+      "path": "routes/fiction/scripts/run_guard_lifecycle_regression.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:214",
+      "path": "routes/fiction/scripts/run_installed_parity_regression.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:215",
+      "path": "routes/fiction/scripts/run_longform_regression.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:216",
+      "path": "routes/fiction/scripts/run_native_regression.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:217",
+      "path": "routes/fiction/scripts/run_route_regression.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:218",
+      "path": "routes/fiction/scripts/run_story_model_mesh_regression.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:219",
+      "path": "routes/fiction/scripts/scene_contract_check.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:220",
+      "path": "routes/fiction/scripts/semantic_review_check.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:221",
+      "path": "routes/fiction/scripts/story_contribution_check.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:222",
+      "path": "routes/fiction/scripts/story_ledger_check.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:223",
+      "path": "routes/fiction/scripts/storyline_closure_check.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:224",
+      "path": "routes/fiction/scripts/storyline_project_mesh_check.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:225",
+      "path": "routes/fiction/scripts/storyline_route_check.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:226",
+      "path": "routes/fiction/scripts/turning_point_check.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:227",
+      "path": "routes/fiction/scripts/validate_fiction_artifact.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:228",
+      "path": "routes/fiction/scripts/voice_style_continuity_check.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:229",
+      "path": "routes/investigation/scripts/validate_investigation_artifact.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:230",
+      "path": "routes/travel/examples/failure_cases/accessibility_review_missing.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:231",
+      "path": "routes/travel/examples/failure_cases/candidate_dangling_risk.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:232",
+      "path": "routes/travel/examples/failure_cases/candidate_source_role_mismatch.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:233",
+      "path": "routes/travel/examples/failure_cases/candidate_unknown_source.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:234",
+      "path": "routes/travel/examples/failure_cases/candidate_wrong_world_target.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:235",
+      "path": "routes/travel/examples/failure_cases/child_protection_missing.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:236",
+      "path": "routes/travel/examples/failure_cases/claim_level_overreach.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:237",
+      "path": "routes/travel/examples/failure_cases/date_relation_lie.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:238",
+      "path": "routes/travel/examples/failure_cases/day_interface_chain_mismatch.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:239",
+      "path": "routes/travel/examples/failure_cases/fallback_unknown_replacement.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:240",
+      "path": "routes/travel/examples/failure_cases/fallback_unreachable.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:241",
+      "path": "routes/travel/examples/failure_cases/final_artifact_hash_drift.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:242",
+      "path": "routes/travel/examples/failure_cases/final_artifact_missing.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:243",
+      "path": "routes/travel/examples/failure_cases/fit_input_drift.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:244",
+      "path": "routes/travel/examples/failure_cases/lodging_nonhotel.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:245",
+      "path": "routes/travel/examples/failure_cases/promise_class_mismatch.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:246",
+      "path": "routes/travel/examples/failure_cases/reverse_review_hash_drift.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:247",
+      "path": "routes/travel/examples/failure_cases/reverse_review_observation_drift.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:248",
+      "path": "routes/travel/examples/failure_cases/route_edge_chain_broken.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:249",
+      "path": "routes/travel/examples/failure_cases/route_wrong_world_target.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:250",
+      "path": "routes/travel/examples/failure_cases/scene_unknown_day.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:251",
+      "path": "routes/travel/examples/failure_cases/upstream_nonpass_overwritten.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:252",
+      "path": "routes/travel/examples/failure_cases/walking_tolerance_exceeded.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:253",
+      "path": "routes/travel/examples/failure_cases/weather_chronology_mismatch.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:254",
+      "path": "routes/travel/examples/good_city_couple_trip/guide.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:255",
+      "path": "routes/travel/examples/good_city_couple_trip/plan.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:256",
+      "path": "routes/travel/examples/good_text_outputs/city_couple_native_guide.review.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:257",
+      "path": "routes/travel/examples/good_text_outputs/city_couple_native_guide.txt",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:258",
+      "path": "routes/travel/examples/positive_cases/accessibility-guide.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:259",
+      "path": "routes/travel/examples/positive_cases/accessibility.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:260",
+      "path": "routes/travel/examples/positive_cases/day-of-guide.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:261",
+      "path": "routes/travel/examples/positive_cases/day_of.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:262",
+      "path": "routes/travel/examples/positive_cases/family-child-guide.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:263",
+      "path": "routes/travel/examples/positive_cases/family_child.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:264",
+      "path": "routes/travel/examples/positive_cases/low-stamina-guide.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:265",
+      "path": "routes/travel/examples/positive_cases/low_stamina.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:266",
+      "path": "routes/travel/examples/positive_cases/near-future-bookable-guide.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:267",
+      "path": "routes/travel/examples/positive_cases/near_future_bookable.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:268",
+      "path": "routes/travel/examples/positive_cases/past-observed-guide.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:269",
+      "path": "routes/travel/examples/positive_cases/past_observed.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:270",
+      "path": "routes/travel/examples/text_failure_cases/artifact_hash_drift.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:271",
+      "path": "routes/travel/examples/text_failure_cases/bullet_list_only.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:272",
+      "path": "routes/travel/examples/text_failure_cases/internal_jargon_leak.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:273",
+      "path": "routes/travel/examples/text_failure_cases/missing_day_headings.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:274",
+      "path": "routes/travel/examples/text_failure_cases/missing_reverse_review.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:275",
+      "path": "routes/travel/examples/text_failure_cases/named_fallback_drift.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:276",
+      "path": "routes/travel/examples/text_failure_cases/observation_drift.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:277",
+      "path": "routes/travel/examples/text_failure_cases/weather_evidence_missing.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:278",
+      "path": "routes/travel/examples/text_failure_cases/weather_mode_missing.json",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:279",
+      "path": "routes/travel/references/closure-report.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:280",
+      "path": "routes/travel/references/experience-candidate-pool.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:281",
+      "path": "routes/travel/references/flowguard-development-process.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:282",
+      "path": "routes/travel/references/guard-role-map.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:283",
+      "path": "routes/travel/references/negative-evidence-and-fallback.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:284",
+      "path": "routes/travel/references/route-mesh.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:285",
+      "path": "routes/travel/references/runtime-workflow.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:286",
+      "path": "routes/travel/references/source-portfolio.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:287",
+      "path": "routes/travel/references/story-output-contract.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:288",
+      "path": "routes/travel/references/traveler-native-guide-compiler.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:289",
+      "path": "routes/travel/references/traveler-profile.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:290",
+      "path": "routes/travel/references/trip-fit-review.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:291",
+      "path": "routes/travel/references/world-feasibility.md",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:292",
+      "path": "routes/travel/scripts/build_guide_artifact_map.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:293",
+      "path": "routes/travel/scripts/fixture_mutation.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:294",
+      "path": "routes/travel/scripts/travel_contract.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:295",
+      "path": "routes/travel/scripts/validate_failure_cases.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:296",
+      "path": "routes/travel/scripts/validate_positive_cases.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:297",
+      "path": "routes/travel/scripts/validate_travel_artifact.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:298",
+      "path": "routes/travel/scripts/validate_travel_plan.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:299",
+      "path": "routes/travel/scripts/validate_travel_text_outputs.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:300",
+      "path": "scripts/_common.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:301",
+      "path": "scripts/audit_reader_output.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:302",
+      "path": "scripts/build_artifact_map.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:303",
+      "path": "scripts/build_obligation_manifest.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:304",
+      "path": "scripts/build_reader_brief.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:305",
+      "path": "scripts/build_reader_brief_receipt.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:306",
+      "path": "scripts/build_reader_repair.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:307",
+      "path": "scripts/build_source_unit_manifest.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:308",
+      "path": "scripts/derive_closure.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:309",
+      "path": "scripts/execution_record_resolver.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:310",
+      "path": "scripts/local_execution_backend.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:311",
+      "path": "scripts/production_reader_pipeline.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:312",
+      "path": "scripts/propagate_staleness.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:313",
+      "path": "scripts/provider_preflight.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:314",
+      "path": "scripts/reader_execution.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:315",
+      "path": "scripts/reader_pipeline.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:316",
+      "path": "scripts/reader_projection_conformance.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:317",
+      "path": "scripts/reader_receipts.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:318",
+      "path": "scripts/receipt_authority.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:319",
+      "path": "scripts/receipt_store.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:320",
+      "path": "scripts/record_reader_repair.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:321",
+      "path": "scripts/researchguard_handoff.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:322",
+      "path": "scripts/review_obligations.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:323",
+      "path": "scripts/schema_validation.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:324",
+      "path": "scripts/select_route.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:325",
+      "path": "scripts/text_extent.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:326",
+      "path": "scripts/validate_adapter_request.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:327",
+      "path": "scripts/validate_adapter_result.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:328",
+      "path": "scripts/validate_claim_support.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:329",
+      "path": "scripts/validate_judgment_receipt.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:330",
+      "path": "scripts/validate_research_packet.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:331",
+      "path": "scripts/validate_revision_provenance.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:332",
+      "path": "scripts/validate_shared_writing.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:333",
+      "path": "scripts/validate_source_registry.py",
+      "required": true,
+      "role": "runtime_source"
+    },
+    {
+      "id": "input:334",
+      "path": "SKILL.md",
+      "required": true,
+      "role": "instructions"
+    },
+    {
+      "id": "input:wrapper",
+      "path": ".skillguard/checks/run_logic_writing_check.py",
+      "required": true,
+      "role": "author_check"
     }
   ],
-  "default_route_id": "route:logic-writing:router",
-  "depth_profile": {
-    "claim_boundary": "SkillGuard supervises the exact current receipts for Logic Writing's declared checks. It does not replace investigation, academic, fiction, travel, specialist judgment, or the frozen repository validation owners.",
-    "enforcement_level": "enforced",
-    "integration_mode": "native-integrated",
-    "native_check_ids": [
-      "check:logic-writing:routing",
-      "check:logic-writing:specialist-authority",
-      "check:logic-writing:investigation",
-      "check:logic-writing:academic",
-      "check:logic-writing:fiction",
-      "check:logic-writing:travel",
-      "check:logic-writing:shared-writing",
-      "check:logic-writing:reader-artifact",
-      "check:logic-writing:final-closure",
-      "check:logic-writing:contract-calibration",
-      "check:logic-writing:release-integrity",
-      "check:logic-writing:model-depth"
-    ],
-    "model_deepening_check_id": "check:logic-writing:model-depth",
-    "native_owner_id": "logic-writing",
-    "native_route_ids": [
-      "route:logic-writing:router",
-      "route:logic-writing:investigation",
-      "route:logic-writing:academic-writing",
-      "route:logic-writing:fiction-writing",
-      "route:logic-writing:travel-guide"
-    ],
-    "profile_id": "profile:logic-writing:declared-check-supervision",
-    "provider_runtime": {
-      "provider_id": "skillguard-local-provider",
-      "readiness_check_ids": [
-        "check:logic-writing:contract-calibration",
-        "check:logic-writing:release-integrity",
-        "check:logic-writing:model-depth"
-      ],
-      "required_capability_ids": [
-        "declared-check-inventory.v1",
-        "declared-check-receipt-reconciliation.v1",
-        "installation-receipt-binding.v1",
-        "installation-currentness-replay.v1",
-        "provider-runtime-enrollment.v1",
-        "single-flight-check-execution.v1"
-      ],
-      "required_enrollment_status": "enrolled",
-      "required_runtime_contract_id": "skillguard-declared-check-supervision-current"
-    },
-    "required_closure_profiles": [
-      "enforced"
-    ],
-    "schema_version": "skillguard.depth_profile.v2",
-    "skillguard_adds_domain_route": false,
-    "surface_inventory": {
-      "path": ".skillguard/surface-inventory.json",
-      "adequacy_check_ids": [
-        "check:logic-writing:contract-calibration",
-        "check:logic-writing:model-depth"
-      ],
-      "model_deepening_check_id": "check:logic-writing:model-depth"
-    },
-    "target_skill_id": "logic-writing"
-  },
-  "implementation_paths": [
-    "skills/logic-writing/SKILL.md",
-    "skills/logic-writing/agents",
-    "skills/logic-writing/references",
-    "skills/logic-writing/routes",
-    "skills/logic-writing/scripts",
-    "skills/logic-writing/assets",
-    "scripts/author",
-    ".flowguard/models",
-    ".flowguard/verification",
-    "tests/flowguard",
-    "skills/logic-writing/.skillguard/fixtures",
-    "scripts/run_fiction_regression.py",
-    "scripts/run_travel_regression.py",
-    ".flowguard/structure/owner-bindings.json",
-    "tests/contract/test_skillguard_surface_inventory.py",
-    "tests/contract/test_logic_writing_model_depth.py"
-  ],
-  "integration_mode": "native-integrated",
-  "judgment_rubrics": [],
   "maintenance_unit_id": "unit:logic-writing",
-  "may_define_parallel_execution_route": false,
-  "may_define_skillguard_runtime_route": false,
   "member_skill_ids": [
     "logic-writing"
   ],
-  "model_id": "logic-writing.skill-contract.v2",
-  "model_path": "scripts/author/skillguard_contract_model.py",
-  "native_check_bindings": [
+  "obligations": [
     {
-      "authority": "target-native",
-      "check_id": "check:logic-writing:routing",
-      "owner_id": "logic-writing"
-    },
-    {
-      "authority": "target-native",
-      "check_id": "check:logic-writing:specialist-authority",
-      "owner_id": "logic-writing"
-    },
-    {
-      "authority": "target-native",
-      "check_id": "check:logic-writing:investigation",
-      "owner_id": "logic-writing"
-    },
-    {
-      "authority": "target-native",
-      "check_id": "check:logic-writing:academic",
-      "owner_id": "logic-writing"
-    },
-    {
-      "authority": "target-native",
-      "check_id": "check:logic-writing:fiction",
-      "owner_id": "logic-writing"
-    },
-    {
-      "authority": "target-native",
-      "check_id": "check:logic-writing:travel",
-      "owner_id": "logic-writing"
-    },
-    {
-      "authority": "target-native",
-      "check_id": "check:logic-writing:shared-writing",
-      "owner_id": "logic-writing"
-    },
-    {
-      "authority": "target-native",
-      "check_id": "check:logic-writing:reader-artifact",
-      "owner_id": "logic-writing"
-    },
-    {
-      "authority": "target-native",
-      "check_id": "check:logic-writing:final-closure",
-      "owner_id": "logic-writing"
-    },
-    {
-      "authority": "target-native",
-      "check_id": "check:logic-writing:contract-calibration",
-      "owner_id": "logic-writing"
-    },
-    {
-      "authority": "target-native",
-      "check_id": "check:logic-writing:release-integrity",
-      "owner_id": "logic-writing"
-    },
-    {
-      "authority": "target-native",
-      "check_id": "check:logic-writing:model-depth",
-      "owner_id": "owner:logic-writing:model-depth"
-    }
-  ],
-  "native_route_bindings": [
-    {
-      "authority": "target-native",
-      "owner_id": "logic-writing",
-      "route_id": "route:logic-writing:router"
-    },
-    {
-      "authority": "target-native",
-      "owner_id": "logic-writing",
-      "route_id": "route:logic-writing:investigation"
-    },
-    {
-      "authority": "target-native",
-      "owner_id": "logic-writing",
-      "route_id": "route:logic-writing:academic-writing"
-    },
-    {
-      "authority": "target-native",
-      "owner_id": "logic-writing",
-      "route_id": "route:logic-writing:fiction-writing"
-    },
-    {
-      "authority": "target-native",
-      "owner_id": "logic-writing",
-      "route_id": "route:logic-writing:travel-guide"
-    }
-  ],
-  "native_route_owner": "logic-writing",
-  "release_eligible": true,
-  "repository_role": "skill_maintainer_source",
-  "schema_version": "skillguard.contract_source.v2",
-  "skill_id": "logic-writing",
-  "step_bindings": [
-    {
-      "action": {
-        "kind": "native",
-        "summary": "Select one terminal owner and preserve typed specialist authority."
-      },
       "check_ids": [
-        "check:logic-writing:routing",
+        "check:logic-writing:routing"
+      ],
+      "obligation_id": "obligation:logic-writing:routing"
+    },
+    {
+      "check_ids": [
         "check:logic-writing:specialist-authority"
       ],
-      "output_artifact_ids": [],
-      "step_id": "step:logic-writing:route"
+      "obligation_id": "obligation:logic-writing:specialist-authority"
     },
     {
-      "action": {
-        "kind": "native",
-        "summary": "Build current route-native evidence under the selected investigation, academic, fiction, or travel owner."
-      },
-      "check_ids": [
-        "check:logic-writing:investigation",
-        "check:logic-writing:academic",
-        "check:logic-writing:fiction",
-        "check:logic-writing:travel"
-      ],
-      "output_artifact_ids": [],
-      "step_id": "step:logic-writing:evidence"
-    },
-    {
-      "action": {
-        "kind": "native",
-        "summary": "Translate current evidence into a ReaderBrief and inspect the actual reader artifact."
-      },
-      "check_ids": [
-        "check:logic-writing:shared-writing",
-        "check:logic-writing:reader-artifact"
-      ],
-      "output_artifact_ids": [],
-      "step_id": "step:logic-writing:reader-artifact"
-    },
-    {
-      "action": {
-        "kind": "verifier",
-        "summary": "Derive final closure from minimum route content, current reader evidence, and exact artifact identity."
-      },
-      "check_ids": [
-        "check:logic-writing:final-closure"
-      ],
-      "output_artifact_ids": [],
-      "step_id": "step:logic-writing:closure"
-    },
-    {
-      "action": {
-        "kind": "verifier",
-        "summary": "Calibrate the portable contract and validate its release-integrity boundary."
-      },
-      "check_ids": [
-        "check:logic-writing:contract-calibration",
-        "check:logic-writing:release-integrity",
-        "check:logic-writing:model-depth"
-      ],
-      "output_artifact_ids": [],
-      "step_id": "step:logic-writing:maintenance"
-    },
-    {
-      "action": {
-        "kind": "native",
-        "summary": "Preserve the investigation route as a native final-owner route."
-      },
       "check_ids": [
         "check:logic-writing:investigation"
       ],
-      "output_artifact_ids": [],
-      "step_id": "step:logic-writing:investigation:execute"
+      "obligation_id": "obligation:logic-writing:investigation"
     },
     {
-      "action": {
-        "kind": "native",
-        "summary": "Preserve the academic-writing route as a native final-owner route."
-      },
       "check_ids": [
         "check:logic-writing:academic"
       ],
-      "output_artifact_ids": [],
-      "step_id": "step:logic-writing:academic-writing:execute"
+      "obligation_id": "obligation:logic-writing:academic"
     },
     {
-      "action": {
-        "kind": "native",
-        "summary": "Preserve the fiction-writing route as a native final-owner route."
-      },
       "check_ids": [
         "check:logic-writing:fiction"
       ],
-      "output_artifact_ids": [],
-      "step_id": "step:logic-writing:fiction-writing:execute"
+      "obligation_id": "obligation:logic-writing:fiction"
     },
     {
-      "action": {
-        "kind": "native",
-        "summary": "Preserve the travel-guide route as a native final-owner route."
-      },
       "check_ids": [
         "check:logic-writing:travel"
       ],
-      "output_artifact_ids": [],
-      "step_id": "step:logic-writing:travel-guide:execute"
+      "obligation_id": "obligation:logic-writing:travel"
+    },
+    {
+      "check_ids": [
+        "check:logic-writing:shared-writing"
+      ],
+      "obligation_id": "obligation:logic-writing:shared-writing"
+    },
+    {
+      "check_ids": [
+        "check:logic-writing:reader-artifact"
+      ],
+      "obligation_id": "obligation:logic-writing:reader-artifact"
+    },
+    {
+      "check_ids": [
+        "check:logic-writing:final-closure"
+      ],
+      "obligation_id": "obligation:logic-writing:final-closure"
+    },
+    {
+      "check_ids": [
+        "check:logic-writing:contract-calibration"
+      ],
+      "obligation_id": "obligation:logic-writing:contract-calibration"
+    },
+    {
+      "check_ids": [
+        "check:logic-writing:release-integrity"
+      ],
+      "obligation_id": "obligation:logic-writing:release-integrity"
+    },
+    {
+      "check_ids": [
+        "check:logic-writing:model-depth"
+      ],
+      "obligation_id": "obligation:logic-writing:model-depth"
+    }
+  ],
+  "routes": [
+    {
+      "choice_group": "operation",
+      "obligation_ids": [
+        "obligation:logic-writing:routing",
+        "obligation:logic-writing:specialist-authority",
+        "obligation:logic-writing:investigation",
+        "obligation:logic-writing:academic",
+        "obligation:logic-writing:fiction",
+        "obligation:logic-writing:travel",
+        "obligation:logic-writing:shared-writing",
+        "obligation:logic-writing:reader-artifact",
+        "obligation:logic-writing:final-closure",
+        "obligation:logic-writing:contract-calibration",
+        "obligation:logic-writing:release-integrity",
+        "obligation:logic-writing:model-depth"
+      ],
+      "route_id": "route:logic-writing:current-validation",
+      "step_ids": [
+        "step:logic-writing:routing",
+        "step:logic-writing:specialist-authority",
+        "step:logic-writing:investigation",
+        "step:logic-writing:academic",
+        "step:logic-writing:fiction",
+        "step:logic-writing:travel",
+        "step:logic-writing:shared-writing",
+        "step:logic-writing:reader-artifact",
+        "step:logic-writing:final-closure",
+        "step:logic-writing:contract-calibration",
+        "step:logic-writing:release-integrity",
+        "step:logic-writing:model-depth"
+      ],
+      "when": [
+        {
+          "equals": "validate",
+          "fact": "operation"
+        }
+      ]
+    }
+  ],
+  "schema_version": "skillguard.skill_contract.v3",
+  "skill_id": "logic-writing",
+  "steps": [
+    {
+      "check_ids": [
+        "check:logic-writing:routing"
+      ],
+      "requires": [],
+      "step_id": "step:logic-writing:routing"
+    },
+    {
+      "check_ids": [
+        "check:logic-writing:specialist-authority"
+      ],
+      "requires": [
+        "step:logic-writing:routing"
+      ],
+      "step_id": "step:logic-writing:specialist-authority"
+    },
+    {
+      "check_ids": [
+        "check:logic-writing:investigation"
+      ],
+      "requires": [
+        "step:logic-writing:specialist-authority"
+      ],
+      "step_id": "step:logic-writing:investigation"
+    },
+    {
+      "check_ids": [
+        "check:logic-writing:academic"
+      ],
+      "requires": [
+        "step:logic-writing:investigation"
+      ],
+      "step_id": "step:logic-writing:academic"
+    },
+    {
+      "check_ids": [
+        "check:logic-writing:fiction"
+      ],
+      "requires": [
+        "step:logic-writing:academic"
+      ],
+      "step_id": "step:logic-writing:fiction"
+    },
+    {
+      "check_ids": [
+        "check:logic-writing:travel"
+      ],
+      "requires": [
+        "step:logic-writing:fiction"
+      ],
+      "step_id": "step:logic-writing:travel"
+    },
+    {
+      "check_ids": [
+        "check:logic-writing:shared-writing"
+      ],
+      "requires": [
+        "step:logic-writing:travel"
+      ],
+      "step_id": "step:logic-writing:shared-writing"
+    },
+    {
+      "check_ids": [
+        "check:logic-writing:reader-artifact"
+      ],
+      "requires": [
+        "step:logic-writing:shared-writing"
+      ],
+      "step_id": "step:logic-writing:reader-artifact"
+    },
+    {
+      "check_ids": [
+        "check:logic-writing:final-closure"
+      ],
+      "requires": [
+        "step:logic-writing:reader-artifact"
+      ],
+      "step_id": "step:logic-writing:final-closure"
+    },
+    {
+      "check_ids": [
+        "check:logic-writing:contract-calibration"
+      ],
+      "requires": [
+        "step:logic-writing:final-closure"
+      ],
+      "step_id": "step:logic-writing:contract-calibration"
+    },
+    {
+      "check_ids": [
+        "check:logic-writing:release-integrity"
+      ],
+      "requires": [
+        "step:logic-writing:contract-calibration"
+      ],
+      "step_id": "step:logic-writing:release-integrity"
+    },
+    {
+      "check_ids": [
+        "check:logic-writing:model-depth"
+      ],
+      "requires": [
+        "step:logic-writing:release-integrity"
+      ],
+      "step_id": "step:logic-writing:model-depth"
     }
   ]
 }

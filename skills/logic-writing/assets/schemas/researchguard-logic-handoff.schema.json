@@ -17,7 +17,7 @@
   "properties": {
     "schema_version": { "const": "1.0" },
     "provider_id": { "const": "researchguard" },
-    "provider_version": { "const": "0.5.1" },
+    "provider_version": { "const": "0.5.2" },
     "member_id": { "const": "logicguard" },
     "primary_path_id": { "const": "primary:researchguard:logic" },
     "native_result_schema_version": { "const": "researchguard.logic.synthesis-plan.v1" },

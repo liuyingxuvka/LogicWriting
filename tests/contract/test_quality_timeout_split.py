@@ -17,10 +17,10 @@ def test_job_timeout_is_distinct_from_backend_timeout(tmp_path: Path) -> None:
         json.dumps(
             {
                 "schema_version": "logic-writing.local-backend-plan.v1",
-                "backend_id": "local-codex:0.154.0:gpt-6-astra:xhigh",
+                "backend_id": "local-codex:0.155.0:gpt-6-astra:xhigh",
                 "model_id": "gpt-6-astra",
                 "reasoning_effort": "xhigh",
-                "cli_version": "0.154.0",
+                "cli_version": "0.155.0",
                 "cli_sha256": benchmark.DEFAULT_CLI_SHA256,
                 "timeout_seconds": 900,
                 "job_timeout_seconds": 1800,

@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 from pathlib import Path
 
@@ -25,6 +26,12 @@ SKIP_PARTS = {
     ".pytest_cache",
     "compiled-contract.json",
     "check-manifest.json",
+    # Runtime evidence is deliberately outside the source topology.  Reading
+    # thousands of historical JSON receipts made this author check exceed the
+    # bounded SkillGuard check timeout while adding no current source signal.
+    "evidence",
+    "history",
+    "run_artifacts",
 }
 GOVERNED_ROOTS = ("skills/logic-writing", "tests", "scripts", ".flowguard")
 OLD_EXECUTION_PATTERNS = (
@@ -42,7 +49,7 @@ REQUIRED_BINDINGS = {
     "sourceguard": ("source", "primary:researchguard:source"),
     "traceguard": ("trace", "primary:researchguard:trace"),
 }
-SUPPORTED_VERSION = "0.5.1"
+SUPPORTED_VERSION = "0.5.2"
 
 
 def _governed_files(root: Path):
@@ -50,15 +57,20 @@ def _governed_files(root: Path):
         target = root / relative
         if not target.exists():
             continue
-        for path in target.rglob("*"):
-            if not path.is_file() or path.suffix.lower() not in TEXT_SUFFIXES:
-                continue
-            relative_path = path.relative_to(root)
-            if relative_path.as_posix() == "scripts/check_researchguard_topology.py":
-                continue
-            if any(part in SKIP_PARTS for part in relative_path.parts):
-                continue
-            yield relative_path, path
+        # Prune generated evidence before descending.  A post-filtered
+        # ``rglob`` still walks every historical receipt directory and can
+        # exceed the bounded author-check timeout.
+        for directory, dirnames, filenames in os.walk(target):
+            dirnames[:] = [name for name in dirnames if name not in SKIP_PARTS]
+            base = Path(directory)
+            for filename in filenames:
+                path = base / filename
+                if path.suffix.lower() not in TEXT_SUFFIXES:
+                    continue
+                relative_path = path.relative_to(root)
+                if relative_path.as_posix() == "scripts/check_researchguard_topology.py":
+                    continue
+                yield relative_path, path
 
 
 def check(root: Path) -> dict[str, object]:
@@ -135,7 +147,7 @@ def check(root: Path) -> dict[str, object]:
 
     validator_path = root / "skills/logic-writing/scripts/validate_adapter_result.py"
     validator_text = validator_path.read_text(encoding="utf-8")
-    if 'provider_version") != "0.5.1"' not in validator_text:
+    if 'provider_version") != "0.5.2"' not in validator_text:
         findings.append(
             {
                 "code": "adapter_validator_version_missing",
@@ -145,7 +157,7 @@ def check(root: Path) -> dict[str, object]:
         )
     schema_path = root / "skills/logic-writing/assets/schemas/adapter-result.schema.json"
     schema_text = schema_path.read_text(encoding="utf-8")
-    if '"provider_version": { "const": "0.5.1" }' not in schema_text:
+    if '"provider_version": { "const": "0.5.2" }' not in schema_text:
         findings.append(
             {
                 "code": "adapter_schema_version_missing",

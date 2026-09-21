@@ -24,6 +24,10 @@ def test_declared_route_resources_are_copied_into_consumer_projection():
         for row in contract["content_impact_plan"]["inventory"]
     }
 
+    def portable(path: str) -> str:
+        prefix = "skills/logic-writing/"
+        return path[len(prefix) :] if path.startswith(prefix) else path
+
     required_paths: set[str] = set()
     for route in manifest["routes"].values():
         required_paths.update(route.get("required_resources", []))
@@ -38,27 +42,13 @@ def test_declared_route_resources_are_copied_into_consumer_projection():
         )
 
     assert required_paths
+    required_paths = {portable(path) for path in required_paths}
     assert all(path in inventory for path in required_paths)
     assert all(
         inventory[path]["install_disposition"] == "copy"
         for path in required_paths
     )
 
-    # Keep the reviewed subtree overrides broad enough to cover newly added
-    # route references and example payloads without another hand-maintained
-    # per-file list.
-    overrides = {
-        str(row["path"]): row
-        for row in json.loads(
-            (SKILL_ROOT / ".skillguard" / "contract-source.json").read_text(
-                encoding="utf-8"
-            )
-        )["content_role_overrides"]
-    }
-    assert {
-        "skills/logic-writing/routes/fiction/references",
-        "skills/logic-writing/routes/travel/references",
-        "skills/logic-writing/routes/fiction/examples",
-        "skills/logic-writing/routes/travel/examples",
-    } == set(overrides)
-    assert all(row["install_disposition"] == "copy" for row in overrides.values())
+    projection_paths = set(contract["consumer_projection"]["file_paths"])
+    assert required_paths <= projection_paths
+    assert all(inventory[path]["install_disposition"] == "copy" for path in required_paths)

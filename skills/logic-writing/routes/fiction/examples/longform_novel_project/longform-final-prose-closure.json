@@ -11,7 +11,7 @@
     {
       "surface": "flowguard_process",
       "status": "passed",
-      "evidence_ref": "file:guard_handoffs/flowguard.json;sha256:cf74378a87b851ac769cd1f95144b95bca3031df2b6861bec1bf7aa9cf6b0a00",
+      "evidence_ref": "file:guard_handoffs/flowguard.json;sha256:673596484bcbc181eb88d1e82616d55ab0185dd1bab06790f0c087128569bc60",
       "input_fingerprint": "sha256:f72d4756d985004e07ddc6eb32bb45cf7e03e0a6f3c6c672e23fdd8b8e2f4efe",
       "blocks_closure": false,
       "next_action": "Refresh FlowGuard process evidence after model, validator, fixture, prose, or installed-copy changes"
@@ -19,7 +19,7 @@
     {
       "surface": "traceguard_storyline",
       "status": "passed",
-      "evidence_ref": "file:guard_handoffs/traceguard.json;sha256:49e971e2a814402fd10b6a8ee85fc287e3d264943a807fc15f469888971824c5",
+      "evidence_ref": "file:guard_handoffs/traceguard.json;sha256:d87c18bb497784c1fdd091cd3933120347e089578978e10d1ee18e06b52a2949",
       "input_fingerprint": "sha256:2a3a904d5c2afb9d13372982b8319a3c6137f2ff7e1fe05972f3407db6aa8577",
       "blocks_closure": false,
       "next_action": "Refresh TraceGuard storyline evidence after chronology, clue, or reveal changes"
@@ -27,7 +27,7 @@
     {
       "surface": "worldguard_story_claims",
       "status": "passed",
-      "evidence_ref": "file:guard_handoffs/worldguard.json;sha256:0d38b267895206f82da86955e7b28ed176cf451040444c670af8e8861e7e4c94",
+      "evidence_ref": "file:guard_handoffs/worldguard.json;sha256:f9671661d9e36b83aa22e13d458539a6682c6aa7b78305c2378f54531a4aed0b",
       "input_fingerprint": "sha256:6ddbdb1b2238b5e52d7abf0cd1dc7c846f224ff151ffbcecc683d4b1d151dd67",
       "blocks_closure": false,
       "next_action": "Refresh WorldGuard story-claim evidence after world rule, access, resource, or causality edits"
@@ -35,7 +35,7 @@
     {
       "surface": "logicguard_theme_support",
       "status": "passed",
-      "evidence_ref": "file:guard_handoffs/logicguard.json;sha256:c8ca4b5dfc5db883ca22164b4c1ad38e1cf8b1741a4542f2ad344d4edfe7f945",
+      "evidence_ref": "file:guard_handoffs/logicguard.json;sha256:4f3253964a101bd988862dbd19c45cb8f25efa51f14d08fc5e4e61cdc4a423ce",
       "input_fingerprint": "sha256:3a85fcd7149479214cf661ef2ba96e681cc326dc097c7f11be43f8b3c45cc0b3",
       "blocks_closure": false,
       "next_action": "Refresh LogicGuard theme support after ending, arc, or final-prose changes"
@@ -43,7 +43,7 @@
     {
       "surface": "sourceguard_canon_support",
       "status": "passed",
-      "evidence_ref": "file:guard_handoffs/sourceguard.json;sha256:f96428aa27fc7ea82c54435b969f2f93b7ed2fd8003e5d677a1defe35e0680e8",
+      "evidence_ref": "file:guard_handoffs/sourceguard.json;sha256:c83a8883d45744ed4ad97dafb2e32379f36d3fea76757164bbce44258dd2545c",
       "input_fingerprint": "sha256:8a2a9448e059aaf4bd5baa1eb12e10ee2b17ac90f4b37382c38508995d710e69",
       "blocks_closure": false,
       "next_action": "Refresh SourceGuard source support after source requirement or final artifact changes"

@@ -101,6 +101,45 @@ def validate_pair(positive_path: Path, shallow_path: Path) -> dict[str, Any]:
     }
 
 
+def _validate_compact_v3(root: Path) -> dict[str, Any]:
+    """Validate the current SkillGuard v3 contract without the removed v2 API."""
+    control = root / "skills" / "logic-writing" / ".skillguard"
+    source = _load(control / "contract-source.json")
+    compiled = _load(control / "compiled-contract.json")
+    manifest = _load(control / "check-manifest.json")
+    if source.get("schema_version") != "skillguard.skill_contract.v3":
+        raise ValueError("compact-v3-contract-required")
+    check_ids = {str(item.get("check_id")) for item in source.get("checks", ())}
+    obligation_ids = {str(item.get("obligation_id")) for item in source.get("obligations", ())}
+    step_ids = {str(item.get("step_id")) for item in source.get("steps", ())}
+    route_ids = {str(item.get("route_id")) for item in source.get("routes", ())}
+    compiled_ids = {str(item.get("check_id")) for item in compiled.get("checks", ())}
+    if not check_ids or check_ids != compiled_ids:
+        raise ValueError("compact-v3-checks-mismatch")
+    for obligation in source.get("obligations", ()):
+        if not set(obligation.get("check_ids", ())).issubset(check_ids):
+            raise ValueError("compact-v3-obligation-reference-mismatch")
+    for step in source.get("steps", ()):
+        if not set(step.get("check_ids", ())).issubset(check_ids) or not set(step.get("requires", ())).issubset(step_ids):
+            raise ValueError("compact-v3-step-reference-mismatch")
+    for route in source.get("routes", ()):
+        if not set(route.get("obligation_ids", ())).issubset(obligation_ids) or not set(route.get("step_ids", ())).issubset(step_ids):
+            raise ValueError("compact-v3-route-reference-mismatch")
+    if not route_ids or not source.get("consumer_projection", {}).get("file_paths"):
+        raise ValueError("compact-v3-projection-missing")
+    if manifest.get("schema_version") != "skillguard.check_manifest.v3":
+        raise ValueError("compact-v3-manifest-required")
+    return {
+        "status": "current",
+        "schema_version": source["schema_version"],
+        "check_count": len(check_ids),
+        "obligation_count": len(obligation_ids),
+        "step_count": len(step_ids),
+        "route_count": len(route_ids),
+        "compiled_contract_hash": manifest.get("contract_hash"),
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--positive", type=Path, required=True)
@@ -112,20 +151,25 @@ def main() -> int:
     # surface mapping. A successful historical calibration pair cannot stand in
     # for a missing, stale or re-signed target-owned inventory.
     try:
-        from build_skillguard_surface_inventory import build_inventory, load_skillguard
+        control = args.root / "skills" / "logic-writing" / ".skillguard"
+        source = _load(control / "contract-source.json")
+        if source.get("schema_version") == "skillguard.skill_contract.v3":
+            compact = _validate_compact_v3(args.root)
+            result["surface_inventory"] = compact
+        else:
+            from build_skillguard_surface_inventory import build_inventory, load_skillguard
 
-        expected_map, expected_inventory = build_inventory(args.root, load_skillguard())
-        control = args.root / "skills/logic-writing/.skillguard"
-        current = (
-            _load(control / "surface-semantic-map.json") == expected_map
-            and _load(control / "surface-inventory.json") == expected_inventory
-        )
-        result["surface_inventory"] = {
-            "status": "current" if current else "stale",
-            "inventory_hash": expected_inventory["inventory_hash"],
-            "surface_count": len(expected_inventory["full_surfaces"]),
-        }
-        result["ok"] = result["ok"] and current
+            expected_map, expected_inventory = build_inventory(args.root, load_skillguard())
+            current = (
+                _load(control / "surface-semantic-map.json") == expected_map
+                and _load(control / "surface-inventory.json") == expected_inventory
+            )
+            result["surface_inventory"] = {
+                "status": "current" if current else "stale",
+                "inventory_hash": expected_inventory["inventory_hash"],
+                "surface_count": len(expected_inventory["full_surfaces"]),
+            }
+            result["ok"] = result["ok"] and current
     except (OSError, ValueError) as exc:
         result["surface_inventory"] = {"status": "blocked", "detail": str(exc)}
         result["ok"] = False

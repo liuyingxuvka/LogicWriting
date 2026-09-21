@@ -10,7 +10,7 @@
       "check_name": "story-development-flowgraph",
       "status": "passed",
       "required": true,
-      "evidence_ref": "file:guard_handoffs/flowguard.json;sha256:0aac8d541b0b56081e9262dcd79b1b60b9fbf13cb2eb0d61c8a6e68b475420e0",
+      "evidence_ref": "file:guard_handoffs/flowguard.json;sha256:94e2645549d8aec38a3b344802b105d543d051d5e5f99e609bceeef1bc74955a",
       "input_fingerprint": "sha256:4f2956ce5637fb77c759714900a488f68d65322cda95025cccf1879cbc6b9787",
       "blocks_closure": false
     },
@@ -19,7 +19,7 @@
       "check_name": "traceguard-storyline-contract",
       "status": "passed",
       "required": true,
-      "evidence_ref": "file:guard_handoffs/traceguard.json;sha256:fc39816cc4f6aba08642e5ef9d0a9af2116e377add62a4a00c2d2e243b176ce2",
+      "evidence_ref": "file:guard_handoffs/traceguard.json;sha256:e78de96dac26c408a595ebffaf16993c85bc7d98b48acad1f199bde18e93c50f",
       "input_fingerprint": "sha256:9d69656be94f538157e409f350e305909b6b8ef0c5041c816cb41b55b8c382a4"
     },
     {
@@ -27,7 +27,7 @@
       "check_name": "worldguard_claim_reference_check",
       "status": "passed",
       "required": true,
-      "evidence_ref": "file:guard_handoffs/worldguard.json;sha256:480a4f06a4019ee04ad6317a01718ce4f887c0f6228dbe96d74d4600ff5be3bd",
+      "evidence_ref": "file:guard_handoffs/worldguard.json;sha256:19271850f7d1ab826c27e2cb1162d105d2834eb5303bea6e502fa0d43d50a9f5",
       "input_fingerprint": "sha256:ae975866ceceeb03cf9ba3bfd5138fb1d5436b521d7c50a92ef00cbbcab3f127"
     },
     {
@@ -35,7 +35,7 @@
       "check_name": "logicguard-theme-contract",
       "status": "not_applicable_with_reason",
       "required": true,
-      "evidence_ref": "file:guard_handoffs/logicguard.json;sha256:040f203071af29707a47baf0fcc5787421f496ffbd81e2c412e7ef3a2053a285",
+      "evidence_ref": "file:guard_handoffs/logicguard.json;sha256:80e15a21d9bc9376a289ffa21fccf2f8edbf6f2f0a9fb93e2c92968abb480fc6",
       "input_fingerprint": "sha256:644dd863244fd0e739c622abe2593e70685b551305088d3b8f7c15c922da737c",
       "not_applicable_reason": "The fixture claims structural readiness, not a material theme, moral, or ending-interpretation result.",
       "blocks_closure": false,
@@ -46,7 +46,7 @@
       "check_name": "sourceguard-canon-contract",
       "status": "not_applicable_with_reason",
       "required": true,
-      "evidence_ref": "file:guard_handoffs/sourceguard.json;sha256:f8f7a7a34f1505af78a7203d023f85361069648da37c5b517cf68383b0708a0d",
+      "evidence_ref": "file:guard_handoffs/sourceguard.json;sha256:5dca0680c335045e521f1d0b42c5925f23fb53ef47593a17eefe67782687e516",
       "input_fingerprint": "sha256:1dfbf8860323f1e4a557e5ef67fadf03c7d23807173cf3a008d3318a946f9be4",
       "not_applicable_reason": "The fixture has no user canon, prior draft, adaptation source, historical fact, or external source constraint.",
       "blocks_closure": false,

@@ -1,10 +1,10 @@
 {
   "schema_version": "logic-writing.local-backend-plan.v1",
-  "backend_id": "local-codex:0.154.0:gpt-6-astra:xhigh",
+  "backend_id": "local-codex:0.155.0:gpt-6-astra:xhigh",
   "model_id": "gpt-6-astra",
   "reasoning_effort": "xhigh",
-  "cli_version": "0.154.0",
-  "cli_sha256": "081e4de4be8e38fac6ed4d95e3b1a0b9f6d31c090ddc36e1696b349fe406f575",
+  "cli_version": "0.155.0",
+  "cli_sha256": "bc45017e8239dc150258f69309ced9df6bbcdf5b8e4f346decf780ac0999e226",
   "timeout_seconds": 900,
   "job_timeout_seconds": 1800,
   "max_attempts": 1,
@@ -13,5 +13,5 @@
   "output_token_limit_supported": false,
   "purpose": "Local desktop Codex execution only; executable path and authentication remain runtime observations.",
   "no_progress_seconds": 0,
-  "startup_timeout_seconds": 60
+  "startup_timeout_seconds": 180
 }

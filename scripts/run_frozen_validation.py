@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import fnmatch
 import glob
 import hashlib
 import importlib
@@ -195,8 +196,30 @@ def _is_ignored(relative: Path, *, explicit: bool) -> bool:
 def _selector_files(root: Path, selector: str) -> list[Path]:
     normalized = selector.replace("\\", "/")
     wildcard = any(character in normalized for character in "*?[")
-    matches = [Path(item) for item in glob.glob(str(root / normalized), recursive=True)]
     files: list[Path] = []
+
+    def matches_pattern(relative: Path) -> bool:
+        """Match path segments without letting ``**`` traverse ignored trees."""
+
+        path_parts = relative.as_posix().split("/")
+        pattern_parts = normalized.split("/")
+
+        def visit(path_index: int, pattern_index: int) -> bool:
+            if pattern_index == len(pattern_parts):
+                return path_index == len(path_parts)
+            token = pattern_parts[pattern_index]
+            if token == "**":
+                return visit(path_index, pattern_index + 1) or (
+                    path_index < len(path_parts)
+                    and visit(path_index + 1, pattern_index)
+                )
+            return (
+                path_index < len(path_parts)
+                and fnmatch.fnmatchcase(path_parts[path_index], token)
+                and visit(path_index + 1, pattern_index + 1)
+            )
+
+        return visit(0, 0)
 
     def admit(path: Path) -> None:
         """Admit one file while pruning known runtime trees before resolve.
@@ -224,10 +247,43 @@ def _selector_files(root: Path, selector: str) -> list[Path]:
             return
         files.append(resolved)
 
-    for match in matches:
-        if match.is_dir():
+    if not wildcard:
+        matches = [Path(item) for item in glob.glob(str(root / normalized), recursive=False)]
+        for match in matches:
+            if match.is_dir():
+                for directory, dirnames, filenames in os.walk(
+                    match, topdown=True, followlinks=False
+                ):
+                    directory_path = Path(directory)
+                    dirnames[:] = [
+                        name
+                        for name in dirnames
+                        if not _is_ignored(
+                            directory_path.joinpath(name).relative_to(root),
+                            explicit=True,
+                        )
+                    ]
+                    for filename in filenames:
+                        admit(directory_path / filename)
+            elif match.is_file():
+                admit(match)
+    else:
+        # Derive a static traversal root before the first wildcard segment.
+        # This avoids the recursive ``glob.glob`` walk over ignored history and
+        # run-artifact trees on archive-backed Windows workspaces.
+        pattern_parts = normalized.split("/")
+        static_count = 0
+        for part in pattern_parts:
+            if any(character in part for character in "*?["):
+                break
+            static_count += 1
+        traversal = root.joinpath(*pattern_parts[:static_count])
+        if traversal.is_file():
+            if matches_pattern(traversal.relative_to(root)):
+                admit(traversal)
+        elif traversal.is_dir():
             for directory, dirnames, filenames in os.walk(
-                match, topdown=True, followlinks=False
+                traversal, topdown=True, followlinks=False
             ):
                 directory_path = Path(directory)
                 dirnames[:] = [
@@ -235,13 +291,13 @@ def _selector_files(root: Path, selector: str) -> list[Path]:
                     for name in dirnames
                     if not _is_ignored(
                         directory_path.joinpath(name).relative_to(root),
-                        explicit=not wildcard,
+                        explicit=False,
                     )
                 ]
                 for filename in filenames:
-                    admit(directory_path / filename)
-        elif match.is_file():
-            admit(match)
+                    candidate = directory_path / filename
+                    if matches_pattern(candidate.relative_to(root)):
+                        admit(candidate)
     if not files:
         raise ValueError(f"input_selector_has_no_files:{selector}")
     return sorted(set(files))

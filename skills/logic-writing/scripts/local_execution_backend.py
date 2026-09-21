@@ -40,7 +40,7 @@ _CODEX_INSTALL_RELATIVE_PATH = Path(
     "OpenAI",
     "Codex",
     "bin",
-    "bffc5354119c8421",
+    "247581e40ee272fb",
     "codex.exe",
 )
 
@@ -58,8 +58,8 @@ def _default_codex_path() -> Path:
 
 
 DEFAULT_CODEX_PATH = _default_codex_path()
-DEFAULT_CLI_VERSION = "0.154.0"
-DEFAULT_CLI_SHA256 = "081e4de4be8e38fac6ed4d95e3b1a0b9f6d31c090ddc36e1696b349fe406f575"
+DEFAULT_CLI_VERSION = "0.155.0"
+DEFAULT_CLI_SHA256 = "bc45017e8239dc150258f69309ced9df6bbcdf5b8e4f346decf780ac0999e226"
 
 # The local quality lanes are intentionally denied every feature that could
 # reach an app, plugin, shell, browser, or another external execution

@@ -2,7 +2,7 @@
   "schema_version": "skillguard.surface_semantic_map.v1",
   "map_id": "map:logic-writing:surface-semantics",
   "target_skill_id": "logic-writing",
-  "source_discovery_fingerprint": "sha256:35a74638f9194678be4dfd66a931417656913b3001610e39e847c4ca12af8426",
+  "source_discovery_fingerprint": "sha256:b0644759bb3e16dfeb13365fb332f16f2af6254a75454f985056645d2f8592d5",
   "full_surface_ids": [
     "api:routes/academic/scripts/validate_academic_artifact.py:validate_academic_artifact",
     "api:routes/fiction/guard-model/verify.py:GuardModelContractError",
@@ -15581,5 +15581,5 @@
     }
   ],
   "claim_boundary": "The inventory binds the current LogicWriting skill-root source observation to explicit target-owned obligations and checks. It proves neither domain correctness, provider quality, installation currentness, release, nor future prose behavior.",
-  "map_hash": "sha256:209c9a7e1d5ed2a6a6baee7c1785b835de7d282725b0d05ccee8bc64fb18fe91"
+  "map_hash": "sha256:afc1c0ebe82d9932f289a201f10f9992c1d655a10fae59e711a3b41c8c7e60c6"
 }

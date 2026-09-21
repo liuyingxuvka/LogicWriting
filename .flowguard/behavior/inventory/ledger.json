@@ -1033,7 +1033,7 @@
       "actor_kind": "developer",
       "actor": "release owner",
       "trigger": "the installed, routed replacement is current and release candidate checks pass",
-      "expected_result": "commit, tag, release, docs, and active installation share the Logic Writing v4.0.0 release identity",
+      "expected_result": "commit, tag, release, docs, and active installation share the Logic Writing v4.0.1 release identity",
       "failure_boundary": "no release while validation, installation, privacy, or fresh-clone evidence is stale or missing",
       "preconditions": [],
       "expected_terminal": "public v2.0.0 release with immutable prior history or visible blocked publication",
@@ -1070,7 +1070,7 @@
       "lookup_binding": {
         "task_terms": [
           "publish LogicWriting",
-          "v4.0.0",
+          "v4.0.1",
           "four-route release",
           "post-archive release"
         ],
@@ -1878,10 +1878,10 @@
       "source_ref": "openspec/specs/*/spec.md;openspec/verification-contract.yaml",
       "source_system_id": "logic-writing-repository",
       "native_artifact_id": "openspec/specs and openspec/verification-contract.yaml#C01:select-one-final-owner",
-      "content_fingerprint": "sha256:d4b01714a78b52282a2197c1fc4a41452247ca572781751abfd462dc41c7505d",
-      "inventory_revision": "source-inventory:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663",
+      "content_fingerprint": "sha256:6cdc3f57a09dcb5415fad723c12e16bc5fd11cd250bcc57d2d87dd16b04aeea6",
+      "inventory_revision": "source-inventory:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991",
       "discovery_evidence_ids": [
-        "source-inventory-discovery:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663"
+        "source-inventory-discovery:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991"
       ],
       "source_authority_role": "normative",
       "source_classification": "external_normative_contract",
@@ -1934,10 +1934,10 @@
       "source_ref": "skills/logic-writing/SKILL.md",
       "source_system_id": "logic-writing-repository",
       "native_artifact_id": "skills/logic-writing/SKILL.md#C01:select-one-final-owner",
-      "content_fingerprint": "sha256:45e01fa558eeed6e700ccdeca0ec9d2dbc4b70391c3e0c0f21c1eca07fcf9a89",
-      "inventory_revision": "source-inventory:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663",
+      "content_fingerprint": "sha256:e57e2b8d75367525d978d5ae91b483e45f94e3a54dd7ef584247f4d1bc3f5e07",
+      "inventory_revision": "source-inventory:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991",
       "discovery_evidence_ids": [
-        "source-inventory-discovery:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663"
+        "source-inventory-discovery:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991"
       ],
       "source_authority_role": "normative",
       "source_classification": "external_normative_contract",
@@ -1980,10 +1980,10 @@
       "source_ref": "openspec/specs/*/spec.md;openspec/verification-contract.yaml",
       "source_system_id": "logic-writing-repository",
       "native_artifact_id": "openspec/specs and openspec/verification-contract.yaml#C02:preserve-specialist-authority",
-      "content_fingerprint": "sha256:d4b01714a78b52282a2197c1fc4a41452247ca572781751abfd462dc41c7505d",
-      "inventory_revision": "source-inventory:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663",
+      "content_fingerprint": "sha256:6cdc3f57a09dcb5415fad723c12e16bc5fd11cd250bcc57d2d87dd16b04aeea6",
+      "inventory_revision": "source-inventory:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991",
       "discovery_evidence_ids": [
-        "source-inventory-discovery:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663"
+        "source-inventory-discovery:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991"
       ],
       "source_authority_role": "normative",
       "source_classification": "external_normative_contract",
@@ -2036,10 +2036,10 @@
       "source_ref": "skills/logic-writing/SKILL.md",
       "source_system_id": "logic-writing-repository",
       "native_artifact_id": "skills/logic-writing/SKILL.md#C02:preserve-specialist-authority",
-      "content_fingerprint": "sha256:45e01fa558eeed6e700ccdeca0ec9d2dbc4b70391c3e0c0f21c1eca07fcf9a89",
-      "inventory_revision": "source-inventory:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663",
+      "content_fingerprint": "sha256:e57e2b8d75367525d978d5ae91b483e45f94e3a54dd7ef584247f4d1bc3f5e07",
+      "inventory_revision": "source-inventory:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991",
       "discovery_evidence_ids": [
-        "source-inventory-discovery:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663"
+        "source-inventory-discovery:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991"
       ],
       "source_authority_role": "normative",
       "source_classification": "external_normative_contract",
@@ -2082,10 +2082,10 @@
       "source_ref": "openspec/specs/*/spec.md;openspec/verification-contract.yaml",
       "source_system_id": "logic-writing-repository",
       "native_artifact_id": "openspec/specs and openspec/verification-contract.yaml#C03:build-current-research-packet",
-      "content_fingerprint": "sha256:d4b01714a78b52282a2197c1fc4a41452247ca572781751abfd462dc41c7505d",
-      "inventory_revision": "source-inventory:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663",
+      "content_fingerprint": "sha256:6cdc3f57a09dcb5415fad723c12e16bc5fd11cd250bcc57d2d87dd16b04aeea6",
+      "inventory_revision": "source-inventory:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991",
       "discovery_evidence_ids": [
-        "source-inventory-discovery:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663"
+        "source-inventory-discovery:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991"
       ],
       "source_authority_role": "normative",
       "source_classification": "external_normative_contract",
@@ -2138,10 +2138,10 @@
       "source_ref": "skills/logic-writing/SKILL.md",
       "source_system_id": "logic-writing-repository",
       "native_artifact_id": "skills/logic-writing/SKILL.md#C03:build-current-research-packet",
-      "content_fingerprint": "sha256:45e01fa558eeed6e700ccdeca0ec9d2dbc4b70391c3e0c0f21c1eca07fcf9a89",
-      "inventory_revision": "source-inventory:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663",
+      "content_fingerprint": "sha256:e57e2b8d75367525d978d5ae91b483e45f94e3a54dd7ef584247f4d1bc3f5e07",
+      "inventory_revision": "source-inventory:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991",
       "discovery_evidence_ids": [
-        "source-inventory-discovery:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663"
+        "source-inventory-discovery:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991"
       ],
       "source_authority_role": "normative",
       "source_classification": "external_normative_contract",
@@ -2184,10 +2184,10 @@
       "source_ref": "openspec/specs/*/spec.md;openspec/verification-contract.yaml",
       "source_system_id": "logic-writing-repository",
       "native_artifact_id": "openspec/specs and openspec/verification-contract.yaml#C04:build-reader-brief",
-      "content_fingerprint": "sha256:d4b01714a78b52282a2197c1fc4a41452247ca572781751abfd462dc41c7505d",
-      "inventory_revision": "source-inventory:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663",
+      "content_fingerprint": "sha256:6cdc3f57a09dcb5415fad723c12e16bc5fd11cd250bcc57d2d87dd16b04aeea6",
+      "inventory_revision": "source-inventory:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991",
       "discovery_evidence_ids": [
-        "source-inventory-discovery:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663"
+        "source-inventory-discovery:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991"
       ],
       "source_authority_role": "normative",
       "source_classification": "external_normative_contract",
@@ -2240,10 +2240,10 @@
       "source_ref": "skills/logic-writing/SKILL.md",
       "source_system_id": "logic-writing-repository",
       "native_artifact_id": "skills/logic-writing/SKILL.md#C04:build-reader-brief",
-      "content_fingerprint": "sha256:45e01fa558eeed6e700ccdeca0ec9d2dbc4b70391c3e0c0f21c1eca07fcf9a89",
-      "inventory_revision": "source-inventory:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663",
+      "content_fingerprint": "sha256:e57e2b8d75367525d978d5ae91b483e45f94e3a54dd7ef584247f4d1bc3f5e07",
+      "inventory_revision": "source-inventory:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991",
       "discovery_evidence_ids": [
-        "source-inventory-discovery:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663"
+        "source-inventory-discovery:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991"
       ],
       "source_authority_role": "normative",
       "source_classification": "external_normative_contract",
@@ -2286,10 +2286,10 @@
       "source_ref": "openspec/specs/*/spec.md;openspec/verification-contract.yaml",
       "source_system_id": "logic-writing-repository",
       "native_artifact_id": "openspec/specs and openspec/verification-contract.yaml#C05:audit-actual-artifact",
-      "content_fingerprint": "sha256:d4b01714a78b52282a2197c1fc4a41452247ca572781751abfd462dc41c7505d",
-      "inventory_revision": "source-inventory:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663",
+      "content_fingerprint": "sha256:6cdc3f57a09dcb5415fad723c12e16bc5fd11cd250bcc57d2d87dd16b04aeea6",
+      "inventory_revision": "source-inventory:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991",
       "discovery_evidence_ids": [
-        "source-inventory-discovery:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663"
+        "source-inventory-discovery:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991"
       ],
       "source_authority_role": "normative",
       "source_classification": "external_normative_contract",
@@ -2342,10 +2342,10 @@
       "source_ref": "skills/logic-writing/SKILL.md",
       "source_system_id": "logic-writing-repository",
       "native_artifact_id": "skills/logic-writing/SKILL.md#C05:audit-actual-artifact",
-      "content_fingerprint": "sha256:45e01fa558eeed6e700ccdeca0ec9d2dbc4b70391c3e0c0f21c1eca07fcf9a89",
-      "inventory_revision": "source-inventory:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663",
+      "content_fingerprint": "sha256:e57e2b8d75367525d978d5ae91b483e45f94e3a54dd7ef584247f4d1bc3f5e07",
+      "inventory_revision": "source-inventory:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991",
       "discovery_evidence_ids": [
-        "source-inventory-discovery:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663"
+        "source-inventory-discovery:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991"
       ],
       "source_authority_role": "normative",
       "source_classification": "external_normative_contract",
@@ -2388,10 +2388,10 @@
       "source_ref": "openspec/specs/*/spec.md;openspec/verification-contract.yaml",
       "source_system_id": "logic-writing-repository",
       "native_artifact_id": "openspec/specs and openspec/verification-contract.yaml#C06:issue-final-artifact-closure",
-      "content_fingerprint": "sha256:d4b01714a78b52282a2197c1fc4a41452247ca572781751abfd462dc41c7505d",
-      "inventory_revision": "source-inventory:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663",
+      "content_fingerprint": "sha256:6cdc3f57a09dcb5415fad723c12e16bc5fd11cd250bcc57d2d87dd16b04aeea6",
+      "inventory_revision": "source-inventory:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991",
       "discovery_evidence_ids": [
-        "source-inventory-discovery:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663"
+        "source-inventory-discovery:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991"
       ],
       "source_authority_role": "normative",
       "source_classification": "external_normative_contract",
@@ -2444,10 +2444,10 @@
       "source_ref": "skills/logic-writing/SKILL.md",
       "source_system_id": "logic-writing-repository",
       "native_artifact_id": "skills/logic-writing/SKILL.md#C06:issue-final-artifact-closure",
-      "content_fingerprint": "sha256:45e01fa558eeed6e700ccdeca0ec9d2dbc4b70391c3e0c0f21c1eca07fcf9a89",
-      "inventory_revision": "source-inventory:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663",
+      "content_fingerprint": "sha256:e57e2b8d75367525d978d5ae91b483e45f94e3a54dd7ef584247f4d1bc3f5e07",
+      "inventory_revision": "source-inventory:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991",
       "discovery_evidence_ids": [
-        "source-inventory-discovery:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663"
+        "source-inventory-discovery:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991"
       ],
       "source_authority_role": "normative",
       "source_classification": "external_normative_contract",
@@ -2490,10 +2490,10 @@
       "source_ref": "openspec/specs/*/spec.md;openspec/verification-contract.yaml",
       "source_system_id": "logic-writing-repository",
       "native_artifact_id": "openspec/specs and openspec/verification-contract.yaml#C07:freeze-one-validation-owner",
-      "content_fingerprint": "sha256:d4b01714a78b52282a2197c1fc4a41452247ca572781751abfd462dc41c7505d",
-      "inventory_revision": "source-inventory:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663",
+      "content_fingerprint": "sha256:6cdc3f57a09dcb5415fad723c12e16bc5fd11cd250bcc57d2d87dd16b04aeea6",
+      "inventory_revision": "source-inventory:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991",
       "discovery_evidence_ids": [
-        "source-inventory-discovery:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663"
+        "source-inventory-discovery:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991"
       ],
       "source_authority_role": "normative",
       "source_classification": "external_normative_contract",
@@ -2546,10 +2546,10 @@
       "source_ref": "openspec/verification-contract.yaml;docs/release-retirement-checklist.md",
       "source_system_id": "logic-writing-repository",
       "native_artifact_id": "openspec/verification-contract.yaml and docs/release-retirement-checklist.md#C07:freeze-one-validation-owner",
-      "content_fingerprint": "sha256:d4d7b1e6e932ad54d3172cdcbddc3fed2ebfec90c17e5239666c9a4ab79e24b9",
-      "inventory_revision": "source-inventory:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663",
+      "content_fingerprint": "sha256:0b9de666e01fab6a75202895a1ad0cc4a6280ce5c8f1ccd4efc1c8dbe5746a73",
+      "inventory_revision": "source-inventory:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991",
       "discovery_evidence_ids": [
-        "source-inventory-discovery:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663"
+        "source-inventory-discovery:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991"
       ],
       "source_authority_role": "normative",
       "source_classification": "external_normative_contract",
@@ -2593,10 +2593,10 @@
       "source_ref": "openspec/specs/*/spec.md;openspec/verification-contract.yaml",
       "source_system_id": "logic-writing-repository",
       "native_artifact_id": "openspec/specs and openspec/verification-contract.yaml#C08:activate-recoverable-install",
-      "content_fingerprint": "sha256:d4b01714a78b52282a2197c1fc4a41452247ca572781751abfd462dc41c7505d",
-      "inventory_revision": "source-inventory:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663",
+      "content_fingerprint": "sha256:6cdc3f57a09dcb5415fad723c12e16bc5fd11cd250bcc57d2d87dd16b04aeea6",
+      "inventory_revision": "source-inventory:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991",
       "discovery_evidence_ids": [
-        "source-inventory-discovery:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663"
+        "source-inventory-discovery:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991"
       ],
       "source_authority_role": "normative",
       "source_classification": "external_normative_contract",
@@ -2649,10 +2649,10 @@
       "source_ref": "openspec/verification-contract.yaml;docs/release-retirement-checklist.md",
       "source_system_id": "logic-writing-repository",
       "native_artifact_id": "openspec/verification-contract.yaml and docs/release-retirement-checklist.md#C08:activate-recoverable-install",
-      "content_fingerprint": "sha256:d4d7b1e6e932ad54d3172cdcbddc3fed2ebfec90c17e5239666c9a4ab79e24b9",
-      "inventory_revision": "source-inventory:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663",
+      "content_fingerprint": "sha256:0b9de666e01fab6a75202895a1ad0cc4a6280ce5c8f1ccd4efc1c8dbe5746a73",
+      "inventory_revision": "source-inventory:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991",
       "discovery_evidence_ids": [
-        "source-inventory-discovery:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663"
+        "source-inventory-discovery:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991"
       ],
       "source_authority_role": "normative",
       "source_classification": "external_normative_contract",
@@ -2696,10 +2696,10 @@
       "source_ref": "openspec/specs/*/spec.md;openspec/verification-contract.yaml",
       "source_system_id": "logic-writing-repository",
       "native_artifact_id": "openspec/specs and openspec/verification-contract.yaml#C09:project-one-global-route",
-      "content_fingerprint": "sha256:d4b01714a78b52282a2197c1fc4a41452247ca572781751abfd462dc41c7505d",
-      "inventory_revision": "source-inventory:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663",
+      "content_fingerprint": "sha256:6cdc3f57a09dcb5415fad723c12e16bc5fd11cd250bcc57d2d87dd16b04aeea6",
+      "inventory_revision": "source-inventory:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991",
       "discovery_evidence_ids": [
-        "source-inventory-discovery:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663"
+        "source-inventory-discovery:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991"
       ],
       "source_authority_role": "normative",
       "source_classification": "external_normative_contract",
@@ -2752,10 +2752,10 @@
       "source_ref": "openspec/verification-contract.yaml;docs/release-retirement-checklist.md",
       "source_system_id": "logic-writing-repository",
       "native_artifact_id": "openspec/verification-contract.yaml and docs/release-retirement-checklist.md#C09:project-one-global-route",
-      "content_fingerprint": "sha256:d4d7b1e6e932ad54d3172cdcbddc3fed2ebfec90c17e5239666c9a4ab79e24b9",
-      "inventory_revision": "source-inventory:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663",
+      "content_fingerprint": "sha256:0b9de666e01fab6a75202895a1ad0cc4a6280ce5c8f1ccd4efc1c8dbe5746a73",
+      "inventory_revision": "source-inventory:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991",
       "discovery_evidence_ids": [
-        "source-inventory-discovery:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663"
+        "source-inventory-discovery:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991"
       ],
       "source_authority_role": "normative",
       "source_classification": "external_normative_contract",
@@ -2799,10 +2799,10 @@
       "source_ref": "openspec/specs/*/spec.md;openspec/verification-contract.yaml",
       "source_system_id": "logic-writing-repository",
       "native_artifact_id": "openspec/specs and openspec/verification-contract.yaml#C10:publish-logic-writing-release",
-      "content_fingerprint": "sha256:d4b01714a78b52282a2197c1fc4a41452247ca572781751abfd462dc41c7505d",
-      "inventory_revision": "source-inventory:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663",
+      "content_fingerprint": "sha256:6cdc3f57a09dcb5415fad723c12e16bc5fd11cd250bcc57d2d87dd16b04aeea6",
+      "inventory_revision": "source-inventory:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991",
       "discovery_evidence_ids": [
-        "source-inventory-discovery:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663"
+        "source-inventory-discovery:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991"
       ],
       "source_authority_role": "normative",
       "source_classification": "external_normative_contract",
@@ -2855,10 +2855,10 @@
       "source_ref": "openspec/verification-contract.yaml;docs/release-retirement-checklist.md",
       "source_system_id": "logic-writing-repository",
       "native_artifact_id": "openspec/verification-contract.yaml and docs/release-retirement-checklist.md#C10:publish-logic-writing-release",
-      "content_fingerprint": "sha256:d4d7b1e6e932ad54d3172cdcbddc3fed2ebfec90c17e5239666c9a4ab79e24b9",
-      "inventory_revision": "source-inventory:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663",
+      "content_fingerprint": "sha256:0b9de666e01fab6a75202895a1ad0cc4a6280ce5c8f1ccd4efc1c8dbe5746a73",
+      "inventory_revision": "source-inventory:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991",
       "discovery_evidence_ids": [
-        "source-inventory-discovery:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663"
+        "source-inventory-discovery:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991"
       ],
       "source_authority_role": "normative",
       "source_classification": "external_normative_contract",
@@ -2902,10 +2902,10 @@
       "source_ref": "openspec/specs/*/spec.md;openspec/verification-contract.yaml",
       "source_system_id": "logic-writing-repository",
       "native_artifact_id": "openspec/specs and openspec/verification-contract.yaml#C11:retire-predecessors-safely",
-      "content_fingerprint": "sha256:d4b01714a78b52282a2197c1fc4a41452247ca572781751abfd462dc41c7505d",
-      "inventory_revision": "source-inventory:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663",
+      "content_fingerprint": "sha256:6cdc3f57a09dcb5415fad723c12e16bc5fd11cd250bcc57d2d87dd16b04aeea6",
+      "inventory_revision": "source-inventory:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991",
       "discovery_evidence_ids": [
-        "source-inventory-discovery:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663"
+        "source-inventory-discovery:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991"
       ],
       "source_authority_role": "normative",
       "source_classification": "external_normative_contract",
@@ -2958,10 +2958,10 @@
       "source_ref": "openspec/verification-contract.yaml;docs/release-retirement-checklist.md",
       "source_system_id": "logic-writing-repository",
       "native_artifact_id": "openspec/verification-contract.yaml and docs/release-retirement-checklist.md#C11:retire-predecessors-safely",
-      "content_fingerprint": "sha256:d4d7b1e6e932ad54d3172cdcbddc3fed2ebfec90c17e5239666c9a4ab79e24b9",
-      "inventory_revision": "source-inventory:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663",
+      "content_fingerprint": "sha256:0b9de666e01fab6a75202895a1ad0cc4a6280ce5c8f1ccd4efc1c8dbe5746a73",
+      "inventory_revision": "source-inventory:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991",
       "discovery_evidence_ids": [
-        "source-inventory-discovery:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663"
+        "source-inventory-discovery:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991"
       ],
       "source_authority_role": "normative",
       "source_classification": "external_normative_contract",
@@ -3005,10 +3005,10 @@
       "source_ref": "openspec/specs/*/spec.md;openspec/verification-contract.yaml",
       "source_system_id": "logic-writing-repository",
       "native_artifact_id": "openspec/specs and openspec/verification-contract.yaml#C12:produce-fiction-artifact",
-      "content_fingerprint": "sha256:d4b01714a78b52282a2197c1fc4a41452247ca572781751abfd462dc41c7505d",
-      "inventory_revision": "source-inventory:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663",
+      "content_fingerprint": "sha256:6cdc3f57a09dcb5415fad723c12e16bc5fd11cd250bcc57d2d87dd16b04aeea6",
+      "inventory_revision": "source-inventory:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991",
       "discovery_evidence_ids": [
-        "source-inventory-discovery:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663"
+        "source-inventory-discovery:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991"
       ],
       "source_authority_role": "normative",
       "source_classification": "external_normative_contract",
@@ -3061,10 +3061,10 @@
       "source_ref": "skills/logic-writing/SKILL.md",
       "source_system_id": "logic-writing-repository",
       "native_artifact_id": "skills/logic-writing/SKILL.md#C12:produce-fiction-artifact",
-      "content_fingerprint": "sha256:45e01fa558eeed6e700ccdeca0ec9d2dbc4b70391c3e0c0f21c1eca07fcf9a89",
-      "inventory_revision": "source-inventory:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663",
+      "content_fingerprint": "sha256:e57e2b8d75367525d978d5ae91b483e45f94e3a54dd7ef584247f4d1bc3f5e07",
+      "inventory_revision": "source-inventory:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991",
       "discovery_evidence_ids": [
-        "source-inventory-discovery:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663"
+        "source-inventory-discovery:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991"
       ],
       "source_authority_role": "normative",
       "source_classification": "external_normative_contract",
@@ -3107,10 +3107,10 @@
       "source_ref": "openspec/specs/*/spec.md;openspec/verification-contract.yaml",
       "source_system_id": "logic-writing-repository",
       "native_artifact_id": "openspec/specs and openspec/verification-contract.yaml#C13:produce-travel-guide",
-      "content_fingerprint": "sha256:d4b01714a78b52282a2197c1fc4a41452247ca572781751abfd462dc41c7505d",
-      "inventory_revision": "source-inventory:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663",
+      "content_fingerprint": "sha256:6cdc3f57a09dcb5415fad723c12e16bc5fd11cd250bcc57d2d87dd16b04aeea6",
+      "inventory_revision": "source-inventory:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991",
       "discovery_evidence_ids": [
-        "source-inventory-discovery:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663"
+        "source-inventory-discovery:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991"
       ],
       "source_authority_role": "normative",
       "source_classification": "external_normative_contract",
@@ -3163,10 +3163,10 @@
       "source_ref": "skills/logic-writing/SKILL.md",
       "source_system_id": "logic-writing-repository",
       "native_artifact_id": "skills/logic-writing/SKILL.md#C13:produce-travel-guide",
-      "content_fingerprint": "sha256:45e01fa558eeed6e700ccdeca0ec9d2dbc4b70391c3e0c0f21c1eca07fcf9a89",
-      "inventory_revision": "source-inventory:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663",
+      "content_fingerprint": "sha256:e57e2b8d75367525d978d5ae91b483e45f94e3a54dd7ef584247f4d1bc3f5e07",
+      "inventory_revision": "source-inventory:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991",
       "discovery_evidence_ids": [
-        "source-inventory-discovery:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663"
+        "source-inventory-discovery:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991"
       ],
       "source_authority_role": "normative",
       "source_classification": "external_normative_contract",
@@ -3209,10 +3209,10 @@
       "source_ref": "openspec/specs/*/spec.md;openspec/verification-contract.yaml",
       "source_system_id": "logic-writing-repository",
       "native_artifact_id": "openspec/specs and openspec/verification-contract.yaml#C14:bind-model-to-reader-artifact",
-      "content_fingerprint": "sha256:d4b01714a78b52282a2197c1fc4a41452247ca572781751abfd462dc41c7505d",
-      "inventory_revision": "source-inventory:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663",
+      "content_fingerprint": "sha256:6cdc3f57a09dcb5415fad723c12e16bc5fd11cd250bcc57d2d87dd16b04aeea6",
+      "inventory_revision": "source-inventory:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991",
       "discovery_evidence_ids": [
-        "source-inventory-discovery:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663"
+        "source-inventory-discovery:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991"
       ],
       "source_authority_role": "normative",
       "source_classification": "external_normative_contract",
@@ -3265,10 +3265,10 @@
       "source_ref": "skills/logic-writing/SKILL.md",
       "source_system_id": "logic-writing-repository",
       "native_artifact_id": "skills/logic-writing/SKILL.md#C14:bind-model-to-reader-artifact",
-      "content_fingerprint": "sha256:45e01fa558eeed6e700ccdeca0ec9d2dbc4b70391c3e0c0f21c1eca07fcf9a89",
-      "inventory_revision": "source-inventory:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663",
+      "content_fingerprint": "sha256:e57e2b8d75367525d978d5ae91b483e45f94e3a54dd7ef584247f4d1bc3f5e07",
+      "inventory_revision": "source-inventory:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991",
       "discovery_evidence_ids": [
-        "source-inventory-discovery:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663"
+        "source-inventory-discovery:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991"
       ],
       "source_authority_role": "normative",
       "source_classification": "external_normative_contract",
@@ -3311,10 +3311,10 @@
       "source_ref": "openspec/changes/repair-argument-to-reader-composition/*.md",
       "source_system_id": "logic-writing-repository",
       "native_artifact_id": "openspec/changes/repair-reader-composition-pipeline#C15:produce-investigation-report",
-      "content_fingerprint": "sha256:d9c5498daff8c7a2677ac62e149311bae8882ea679d761efebf1ac561b75ed49",
-      "inventory_revision": "source-inventory:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663",
+      "content_fingerprint": "sha256:33dd43d7736fdc04c9c959a65d777e336b6947ee6caa54550e8f68b0afe99f26",
+      "inventory_revision": "source-inventory:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991",
       "discovery_evidence_ids": [
-        "source-inventory-discovery:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663"
+        "source-inventory-discovery:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991"
       ],
       "source_authority_role": "normative",
       "source_classification": "external_normative_contract",
@@ -3359,10 +3359,10 @@
       "source_ref": "skills/logic-writing/SKILL.md",
       "source_system_id": "logic-writing-repository",
       "native_artifact_id": "skills/logic-writing/SKILL.md#C15:produce-investigation-report",
-      "content_fingerprint": "sha256:45e01fa558eeed6e700ccdeca0ec9d2dbc4b70391c3e0c0f21c1eca07fcf9a89",
-      "inventory_revision": "source-inventory:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663",
+      "content_fingerprint": "sha256:e57e2b8d75367525d978d5ae91b483e45f94e3a54dd7ef584247f4d1bc3f5e07",
+      "inventory_revision": "source-inventory:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991",
       "discovery_evidence_ids": [
-        "source-inventory-discovery:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663"
+        "source-inventory-discovery:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991"
       ],
       "source_authority_role": "normative",
       "source_classification": "external_normative_contract",
@@ -3405,10 +3405,10 @@
       "source_ref": "openspec/changes/repair-argument-to-reader-composition/*.md",
       "source_system_id": "logic-writing-repository",
       "native_artifact_id": "openspec/changes/repair-reader-composition-pipeline#C16:produce-academic-artifact",
-      "content_fingerprint": "sha256:d9c5498daff8c7a2677ac62e149311bae8882ea679d761efebf1ac561b75ed49",
-      "inventory_revision": "source-inventory:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663",
+      "content_fingerprint": "sha256:33dd43d7736fdc04c9c959a65d777e336b6947ee6caa54550e8f68b0afe99f26",
+      "inventory_revision": "source-inventory:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991",
       "discovery_evidence_ids": [
-        "source-inventory-discovery:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663"
+        "source-inventory-discovery:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991"
       ],
       "source_authority_role": "normative",
       "source_classification": "external_normative_contract",
@@ -3453,10 +3453,10 @@
       "source_ref": "skills/logic-writing/SKILL.md",
       "source_system_id": "logic-writing-repository",
       "native_artifact_id": "skills/logic-writing/SKILL.md#C16:produce-academic-artifact",
-      "content_fingerprint": "sha256:45e01fa558eeed6e700ccdeca0ec9d2dbc4b70391c3e0c0f21c1eca07fcf9a89",
-      "inventory_revision": "source-inventory:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663",
+      "content_fingerprint": "sha256:e57e2b8d75367525d978d5ae91b483e45f94e3a54dd7ef584247f4d1bc3f5e07",
+      "inventory_revision": "source-inventory:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991",
       "discovery_evidence_ids": [
-        "source-inventory-discovery:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663"
+        "source-inventory-discovery:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991"
       ],
       "source_authority_role": "normative",
       "source_classification": "external_normative_contract",
@@ -3528,10 +3528,10 @@
     "surface:openspec:c16-produce-academic-artifact",
     "surface:skill-entry:c16-produce-academic-artifact"
   ],
-  "source_inventory_revision": "source-inventory:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663",
-  "source_inventory_fingerprint": "sha256:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663",
+  "source_inventory_revision": "source-inventory:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991",
+  "source_inventory_fingerprint": "sha256:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991",
   "source_inventory_evidence_ids": [
-    "source-inventory-discovery:62ece5eef8acbf36be171d1188edc24c214db5935223c67faca9aeeb76bb4663"
+    "source-inventory-discovery:f5c4ba3ce8fd63f644bb92b2c9eafdac590dfd506b0f90be8ef23120699fb991"
   ],
   "require_complete_source_inventory": true,
   "independent_behavior_inventory": null,

@@ -10,6 +10,18 @@ line follows semantic versioning.
 
 - Hosted release metadata is intentionally not asserted by this source file.
 
+## [4.0.1]
+
+### Fixed
+
+- Adopted the compact SkillGuard v3 author contract with one explicit,
+  sequential current-validation route and portable check wrappers.
+- Bound the provider adapters, examples, schemas, and current OpenSpec
+  requirements to ResearchGuard `0.5.2` while retaining the single console and
+  the three supported direct members.
+- Refreshed the local execution timeout split and the ResearchGuard topology
+  scan so current checks fail visibly without traversing historical evidence.
+
 ## [4.0.0]
 
 ### Fixed

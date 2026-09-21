@@ -5,11 +5,11 @@
   "native_owner": "sourceguard",
   "native_route_id": "primary:researchguard:source",
   "native_check_id": "sourceguard.canon_support_applicability",
-  "tool_version": "0.5.1",
+  "tool_version": "0.5.2",
   "receipt_schema_version": "sourceguard.native_terminal_receipt.v1",
   "input_fingerprint": "sha256:d46f9afebfa242ba7991beabcfe78ba3fcbffdf920f106313b72f08ae887f901",
   "terminal_receipt_id": "compact-guard-pass-sourceguard-terminal",
-  "terminal_receipt_ref": "file:../receipts/sourceguard-terminal.json;sha256:e07fa9b0a0d432010084cae2415601bf27c100a67d51c8959ceb8a019a963557",
+  "terminal_receipt_ref": "file:../receipts/sourceguard-terminal.json;sha256:e45595eff5f93b382cd0644b232218d3cc29b1c42401af0f59102acd7f3220dc",
   "terminal_status": "not_applicable_with_reason",
   "claim_boundary": "No user canon, prior draft, adaptation source, historical fact, or external source constrains the compact fixture input."
 }

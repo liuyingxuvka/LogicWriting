@@ -696,7 +696,7 @@ def test_worker_candidate_identity_mismatch_is_quarantined(monkeypatch, tmp_path
 def test_worker_marker_does_not_count_provider_dispatch_before_role_record(monkeypatch, tmp_path):
     class Backend:
         run_root = tmp_path / "backend"
-        cli_version = "0.154.0"
+        cli_version = "0.155.0"
         executable_sha256 = "a" * 64
         backend_id = "fake-backend"
 
