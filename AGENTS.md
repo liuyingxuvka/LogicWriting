@@ -166,3 +166,12 @@ Author audit command: `python <installed-skillguard>/scripts/skillguard.py maint
 This managed block is a routing and maintenance contract. It is not runtime, test, release, or future-behavior proof.
 <!-- END MANAGED SKILLGUARD AUTHOR RULES -->
 
+## Audit handoff 2026-09-21
+
+- Prefer short deterministic and metamorphic checks before any live author,
+  planner, writer, judge, or self-review call.
+- Live model execution is opt-in and requires an explicit finite call budget;
+  this handoff's validation policy sets the live-call allowance to zero.
+- Keep implementation evidence, skipped checks, environment blockers, and
+  release claims separate. A passing offline fixture is not real writing-quality
+  or release evidence.

@@ -98,7 +98,7 @@ three direct semantic owners:
   material temporal, causal, implementation, competing-story,
   counterfactual, and prediction-boundary analysis.
 - ResearchGuard's `experiment` member and the umbrella `run` route are outside
-  Logic Writing `4.0.3`. Requests for them are visible scope blocks and do not
+  Logic Writing `4.0.4`. Requests for them are visible scope blocks and do not
   cause automatic multi-member execution.
 - WorldGuard owns material event, agent, space, resource, access, capability,
   conflict, authority, and norm consistency in real and fictional worlds.
@@ -246,12 +246,17 @@ Never strengthen these states into pass: `not_run`, `stale`,
 
 Only the selected final route may issue final closure. Child routes close only
 their bounded request. Every non-pass result creates a typed
-`ReaderRepairRequest` naming actual target units, required structural change,
-content to preserve, and forbidden shortcuts. After real new bytes exist,
-record `ReaderRepairResult`, rebuild all byte-bound evidence, and rerun the
-three quality owners. Two consecutive current repair results with the same
-defect lineage, same remaining defect set, and no byte-level progress terminate
-visibly; repeated closure calls never count as repair attempts.
+`ReaderRepairRequest` naming the current judgment defect IDs, actual target
+units, required structural change, content to preserve, and forbidden
+shortcuts. A `ReaderRepairResult` may report progress only when real bytes
+changed, preservation passed, and the current independently validated
+judgment exposes a strict subset of the original defect IDs. A renamed,
+added, or caller-only defect list is no progress; a preservation violation or
+missing current evidence is blocked. Rebuild all byte-bound evidence and
+rerun the three quality owners after real new bytes exist. One real
+`no_progress` result is terminal: do not automatically write another draft or
+switch lineage without new input or a new diagnosis. Repeated closure calls
+never count as repair attempts.
 
 ## Hard Gates
 

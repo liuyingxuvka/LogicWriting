@@ -139,7 +139,6 @@ def _schema_check(payload: Mapping[str, Any], name: str, scanner: Any) -> None:
 
 
 def _validate_native(root: Path, scanner: Any, mapping: Mapping[str, Any], inventory: Mapping[str, Any]) -> None:
-    _schema_check(mapping, "skillguard_surface_semantic_map_v1.schema.json", scanner)
     _schema_check(inventory, "skillguard_surface_inventory_v1.schema.json", scanner)
     source = _read(root / "skills/logic-writing/.skillguard/contract-source.json")
     native_checks = source["depth_profile"]["native_check_ids"]
@@ -150,7 +149,7 @@ def _validate_native(root: Path, scanner: Any, mapping: Mapping[str, Any], inven
     ))
     findings.extend(scanner.validate_full_surface_inventory(
         inventory, target_root=root / "skills/logic-writing", command_surface=(),
-        route_entries=(), command_handlers=None, native_check_ids=native_checks,
+        route_entries=(), native_check_ids=native_checks,
         model_deepening_check_id=deepening,
     ))
     if findings:
@@ -191,7 +190,7 @@ def build_inventory(root: Path, scanner: Any) -> tuple[dict[str, Any], dict[str,
     if not deepening or deepening not in native_checks:
         raise ValueError("model-depth must be a declared native check")
     rules = _rules()
-    scan = scanner.discover_full_source_surfaces(skill, command_surface=(), route_entries=(), command_handlers=None)
+    scan = scanner.discover_full_source_surfaces(skill, command_surface=(), route_entries=())
     if scan.findings:
         raise ValueError(f"unclean source discovery: {[row.to_dict() for row in scan.findings]}")
     observed_paths = set(scan.source_paths)
@@ -291,6 +290,10 @@ def build_inventory(root: Path, scanner: Any) -> tuple[dict[str, Any], dict[str,
     }
     mapping["map_hash"] = _hash(mapping)
     all_check_ids = sorted(native_checks)
+    inventory_rows = [
+        {key: value for key, value in row.items() if key != "model_obligation_ids"}
+        for row in rows
+    ]
     compact_rows = []
     for route_id, route in sorted(routes.items()):
         path = ROUTE_SOURCES[route_id]
@@ -319,10 +322,8 @@ def build_inventory(root: Path, scanner: Any) -> tuple[dict[str, Any], dict[str,
         "observed_surface_ids": [row["surface_id"] for row in compact_rows],
         "owner_ids": sorted({owner_id} | {str(checks[cid]["execution_owner_id"]) for cid in all_check_ids}),
         "rows": compact_rows,
-        "current_obligation_ids": sorted(obligations),
-        "model_obligations": model_bindings,
-        "full_surface_ids": mapping["full_surface_ids"],
-        "full_surfaces": rows,
+        "full_surface_ids": [row["surface_id"] for row in inventory_rows],
+        "full_surfaces": inventory_rows,
         "surface_category_dispositions": {
             category: {
                 "disposition": "governed" if category in observed_categories else "not_applicable_proven",

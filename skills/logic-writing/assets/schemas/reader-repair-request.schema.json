@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/liuyingxuvka/LogicWriting/schemas/reader-repair-request.schema.json",
-  "title": "Logic Writing ReaderRepairRequest v2",
+  "title": "Logic Writing ReaderRepairRequest v2.1",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -9,12 +9,12 @@
     "source_artifact_fingerprint", "reader_intent_fingerprint", "reader_brief_fingerprint",
     "composition_plan_fingerprint", "artifact_map_fingerprint", "shared_writing_contract_fingerprint",
     "audit_fingerprint", "route_audit_fingerprint", "judgment_fingerprint",
-    "defect_lineage", "defect_set_fingerprint", "target_unit_ids", "required_changes",
+    "defect_lineage", "initial_defect_ids", "defect_set_fingerprint", "target_unit_ids", "required_changes",
     "preserve_content_unit_ids", "must_preserve_tokens", "forbidden_shortcuts",
     "request_fingerprint"
   ],
   "properties": {
-    "schema_version": { "const": "2.0" },
+    "schema_version": { "const": "2.1" },
     "repair_id": { "$ref": "#/$defs/id" },
     "attempt_number": { "type": "integer", "minimum": 1 },
     "final_owner": { "enum": ["investigation", "academic-writing", "fiction-writing", "travel-guide"] },
@@ -28,6 +28,7 @@
     "route_audit_fingerprint": { "$ref": "#/$defs/fp" },
     "judgment_fingerprint": { "$ref": "#/$defs/fp" },
     "defect_lineage": { "$ref": "#/$defs/id" },
+    "initial_defect_ids": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/id" }, "uniqueItems": true },
     "defect_set_fingerprint": { "$ref": "#/$defs/fp" },
     "target_unit_ids": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/id" }, "uniqueItems": true },
     "required_changes": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },

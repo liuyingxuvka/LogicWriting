@@ -859,6 +859,8 @@ def test_failed_writer_blocks_the_entire_pair_judge_lane(monkeypatch, tmp_path):
         backend_plan=root / "tests/fixtures/writing_quality/local-backend-plan.json",
         run_writers=True,
         run_judges=True,
+        execute_live=True,
+        max_model_calls=100,
     )
 
     assert calls == ["writer"]
@@ -905,6 +907,8 @@ def test_failed_writer_blocks_the_entire_held_out_judge_lane(monkeypatch, tmp_pa
         run_writers=True,
         run_judges=True,
         mode="held_out",
+        execute_live=True,
+        max_model_calls=100,
     )
 
     assert calls == ["writer"]

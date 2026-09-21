@@ -1,17 +1,18 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/liuyingxuvka/LogicWriting/schemas/reader-repair-result.schema.json",
-  "title": "Logic Writing ReaderRepairResult v2",
+  "title": "Logic Writing ReaderRepairResult v2.1",
   "type": "object",
   "additionalProperties": false,
   "required": [
     "schema_version", "repair_id", "request_fingerprint", "defect_lineage",
     "input_artifact_fingerprint", "output_artifact_fingerprint", "changed_unit_ids",
-    "preservation_check", "remaining_defect_set_fingerprint", "progress_status",
+    "preservation_check", "remaining_defect_ids", "remaining_defect_set_fingerprint",
+    "verification_evidence", "progress_status",
     "rerun_required", "result_fingerprint"
   ],
   "properties": {
-    "schema_version": { "const": "2.0" },
+    "schema_version": { "const": "2.1" },
     "repair_id": { "$ref": "#/$defs/id" },
     "request_fingerprint": { "$ref": "#/$defs/fp" },
     "defect_lineage": { "$ref": "#/$defs/id" },
@@ -27,7 +28,23 @@
         "violations": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true }
       }
     },
+    "remaining_defect_ids": { "type": "array", "items": { "$ref": "#/$defs/id" }, "uniqueItems": true },
     "remaining_defect_set_fingerprint": { "$ref": "#/$defs/fp" },
+    "verification_evidence": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "status", "artifact_fingerprint", "artifact_map_fingerprint",
+        "audit_fingerprint", "route_audit_fingerprint", "judgment_fingerprint"
+      ],
+      "properties": {
+        "status": { "enum": ["current", "missing"] },
+        "artifact_fingerprint": { "$ref": "#/$defs/fp" },
+        "artifact_map_fingerprint": { "$ref": "#/$defs/fp" },
+        "audit_fingerprint": { "$ref": "#/$defs/fp" },
+        "route_audit_fingerprint": { "$ref": "#/$defs/fp" },
+        "judgment_fingerprint": { "$ref": "#/$defs/fp" }
+      }
+    },
     "progress_status": { "enum": ["progressed", "no_progress", "blocked"] },
     "rerun_required": {
       "type": "array", "minItems": 4,

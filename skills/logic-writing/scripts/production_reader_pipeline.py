@@ -20,6 +20,7 @@ at the process boundary in tests, never on a second runtime provider path.
 from __future__ import annotations
 
 import copy
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -46,6 +47,7 @@ from reader_pipeline import (
 )
 from researchguard_handoff import build_researchguard_handoff, bind_handoff_consumption, validate_handoff_consumption
 from select_route import select_route
+from text_extent import describe_extent
 
 
 SCHEMA = "logic-writing.production-reader-input.v1"
@@ -133,6 +135,7 @@ _READER_CONTEXT_KEYS = {
     "language", "audience", "purpose", "artifact_mode", "artifact_format",
     "heading_policy", "list_policy", "table_policy", "citation_policy",
     "style", "extent", "required_content", "forbidden_content",
+    "structure", "reference_examples", "unresolved_choices",
 }
 _READER_CONTENT_DISPOSITIONS = {"support", "merge", "omit"}
 _READER_MATERIALITIES = {
@@ -943,6 +946,7 @@ def _spine_context(intent: Mapping[str, Any]) -> dict[str, Any]:
             "language", "audience", "purpose", "artifact_mode", "artifact_format",
             "heading_policy", "list_policy", "table_policy", "citation_policy",
             "style", "extent", "required_content", "forbidden_content",
+            "structure", "reference_examples", "unresolved_choices",
         )
     }
 
@@ -980,6 +984,134 @@ def _spine_id_list(
     if known is not None and any(item not in known for item in result):
         unknown = sorted(item for item in result if item not in known)
         raise ProductionPipelineBlocked("reader_spine_reference_invalid", {"path": path, "unknown": unknown})
+    return result
+
+
+def _validate_reader_context_structure(value: Any) -> dict[str, Any]:
+    """Validate the original ReaderIntent structure without creating a copy.
+
+    ``ReaderSpine`` carries this object so that the writer projection cannot
+    quietly forget a locked outline or a non-material choice.  IDs remain
+    private binding data; only the renderer decides which human-readable
+    labels may cross into the prompt.
+    """
+
+    structure = require_mapping(value, "reader_spine reader_context.structure")
+    if set(structure) != {"mode", "requested_outline"}:
+        raise ProductionPipelineBlocked(
+            "reader_spine_context_invalid",
+            {"path": "structure", "extra": sorted(set(structure) - {"mode", "requested_outline"}),
+             "missing": sorted({"mode", "requested_outline"} - set(structure))},
+        )
+    if structure["mode"] not in {"fixed", "partially_fixed", "route_selected"}:
+        raise ProductionPipelineBlocked("reader_spine_context_invalid", "structure.mode")
+    rows = structure["requested_outline"]
+    if not isinstance(rows, list):
+        raise ProductionPipelineBlocked("reader_spine_context_invalid", "structure.requested_outline")
+    row_keys = {
+        "outline_id", "parent_outline_id", "order", "label", "required", "title_locked", "source",
+    }
+    by_id: dict[str, Mapping[str, Any]] = {}
+    for index, raw in enumerate(rows):
+        row = require_mapping(raw, f"reader_spine structure.requested_outline[{index}]")
+        if set(row) != row_keys:
+            raise ProductionPipelineBlocked(
+                "reader_spine_context_invalid",
+                {"path": f"structure.requested_outline[{index}]",
+                 "extra": sorted(set(row) - row_keys), "missing": sorted(row_keys - set(row))},
+            )
+        outline_id = _spine_text(row["outline_id"], f"structure.requested_outline[{index}].outline_id")
+        if outline_id in by_id:
+            raise ProductionPipelineBlocked("reader_spine_context_invalid", f"duplicate outline_id: {outline_id}")
+        by_id[outline_id] = row
+        parent = row["parent_outline_id"]
+        if parent is not None:
+            _spine_text(parent, f"structure.requested_outline[{index}].parent_outline_id")
+        if type(row["order"]) is not int or row["order"] < 1:
+            raise ProductionPipelineBlocked("reader_spine_context_invalid", f"{outline_id}.order")
+        _spine_text(row["label"], f"structure.requested_outline[{index}].label")
+        if type(row["required"]) is not bool or type(row["title_locked"]) is not bool:
+            raise ProductionPipelineBlocked("reader_spine_context_invalid", f"{outline_id}.required/title_locked")
+        if row["source"] not in {"user", "existing_artifact", "format_contract", "route_default"}:
+            raise ProductionPipelineBlocked("reader_spine_context_invalid", f"{outline_id}.source")
+    outline_ids = set(by_id)
+    for outline_id, row in by_id.items():
+        parent = row["parent_outline_id"]
+        if parent is not None and parent not in outline_ids:
+            raise ProductionPipelineBlocked("reader_spine_context_invalid", f"{outline_id}.parent_outline_id")
+        seen: set[str] = set()
+        current: str | None = outline_id
+        while current is not None:
+            if current in seen:
+                raise ProductionPipelineBlocked("reader_spine_context_invalid", f"outline cycle at {current}")
+            seen.add(current)
+            current = by_id[current]["parent_outline_id"] if current in by_id else None
+    return structure
+
+
+def _validate_reader_context_extent(value: Any) -> dict[str, Any]:
+    extent = require_mapping(value, "reader_spine reader_context.extent")
+    allowed = {"unit", "minimum", "target", "maximum", "extent_metric_id"}
+    if set(extent) - allowed or set(extent) - {"unit", "minimum", "target", "maximum"} - {"extent_metric_id"}:
+        raise ProductionPipelineBlocked("reader_spine_context_invalid", "extent keys")
+    for key in ("unit", "minimum", "target", "maximum"):
+        if key not in extent:
+            raise ProductionPipelineBlocked("reader_spine_context_invalid", f"extent.{key}")
+    unit = extent["unit"]
+    metric_id = extent.get("extent_metric_id")
+    try:
+        describe_extent(unit, metric_id)
+    except ValidationError as exc:
+        raise ProductionPipelineBlocked("reader_intent_extent_unsupported", str(exc)) from exc
+    for key in ("minimum", "target", "maximum"):
+        if type(extent[key]) is not int or extent[key] < 0:
+            raise ProductionPipelineBlocked("reader_spine_context_invalid", f"extent.{key}")
+    if not extent["minimum"] <= extent["target"] <= extent["maximum"]:
+        raise ProductionPipelineBlocked("reader_spine_context_invalid", "extent order")
+    if "extent_metric_id" in extent and metric_id is not None and not isinstance(metric_id, str):
+        raise ProductionPipelineBlocked("reader_spine_context_invalid", "extent.extent_metric_id")
+    return extent
+
+
+def _validate_reader_context_examples(value: Any) -> list[dict[str, Any]]:
+    if not isinstance(value, list):
+        raise ProductionPipelineBlocked("reader_spine_context_invalid", "reference_examples")
+    keys = {"reference_id", "role", "description"}
+    result: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for index, raw in enumerate(value):
+        row = require_mapping(raw, f"reader_spine reference_examples[{index}]")
+        if set(row) != keys:
+            raise ProductionPipelineBlocked("reader_spine_context_invalid", f"reference_examples[{index}]")
+        identifier = _spine_text(row["reference_id"], f"reference_examples[{index}].reference_id")
+        if identifier in seen:
+            raise ProductionPipelineBlocked("reader_spine_context_invalid", identifier)
+        seen.add(identifier)
+        if row["role"] not in {"structure", "voice", "format", "quality_bar", "avoid"}:
+            raise ProductionPipelineBlocked("reader_spine_context_invalid", f"reference_examples[{index}].role")
+        _spine_text(row["description"], f"reference_examples[{index}].description")
+        result.append(dict(row))
+    return result
+
+
+def _validate_reader_context_choices(value: Any) -> list[dict[str, Any]]:
+    if not isinstance(value, list):
+        raise ProductionPipelineBlocked("reader_spine_context_invalid", "unresolved_choices")
+    keys = {"choice_id", "question", "material"}
+    result: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for index, raw in enumerate(value):
+        row = require_mapping(raw, f"reader_spine unresolved_choices[{index}]")
+        if set(row) != keys:
+            raise ProductionPipelineBlocked("reader_spine_context_invalid", f"unresolved_choices[{index}]")
+        identifier = _spine_text(row["choice_id"], f"unresolved_choices[{index}].choice_id")
+        if identifier in seen:
+            raise ProductionPipelineBlocked("reader_spine_context_invalid", identifier)
+        seen.add(identifier)
+        _spine_text(row["question"], f"unresolved_choices[{index}].question")
+        if type(row["material"]) is not bool:
+            raise ProductionPipelineBlocked("reader_spine_context_invalid", f"unresolved_choices[{index}].material")
+        result.append(dict(row))
     return result
 
 
@@ -1437,6 +1569,40 @@ def _validate_reader_constraints(
     return constraints
 
 
+def _validate_reader_citation_bindings(spine: Mapping[str, Any]) -> None:
+    """Ensure every declared citation source is present in its fact relation.
+
+    This is a build-time contract check.  The standalone spine validator also
+    accepts a hand-edited fixture so identity/projection tests can exercise a
+    changed capture; production construction remains strict.
+    """
+
+    anchors = [row for row in spine.get("evidence_anchors", []) if isinstance(row, Mapping)]
+    if not anchors:
+        return
+    visible_content_ids = {
+        str(row["content_unit_id"])
+        for row in spine.get("editorial_dispositions", [])
+        if isinstance(row, Mapping) and row.get("disposition") in {"support", "merge"}
+    }
+    constraints = _validate_reader_constraints(
+        spine["reader_constraints"],
+        content_ids=visible_content_ids,
+    )
+    for index, row in enumerate(constraints["citation_rules"]):
+        source_id = str(row["source_id"])
+        content_ids = {str(item) for item in row["content_unit_ids"]}
+        if not any(
+            str(anchor["source_id"]) == source_id
+            and content_ids.intersection(str(item) for item in anchor["content_unit_ids"])
+            for anchor in anchors
+        ):
+            raise ProductionPipelineBlocked(
+                "reader_spine_constraint_invalid",
+                {"path": f"citation_rules[{index}].source_id", "source_id": source_id, "content_unit_ids": sorted(content_ids)},
+            )
+
+
 def _validate_route_guidance(
     value: Any,
     *,
@@ -1730,8 +1896,32 @@ def validate_reader_spine(value: Any) -> dict[str, Any]:
                 "heading_policy", "list_policy", "table_policy", "citation_policy"):
         if not isinstance(context[key], str) or not context[key].strip():
             raise ProductionPipelineBlocked("reader_spine_context_invalid", key)
-    if not isinstance(context["style"], Mapping) or not isinstance(context["extent"], Mapping):
-        raise ProductionPipelineBlocked("reader_spine_context_invalid", "style/extent")
+    policy_values = {
+        "artifact_mode": {"create_new", "revise_existing"},
+        "artifact_format": {"text", "markdown", "docx", "pdf", "latex", "slides", "user_defined"},
+        "heading_policy": {"locked", "preserve_requested", "route_selected", "minimal", "none"},
+        "list_policy": {"prose_default", "lists_allowed", "lists_required", "user_defined"},
+        "table_policy": {"forbidden", "allowed", "required", "user_defined"},
+        "citation_policy": {"none", "inline", "footnote", "endnote", "author_date", "numeric", "user_defined"},
+    }
+    for key, allowed in policy_values.items():
+        if context[key] not in allowed:
+            raise ProductionPipelineBlocked("reader_spine_context_invalid", key)
+    _validate_reader_context_structure(context["structure"])
+    _validate_reader_context_extent(context["extent"])
+    _validate_reader_context_examples(context["reference_examples"])
+    _validate_reader_context_choices(context["unresolved_choices"])
+    style = require_mapping(context["style"], "reader_spine reader_context.style")
+    style_keys = {"voice", "formality", "required_traits", "forbidden_traits"}
+    if set(style) != style_keys:
+        raise ProductionPipelineBlocked("reader_spine_context_invalid", "style keys")
+    if not isinstance(style["voice"], str) or not style["voice"].strip():
+        raise ProductionPipelineBlocked("reader_spine_context_invalid", "style.voice")
+    if style["formality"] not in {"informal", "neutral", "formal", "scholarly", "user_defined"}:
+        raise ProductionPipelineBlocked("reader_spine_context_invalid", "style.formality")
+    for key in ("required_traits", "forbidden_traits"):
+        if not isinstance(style[key], list) or not all(isinstance(item, str) and item.strip() for item in style[key]):
+            raise ProductionPipelineBlocked("reader_spine_context_invalid", f"style.{key}")
     for key in ("required_content", "forbidden_content"):
         if not isinstance(context[key], list) or not all(isinstance(item, str) and item.strip() for item in context[key]):
             raise ProductionPipelineBlocked("reader_spine_context_invalid", key)
@@ -1912,6 +2102,23 @@ def validate_reader_spine(value: Any) -> dict[str, Any]:
         for content_id, row in disposition_by_content.items()
         if row["disposition"] in {"support", "merge"}
     }
+    anchors_by_id = {str(row["anchor_id"]): row for row in anchors}
+    for anchor in anchors:
+        anchor_content_ids = {str(item) for item in anchor["content_unit_ids"]}
+        if not anchor_content_ids <= visible_content_ids:
+            raise ProductionPipelineBlocked(
+                "reader_spine_evidence_invalid",
+                {"anchor_id": anchor["anchor_id"], "unknown_or_omitted_content_unit_ids": sorted(anchor_content_ids - visible_content_ids)},
+            )
+    for unit in units:
+        unit_content_ids = {str(row["content_unit_id"]) for row in unit["content"]}
+        for anchor_id in unit["evidence_anchor_ids"]:
+            anchor = anchors_by_id[str(anchor_id)]
+            if not unit_content_ids.intersection(str(item) for item in anchor["content_unit_ids"]):
+                raise ProductionPipelineBlocked(
+                    "reader_spine_evidence_unattached",
+                    {"unit_id": unit["planned_unit_id"], "anchor_id": anchor_id, "reason": "anchor is not bound to unit content"},
+                )
     _validate_reader_constraints(
         spine["reader_constraints"],
         content_ids=visible_content_ids,
@@ -1923,6 +2130,73 @@ def validate_reader_spine(value: Any) -> dict[str, Any]:
         anchor_ids=anchor_ids,
     )
     return spine
+
+
+def _validate_reader_intent_structure_requirements(
+    intent: Mapping[str, Any],
+    plan: Mapping[str, Any],
+) -> None:
+    """Reject a hard reader-policy contradiction before writer preparation."""
+
+    structure = require_mapping(intent.get("structure"), "ReaderIntent.structure")
+    outlines = structure.get("requested_outline", [])
+    heading_policy = str(intent.get("heading_policy") or "")
+    locked_rows = [row for row in outlines if isinstance(row, Mapping) and row.get("required") and row.get("title_locked")]
+    if heading_policy == "none" and locked_rows:
+        raise ProductionPipelineBlocked(
+            "reader_intent_structure_conflict",
+            {"field": "heading_policy", "policy": "none", "locked_outline_ids": [row.get("outline_id") for row in locked_rows]},
+        )
+    if heading_policy == "locked" and not locked_rows:
+        raise ProductionPipelineBlocked(
+            "reader_intent_structure_conflict",
+            {"field": "heading_policy", "policy": "locked", "reason": "no required title_locked outline row"},
+        )
+
+    planned_units = [row for row in plan.get("planned_units", []) if isinstance(row, Mapping)]
+    presentation_modes = {str(row.get("presentation_mode") or "") for row in planned_units}
+    list_modes = {"list", "appendix"}
+    list_policy = str(intent.get("list_policy") or "")
+    if list_policy == "lists_required" and not (presentation_modes & list_modes):
+        raise ProductionPipelineBlocked(
+            "reader_intent_structure_conflict",
+            {"field": "list_policy", "policy": list_policy, "reason": "no planned list-capable unit"},
+        )
+    if list_policy == "user_defined" and not (presentation_modes & list_modes):
+        raise ProductionPipelineBlocked(
+            "reader_intent_custom_policy_unresolved",
+            {"field": "list_policy", "reason": "no executable planned list structure"},
+        )
+
+    table_policy = str(intent.get("table_policy") or "")
+    has_table = "table" in presentation_modes
+    if table_policy == "required" and not has_table:
+        raise ProductionPipelineBlocked(
+            "reader_intent_structure_conflict",
+            {"field": "table_policy", "policy": table_policy, "reason": "no planned table unit"},
+        )
+    if table_policy == "user_defined" and not has_table:
+        raise ProductionPipelineBlocked(
+            "reader_intent_custom_policy_unresolved",
+            {"field": "table_policy", "reason": "no executable planned table structure"},
+        )
+    if table_policy == "forbidden" and has_table:
+        raise ProductionPipelineBlocked(
+            "reader_intent_structure_conflict",
+            {"field": "table_policy", "policy": table_policy, "reason": "composition contains a table unit"},
+        )
+
+    unresolved = [
+        row for row in intent.get("unresolved_choices", [])
+        if isinstance(row, Mapping) and row.get("material") is True
+    ]
+    if unresolved:
+        raise ProductionPipelineBlocked(
+            "reader_intent_material_choice_unresolved",
+            [{"path": f"reader_intent.unresolved_choices[{index}]", "choice_id": row.get("choice_id"), "question": row.get("question")}
+             for index, row in enumerate(intent.get("unresolved_choices", []))
+             if isinstance(row, Mapping) and row.get("material") is True],
+        )
 
 
 def build_reader_spine(
@@ -1962,6 +2236,7 @@ def build_reader_spine(
         raise ProductionPipelineBlocked("reader_spine_source_invalid", str(exc)) from exc
 
     intent = require_mapping(brief.get("reader_intent"), "ReaderBrief.reader_intent")
+    _validate_reader_intent_structure_requirements(intent, plan)
     boundaries = require_mapping(brief.get("content_boundaries"), "ReaderBrief.content_boundaries")
     boundary_content = {
         str(row["content_unit_id"]): row
@@ -2019,11 +2294,14 @@ def build_reader_spine(
             key: row.get(key)
             for key in ("anchor_id", "source_id", "locator", "relation", "observed_summary", "boundary")
         }
+        content_id = str(row.get("content_unit_id", ""))
+        if not content_id:
+            raise ProductionPipelineBlocked("reader_spine_evidence_invalid", f"{anchor_id}.content_unit_id")
         previous = evidence_by_anchor.get(anchor_id)
         if previous is not None and previous != comparable:
             raise ProductionPipelineBlocked("reader_spine_duplicate_evidence_conflict", anchor_id)
         evidence_by_anchor[anchor_id] = comparable
-        evidence_content_ids.setdefault(anchor_id, set()).add(str(row.get("content_unit_id", "")))
+        evidence_content_ids.setdefault(anchor_id, set()).add(content_id)
 
     selected_content_ids = set(selected)
     projected_content_ids = {
@@ -2209,7 +2487,99 @@ def build_reader_spine(
         "reader_constraints": reader_constraints,
         "route_guidance": route_guidance,
     }
-    return validate_reader_spine(spine)
+    validated_spine = validate_reader_spine(spine)
+    _validate_reader_citation_bindings(validated_spine)
+    return validated_spine
+
+
+def _prompt_outline_text(rows: Any) -> str:
+    """Render requested outline labels while hiding outline binding IDs."""
+
+    if not isinstance(rows, list):
+        return ""
+    by_id = {
+        str(row.get("outline_id")): row
+        for row in rows
+        if isinstance(row, Mapping) and row.get("outline_id")
+    }
+    depth_cache: dict[str, int] = {}
+
+    def depth(identifier: str, active: set[str] | None = None) -> int:
+        if identifier in depth_cache:
+            return depth_cache[identifier]
+        active = set(active or ())
+        if identifier in active:
+            return 0
+        active.add(identifier)
+        row = by_id.get(identifier, {})
+        parent = row.get("parent_outline_id")
+        result = 0 if parent is None or str(parent) not in by_id else depth(str(parent), active) + 1
+        depth_cache[identifier] = result
+        return result
+
+    ordered = sorted(
+        (row for row in rows if isinstance(row, Mapping)),
+        key=lambda row: (depth(str(row.get("outline_id")), set()), int(row.get("order", 0)), str(row.get("outline_id"))),
+    )
+    parts: list[str] = []
+    for row in ordered:
+        label = str(row.get("label") or "").strip()
+        if not label:
+            continue
+        level = depth(str(row.get("outline_id")), set()) + 1
+        parts.append(f"第{level}层“{label}”")
+    return "；".join(parts)
+
+
+def _anchor_citation_markers(anchor: Mapping[str, Any], constraints: Mapping[str, Any]) -> list[str]:
+    """Return citation markers whose source/content pair supports ``anchor``."""
+
+    anchor_source = str(anchor.get("source_id") or "")
+    anchor_content = {str(item) for item in anchor.get("content_unit_ids", [])}
+    markers: list[str] = []
+    for row in constraints.get("citation_rules", []) if isinstance(constraints, Mapping) else []:
+        if not isinstance(row, Mapping):
+            continue
+        if str(row.get("source_id") or "") != anchor_source:
+            continue
+        if not anchor_content.intersection(str(item) for item in row.get("content_unit_ids", [])):
+            continue
+        marker = str(row.get("marker") or "")
+        if marker and marker not in markers:
+            markers.append(marker)
+    return markers
+
+
+def _prompt_exact_block(
+    label: str,
+    raw: str,
+    reason: Any,
+    *,
+    block_index: int,
+) -> str:
+    """Render one exact obligation without sending its value through cleanup.
+
+    The heading is writer-facing metadata, while the text between delimiters
+    is the caller-owned Unicode value.  A content-derived delimiter makes the
+    block easy to identify in a captured prompt and the collision check keeps
+    an adversarial value from terminating its own block early.
+    """
+
+    if not isinstance(raw, str) or not raw:
+        raise ProductionPipelineBlocked("reader_prompt_exact_value_invalid", block_index)
+    digest = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+    delimiter = ""
+    for attempt in range(1000):
+        suffix = "" if attempt == 0 else f"-{attempt}"
+        candidate = f"<<<LW-EXACT-{digest[:24]}-{block_index}{suffix}>>>"
+        if candidate not in raw:
+            delimiter = candidate
+            break
+    if not delimiter:
+        raise ProductionPipelineBlocked("reader_prompt_exact_delimiter_collision", block_index)
+    reason_text = _prompt_clean_text(reason)
+    heading = label if not reason_text else f"{label}（用途：{reason_text}）"
+    return f"{heading}\n{delimiter}\n{raw}\n{delimiter}"
 
 
 def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
@@ -2260,81 +2630,161 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
     if context_clause:
         paragraphs.append(context_clause + "。")
 
+    language = _prompt_clean_text(context.get("language"), preserve_citations=citation_markers)
+    artifact_mode = str(context.get("artifact_mode") or "")
+    artifact_mode_clause = {
+        "create_new": "从零创作新的成稿",
+        "revise_existing": "在现有成稿基础上修订",
+    }.get(artifact_mode, artifact_mode)
+    artifact_format = _prompt_clean_text(context.get("artifact_format"), preserve_citations=citation_markers)
+    if language:
+        paragraphs.append(
+            f"输出语言必须是{language}；交付方式是{artifact_mode_clause}，目标格式为{artifact_format}。"
+        )
+
+    structure = context.get("structure") if isinstance(context.get("structure"), Mapping) else {}
+    outline_rows = structure.get("requested_outline", []) if isinstance(structure, Mapping) else []
+    heading_policy = str(context.get("heading_policy") or "")
+    if heading_policy == "none":
+        paragraphs.append("成稿不输出标题；用自然段落完成推进。")
+    elif heading_policy == "locked":
+        outline_text = _prompt_outline_text(outline_rows)
+        if outline_text:
+            paragraphs.append(
+                "标题结构必须严格保留原标签、层级和顺序：" + outline_text + "。不得改名、调序或增加平行标题。"
+            )
+    elif heading_policy == "minimal":
+        paragraphs.append("标题只在确实帮助读者定位时使用，不为每个材料点增加小标题。")
+    elif heading_policy in {"preserve_requested", "route_selected"}:
+        outline_text = _prompt_outline_text(outline_rows)
+        if outline_text:
+            paragraphs.append("保留已请求的标题层级和顺序；标题只承担定位作用：" + outline_text + "。")
+
+    citation_policy = str(context.get("citation_policy") or "")
+    if citation_policy == "none":
+        paragraphs.append("引用方式为none：除明确的原文要求外，不新增引用标记。")
+    elif citation_policy:
+        paragraphs.append(f"引用方式为{citation_policy}；每个事实只使用与其来源绑定的标记。")
+
+    examples = context.get("reference_examples", [])
+    example_parts: list[str] = []
+    for row in examples:
+        if not isinstance(row, Mapping):
+            continue
+        role = _prompt_clean_text(row.get("role"), preserve_citations=citation_markers)
+        description = _prompt_clean_text(row.get("description"), preserve_citations=citation_markers)
+        if not description:
+            continue
+        if role == "avoid":
+            example_parts.append(f"避开样例中的{description}")
+        else:
+            example_parts.append(f"参考样例用于{role}：{description}")
+    if example_parts:
+        paragraphs.append("参考样例只约束表达方式，不把样例中的故事或事实迁入当前成稿；" + "；".join(example_parts) + "。")
+
     units = spine["major_units"]
+    anchor_by_id = {
+        str(anchor["anchor_id"]): anchor
+        for anchor in spine["evidence_anchors"]
+        if isinstance(anchor, Mapping)
+    }
+    limitation_by_id = {
+        str(limitation["limitation_id"]): limitation
+        for limitation in spine["conclusion_sensitive_limitations"]
+        if isinstance(limitation, Mapping)
+    }
     unit_fragments: list[str] = []
-    # Reader-state labels stay in the validated spine for lineage and reverse
-    # review.  They are deliberately omitted from the provider prompt: the
-    # root throughline and ordered unit jobs already carry the actionable
-    # progression, while repeating labels such as “读者需要先知道…” make
-    # prose generation sound like a planning checklist.
+    content_groups: list[str] = []
     for index, unit in enumerate(units):
         title = _prompt_clean_text(unit["title"], preserve_citations=citation_markers)
         job = _prompt_clean_text(unit["reader_job"], preserve_citations=citation_markers)
+        relation = _prompt_clean_text(unit["relation_to_previous"], preserve_citations=citation_markers)
+        presentation_mode = str(unit.get("presentation_mode") or "prose")
+        presentation_clause = {
+            "prose": "用连贯段落呈现",
+            "list": "在这里落实有明确功能的列表",
+            "table": "在这里落实已规划的表格",
+            "appendix": "在这里落实有明确用途的附录或清单",
+            "quote": "以连续引文或说明呈现",
+        }.get(presentation_mode, f"按{presentation_mode}的已规划形式呈现")
+        if heading_policy == "none":
+            unit_label = f"第{index + 1}个推进单元"
+        else:
+            unit_label = f"“{title}”"
         prefix = "先处理" if index == 0 else ("最后收束" if index == len(units) - 1 else "随后转入")
-        fragment = f"{prefix}“{title}”：{_prompt_core(job, citation_markers)}"
-        unit_fragments.append(fragment)
-    if unit_fragments:
-        paragraphs.append(
-            "推进线路是" + "；".join(unit_fragments) +
-            "。每一步都要改变读者的判断、可行行动或代价，后一步承接前一步的结果；不要把步骤机械地拆成同样长度的段落。"
-        )
+        fragment_parts = [f"{prefix}{unit_label}：{_prompt_core(job, citation_markers)}"]
+        if index > 0 and relation:
+            fragment_parts.append(f"承接关系是{relation}")
+        elif index == 0 and relation:
+            fragment_parts.append(f"本单元的起点关系是{relation}")
+        fragment_parts.append(presentation_clause)
 
-    # Content meanings contain the safe material boundary.  User-task prose
-    # is already represented by the root/context paragraph, so only retain
-    # constraints here; evidence anchors carry the factual observations.
-    anchor_summaries = {
-        _prompt_key(anchor.get("observed_summary"))
-        for anchor in spine["evidence_anchors"]
-        if isinstance(anchor, Mapping) and anchor.get("observed_summary")
-    }
-    content_parts: list[str] = []
-    for unit in units:
+        local_content: list[str] = []
         for row in unit["content"]:
             if not isinstance(row, Mapping) or row.get("disposition") == "omit":
                 continue
-            raw = str(row.get("meaning") or "")
-            constraint_text = _prompt_labeled_segment(raw, "用户约束")
-            if constraint_text:
-                _prompt_add(content_parts, constraint_text)
-                continue
-            if re.search(r"(?:^|\n)\s*(?:用户任务|冻结材料|材料事实)\s*[：:]", raw):
-                continue
-            cleaned = _prompt_clean_text(raw, preserve_citations=citation_markers)
-            if cleaned and _prompt_key(cleaned) not in anchor_summaries:
-                _prompt_add(content_parts, cleaned)
-    if content_parts:
-        paragraphs.append(
-            "材料中必须保留的条件和作用是：" + _prompt_join(content_parts) + "。"
-        )
+            # Labels such as “材料事实” identify the origin of a row; they
+            # never authorize dropping the row.  Only the normal scrubber is
+            # used to remove private references while retaining the meaning.
+            cleaned = _prompt_content_text(row.get("meaning"), preserve_citations=citation_markers)
+            if cleaned and _prompt_key(cleaned) not in {_prompt_key(item) for item in local_content}:
+                local_content.append(cleaned)
+        if local_content:
+            fragment_parts.append("本单元保留条件和作用为" + _prompt_join(local_content))
+            content_groups.append(f"{unit_label}：" + _prompt_join(local_content))
 
-    fact_parts: list[str] = []
-    for anchor in spine["evidence_anchors"]:
-        if not isinstance(anchor, Mapping):
-            continue
-        summary = _prompt_clean_text(anchor.get("observed_summary"), preserve_citations=citation_markers)
-        boundary = _prompt_clean_text(anchor.get("boundary"), preserve_citations=citation_markers)
-        if summary:
-            _prompt_add(fact_parts, summary)
-        if boundary and not re.search(r"只能支持其中明确写出的事实|仅支持明确写出的事实", boundary):
-            _prompt_add(fact_parts, boundary)
-    if fact_parts:
+        local_facts: list[str] = []
+        for anchor_id in unit["evidence_anchor_ids"]:
+            anchor = anchor_by_id.get(str(anchor_id))
+            if anchor is None:
+                continue
+            summary = _prompt_clean_text(anchor.get("observed_summary"), preserve_citations=citation_markers)
+            boundary = _prompt_clean_text(anchor.get("boundary"), preserve_citations=citation_markers)
+            relation_label = _prompt_clean_text(anchor.get("relation"), preserve_citations=citation_markers)
+            markers = _anchor_citation_markers(anchor, spine["reader_constraints"])
+            if not summary:
+                continue
+            item = f"事实“{summary}”"
+            if relation_label:
+                item += f"（证据关系：{relation_label}）"
+            if markers:
+                item += "（对应引用标记" + "、".join(markers) + "）"
+            if boundary and not re.search(r"只能支持其中明确写出的事实|仅支持明确写出的事实", boundary):
+                item += f"；适用范围是{boundary}"
+            local_facts.append(item)
+        if local_facts:
+            fragment_parts.append("本单元的事实依据为" + "；".join(local_facts))
+
+        local_limits: list[str] = []
+        for limitation_id in unit["limitation_ids"]:
+            limitation = limitation_by_id.get(str(limitation_id))
+            if limitation is None:
+                continue
+            meaning = _prompt_clean_text(limitation.get("meaning"), preserve_citations=citation_markers)
+            placement = _prompt_clean_text(limitation.get("realization_requirement"), preserve_citations=citation_markers)
+            if meaning:
+                item = meaning
+                if placement and _prompt_key(placement) not in _prompt_key(meaning) and _prompt_key(meaning) not in _prompt_key(placement):
+                    item += f"；在本单元的{placement}处说明"
+                local_limits.append(item)
+        if local_limits:
+            fragment_parts.append("本单元必须同时保留的边界为" + "；".join(local_limits))
+        unit_fragments.append("；".join(fragment_parts))
+    if unit_fragments:
         paragraphs.append(
-            "可使用的事实依据是：" + _prompt_join(fact_parts) +
-            "。这些事实只支持明确写出的范围，不得外推。"
+            "推进线路是" + "；".join(unit_fragments) +
+            "。后一步只承接前一步已经形成的结果；根据每个单元的具体关系推进，不把每个单元机械拆成同样长度的段落。"
         )
+    if content_groups:
+        paragraphs.append(
+            "材料中必须保留的条件和作用按单元绑定如下：" + "；".join(content_groups) +
+            "。只在绑定单元中使用这些内容。"
+        )
+    if anchor_by_id:
+        paragraphs.append("各单元的事实依据已经就近绑定到对应单元；引用标记只能跟随它支持的事实，不得跨事实挪用。")
 
     limit_parts: list[str] = []
-    for limitation in spine["conclusion_sensitive_limitations"]:
-        if not isinstance(limitation, Mapping):
-            continue
-        meaning = _prompt_clean_text(limitation.get("meaning"), preserve_citations=citation_markers)
-        placement = _prompt_clean_text(limitation.get("realization_requirement"), preserve_citations=citation_markers)
-        if meaning:
-            item = meaning
-            if placement and _prompt_key(placement) not in _prompt_key(meaning) and _prompt_key(meaning) not in _prompt_key(placement):
-                item += f"；把它放在{placement}"
-            _prompt_add(limit_parts, item)
-
+    exact_blocks: list[str] = []
     constraints = spine["reader_constraints"]
     for row in constraints["citation_rules"]:
         if isinstance(row, Mapping):
@@ -2348,22 +2798,16 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
     exact = constraints["exact_obligations"]
     for row in exact["must_preserve"]:
         if isinstance(row, Mapping):
-            token = _prompt_clean_text(row.get("token"), preserve_internal=True)
+            token = str(row.get("token") or "")
             reason = _prompt_clean_text(row.get("reason"))
             if token:
-                item = f"保留术语“{token}”"
-                if reason:
-                    item += f"，因为{reason}"
-                _prompt_add(limit_parts, item, preserve_internal=True)
+                exact_blocks.append(_prompt_exact_block("必须保留的术语", token, reason or "用户明确要求", block_index=len(exact_blocks)))
     for row in exact["verbatim"]:
         if isinstance(row, Mapping):
-            original = _prompt_clean_text(row.get("text"), preserve_internal=True)
+            original = str(row.get("text") or "")
             reason = _prompt_clean_text(row.get("reason"))
             if original:
-                item = f"保留原文“{original}”"
-                if reason:
-                    item += f"，因为{reason}"
-                _prompt_add(limit_parts, item, preserve_internal=True)
+                exact_blocks.append(_prompt_exact_block("必须逐字保留的原文", original, reason or "用户明确要求", block_index=len(exact_blocks)))
     for row in constraints["claim_boundaries"]:
         if isinstance(row, Mapping):
             forbidden = _prompt_clean_text(row.get("forbidden_meaning"))
@@ -2378,7 +2822,6 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
             "结论边界和必须保留的要求是：" + _prompt_join(limit_parts) +
             "。每条边界只在它第一次改变判断、行动或代价的位置出现。"
         )
-
     route = spine["route_guidance"]
     route_parts: list[str] = []
     if mode == "fiction-writing":
@@ -2402,25 +2845,8 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
                 "集合外的事实必须等到视角人物通过材料允许的看见、听见、阅读、对话或其它可观察事件取得后才能写出；"
                 "在此之前只能写目标、疑问或可见线索，不能用确定语气写出该事实。",
             )
-        if "砸锁" in spine_text and "公开账页" in spine_text:
-            _prompt_add(
-                route_parts,
-                "材料虽然列出‘等待’、‘公开账页’和‘砸锁’等备选，但当前任务目的已经选定公开账页；"
-                "只能沿公开账页造成压力、主管放行、现场开门、救单和信任代价这条路线推进，"
-                "不得把砸锁、撬锁或铁锤改写成当前场景的实际开门手段，也不得把备选动作串接进主线。"
-                "至少明确写出主管放行或交钥匙后门锁解除、门打开、工人进入的可见动作桥；"
-                "要写清由谁实际解除锁闭并开门，不能只写‘门开了’或跳到‘工人进入’，也不自行补造锁具失败。"
-                "不得让林岚或其它角色用未知钥匙无来源地开门，不得新增第二把钥匙，也不得把白漆直接解释为调钥匙事实。",
-            )
         for value in _prompt_mapping_texts(route.get("voice_contract")):
             _prompt_add(route_parts, value)
-        if re.search(r"三声船铃|三声铃|ship\s+bell\s+three\s+times|bell\s+three\s+times", spine_text, re.IGNORECASE):
-            _prompt_add(
-                route_parts,
-                "若材料要求船铃意象出现三次，这里的三次按铃声事件计数：正文总共写三次船铃响起，每个节点只写一次铃声，"
-                "不要每次再写三下而累计成九声；第一次建立日常，第二次加重压力，第三次落到关系变化，"
-                "也不要把三次事件拆成孤立的说明。",
-            )
         # Unit jobs already carry pressure and irreversible change.  Retain
         # only route values that add a distinct reveal boundary, avoiding a
         # second field-by-field copy of the same movement ledger.
@@ -2509,10 +2935,6 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
                         _prompt_add(route_parts, _prompt_clean_text(row[key], preserve_citations=citation_markers))
 
     elif mode == "travel-guide":
-        # A fallback may be carried by the selected material rather than by
-        # the route extension.  Do not tell the writer that no reachable
-        # fallback exists when the reader-facing facts already name one.
-        reader_text = " ".join(_prompt_mapping_texts(spine))
         _prompt_add(
             route_parts,
             "旅行任务只保留会改变当天时间、地点、交通、休息或备用选择的条件；未参与取舍的地点、认证、票价、天气来源声明和泛化未知项省略。",
@@ -2540,33 +2962,38 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
             if isinstance(row, Mapping):
                 trigger = _prompt_clean_text(row.get("trigger"))
                 mitigation = _prompt_clean_text(row.get("mitigation"))
+                affected_sections = [
+                    _prompt_clean_text(unit.get("title"))
+                    for unit in units
+                    if isinstance(unit, Mapping)
+                    and str(unit.get("planned_unit_id") or "") in {
+                        str(value) for value in row.get("affected_section_ids", [])
+                    }
+                    and _prompt_clean_text(unit.get("title"))
+                ]
                 travelers = [
-                    _prompt_clean_text(item)
-                    for item in row.get("affected_travelers", [])
-                    if _prompt_clean_text(item)
+                    _prompt_clean_text(value)
+                    for value in row.get("affected_travelers", [])
+                    if _prompt_clean_text(value)
                 ]
                 if trigger and mitigation:
                     item = f"如果{trigger}，{mitigation}"
+                    if affected_sections:
+                        item += "，影响" + "、".join(affected_sections)
                     if travelers:
                         item += "，照顾" + "、".join(travelers)
                     _prompt_add(route_parts, item)
-        has_material_fallback = bool(
-            re.search(r"备用|备选|替换|绘本馆|留在(?:旅馆|起点)", reader_text, re.IGNORECASE)
-        )
-        if not route.get("reachable_fallbacks") and not has_material_fallback:
+        if not route.get("reachable_fallbacks"):
             _prompt_add(
                 route_parts,
-                "如果材料没有支持的可达备用路线，遇到出发前或途中条件不满足时，必须把留在起点、停止出发或原地休息写成明确可执行的退回方案。"
-                "不得把退回路径写成要求读者补资料的开放任务，也不得用未知的休息点、接驳或现场服务补造路线。"
-                "不要自行新增返程中断、现场服务或其它材料没有给出的故障分支；若必要条件无法在出发前确认，"
-                "只写停止出发、留在起点或在已知地点原地休息。",
+                "材料没有提供可验证的备用路线时，只说明退路信息缺口，不把未知地点写成可达或安全地点。",
             )
         _prompt_add(
             route_parts,
             "每天的开放、交通、休息和天气条件放回对应日期的段落；结尾只收束全局边界，"
             "不要把每天的条件集中重列。如果同时存在默认路线和备用路线，分别写清每条路线自己的启用条件与退回条件；"
             "一条备用路线未通过核实时，不能因此取消已经满足条件的默认路线，不能把不同路线的条件合并成一个全局退回判断；"
-            "结尾必须按‘实际选择的路线→该路线条件不满足→留在起点’分别写出分支。",
+            "每条路线的退回安排都必须以已有材料为准。",
         )
         if re.search(r"只改|受影响|局部修订|revision|revise", purpose, re.IGNORECASE):
             _prompt_add(
@@ -2579,27 +3006,18 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
         paragraphs.append("本类成品还要保持这些推进要求：" + _prompt_join(route_parts) + "。")
 
     extent = context["extent"]
-    extent_unit = {"characters": "汉字", "words": "单词"}.get(str(extent["unit"]), str(extent["unit"]))
+    try:
+        extent_description = describe_extent(extent["unit"], extent.get("extent_metric_id"))
+    except ValidationError as exc:
+        raise ProductionPipelineBlocked("reader_intent_extent_unsupported", str(exc)) from exc
     paragraphs.append(
-        f"篇幅是硬约束。篇幅按{extent_unit}统计，范围为 {extent['minimum']}—{extent['maximum']}，目标为 {extent['target']}。"
-        "低于下限时，只补入直接推进问题、判断、行动或代价的具体内容；超过上限时，删去不改变读者判断的句子。"
-        "不要用重复材料、泛化免责声明、作者说明或流程说明填充篇幅。"
+        f"篇幅是硬约束。最终正文按{extent_description}统计，范围为 {extent['minimum']}—{extent['maximum']}，目标为 {extent['target']}。"
+        "正文统计范围与最终审查使用的正文范围一致，不含仅供边界核验的材料；低于下限时，只补入直接推进问题、判断、行动或代价的具体内容；"
+        "超过上限时，删去不改变读者判断的句子。不要用重复材料、泛化免责声明、作者说明或流程说明填充篇幅。"
     )
-    if extent_unit == "汉字" and not (mode == "investigation" and "汉字" in purpose):
-        paragraphs.append(
-            "返回前按正文实际可见字符（标题和空白不计）核对一次长度；超过上限就合并重复限制或删去不改变判断的句子，"
-            "不要返回超出上限的草稿，也不要用内部说明填充下限。"
-        )
-
-    if mode == "investigation" and "汉字" in purpose:
-        paragraphs.append(
-            "返回前逐字核对正文汉字数，必须达到给定下限且不超过上限；数字、英文字母、标点、空白和内部核对语句不计入汉字数。"
-            "若不足，只补入改变采购判断、适用范围、情景测算或验证顺序的具体推理，不用免责声明或重复材料补字数。"
-        )
-    if mode == "investigation" and "主张/证据/缺口" in purpose:
-        paragraphs.append(
-            "用户明确要求开篇解释后提供一张‘主张/证据/缺口’表；必须真的输出一张表，把实测、机制、负载边界、长期或跨设备外推、经济情景和宣传依据放在最相关的行，表后只写一次综合判断和下一项验证。"
-        )
+    paragraphs.append(
+        "系统会按正文实际可见字符（标题和空白不计）核对一次长度；超过上限就合并重复限制或删去不改变判断的句子，不要用内部说明填充下限。"
+    )
     if mode == "academic-writing":
         paragraphs.append(
             "学术任务若指定标题或表格，严格保留其结构；相同数字或限制只在承担新的论证工作时再次出现，不要把表格要求改写成散文，也不要用平行材料清单代替层间递进。"
@@ -2611,8 +3029,15 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
         mapped_voice = {"neutral": "中性", "scholarly": "学术、克制", "formal": "正式"}.get(voice.casefold(), voice)
         style_parts.append(mapped_voice)
     formality = _prompt_clean_text(style.get("formality"))
-    if formality and formality.casefold() not in {"neutral", "scholarly", "formal"}:
-        style_parts.append(formality)
+    if formality:
+        mapped_formality = {
+            "informal": "非正式",
+            "neutral": "中性",
+            "formal": "正式",
+            "scholarly": "学术、克制",
+            "user_defined": "按用户指定",
+        }.get(formality.casefold(), formality)
+        style_parts.append(mapped_formality)
     required_traits = []
     for item in style.get("required_traits", []):
         cleaned = _prompt_clean_text(item)
@@ -2636,7 +3061,7 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
             "正文默认使用连续段落和自然过渡，不要把材料拆成项目符号、编号清单或一行一项；只有用户明确要求的标题、表格或操作清单才保留相应结构。"
         )
     elif list_policy == "lists_required":
-        paragraphs.append("只有承担明确功能的地方使用列表，其余内容仍用连续解释；不得把每条材料各变成一个列表项。")
+        paragraphs.append("已经规划的列表单元必须使用列表来完成其功能，其余内容仍用连续解释；不得把每条材料各变成一个列表项。")
     elif list_policy == "lists_allowed":
         paragraphs.append("列表只有在能帮助读者执行或核对时才使用，其余内容用连续解释；不得按材料编号平行罗列。")
         if re.search(r"简短|short", purpose, re.IGNORECASE) and re.search(r"清单|checklist|列表", purpose, re.IGNORECASE):
@@ -2644,6 +3069,8 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
                 "任务要求简短清单时，清单只保留可直接执行的短动作；正文已经解释过的理由、边界和备用路线不要在清单重复，"
                 "备用方案只写切换动作。"
             )
+    elif list_policy == "user_defined":
+        paragraphs.append("只按已经规划的自定义列表职责组织列表；未规划的材料保持连续解释，不自行发明列表。")
     else:
         paragraphs.append("按任务明确的结构组织成稿，列表和表格只在确有阅读功能时使用。")
     if context.get("heading_policy") in {"preserve_requested", "route_selected"}:
@@ -2652,6 +3079,10 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
         paragraphs.append("不要使用表格。")
     elif context.get("table_policy") == "allowed":
         paragraphs.append("只有表格能明显帮助读者比较或执行时才使用表格。")
+    elif context.get("table_policy") == "required":
+        paragraphs.append("已规划的表格单元必须实际输出表格；表格承担其规划的比较或核对功能。")
+    elif context.get("table_policy") == "user_defined":
+        paragraphs.append("只按已经规划的自定义表格职责输出表格，不自行增加表格。")
 
     required = [_prompt_clean_text(item) for item in context.get("required_content", []) if _prompt_clean_text(item)]
     forbidden = [_prompt_clean_text(item) for item in context.get("forbidden_content", []) if _prompt_clean_text(item)]
@@ -2666,7 +3097,11 @@ def render_reader_spine_prompt(reader_spine: Mapping[str, Any]) -> str:
     paragraphs.append(
         "成稿前只在内部核对事实、边界、顺序和篇幅，不输出核对过程；沿一条主线收束，让最后一句承接前文的判断或下一步。"
     )
-    return "\n\n".join(_dedupe_prompt_paragraphs(paragraphs, citation_markers))
+    rendered = "\n\n".join(_dedupe_prompt_paragraphs(paragraphs, citation_markers))
+    rendered = _remove_private_projection_references(rendered, spine, citation_markers)
+    if exact_blocks:
+        rendered += "\n\n" + "\n\n".join(exact_blocks)
+    return rendered
 
 
 _PROMPT_INTERNAL_BRACKET_REF = re.compile(r"\[(?:[A-Z]{1,3}(?:-[A-Z]{1,3})?[-_:]?\d{1,4})\]")
@@ -2680,7 +3115,7 @@ _PROMPT_LOCATOR = re.compile(
 )
 _PROMPT_INTERNAL_FIELD = re.compile(
     r"(?<!\w)(?:schema_version|root_question|major_units|reader_context|route_guidance|"
-    r"content_unit_id|planned_unit_id|source_id|locator|reader_constraints|route_semantics|"
+    r"content_unit_id|planned_unit_id|source_id|reader_constraints|route_semantics|"
     r"native_handoff|selected_content|gaps|appendix:checks)(?!\w)",
     re.IGNORECASE,
 )
@@ -2697,27 +3132,86 @@ def _prompt_clean_text(
     preserve_citations: Iterable[str] | None = None,
 ) -> str:
     text = str(value or "").replace("\r\n", "\n").replace("\r", "\n").strip()
-    protected_citations: dict[str, str] = {}
-    if not preserve_internal:
-        # Internal bracket references and user-facing citation markers share a
-        # visual shape.  Protect only the markers declared by the current
-        # ReaderSpine, then apply the normal internal-reference scrubber.
-        for index, marker in enumerate(sorted({str(item) for item in (preserve_citations or ()) if str(item)}, key=len, reverse=True)):
-            sentinel = f"\ue000CIT{index}\ue001"
-            if marker in text:
-                text = text.replace(marker, sentinel)
-                protected_citations[sentinel] = marker
-        text = _PROMPT_INTERNAL_BRACKET_REF.sub("", text)
-        text = _PROMPT_INTERNAL_TOKEN.sub("", text)
-        text = _PROMPT_LOCATOR.sub("", text)
-        text = _PROMPT_INTERNAL_FIELD.sub("", text)
     text = _PROMPT_LABEL_PREFIX.sub("", text)
     text = re.sub(r"\s+", " ", text).strip()
     text = re.sub(r"\s+([，。；：？！,.!?;:])", r"\1", text)
     text = re.sub(r"([。！？!?；;])\s*([。！？!?；;])+", r"\1", text)
-    for sentinel, marker in protected_citations.items():
-        text = text.replace(sentinel, marker)
     return text
+
+
+def _prompt_content_text(
+    value: Any,
+    *,
+    preserve_citations: Iterable[str] | None = None,
+) -> str:
+    """Normalize line endings and labels without deleting user-facing terms."""
+
+    return _prompt_clean_text(value, preserve_citations=preserve_citations)
+
+
+def _prompt_private_projection_references(reader_spine: Mapping[str, Any]) -> set[str]:
+    """Collect only identifiers that belong to the private projection ledger."""
+
+    references: set[str] = set()
+
+    def collect(value: Any, *, locator: bool = False) -> None:
+        if isinstance(value, str) and value:
+            # A one-character locator such as ``a`` or ``b`` is not a private
+            # identifier. Removing it globally would corrupt ordinary prose
+            # (for example ``markdown``).
+            if locator and len(value) < 3 and not any(mark in value for mark in (":", "/", "\\", ".")):
+                return
+            if not locator and len(value) < 3 and ":" not in value:
+                return
+            references.add(value)
+        elif isinstance(value, list):
+            for item in value:
+                collect(item, locator=locator)
+
+    def walk(value: Any) -> None:
+        if isinstance(value, Mapping):
+            for key, item in value.items():
+                key_text = str(key)
+                if key_text == "locator":
+                    collect(item, locator=True)
+                elif key_text.endswith("_id") or key_text.endswith("_ids"):
+                    collect(item)
+                walk(item)
+        elif isinstance(value, list):
+            for item in value:
+                walk(item)
+
+    walk(reader_spine)
+    references.update(
+        f"[{suffix}]"
+        for reference in references.copy()
+        if ":" in reference
+        for suffix in [reference.rsplit(":", 1)[-1]]
+        if re.fullmatch(r"[A-Z]{1,4}(?:[-_][A-Z]{1,4})?\d{1,4}", suffix)
+    )
+    return references
+
+
+def _remove_private_projection_references(
+    text: str,
+    reader_spine: Mapping[str, Any],
+    citation_markers: Iterable[str] | None = None,
+) -> str:
+    """Remove field-scoped ledger identifiers while preserving citations and text."""
+
+    protected: dict[str, str] = {}
+    result = text
+    for index, marker in enumerate(sorted({str(item) for item in (citation_markers or []) if str(item)}, key=len, reverse=True)):
+        sentinel = f"\ue000LW-CIT-{index}\ue001"
+        if marker in result:
+            result = result.replace(marker, sentinel)
+            protected[sentinel] = marker
+    for reference in sorted(_prompt_private_projection_references(reader_spine), key=len, reverse=True):
+        if reference:
+            result = result.replace(reference, "")
+    for sentinel, marker in protected.items():
+        result = result.replace(sentinel, marker)
+    return result
 
 
 def _prompt_job_clause(label: str, value: Any, citation_markers: Iterable[str] | None = None) -> str:
@@ -2737,7 +3231,8 @@ def _prompt_core(value: Any, citation_markers: Iterable[str] | None = None) -> s
 
 
 def _prompt_key(value: Any) -> str:
-    return re.sub(r"[\W_]+", "", _prompt_clean_text(value).casefold())
+    """Use exact equality after edge trim; preserve symbols and case."""
+    return str(value or "").strip()
 
 
 def _prompt_paragraph_key(value: Any, citation_markers: Iterable[str] | None = None) -> str:
@@ -2748,8 +3243,7 @@ def _prompt_paragraph_key(value: Any, citation_markers: Iterable[str] | None = N
     whitespace and punctuation differences.
     """
 
-    cleaned = _prompt_clean_text(value, preserve_citations=citation_markers)
-    return re.sub(r"[\W_]+", "", cleaned.casefold())
+    return str(value or "").strip()
 
 
 def _dedupe_prompt_paragraphs(
@@ -2772,20 +3266,15 @@ def _dedupe_prompt_paragraphs(
 
 
 def _prompt_add(bucket: list[str], value: Any, *, preserve_internal: bool = False) -> None:
-    cleaned = _prompt_clean_text(value, preserve_internal=preserve_internal)
-    if not cleaned:
+    raw_value = str(value or "")
+    retained = raw_value.strip()
+    if not retained:
         return
-    if not preserve_internal and cleaned.casefold() in _PROMPT_WORKFLOW_ONLY:
+    if not preserve_internal and retained.casefold() in _PROMPT_WORKFLOW_ONLY:
         return
-    key = _prompt_key(cleaned) if not preserve_internal else re.sub(r"[\W_]+", "", cleaned.casefold())
-    if not key:
-        return
-    existing = {
-        _prompt_key(item) if not preserve_internal else re.sub(r"[\W_]+", "", item.casefold())
-        for item in bucket
-    }
-    if key not in existing:
-        bucket.append(cleaned)
+    key = _prompt_key(retained)
+    if key and key not in {_prompt_key(item) for item in bucket}:
+        bucket.append(retained)
 
 
 def _prompt_join(values: list[str]) -> str:
@@ -2819,8 +3308,214 @@ def _prompt_mapping_texts(value: Any) -> list[str]:
     return values
 
 
+def _prompt_has_nearby(text: str, needle: str, *, radius: int = 260) -> bool:
+    if not needle:
+        return False
+    start = 0
+    while True:
+        position = text.find(needle, start)
+        if position < 0:
+            return False
+        window = text[max(0, position - radius): position + len(needle) + radius]
+        if needle in window:
+            return True
+        start = position + max(1, len(needle))
+
+
+def _reader_prompt_obligation_missing(path: str, binding: Any) -> None:
+    raise ProductionPipelineBlocked(
+        "reader_prompt_obligation_missing",
+        {"path": path, "binding": binding},
+    )
+
+
+def validate_reader_prompt_obligations(prompt: Any, reader_spine: Mapping[str, Any]) -> bool:
+    """Check local prompt obligations without rendering a second expectation.
+
+    The identity check remains the responsibility of
+    :func:`validate_reader_spine_prompt`.  This checker only reads the
+    already-built spine and the captured prompt, then verifies that each
+    reader-visible obligation still has a concrete textual carrier.  It never
+    calls the renderer and never invokes a model.
+    """
+
+    if not isinstance(prompt, str):
+        _reader_prompt_obligation_missing("prompt", "prompt must be text")
+    spine = validate_reader_spine(reader_spine)
+    _validate_reader_citation_bindings(spine)
+    context = spine["reader_context"]
+
+    def obligation_text(value: Any) -> str:
+        raw = _prompt_content_text(value, preserve_citations={})
+        return _remove_private_projection_references(raw, spine, ())
+
+    language = str(context.get("language") or "")
+    if not language or language not in prompt:
+        _reader_prompt_obligation_missing("reader_context.language", language)
+    artifact_mode = str(context.get("artifact_mode") or "")
+    artifact_mode_phrase = {
+        "create_new": "从零创作新的成稿",
+        "revise_existing": "在现有成稿基础上修订",
+    }.get(artifact_mode, artifact_mode)
+    if artifact_mode_phrase and artifact_mode_phrase not in prompt:
+        _reader_prompt_obligation_missing("reader_context.artifact_mode", artifact_mode)
+    artifact_format = str(context.get("artifact_format") or "")
+    if artifact_format and artifact_format not in prompt:
+        _reader_prompt_obligation_missing("reader_context.artifact_format", artifact_format)
+
+    heading_policy = str(context.get("heading_policy") or "")
+    if heading_policy == "none":
+        if "不输出标题" not in prompt:
+            _reader_prompt_obligation_missing("reader_context.heading_policy", heading_policy)
+    elif heading_policy == "locked":
+        for index, row in enumerate(context["structure"].get("requested_outline", [])):
+            if not row.get("required") or not row.get("title_locked"):
+                continue
+            label = _prompt_clean_text(row.get("label"), preserve_citations={})
+            if not label or label not in prompt:
+                _reader_prompt_obligation_missing(
+                    f"reader_context.structure.requested_outline[{index}].label",
+                    {"label": row.get("label"), "policy": heading_policy},
+                )
+
+    policy_phrases = {
+        "lists_required": "已经规划的列表单元必须使用列表",
+        "user_defined": "已经规划的自定义列表职责",
+    }
+    list_policy = str(context.get("list_policy") or "")
+    if list_policy in policy_phrases and policy_phrases[list_policy] not in prompt:
+        _reader_prompt_obligation_missing("reader_context.list_policy", list_policy)
+    table_policy = str(context.get("table_policy") or "")
+    table_phrases = {
+        "forbidden": "不要使用表格",
+        "required": "已规划的表格单元必须实际输出表格",
+        "user_defined": "已经规划的自定义表格职责",
+    }
+    if table_policy in table_phrases and table_phrases[table_policy] not in prompt:
+        _reader_prompt_obligation_missing("reader_context.table_policy", table_policy)
+    citation_policy = str(context.get("citation_policy") or "")
+    citation_phrase = "引用方式为none" if citation_policy == "none" else f"引用方式为{citation_policy}"
+    if citation_policy and citation_phrase not in prompt:
+        _reader_prompt_obligation_missing("reader_context.citation_policy", citation_policy)
+
+    extent = context["extent"]
+    extent_description = describe_extent(extent["unit"], extent.get("extent_metric_id"))
+    for value in (extent_description, str(extent["minimum"]), str(extent["target"]), str(extent["maximum"])):
+        if value not in prompt:
+            _reader_prompt_obligation_missing("reader_context.extent", {"missing": value, "extent": extent})
+
+    for field in ("required_content", "forbidden_content"):
+        for index, value in enumerate(context[field]):
+            cleaned = obligation_text(value)
+            if cleaned and cleaned not in prompt:
+                _reader_prompt_obligation_missing(f"reader_context.{field}[{index}]", value)
+
+    for index, row in enumerate(context.get("reference_examples", [])):
+        description = obligation_text(row.get("description"))
+        if description and description not in prompt:
+            _reader_prompt_obligation_missing(f"reader_context.reference_examples[{index}].description", row.get("description"))
+
+    visible_content = {
+        str(row.get("content_unit_id"))
+        for row in spine["editorial_dispositions"]
+        if isinstance(row, Mapping) and row.get("disposition") in {"support", "merge"}
+    }
+    for unit_index, unit in enumerate(spine["major_units"]):
+        if unit_index > 0:
+            relation = obligation_text(unit.get("relation_to_previous"))
+            if relation and relation not in prompt:
+                _reader_prompt_obligation_missing(
+                    f"major_units[{unit_index}].relation_to_previous",
+                    {"planned_unit_id": unit.get("planned_unit_id"), "relation": unit.get("relation_to_previous")},
+                )
+        presentation_mode = str(unit.get("presentation_mode") or "prose")
+        presentation_phrase = {
+            "prose": "用连贯段落呈现",
+            "list": "在这里落实有明确功能的列表",
+            "table": "在这里落实已规划的表格",
+            "appendix": "在这里落实有明确用途的附录或清单",
+            "quote": "以连续引文或说明呈现",
+        }.get(presentation_mode, f"按{presentation_mode}的已规划形式呈现")
+        if presentation_phrase not in prompt:
+            _reader_prompt_obligation_missing(
+                f"major_units[{unit_index}].presentation_mode",
+                {"planned_unit_id": unit.get("planned_unit_id"), "presentation_mode": presentation_mode},
+            )
+        for content_index, row in enumerate(unit["content"]):
+            content_id = str(row.get("content_unit_id"))
+            if content_id not in visible_content:
+                continue
+            meaning = obligation_text(row.get("meaning"))
+            if meaning and meaning not in prompt:
+                _reader_prompt_obligation_missing(
+                    f"major_units[{unit_index}].content[{content_index}].meaning",
+                    {"content_unit_id": content_id, "meaning": row.get("meaning")},
+                )
+
+    anchor_by_id = {str(row["anchor_id"]): row for row in spine["evidence_anchors"]}
+    for anchor_index, anchor in enumerate(spine["evidence_anchors"]):
+        summary = obligation_text(anchor.get("observed_summary"))
+        if summary and summary not in prompt:
+            _reader_prompt_obligation_missing(
+                f"evidence_anchors[{anchor_index}].observed_summary",
+                {"anchor_id": anchor.get("anchor_id"), "content_unit_ids": anchor.get("content_unit_ids")},
+            )
+        markers = _anchor_citation_markers(anchor, spine["reader_constraints"])
+        for marker in markers:
+            if not summary or not _prompt_has_nearby(prompt, summary + "", radius=320):
+                _reader_prompt_obligation_missing(
+                    f"evidence_anchors[{anchor_index}] -> citation_rules",
+                    {"anchor_id": anchor.get("anchor_id"), "source_id": anchor.get("source_id"), "marker": marker},
+                )
+            summary_positions = []
+            cursor = 0
+            while summary:
+                position = prompt.find(summary, cursor)
+                if position < 0:
+                    break
+                summary_positions.append(position)
+                cursor = position + len(summary)
+            if not any(marker in prompt[max(0, position - 320): position + len(summary) + 320] for position in summary_positions):
+                _reader_prompt_obligation_missing(
+                    f"evidence_anchors[{anchor_index}] -> citation_rules",
+                    {"anchor_id": anchor.get("anchor_id"), "source_id": anchor.get("source_id"), "marker": marker},
+                )
+
+    for limitation_index, limitation in enumerate(spine["conclusion_sensitive_limitations"]):
+        meaning = obligation_text(limitation.get("meaning"))
+        placement = obligation_text(limitation.get("realization_requirement"))
+        if meaning and meaning not in prompt:
+            _reader_prompt_obligation_missing(
+                f"conclusion_sensitive_limitations[{limitation_index}].meaning",
+                {"limitation_id": limitation.get("limitation_id"), "destination_unit_ids": limitation.get("destination_unit_ids")},
+            )
+        if placement and placement not in meaning and placement not in prompt:
+            _reader_prompt_obligation_missing(
+                f"conclusion_sensitive_limitations[{limitation_index}].realization_requirement",
+                {"limitation_id": limitation.get("limitation_id"), "destination_unit_ids": limitation.get("destination_unit_ids")},
+            )
+
+    exact = spine["reader_constraints"]["exact_obligations"]
+    for kind, field in (("must_preserve", "token"), ("verbatim", "text")):
+        for index, row in enumerate(exact[kind]):
+            raw = str(row[field])
+            if raw not in prompt:
+                _reader_prompt_obligation_missing(
+                    f"reader_constraints.exact_obligations.{kind}[{index}].{field}",
+                    {"raw": raw, "content_unit_ids": row.get("content_unit_ids")},
+                )
+    for index, row in enumerate(spine["reader_constraints"]["claim_boundaries"]):
+        forbidden = obligation_text(row.get("forbidden_meaning"))
+        if forbidden and forbidden not in prompt:
+            _reader_prompt_obligation_missing(
+                f"reader_constraints.claim_boundaries[{index}].forbidden_meaning",
+                {"overclaim_id": row.get("overclaim_id")},
+            )
+    return True
+
+
 def validate_reader_spine_prompt(value: Any, reader_spine: Mapping[str, Any]) -> bool:
-    """Verify that a captured writer prompt is the current compact projection."""
+    """Verify capture identity, then independently verify reader obligations."""
     if not isinstance(value, str):
         raise ProductionPipelineBlocked("reader_prompt_projection_invalid", "prompt must be text")
     spine = validate_reader_spine(reader_spine)
@@ -2830,6 +3525,7 @@ def validate_reader_spine_prompt(value: Any, reader_spine: Mapping[str, Any]) ->
             "reader_prompt_projection_mismatch",
             {"actual_fingerprint": fingerprint(value), "expected_fingerprint": fingerprint(expected)},
         )
+    validate_reader_prompt_obligations(value, spine)
     return True
 
 def _paragraphs_for_diagnostic(text: str) -> list[str]:
@@ -3042,6 +3738,7 @@ def prepare_production_reader_input(request, *, native_provider, planner_backend
 __all__ = [
     "InstalledResearchGuardProvider", "ProductionPipelineBlocked", "READER_SPINE_SCHEMA",
     "READER_DIAGNOSTIC_SCHEMA", "build_reader_spine", "compile_reader_spine",
-    "validate_reader_spine", "render_reader_spine_prompt", "validate_reader_spine_prompt", "diagnose_reader_output",
+    "validate_reader_spine", "render_reader_spine_prompt", "validate_reader_spine_prompt",
+    "validate_reader_prompt_obligations", "diagnose_reader_output",
     "diagnose_reader_quality", "prepare_production_reader_input",
 ]

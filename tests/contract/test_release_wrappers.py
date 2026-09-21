@@ -149,6 +149,8 @@ def test_real_quality_runner_rejects_injected_backend_without_local_plan(tmp_pat
             output_dir=tmp_path / "quality",
             backend=shaped_backend,
             backend_id="authorized-test-provider",
+            execute_live=True,
+            max_model_calls=1,
         )
 
 

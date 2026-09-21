@@ -179,6 +179,35 @@ def _ids(rows: Iterable[Mapping[str, Any]], field: str, label: str) -> tuple[str
     return values
 
 
+def _sorted_unique_ids(values: Iterable[str], label: str) -> list[str]:
+    """Return the one canonical representation used by repair contracts.
+
+    Repair progress is a set comparison, so accepting multiple serialisations
+    of the same set would make the fingerprints and the lineage ambiguous.
+    Reject duplicates and non-canonical order rather than silently repairing a
+    caller-authored receipt.
+    """
+    rows = list(values)
+    if any(not isinstance(value, str) or not value for value in rows):
+        raise ValidationError(f"{label} must contain non-empty strings")
+    canonical = sorted(rows)
+    if len(canonical) != len(set(canonical)):
+        raise ValidationError(f"{label} must be unique")
+    if rows != canonical:
+        raise ValidationError(f"{label} must be sorted")
+    return canonical
+
+
+def _canonicalize_ids(values: Iterable[str], label: str) -> list[str]:
+    """Canonicalize caller input before it is persisted in a repair object."""
+    rows = list(values)
+    if any(not isinstance(value, str) or not value for value in rows):
+        raise ValidationError(f"{label} must contain non-empty strings")
+    if len(rows) != len(set(rows)):
+        raise ValidationError(f"{label} must be unique")
+    return sorted(rows)
+
+
 def validate_reader_intent(value: Any) -> dict[str, Any]:
     intent = require_mapping(value, "ReaderIntent")
     require_schema("reader-intent.schema.json", intent, label="ReaderIntent")
@@ -1958,7 +1987,18 @@ def build_repair_request(
     )
     if validated["status"] == "passed":
         raise ValidationError("a passing ReaderJudgment cannot produce a RepairRequest")
-    defect_ids = [row["observation_id"] for row in validated["defects"]]
+    defect_ids = _canonicalize_ids(
+        (row["observation_id"] for row in validated["defects"]),
+        "initial_defect_ids",
+    )
+    # A route or deterministic failure must already have an addressable,
+    # independently judged defect.  An empty caller-supplied set cannot be
+    # used to bypass an upstream non-pass state.
+    if not defect_ids:
+        raise ValidationError(
+            "a non-passing ReaderJudgment must expose the current route/"
+            "deterministic defect before a repair request can be built"
+        )
     target_units = list(dict.fromkeys(
         unit_id
         for row in validated["required_repairs"]
@@ -1971,7 +2011,7 @@ def build_repair_request(
         if row["required"]
     ]
     request = {
-        "schema_version": "2.0",
+        "schema_version": "2.1",
         "repair_id": repair_id,
         "attempt_number": attempt_number,
         "final_owner": brief["final_owner"],
@@ -1985,7 +2025,8 @@ def build_repair_request(
         "route_audit_fingerprint": route_review["review_fingerprint"],
         "judgment_fingerprint": validated["judgment_fingerprint"],
         "defect_lineage": defect_lineage,
-        "defect_set_fingerprint": fingerprint(sorted(defect_ids)),
+        "initial_defect_ids": defect_ids,
+        "defect_set_fingerprint": fingerprint(defect_ids),
         "target_unit_ids": target_units,
         "required_changes": required_changes,
         "preserve_content_unit_ids": preserve_ids,
@@ -2005,24 +2046,79 @@ def record_repair_result(
     preserved_content_unit_ids: Iterable[str],
     preservation_violations: Iterable[str],
     remaining_defect_ids: Iterable[str],
+    current_judgment: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     repair = require_mapping(request, "ReaderRepairRequest")
     require_schema("reader-repair-request.schema.json", repair, label="ReaderRepairRequest")
     _require_exact_fingerprint(repair, "request_fingerprint")
     amap = validate_artifact_map(output_artifact_map)
-    remaining_fp = fingerprint(sorted(remaining_defect_ids))
+    initial_ids = _sorted_unique_ids(repair["initial_defect_ids"], "initial_defect_ids")
+    if repair["defect_set_fingerprint"] != fingerprint(initial_ids):
+        raise ValidationError("ReaderRepairRequest defect set fingerprint is stale")
+    remaining = _canonicalize_ids(remaining_defect_ids, "remaining_defect_ids")
+    remaining_fp = fingerprint(remaining)
+    if not set(remaining).issubset(initial_ids):
+        # A new or renamed id is a new observation, not evidence that an
+        # original defect was repaired.
+        remaining_is_strict_subset = False
+    else:
+        remaining_is_strict_subset = len(remaining) < len(initial_ids)
     changed = list(changed_unit_ids)
+    if len(changed) != len(set(changed)) or any(not isinstance(value, str) or not value for value in changed):
+        raise ValidationError("changed_unit_ids must be non-empty and unique")
     violations = list(preservation_violations)
     same_bytes = repair["source_artifact_fingerprint"] == amap["artifact_fingerprint"]
     same_defects = remaining_fp == repair["defect_set_fingerprint"]
-    if violations:
+
+    evidence = None
+    if current_judgment is not None:
+        evidence = require_mapping(current_judgment, "current ReaderJudgment")
+        require_schema("reader-judgment.schema.json", evidence, label="current ReaderJudgment")
+        _require_exact_fingerprint(evidence, "judgment_fingerprint")
+        if evidence["artifact_fingerprint"] != amap["artifact_fingerprint"]:
+            raise ValidationError("current ReaderJudgment is stale for the output artifact")
+        if evidence["artifact_map_fingerprint"] != amap["map_fingerprint"]:
+            raise ValidationError("current ReaderJudgment is stale for the output ArtifactMap")
+        evidence_ids = _canonicalize_ids(
+            (row["observation_id"] for row in evidence["defects"]),
+            "current ReaderJudgment defect ids",
+        )
+        if evidence_ids != remaining:
+            raise ValidationError(
+                "remaining_defect_ids do not match the current ReaderJudgment defects"
+            )
+        if evidence["status"] == "repair" and not evidence_ids:
+            raise ValidationError(
+                "a repairing ReaderJudgment must expose route/deterministic defects"
+            )
+        verification_evidence = {
+            "status": "current",
+            "artifact_fingerprint": evidence["artifact_fingerprint"],
+            "artifact_map_fingerprint": evidence["artifact_map_fingerprint"],
+            "audit_fingerprint": evidence["deterministic_audit_fingerprint"],
+            "route_audit_fingerprint": evidence["route_audit_fingerprint"],
+            "judgment_fingerprint": evidence["judgment_fingerprint"],
+        }
+    else:
+        # A legacy caller can still record a safe non-progressing result, but
+        # it can never claim progress from its own defect list.  The missing
+        # current evidence remains visible and blocks closure.
+        verification_evidence = {
+            "status": "missing",
+            "artifact_fingerprint": amap["artifact_fingerprint"],
+            "artifact_map_fingerprint": amap["map_fingerprint"],
+            "audit_fingerprint": repair["audit_fingerprint"],
+            "route_audit_fingerprint": repair["route_audit_fingerprint"],
+            "judgment_fingerprint": repair["judgment_fingerprint"],
+        }
+    if current_judgment is None or violations:
         progress = "blocked"
-    elif same_bytes or same_defects:
+    elif same_bytes or same_defects or not remaining_is_strict_subset:
         progress = "no_progress"
     else:
         progress = "progressed"
     result = {
-        "schema_version": "2.0",
+        "schema_version": "2.1",
         "repair_id": repair["repair_id"],
         "request_fingerprint": repair["request_fingerprint"],
         "defect_lineage": repair["defect_lineage"],
@@ -2034,7 +2130,9 @@ def record_repair_result(
             "preserved_content_unit_ids": list(preserved_content_unit_ids),
             "violations": violations,
         },
+        "remaining_defect_ids": remaining,
         "remaining_defect_set_fingerprint": remaining_fp,
+        "verification_evidence": verification_evidence,
         "progress_status": progress,
         "rerun_required": [
             "artifact_map", "shared_writing", "deterministic_audit",

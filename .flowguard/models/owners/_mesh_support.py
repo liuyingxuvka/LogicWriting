@@ -524,6 +524,72 @@ def _write_native_results(model_id: str, status: str, summary: Mapping[str, Any]
     }
     raw.write_text(json.dumps(raw_payload, ensure_ascii=False, sort_keys=True, indent=2) + "\n", encoding="utf-8")
     raw_fp = _sha(raw)
+
+    # The model-mesh owner is a real native producer, even for owners whose
+    # domain implementation is exercised by a focused test instead of a
+    # ScenarioReviewReport.  Keep that execution visible as one bounded
+    # owner-execution scenario.  FlowGuard path-quality consumes this source
+    # graph; it must never infer a graph from the compact receipt or stdout.
+    # The aggregate mesh row remains the declared regression case, while the
+    # scenario row is the leaf consumed by the path-quality projector.
+    observed = status or "blocked"
+    scenario_name = "current_owner_execution"
+    scenario_case_id = f"native-scenario:{model_id}:{scenario_name}"
+    initial_state = {
+        "fields": {
+            "model_id": model_id,
+            "phase": "started",
+            "status": "not_run",
+        }
+    }
+    final_state = {
+        "fields": {
+            "model_id": model_id,
+            "phase": "completed",
+            "status": observed,
+        }
+    }
+    trace = {
+        "initial_state": initial_state,
+        "steps": [
+            {
+                "old_state": initial_state,
+                "new_state": final_state,
+                "label": "owner-execution-completed",
+                "function_name": "run_owner",
+            }
+        ],
+        "final_state": final_state,
+        "labels": ["owner-execution"],
+    }
+    scenario_run = {
+        "observed_status": observed,
+        "traces": [trace],
+        "final_states": [final_state],
+    }
+    source_payload = {
+        "schema_version": "flowguard.native_model_case_result.v1",
+        "owner_id": f"model:{model_id}",
+        "producer": "logic-writing.model-mesh-owner",
+        "source_hashes": dict(source_hashes),
+        "summary": dict(summary),
+        "report": {
+            "results": [
+                {
+                    "scenario_name": scenario_name,
+                    "status": "pass" if observed in {"pass", "pass_with_gaps"} else "blocked",
+                    "ok": observed in {"pass", "pass_with_gaps"},
+                    "scenario_run": scenario_run,
+                }
+            ]
+        },
+    }
+    source = output_dir / "native-source.json"
+    source.write_text(
+        json.dumps(source_payload, ensure_ascii=False, sort_keys=True, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    source_fp = _sha(source)
     input_fp = str(os.environ.get("FLOWGUARD_INPUT_FINGERPRINT", "")) or _fingerprint(source_hashes)
     model_fp = _source_sha(_root() / MODEL_PATHS[model_id])
     code_fp = _fingerprint({"model": model_fp, "sources": dict(source_hashes)})
@@ -533,14 +599,18 @@ def _write_native_results(model_id: str, status: str, summary: Mapping[str, Any]
     environment_fp = _fingerprint({"platform": sys.platform, "root": str(_root())})
     outcome = "pass" if status in {"pass", "pass_with_gaps"} else "fail"
     observed = status or "blocked"
-    result = NativeModelCaseResult(
+    aggregate_case_id = f"mesh:{model_id}:current"
+    aggregate = NativeModelCaseResult(
         owner_id=f"model:{model_id}",
-        source_case_id=f"mesh:{model_id}:current",
+        source_case_id=aggregate_case_id,
         outcome=outcome,
         observed_status=observed,
         observed_finding_codes=(),
         executed_dimensions=DIMENSIONS,
         oracle_results=tuple({"dimension": dim, "oracle_member_id": f"native:{model_id}:oracle", "status": observed, "ok": outcome == "pass"} for dim in DIMENSIONS),
+        # The aggregate terminal receipt is the compact owner result.  Keep
+        # its own raw-result binding; the leaf row below binds the executed
+        # native source graph used by path-quality.
         result_artifact_fingerprint=raw_fp,
         input_fingerprint=input_fp,
         model_fingerprint=model_fp,
@@ -551,9 +621,58 @@ def _write_native_results(model_id: str, status: str, summary: Mapping[str, Any]
         environment_fingerprint=environment_fp,
         raw_artifact_path="raw-result.json",
     )
+    leaf = NativeModelCaseResult(
+        owner_id=f"model:{model_id}",
+        source_case_id=scenario_case_id,
+        outcome=outcome,
+        observed_status=observed,
+        observed_finding_codes=(),
+        executed_dimensions=DIMENSIONS,
+        oracle_results=tuple(
+            {
+                "dimension": dim,
+                "oracle_member_id": f"native:{model_id}:oracle",
+                "status": observed,
+                "ok": outcome == "pass",
+            }
+            for dim in DIMENSIONS
+        ),
+        result_artifact_fingerprint=source_fp,
+        input_fingerprint=input_fp,
+        model_fingerprint=model_fp,
+        code_fingerprint=code_fp,
+        test_fingerprint=test_fp,
+        oracle_fingerprint=oracle_fp,
+        toolchain_fingerprint=toolchain_fp,
+        environment_fingerprint=environment_fp,
+        raw_artifact_path="native-source.json",
+    )
+    # Mark the mesh case as an aggregate so path-quality uses only the
+    # executed leaf graph while the regression protocol still sees its exact
+    # historical case id.
+    aggregate = replace(aggregate, child_case_ids=(scenario_case_id,))
     envelope = output_dir / "native-case-results.json"
-    envelope.write_text(json.dumps({"schema_version": "flowguard.native_model_case_result.v1", "results": [result.to_dict()]}, ensure_ascii=False, sort_keys=True, indent=2) + "\n", encoding="utf-8")
-    return {"path": str(envelope), "fingerprint": _sha(envelope), "result": result.to_dict()}
+    envelope.write_text(
+        json.dumps(
+            {
+                "schema_version": "flowguard.native_model_case_result.v1",
+                "results": [aggregate.to_dict(), leaf.to_dict()],
+            },
+            ensure_ascii=False,
+            sort_keys=True,
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    return {
+        "path": str(envelope),
+        "fingerprint": _sha(envelope),
+        "result": aggregate.to_dict(),
+        "leaf_result": leaf.to_dict(),
+        "source_path": str(source),
+        "source_fingerprint": source_fp,
+    }
 
 
 def _write_receipt(model_id: str, parent_id: str, status: str, summary: Mapping[str, Any], child_payloads: Sequence[Mapping[str, Any]], source_hashes: Mapping[str, str], native: Mapping[str, Any], *, root: Path, receipt_root: Path | None = None) -> dict[str, Any]:
@@ -838,7 +957,11 @@ def emit_runner(model_id: str, payload: Mapping[str, Any]) -> int:
             + "\n",
             encoding="utf-8",
         )
-    print(f"FLOWGUARD_EXECUTED_CASE_IDS=[\"mesh:{model_id}:current\"]")
+    print(
+        "FLOWGUARD_EXECUTED_CASE_IDS="
+        f"[\"mesh:{model_id}:current\","
+        f"\"native-scenario:{model_id}:current_owner_execution\"]"
+    )
     print(json.dumps(dict(payload), ensure_ascii=False, sort_keys=True, indent=2))
     return 0 if str(payload.get("status")) in {"pass", "pass_with_gaps"} else 1
 

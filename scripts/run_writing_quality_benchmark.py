@@ -22,6 +22,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
 import time
+from threading import Lock
 
 ROOT = Path(__file__).resolve().parents[1]
 SKILL_SCRIPTS = ROOT / "skills" / "logic-writing" / "scripts"
@@ -78,6 +79,71 @@ HELD_OUT_RUBRIC = (
     "都不能通过。不得补写材料没有给出的事实、时间、价格、因果、无障碍属性或人物内心。"
     "只返回指定JSON，不输出评审过程。"
 )
+
+
+class ModelCallBudget:
+    """Thread-safe authorization for one explicitly enabled live run.
+
+    The budget counts *attempts*, including a call that later fails.  It is
+    deliberately a small in-memory owner object: callers pass the same
+    instance down the direct planner/writer/judge path and a child process
+    receives only the finite reservation assigned to that job.  No retry or
+    nested helper may create a fresh unlimited budget.
+    """
+
+    def __init__(self, limit: int):
+        try:
+            limit = int(limit)
+        except (TypeError, ValueError) as exc:
+            raise ValueError("max_model_calls must be a positive integer") from exc
+        if limit <= 0:
+            raise ValueError("max_model_calls must be a positive integer")
+        self.limit = limit
+        self.used = 0
+        self.attempts: list[dict[str, str]] = []
+        self._lock = Lock()
+
+    def consume(self, role: str, request_id: str) -> None:
+        with self._lock:
+            if self.used >= self.limit:
+                raise ValidationError(
+                    f"model_call_budget_exhausted: limit={self.limit} used={self.used}"
+                )
+            self.used += 1
+            self.attempts.append({"role": str(role), "request_id": str(request_id)})
+
+    def reserve(self, count: int, role: str, request_id: str) -> None:
+        """Reserve a bounded child-job allowance before process admission.
+
+        Isolated workers cannot share a Python lock with the parent.  The
+        owner therefore reserves the finite upper bound before spawning one
+        child and passes that exact allowance into the child.  Reserving is
+        intentionally conservative: an early child failure still consumes
+        the reserved attempts and can never be retried invisibly.
+        """
+
+        count = int(count)
+        if count <= 0:
+            raise ValueError("model call reservation must be positive")
+        with self._lock:
+            if self.used + count > self.limit:
+                raise ValidationError(
+                    f"model_call_budget_exhausted: limit={self.limit} used={self.used} requested={count}"
+                )
+            self.used += count
+            self.attempts.extend(
+                {"role": str(role), "request_id": f"{request_id}:reserved:{index}"}
+                for index in range(count)
+            )
+
+    def snapshot(self) -> dict[str, Any]:
+        with self._lock:
+            return {
+                "limit": self.limit,
+                "used": self.used,
+                "remaining": self.limit - self.used,
+                "attempts": list(self.attempts),
+            }
 DIMENSIONS = (
     "clarity", "coherence", "naturalness", "reader_fit", "genre_fit",
     "content_fidelity", "instruction_fidelity", "structure_fidelity",
@@ -689,6 +755,12 @@ def _job_worker_main(payload_path: Path) -> int:
             if observed_implementation_fingerprint != expected_implementation_fingerprint:
                 raise ValueError("source_changed_before_execution")
         backend = LocalCodexBackend(**dict(backend_config))
+        child_budget_limit = payload.get("model_call_budget_limit")
+        child_budget = (
+            ModelCallBudget(int(child_budget_limit))
+            if child_budget_limit is not None
+            else None
+        )
         resolver = LocalExecutionRecordResolver(
             backend.run_root,
             expected_cli_version=backend.cli_version,
@@ -715,6 +787,7 @@ def _job_worker_main(payload_path: Path) -> int:
             row = _execute_writer_job(
                 case=job["case"], repeat=int(job["repeat"]), version=str(job["version"]),
                 writer_dir=Path(str(payload["writer_dir"])), local_backend=backend, backend=None, resolver=resolver,
+                call_budget=child_budget,
                 result_path=row_path,
             )
         elif role == "judge":
@@ -723,13 +796,15 @@ def _job_worker_main(payload_path: Path) -> int:
                     case=job["case"], repeat=int(job["repeat"]), judge_index=int(job["judge_index"]),
                     writer=job["writer"], rubric_text=str(payload["rubric_text"]),
                     cases_dir=Path(str(payload["cases_dir"])), judge_dir=Path(str(payload["judge_dir"])),
-                    local_backend=backend, backend=None, resolver=resolver, result_path=row_path,
+                    local_backend=backend, backend=None, resolver=resolver, call_budget=child_budget,
+                    result_path=row_path,
                 )
             else:
                 row = _execute_judge_job(
                     case=job["case"], repeat=int(job["repeat"]), judge_index=int(job["judge_index"]), order=job["order"],
                     rubric_text=str(payload["rubric_text"]), cases_dir=Path(str(payload["cases_dir"])),
                     judge_dir=Path(str(payload["judge_dir"])), local_backend=backend, backend=None, resolver=resolver,
+                    call_budget=child_budget,
                     result_path=row_path,
                 )
         else:
@@ -873,6 +948,7 @@ def _run_isolated_jobs(
     plan: Mapping[str, Any],
     timeout_seconds: int,
     startup_timeout_seconds: int,
+    call_budget: ModelCallBudget | None = None,
 ) -> list[dict[str, Any]]:
     """Run jobs in independently terminable children with one parent ledger.
 
@@ -889,6 +965,11 @@ def _run_isolated_jobs(
     dispatch_root = output_dir / "job-dispatch" / role
     dispatch_root.mkdir(parents=True, exist_ok=True)
     concurrency = max(1, min(int(plan.get("concurrency", 1)), len(jobs)))
+    # A Python lock cannot cross the process boundary.  Keep one live child at
+    # a time whenever the owner has an explicit budget so every reservation
+    # is made by this single owner before the child is admitted.
+    if call_budget is not None:
+        concurrency = 1
     # ``timeout_seconds`` is the budget for one backend/native invocation.
     # A repaired writer first prepares the full production reader input and
     # only then dispatches the writer, so the parent job needs its own wall
@@ -1200,6 +1281,23 @@ def _run_isolated_jobs(
                 # against PID reuse.
                 "worker_process_creation_time": None,
             }
+            budget_reservation = None
+            if call_budget is not None:
+                try:
+                    budget_reservation = _job_model_call_cost(job, role)
+                    call_budget.reserve(budget_reservation, role, str(identity["job_id"]))
+                except (ValueError, ValidationError) as exc:
+                    row = _job_row(job, role, status="not_started_dependency_failed", terminal_reason="model_call_budget_exhausted")
+                    row["dependency_status"] = "failed"
+                    row["error"] = str(exc)
+                    row["error_event"] = {
+                        "type": "error_event", "role": role, "job_id": identity["job_id"],
+                        "error_class": "model_call_budget_exhausted", "message": str(exc), "terminal": True,
+                    }
+                    _record_terminal(row, canonical_path=canonical_path, event="not_started")
+                    _fail_fast_after_terminal(row)
+                    continue
+                payload["model_call_budget_limit"] = budget_reservation
             _write_json_atomic(payload_path, payload)
             dispatch_started_monotonic = time.monotonic()
             try:
@@ -2547,6 +2645,7 @@ def _production_planner_backend(
     *,
     token: str,
     execution_token: str | None = None,
+    call_budget: ModelCallBudget | None = None,
 ):
     """Adapt one real local planner execution to the pipeline's raw-capture contract."""
 
@@ -2559,6 +2658,8 @@ def _production_planner_backend(
     def planner(*, stage: str, inputs: dict[str, Any], evidence_root: Path) -> dict[str, Any]:
         prompt = _production_research_prompt(inputs) if stage == "research" else _production_compose_prompt(inputs)
         run_id = f"planner:{stage}:{run_token}"
+        if call_budget is not None:
+            call_budget.consume("planner", run_id)
         response = local_backend.run("planner", {
             "request_id": run_id,
             "run_id": run_id,
@@ -3010,6 +3111,7 @@ def _execute_judge_job(
     local_backend: LocalCodexBackend | None,
     backend: Callable[..., Any] | None,
     resolver: LocalExecutionRecordResolver | None,
+    call_budget: ModelCallBudget | None = None,
     result_path: Path | None = None,
 ) -> dict[str, Any]:
     pair: list[dict[str, Any]] = []
@@ -3055,6 +3157,8 @@ def _execute_judge_job(
     }
     job_id = _job_identity({"case": case, "repeat": repeat, "judge_index": judge_index}, "judge")["job_id"]
     try:
+        if call_budget is not None:
+            call_budget.consume("judge", request["run_id"])
         if local_backend is not None:
             dispatched = dispatch_judge(request, local_backend)
             row["dispatch_status"] = dispatched.get("status")
@@ -3108,6 +3212,7 @@ def _execute_single_judge_job(
     local_backend: LocalCodexBackend | None,
     backend: Callable[..., Any] | None,
     resolver: LocalExecutionRecordResolver | None,
+    call_budget: ModelCallBudget | None = None,
     result_path: Path | None = None,
 ) -> dict[str, Any]:
     """Review one held-out artifact in an independent judge context."""
@@ -3155,6 +3260,8 @@ def _execute_single_judge_job(
     }
     job_id = _job_identity({"case": case, "repeat": repeat, "judge_index": judge_index}, "judge")["job_id"]
     try:
+        if call_budget is not None:
+            call_budget.consume("judge", request["run_id"])
         if local_backend is not None:
             dispatched = dispatch_judge(request, local_backend)
             row["dispatch_status"] = dispatched.get("status")
@@ -3423,6 +3530,16 @@ def _planner_stages_for_version(version: str) -> tuple[str, ...]:
     # repaired pair lane and the held-out current lane each run the same two
     # production planner stages before dispatching the writer.
     return ("research", "compose") if version in {"repaired", HELD_OUT_VERSION} else ()
+
+
+def _job_model_call_cost(job: Mapping[str, Any], role: str) -> int:
+    """Return the finite live-call reservation for one isolated job."""
+
+    if role == "writer":
+        return 1 + len(_planner_stages_for_version(str(job.get("version") or "")))
+    if role == "judge":
+        return 1
+    raise ValueError(f"unsupported model-call role: {role}")
 
 
 def _status_progress(items: list[Mapping[str, Any]]) -> dict[str, int]:
@@ -3801,6 +3918,7 @@ def _execute_writer_job(
     local_backend: LocalCodexBackend | None,
     backend: Callable[..., Any] | None,
     resolver: LocalExecutionRecordResolver | None,
+    call_budget: ModelCallBudget | None = None,
     result_path: Path | None = None,
 ) -> dict[str, Any]:
     """Execute one writer job and persist only its own artifact directory.
@@ -3825,6 +3943,7 @@ def _execute_writer_job(
                 local_backend,
                 token=token,
                 execution_token=f"{token}-r{repeat}",
+                call_budget=call_budget,
             ),
             frozen_content_boundaries=boundaries,
             evidence_root=production_root,
@@ -3890,6 +4009,8 @@ def _execute_writer_job(
         # the exact pre-writer input and does not need to be rewritten.
         row["production_reader"]["writer_request_fingerprint"] = row["request_fingerprint"]
     try:
+        if call_budget is not None:
+            call_budget.consume("writer", request["run_id"])
         if local_backend is not None:
             dispatched = dispatch_writer(request, local_backend)
             row["dispatch_status"] = dispatched.get("status")
@@ -3957,6 +4078,8 @@ def run_benchmark(
     mode: str = "pair",
     preflight_case: str | None = None,
     repeats_override: int | None = None,
+    execute_live: bool = False,
+    max_model_calls: int | None = None,
 ) -> dict[str, Any]:
     # Summary consumption is deliberately side-effect free.  Keep this guard
     # before mode dispatch, input loading, output-directory creation, and plan
@@ -3964,6 +4087,9 @@ def run_benchmark(
     # historical run's frozen identity.
     if summarize_only:
         return summarize_run(output_dir.resolve())
+    if execute_live:
+        if max_model_calls is None or int(max_model_calls) <= 0:
+            raise ValueError("--execute-live requires a positive --max-model-calls")
     if mode == "held_out":
         return _run_held_out_benchmark(
             root,
@@ -3975,6 +4101,8 @@ def run_benchmark(
             run_writers=run_writers,
             run_judges=run_judges,
             summarize_only=summarize_only,
+            execute_live=execute_live,
+            max_model_calls=max_model_calls,
         )
     if mode not in {"pair", "preflight"}:
         raise ValueError(f"unsupported quality benchmark mode: {mode}")
@@ -4002,7 +4130,7 @@ def run_benchmark(
     repeat_count = int(repeats_override if repeats_override is not None else REPEATS)
     versions = VERSIONS
     plan = _load_plan(backend_plan, source_manifest_fp=source_manifest_fp)
-    if backend is not None and backend_plan is None:
+    if execute_live and backend is not None and backend_plan is None:
         raise ValueError(
             "an injected backend cannot produce real_execution quality evidence; "
             "run the pinned local backend with --backend-plan"
@@ -4049,11 +4177,22 @@ def run_benchmark(
             "product_implementation": implementation_identity,
             "execution_policy": policy_identity,
         },
+        "live_execution_authorized": bool(execute_live),
+        "max_model_calls": int(max_model_calls) if execute_live and max_model_calls is not None else None,
     })
     _write_json(output_dir / "benchmark_plan.json", plan)
     _write_json(output_dir / "case_requests.json", [{"case": case, "case_fingerprint": fingerprint(case)} for case in cases])
     planned_ledger = _build_planned_ledger(cases, plan, repeats_count=repeat_count, versions=versions, mode="pair")
     _write_json(output_dir / "planned-ledger.json", planned_ledger)
+    if not execute_live:
+        _finalize_planned_ledger(output_dir, planned_ledger, [])
+        return _unavailable_result(
+            plan,
+            source_manifest_fp=source_manifest_fp,
+            output_dir=output_dir,
+            reason="live_execution_not_authorized",
+        )
+    call_budget = ModelCallBudget(int(max_model_calls))
     if backend is None and backend_plan is None:
         _finalize_planned_ledger(output_dir, planned_ledger, [])
         return _unavailable_result(plan, source_manifest_fp=source_manifest_fp, output_dir=output_dir, reason="execution_provider_unavailable")
@@ -4097,6 +4236,7 @@ def run_benchmark(
                 plan={**plan, "concurrency": writer_workers},
                 timeout_seconds=_orchestration_timeout(plan, len(jobs)),
                 startup_timeout_seconds=int(plan.get("startup_timeout_seconds", 180)),
+                call_budget=call_budget,
             )
         else:
             rows = [
@@ -4108,6 +4248,7 @@ def run_benchmark(
                     local_backend=local_backend,
                     backend=backend,
                     resolver=resolver,
+                    call_budget=call_budget,
                 )
                 for job in jobs
             ]
@@ -4167,6 +4308,7 @@ def run_benchmark(
                 local_backend=local_backend, plan={**plan, "concurrency": max_workers},
                 timeout_seconds=_orchestration_timeout(plan, len(jobs)),
                 startup_timeout_seconds=int(plan.get("startup_timeout_seconds", 180)),
+                call_budget=call_budget,
             ) if jobs else []
             judges = [*dependency_rows, *executed]
         elif max_workers == 1:
@@ -4175,6 +4317,7 @@ def run_benchmark(
                     case=job["case"], repeat=job["repeat"], judge_index=job["judge_index"], order=job["order"],
                     rubric_text=rubric_text, cases_dir=cases_dir, judge_dir=judge_dir, local_backend=local_backend,
                     backend=backend, resolver=resolver,
+                    call_budget=call_budget,
                 )
                 for job in jobs
             ]
@@ -4187,7 +4330,7 @@ def run_benchmark(
                 _execute_judge_job(
                     case=job["case"], repeat=job["repeat"], judge_index=job["judge_index"], order=job["order"],
                     rubric_text=rubric_text, cases_dir=cases_dir, judge_dir=judge_dir, local_backend=local_backend,
-                    backend=backend, resolver=resolver,
+                    backend=backend, resolver=resolver, call_budget=call_budget,
                 )
                 for job in jobs
             ]
@@ -4228,6 +4371,7 @@ def run_benchmark(
         "planned_status_counts": status_counts,
         "progress": {**status_counts, "ledger_fingerprint": planned_ledger.get("ledger_fingerprint")},
         "claim_boundary": "This preflight is smoke evidence only; it cannot satisfy the twelve-case quality gate." if mode == "preflight" else "Scores are claimed only when every writer and pair judge has a verified local capture and parseable judgment.",
+        "model_call_budget": call_budget.snapshot(),
         "summary_fingerprint": fingerprint(summary),
     }
     _write_json(output_dir / "writers.json", writers)
@@ -4358,6 +4502,8 @@ def _run_held_out_benchmark(
     run_writers: bool = True,
     run_judges: bool = True,
     summarize_only: bool = False,
+    execute_live: bool = False,
+    max_model_calls: int | None = None,
 ) -> dict[str, Any]:
     """Run the four-case single-article holdout lane.
 
@@ -4368,6 +4514,9 @@ def _run_held_out_benchmark(
 
     if summarize_only:
         return summarize_run(output_dir.resolve())
+    if execute_live:
+        if max_model_calls is None or int(max_model_calls) <= 0:
+            raise ValueError("--execute-live requires a positive --max-model-calls")
     root = root.resolve()
     cases_dir = (cases_dir or root / "tests/fixtures/writing_quality").resolve()
     output_dir = output_dir.resolve()
@@ -4376,7 +4525,7 @@ def _run_held_out_benchmark(
     output_dir.mkdir(parents=True, exist_ok=True)
     cases, rubric_text, input_manifest_fp, source_manifest_fp, material_files = _load_held_out_inputs(cases_dir)
     plan = _load_plan(backend_plan, source_manifest_fp=source_manifest_fp)
-    if backend is not None and backend_plan is None:
+    if execute_live and backend is not None and backend_plan is None:
         raise ValueError(
             "an injected backend cannot produce real_execution quality evidence; "
             "run the pinned local backend with --backend-plan"
@@ -4409,6 +4558,8 @@ def _run_held_out_benchmark(
         "case_order": [case["case_id"] for case in cases],
         "held_out_manifest": "tests/fixtures/writing_quality/held-out-manifest.json",
         "created_at": _now(),
+        "live_execution_authorized": bool(execute_live),
+        "max_model_calls": int(max_model_calls) if execute_live and max_model_calls is not None else None,
     })
     corpus_identity = {
         "source_manifest_fingerprint": source_manifest_fp,
@@ -4434,6 +4585,15 @@ def _run_held_out_benchmark(
     _write_json(output_dir / "case_requests.json", [{"case": case, "case_fingerprint": fingerprint(case)} for case in public_requests])
     planned_ledger = _build_planned_ledger(cases, plan, repeats_count=repeat_count, versions=versions, mode="held_out")
     _write_json(output_dir / "planned-ledger.json", planned_ledger)
+    if not execute_live:
+        _finalize_planned_ledger(output_dir, planned_ledger, [])
+        return _unavailable_result(
+            plan,
+            source_manifest_fp=source_manifest_fp,
+            output_dir=output_dir,
+            reason="live_execution_not_authorized",
+        )
+    call_budget = ModelCallBudget(int(max_model_calls))
     if backend is None and backend_plan is None:
         _finalize_planned_ledger(output_dir, planned_ledger, [])
         return _unavailable_result(plan, source_manifest_fp=source_manifest_fp, output_dir=output_dir, reason="execution_provider_unavailable")
@@ -4460,13 +4620,14 @@ def _run_held_out_benchmark(
                 plan={**plan, "concurrency": writer_workers},
                 timeout_seconds=_orchestration_timeout(plan, len(jobs)),
                 startup_timeout_seconds=int(plan.get("startup_timeout_seconds", 180)),
+                call_budget=call_budget,
             )
         else:
             rows = [
                 _execute_writer_job(
                     case=job["case"], repeat=1, version=HELD_OUT_VERSION,
                     writer_dir=writer_dir, local_backend=local_backend,
-                    backend=backend, resolver=resolver,
+                    backend=backend, resolver=resolver, call_budget=call_budget,
                 )
                 for job in jobs
             ]
@@ -4527,6 +4688,7 @@ def _run_held_out_benchmark(
                 local_backend=local_backend, plan={**plan, "concurrency": max_workers},
                 timeout_seconds=_orchestration_timeout(plan, len(jobs)),
                 startup_timeout_seconds=int(plan.get("startup_timeout_seconds", 180)),
+                call_budget=call_budget,
             ) if jobs else []
             judges = [*dependency_rows, *executed]
         else:
@@ -4535,7 +4697,7 @@ def _run_held_out_benchmark(
                     case=job["case"], repeat=1, judge_index=int(job["judge_index"]),
                     writer=job["writer"], rubric_text=rubric_text, cases_dir=cases_dir,
                     judge_dir=judge_dir, local_backend=local_backend, backend=backend,
-                    resolver=resolver,
+                    resolver=resolver, call_budget=call_budget,
                 )
                 for job in jobs
             ]
@@ -4585,6 +4747,7 @@ def _run_held_out_benchmark(
         "planned_status_counts": status_counts,
         "progress": {**status_counts, "ledger_fingerprint": planned_ledger.get("ledger_fingerprint")},
         "claim_boundary": "Four held-out artifacts were each reviewed twice in independent contexts; this does not generalize beyond the frozen holdout.",
+        "model_call_budget": call_budget.snapshot(),
         "summary_fingerprint": fingerprint(summary),
     }
     _write_json(output_dir / "writers.json", writers)
@@ -4687,6 +4850,16 @@ def main() -> int:
     parser.add_argument("--run-writers", action="store_true")
     parser.add_argument("--run-judges", action="store_true")
     parser.add_argument("--summarize", action="store_true")
+    parser.add_argument(
+        "--execute-live",
+        action="store_true",
+        help="Explicitly authorize live planner/writer/judge calls (disabled by default)",
+    )
+    parser.add_argument(
+        "--max-model-calls",
+        type=int,
+        help="Positive finite live-call attempt budget; required with --execute-live",
+    )
     parser.add_argument("--_job-worker", type=Path, help=argparse.SUPPRESS)
     args = parser.parse_args()
     if args._job_worker is not None:
@@ -4698,11 +4871,31 @@ def main() -> int:
         if args.summarize:
             result = run_benchmark(args.root, output_dir=args.output_dir, cases_dir=cases_dir, summarize_only=True)
         elif args.plan_only:
-            result = run_benchmark(args.root, output_dir=args.output_dir, cases_dir=cases_dir, backend_plan=args.backend_plan, run_writers=False, run_judges=False)
+            result = run_benchmark(
+                args.root,
+                output_dir=args.output_dir,
+                cases_dir=cases_dir,
+                backend_plan=args.backend_plan,
+                run_writers=False,
+                run_judges=False,
+                execute_live=False,
+                max_model_calls=args.max_model_calls,
+            )
         else:
             backend = _resolve_backend(args.backend)
             explicit_stage = args.run_writers or args.run_judges
-            result = run_benchmark(args.root, output_dir=args.output_dir, cases_dir=cases_dir, backend=backend, backend_id=args.backend, backend_plan=args.backend_plan, run_writers=args.run_writers or not explicit_stage, run_judges=args.run_judges or not explicit_stage)
+            result = run_benchmark(
+                args.root,
+                output_dir=args.output_dir,
+                cases_dir=cases_dir,
+                backend=backend,
+                backend_id=args.backend,
+                backend_plan=args.backend_plan,
+                run_writers=args.run_writers or not explicit_stage,
+                run_judges=args.run_judges or not explicit_stage,
+                execute_live=args.execute_live,
+                max_model_calls=args.max_model_calls,
+            )
     except (OSError, ValueError, ValidationError, json.JSONDecodeError, ImportError) as exc:
         print(json.dumps({"status": "failed", "error": str(exc)}, ensure_ascii=False))
         return 1

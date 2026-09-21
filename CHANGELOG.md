@@ -6,6 +6,14 @@ releases, tags, package publications, installations, or predecessor deletions.
 The format follows the main ideas of Keep a Changelog, and the source version
 line follows semantic versioning.
 
+## [4.0.4]
+
+### Fixed
+
+- Closed the ReaderSpine repair and closure path so repaired reader artifacts keep one current producer identity, compact prompt projections, and explicit no-progress safeguards.
+- Made quality execution opt-in with finite local budgets and added lifecycle, release-wrapper, freshness, and repair-invariant coverage.
+- Refreshed the SkillGuard v2 author contract and FlowGuard model authority/depth receipts for the current 22-model Logic Writing mesh.
+
 ## [4.0.3]
 
 ### Fixed

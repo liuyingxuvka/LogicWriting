@@ -32,4 +32,26 @@ def measure_text(text: str, unit: str, *, metric_id: str | None = None) -> int:
     raise ValidationError(f"unsupported ReaderIntent extent unit: {unit}")
 
 
-__all__ = ["measure_text"]
+def describe_extent(unit: str, metric_id: str | None = None) -> str:
+    """Return the one human-readable description of an executable metric.
+
+    This is intentionally a pure description helper.  It does not count text
+    and therefore cannot drift from :func:`measure_text` by maintaining a
+    second counter.  Unsupported ReaderIntent units are rejected rather than
+    being presented as if the audit layer could measure them.
+    """
+
+    if unit == "characters":
+        return "非空白字符"
+    if unit == "words":
+        return "按项目现有词法计数器统计的词项"
+    if unit == "sentences":
+        return "句子"
+    if unit == "user_defined" and metric_id == "han_characters":
+        return "纯汉字"
+    raise ValidationError(
+        f"unsupported ReaderIntent extent metric: unit={unit!r}, metric_id={metric_id!r}"
+    )
+
+
+__all__ = ["measure_text", "describe_extent"]

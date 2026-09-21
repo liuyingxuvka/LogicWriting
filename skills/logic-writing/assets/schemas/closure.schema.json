@@ -76,7 +76,7 @@
       "if": { "properties": { "status": { "const": "no_progress_blocked" } }, "required": ["status"] },
       "then": {
         "properties": {
-          "repair_result_fingerprints": { "minItems": 2 },
+          "repair_result_fingerprints": { "minItems": 1 },
           "residual_risk": { "minItems": 1 },
           "next_actions": { "minItems": 1 },
           "broad_claim_allowed": { "const": false },

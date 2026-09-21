@@ -15,6 +15,7 @@ def validate_request(value):
         preserved_content_unit_ids=request.get("preserved_content_unit_ids", []),
         preservation_violations=request.get("preservation_violations", []),
         remaining_defect_ids=request.get("remaining_defect_ids", []),
+        current_judgment=request.get("current_judgment"),
     )
     return validation_result(
         status="current_pass" if result["progress_status"] != "blocked" else "blocked",

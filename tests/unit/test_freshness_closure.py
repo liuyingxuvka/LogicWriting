@@ -33,12 +33,12 @@ def test_repeating_closure_does_not_count_as_repair(tmp_path):
     assert first["closure"]["status"] == second["closure"]["status"] == "blocked"
 
 
-def test_two_actual_no_progress_results_stop_only_same_lineage(tmp_path):
+def test_one_actual_no_progress_result_stops_same_lineage(tmp_path):
     chain = complete_chain(tmp_path, pass_quality=False)
     artifact = chain["artifact_map"]["artifact_fingerprint"]
     defect_fp = fingerprint(["judge:defect"])
     first = {
-        "schema_version": "2.0", "repair_id": "repair:one",
+        "schema_version": "2.1", "repair_id": "repair:one",
         "request_fingerprint": fingerprint({"request": 1}),
         "defect_lineage": "lineage:one",
         "input_artifact_fingerprint": fingerprint({"before": 1}),
@@ -46,17 +46,21 @@ def test_two_actual_no_progress_results_stop_only_same_lineage(tmp_path):
         "changed_unit_ids": [], "preservation_check": {
             "status": "passed", "preserved_content_unit_ids": ["content:answer"], "violations": [],
         },
+        "remaining_defect_ids": ["judge:defect"],
         "remaining_defect_set_fingerprint": defect_fp,
+        "verification_evidence": {
+            "status": "current",
+            "artifact_fingerprint": artifact,
+            "artifact_map_fingerprint": chain["artifact_map"]["map_fingerprint"],
+            "audit_fingerprint": chain["deterministic_audit"]["audit_fingerprint"],
+            "route_audit_fingerprint": chain["route_review"]["review_fingerprint"],
+            "judgment_fingerprint": chain["judgment"]["judgment_fingerprint"],
+        },
         "progress_status": "no_progress",
         "rerun_required": ["artifact_map", "shared_writing", "deterministic_audit", "route_audit", "reader_judgment"],
     }
     first["result_fingerprint"] = fingerprint(first)
-    second = copy.deepcopy(first)
-    second["repair_id"] = "repair:two"
-    second["request_fingerprint"] = fingerprint({"request": 2})
-    second["input_artifact_fingerprint"] = artifact
-    second["result_fingerprint"] = fingerprint(second)
-    chain["repair_results"] = [first, second]
+    chain["repair_results"] = [first]
     result = derive_closure(closure_input(chain))
     assert result["closure"]["status"] == "no_progress_blocked"
     assert result["closure"]["terminal"] is True

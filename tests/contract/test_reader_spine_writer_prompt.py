@@ -96,22 +96,24 @@ def test_production_reader_prompt_enforces_extent_and_fiction_information_bounda
     assert "篇幅是硬约束" in prompt
     assert "范围为 800—1100" in prompt
     assert "在材料给出的合法知情路径出现前" in prompt
-    assert "当前任务目的已经选定公开账页" in prompt
-    assert "不得把砸锁、撬锁或铁锤改写成当前场景的实际开门手段" in prompt
-    assert "不得新增第二把钥匙" in prompt
+    assert "公开账页" in prompt
+    assert "当前任务目的已经选定公开账页" not in prompt
+    assert "不得把砸锁、撬锁或铁锤改写成当前场景的实际开门手段" not in prompt
+    assert "不得新增第二把钥匙" not in prompt
     assert "按正文实际可见字符（标题和空白不计）核对一次长度" in prompt
 
 
-def test_production_fiction_prompt_counts_bell_events_and_closes_door_action(tmp_path):
+def test_production_fiction_prompt_does_not_inject_bell_story_arc(tmp_path):
     chain = make_reader_chain(tmp_path / "fiction-bell", "fiction-writing")
     spine = build_reader_spine(chain["reader_brief"], composition_plan=chain["plan"])
     spine["major_units"][0]["content"][0]["meaning"] = "重复意象是三声船铃；材料列出公开账页和砸锁两种开门路径。"
 
     prompt = _load_benchmark()._production_writer_prompt(spine)
 
-    assert "正文总共写三次船铃响起，每个节点只写一次铃声" in prompt
-    assert "不要每次再写三下而累计成九声" in prompt
-    assert "由谁实际解除锁闭并开门" in prompt
+    assert "三声船铃" in prompt
+    assert "正文总共写三次船铃响起，每个节点只写一次铃声" not in prompt
+    assert "不要每次再写三下而累计成九声" not in prompt
+    assert "由谁实际解除锁闭并开门" not in prompt
 
 
 def test_academic_prompt_drops_repeated_hierarchy_boilerplate(tmp_path):
@@ -131,6 +133,18 @@ def test_academic_prompt_drops_repeated_hierarchy_boilerplate(tmp_path):
     assert "当前请求没有要求新实验方法" not in prompt
 
 
+def test_production_investigation_prompt_does_not_inject_procurement_reasoning_or_rows(tmp_path):
+    chain = make_reader_chain(tmp_path / "investigation-generic", "investigation")
+    spine = build_reader_spine(chain["reader_brief"], composition_plan=chain["plan"])
+    spine["reader_context"]["purpose"] = "写采购建议并提供一张主张/证据/缺口表。"
+
+    prompt = _load_benchmark()._production_writer_prompt(spine)
+
+    assert "写采购建议并提供一张主张/证据/缺口表" in prompt
+    assert "返回前逐字核对正文汉字数" not in prompt
+    assert "实测、机制、负载边界、长期或跨设备外推" not in prompt
+
+
 def test_production_reader_prompt_closes_restricted_starting_knowledge(tmp_path):
     benchmark = _load_benchmark()
     chain = make_reader_chain(tmp_path / "restricted-fiction", "fiction-writing")
@@ -147,7 +161,7 @@ def test_production_reader_prompt_closes_restricted_starting_knowledge(tmp_path)
     assert "集合外的事实必须等到视角人物通过材料允许的看见、听见、阅读、对话或其它可观察事件取得后才能写出" in prompt
 
 
-def test_production_travel_prompt_requires_explicit_origin_fallback_when_none_is_supported(tmp_path):
+def test_production_travel_prompt_does_not_invent_origin_fallback(tmp_path):
     benchmark = _load_benchmark()
     chain = make_reader_chain(tmp_path / "travel-no-fallback", "travel-guide")
     spine = build_reader_spine(chain["reader_brief"], composition_plan=chain["plan"])
@@ -155,26 +169,54 @@ def test_production_travel_prompt_requires_explicit_origin_fallback_when_none_is
 
     prompt = benchmark._production_writer_prompt(spine)
 
-    assert "如果材料没有支持的可达备用路线" in prompt
-    assert "必须把留在起点、停止出发或原地休息写成明确可执行的退回方案" in prompt
-    assert "不得把退回路径写成要求读者补资料的开放任务" in prompt
+    assert "如果材料没有支持的可达备用路线" not in prompt
+    assert "必须把留在起点、停止出发或原地休息写成明确可执行的退回方案" not in prompt
+    assert "不得把退回路径写成要求读者补资料的开放任务" not in prompt
+    assert "材料没有提供可验证的备用路线时，只说明退路信息缺口" in prompt
     assert "如果同时存在默认路线和备用路线，分别写清每条路线自己的启用条件与退回条件" in prompt
     assert "一条备用路线未通过核实时，不能因此取消已经满足条件的默认路线" in prompt
-    assert "结尾必须按‘实际选择的路线→该路线条件不满足→留在起点’分别写出分支" in prompt
-    assert "不要自行新增返程中断、现场服务或其它材料没有给出的故障分支" in prompt
+    assert "结尾必须按‘实际选择的路线→该路线条件不满足→留在起点’分别写出分支" not in prompt
+    assert "留在起点" not in prompt
     assert "每天的开放、交通、休息和天气条件放回对应日期的段落" in prompt
     assert "appendix:checks" not in prompt
 
 
-def test_production_travel_prompt_does_not_deny_material_fallback(tmp_path):
+def test_production_travel_prompt_renders_known_departure_fallback_only(tmp_path):
     chain = make_reader_chain(tmp_path / "travel-material-fallback", "travel-guide")
     spine = build_reader_spine(chain["reader_brief"], composition_plan=chain["plan"])
-    spine["major_units"][0]["content"][0]["meaning"] = "默认安排可行；绘本馆是材料给出的备用。"
+    unit_title = spine["major_units"][0]["title"]
+    unit_id = spine["major_units"][0]["planned_unit_id"]
+    spine["route_guidance"]["reachable_fallbacks"] = [{
+        "risk_id": "risk:departure-weather",
+        "affected_section_ids": [unit_id],
+        "trigger": "出发前降雨超过阈值",
+        "affected_travelers": ["婴儿车旅客"],
+        "mitigation": "留在已知旅馆休息",
+        "fallback_id": "fallback:hotel",
+        "evidence_mode": "material",
+    }]
+
+    prompt = _load_benchmark()._production_writer_prompt(spine)
+
+    assert "如果出发前降雨超过阈值，留在已知旅馆休息" in prompt
+    assert f"影响{unit_title}" in prompt
+    assert "照顾婴儿车旅客" in prompt
+    assert "留在起点" not in prompt
+
+
+def test_production_travel_prompt_leaves_unknown_in_transit_fallback_as_a_gap(tmp_path):
+    chain = make_reader_chain(tmp_path / "travel-unknown-fallback", "travel-guide")
+    spine = build_reader_spine(chain["reader_brief"], composition_plan=chain["plan"])
+    spine["reader_context"]["purpose"] = "说明途中条件失败时材料已知和未知的退路。"
     spine["route_guidance"]["reachable_fallbacks"] = []
 
     prompt = _load_benchmark()._production_writer_prompt(spine)
 
+    assert "途中条件失败时材料已知和未知的退路" in prompt
     assert "如果材料没有支持的可达备用路线" not in prompt
+    assert "材料没有提供可验证的备用路线时，只说明退路信息缺口" in prompt
+    assert "留在起点" not in prompt
+    assert "返回起点" not in prompt
 
 
 def test_direct_repaired_prompt_keeps_f01_action_source_and_i01_length_contract():
@@ -318,6 +360,19 @@ def test_reader_prompt_preserves_declared_citations_and_compacts_job_labels(tmp_
         "marker": "[L01]",
         "placement": "same_paragraph",
     }]
+    spine["major_units"][0]["evidence_anchor_ids"] = ["evidence:L01"]
+    spine["evidence_anchors"] = [{
+        "anchor_id": "evidence:L01",
+        "source_id": "source:L01",
+        "locator": "materials-L.json:line:1",
+        "relation": "support",
+        "observed_summary": "第一条材料。",
+        "boundary": "仅支持明确事实。",
+        "content_unit_ids": ["content:answer"],
+    }]
+    for hierarchy_row in spine["route_guidance"].get("hierarchy", []):
+        if isinstance(hierarchy_row, dict):
+            hierarchy_row["evidence_anchor_ids"] = ["evidence:L01"]
     spine["root_conclusion"] = "中心判断依据[L01]收束。"
     spine["opening_job"] = "开篇先建立问题。"
     spine["conclusion_job"] = "结尾再给出边界。"
@@ -332,3 +387,42 @@ def test_reader_prompt_preserves_declared_citations_and_compacts_job_labels(tmp_
     assert "结尾再给出边界" in prompt
     assert "开头开篇" not in prompt
     assert "结尾结尾" not in prompt
+
+
+def test_prompt_carries_relation_and_presentation_responsibility_locally(tmp_path):
+    benchmark = _load_benchmark()
+    chain = make_reader_chain(tmp_path / "relation", "investigation")
+    spine = build_reader_spine(chain["reader_brief"], composition_plan=chain["plan"])
+    first = spine["major_units"][0]
+    first["forward_link"]["downstream_unit_ids"] = ["unit:second"]
+    spine["major_units"].append({
+        "planned_unit_id": "unit:second", "parent_unit_id": None, "order": 2,
+        "title": "第二个判断", "reader_job": "把前段的结果转成下一步决定。",
+        "relation_to_previous": "反驳前段推断，改写下一步判断。",
+        "incoming_reader_state": "读者接受了前段的暂时解释。",
+        "forward_link": {"outgoing_reader_state": "读者知道下一步如何行动。", "downstream_unit_ids": []},
+        "content": [], "evidence_anchor_ids": [], "limitation_ids": [],
+        "presentation_mode": "table", "target_extent": 100,
+    })
+    prompt = benchmark._production_writer_prompt(spine)
+    assert "反驳前段推断，改写下一步判断" in prompt
+    assert "在这里落实已规划的表格" in prompt
+    assert "每一步都要改变读者的判断、可行行动或代价" not in prompt
+    assert "unit:second" not in prompt
+
+
+def test_prompt_distinguishes_language_formality_and_extent_metric(tmp_path):
+    benchmark = _load_benchmark()
+    chain = make_reader_chain(tmp_path / "policies", "investigation")
+    spine = build_reader_spine(chain["reader_brief"], composition_plan=chain["plan"])
+    spine["reader_context"]["language"] = "en"
+    spine["reader_context"]["style"]["formality"] = "formal"
+    spine["reader_context"]["extent"] = {
+        "unit": "user_defined", "extent_metric_id": "han_characters",
+        "minimum": 2, "target": 4, "maximum": 8,
+    }
+    prompt = benchmark._production_writer_prompt(spine)
+    assert "输出语言必须是en" in prompt
+    assert "正式" in prompt
+    assert "按纯汉字统计" in prompt
+    assert "汉字数" not in prompt

@@ -585,4 +585,8 @@ def closure_input(chain: dict) -> dict:
             "artifact_map", "shared_writing", "deterministic_audit", "route_review",
             "judgment", "revision_provenance", "native_receipt_fingerprints",
         )
-    } | {"repair_results": chain.get("repair_results", []), "reader_execution_records": chain.get("reader_execution_records", [])}
+    } | {
+        "repair_requests": chain.get("repair_requests", []),
+        "repair_results": chain.get("repair_results", []),
+        "reader_execution_records": chain.get("reader_execution_records", []),
+    }

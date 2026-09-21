@@ -810,6 +810,8 @@ def run_owner(
     preflight_run_root: Path | None = None,
     held_out_run_root: Path | None = None,
     aggregate_only: bool = False,
+    execute_live: bool = False,
+    max_model_calls: int | None = None,
 ) -> dict[str, Any]:
     if held_out_only and preflight_case is not None:
         raise ValueError("--held-out-only cannot be combined with --preflight-case")
@@ -874,6 +876,8 @@ def run_owner(
             mode=mode,
             preflight_case=preflight_case,
             repeats_override=repeats,
+            execute_live=execute_live,
+            max_model_calls=max_model_calls,
         )
     except (OSError, UnicodeError, ValueError, TypeError, json.JSONDecodeError) as exc:
         return _record_initialization_failure(
@@ -970,6 +974,16 @@ def main() -> int:
     parser.add_argument("--repeats", type=int, help="Preflight repeat count; requires --preflight-case")
     parser.add_argument("--preflight-run-root", type=Path, help="Completed I01 preflight evidence required by held-out/full pair runs")
     parser.add_argument("--held-out-run-root", type=Path, help="Completed four-case held-out evidence required by full pair runs")
+    parser.add_argument(
+        "--execute-live",
+        action="store_true",
+        help="Explicitly authorize live planner/writer/judge calls (disabled by default)",
+    )
+    parser.add_argument(
+        "--max-model-calls",
+        type=int,
+        help="Positive finite live-call attempt budget; required with --execute-live",
+    )
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
     output_dir = (args.output_dir or Path(__import__("os").environ.get("LW_VALIDATION_ATTEMPT_ROOT", str(args.root / "run-artifacts" / "reader-execution-quality-producer")))).resolve()
@@ -992,6 +1006,8 @@ def main() -> int:
             preflight_run_root=args.preflight_run_root.resolve() if args.preflight_run_root else None,
             held_out_run_root=args.held_out_run_root.resolve() if args.held_out_run_root else None,
             aggregate_only=args.aggregate_only,
+            execute_live=args.execute_live,
+            max_model_calls=args.max_model_calls,
         )
     except (OSError, ValueError, TypeError, json.JSONDecodeError) as exc:
         report = {"schema_version": "logic-writing.reader-acceptance-owner-result.v1", "producer_check_id": PRODUCER_ID, "status": "failed", "error": str(exc)}

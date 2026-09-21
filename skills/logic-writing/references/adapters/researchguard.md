@@ -49,7 +49,7 @@ identity or a second provider hash; raw or already-labelled native values must
 still be valid lowercase SHA-256 digests.
 
 `experimentguard` and the `researchguard run` umbrella are explicit scope-outs
-for Logic Writing `4.0.3`; they execute no provider command.
+for Logic Writing `4.0.4`; they execute no provider command.
 
 After a semantic handoff is joined to a current ReaderBrief, the adapter emits
 one `researchguard.logic.consumption-binding.v1` artifact. The

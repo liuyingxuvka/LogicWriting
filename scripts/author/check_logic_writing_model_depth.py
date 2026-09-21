@@ -277,10 +277,19 @@ def _native(root: Path, mesh: Any, model_id: str, payload: Mapping[str, Any], fi
     except Exception as exc:
         _finding(findings, "native_terminal_receipt_unreadable", f"{type(exc).__name__}: {exc}", model_id)
         return
-    if len(rows) != 1:
-        _finding(findings, "native_terminal_receipt_cardinality_invalid", len(rows), model_id)
+    # The current native producer stores one aggregate mesh row plus the
+    # executed leaf rows that form the path-quality graph.  The depth gate
+    # authenticates the aggregate terminal row; path-quality separately
+    # consumes the leaf rows.  Requiring the whole graph to have cardinality
+    # one would reject valid current evidence.
+    terminal_rows = tuple(
+        row for row in rows
+        if row.source_case_id == f"mesh:{model_id}:current"
+    )
+    if len(terminal_rows) != 1:
+        _finding(findings, "native_terminal_receipt_cardinality_invalid", len(terminal_rows), model_id)
         return
-    result = rows[0]
+    result = terminal_rows[0]
     if native.get("result") != result.to_dict():
         _finding(findings, "native_terminal_receipt_result_mismatch", model_id=model_id)
     if result.owner_id != f"model:{model_id}" or result.source_case_id != f"mesh:{model_id}:current":
