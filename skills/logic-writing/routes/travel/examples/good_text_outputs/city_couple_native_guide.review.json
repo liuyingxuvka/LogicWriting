@@ -1,7 +1,7 @@
 {
   "final_artifact_ref": "city_couple_native_guide.txt",
   "final_artifact_path": "city_couple_native_guide.txt",
-  "final_artifact_sha256": "0265FA6F2E4F1934B0FF355DA912614B12DD6EB017651E78C2A685EB66464BAD",
+  "final_artifact_sha256": "373A9D62A43870A3A8F25E99A9C523EF48F9EC6E0BAC3D4F646047402B67733F",
   "observed_days": ["arrival afternoon", "full city day", "departure morning"],
   "observed_day_headings": ["Day 1 - Arrival afternoon", "Day 2 - Full city day", "Day 3 - Departure morning"],
   "observed_local_food_details": ["local bistro dinner", "cafe rest stop", "market snack"],

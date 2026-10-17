@@ -9,7 +9,7 @@
   "receipt_schema_version": "traceguard.native_terminal_receipt.v1",
   "input_fingerprint": "sha256:d2266e0aa5a54ea556782bac87fc488d67766713250b11b93ab65f99dd1aa457",
   "terminal_receipt_id": "aurora-key-pre-draft-traceguard-terminal",
-  "terminal_receipt_ref": "file:../guard_receipts/traceguard-planning.json;sha256:9944e93d81715d8bf7053db1b5ae842a33a5e3bad2deb949d40afa7ddda0c201",
+  "terminal_receipt_ref": "file:../guard_receipts/traceguard-planning.json;sha256:ee6c1637d53e93d7b09934da2c75ecdb77e6e1491744328ee1f817b38df916bc",
   "terminal_status": "passed",
   "claim_boundary": "The TraceGuard receipt covers chronology and reader-revelation order in the current Aurora Key pre-draft model; prose realization is outside this claim."
 }

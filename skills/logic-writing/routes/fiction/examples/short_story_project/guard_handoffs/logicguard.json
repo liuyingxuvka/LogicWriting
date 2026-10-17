@@ -9,7 +9,7 @@
   "receipt_schema_version": "logicguard.native_terminal_receipt.v1",
   "input_fingerprint": "sha256:644dd863244fd0e739c622abe2593e70685b551305088d3b8f7c15c922da737c",
   "terminal_receipt_id": "lantern-map-logicguard-terminal",
-  "terminal_receipt_ref": "file:../guard_receipts/logicguard-terminal.json;sha256:e7dd6a66245bee4b22da7041244b999fb4016e34475132b589f7ef056daca65f",
+  "terminal_receipt_ref": "file:../guard_receipts/logicguard-terminal.json;sha256:73fc5ec8706e84cb26e7cb2fa647a3364ef2192630a8c12be2ae5b1f23c29e7c",
   "terminal_status": "not_applicable_with_reason",
   "claim_boundary": "The Lantern Map fixture claims structural readiness, not a material theme, moral, or ending-interpretation conclusion."
 }

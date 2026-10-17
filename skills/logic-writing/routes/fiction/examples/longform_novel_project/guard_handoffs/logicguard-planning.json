@@ -9,7 +9,7 @@
   "receipt_schema_version": "logicguard.native_terminal_receipt.v1",
   "input_fingerprint": "sha256:10940539101895ab19896e080b3e8828f29eab1fd3f2e2ee811c8fe7993929bb",
   "terminal_receipt_id": "aurora-key-pre-draft-logicguard-terminal",
-  "terminal_receipt_ref": "file:../guard_receipts/logicguard-planning.json;sha256:8edbb7fee2c5cd1c04d9cde3662376a0932b4deb61ae1f90c87e6b8ff08df768",
+  "terminal_receipt_ref": "file:../guard_receipts/logicguard-planning.json;sha256:1ac4b59ccb113a6c42977c35e5ee5f11e0ceba299a6b818da0f33e243f9b3f68",
   "terminal_status": "not_applicable_with_reason",
   "claim_boundary": "No final theme, moral, or ending-interpretation conclusion is claimed at the Aurora Key pre-draft model boundary."
 }
