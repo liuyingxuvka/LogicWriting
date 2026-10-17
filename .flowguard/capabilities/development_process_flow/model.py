@@ -4,7 +4,7 @@ Created with FlowGuard: https://github.com/liuyingxuvka/FlowGuard
 Purpose: Review a development lifecycle as a sibling process route, tracking artifact versions and validation evidence freshness before done or release claims.
 Guards against: stale validation after code/test/model/requirement/UI observed inventory/UI functional capability coverage/UI functional chain/UI source-baseline interaction/UI done-claim/payload-schema/field-lifecycle/contract-exhaustion interaction group, shard, or receipt changes, oversized direct model evidence, slow or broad direct validation evidence, progress-only evidence, hidden skips, missing V-style validation pairs, peer writes, and release overclaims.
 Use before editing: Update this development process flow when changing development ordering, UI click-through, observed-inventory, functional capability coverage, functional-chain, source-baseline interaction, done-claim, payload-pack validation gates, ContractExhaustionMesh generated cases/shards/receipts, release readiness, or evidence freshness policy.
-Run: python .flowguard/verification/owners/development_process_flow/run_checks.py
+Run: python .flowguard/capabilities/development_process_flow/run_checks.py
 """
 
 from __future__ import annotations
@@ -52,7 +52,7 @@ def proof_artifact(artifact_id: str, *covered: str) -> ProofArtifactRef:
     # Keep the positive lifecycle proof grounded in a checked-in fixture.  The
     # previous ``tmp/...`` path made the supposedly healthy plan fail whenever
     # the model was run from a clean checkout because no result bytes existed.
-    result_path = str((Path(__file__).resolve().parents[4] / "tests" / "fixtures" / "flowguard" / "proof_unit_pass.json").resolve())
+    result_path = str((Path(__file__).resolve().parents[3] / "tests" / "fixtures" / "flowguard" / "proof_unit_pass.json").resolve())
     return ProofArtifactRef(
         artifact_id,
         producer_route="test_mesh_maintenance",

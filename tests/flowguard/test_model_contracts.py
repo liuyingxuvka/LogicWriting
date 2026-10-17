@@ -23,7 +23,7 @@ from models._frozen_source_contract_exhaustion import (  # noqa: E402
     CASE_IDS,
     review_frozen_source_name_family,
 )
-from models.owners.model_test_alignment.model import (  # noqa: E402
+from capabilities.model_test_alignment.model import (  # noqa: E402
     aligned_plan,
     broken_missing_actual_artifact_plan,
 )
@@ -228,9 +228,9 @@ def test_identical_no_progress_attempts_terminate_visibly():
         OperationState(
             route_owner="investigation",
             route_status="current_pass",
-            consecutive_no_progress=2,
-            repair_attempt_count=2,
-            no_progress_count=2,
+            consecutive_no_progress=1,
+            repair_attempt_count=1,
+            no_progress_count=1,
         ),
         OperationEvent("close_operation"),
     )

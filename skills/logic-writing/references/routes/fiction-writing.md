@@ -101,3 +101,11 @@ manufacture it.
 The internal route pack under `routes/fiction/` preserves the verified compact,
 short-story, long-form, Guard-lifecycle, mesh, and known-bad regression families.
 It is implementation material, not a separately installed skill or final owner.
+
+## Independent actual-text review
+
+One context independent of the writer may assess this route's semantic
+obligations and the eight reader dimensions together. Preserve both existing
+`route_review` and `ReaderJudgment`, including actual spans, reverse outline,
+required dimensions, scores and their current execution/fingerprint bindings.
+A real `no_progress` repair result ends automatic work on that lineage.

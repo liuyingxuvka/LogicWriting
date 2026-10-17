@@ -137,3 +137,11 @@ Bind the important rows in the claim/argument model to exact spans in the
 current delivered artifact. Important prose without a model row, or important
 model rows that never appear in the artifact, block closure until repaired or
 explicitly dispositioned.
+
+## Independent actual-text review
+
+One context independent of the writer may assess this route's semantic
+obligations and the eight reader dimensions together. Preserve both existing
+`route_review` and `ReaderJudgment`, including actual spans, reverse outline,
+required dimensions, scores and their current execution/fingerprint bindings.
+A real `no_progress` repair result ends automatic work on that lineage.

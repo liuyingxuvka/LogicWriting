@@ -21,7 +21,14 @@ judgment all to pass. Any defect produces a typed repair request for actual
 units and preservation duties. After real new bytes exist, rebuild every
 dependent record.
 
-Repeated closure calls do not demonstrate work. `no_progress_blocked` requires
-two consecutive current repair results with the same lineage and remaining
-defect identity, a chained input/output artifact identity, and no actual
-progress. It then hands the artifact to human review instead of looping.
+The route review and reader dimensions may be assessed together in one context
+independent of the writer. Preserve both existing results, all route dimensions,
+reverse outline and actual spans; the judgment binds the current route review
+and real judge execution. Final pass and broad claims require capture resolution;
+`derive_closure.py --execution-root <capture-root>` uses the existing local
+execution resolver. A caller-authored `verified` marker does not license pass.
+
+Repeated closure calls do not demonstrate work. One actual current `no_progress`
+repair result is terminal for that defect lineage. Preserve its input/output
+artifact chain and remaining-defect identity, then hand the artifact to human
+review. Do not start a second unchanged attempt or another automatic draft.

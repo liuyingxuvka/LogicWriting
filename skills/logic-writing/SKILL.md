@@ -209,7 +209,7 @@ planned unit, content unit, model row, and route surface to real locators and
 span fingerprints through `SharedWriting`. Inspect the actual current text or
 document, not metadata that says it is good.
 
-Run three distinct quality owners:
+Preserve three quality responsibilities:
 
 1. deterministic `ReaderAudit` for current bytes, locked structure, exact
    preservation, citations, list zones, fragmentation, placeholders, workflow
@@ -219,8 +219,22 @@ Run three distinct quality owners:
    separated, for reverse outline, clarity, coherence, naturalness, reader fit,
    genre fit, content fidelity, and instruction fidelity.
 
+One review context independent of the writer may perform both the selected
+route's semantic review and the eight reader dimensions in the same actual-text
+review. Record both existing results (`route_review` and `ReaderJudgment`); bind
+the judgment to the current route-review fingerprint and the real captured judge
+execution. These are separate responsibilities, not a requirement for two judge
+calls. Existing single/pair quality experiments keep their declared scoring and
+call budgets. Do not invent a combined output schema or infer either result from
+a plan, a score, or a caller-supplied independence marker.
+The captured output uses the existing ReaderJudgment JSON. After capture, fill
+its execution-record fingerprint and recompute the outer judgment fingerprint;
+all other fields must match the captured JSON. No new combined schema is used.
+
 Self-scored quality, plan review, or a route saying its draft is good cannot
-substitute for these checks. A material edit stales the ArtifactMap, bindings,
+substitute for these checks. Final closure and a passing judgment receipt require the existing local capture
+resolver; the closure CLI accepts `--execution-root` for that capture. A material
+edit stales the ArtifactMap, bindings,
 audits, judgment, and closure.
 
 For document files, keep content evidence and visual evidence separate. Text

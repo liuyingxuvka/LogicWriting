@@ -71,40 +71,6 @@ def build_plan(*, conformance_status="skipped_with_reason", conformance_evidence
             defect_lineage="defect:cards",
             status="no_progress",
         ),
-        OperationEvent("integrate_artifact", artifact_fingerprint="artifact:1"),
-        OperationEvent("map_artifact", fingerprint="map:2", artifact_fingerprint="artifact:1"),
-        OperationEvent(
-            "bind_shared_writing",
-            fingerprint="binding:2",
-            related_fingerprint="map:2",
-            artifact_fingerprint="artifact:1",
-        ),
-        OperationEvent("record_revision_provenance", status="not_applicable"),
-        OperationEvent("deterministic_audit", artifact_fingerprint="artifact:1", status="passed"),
-        OperationEvent("route_audit", artifact_fingerprint="artifact:1", owner="academic-writing", status="passed"),
-        OperationEvent(
-            "judge_artifact",
-            artifact_fingerprint="artifact:1",
-            producer_id="writer:1",
-            judge_id="critic:1",
-            defect_lineage="defect:cards",
-            status="repair",
-        ),
-        OperationEvent(
-            "request_repair",
-            fingerprint="repair-request:2",
-            artifact_fingerprint="artifact:1",
-            defect_lineage="defect:cards",
-            owner="academic-writing",
-        ),
-        OperationEvent("apply_repair", artifact_fingerprint="artifact:1"),
-        OperationEvent(
-            "record_repair_result",
-            related_fingerprint="repair-request:2",
-            artifact_fingerprint="artifact:1",
-            defect_lineage="defect:cards",
-            status="no_progress",
-        ),
         OperationEvent("close_operation"),
     )
     return formal_plan(
@@ -115,7 +81,7 @@ def build_plan(*, conformance_status="skipped_with_reason", conformance_evidence
         invariants=OPERATION_INVARIANTS,
         scenarios=(
             scenario("source_change_stales_chain", "Source changes stale every dependent operation receipt", PASSED, source_change, workflow, OPERATION_INVARIANTS),
-            scenario("real_repair_no_progress_terminates", "Two current repair results for one defect lineage stop visibly", repairable, no_progress, workflow, OPERATION_INVARIANTS),
+            scenario("real_repair_no_progress_terminates", "One actual current no-progress result ends the defect lineage", repairable, no_progress, workflow, OPERATION_INVARIANTS),
         ),
         protected_error_classes=("stale_evidence_accepted", "infinite_no_progress_loop"),
         modeled_state=(

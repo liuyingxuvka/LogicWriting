@@ -27,7 +27,7 @@ def check_plan(model_id):
 
 
 def check_optional(model_id):
-    module = importlib.import_module(f"models.owners.{model_id}.model")
+    module = importlib.import_module(f"capabilities.{model_id}.model")
     if model_id == "development_process_flow":
         good, bad = module.run_checks()
         return {"ok": good.ok and not bad.ok, "good": good.to_dict(), "known_bad": bad.to_dict()}

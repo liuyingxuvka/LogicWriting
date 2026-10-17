@@ -19,7 +19,7 @@ from flowguard import (
     contract_exhaustion_to_model_obligations,
 )
 
-FLOWGUARD_ROOT = Path(__file__).resolve().parents[3]
+FLOWGUARD_ROOT = Path(__file__).resolve().parents[2]
 if str(FLOWGUARD_ROOT) not in sys.path:
     sys.path.insert(0, str(FLOWGUARD_ROOT))
 

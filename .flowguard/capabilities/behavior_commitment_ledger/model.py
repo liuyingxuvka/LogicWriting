@@ -16,7 +16,7 @@ from flowguard import load_behavior_commitment_ledger
 
 
 LEDGER_PATH = (
-    Path(__file__).resolve().parents[3]
+    Path(__file__).resolve().parents[2]
     / "behavior"
     / "inventory"
     / "ledger.json"

@@ -66,13 +66,13 @@
         "skills/logic-writing/references/shared/research-packet.md",
         "skills/logic-writing/scripts/build_reader_brief_receipt.py",
         "skills/logic-writing/scripts/build_source_unit_manifest.py",
-        "skills/logic-writing/scripts/reader_receipts.py",
         "skills/logic-writing/scripts/receipt_authority.py",
         "skills/logic-writing/scripts/receipt_store.py",
         "skills/logic-writing/scripts/researchguard_handoff.py",
         "skills/logic-writing/scripts/validate_claim_support.py",
         "skills/logic-writing/scripts/validate_research_packet.py",
         "skills/logic-writing/scripts/validate_source_registry.py",
+        "tests/authority/test_receipt_authority.py",
         "tests/contract/test_researchguard_handoff.py",
         "tests/unit/test_consumer_resource_closure.py"
       ],
@@ -83,6 +83,7 @@
         "reader-artifact"
       ],
       "tests": [
+        "tests/authority/test_receipt_authority.py",
         "tests/contract/test_researchguard_handoff.py",
         "tests/unit/test_consumer_resource_closure.py"
       ],
@@ -133,7 +134,6 @@
         "skills/logic-writing/references/shared/writing-contract.md",
         "skills/logic-writing/routes/academic/scripts/validate_academic_artifact.py",
         "skills/logic-writing/routes/investigation/scripts/validate_investigation_artifact.py",
-        "skills/logic-writing/scripts/_common.py",
         "skills/logic-writing/scripts/audit_reader_output.py",
         "skills/logic-writing/scripts/build_artifact_map.py",
         "skills/logic-writing/scripts/build_obligation_manifest.py",
@@ -144,9 +144,9 @@
         "skills/logic-writing/scripts/propagate_staleness.py",
         "skills/logic-writing/scripts/reader_pipeline.py",
         "skills/logic-writing/scripts/reader_projection_conformance.py",
+        "skills/logic-writing/scripts/reader_receipts.py",
         "skills/logic-writing/scripts/record_reader_repair.py",
         "skills/logic-writing/scripts/review_obligations.py",
-        "skills/logic-writing/scripts/schema_validation.py",
         "skills/logic-writing/scripts/text_extent.py",
         "skills/logic-writing/scripts/validate_revision_provenance.py",
         "skills/logic-writing/scripts/validate_shared_writing.py",
@@ -408,11 +408,6 @@
         "skills/logic-writing/routes/fiction/examples/short_story_project/scene-cards.yaml",
         "skills/logic-writing/routes/fiction/examples/short_story_project/story-ledger.yaml",
         "skills/logic-writing/routes/fiction/examples/short_story_project/worldguard-claims.yaml",
-        "skills/logic-writing/routes/fiction/guard-model/contract.json",
-        "skills/logic-writing/routes/fiction/guard-model/known-bad.json",
-        "skills/logic-writing/routes/fiction/guard-model/known-good.json",
-        "skills/logic-writing/routes/fiction/guard-model/oracles.json",
-        "skills/logic-writing/routes/fiction/guard-model/verify.py",
         "skills/logic-writing/routes/fiction/references/artifact-taxonomy.json",
         "skills/logic-writing/routes/fiction/references/chapter-interface-prose-blueprint.md",
         "skills/logic-writing/routes/fiction/references/closure-report.md",
@@ -685,6 +680,7 @@
         "scripts/prepare_reader_quality_receipt.py",
         "scripts/run_fiction_regression.py",
         "scripts/run_frozen_validation.py",
+        "scripts/run_logic_writing_model_regression.py",
         "scripts/run_reader_acceptance_owner.py",
         "scripts/run_reader_projection_conformance.py",
         "scripts/run_travel_regression.py",
@@ -714,32 +710,7 @@
         "tests/flowguard/test_model_contracts.py"
       ],
       "models": [
-        ".flowguard/verification/owners/release_retirement_model/run_checks.py",
-        ".flowguard/verification/owners/development_process_flow/run_checks.py"
-      ],
-      "status": "draft"
-    },
-    {
-      "id": "model-support",
-      "layer": "domain",
-      "summary": "Native model helpers and explicit optional FlowGuard capability views.",
-      "responsibilities": [
-        "model-support"
-      ],
-      "files": [
-        "scripts/run_logic_writing_model_regression.py"
-      ],
-      "entrypoints": [],
-      "state": [],
-      "side_effects": [],
-      "depends_on": [],
-      "tests": [],
-      "models": [
-        ".flowguard/verification/owners/behavior_commitment_ledger/run_checks.py",
-        ".flowguard/verification/owners/primary_path_authority/run_checks.py",
-        ".flowguard/verification/owners/model_test_alignment/run_checks.py",
-        ".flowguard/verification/owners/plan_detailing/run_checks.py",
-        ".flowguard/verification/owners/test_mesh/run_checks.py"
+        ".flowguard/verification/owners/release_retirement_model/run_checks.py"
       ],
       "status": "draft"
     },
@@ -770,7 +741,33 @@
         "tests/contract/test_adapters.py",
         "tests/unit/test_researchguard_provider_topology.py"
       ],
-      "models": [],
+      "models": [
+        ".flowguard/verification/owners/route_and_guard_model/run_checks.py"
+      ],
+      "status": "draft"
+    },
+    {
+      "id": "shared-contracts",
+      "layer": "domain",
+      "summary": "Shared canonical identity and JSON schema validation used by existing domain owners.",
+      "responsibilities": [
+        "preserve canonical identity and strict shared validation"
+      ],
+      "files": [
+        "skills/logic-writing/scripts/_common.py",
+        "skills/logic-writing/scripts/schema_validation.py"
+      ],
+      "entrypoints": [],
+      "state": [],
+      "side_effects": [],
+      "depends_on": [],
+      "tests": [
+        "tests/contract/test_schemas.py"
+      ],
+      "models": [
+        ".flowguard/verification/owners/reader_artifact_model/run_checks.py",
+        ".flowguard/verification/owners/research_packet_model/run_checks.py"
+      ],
       "status": "draft"
     }
   ],

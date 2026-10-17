@@ -18,7 +18,7 @@ from flowguard import (
     contract_exhaustion_to_test_mesh_cell_ids,
 )
 
-FLOWGUARD_ROOT = Path(__file__).resolve().parents[3]
+FLOWGUARD_ROOT = Path(__file__).resolve().parents[2]
 if str(FLOWGUARD_ROOT) not in sys.path:
     sys.path.insert(0, str(FLOWGUARD_ROOT))
 
@@ -30,7 +30,7 @@ from models._frozen_source_contract_exhaustion import (  # noqa: E402
 )
 
 
-REPO_ROOT = Path(__file__).resolve().parents[4]
+REPO_ROOT = Path(__file__).resolve().parents[3]
 CONTRACT_PATH = REPO_ROOT / "openspec" / "verification-contract.yaml"
 RECEIPT_ROOT = "run-artifacts/validation-receipts"
 
@@ -240,7 +240,7 @@ def release_plan(receipts: Mapping[str, Mapping[str, Any]] | None = None) -> Tes
             covered_partition_item_ids=tuple(item.item_id for item in items),
             state_owner_fields=("validation_fingerprint", "validation_status", "validation_current"),
             side_effect_owner_fields=("validation_receipts",),
-            source_model_path=".flowguard/models/release_retirement_model.py",
+            source_model_path=".flowguard/models/owners/release_retirement_model/model.py",
             rationale=(
                 "The release-retirement model requires one frozen validation identity; "
                 "each OpenSpec command is one execution owner and receipt rows are consumers."

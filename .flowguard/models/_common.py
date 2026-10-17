@@ -252,6 +252,9 @@ class RejectUnknownOperationEvent(_OperationBlock):
     writes = ("errors", "terminal")
 
     def apply(self, event: OperationEvent, state: OperationState) -> Iterable[FunctionResult]:
+        if state.consecutive_no_progress >= 1 and event.action != "close_operation":
+            return (FunctionResult(replace(event, action="__blocked__"), replace(state, terminal=True),
+                                   label="no_progress_lineage_is_terminal"),)
         if event.action == "invoke_adapter":
             invalid_status = event.status not in ADAPTER_STATUSES
         elif event.action in {"deterministic_audit", "route_audit", "judge_artifact"}:
@@ -1077,7 +1080,7 @@ class RecordRepairResult(_OperationBlock):
                 FunctionResult(event, replace(state, last_repair_status="blocked"), label="repair_result_blocked"),
             )
         no_progress = state.consecutive_no_progress + 1 if event.status == "no_progress" else 0
-        terminal = no_progress >= 2
+        terminal = no_progress >= 1
         return (
             FunctionResult(
                 event,
@@ -1192,7 +1195,8 @@ class CloseOperation(_OperationBlock):
         if event.action != "close_operation":
             return self._pass(event, state, "closure_not_requested")
         ready = (
-            state.route_owner in FINAL_OWNERS
+            state.consecutive_no_progress == 0
+            and state.route_owner in FINAL_OWNERS
             and state.packet_current
             and state.reader_intent_status == "current_pass"
             and state.composition_plan_status == "current_pass"
@@ -1226,7 +1230,7 @@ class CloseOperation(_OperationBlock):
                     label="operation_closed",
                 ),
             )
-        terminal = state.consecutive_no_progress >= 2
+        terminal = state.consecutive_no_progress >= 1
         return (
             FunctionResult(
                 event,
@@ -1688,8 +1692,8 @@ def bounded_child_never_closes_parent(state: OperationState, trace) -> Invariant
 
 def operation_terminal_is_visible(state: OperationState, trace) -> InvariantResult:
     del trace
-    if state.consecutive_no_progress >= 2 and not state.terminal:
-        return _fail("operation_terminal_is_visible", "repeated identical no-progress attempts did not terminate visibly")
+    if state.consecutive_no_progress >= 1 and not state.terminal:
+        return _fail("operation_terminal_is_visible", "one actual no-progress result did not terminate visibly")
     if state.no_progress_count > state.repair_attempt_count:
         return _fail("operation_terminal_is_visible", "closure derivation manufactured repair progress")
     return InvariantResult.pass_()

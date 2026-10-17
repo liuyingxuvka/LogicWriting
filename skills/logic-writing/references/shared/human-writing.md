@@ -20,7 +20,9 @@ Do not copy “safe wording” as a script. Do not expose Guard names, route ids
 model labels, status fields, paragraph jobs, or agent plans in ordinary prose.
 
 After drafting, judge the actual bytes. The deterministic audit finds observable
-defects. The selected route checks its own semantics in real spans. A separate
-judge evaluates reverse structure, coherence, naturalness, reader fit, genre,
-content fidelity, and instruction fidelity. Plans and self-assessment are not
+defects. The selected route checks its own semantics in real spans. A reviewer
+in a context independent of the writer may assess those route obligations and
+all eight reader dimensions together, recording the existing route review and
+ReaderJudgment separately. Keep their fingerprints, reverse outline, actual
+spans and verified execution binding. Plans and self-assessment are not
 postwrite evidence.

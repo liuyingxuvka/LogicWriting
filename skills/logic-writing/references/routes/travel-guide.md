@@ -96,3 +96,11 @@ or observation not present in the actual guide blocks closure.
 The internal route pack under `routes/travel/` preserves the verified base,
 positive, exact-negative, time-mode, feasibility, fit, fallback, artifact-hash,
 and traveler-native text families. It is not a separately installed skill.
+
+## Independent actual-text review
+
+One context independent of the writer may assess this route's semantic
+obligations and the eight reader dimensions together. Preserve both existing
+`route_review` and `ReaderJudgment`, including actual spans, reverse outline,
+required dimensions, scores and their current execution/fingerprint bindings.
+A real `no_progress` repair result ends automatic work on that lineage.
