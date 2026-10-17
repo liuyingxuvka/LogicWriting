@@ -103,7 +103,7 @@ def test_academic_gap_request_preserves_parent_ownership():
 
 
 @pytest.mark.parametrize("parent", ["fiction-writing", "travel-guide"])
-def test_worldguard_request_preserves_new_parent_ownership(parent: str):
+def test_worldguard_request_preserves_new_parent_ownership(parent: str, tmp_path, monkeypatch):
     value = _request(owner="worldguard", parent=parent)
     value["native_route"] = "review-world-consistency"
     value["required_output_type"] = "world_consistency"
@@ -113,6 +113,36 @@ def test_worldguard_request_preserves_new_parent_ownership(parent: str):
 
     assert result["parent_route"] == parent
     assert result["native_owner"] == "worldguard"
+
+    from provider_preflight import preflight
+    from types import SimpleNamespace
+    root = tmp_path / "worldguard"
+    (root / "scripts").mkdir(parents=True)
+    (root / "runtime/worldguard").mkdir(parents=True)
+    (root / "SKILL.md").write_text("---\nname: worldguard\n---\nPortable world checks.\n")
+    (root / "scripts/run_worldguard.py").write_text(
+        'from pathlib import Path\nimport sys\nRUNTIME_ROOT = Path(__file__).resolve().parents[1] / "runtime"\n'
+        'if str(RUNTIME_ROOT) not in sys.path:\n    sys.path.insert(0, str(RUNTIME_ROOT))\n'
+        'from worldguard.cli import main\n')
+    (root / "runtime/worldguard/__init__.py").write_text('__version__ = "0.7.12"\n')
+    (root / "runtime/worldguard/cli.py").write_text('def main(): pass\n')
+    calls = []
+    def probe(command, **kwargs):
+        calls.append(command)
+        return SimpleNamespace(returncode=0, stdout="--contract --example")
+    monkeypatch.setattr("provider_preflight.subprocess.run", probe)
+    current = preflight("worldguard", provider_root=str(root))
+    assert current["status"] == "current_pass"
+    assert len(calls) == 1 and calls[0][1:] == [str(root / "scripts/run_worldguard.py"), "check", "--help"]
+    assert str(root) not in str(current)
+    assert preflight("worldguard")["status"] == "provider_unavailable"
+    monkeypatch.setattr("provider_preflight.subprocess.run", lambda *args, **kwargs: SimpleNamespace(returncode=1, stdout=""))
+    assert preflight("worldguard", provider_root=str(root))["status"] == "provider_unavailable"
+    (root / "SKILL.md").write_text("---\nname: another\n---\n")
+    assert preflight("worldguard", provider_root=str(root))["status"] == "blocked"
+    (root / "SKILL.md").unlink()
+    (root / "SKILL.md").symlink_to(tmp_path / "outside")
+    assert preflight("worldguard", provider_root=str(root))["status"] == "blocked"
 
 
 def test_adapter_request_rejects_unknown_owner():
@@ -197,7 +227,7 @@ def test_researchguard_provider_version_mismatch_is_rejected():
         value, "adapter_result_fingerprint"
     )
 
-    with pytest.raises(ValidationError, match="provider_reference|0.5.4"):
+    with pytest.raises(ValidationError, match="provider_reference|0.5.6"):
         validate_adapter_result(value)
 
 

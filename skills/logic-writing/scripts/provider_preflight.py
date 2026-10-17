@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 import argparse
+import ast
+import hashlib
+import sys
 import importlib
 import importlib.metadata
 import re
@@ -27,7 +30,7 @@ RESEARCHGUARD_MEMBERS = {
         "primary_path_id": "primary:researchguard:trace",
     },
 }
-SUPPORTED_RESEARCHGUARD_VERSION = "0.5.4"
+SUPPORTED_RESEARCHGUARD_VERSION = "0.5.6"
 SCOPE_OUT_PROVIDERS = {
     "experimentguard": "ExperimentGuard is not an active Logic Writing 4.0.4 provider.",
     "researchguard": "The ResearchGuard umbrella route is not an active Logic Writing 4.0.4 provider.",
@@ -36,6 +39,7 @@ MODULE_PROVIDERS = {
     "flowguard": ("flowguard", ("SCHEMA_VERSION", "FlowGuardCheckPlan")),
 }
 SKILL_PROVIDERS = {
+    "worldguard": ("worldguard", ()),
     "documents": ("documents", ("docx", "render")),
     "pdf": ("pdf", ("pdf", "render")),
 }
@@ -117,6 +121,49 @@ def _skill_manifest(root: Path):
         return None, text
     name_match = re.search(r'^name:\s*["\']?([^"\'\n]+)["\']?\s*$', match.group("header"), flags=re.MULTILINE)
     return (name_match.group(1).strip() if name_match else None), text
+
+
+def _worldguard_preflight(provider_root):
+    """Check only the explicitly selected portable launcher and its help."""
+    evidence = {"provider_console_id": "worldguard-portable", "provider_execution": "help_only"}
+    if not provider_root:
+        return "provider_unavailable", {**evidence, "reason": "provider_root_required"}
+    root = Path(provider_root).expanduser().resolve()
+    paths = {name: root / name for name in (
+        "SKILL.md", "scripts/run_worldguard.py", "runtime/worldguard/__init__.py", "runtime/worldguard/cli.py",
+    )}
+    for path in paths.values():
+        if not path.resolve().is_relative_to(root):
+            return "blocked", {**evidence, "reason": "provider_path_escaped_root"}
+        if not path.is_file():
+            return "provider_unavailable", {**evidence, "reason": "portable_resource_missing"}
+    name, _ = _skill_manifest(root)
+    if name != "worldguard":
+        return "blocked", {**evidence, "reason": "provider_identity_mismatch"}
+    try:
+        launcher = paths["scripts/run_worldguard.py"].read_text(encoding="utf-8")
+        tree = ast.parse(launcher)
+        expected = ast.parse('RUNTIME_ROOT = Path(__file__).resolve().parents[1] / "runtime"').body[0]
+        runtime_assignment = any(ast.dump(node) == ast.dump(expected) for node in ast.walk(tree))
+        insertion = ast.dump(ast.parse('sys.path.insert(0, str(RUNTIME_ROOT))').body[0].value)
+        runtime_first = any(isinstance(node, ast.Call) and ast.dump(node) == insertion for node in ast.walk(tree))
+        if not (runtime_assignment and runtime_first):
+            return "blocked", {**evidence, "reason": "portable_runtime_binding_mismatch"}
+        versions = [node.value.value for node in ast.parse(paths["runtime/worldguard/__init__.py"].read_text(encoding="utf-8")).body
+                    if isinstance(node, ast.Assign) and any(isinstance(target, ast.Name) and target.id == "__version__" for target in node.targets)
+                    and isinstance(node.value, ast.Constant) and isinstance(node.value.value, str)]
+        if len(versions) != 1 or not re.fullmatch(r"[0-9]+(?:\.[0-9]+){2}", versions[0]):
+            return "provider_unavailable", {**evidence, "reason": "portable_version_unavailable"}
+        evidence.update(provider_version=versions[0], runtime_binding="static_same_tree", file_fingerprints={
+            name: "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest() for name, path in paths.items()
+        })
+        result = subprocess.run([sys.executable, str(paths["scripts/run_worldguard.py"]), "check", "--help"],
+                                capture_output=True, text=True, timeout=PROBE_TIMEOUT_SECONDS, check=False)
+    except (OSError, SyntaxError, UnicodeError, subprocess.TimeoutExpired) as exc:
+        return "provider_unavailable", {**evidence, "reason": type(exc).__name__}
+    tokens = {token: token in result.stdout for token in ("--contract", "--example")}
+    evidence.update(exit_code=result.returncode, capability_probe=tokens)
+    return ("current_pass" if result.returncode == 0 and all(tokens.values()) else "provider_unavailable"), evidence
 
 
 def preflight(provider: str, *, provider_root: str | None = None, require_render: bool = False):
@@ -223,6 +270,9 @@ def preflight(provider: str, *, provider_root: str | None = None, require_render
                 }
             )
         status = "current_pass" if available else "provider_unavailable"
+    elif provider == "worldguard":
+        status, portable_evidence = _worldguard_preflight(provider_root)
+        evidence.update(portable_evidence)
     elif provider in SKILL_PROVIDERS:
         expected_name, capability_tokens = SKILL_PROVIDERS[provider]
         root = Path(provider_root).expanduser().resolve() if provider_root else None

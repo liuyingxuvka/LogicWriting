@@ -19,7 +19,7 @@
     {
       "surface": "traceguard_storyline",
       "status": "passed",
-      "evidence_ref": "file:guard_handoffs/traceguard.json;sha256:103810e59af30ed1c18c44f5639844cbbe194433930c117cb326e4ddc8ed5a5e",
+      "evidence_ref": "file:guard_handoffs/traceguard.json;sha256:ee367e3b7f4ca08231b6ae0881f91e78445219c46f0269cd069505fd00fee638",
       "input_fingerprint": "sha256:2a3a904d5c2afb9d13372982b8319a3c6137f2ff7e1fe05972f3407db6aa8577",
       "blocks_closure": false,
       "next_action": "Refresh TraceGuard storyline evidence after chronology, clue, or reveal changes"
@@ -35,7 +35,7 @@
     {
       "surface": "logicguard_theme_support",
       "status": "passed",
-      "evidence_ref": "file:guard_handoffs/logicguard.json;sha256:4c5461241fa349fb2638e5793b781f6a0402ce4ab49da8c6100855c7235a7ab3",
+      "evidence_ref": "file:guard_handoffs/logicguard.json;sha256:eb39476d610f837712ee2da9f771af52e574f4ed9dcc6986de383a9f10ebbefa",
       "input_fingerprint": "sha256:3a85fcd7149479214cf661ef2ba96e681cc326dc097c7f11be43f8b3c45cc0b3",
       "blocks_closure": false,
       "next_action": "Refresh LogicGuard theme support after ending, arc, or final-prose changes"
@@ -43,7 +43,7 @@
     {
       "surface": "sourceguard_canon_support",
       "status": "passed",
-      "evidence_ref": "file:guard_handoffs/sourceguard.json;sha256:9fe806f991e9948cfe5dc1a4e315ecebd806174d7df0be3477d6a49ed7bfcb79",
+      "evidence_ref": "file:guard_handoffs/sourceguard.json;sha256:d3aeb1fa81c22f1554f3e9a0a5f4ef8fe1015f9203c4e83b8aad2627e6b819ec",
       "input_fingerprint": "sha256:8a2a9448e059aaf4bd5baa1eb12e10ee2b17ac90f4b37382c38508995d710e69",
       "blocks_closure": false,
       "next_action": "Refresh SourceGuard source support after source requirement or final artifact changes"
