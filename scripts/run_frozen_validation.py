@@ -150,6 +150,8 @@ def _validate_plan(contract: Mapping[str, Any]) -> tuple[list[dict[str, Any]], d
 
 
 def _is_ignored(relative: Path, *, explicit: bool) -> bool:
+    if relative.as_posix().startswith(".flowguard/cache/"):
+        return True
     parts = relative.as_posix().split("/")
     if relative.name == "verification-report.json":
         return True

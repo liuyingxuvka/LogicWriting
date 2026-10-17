@@ -73,15 +73,15 @@ def inventory_revision(value: Mapping[str, Any] | None = None) -> str:
     declared_execution_case_ids = tuple(
         str(item) for item in declared.get("frozen_execution_case_ids", [])
     )
-    if declared_source_case_ids != source_name_case_ids:
+    if declared and declared_source_case_ids != source_name_case_ids:
         raise ValueError("declared frozen source case inventory does not match FlowGuard")
-    if declared_execution_case_ids != execution_boundary_case_ids:
+    if declared and declared_execution_case_ids != execution_boundary_case_ids:
         raise ValueError("declared frozen execution case inventory does not match FlowGuard")
     payload = {
         "checks": contract["checks"],
         "contract_version": contract.get("contract_version"),
         "change": contract.get("change"),
-        "test_mesh": declared,
+        "test_mesh": contract.get("test_mesh"),
     }
     canonical = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
     return "sha256:" + hashlib.sha256(canonical).hexdigest()

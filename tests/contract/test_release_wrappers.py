@@ -357,6 +357,7 @@ def test_frozen_boundary_excludes_runtime_inputs_and_internal_records():
         "docs/flowguard_adoption_log.md",
         ".flowguard/adoption_log.jsonl",
         ".flowguard/history/legacy.json",
+        ".flowguard/cache/.gitignore",
         ".flowguard/structure/reverse-surfaces/current-discovery.json",
     ):
         assert runner._is_ignored(Path(relative), explicit=True)
@@ -368,6 +369,7 @@ def test_frozen_boundary_excludes_runtime_inputs_and_internal_records():
     checks = {item["id"]: item for item in contract["checks"]}
     commands, consumers = runner._validate_plan(contract)
     assert commands and not consumers
+    assert "test_mesh" not in contract
     assert not any(
         str(selector).startswith("run-artifacts/")
         for item in checks.values() for selector in item["input_selectors"]

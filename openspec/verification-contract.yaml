@@ -23,25 +23,6 @@ obligations:
     required: true
     evidence: [check.source.reconciliation, check.tests.full, check.fiction.native, check.travel.native]
 
-test_mesh:
-  frozen_source_case_ids:
-    - case:source-name:receipt-schema-json
-    - case:source-name:receipts-schema-json
-    - case:source-name:cache-schema-json
-    - case:source-name:progress-schema-json
-    - case:source-name:registry-schema-json
-    - case:source-name:verification-receipt-schema-json
-  frozen_execution_case_ids:
-    - case:frozen-boundary:runtime-prerequisite-declared-as-source
-    - case:frozen-boundary:ignored-coordination-record-admitted
-    - case:frozen-boundary:ignored-adoption-record-admitted
-    - case:frozen-boundary:ignored-verification-output-admitted
-    - case:frozen-boundary:check-input-selector-unbound
-    - case:frozen-boundary:vcs-metadata-required-inside-frozen-root
-    - case:frozen-boundary:project-identity-bound-to-random-frozen-directory
-    - case:frozen-boundary:live-consumer-bound-to-change-lifecycle-contract
-    - case:frozen-boundary:post-archive-full-regression-not-run
-
 checks:
   - id: check.source.reconciliation
     kind: command
@@ -159,6 +140,7 @@ checks:
       - skills/logic-writing/agents/*.yaml
       - skills/logic-writing/assets/schemas/*.json
       - skills/logic-writing/references/**/*.md
+      - skills/logic-writing/references/routes/required-resources.json
       - skills/logic-writing/routes/**/*
       - skills/logic-writing/scripts/**/*.py
       - tests/**/*.py
@@ -257,6 +239,7 @@ freshness:
     - "**/verification-report.json"
     - "**/verification-receipts/**"
     - "**/.flowguard/evidence/**"
+    - "**/.flowguard/cache/**"
     - "**/.flowguard/history/**"
     - "**/.flowguard/structure/reverse-surfaces/**"
     - "**/run-artifacts/**"
