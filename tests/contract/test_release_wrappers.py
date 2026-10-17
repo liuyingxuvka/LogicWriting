@@ -31,7 +31,7 @@ def _load(name: str):
     return module
 
 
-def test_public_document_and_source_release_contracts_pass():
+def test_public_document_and_source_release_contracts_pass(monkeypatch):
     public_docs = _load("check_public_docs")
     release = _load("check_release_surface")
     assert public_docs.check(ROOT)["status"] == "passed"
@@ -42,6 +42,25 @@ def test_public_document_and_source_release_contracts_pass():
         require_clean=False,
         require_head=False,
     )["status"] == "passed"
+    sha = "a" * 40
+    repository = "liuyingxuvka/LogicWriting"
+    def git_lines(root, *args):
+        return [f"https://github.com/{repository}.git"] if args[:2] == ("remote", "get-url") else [sha]
+    payloads = {
+        "": {"full_name": repository, "private": False, "default_branch": "main"},
+        "git/ref/heads/main": {"object": {"sha": sha}},
+        f"git/ref/tags/v{release.VERSION}": {"object": {"type": "commit", "sha": sha}},
+        f"releases/tags/v{release.VERSION}": {"tag_name": f"v{release.VERSION}", "draft": False, "prerelease": False},
+    }
+    monkeypatch.setattr(release, "git_lines", git_lines)
+    monkeypatch.setattr(release, "_github_json", lambda repo, path="": payloads[path])
+    assert release._published_checks(ROOT, repository)[0] == []
+    payloads[f"git/ref/tags/v{release.VERSION}"]["object"]["sha"] = "b" * 40
+    assert "github_release_tag_does_not_match_head" in release._published_checks(ROOT, repository)[0]
+    def unavailable(*_args, **_kwargs):
+        raise OSError("public GitHub unavailable")
+    monkeypatch.setattr(release, "_github_json", unavailable)
+    assert "github_published_evidence_unavailable" in release._published_checks(ROOT, repository)[0]
 
 
 def test_quality_consumer_imports_from_repository_root():
@@ -589,9 +608,6 @@ def _minimal_frozen_receipts(runner, root: Path, receipts: Path, contract: dict[
     receipt["receipt_hash"] = runner._receipt_hash(receipt)
     success_path = receipts / "success" / "check.one" / ("a" * 64 + ".json")
     _write_json_file(success_path, receipt)
-    mesh_payload = {"status": "passed", "owner_count": 1}
-    mesh_path = receipts / "test-mesh-terminal.json"
-    _write_json_file(mesh_path, mesh_payload)
     parent = {
         "schema_version": "logic_writing_validation_index.v1",
         "status": "passed",
@@ -608,23 +624,30 @@ def _minimal_frozen_receipts(runner, root: Path, receipts: Path, contract: dict[
         "reused_check_ids": [],
         "receipts": {"check.one": receipt},
         "consumer_owners": {},
-        "test_mesh": {
+        "claim_boundary": "test",
+    }
+    if "test_mesh" in contract:
+        mesh_payload = {"status": "passed", "owner_count": 1}
+        mesh_path = receipts / "test-mesh-terminal.json"
+        _write_json_file(mesh_path, mesh_payload)
+        parent["test_mesh"] = {
             "status": "passed",
             "result_path": mesh_path.relative_to(receipts).as_posix(),
             "result_hash": runner._hash(mesh_payload),
-        },
-        "claim_boundary": "test",
-    }
+        }
     parent["index_hash"] = runner._hash(parent)
     _write_json_file(receipts / "index.json", parent)
 
 
-def test_frozen_audit_only_is_pure_read_and_revalidates_existing_parent(monkeypatch, tmp_path):
+@pytest.mark.parametrize("with_mesh", [False, True])
+def test_frozen_audit_only_is_pure_read_and_revalidates_existing_parent(monkeypatch, tmp_path, with_mesh):
     runner = _load("run_frozen_validation")
     root = tmp_path / "repo"
     (root / "openspec").mkdir(parents=True)
     (root / "source.txt").write_text("source\n", encoding="utf-8")
     contract = _minimal_frozen_contract()
+    if with_mesh:
+        contract["test_mesh"] = {}
     _write_json_file(root / "openspec" / "verification-contract.yaml", contract)
     # The custom helper writes JSON, which is valid YAML for this focused
     # contract and keeps the audit fixture deterministic.
@@ -653,7 +676,22 @@ def test_frozen_audit_only_is_pure_read_and_revalidates_existing_parent(monkeypa
     assert report["status"] == "passed"
     assert report["audit_only"] is True
     assert report["executed_check_ids"] == []
+    assert ("test_mesh" in report) is with_mesh
     assert before == after
+    if with_mesh:
+        mesh_path = receipts / "test-mesh-terminal.json"
+        _write_json_file(mesh_path, {"status": "passed", "owner_count": 2})
+        tampered = runner.run_validation(
+            root, Path("openspec/verification-contract.yaml"), receipts,
+            audit_only=True, require_clean_git=False,
+        )
+        assert tampered["error"] == "test_mesh_terminal_receipt_hash_mismatch"
+        mesh_path.unlink()
+        missing = runner.run_validation(
+            root, Path("openspec/verification-contract.yaml"), receipts,
+            audit_only=True, require_clean_git=False,
+        )
+        assert missing["error"].startswith("test_mesh_terminal_receipt_invalid:")
 
 
 def test_frozen_validation_creates_private_attempt_and_passes_owner_context(monkeypatch, tmp_path):
@@ -662,6 +700,8 @@ def test_frozen_validation_creates_private_attempt_and_passes_owner_context(monk
     (root / "openspec").mkdir(parents=True)
     (root / "source.txt").write_text("source\n", encoding="utf-8")
     contract = _minimal_frozen_contract()
+    (root / "other.txt").write_text("first snapshot\n", encoding="utf-8")
+    contract["freshness"]["watch"].append("other.txt")
     _write_json_file(root / "openspec" / "verification-contract.yaml", contract)
     receipts = tmp_path / "receipts"
     calls: list[dict[str, object]] = []
@@ -674,7 +714,7 @@ def test_frozen_validation_creates_private_attempt_and_passes_owner_context(monk
 
     def fake_execute(command, *, cwd, timeout, env=None):
         calls.append({"command": command, "env": env})
-        if ".flowguard/test_mesh/run_checks.py" in command:
+        if ".flowguard/capabilities/test_mesh/run_checks.py" in command:
             assert env is None
             return {
                 "exit_code": 0,
@@ -715,6 +755,28 @@ def test_frozen_validation_creates_private_attempt_and_passes_owner_context(monk
     owner_attempts = list((receipts / "attempts" / "check.one").iterdir())
     assert len(owner_attempts) == 1
     assert (owner_attempts[0] / "run").is_dir()
+
+    unchanged = runner.run_validation(
+        root, Path("openspec/verification-contract.yaml"), receipts,
+        audit_only=False, require_clean_git=False,
+    )
+    assert unchanged["reused_check_ids"] == ["check.one"]
+    assert len(calls) == 1
+
+    # The check's narrow source.txt inputs are unchanged, but a different
+    # globally frozen source cannot inherit a receipt from the old snapshot.
+    (root / "other.txt").write_text("second snapshot\n", encoding="utf-8")
+    changed = runner.run_validation(
+        root, Path("openspec/verification-contract.yaml"), receipts,
+        audit_only=False, require_clean_git=False,
+    )
+    assert changed["executed_check_ids"] == ["check.one"]
+    assert changed["reused_check_ids"] == []
+    assert len(calls) == 2
+    assert runner.run_validation(
+        root, Path("openspec/verification-contract.yaml"), receipts,
+        audit_only=True, require_clean_git=False,
+    )["status"] == "passed"
 
 
 def test_frozen_success_reuse_rejects_result_outside_its_attempt(tmp_path):

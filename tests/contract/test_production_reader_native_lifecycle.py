@@ -3,11 +3,27 @@ from __future__ import annotations
 import json
 import subprocess
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
 import production_reader_pipeline as pipeline
 from build_source_unit_manifest import fingerprint_bytes
+
+
+@pytest.fixture
+def _windows_native_platform(monkeypatch):
+    """Keep taskkill fault simulations independent of the host platform."""
+    monkeypatch.setattr(
+        pipeline, "os", SimpleNamespace(**{**vars(pipeline.os), "name": "nt"})
+    )
+    monkeypatch.setattr(
+        pipeline, "subprocess", SimpleNamespace(**{
+            **vars(pipeline.subprocess),
+            "CREATE_NO_WINDOW": getattr(pipeline.subprocess, "CREATE_NO_WINDOW", 0),
+            "CREATE_NEW_PROCESS_GROUP": getattr(pipeline.subprocess, "CREATE_NEW_PROCESS_GROUP", 0),
+        })
+    )
 
 
 class _FakeNativeProcess:
@@ -89,7 +105,7 @@ def test_native_execution_receipt_is_written_for_exit_paths(monkeypatch, tmp_pat
     assert process.communicate_calls == [3]
 
 
-def test_native_timeout_receipt_records_bounded_cleanup(monkeypatch, tmp_path: Path):
+def test_native_timeout_receipt_records_bounded_cleanup(monkeypatch, tmp_path: Path, _windows_native_platform):
     process_box: list[_FakeNativeProcess] = []
 
     def popen(command, **kwargs):
@@ -98,6 +114,7 @@ def test_native_timeout_receipt_records_bounded_cleanup(monkeypatch, tmp_path: P
         return process
 
     def taskkill(command, **kwargs):
+        assert command == ["taskkill", "/PID", str(process_box[0].pid), "/T", "/F"]
         assert kwargs["timeout"] == 1
         process_box[0].killed = True
         process_box[0].returncode = -9
@@ -125,7 +142,7 @@ def test_native_timeout_receipt_records_bounded_cleanup(monkeypatch, tmp_path: P
     assert receipt["output_fingerprint"] is None
 
 
-def test_second_cleanup_drain_timeout_is_fail_closed_and_receipted(monkeypatch, tmp_path: Path):
+def test_second_cleanup_drain_timeout_is_fail_closed_and_receipted(monkeypatch, tmp_path: Path, _windows_native_platform):
     process_box: list[_FakeNativeProcess] = []
 
     def popen(command, **kwargs):
@@ -134,6 +151,7 @@ def test_second_cleanup_drain_timeout_is_fail_closed_and_receipted(monkeypatch, 
         return process
 
     def taskkill(command, **kwargs):
+        assert command == ["taskkill", "/PID", str(process_box[0].pid), "/T", "/F"]
         assert kwargs["timeout"] == 1
         # Pretend taskkill acknowledged the tree while the pipe remains
         # un-drainable.  The second communicate timeout must still block.
@@ -159,7 +177,7 @@ def test_second_cleanup_drain_timeout_is_fail_closed_and_receipted(monkeypatch, 
     assert receipt["stderr_fingerprint"] == fingerprint_bytes(b"late stderr")
 
 
-def test_communicate_error_cannot_be_reported_as_a_native_pass(monkeypatch, tmp_path: Path):
+def test_communicate_error_cannot_be_reported_as_a_native_pass(monkeypatch, tmp_path: Path, _windows_native_platform):
     process_box: list[_FakeNativeProcess] = []
 
     def popen(command, **kwargs):
@@ -168,6 +186,7 @@ def test_communicate_error_cannot_be_reported_as_a_native_pass(monkeypatch, tmp_
         return process
 
     def taskkill(command, **kwargs):
+        assert command == ["taskkill", "/PID", str(process_box[0].pid), "/T", "/F"]
         assert kwargs["timeout"] == 1
         return type("Result", (), {"returncode": 1})()
 
@@ -184,7 +203,7 @@ def test_communicate_error_cannot_be_reported_as_a_native_pass(monkeypatch, tmp_
     assert "synthetic pipe capture failure" in receipt["failure_detail"]
 
 
-def test_taskkill_timeout_is_bounded_and_fail_closed(monkeypatch, tmp_path: Path):
+def test_taskkill_timeout_is_bounded_and_fail_closed(monkeypatch, tmp_path: Path, _windows_native_platform):
     process_box: list[_FakeNativeProcess] = []
 
     def popen(command, **kwargs):
@@ -193,6 +212,7 @@ def test_taskkill_timeout_is_bounded_and_fail_closed(monkeypatch, tmp_path: Path
         return process
 
     def taskkill(command, **kwargs):
+        assert command == ["taskkill", "/PID", str(process_box[0].pid), "/T", "/F"]
         assert kwargs["timeout"] == 1
         raise subprocess.TimeoutExpired(command, kwargs["timeout"])
 

@@ -18,7 +18,8 @@
       "layer": "domain",
       "summary": "Select exactly one final owner and bounded investigation child.",
       "responsibilities": [
-        "routing"
+        "Choose one final owner from the requested terminal artifact.",
+        "Keep substantial research as a bounded investigation child; sibling routes never take final ownership."
       ],
       "files": [
         "skills/logic-writing/assets/schemas/route-decision.schema.json",
@@ -29,8 +30,12 @@
         "tests/e2e/test_routes.py",
         "tests/unit/test_routing.py"
       ],
-      "entrypoints": [],
-      "state": [],
+      "entrypoints": [
+        "skills/logic-writing/scripts/select_route.py:select_route"
+      ],
+      "state": [
+        "Current request/intent fingerprints and selected owner."
+      ],
       "side_effects": [],
       "depends_on": [
         "reader-artifact"
@@ -43,14 +48,16 @@
       "models": [
         ".flowguard/verification/owners/route_and_guard_model/run_checks.py"
       ],
-      "status": "draft"
+      "status": "confirmed",
+      "fingerprint": "sha256:cc88e30af9ac0d41245a30bcb6a4a5066e85ce68bb52116b3b1504c589b12815"
     },
     {
       "id": "research-packet",
       "layer": "domain",
       "summary": "Preserve native evidence, argument/source identity and handoff consumption.",
       "responsibilities": [
-        "research-packet"
+        "Validate source identity, claim support and current native receipts.",
+        "Bind ResearchGuard synthesis plans to consumed reader units without replacing native member authority."
       ],
       "files": [
         "skills/logic-writing/assets/schemas/claim-support.schema.json",
@@ -76,9 +83,17 @@
         "tests/contract/test_researchguard_handoff.py",
         "tests/unit/test_consumer_resource_closure.py"
       ],
-      "entrypoints": [],
-      "state": [],
-      "side_effects": [],
+      "entrypoints": [
+        "skills/logic-writing/scripts/researchguard_handoff.py:build_researchguard_handoff",
+        "skills/logic-writing/scripts/researchguard_handoff.py:validate_handoff_consumption",
+        "skills/logic-writing/scripts/validate_research_packet.py:validate_research_packet"
+      ],
+      "state": [
+        "Native plan/receipt/source fingerprints and consumed unit bindings."
+      ],
+      "side_effects": [
+        "Read evidence files and persist existing domain receipt records."
+      ],
       "depends_on": [
         "reader-artifact"
       ],
@@ -90,14 +105,17 @@
       "models": [
         ".flowguard/verification/owners/research_packet_model/run_checks.py"
       ],
-      "status": "draft"
+      "status": "confirmed",
+      "fingerprint": "sha256:ba2ff6c4ae7af148c1cf77fc207ff597b75ffad83e73932a4b8a9ee97c501668"
     },
     {
       "id": "reader-artifact",
       "layer": "domain",
       "summary": "Reader intent, composition, writer projection, actual-byte map/audit, review and closure.",
       "responsibilities": [
-        "reader-artifact"
+        "Preserve requested intent, composition order, editorial dispositions and writer projection.",
+        "Bind actual artifact bytes and spans to shared contracts, deterministic audit and route review.",
+        "Derive closure from one current snapshot, independent captured judgment, freshness and real repair stopping."
       ],
       "files": [
         "skills/logic-writing/SKILL.md",
@@ -132,8 +150,6 @@
         "skills/logic-writing/references/shared/human-writing.md",
         "skills/logic-writing/references/shared/reader-brief.md",
         "skills/logic-writing/references/shared/writing-contract.md",
-        "skills/logic-writing/routes/academic/scripts/validate_academic_artifact.py",
-        "skills/logic-writing/routes/investigation/scripts/validate_investigation_artifact.py",
         "skills/logic-writing/scripts/audit_reader_output.py",
         "skills/logic-writing/scripts/build_artifact_map.py",
         "skills/logic-writing/scripts/build_obligation_manifest.py",
@@ -208,9 +224,20 @@
         "tests/unit/test_writer_projection.py",
         "tests/v2_support.py"
       ],
-      "entrypoints": [],
-      "state": [],
-      "side_effects": [],
+      "entrypoints": [
+        "skills/logic-writing/scripts/production_reader_pipeline.py:prepare_production_reader_input",
+        "skills/logic-writing/scripts/reader_pipeline.py:build_writer_input",
+        "skills/logic-writing/scripts/reader_pipeline.py:build_artifact_map",
+        "skills/logic-writing/scripts/derive_closure.py:derive_closure",
+        "skills/logic-writing/scripts/reader_receipts.py:commit_reader_judgment_receipt"
+      ],
+      "state": [
+        "Intent/plan/writer input and artifact fingerprints; audit/review/judgment status.",
+        "Current defect lineage, RepairRequest/RepairResult and stale dependencies."
+      ],
+      "side_effects": [
+        "Read exact artifact bytes; write existing reader/domain receipts on explicit persistence."
+      ],
       "depends_on": [
         "research-packet"
       ],
@@ -251,14 +278,16 @@
         ".flowguard/verification/owners/reader_artifact_model/run_checks.py",
         ".flowguard/verification/owners/operation_freshness_closure_model/run_checks.py"
       ],
-      "status": "draft"
+      "status": "confirmed",
+      "fingerprint": "sha256:ff160d7ad127c4cdd20985228dccb908bf7331816116ccb79413ace2333068ee"
     },
     {
       "id": "execution-binding",
       "layer": "domain",
       "summary": "Real writer/judge captures, context separation and execution-bound judgment.",
       "responsibilities": [
-        "execution-binding"
+        "Capture actual local writer and judge execution, separate writer and judge contexts.",
+        "Resolve current inputs, raw output bytes and structured judgment rather than trusting completion or independence markers."
       ],
       "files": [
         "skills/logic-writing/assets/schemas/reader-execution-record.schema.json",
@@ -271,9 +300,17 @@
         "tests/contract/test_local_execution_backend_lifecycle.py",
         "tests/contract/test_quality_execution_opt_in.py"
       ],
-      "entrypoints": [],
-      "state": [],
-      "side_effects": [],
+      "entrypoints": [
+        "skills/logic-writing/scripts/local_execution_backend.py:LocalCodexBackend",
+        "skills/logic-writing/scripts/execution_record_resolver.py:LocalExecutionRecordResolver",
+        "skills/logic-writing/scripts/reader_execution.py:validate_judgment_execution_record"
+      ],
+      "state": [
+        "Capture manifest, actual raw output hash, three judgment input fingerprints and execution identity."
+      ],
+      "side_effects": [
+        "Explicit backend invocation creates capture files; validation reads them without a new model call."
+      ],
       "depends_on": [
         "reader-artifact"
       ],
@@ -286,14 +323,17 @@
       "models": [
         ".flowguard/verification/owners/execution_binding/run_checks.py"
       ],
-      "status": "draft"
+      "status": "confirmed",
+      "fingerprint": "sha256:3adcbed75f788e521df27c995cc01487b93c717dc1d7a3c55d8749f8d078c11d"
     },
     {
       "id": "fiction",
       "layer": "domain",
       "summary": "Native fiction taxonomy, state, model/prose binding and long-form closure.",
       "responsibilities": [
-        "fiction"
+        "Route sixteen artifact types across supported prose phases.",
+        "Preserve native world/state, promise, scene, chapter, voice and model/prose bindings.",
+        "License long-form closure only from current linked project evidence and actual prose."
       ],
       "files": [
         "skills/logic-writing/routes/fiction/examples/execution-depth/intentionally-shallow.json",
@@ -466,9 +506,17 @@
         "skills/logic-writing/routes/fiction/scripts/voice_style_continuity_check.py",
         "tests/unit/test_fiction.py"
       ],
-      "entrypoints": [],
-      "state": [],
-      "side_effects": [],
+      "entrypoints": [
+        "skills/logic-writing/routes/fiction/scripts/storyline_route_check.py:compile_route_decision",
+        "skills/logic-writing/routes/fiction/scripts/longform_closure_check.py:validate",
+        "skills/logic-writing/routes/fiction/scripts/validate_fiction_artifact.py:validate_fiction_artifact"
+      ],
+      "state": [
+        "Project/revision identity, native evidence hashes, prose phase and final closure surfaces."
+      ],
+      "side_effects": [
+        "Read actual project/manuscript resources."
+      ],
       "depends_on": [
         "reader-artifact"
       ],
@@ -478,14 +526,16 @@
       "models": [
         ".flowguard/verification/owners/fiction_route_model/run_checks.py"
       ],
-      "status": "draft"
+      "status": "confirmed",
+      "fingerprint": "sha256:9c40be58fc851ba436758d0b06e6f963695dae8553d2208e7c5c5a30706a3183"
     },
     {
       "id": "travel",
       "layer": "domain",
       "summary": "Native traveler feasibility, time/weather modes and guide/reverse review.",
       "responsibilities": [
-        "travel"
+        "Validate traveler fit, feasible schedule/resources/access, source/time/weather boundaries and fallback plans.",
+        "Bind the final guide and reverse review to exact guide bytes and neutral shared reader projection."
       ],
       "files": [
         "skills/logic-writing/routes/travel/examples/failure_cases/accessibility_review_missing.json",
@@ -559,9 +609,16 @@
         "skills/logic-writing/routes/travel/scripts/validate_travel_text_outputs.py",
         "tests/unit/test_travel.py"
       ],
-      "entrypoints": [],
-      "state": [],
-      "side_effects": [],
+      "entrypoints": [
+        "skills/logic-writing/routes/travel/scripts/travel_contract.py:validate_plan_file",
+        "skills/logic-writing/routes/travel/scripts/validate_travel_artifact.py:validate_travel_artifact"
+      ],
+      "state": [
+        "Traveler/time mode, plan/guide identity and material feasibility gaps."
+      ],
+      "side_effects": [
+        "Read selected plan/source/guide files."
+      ],
       "depends_on": [
         "reader-artifact"
       ],
@@ -571,21 +628,28 @@
       "models": [
         ".flowguard/verification/owners/travel_route_model/run_checks.py"
       ],
-      "status": "draft"
+      "status": "confirmed",
+      "fingerprint": "sha256:c326b657ea1e958809a7f0a43077699cda02e18154b1f9e36a99ed0192e492e0"
     },
     {
       "id": "investigation",
       "layer": "domain",
       "summary": "Investigation final-owner semantics.",
       "responsibilities": [
-        "investigation"
+        "Keep investigation as final owner or a bounded child with visible evidence/argument/trace limits.",
+        "Review current investigation artifact spans against route-specific dimensions."
       ],
       "files": [
         "skills/logic-writing/references/routes/investigation.md",
+        "skills/logic-writing/routes/investigation/scripts/validate_investigation_artifact.py",
         "tests/unit/test_investigation.py"
       ],
-      "entrypoints": [],
-      "state": [],
+      "entrypoints": [
+        "skills/logic-writing/routes/investigation/scripts/validate_investigation_artifact.py:validate_investigation_artifact"
+      ],
+      "state": [
+        "Current investigation route composition/review and evidence limitations."
+      ],
       "side_effects": [],
       "depends_on": [
         "reader-artifact"
@@ -596,21 +660,28 @@
       "models": [
         ".flowguard/verification/owners/investigation_route_model/run_checks.py"
       ],
-      "status": "draft"
+      "status": "confirmed",
+      "fingerprint": "sha256:367e26d7a4544fe84d0875a88bbeeb8fe5efda409827fee78776a6ca7533073e"
     },
     {
       "id": "academic",
       "layer": "domain",
       "summary": "Academic final-owner semantics and revision.",
       "responsibilities": [
-        "academic"
+        "Preserve academic argument, section jobs, citation and revision-provenance boundaries.",
+        "Review current academic artifact spans against route-specific dimensions."
       ],
       "files": [
         "skills/logic-writing/references/routes/academic-writing.md",
+        "skills/logic-writing/routes/academic/scripts/validate_academic_artifact.py",
         "tests/unit/test_academic.py"
       ],
-      "entrypoints": [],
-      "state": [],
+      "entrypoints": [
+        "skills/logic-writing/routes/academic/scripts/validate_academic_artifact.py:validate_academic_artifact"
+      ],
+      "state": [
+        "Current academic composition/review and exact revision provenance."
+      ],
       "side_effects": [],
       "depends_on": [
         "reader-artifact"
@@ -621,14 +692,17 @@
       "models": [
         ".flowguard/verification/owners/academic_route_model/run_checks.py"
       ],
-      "status": "draft"
+      "status": "confirmed",
+      "fingerprint": "sha256:17bb858fa38e39df2a801f32657f57e5773c1ebdcfd7946b7572ec15525c57e6"
     },
     {
       "id": "release",
       "layer": "domain",
       "summary": "Ordinary validation, staging, release identity and predecessor retirement.",
       "responsibilities": [
-        "release"
+        "Stage canonical skill files with exact inventory/byte parity and representative route/resource checks.",
+        "Run eleven ordinary release commands with one full pytest owner and no live quality experiment.",
+        "Separate local source, actual installed directory and hosted main/tag/stable Release identities."
       ],
       "files": [
         ".codex/skills/openspec-apply-change/SKILL.md",
@@ -637,20 +711,10 @@
         ".codex/skills/openspec-propose/SKILL.md",
         ".codex/skills/openspec-sync-specs/SKILL.md",
         ".gitattributes",
+        ".github/workflows/publish-release.yml",
         ".gitignore",
         "AGENTS.md",
         "VERSION",
-        "openspec/changes/repair-argument-to-reader-composition/.openspec.yaml",
-        "openspec/changes/repair-argument-to-reader-composition/design.md",
-        "openspec/changes/repair-argument-to-reader-composition/proposal.md",
-        "openspec/changes/repair-argument-to-reader-composition/specs/consumer-resource-closure/spec.md",
-        "openspec/changes/repair-argument-to-reader-composition/specs/fiction-writing-route/spec.md",
-        "openspec/changes/repair-argument-to-reader-composition/specs/reader-execution-evidence/spec.md",
-        "openspec/changes/repair-argument-to-reader-composition/specs/reader-facing-synthesis/spec.md",
-        "openspec/changes/repair-argument-to-reader-composition/specs/travel-guide-route/spec.md",
-        "openspec/changes/repair-argument-to-reader-composition/specs/unified-routing/spec.md",
-        "openspec/changes/repair-argument-to-reader-composition/specs/writing-quality-benchmark/spec.md",
-        "openspec/changes/repair-argument-to-reader-composition/tasks.md",
         "openspec/config.yaml",
         "openspec/specs/academic-writing-route/spec.md",
         "openspec/specs/current-researchguard-provider/spec.md",
@@ -695,9 +759,17 @@
         "tests/flowguard/test_alignment_and_mesh.py",
         "tests/flowguard/test_model_contracts.py"
       ],
-      "entrypoints": [],
-      "state": [],
-      "side_effects": [],
+      "entrypoints": [
+        "scripts/run_frozen_validation.py:run_validation",
+        "scripts/check_installation_parity.py:check",
+        "scripts/check_release_surface.py:check"
+      ],
+      "state": [
+        "Frozen source/toolchain/command receipts and source/tag/release identity."
+      ],
+      "side_effects": [
+        "Run explicit ordinary check processes, write their existing receipts, read public GitHub identity."
+      ],
       "depends_on": [
         "reader-artifact"
       ],
@@ -712,14 +784,16 @@
       "models": [
         ".flowguard/verification/owners/release_retirement_model/run_checks.py"
       ],
-      "status": "draft"
+      "status": "confirmed",
+      "fingerprint": "sha256:15e84a8197b52cdf3fd3c8347a2342ac3e6255d045b78d2f5088417c3f19ac85"
     },
     {
       "id": "providers",
       "layer": "domain",
       "summary": "Explicit native provider boundaries and availability checks.",
       "responsibilities": [
-        "providers"
+        "Preflight only the selected native ResearchGuard member or explicit portable/document provider.",
+        "Require ResearchGuard 0.5.6 installed console identity; keep WorldGuard static portable launcher availability separate from domain judgment."
       ],
       "files": [
         "skills/logic-writing/assets/schemas/adapter-request.schema.json",
@@ -730,9 +804,15 @@
         "tests/contract/test_adapters.py",
         "tests/unit/test_researchguard_provider_topology.py"
       ],
-      "entrypoints": [],
-      "state": [],
-      "side_effects": [],
+      "entrypoints": [
+        "skills/logic-writing/scripts/provider_preflight.py:preflight"
+      ],
+      "state": [
+        "Provider identity/version, explicit resource fingerprints and typed available/unavailable/blocked result."
+      ],
+      "side_effects": [
+        "Run one selected help/version availability path; no fallback, self-test or automatic domain execution."
+      ],
       "depends_on": [
         "reader-artifact",
         "release"
@@ -744,20 +824,24 @@
       "models": [
         ".flowguard/verification/owners/route_and_guard_model/run_checks.py"
       ],
-      "status": "draft"
+      "status": "confirmed",
+      "fingerprint": "sha256:a78b26ffcba37399eea76b0484d2f89a6f062219984798cf4838c6c902f617b7"
     },
     {
       "id": "shared-contracts",
       "layer": "domain",
       "summary": "Shared canonical identity and JSON schema validation used by existing domain owners.",
       "responsibilities": [
-        "preserve canonical identity and strict shared validation"
+        "Preserve canonical content fingerprints and strict JSON schema validation shared by existing domain owners."
       ],
       "files": [
         "skills/logic-writing/scripts/_common.py",
         "skills/logic-writing/scripts/schema_validation.py"
       ],
-      "entrypoints": [],
+      "entrypoints": [
+        "skills/logic-writing/scripts/_common.py:fingerprint",
+        "skills/logic-writing/scripts/schema_validation.py:assert_schema_valid"
+      ],
       "state": [],
       "side_effects": [],
       "depends_on": [],
@@ -768,7 +852,8 @@
         ".flowguard/verification/owners/reader_artifact_model/run_checks.py",
         ".flowguard/verification/owners/research_packet_model/run_checks.py"
       ],
-      "status": "draft"
+      "status": "confirmed",
+      "fingerprint": "sha256:fe7d7cb8451bbad7f9f723d81143d57f10af21fc58175bb849c6d877aa59eb9f"
     }
   ],
   "flows": []

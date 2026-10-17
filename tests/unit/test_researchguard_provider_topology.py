@@ -6,7 +6,7 @@ from types import SimpleNamespace
 
 import provider_preflight
 
-from scripts.check_researchguard_topology import check
+from scripts.check_researchguard_topology import RETIRED_SKILL_IDS, check
 
 
 class _Distribution:
@@ -199,8 +199,26 @@ def test_member_provider_root_is_rejected_before_console_execution(monkeypatch, 
     assert "provider-root overrides" in result["evidence"]["reason"]
 
 
-def test_current_consumer_has_zero_retired_researchguard_routes():
+def test_current_consumer_has_zero_retired_researchguard_routes(tmp_path):
     root = Path(__file__).resolve().parents[2]
     report = check(root)
-
     assert report["ok"], report["findings"]
+
+    # Only the current generated FG inventory cache is outside source topology.
+    for relative in (
+        "skills/logic-writing/scripts/provider_preflight.py",
+        "skills/logic-writing/scripts/validate_adapter_result.py",
+        "skills/logic-writing/assets/schemas/adapter-result.schema.json",
+    ):
+        target = tmp_path / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes((root / relative).read_bytes())
+    generated = tmp_path / ".flowguard/cache/inventory.json"
+    generated.parent.mkdir(parents=True)
+    generated.write_text(RETIRED_SKILL_IDS[0], encoding="utf-8")
+    assert check(tmp_path)["ok"]
+    active = tmp_path / "skills/logic-writing/cache/active.md"
+    active.parent.mkdir(parents=True)
+    active.write_text(RETIRED_SKILL_IDS[0], encoding="utf-8")
+    assert any(row["path"] == active.relative_to(tmp_path).as_posix()
+               for row in check(tmp_path)["findings"])

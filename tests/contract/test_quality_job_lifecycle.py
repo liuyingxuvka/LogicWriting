@@ -232,6 +232,11 @@ def test_isolated_child_dependency_failure_publishes_terminal_row(tmp_path):
 def test_backend_cleanup_proof_survives_worker_tree_observation_gap(monkeypatch, tmp_path):
     """A completed backend record must not be relabeled as worker cleanup failure."""
 
+    # The observation gap is a Windows WMI condition. Preserve the host OS
+    # for paths and other tests while selecting that branch in this owner.
+    monkeypatch.setattr(
+        benchmark, "os", SimpleNamespace(**{**vars(benchmark.os), "name": "nt"})
+    )
     class CompletedWorker:
         pid = 7711
 

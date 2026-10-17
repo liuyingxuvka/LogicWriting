@@ -61,8 +61,9 @@ def _governed_files(root: Path):
         # ``rglob`` still walks every historical receipt directory and can
         # exceed the bounded author-check timeout.
         for directory, dirnames, filenames in os.walk(target):
-            dirnames[:] = [name for name in dirnames if name not in SKIP_PARTS]
             base = Path(directory)
+            dirnames[:] = [name for name in dirnames if name not in SKIP_PARTS
+                          and not (relative == ".flowguard" and base == target and name == "cache")]
             for filename in filenames:
                 path = base / filename
                 if path.suffix.lower() not in TEXT_SUFFIXES:

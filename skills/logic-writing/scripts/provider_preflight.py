@@ -32,8 +32,8 @@ RESEARCHGUARD_MEMBERS = {
 }
 SUPPORTED_RESEARCHGUARD_VERSION = "0.5.6"
 SCOPE_OUT_PROVIDERS = {
-    "experimentguard": "ExperimentGuard is not an active Logic Writing 4.0.4 provider.",
-    "researchguard": "The ResearchGuard umbrella route is not an active Logic Writing 4.0.4 provider.",
+    "experimentguard": "ExperimentGuard is not an active Logic Writing 4.0.5 provider.",
+    "researchguard": "The ResearchGuard umbrella route is not an active Logic Writing 4.0.5 provider.",
 }
 MODULE_PROVIDERS = {
     "flowguard": ("flowguard", ("SCHEMA_VERSION", "FlowGuardCheckPlan")),
@@ -137,7 +137,10 @@ def _worldguard_preflight(provider_root):
             return "blocked", {**evidence, "reason": "provider_path_escaped_root"}
         if not path.is_file():
             return "provider_unavailable", {**evidence, "reason": "portable_resource_missing"}
-    name, _ = _skill_manifest(root)
+    try:
+        name, _ = _skill_manifest(root)
+    except (OSError, UnicodeError):
+        return "provider_unavailable", {**evidence, "reason": "portable_manifest_unreadable"}
     if name != "worldguard":
         return "blocked", {**evidence, "reason": "provider_identity_mismatch"}
     try:

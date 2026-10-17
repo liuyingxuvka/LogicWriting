@@ -1005,18 +1005,24 @@ def _audit_existing_validation(
     except (OSError, UnicodeError, ValueError, TypeError, json.JSONDecodeError) as exc:
         return {**base, "status": "failed", "error": str(exc)}
 
-    mesh_info = parent.get("test_mesh")
-    if not isinstance(mesh_info, Mapping) or mesh_info.get("status") != "passed":
-        return {**base, "status": "failed", "error": "test_mesh_terminal_receipt_missing"}
-    try:
-        mesh_path = _safe_evidence_path(receipts, mesh_info.get("result_path"), field="test_mesh.result_path")
-        mesh_payload = _read_json(mesh_path)
-    except (OSError, UnicodeError, ValueError, TypeError, json.JSONDecodeError) as exc:
-        return {**base, "status": "failed", "error": f"test_mesh_terminal_receipt_invalid:{exc}"}
-    if not isinstance(mesh_payload, Mapping) or mesh_payload.get("status") != "passed":
-        return {**base, "status": "failed", "error": "test_mesh_terminal_receipt_not_passed"}
-    if mesh_info.get("result_hash") != _hash(mesh_payload):
-        return {**base, "status": "failed", "error": "test_mesh_terminal_receipt_hash_mismatch"}
+    mesh_required = "test_mesh" in contract or any(
+        str(check["id"]) == "check.testmesh.plan" for check in ordered
+    )
+    mesh_evidence = {}
+    if mesh_required:
+        mesh_info = parent.get("test_mesh")
+        if not isinstance(mesh_info, Mapping) or mesh_info.get("status") != "passed":
+            return {**base, "status": "failed", "error": "test_mesh_terminal_receipt_missing"}
+        try:
+            mesh_path = _safe_evidence_path(receipts, mesh_info.get("result_path"), field="test_mesh.result_path")
+            mesh_payload = _read_json(mesh_path)
+        except (OSError, UnicodeError, ValueError, TypeError, json.JSONDecodeError) as exc:
+            return {**base, "status": "failed", "error": f"test_mesh_terminal_receipt_invalid:{exc}"}
+        if not isinstance(mesh_payload, Mapping) or mesh_payload.get("status") != "passed":
+            return {**base, "status": "failed", "error": "test_mesh_terminal_receipt_not_passed"}
+        if mesh_info.get("result_hash") != _hash(mesh_payload):
+            return {**base, "status": "failed", "error": "test_mesh_terminal_receipt_hash_mismatch"}
+        mesh_evidence["test_mesh"] = {"status": "passed", "result_path": mesh_info.get("result_path")}
     return {
         **base,
         "status": "passed",
@@ -1028,7 +1034,7 @@ def _audit_existing_validation(
         "receipt_consumer_count": len(consumers),
         "reused_check_ids": [str(item["id"]) for item in ordered],
         "consumer_owners": dict(consumers),
-        "test_mesh": {"status": "passed", "result_path": mesh_info.get("result_path")},
+        **mesh_evidence,
     }
 
 
@@ -1136,6 +1142,10 @@ def run_validation(
                 receipts=receipts,
                 check_id=check_id,
             )
+            # The parent/audit contract binds every owner to this full source
+            # snapshot, even when that owner's narrower inputs did not change.
+            if current is not None and current.get("artifact_version") != snapshot_id:
+                current = None
             if current is not None:
                 index[check_id] = current
                 reused.append(check_id)

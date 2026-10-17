@@ -253,6 +253,11 @@ def test_local_run_uses_exit_boundary_snapshot_without_weakening_unknown_rule(
 ):
     """An early empty snapshot survives a late WMI miss; nonempty stays unknown."""
 
+    # Select the Windows observation branch without changing the host's
+    # pathlib or the real short-lived child process used by this test.
+    monkeypatch.setattr(
+        backend_module, "os", SimpleNamespace(**{**vars(backend_module.os), "name": "nt"})
+    )
     real_popen = backend_module._REAL_SUBPROCESS_POPEN
     code = (
         "import json,pathlib,sys; "

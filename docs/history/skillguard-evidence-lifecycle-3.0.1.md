@@ -1,3 +1,5 @@
+> Historical retired author workflow; no current runtime or release dependency.
+
 # SkillGuard evidence lifecycle — Logic Writing 3.0.1
 
 This record fixes the evidence boundary for the 3.0.1 release. It is a

@@ -6,6 +6,21 @@ releases, tags, package publications, installations, or predecessor deletions.
 The format follows the main ideas of Keep a Changelog, and the source version
 line follows semantic versioning.
 
+## [4.0.5]
+
+### Fixed
+
+- Refreshed canonical fiction/travel fixture byte references and the ResearchGuard 0.5.6 provider contracts; real user artifacts still use exact byte hashes.
+- Bound passing judgments and final closure to the current independent capture, its actual JSON output and current intent/writer/artifact identities. Missing, unrelated or changed capture evidence cannot license pass.
+- Reused one same-call artifact/audit validation in closure and reject artifact changes before emission.
+- Added portable WorldGuard launcher preflight with an explicit contained skill root.
+
+### Simplified
+
+- Removed SkillGuard author contracts, duplicated local skill copies, the old 22-receipt proof mesh and nested pytest launches. Retained native state models, real bad variants, ordinary domain tests and current FlowGuard 0.70.3 map bindings.
+- Kept one full pytest owner in ordinary offline release; live quality experiments remain explicit finite-budget operations. Independent reader review remains required for actual final closure.
+- Documented one independent review context for route and reader responsibilities, aligned the one-no-progress stopping rule, and removed the unused fiction self-proof bundle.
+
 ## [4.0.4]
 
 ### Fixed

@@ -98,7 +98,7 @@ three direct semantic owners:
   material temporal, causal, implementation, competing-story,
   counterfactual, and prediction-boundary analysis.
 - ResearchGuard's `experiment` member and the umbrella `run` route are outside
-  Logic Writing `4.0.4`. Requests for them are visible scope blocks and do not
+  Logic Writing `4.0.5`. Requests for them are visible scope blocks and do not
   cause automatic multi-member execution.
 - WorldGuard owns material event, agent, space, resource, access, capability,
   conflict, authority, and norm consistency in real and fictional worlds.

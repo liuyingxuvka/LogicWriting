@@ -220,7 +220,7 @@ The development validation plane SHALL prove that every declared authority input
 - **AND** the native project audit result SHALL remain the sole pass or fail authority
 
 ### Requirement: Repeated no-progress loops terminate visibly
-Closure SHALL derive no-progress only from consecutive current RepairResult receipts for the same selected final owner and defect lineage. A no-progress result SHALL prove that a real repair request was issued and that the artifact bytes did not change or that the blocking defect set remained materially unchanged after a current edit. Repeated closure derivation alone SHALL NOT count as repair.
+Closure SHALL derive no-progress only from an actual current RepairResult for the selected final owner and defect lineage. One such no-progress result SHALL stop automatic repair on that lineage. A no-progress result SHALL prove that a real repair request was issued and that the artifact bytes did not change or that the blocking defect set remained materially unchanged after a current edit. Repeated closure derivation alone SHALL NOT count as repair.
 
 #### Scenario: Same packet is rejected twice
 - **WHEN** no RepairRequest and RepairResult pair exists for the repeated rejection
@@ -230,8 +230,8 @@ Closure SHALL derive no-progress only from consecutive current RepairResult rece
 - **WHEN** a current repair result binds identical input and output artifact fingerprints
 - **THEN** one no-progress attempt is recorded
 
-#### Scenario: Two genuine repairs make no progress
-- **WHEN** two consecutive current repair results for the same defect lineage record no progress
+#### Scenario: One genuine repair makes no progress
+- **WHEN** one actual current repair result records no progress for the same defect lineage
 - **THEN** closure terminates visibly as blocked and identifies the remaining defects and next human or evidence owner
 
 ### Requirement: Release validation survives change archival
@@ -327,7 +327,7 @@ The current closure SHALL reject legacy ReaderBrief, SharedWriting, audit, judgm
 - **THEN** closure rejects it as ineligible evidence
 
 ### Requirement: ResearchGuard suite identity is provider evidence
-Every LogicGuard, SourceGuard, or TraceGuard adapter run SHALL carry the unchanged semantic owner and a current ResearchGuard primary path, and its provider preflight SHALL identify the sole `researchguard` console and exact `0.5.4` suite version. Provider availability SHALL NOT prove that native domain work ran.
+Every LogicGuard, SourceGuard, or TraceGuard adapter run SHALL carry the unchanged semantic owner and a current ResearchGuard primary path, and its provider preflight SHALL identify the sole `researchguard` console and exact `0.5.6` suite version. Provider availability SHALL NOT prove that native domain work ran.
 
 #### Scenario: Console and member probe pass
 - **WHEN** both the ResearchGuard version probe and the selected member capability probe pass

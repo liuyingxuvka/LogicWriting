@@ -46,7 +46,7 @@ def test_protocol_fixture_has_twelve_balanced_cases():
     assert {row["language"] for row in cases} == {"zh-CN", "en"}
 
 
-def test_real_quality_runner_records_unavailable_without_backend(tmp_path):
+def test_real_quality_runner_requires_live_authorization_by_default(tmp_path):
     root = Path(__file__).resolve().parents[2]
     completed = subprocess.run(
         [
@@ -65,7 +65,7 @@ def test_real_quality_runner_records_unavailable_without_backend(tmp_path):
     assert completed.returncode == 2
     result = json.loads(completed.stdout)
     assert result["status"] == "not_run"
-    assert result["terminal_reason"] == "execution_provider_unavailable"
+    assert result["terminal_reason"] == "live_execution_not_authorized"
     assert result["actual_execution_count"] == 0
     assert not (tmp_path / "resources-benchmark-evidence" / "executions.json").exists()
 

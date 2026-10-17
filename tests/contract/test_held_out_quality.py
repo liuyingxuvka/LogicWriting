@@ -570,4 +570,4 @@ def test_single_reader_execution_record_binds_one_writer_context_without_pair_sh
     assert record["evaluation_mode"] == "single"
     assert record["pair_inputs"] == []
     assert record["input_artifact_fingerprint"] == artifact_fp
-    execution.validate_execution_record(record, lambda _record: {"writer_context_ids": ["writer-context"]})
+    execution.validate_execution_record(record, lambda _record: {"verified": True, "writer_context_ids": ["writer-context"]})

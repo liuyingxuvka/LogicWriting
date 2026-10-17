@@ -1,3 +1,5 @@
+> Retirement amendment (2026-10-17, 4.0.5): this ledger is archived as historical work, not as proof of its pending live quality or old 22-receipt/installation gates. Current maintenance uses the stable ordinary release contract, native models and staged directory byte parity. Live quality experiments remain explicit opt-in and unexecuted in this patch. The unchecked historical frozen-run item remains unchecked; the final 4.0.5 post-archive offline validation is recorded separately on its exact frozen source. Current specs are maintained directly; these older candidate deltas are not re-applied during archival.
+
 > Maintenance amendment (2026-10-17): the stable ordinary release contract and directory parity replace retired author wrappers. Quality experiments remain explicit opt-in; their pending live results do not block the offline patch release.
 
 ## 1. A01 change contract

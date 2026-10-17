@@ -119,6 +119,7 @@ checks:
       - .codex/skills/**/*.md
       - .flowguard/**/*.py
       - .flowguard/**/*.json
+      - .github/workflows/*.yml
       - .gitattributes
       - .gitignore
       - .logicguard/**/*.yaml

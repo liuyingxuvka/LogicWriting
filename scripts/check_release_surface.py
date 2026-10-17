@@ -4,13 +4,15 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
+from urllib.request import Request, urlopen
 from pathlib import Path
 
-from _release_common import emit, git_lines, run
+from _release_common import emit, git_lines
 
 
-VERSION = "4.0.4"
+VERSION = "4.0.5"
 REPOSITORY = "liuyingxuvka/LogicWriting"
 
 
@@ -48,6 +50,20 @@ def _source_checks(root: Path, *, require_clean: bool, require_head: bool) -> li
     return findings
 
 
+def _github_json(repository: str, path: str = "") -> dict:
+    """Read the same public GitHub authority directly; no local CLI/login needed."""
+    request = Request(f"https://api.github.com/repos/{repository}" + (f"/{path}" if path else ""),
+                      headers={"Accept": "application/vnd.github+json", "User-Agent": "LogicWriting-release-check"})
+    token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
+    if token:
+        request.add_header("Authorization", f"Bearer {token}")
+    with urlopen(request, timeout=30) as response:
+        value = json.load(response)
+    if not isinstance(value, dict):
+        raise ValueError("GitHub response must be an object")
+    return value
+
+
 def _published_checks(root: Path, repository: str) -> tuple[list[str], dict]:
     findings: list[str] = []
     evidence: dict = {}
@@ -58,40 +74,38 @@ def _published_checks(root: Path, repository: str) -> tuple[list[str], dict]:
     remote = git_lines(root, "remote", "get-url", "origin")
     if not remote or repository.lower() not in remote[0].lower():
         findings.append("origin_repository_mismatch")
-    view = run(
-        ["gh", "repo", "view", repository, "--json", "nameWithOwner,visibility,defaultBranchRef,url"],
-        cwd=root,
-        timeout=120,
-    )
-    if view.returncode != 0:
-        findings.append("github_repository_unavailable")
-    else:
-        try:
-            repo_data = json.loads(view.stdout)
-            evidence["repository"] = repo_data
-            if repo_data.get("nameWithOwner") != repository:
-                findings.append("github_repository_identity_mismatch")
-            if repo_data.get("visibility") != "PUBLIC":
-                findings.append("github_repository_not_public")
-            if (repo_data.get("defaultBranchRef") or {}).get("name") != "main":
-                findings.append("github_default_branch_not_main")
-        except json.JSONDecodeError:
-            findings.append("github_repository_response_invalid")
-    release = run(
-        ["gh", "release", "view", f"v{VERSION}", "--repo", repository, "--json", "tagName,isDraft,isPrerelease,url,targetCommitish"],
-        cwd=root,
-        timeout=120,
-    )
-    if release.returncode != 0:
-        findings.append("github_release_unavailable")
-    else:
-        try:
-            release_data = json.loads(release.stdout)
-            evidence["release"] = release_data
-            if release_data.get("tagName") != f"v{VERSION}" or release_data.get("isDraft") or release_data.get("isPrerelease"):
-                findings.append("github_release_identity_mismatch")
-        except json.JSONDecodeError:
-            findings.append("github_release_response_invalid")
+    try:
+        repo = _github_json(repository)
+        evidence["repository"] = {"nameWithOwner": repo.get("full_name"), "visibility": "PRIVATE" if repo.get("private") else "PUBLIC",
+                                  "defaultBranchRef": {"name": repo.get("default_branch")}, "url": repo.get("html_url")}
+        if repo.get("full_name") != repository:
+            findings.append("github_repository_identity_mismatch")
+        if repo.get("private") is not False:
+            findings.append("github_repository_not_public")
+        if repo.get("default_branch") != "main":
+            findings.append("github_default_branch_not_main")
+        main = _github_json(repository, "git/ref/heads/main")["object"]["sha"]
+        if not head or main != head[0]:
+            findings.append("github_main_does_not_match_head")
+        obj = _github_json(repository, f"git/ref/tags/v{VERSION}")["object"]
+        for _ in range(8):
+            if obj.get("type") == "commit":
+                break
+            if obj.get("type") != "tag":
+                raise ValueError("GitHub release tag has an unsupported object type")
+            obj = _github_json(repository, f"git/tags/{obj['sha']}")["object"]
+        if obj.get("type") != "commit" or not head or obj.get("sha") != head[0]:
+            findings.append("github_release_tag_does_not_match_head")
+        evidence["release_commit"] = obj.get("sha")
+        release = _github_json(repository, f"releases/tags/v{VERSION}")
+        evidence["release"] = {"tagName": release.get("tag_name"), "isDraft": release.get("draft"),
+                               "isPrerelease": release.get("prerelease"), "url": release.get("html_url"),
+                               "targetCommitish": release.get("target_commitish")}
+        if release.get("tag_name") != f"v{VERSION}" or release.get("draft") is not False or release.get("prerelease") is not False:
+            findings.append("github_release_identity_mismatch")
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        findings.append("github_published_evidence_unavailable")
+        evidence["error"] = f"{type(exc).__name__}: {exc}"
     return findings, evidence
 
 
