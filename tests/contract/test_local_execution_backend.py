@@ -96,9 +96,9 @@ def test_failed_judge_preserves_unverified_independence_status():
     assert dispatched["record"]["independence_status"] == "independence_unverified"
 
 
-def _make_capture(tmp_path: Path):
+def _make_capture(tmp_path: Path, *, role="writer", request_fields=None):
     run_root = tmp_path / "run"
-    attempt = run_root / "writer" / "one"
+    attempt = run_root / role / "one"
     attempt.mkdir(parents=True)
     prompt = "Return one sentence."
     prompt_path = attempt / "input.txt"
@@ -121,15 +121,16 @@ def _make_capture(tmp_path: Path):
     def sha(path: Path) -> str:
         return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
     request = {
-        "request_id": "writer:one",
+        "request_id": f"{role}:one",
         "reader_intent_fingerprint": FP_A,
         "writer_input_fingerprint": FP_B,
         "settings": {"sandbox": "read-only"},
         "prompt": prompt,
     }
+    request.update(request_fields or {})
     req_fp = fingerprint(request)
     result = {
-        "run_id": "writer:one",
+        "run_id": f"{role}:one",
         "context_id": "thread-one",
         "parent_orchestrator_run_id": "orchestrator:test",
         "model_id": "gpt-6-astra",
@@ -142,13 +143,13 @@ def _make_capture(tmp_path: Path):
         "settings_fingerprint": fingerprint(request["settings"]),
         "request_fingerprint": req_fp,
         "input_prompt_fingerprint": fingerprint_text(prompt),
-        "execution_capture_ref": "writer/one/completion.json",
-        "completion_locator": "writer/one/completion.json",
-        "raw_output_locator": "writer/one/output.txt",
-        "events_locator": "writer/one/events.jsonl",
-        "stderr_locator": "writer/one/stderr.txt",
+        "execution_capture_ref": f"{role}/one/completion.json",
+        "completion_locator": f"{role}/one/completion.json",
+        "raw_output_locator": f"{role}/one/output.txt",
+        "events_locator": f"{role}/one/events.jsonl",
+        "stderr_locator": f"{role}/one/stderr.txt",
         "request_fingerprint": req_fp,
-        "input_prompt_locator": "writer/one/input.txt",
+        "input_prompt_locator": f"{role}/one/input.txt",
         "raw_output_fingerprint": sha(output_path),
         "events_fingerprint": sha(events_path),
         "stderr_fingerprint": sha(stderr_path),
@@ -164,16 +165,17 @@ def _make_capture(tmp_path: Path):
         "terminal_event_type": "turn.completed",
         "terminal_event_index": 3,
         "tool_event_count": 0,
-        "writer_context_ids": [],
+        "writer_context_ids": ["context:writer:synthetic"] if role == "judge" else [],
+        "independence_status": "verified" if role == "judge" else "not_applicable",
         "usage": {"output_tokens": 1},
         "cost_actual": None,
     }
     completion = {
         "schema_version": "logic-writing.local-execution-completion.v1",
-        "role": "writer",
-        "run_id": "writer:one",
+        "role": role,
+        "run_id": f"{role}:one",
         "request_fingerprint": req_fp,
-        "input_prompt_locator": "writer/one/input.txt",
+        "input_prompt_locator": f"{role}/one/input.txt",
         "input_prompt_fingerprint": fingerprint_text(prompt),
         "executable_path": str(executable),
         "executable_sha256": sha(executable),
@@ -207,7 +209,7 @@ def _make_capture(tmp_path: Path):
     }
     completion["completion_fingerprint"] = fingerprint(completion)
     (attempt / "completion.json").write_text(json.dumps(completion, indent=2), encoding="utf-8")
-    record = _record_from_result(request, result, role="writer", backend_id="local-codex:test")
+    record = _record_from_result(request, result, role=role, backend_id="local-codex:test")
     return run_root, record
 
 
@@ -217,6 +219,37 @@ def test_local_resolver_verifies_capture_and_bytes(tmp_path):
     verified = resolver.resolve(record)
     assert verified["verified"] is True
     assert verified["context_id"] == "thread-one"
+
+    # Exercise the public judgment wrapper with actual local capture files,
+    # rather than treating a synthetic independence marker as execution.
+    from tests.v2_support import complete_chain
+    from validate_judgment_receipt import validate_judgment_receipt
+    chain = complete_chain(tmp_path / "chain")
+    run_root, judge = _make_capture(tmp_path / "judge", role="judge", request_fields={
+        "reader_intent_fingerprint": chain["intent"]["intent_fingerprint"],
+        "writer_input_fingerprint": chain["reader_brief"]["writer_input_fingerprint"],
+        "artifact_fingerprint": chain["artifact_map"]["artifact_fingerprint"],
+        "rubric_fingerprint": FP_A,
+    })
+    chain["judgment"]["execution_record_fingerprint"] = judge["record_fingerprint"]
+    chain["judgment"]["judgment_fingerprint"] = fingerprint({
+        key: item for key, item in chain["judgment"].items() if key != "judgment_fingerprint"
+    })
+    chain["reader_execution_records"] = [judge]
+    resolver = LocalExecutionRecordResolver(run_root, expected_cli_version="0.153.4")
+    assert validate_judgment_receipt(chain, execution_resolver=resolver)["status"] == "current_pass"
+    with pytest.raises(ValidationError, match="capture resolver"):
+        validate_judgment_receipt(chain)
+    for rejected in (False, None, {}, {"verified": False}, {"context_id": "thread-one"}):
+        with pytest.raises(ValidationError, match="cannot verify"):
+            validate_judgment_receipt(chain, execution_resolver=lambda _: rejected)
+    with pytest.raises(ValidationError, match="every writer context"):
+        validate_judgment_receipt(chain, execution_resolver=lambda _: {
+            "verified": True, "writer_context_ids": ["thread-one"],
+        })
+    (run_root / "judge" / "one" / "output.txt").write_text("changed\n", encoding="utf-8")
+    with pytest.raises(ValidationError, match="raw_output_fingerprint"):
+        validate_judgment_receipt(chain, execution_resolver=resolver)
 
 
 def test_local_resolver_rejects_changed_output(tmp_path):

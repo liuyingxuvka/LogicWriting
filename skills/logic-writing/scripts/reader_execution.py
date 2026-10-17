@@ -154,7 +154,10 @@ def validate_execution_record(record: Mapping[str, Any], resolver: Callable[[Map
                 verified = resolver.resolve(value)
             else:
                 raise ValidationError("execution resolver must be callable or provide resolve")
-            if value["independence_status"] == "verified" and not verified:
+            if value["independence_status"] == "verified" and (
+                (isinstance(verified, Mapping) and verified.get("verified") is not True)
+                or (not isinstance(verified, Mapping) and verified is not True)
+            ):
                 raise ValidationError("resolver cannot verify this judge execution")
             if value["independence_status"] == "verified" and isinstance(verified, Mapping):
                 contexts = set(verified.get("writer_context_ids", []))
