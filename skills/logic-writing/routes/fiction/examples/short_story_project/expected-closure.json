@@ -19,8 +19,8 @@
       "check_name": "traceguard-storyline-contract",
       "status": "passed",
       "required": true,
-      "evidence_ref": "file:guard_handoffs/traceguard.json;sha256:d9440bb802fc0a5b99f66e090b1a2b671a9b5d87da940c419ddbde49a01991f0",
-      "input_fingerprint": "sha256:9d69656be94f538157e409f350e305909b6b8ef0c5041c816cb41b55b8c382a4"
+      "evidence_ref": "file:guard_handoffs/traceguard.json;sha256:a63e5073051cff96ffb8c5e54e5bd858dfb0ad7e2ed7dd771c8e7a685da888dc",
+      "input_fingerprint": "sha256:255d752e61c8c7bc25b27b71780fa401858d0e32141b400565da40c42979d3b4"
     },
     {
       "surface": "worldguard_story_claims",
@@ -35,8 +35,8 @@
       "check_name": "logicguard-theme-contract",
       "status": "not_applicable_with_reason",
       "required": true,
-      "evidence_ref": "file:guard_handoffs/logicguard.json;sha256:130a7220171eb0c878afdf3e0d9886c60094f26aee89f1a1d104d4c8ddf65507",
-      "input_fingerprint": "sha256:644dd863244fd0e739c622abe2593e70685b551305088d3b8f7c15c922da737c",
+      "evidence_ref": "file:guard_handoffs/logicguard.json;sha256:493155937d57d241c8186662948c049eec9ceaaf48a64445e72cf72c5278f33b",
+      "input_fingerprint": "sha256:589fa8dc1fabc1ece12018005f2f1b32d1a26de555ccabe71341810dd5c9b05c",
       "not_applicable_reason": "The fixture claims structural readiness, not a material theme, moral, or ending-interpretation result.",
       "blocks_closure": false,
       "next_action": "Run LogicGuard theme support if theme closure is claimed."
@@ -46,8 +46,8 @@
       "check_name": "sourceguard-canon-contract",
       "status": "not_applicable_with_reason",
       "required": true,
-      "evidence_ref": "file:guard_handoffs/sourceguard.json;sha256:6765a979d7e23d0a4b588b64d60a8f594d98b1bf5252d13022e9758b41d932a5",
-      "input_fingerprint": "sha256:1dfbf8860323f1e4a557e5ef67fadf03c7d23807173cf3a008d3318a946f9be4",
+      "evidence_ref": "file:guard_handoffs/sourceguard.json;sha256:dcd82129f65807704fd7d779e899799cb95f1d4e96e05cc4b54d8281f5bad05a",
+      "input_fingerprint": "sha256:034f2cf21adaa66c5504a598b645a85f16a120e9e623fc17616f4f56477d83b3",
       "not_applicable_reason": "The fixture has no user canon, prior draft, adaptation source, historical fact, or external source constraint.",
       "blocks_closure": false,
       "next_action": "Run SourceGuard canon/source support if source constraints are added."

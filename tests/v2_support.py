@@ -271,7 +271,7 @@ def make_route_composition(owner: str, intent: dict, plan: dict) -> dict:
     return _with_fp(common, "extension_fingerprint")
 
 
-def make_reader_chain(workdir: Path, owner: str = "investigation", *, language: str = "zh-CN") -> dict:
+def make_reader_chain(workdir: Path, owner: str = "investigation", *, language: str = "zh-CN", native_receipts: list[str] | None = None) -> dict:
     workdir.mkdir(parents=True, exist_ok=True)
     intent = make_intent(language=language)
     plan = make_plan(intent, owner)
@@ -333,7 +333,7 @@ def make_reader_chain(workdir: Path, owner: str = "investigation", *, language: 
         content_boundaries=boundaries,
         composition_plan=plan,
         route_composition=route,
-        native_dependency_receipt_fingerprints=[NATIVE_FP],
+        native_dependency_receipt_fingerprints=native_receipts if native_receipts is not None else [NATIVE_FP],
         content_authority_fingerprints={"content:answer": fingerprint({"content": owner})},
         brief_id=f"brief:{owner}",
     )
@@ -419,11 +419,20 @@ def complete_chain(
     *,
     pass_quality: bool = True,
     language: str = "zh-CN",
+    native_root: Path | None = None,
+    native_receipts: list[str] | None = None,
 ) -> dict:
-    """Build a synthetic protocol chain; do not treat it as a blind review."""
+    """Build a synthetic protocol chain with registered native fixture evidence."""
     from derive_closure import REQUIRED_DIMENSIONS
 
-    chain = make_reader_chain(workdir, owner, language=language)
+    from tests.support import make_current_packet
+    native_root = native_root if native_root is not None else workdir / "native-receipts"
+    packet = make_current_packet(native_root) if native_receipts is None else None
+    if native_receipts is None:
+        native_receipts = [packet["observation_receipt"]["receipt_fingerprint"]]
+    chain = make_reader_chain(workdir, owner, language=language, native_receipts=native_receipts)
+    chain["native_receipt_root"] = native_root
+    chain["native_packet"] = packet
     evidence = span_evidence(chain)
     body_units = [
         row for row in chain["artifact_map"]["units"]
@@ -571,7 +580,7 @@ def complete_chain(
         "route_review": route_review,
         "judgment": judgment,
         "revision_provenance": provenance,
-        "native_receipt_fingerprints": [NATIVE_FP],
+        "native_receipt_fingerprints": native_receipts,
         "closure_id": f"closure:{owner}",
         "reader_execution_records": [judge_execution],
     })
@@ -597,4 +606,7 @@ def derive_protocol_closure(value, **kwargs):
     from derive_closure import derive_closure
     from types import SimpleNamespace
     resolver = SimpleNamespace(resolve_judgment=lambda record, judgment: record.get("backend_id") == "synthetic-protocol-only")
-    return derive_closure(value, execution_resolver=resolver, **kwargs)
+    from unittest.mock import patch
+    native_root = Path(value["artifact_map"]["artifact_path"]).parent / "native-receipts"
+    with patch.dict("os.environ", {"LOGIC_WRITING_RECEIPT_ROOT": str(native_root)}):
+        return derive_closure(value, execution_resolver=resolver, **kwargs)

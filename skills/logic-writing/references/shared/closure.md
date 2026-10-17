@@ -1,5 +1,9 @@
 # Reader closure v2
 
+The executable v2 reader closure covers UTF-8 text/markdown. A text projection
+does not establish closure of its source DOCX/PDF or rendered pages; preserve
+native Documents/PDF evidence and explicit unresolved binary/render boundaries.
+
 Closure accepts only one complete current identity chain:
 
 `WritingRequest -> ReaderIntent -> RouteDecision -> CompositionPlan -> selected
@@ -26,7 +30,11 @@ independent of the writer. Preserve both existing results, all route dimensions,
 reverse outline and actual spans; the judgment binds the current route review
 and real judge execution. Final pass and broad claims require capture resolution;
 `derive_closure.py --execution-root <capture-root>` uses the existing local
-execution resolver. A caller-authored `verified` marker does not license pass.
+execution resolver. Final pass also resolves each declared native receipt through
+the existing authority and requires it to be current and passing, even when the
+closure is not persisted. Supply `receipt_root` / `--receipt-root`, or set
+`LOGIC_WRITING_RECEIPT_ROOT` for non-persisting calls. A caller-authored `verified`
+marker does not license pass.
 
 Repeated closure calls do not demonstrate work. One actual current `no_progress`
 repair result is terminal for that defect lineage. Preserve its input/output

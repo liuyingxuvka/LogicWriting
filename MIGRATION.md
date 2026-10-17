@@ -1,7 +1,7 @@
-# Migration to Logic Writing 4.0.5
+# Migration to Logic Writing 4.0.6
 
 This patch keeps the `logic-writing` entrypoint and four final owners. Use
-ResearchGuard 0.5.6 for the three native research members and FlowGuard 0.70.3
+ResearchGuard 0.5.7 for the three native research members and FlowGuard 0.70.4
 for repository model maintenance. WorldGuard uses its explicitly selected
 portable skill launcher. No SkillGuard installation or author state is used.
 

@@ -83,7 +83,7 @@ one paragraph by default.
 
 This skill is an orchestration shell. It consumes provider-owned results and
 receipts through an opaque, fingerprinted reference; it does not recreate their
-domain decisions or manufacture a native receipt. ResearchGuard `0.5.6` is one
+domain decisions or manufacture a native receipt. ResearchGuard `0.5.7` is one
 versioned suite and one executable console. Logic Writing activates exactly
 three direct semantic owners:
 
@@ -98,7 +98,7 @@ three direct semantic owners:
   material temporal, causal, implementation, competing-story,
   counterfactual, and prediction-boundary analysis.
 - ResearchGuard's `experiment` member and the umbrella `run` route are outside
-  Logic Writing `4.0.5`. Requests for them are visible scope blocks and do not
+  Logic Writing `4.0.6`. Requests for them are visible scope blocks and do not
   cause automatic multi-member execution.
 - WorldGuard owns material event, agent, space, resource, access, capability,
   conflict, authority, and norm consistency in real and fictional worlds.
@@ -112,7 +112,7 @@ For the three ResearchGuard owners, preflight the installed `researchguard`
 console and the selected member command only. Never import an old member
 package, invoke `python -m`, locate a sibling checkout, try another member, or
 accept a provider-root override. Require distribution metadata and console
-output to identify ResearchGuard `0.5.6`. If the one current path is
+output to identify ResearchGuard `0.5.7`. If the one current path is
 unavailable, mismatched, or times out, return the typed degraded state and stop
 that handoff.
 
@@ -204,7 +204,15 @@ more headings, or more bullet cards.
 
 ### Validate the actual delivered artifact
 
-Build an `ArtifactMap` from the exact current bytes, then bind every required
+The v2 automatic reader closure supports UTF-8 `text` and `markdown`. All seven
+requested-format routes remain available. DOCX/PDF creation, revision, extraction,
+rendering, and visual inspection stay with Documents/PDF. A text projection can
+close only its own text layer; it does not bind the original binary or rendering
+identity and cannot license a whole-document broad pass. Keep unresolved binary
+or render dependencies explicitly bounded, `partial`, `render_not_run`, or
+`dependency_unavailable` as applicable.
+
+Build an `ArtifactMap` from the exact current text/markdown bytes, then bind every required
 planned unit, content unit, model row, and route surface to real locators and
 span fingerprints through `SharedWriting`. Inspect the actual current text or
 document, not metadata that says it is good.

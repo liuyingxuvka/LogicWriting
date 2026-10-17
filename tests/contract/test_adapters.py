@@ -227,7 +227,7 @@ def test_researchguard_provider_version_mismatch_is_rejected():
         value, "adapter_result_fingerprint"
     )
 
-    with pytest.raises(ValidationError, match="provider_reference|0.5.6"):
+    with pytest.raises(ValidationError, match="provider_reference|0.5.7"):
         validate_adapter_result(value)
 
 

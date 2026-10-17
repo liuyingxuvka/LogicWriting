@@ -269,6 +269,13 @@ def derive_closure(
             raise ValidationError("final closure requires a local execution capture resolver")
         from reader_execution import validate_judgment_execution_record
         validate_judgment_execution_record(judge_execution, judgment, execution_resolver)
+        from receipt_authority import resolve_current_receipt
+        for native_fingerprint in native_receipts:
+            projection = resolve_current_receipt(native_fingerprint, root=receipt_root)
+            if not projection["current"] or projection["status"] != "current_pass":
+                raise ValidationError(
+                    f"final closure requires a current passing native receipt: {native_fingerprint}"
+                )
 
     defect_ids = [
         *(row["finding_id"] for row in audit["findings"]),
@@ -342,8 +349,8 @@ def derive_closure(
             closure,
             root=receipt_root,
             builder_id="logic-writing.final-closure.v2",
-            native_route="derive-reader-closure",
-            evidence_domain="process_freshness",
+            native_route="derive-final-closure",
+            evidence_domain="final_closure",
             semantic_owner_id=f"reader-closure:{closure['closure_id']}",
             covered_obligation_ids=["reader.full-current-chain"],
             input_fingerprints={

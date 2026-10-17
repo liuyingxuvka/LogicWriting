@@ -1040,3 +1040,127 @@ def test_stable_release_contract_requires_post_archive_complete_gate():
     assert "check.tests.full" in checks["check.openspec.strict"][
         "depends_on_receipts"
     ]
+
+
+def _release_workflow_python(job_id: str, step_name: str) -> tuple[dict, str]:
+    workflow = yaml.safe_load(
+        (ROOT / ".github/workflows/publish-release.yml").read_text(encoding="utf-8")
+    )
+    step = next(step for step in workflow["jobs"][job_id]["steps"] if step["name"] == step_name)
+    script = step["run"].split("python - <<'PY'\n", 1)[1].rsplit("\nPY", 1)[0]
+    return workflow, script
+
+
+def _mock_release_environment(tmp_path, monkeypatch):
+    import subprocess
+
+    sha = "a" * 40
+    version = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "pyproject.toml").write_bytes((ROOT / "pyproject.toml").read_bytes())
+    (tmp_path / "VERSION").write_text(version, encoding="utf-8")
+    (tmp_path / "scripts/check_release_surface.py").write_bytes(
+        (ROOT / "scripts/check_release_surface.py").read_bytes()
+    )
+    (tmp_path / "CHANGELOG.md").write_text(f"## {version}\nScoped release.\n", encoding="utf-8")
+    monkeypatch.chdir(tmp_path)
+    environment = {
+        "SOURCE_SHA": sha, "EVENT_NAME": "push", "GITHUB_REPOSITORY": "liuyingxuvka/LogicWriting",
+        "RUNNER_TEMP": str(tmp_path), "GITHUB_OUTPUT": str(tmp_path / "job-output"),
+        "GITHUB_SERVER_URL": "https://github.com", "GITHUB_RUN_ID": "123",
+    }
+    for key, value in environment.items():
+        monkeypatch.setenv(key, value)
+    commands = []
+    state = {"published": False}
+
+    def output(args, **_kwargs):
+        if args[:3] == ["git", "rev-parse", "HEAD"] or args == ("git", "rev-parse", "HEAD"):
+            return sha + "\n"
+        if tuple(args[:3]) == ("git", "show", "-s"):
+            return f"Release LogicWriting v{version}\n"
+        raise AssertionError(f"unexpected command: {args}")
+
+    def run(args, **_kwargs):
+        commands.append(args)
+        if len(args) > 1 and args[1] == "scripts/run_frozen_validation.py":
+            return SimpleNamespace(returncode=0)
+        if args[:3] == ["gh", "release", "create"]:
+            notes = Path(args[args.index("--notes-file") + 1]).read_text(encoding="utf-8")
+            assert "/actions/runs/123" in notes
+            assert args[args.index("--target") + 1] == sha
+            state["published"] = True
+            return SimpleNamespace(returncode=0)
+        assert args[:2] == ["gh", "api"]
+        path = args[2]
+        if path.endswith("git/ref/heads/main"):
+            payload = {"object": {"sha": sha}}
+        elif "git/ref/tags/" in path:
+            payload = {"object": {"type": "commit", "sha": sha}}
+        elif state["published"]:
+            payload = {"tag_name": f"v{version}", "draft": False, "prerelease": False,
+                       "assets": [], "html_url": "https://github.com/release"}
+        else:
+            return SimpleNamespace(returncode=1, stderr="HTTP 404", stdout="")
+        return SimpleNamespace(returncode=0, stderr="", stdout=json.dumps(payload))
+
+    monkeypatch.setattr(subprocess, "check_output", output)
+    monkeypatch.setattr(subprocess, "run", run)
+    return sha, commands, state
+
+
+def test_publish_workflow_uses_one_same_source_frozen_owner(tmp_path, monkeypatch):
+    workflow, gate = _release_workflow_python(
+        "release-validation", "Run the sole frozen release validation owner"
+    )
+    _, publisher = _release_workflow_python("publish", "Check source identity and publish its stable release")
+    assert workflow["jobs"]["publish"]["needs"] == "release-validation"
+    gate_job = workflow["jobs"]["release-validation"]
+    assert gate_job["outputs"]["source_sha"] == "${{ steps.validation.outputs.source_sha }}"
+    assert gate_job["if"] == workflow["jobs"]["publish"]["if"]
+    assert workflow["jobs"]["publish"]["env"]["VALIDATION_RESULT"] == "${{ needs.release-validation.result }}"
+    sha, commands, state = _mock_release_environment(tmp_path, monkeypatch)
+    exec(compile(gate, "release-validation", "exec"), {})
+    outputs = dict(line.split("=", 1) for line in (tmp_path / "job-output").read_text().splitlines())
+    assert outputs["source_sha"] == sha
+    gate_commands = [command for command in commands if "scripts/run_frozen_validation.py" in command]
+    assert len(gate_commands) == 1
+    assert gate_commands[0][2:6] == ["--root", ".", "--contract", "openspec/verification-contract.yaml"]
+    assert "--require-clean-git" in gate_commands[0]
+    assert Path(gate_commands[0][gate_commands[0].index("--receipt-root") + 1]).parent == tmp_path
+    monkeypatch.setenv("VALIDATION_RESULT", "success")
+    monkeypatch.setenv("VALIDATION_SOURCE_SHA", outputs["source_sha"])
+    monkeypatch.setenv("VALIDATION_URL", outputs["ci_url"])
+    exec(compile(publisher, "publish-release", "exec"), {})
+    assert state["published"]
+    assert len([command for command in commands if command[:3] == ["gh", "release", "create"]]) == 1
+
+
+@pytest.mark.parametrize("result,gate_sha,error", [
+    ("", "a" * 40, "missing or failed"),
+    ("failure", "a" * 40, "missing or failed"),
+    ("success", "b" * 40, "different source SHA"),
+])
+def test_publish_workflow_rejects_missing_failed_or_stale_gate(tmp_path, monkeypatch, result, gate_sha, error):
+    _, publisher = _release_workflow_python("publish", "Check source identity and publish its stable release")
+    _, commands, state = _mock_release_environment(tmp_path, monkeypatch)
+    monkeypatch.setenv("VALIDATION_RESULT", result)
+    monkeypatch.setenv("VALIDATION_SOURCE_SHA", gate_sha)
+    monkeypatch.setenv("VALIDATION_URL", "https://github.com/liuyingxuvka/LogicWriting/actions/runs/123")
+    with pytest.raises(AssertionError, match=error):
+        exec(compile(publisher, "publish-release", "exec"), {})
+    assert not state["published"]
+    assert not any(command[:3] == ["gh", "release", "create"] for command in commands)
+
+
+def test_publish_workflow_failed_frozen_owner_has_no_success_output(tmp_path, monkeypatch):
+    import subprocess
+
+    _, gate = _release_workflow_python("release-validation", "Run the sole frozen release validation owner")
+    _mock_release_environment(tmp_path, monkeypatch)
+    def failed(args, **_kwargs):
+        raise subprocess.CalledProcessError(1, args)
+    monkeypatch.setattr(subprocess, "run", failed)
+    with pytest.raises(subprocess.CalledProcessError):
+        exec(compile(gate, "release-validation", "exec"), {})
+    assert not (tmp_path / "job-output").exists()

@@ -6,6 +6,15 @@ releases, tags, package publications, installations, or predecessor deletions.
 The format follows the main ideas of Keep a Changelog, and the source version
 line follows semantic versioning.
 
+## [4.0.6]
+
+### Fixed
+
+- Resolve every declared native dependency as a current passing authority original before final reader closure, including non-persisting calls; use the existing canonical final receipt route and domain for persistence.
+- Bind automatic publication to the sole frozen ordinary validation job on the same source commit.
+- Clarify text/markdown automatic closure versus native DOCX/PDF binary and rendering duties, and make the optional coordination-file read conditional.
+- Align current provider contracts and synthetic fixtures with ResearchGuard 0.5.7 and the ordinary toolchain with FlowGuard 0.70.4. Synthetic fixture status is not provider-execution or writing-quality evidence.
+
 ## [4.0.5]
 
 ### Fixed

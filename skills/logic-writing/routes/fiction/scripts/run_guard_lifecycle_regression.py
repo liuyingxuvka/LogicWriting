@@ -84,7 +84,7 @@ GUARD_SPECS = {
         "native_owner": "traceguard",
         "route_id": "primary:researchguard:trace",
         "check_id": "traceguard.storyline_terminal",
-        "tool_version": "0.5.6",
+        "tool_version": "0.5.7",
         "status": "passed",
     },
     "worldguard_story_claims": {
@@ -100,7 +100,7 @@ GUARD_SPECS = {
         "native_owner": "logicguard",
         "route_id": "primary:researchguard:logic",
         "check_id": "logicguard.theme_support_applicability",
-        "tool_version": "0.5.6",
+        "tool_version": "0.5.7",
         "status": "not_applicable_with_reason",
     },
     "sourceguard_canon_support": {
@@ -108,7 +108,7 @@ GUARD_SPECS = {
         "native_owner": "sourceguard",
         "route_id": "primary:researchguard:source",
         "check_id": "sourceguard.canon_support_applicability",
-        "tool_version": "0.5.6",
+        "tool_version": "0.5.7",
         "status": "not_applicable_with_reason",
     },
 }
@@ -147,11 +147,12 @@ def fixture_input_fingerprint(artifact: str, surface: str) -> str:
 
 
 def guard_claim_boundary(surface: str, artifact: str, status: str) -> str:
+    # This builder creates synthetic protocol examples, never provider execution.
     if surface == "logicguard_theme_support":
-        return f"No material theme, moral, or ending-interpretation claim exists in the {artifact} matrix input."
+        return f"Synthetic protocol fixture only: no material theme, moral, or ending-interpretation claim exists in the {artifact} matrix input."
     if surface == "sourceguard_canon_support":
-        return f"No user canon, prior draft, adaptation source, historical fact, or external source constrains the {artifact} matrix input."
-    return f"{surface} native terminal receipt covers only the current {artifact} matrix input."
+        return f"Synthetic protocol fixture only: no user canon, prior draft, adaptation source, historical fact, or external source constrains the {artifact} matrix input."
+    return f"Synthetic protocol fixture only: {surface} terminal envelope covers the {artifact} matrix input; no native provider execution is asserted."
 
 
 def build_guard_check(surface: str, artifact: str, case_root: Path) -> dict[str, Any]:

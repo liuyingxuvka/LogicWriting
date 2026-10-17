@@ -214,18 +214,10 @@ def _make_capture(tmp_path: Path, *, role="writer", request_fields=None, output=
     return run_root, record
 
 
-def test_local_resolver_verifies_capture_and_bytes(tmp_path, monkeypatch):
-    run_root, record = _make_capture(tmp_path)
-    resolver = LocalExecutionRecordResolver(run_root, expected_cli_version="0.153.4")
-    verified = resolver.resolve(record)
-    assert verified["verified"] is True
-    assert verified["context_id"] == "thread-one"
-
-    # Exercise the public judgment wrapper with actual local capture files,
-    # rather than treating a synthetic independence marker as execution.
+def _captured_closure_chain(tmp_path, **chain_kwargs):
+    """Offline capture files plus registered native fixtures; no provider call."""
     from tests.v2_support import complete_chain
-    from validate_judgment_receipt import validate_judgment_receipt
-    chain = complete_chain(tmp_path / "chain")
+    chain = complete_chain(tmp_path / "chain", **chain_kwargs)
     provider_judgment = {key: item for key, item in chain["judgment"].items() if key not in {"execution_record_fingerprint", "judgment_fingerprint"}}
     provider_judgment["judgment_fingerprint"] = fingerprint(provider_judgment)
     provider_text = json.dumps(provider_judgment) + "\n"
@@ -241,9 +233,24 @@ def test_local_resolver_verifies_capture_and_bytes(tmp_path, monkeypatch):
     })
     chain["reader_execution_records"] = [judge]
     resolver = LocalExecutionRecordResolver(run_root, expected_cli_version="0.153.4")
+    return chain, run_root, judge, resolver
+
+
+def test_local_resolver_verifies_capture_and_bytes(tmp_path, monkeypatch):
+    run_root, record = _make_capture(tmp_path)
+    resolver = LocalExecutionRecordResolver(run_root, expected_cli_version="0.153.4")
+    verified = resolver.resolve(record)
+    assert verified["verified"] is True
+    assert verified["context_id"] == "thread-one"
+
+    # Exercise the public judgment wrapper with actual local capture files,
+    # rather than treating a synthetic independence marker as execution.
+    from validate_judgment_receipt import validate_judgment_receipt
+    chain, run_root, judge, resolver = _captured_closure_chain(tmp_path)
     assert validate_judgment_receipt(chain, execution_resolver=resolver)["status"] == "current_pass"
     from derive_closure import derive_closure
     from tests.v2_support import closure_input
+    monkeypatch.setenv("LOGIC_WRITING_RECEIPT_ROOT", str(chain["native_receipt_root"]))
     assert derive_closure(closure_input(chain), execution_resolver=resolver)["closure"]["status"] == "passed"
     from reader_receipts import commit_reader_judgment_receipt
     with pytest.raises(ValidationError, match="capture resolver"):
@@ -304,6 +311,49 @@ def test_local_resolver_verifies_capture_and_bytes(tmp_path, monkeypatch):
     (run_root / "judge" / "one" / "output.txt").write_text("changed\n", encoding="utf-8")
     with pytest.raises(ValidationError, match="raw_output_fingerprint"):
         validate_judgment_receipt(chain, execution_resolver=resolver)
+
+
+@pytest.mark.parametrize("native_state", ["current", "missing", "stale", "failed"])
+@pytest.mark.parametrize("persist", [False, True])
+def test_public_closure_resolves_native_dependencies(tmp_path, monkeypatch, native_state, persist):
+    from derive_closure import derive_closure
+    from receipt_authority import resolve_current_receipt
+    from tests.authority.test_receipt_authority import _failed_successor
+    from tests.support import make_current_packet
+    from tests.v2_support import closure_input
+
+    native_root = tmp_path / "authority"
+    packet = make_current_packet(native_root)
+    native_fp = packet["observation_receipt"]["receipt_fingerprint"]
+    if native_state in {"stale", "failed"}:
+        _result, failed = _failed_successor(packet, native_root)
+        if native_state == "failed":
+            native_fp = failed["receipt_fingerprint"]
+    elif native_state == "missing":
+        native_fp = fingerprint({"unregistered": "native dependency"})
+    chain, _run_root, _judge, resolver = _captured_closure_chain(
+        tmp_path / "closure", native_root=native_root, native_receipts=[native_fp])
+    # Non-persisting callers use the existing authority environment variable.
+    monkeypatch.setenv("LOGIC_WRITING_RECEIPT_ROOT", str(native_root))
+    kwargs = {"receipt_root": native_root} if persist else {}
+    if native_state != "current":
+        with pytest.raises(ValidationError, match="not registered|current passing native"):
+            derive_closure(closure_input(chain), execution_resolver=resolver, **kwargs)
+        return
+    result = derive_closure(closure_input(chain), execution_resolver=resolver, **kwargs)
+    assert result["closure"]["status"] == "passed"
+    assert result["closure"]["broad_claim_allowed"] is True
+    assert ("receipt" in result) is persist
+    if persist:
+        projection = resolve_current_receipt(result["receipt"]["receipt_fingerprint"], root=native_root)
+        assert projection["current"] is True
+        assert projection["status"] == "current_pass"
+        assert projection["receipt"]["native_route"] == "derive-final-closure"
+        assert projection["receipt"]["evidence_domain"] == "final_closure"
+    else:
+        monkeypatch.delenv("LOGIC_WRITING_RECEIPT_ROOT")
+        with pytest.raises(ValidationError, match="authority root is required"):
+            derive_closure(closure_input(chain), execution_resolver=resolver)
 
 
 def test_local_resolver_rejects_changed_output(tmp_path):

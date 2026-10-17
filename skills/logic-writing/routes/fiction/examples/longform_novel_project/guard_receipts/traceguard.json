@@ -1,16 +1,16 @@
 {
   "schema_version": "traceguard.native_terminal_receipt.v1",
-  "receipt_id": "aurora-key-final-prose-traceguard-terminal",
+  "receipt_id": "aurora-key-final-prose-traceguard_storyline-terminal",
   "surface": "traceguard_storyline",
   "guard_id": "traceguard",
   "native_owner": "traceguard",
   "route_id": "primary:researchguard:trace",
   "check_id": "traceguard.storyline_terminal",
-  "tool_version": "0.5.6",
+  "tool_version": "0.5.7",
   "input_fingerprint": "sha256:2a3a904d5c2afb9d13372982b8319a3c6137f2ff7e1fe05972f3407db6aa8577",
   "terminal": true,
   "immutable": true,
   "freshness": "current",
   "status": "passed",
-  "claim_boundary": "The TraceGuard receipt covers chronology, investigation, and reader-revelation order for the current Aurora Key input; it does not prove prose quality."
+  "claim_boundary": "Synthetic protocol fixture regenerated for the current provider contract; no ResearchGuard provider execution or domain-quality pass is asserted. The TraceGuard receipt covers chronology, investigation, and reader-revelation order for the current Aurora Key input; it does not prove prose quality."
 }

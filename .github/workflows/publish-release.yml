@@ -24,7 +24,76 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  release-validation:
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.event.head_commit.message, 'Release LogicWriting v')
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: read
+    outputs:
+      source_sha: ${{ steps.validation.outputs.source_sha }}
+      ci_url: ${{ steps.validation.outputs.ci_url }}
+    env:
+      SOURCE_SHA: ${{ inputs.source_sha || github.sha }}
+      RESEARCHGUARD_SOURCE_ROOT: ${{ runner.temp }}/ResearchGuard
+      OPENSPEC_TELEMETRY: "0"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Check out the selected source
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.source_sha || github.sha }}
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Set up Node for the existing OpenSpec check
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install the existing validation toolchain
+        shell: bash
+        run: |
+          git clone --depth 1 --branch v0.5.7 https://github.com/liuyingxuvka/ResearchGuard.git "$RESEARCHGUARD_SOURCE_ROOT"
+          python -m pip install pytest PyYAML "$RESEARCHGUARD_SOURCE_ROOT" "flowguard @ git+https://github.com/liuyingxuvka/FlowGuard.git@v0.70.4"
+          npm install --global @fission-ai/openspec@1.7.0
+
+      - name: Run the sole frozen release validation owner
+        id: validation
+        shell: bash
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          import re
+          import subprocess
+          import sys
+          import tempfile
+
+          source_sha = os.environ["SOURCE_SHA"].lower()
+          assert re.fullmatch(r"[0-9a-f]{40}", source_sha), "source_sha must be a full 40-character commit SHA"
+          def head():
+              return subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip().lower()
+          assert head() == source_sha, "validation checkout does not match source_sha"
+          receipts = tempfile.mkdtemp(prefix="logic-writing-validation-", dir=os.environ["RUNNER_TEMP"])
+          subprocess.run([
+              sys.executable, "scripts/run_frozen_validation.py", "--root", ".",
+              "--contract", "openspec/verification-contract.yaml", "--receipt-root", receipts,
+              "--require-clean-git", "--json",
+          ], check=True)
+          assert head() == source_sha, "source changed during validation"
+          ci_url = f"{os.environ['GITHUB_SERVER_URL']}/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}"
+          with Path(os.environ["GITHUB_OUTPUT"]).open("a", encoding="utf-8") as stream:
+              stream.write(f"source_sha={source_sha}\nci_url={ci_url}\n")
+          print(f"Frozen ordinary validation passed for {source_sha}: {ci_url}")
+          PY
+
   publish:
+    needs: release-validation
     if: github.event_name == 'workflow_dispatch' || startsWith(github.event.head_commit.message, 'Release LogicWriting v')
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -32,6 +101,9 @@ jobs:
       SOURCE_SHA: ${{ inputs.source_sha || github.sha }}
       EVENT_NAME: ${{ github.event_name }}
       GH_TOKEN: ${{ github.token }}
+      VALIDATION_RESULT: ${{ needs.release-validation.result }}
+      VALIDATION_SOURCE_SHA: ${{ needs.release-validation.outputs.source_sha }}
+      VALIDATION_URL: ${{ needs.release-validation.outputs.ci_url }}
     steps:
       - name: Check out the selected source
         uses: actions/checkout@v5
@@ -89,6 +161,10 @@ jobs:
               raise RuntimeError("release tag has excessive annotation nesting")
 
           assert output("git", "rev-parse", "HEAD") == source_sha, "checkout does not match source_sha"
+          assert os.environ.get("VALIDATION_RESULT") == "success", "ordinary release validation is missing or failed"
+          assert os.environ.get("VALIDATION_SOURCE_SHA", "").lower() == source_sha, "ordinary release validation belongs to a different source SHA"
+          ci_url = os.environ.get("VALIDATION_URL", "")
+          assert ci_url, "ordinary release validation URL is missing"
           project = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))["project"]
           assert project["name"] == "logic-writing-skill", "source project identity mismatch"
           version = project["version"]
@@ -109,8 +185,6 @@ jobs:
           assert len(selected) == 1, "CHANGELOG must contain one section for the current version"
           index = selected[0]
           notes = changes[headings[index].start():headings[index + 1].start() if index + 1 < len(headings) else None].strip()
-          ci_url = None
-
 
           # Recheck main and dereference annotated tags; target_commitish alone is insufficient.
           assert api("git/ref/heads/main")["object"]["sha"].lower() == source_sha, "main advanced; publish its final frozen source instead"

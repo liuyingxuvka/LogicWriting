@@ -2,7 +2,7 @@
 
 ## Coordination
 
-- Read `docs/coordination.md` before editing.
+- Read `docs/coordination.md` before editing when that optional coordination file exists.
 - Treat `skills/logic-writing` as the single canonical installable skill source.
 - Do not edit files currently claimed by another active writer.
 - Keep generated receipts, model evidence, caches, and release scratch data outside source authority.

@@ -1,16 +1,16 @@
 {
   "schema_version": "logicguard.native_terminal_receipt.v1",
-  "receipt_id": "aurora-key-final-prose-logicguard-terminal",
+  "receipt_id": "aurora-key-final-prose-logicguard_theme_support-terminal",
   "surface": "logicguard_theme_support",
   "guard_id": "logicguard",
   "native_owner": "logicguard",
   "route_id": "primary:researchguard:logic",
   "check_id": "logicguard.theme_support_applicability",
-  "tool_version": "0.5.6",
+  "tool_version": "0.5.7",
   "input_fingerprint": "sha256:3a85fcd7149479214cf661ef2ba96e681cc326dc097c7f11be43f8b3c45cc0b3",
   "terminal": true,
   "immutable": true,
   "freshness": "current",
   "status": "passed",
-  "claim_boundary": "The LogicGuard receipt covers the declared theme support from the current Aurora Key ending and arc; it does not prove reader interpretation."
+  "claim_boundary": "Synthetic protocol fixture regenerated for the current provider contract; no ResearchGuard provider execution or domain-quality pass is asserted. The LogicGuard receipt covers the declared theme support from the current Aurora Key ending and arc; it does not prove reader interpretation."
 }

@@ -5,11 +5,11 @@
   "native_owner": "logicguard",
   "native_route_id": "primary:researchguard:logic",
   "native_check_id": "logicguard.theme_support_applicability",
-  "tool_version": "0.5.6",
+  "tool_version": "0.5.7",
   "receipt_schema_version": "logicguard.native_terminal_receipt.v1",
-  "input_fingerprint": "sha256:644dd863244fd0e739c622abe2593e70685b551305088d3b8f7c15c922da737c",
-  "terminal_receipt_id": "lantern-map-logicguard-terminal",
-  "terminal_receipt_ref": "file:../guard_receipts/logicguard-terminal.json;sha256:0280d006774bd618e04bcc22f452e3597a638723177bd20ef07d3b34ddb21b90",
+  "input_fingerprint": "sha256:589fa8dc1fabc1ece12018005f2f1b32d1a26de555ccabe71341810dd5c9b05c",
+  "terminal_receipt_id": "lantern-map-logicguard_theme_support-terminal",
+  "terminal_receipt_ref": "file:../guard_receipts/logicguard-terminal.json;sha256:4ca4fa0f2ab6dae1d6aa45cc066dd1b9e8f9aff6743d68f929f0bbe2b6bb57f2",
   "terminal_status": "not_applicable_with_reason",
-  "claim_boundary": "The Lantern Map fixture claims structural readiness, not a material theme, moral, or ending-interpretation conclusion."
+  "claim_boundary": "Synthetic protocol fixture regenerated for the current provider contract; no ResearchGuard provider execution or domain-quality pass is asserted. The Lantern Map fixture claims structural readiness, not a material theme, moral, or ending-interpretation conclusion."
 }

@@ -30,10 +30,10 @@ RESEARCHGUARD_MEMBERS = {
         "primary_path_id": "primary:researchguard:trace",
     },
 }
-SUPPORTED_RESEARCHGUARD_VERSION = "0.5.6"
+SUPPORTED_RESEARCHGUARD_VERSION = "0.5.7"
 SCOPE_OUT_PROVIDERS = {
-    "experimentguard": "ExperimentGuard is not an active Logic Writing 4.0.5 provider.",
-    "researchguard": "The ResearchGuard umbrella route is not an active Logic Writing 4.0.5 provider.",
+    "experimentguard": "ExperimentGuard is not an active Logic Writing 4.0.6 provider.",
+    "researchguard": "The ResearchGuard umbrella route is not an active Logic Writing 4.0.6 provider.",
 }
 MODULE_PROVIDERS = {
     "flowguard": ("flowguard", ("SCHEMA_VERSION", "FlowGuardCheckPlan")),

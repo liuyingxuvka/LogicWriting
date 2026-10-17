@@ -5,11 +5,11 @@
   "native_owner": "logicguard",
   "native_route_id": "primary:researchguard:logic",
   "native_check_id": "logicguard.theme_support_applicability",
-  "tool_version": "0.5.6",
+  "tool_version": "0.5.7",
   "receipt_schema_version": "logicguard.native_terminal_receipt.v1",
   "input_fingerprint": "sha256:10940539101895ab19896e080b3e8828f29eab1fd3f2e2ee811c8fe7993929bb",
-  "terminal_receipt_id": "aurora-key-pre-draft-logicguard-terminal",
-  "terminal_receipt_ref": "file:../guard_receipts/logicguard-planning.json;sha256:f92497e04fd429be4a386a354066582db846a52581992074cb9687147d0a36b3",
+  "terminal_receipt_id": "aurora-key-pre-draft-logicguard_theme_support-terminal",
+  "terminal_receipt_ref": "file:../guard_receipts/logicguard-planning.json;sha256:8fad8de877f3733aa20a02e00041c8f849e79e4681438e5cdf01ff5a77989c43",
   "terminal_status": "not_applicable_with_reason",
-  "claim_boundary": "No final theme, moral, or ending-interpretation conclusion is claimed at the Aurora Key pre-draft model boundary."
+  "claim_boundary": "Synthetic protocol fixture regenerated for the current provider contract; no ResearchGuard provider execution or domain-quality pass is asserted. No final theme, moral, or ending-interpretation conclusion is claimed at the Aurora Key pre-draft model boundary."
 }

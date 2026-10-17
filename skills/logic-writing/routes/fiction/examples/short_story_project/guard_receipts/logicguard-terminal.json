@@ -1,16 +1,16 @@
 {
   "schema_version": "logicguard.native_terminal_receipt.v1",
-  "receipt_id": "lantern-map-logicguard-terminal",
+  "receipt_id": "lantern-map-logicguard_theme_support-terminal",
   "guard_id": "logicguard",
   "surface": "logicguard_theme_support",
   "native_owner": "logicguard",
   "route_id": "primary:researchguard:logic",
   "check_id": "logicguard.theme_support_applicability",
-  "tool_version": "0.5.6",
-  "input_fingerprint": "sha256:644dd863244fd0e739c622abe2593e70685b551305088d3b8f7c15c922da737c",
+  "tool_version": "0.5.7",
+  "input_fingerprint": "sha256:589fa8dc1fabc1ece12018005f2f1b32d1a26de555ccabe71341810dd5c9b05c",
   "terminal": true,
   "immutable": true,
   "freshness": "current",
   "status": "not_applicable_with_reason",
-  "claim_boundary": "The Lantern Map fixture claims structural readiness, not a material theme, moral, or ending-interpretation conclusion."
+  "claim_boundary": "Synthetic protocol fixture regenerated for the current provider contract; no ResearchGuard provider execution or domain-quality pass is asserted. The Lantern Map fixture claims structural readiness, not a material theme, moral, or ending-interpretation conclusion."
 }

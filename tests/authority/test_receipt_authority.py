@@ -162,3 +162,23 @@ def test_index_rollback_with_extra_objects_is_rejected(current_packet, receipt_r
             current_packet["observation_receipt"]["receipt_fingerprint"],
             root=receipt_root,
         )
+
+
+@pytest.mark.parametrize("route,domain", [
+    ("derive-reader-closure", "final_closure"),
+    ("derive-final-closure", "process_freshness"),
+])
+def test_final_closure_builder_rejects_foreign_route_domain(current_packet, receipt_root, route, domain):
+    from reader_receipts import _commit
+    closure = {"closure_fingerprint": fingerprint({"closure": "wrong identity"})}
+    with pytest.raises(ValidationError, match="does not own this receipt route/domain"):
+        _commit(
+            closure, root=receipt_root, builder_id="logic-writing.final-closure.v2",
+            native_route=route, evidence_domain=domain, semantic_owner_id="reader-closure:foreign",
+            covered_obligation_ids=["reader.full-current-chain"],
+            input_fingerprints={"artifact": fingerprint({"artifact": "current"})},
+            output_field="closure_fingerprint", artifact_fingerprint=fingerprint({"artifact": "current"}),
+            dependency_receipt_fingerprints=[current_packet["observation_receipt"]["receipt_fingerprint"]],
+            status="current_pass", safe_claim="fixture only", unsafe_claim_boundary="not writing evidence",
+            run_id="foreign-final-closure",
+        )
