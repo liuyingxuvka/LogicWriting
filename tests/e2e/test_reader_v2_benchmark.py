@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 from _common import ValidationError
-from derive_closure import derive_closure
+from tests.v2_support import derive_protocol_closure as derive_closure
 from reader_pipeline import validate_artifact_map
 from tests.v2_support import closure_input, complete_chain
 

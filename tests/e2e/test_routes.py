@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from derive_closure import derive_closure
+from tests.v2_support import derive_protocol_closure as derive_closure
 from tests.v2_support import closure_input, complete_chain
 
 

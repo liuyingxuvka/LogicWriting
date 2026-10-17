@@ -186,10 +186,12 @@ def commit_reader_judgment_receipt(
     deterministic_audit: Mapping[str, Any],
     route_review: Mapping[str, Any],
     execution_record: Mapping[str, Any] | None = None,
+    execution_resolver=None,
     root: str | Path,
     dependency_receipt_fingerprints: list[str],
 ) -> dict[str, Any]:
-    value = validate_reader_judgment(
+    from validate_judgment_receipt import validate_judgment_receipt
+    validated = validate_judgment_receipt(
         judgment,
         artifact_map=artifact_map,
         reader_brief=reader_brief,
@@ -197,7 +199,9 @@ def commit_reader_judgment_receipt(
         deterministic_audit=deterministic_audit,
         route_review=route_review,
         execution_record=execution_record,
+        execution_resolver=execution_resolver,
     )
+    value = validated["reader_judgment"]
     return _commit(
         value,
         root=root,
@@ -246,7 +250,7 @@ def commit_repair_result_receipt(
         dependency_receipt_fingerprints=dependency_receipt_fingerprints,
         status="blocked" if result["progress_status"] == "blocked" else "current_pass",
         safe_claim="This result records one actual repair attempt, its output bytes, preservation result, and remaining defect identity.",
-        unsafe_claim_boundary="A no-progress result does not close the artifact until two consecutive current results share the same defect lineage.",
+        unsafe_claim_boundary="One actual no-progress result ends automatic repair for its defect lineage and hands the current artifact to human review.",
         run_id=f"reader-repair:{result['repair_id']}:{result['result_fingerprint'][7:19]}",
     )
 

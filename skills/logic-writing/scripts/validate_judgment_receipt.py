@@ -97,11 +97,11 @@ def validate_judgment_receipt(
             raise ValidationError(
                 "current-pass ReaderJudgment requires a local execution capture resolver"
             )
-        from reader_execution import validate_execution_record
+        from reader_execution import validate_judgment_execution_record
 
         # The validator consumes resolver metadata and returns the validated
         # record.  "verified" is deliberately not a record schema field.
-        validate_execution_record(execution, execution_resolver)
+        validate_judgment_execution_record(execution, validated, execution_resolver)
     return validation_result(
         status="current_pass" if validated["status"] == "passed" else "partial",
         reader_judgment=validated,

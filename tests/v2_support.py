@@ -590,3 +590,11 @@ def closure_input(chain: dict) -> dict:
         "repair_results": chain.get("repair_results", []),
         "reader_execution_records": chain.get("reader_execution_records", []),
     }
+
+
+def derive_protocol_closure(value, **kwargs):
+    """Explicit test double for protocol state tests; never real execution evidence."""
+    from derive_closure import derive_closure
+    from types import SimpleNamespace
+    resolver = SimpleNamespace(resolve_judgment=lambda record, judgment: record.get("backend_id") == "synthetic-protocol-only")
+    return derive_closure(value, execution_resolver=resolver, **kwargs)

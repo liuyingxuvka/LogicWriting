@@ -6,7 +6,7 @@ import pytest
 
 from schema_validation import SUPPORTED_SCHEMA_NAMES, SchemaValidationError, assert_schema_valid
 from tests.v2_support import closure_input, complete_chain
-from derive_closure import derive_closure
+from tests.v2_support import derive_protocol_closure as derive_closure
 
 
 @pytest.fixture

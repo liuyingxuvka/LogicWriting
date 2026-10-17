@@ -1514,10 +1514,14 @@ def validate_shared_writing(
     artifact_map: Mapping[str, Any],
     reader_brief: Mapping[str, Any],
 ) -> dict[str, Any]:
+    amap = validate_artifact_map(artifact_map)
+    return _shared_writing_from_current(value, amap=amap, reader_brief=reader_brief)
+
+
+def _shared_writing_from_current(value, *, amap, reader_brief):
     contract = require_mapping(value, "SharedWriting")
     require_schema("shared-writing-contract.schema.json", contract, label="SharedWriting")
     _require_exact_fingerprint(contract, "contract_fingerprint")
-    amap = validate_artifact_map(artifact_map)
     brief = require_mapping(reader_brief, "ReaderBrief")
     require_schema("reader-brief.schema.json", brief, label="ReaderBrief")
     _require_exact_fingerprint(brief, "brief_fingerprint")
@@ -1612,7 +1616,12 @@ def build_reader_audit(
     amap = validate_artifact_map(artifact_map)
     brief = require_mapping(reader_brief, "ReaderBrief")
     require_schema("reader-brief.schema.json", brief, label="ReaderBrief")
-    contract = validate_shared_writing(shared_writing, artifact_map=amap, reader_brief=brief)
+    contract = _shared_writing_from_current(shared_writing, amap=amap, reader_brief=brief)
+    return _build_reader_audit_from_current(audit_id=audit_id, amap=amap, brief=brief,
+                                           contract=contract, audited_at=audited_at)
+
+
+def _build_reader_audit_from_current(*, audit_id, amap, brief, contract, audited_at=None):
     units = amap["units"]
     visible_units = [row for row in units if row["unit_kind"] != "document"]
     text = "\n".join(row["text"] for row in visible_units)
@@ -1798,6 +1807,13 @@ def validate_reader_audit_current(
         reader_brief=reader_brief, shared_writing=shared_writing,
         audited_at=candidate.get("audited_at"),
     )
+    return _compare_reader_audit(candidate, current, rules_version=rules_version)
+
+
+def _compare_reader_audit(candidate, current, *, rules_version="reader-audit-rules.v2"):
+    candidate = require_mapping(candidate, "ReaderAudit")
+    require_schema("reader-audit.schema.json", candidate, label="ReaderAudit")
+    _require_exact_fingerprint(candidate, "audit_fingerprint")
     ignored = {"audit_id", "audited_at", "audit_fingerprint"}
     left = {key: value for key, value in candidate.items() if key not in ignored}
     right = {key: value for key, value in current.items() if key not in ignored}
@@ -1827,9 +1843,6 @@ def validate_route_artifact_review(
     required_dimensions: Iterable[str] = (),
     review_obligations: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
-    review = require_mapping(value, "route artifact review")
-    require_schema("route-artifact-review.schema.json", review, label="route artifact review")
-    _require_exact_fingerprint(review, "review_fingerprint")
     amap = validate_artifact_map(artifact_map)
     route = validate_route_composition(
         route_composition,
@@ -1837,6 +1850,14 @@ def validate_route_artifact_review(
         reader_intent_fingerprint=route_composition["reader_intent_fingerprint"],
         composition_plan_fingerprint=route_composition["composition_plan_fingerprint"],
     )
+    return _route_review_from_current(value, owner=owner, route=route, amap=amap,
+                                      required_dimensions=required_dimensions, review_obligations=review_obligations)
+
+
+def _route_review_from_current(value, *, owner, route, amap, required_dimensions=(), review_obligations=None):
+    review = require_mapping(value, "route artifact review")
+    require_schema("route-artifact-review.schema.json", review, label="route artifact review")
+    _require_exact_fingerprint(review, "review_fingerprint")
     if review["final_owner"] != owner or review["route_extension_fingerprint"] != route["extension_fingerprint"]:
         raise ValidationError("route review belongs to a sibling or stale route composition")
     if review["artifact_map_fingerprint"] != amap["map_fingerprint"] or review["artifact_fingerprint"] != amap["artifact_fingerprint"]:
@@ -1880,15 +1901,25 @@ def validate_reader_judgment(
     execution_record: Mapping[str, Any] | None = None,
     review_obligations: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
+    amap = validate_artifact_map(artifact_map)
+    brief = require_mapping(reader_brief, "ReaderBrief")
+    contract = _shared_writing_from_current(shared_writing, amap=amap, reader_brief=brief)
+    candidate = require_mapping(deterministic_audit, "ReaderAudit")
+    require_schema("reader-audit.schema.json", candidate, label="ReaderAudit")
+    _require_exact_fingerprint(candidate, "audit_fingerprint")
+    current = _build_reader_audit_from_current(audit_id=candidate["audit_id"], amap=amap, brief=brief,
+                                              contract=contract, audited_at=candidate.get("audited_at"))
+    audit = _compare_reader_audit(candidate, current)
+    return _reader_judgment_from_current(value, amap=amap, brief=brief, contract=contract, audit=audit,
+                                         route_review=route_review, execution_record=execution_record,
+                                         review_obligations=review_obligations)
+
+
+def _reader_judgment_from_current(value, *, amap, brief, contract, audit, route_review,
+                                   execution_record=None, review_obligations=None):
     judgment = require_mapping(value, "ReaderJudgment")
     require_schema("reader-judgment.schema.json", judgment, label="ReaderJudgment")
     _require_exact_fingerprint(judgment, "judgment_fingerprint")
-    amap = validate_artifact_map(artifact_map)
-    brief = require_mapping(reader_brief, "ReaderBrief")
-    contract = validate_shared_writing(shared_writing, artifact_map=amap, reader_brief=brief)
-    audit = validate_reader_audit_current(
-        deterministic_audit, artifact_map=amap, reader_brief=brief, shared_writing=contract
-    )
     review = require_mapping(route_review, "route artifact review")
     require_schema("route-artifact-review.schema.json", review, label="route artifact review")
     _require_exact_fingerprint(review, "review_fingerprint")
@@ -1932,6 +1963,15 @@ def validate_reader_judgment(
         execution = validate_execution_record(execution_record, lambda record: record.get("independence_status") == "verified")
         if judgment.get("execution_record_fingerprint") != execution["record_fingerprint"]:
             raise ValidationError("ReaderJudgment execution record is stale or foreign")
+        if execution["role"] != "judge" or execution["evaluation_mode"] != "single":
+            raise ValidationError("ReaderJudgment requires a single-artifact judge execution")
+        for field, expected_value in {
+            "input_reader_intent_fingerprint": brief["reader_intent_fingerprint"],
+            "input_writer_input_fingerprint": brief["writer_input_fingerprint"],
+            "input_artifact_fingerprint": amap["artifact_fingerprint"],
+        }.items():
+            if execution[field] != expected_value:
+                raise ValidationError(f"ReaderJudgment execution {field} is stale or foreign")
         execution_ok = execution["role"] == "judge" and execution["terminal_status"] == "completed" and execution["independence_status"] == "verified"
     elif judgment["status"] == "passed":
         raise ValidationError("ReaderJudgment passed without a real judge execution record")

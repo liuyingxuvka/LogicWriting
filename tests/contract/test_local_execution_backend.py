@@ -96,7 +96,7 @@ def test_failed_judge_preserves_unverified_independence_status():
     assert dispatched["record"]["independence_status"] == "independence_unverified"
 
 
-def _make_capture(tmp_path: Path, *, role="writer", request_fields=None):
+def _make_capture(tmp_path: Path, *, role="writer", request_fields=None, output="done\n"):
     run_root = tmp_path / "run"
     attempt = run_root / role / "one"
     attempt.mkdir(parents=True)
@@ -110,13 +110,14 @@ def _make_capture(tmp_path: Path, *, role="writer", request_fields=None):
     events_path.write_text(
         '{"type":"thread.started","thread_id":"thread-one"}\r\n'
         '{"type":"turn.started"}\r\n'
-        '{"type":"item.completed","item":{"type":"agent_message","text":"done"}}\r\n'
+        + json.dumps({"type": "item.completed", "item": {"type": "agent_message", "text": output.rstrip("\n")}}) + "\r\n"
+        +
         '{"type":"turn.completed","usage":{"output_tokens":1}}\r\n',
         encoding="utf-8",
         newline="",
     )
     stderr_path.write_bytes(b"")
-    output_path.write_text("done\n", encoding="utf-8")
+    output_path.write_text(output, encoding="utf-8")
     executable.write_bytes(b"fake pinned executable")
     def sha(path: Path) -> str:
         return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
@@ -137,7 +138,7 @@ def _make_capture(tmp_path: Path, *, role="writer", request_fields=None):
         "started_at": "2026-09-08T00:00:00Z",
         "finished_at": "2026-09-08T00:00:01Z",
         "terminal_status": "completed",
-        "output": "done\n",
+        "output": output,
         "output_fingerprint": sha(output_path),
         "provider_completion_ref": "local-codex:thread-one",
         "settings_fingerprint": fingerprint(request["settings"]),
@@ -213,7 +214,7 @@ def _make_capture(tmp_path: Path, *, role="writer", request_fields=None):
     return run_root, record
 
 
-def test_local_resolver_verifies_capture_and_bytes(tmp_path):
+def test_local_resolver_verifies_capture_and_bytes(tmp_path, monkeypatch):
     run_root, record = _make_capture(tmp_path)
     resolver = LocalExecutionRecordResolver(run_root, expected_cli_version="0.153.4")
     verified = resolver.resolve(record)
@@ -225,7 +226,10 @@ def test_local_resolver_verifies_capture_and_bytes(tmp_path):
     from tests.v2_support import complete_chain
     from validate_judgment_receipt import validate_judgment_receipt
     chain = complete_chain(tmp_path / "chain")
-    run_root, judge = _make_capture(tmp_path / "judge", role="judge", request_fields={
+    provider_judgment = {key: item for key, item in chain["judgment"].items() if key not in {"execution_record_fingerprint", "judgment_fingerprint"}}
+    provider_judgment["judgment_fingerprint"] = fingerprint(provider_judgment)
+    provider_text = json.dumps(provider_judgment) + "\n"
+    run_root, judge = _make_capture(tmp_path / "judge", role="judge", output=provider_text, request_fields={
         "reader_intent_fingerprint": chain["intent"]["intent_fingerprint"],
         "writer_input_fingerprint": chain["reader_brief"]["writer_input_fingerprint"],
         "artifact_fingerprint": chain["artifact_map"]["artifact_fingerprint"],
@@ -238,15 +242,65 @@ def test_local_resolver_verifies_capture_and_bytes(tmp_path):
     chain["reader_execution_records"] = [judge]
     resolver = LocalExecutionRecordResolver(run_root, expected_cli_version="0.153.4")
     assert validate_judgment_receipt(chain, execution_resolver=resolver)["status"] == "current_pass"
+    from derive_closure import derive_closure
+    from tests.v2_support import closure_input
+    assert derive_closure(closure_input(chain), execution_resolver=resolver)["closure"]["status"] == "passed"
+    from reader_receipts import commit_reader_judgment_receipt
+    with pytest.raises(ValidationError, match="capture resolver"):
+        commit_reader_judgment_receipt(
+            judgment=chain["judgment"], artifact_map=chain["artifact_map"], reader_brief=chain["reader_brief"],
+            shared_writing=chain["shared_writing"], deterministic_audit=chain["deterministic_audit"],
+            route_review=chain["route_review"], execution_record=judge,
+            root=tmp_path / "receipts", dependency_receipt_fingerprints=[])
     with pytest.raises(ValidationError, match="capture resolver"):
         validate_judgment_receipt(chain)
     for rejected in (False, None, {}, {"verified": False}, {"context_id": "thread-one"}):
         with pytest.raises(ValidationError, match="cannot verify"):
-            validate_judgment_receipt(chain, execution_resolver=lambda _: rejected)
+            from types import SimpleNamespace
+            validate_judgment_receipt(chain, execution_resolver=SimpleNamespace(resolve_judgment=lambda *_: rejected))
     with pytest.raises(ValidationError, match="every writer context"):
-        validate_judgment_receipt(chain, execution_resolver=lambda _: {
+        from types import SimpleNamespace
+        validate_judgment_receipt(chain, execution_resolver=SimpleNamespace(resolve_judgment=lambda *_: {
             "verified": True, "writer_context_ids": ["thread-one"],
-        })
+        }))
+    import copy
+    # Each declared input is required to identify the current article, not
+    # merely a valid unrelated completed context.
+    for field in ("input_reader_intent_fingerprint", "input_writer_input_fingerprint", "input_artifact_fingerprint"):
+        foreign = copy.deepcopy(chain)
+        foreign_record = foreign["reader_execution_records"][0]
+        foreign_record[field] = FP_B
+        foreign_record["record_fingerprint"] = fingerprint({key: value for key, value in foreign_record.items() if key != "record_fingerprint"})
+        foreign["judgment"]["execution_record_fingerprint"] = foreign_record["record_fingerprint"]
+        foreign["judgment"]["judgment_fingerprint"] = fingerprint({key: value for key, value in foreign["judgment"].items() if key != "judgment_fingerprint"})
+        with pytest.raises(ValidationError, match="stale or foreign"):
+            validate_judgment_receipt(foreign, execution_resolver=resolver)
+    foreign = copy.deepcopy(chain)
+    foreign["judgment"]["strengths"][0]["message"] = "An invented caller review."
+    foreign["judgment"]["judgment_fingerprint"] = fingerprint({key: value for key, value in foreign["judgment"].items() if key != "judgment_fingerprint"})
+    with pytest.raises(ValidationError, match="captured judge output"):
+        validate_judgment_receipt(foreign, execution_resolver=resolver)
+    # A real completed capture saying only 'done' never licenses new JSON.
+    done_root, done_record = _make_capture(tmp_path / "done", role="judge", request_fields={
+        "reader_intent_fingerprint": chain["intent"]["intent_fingerprint"],
+        "writer_input_fingerprint": chain["reader_brief"]["writer_input_fingerprint"],
+        "artifact_fingerprint": chain["artifact_map"]["artifact_fingerprint"], "rubric_fingerprint": FP_A,
+    })
+    done = copy.deepcopy(chain)
+    done["reader_execution_records"] = [done_record]
+    done["judgment"]["execution_record_fingerprint"] = done_record["record_fingerprint"]
+    done["judgment"]["judgment_fingerprint"] = fingerprint({key: value for key, value in done["judgment"].items() if key != "judgment_fingerprint"})
+    with pytest.raises(ValidationError, match="output is invalid"):
+        validate_judgment_receipt(done, execution_resolver=LocalExecutionRecordResolver(done_root))
+    original_resolve = resolver.resolve
+    def raced(record):
+        verified = original_resolve(record)
+        (run_root / "judge" / "one" / "output.txt").write_text("changed after verification", encoding="utf-8")
+        return verified
+    with monkeypatch.context() as patch:
+        patch.setattr(resolver, "resolve", raced)
+        with pytest.raises(ValidationError, match="raw_output_fingerprint"):
+            validate_judgment_receipt(chain, execution_resolver=resolver)
     (run_root / "judge" / "one" / "output.txt").write_text("changed\n", encoding="utf-8")
     with pytest.raises(ValidationError, match="raw_output_fingerprint"):
         validate_judgment_receipt(chain, execution_resolver=resolver)

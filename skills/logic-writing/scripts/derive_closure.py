@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import argparse
+import copy
+import hashlib
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -18,12 +20,13 @@ from _common import (
 )
 from reader_pipeline import (
     validate_artifact_map,
-    validate_reader_audit_current,
-    validate_reader_judgment,
+    _compare_reader_audit,
+    _build_reader_audit_from_current,
+    _reader_judgment_from_current,
     validate_revision_provenance,
-    validate_route_artifact_review,
+    _route_review_from_current,
     validate_route_composition,
-    validate_shared_writing,
+    _shared_writing_from_current,
 )
 from reader_receipts import _commit
 
@@ -137,8 +140,9 @@ def derive_closure(
     value: Any,
     *,
     receipt_root: str | Path | None = None,
+    execution_resolver=None,
 ) -> dict[str, Any]:
-    request = require_mapping(value, "closure input")
+    request = copy.deepcopy(require_mapping(value, "closure input"))
     required = (
         "closure_id", "route_decision", "reader_brief", "route_composition",
         "artifact_map", "shared_writing", "deterministic_audit", "route_review",
@@ -169,32 +173,33 @@ def derive_closure(
         content_boundaries=brief["content_boundaries"],
     )
     amap = validate_artifact_map(request["artifact_map"])
-    shared = validate_shared_writing(
-        request["shared_writing"], artifact_map=amap, reader_brief=brief
-    )
+    shared = _shared_writing_from_current(request["shared_writing"], amap=amap, reader_brief=brief)
     audit = require_mapping(request["deterministic_audit"], "ReaderAudit")
     require_schema("reader-audit.schema.json", audit, label="ReaderAudit")
-    route_review = validate_route_artifact_review(
+    current_audit = _build_reader_audit_from_current(
+        audit_id=audit["audit_id"], amap=amap, brief=brief, contract=shared, audited_at=audit.get("audited_at"))
+    audit = _compare_reader_audit(audit, current_audit)
+    route_review = _route_review_from_current(
         request["route_review"],
         owner=owner,
-        route_composition=route,
-        artifact_map=amap,
+        route=route,
+        amap=amap,
         required_dimensions=REQUIRED_DIMENSIONS[owner],
     )
     execution_records = [require_mapping(row, "ReaderExecutionRecord") for row in request.get("reader_execution_records", [])]
-    judge_execution = next((row for row in execution_records if row.get("role") == "judge"), None)
-    judgment = validate_reader_judgment(
+    judges = [row for row in execution_records if row.get("role") == "judge"]
+    if len(judges) > 1:
+        raise ValidationError("exactly one judge ReaderExecutionRecord is required")
+    judge_execution = judges[0] if judges else None
+    judgment = _reader_judgment_from_current(
         request["judgment"],
-        artifact_map=amap,
-        reader_brief=brief,
-        shared_writing=shared,
-        deterministic_audit=audit,
+        amap=amap,
+        brief=brief,
+        contract=shared,
+        audit=audit,
         route_review=route_review,
         execution_record=judge_execution,
     )
-    if judge_execution is not None:
-        from reader_execution import validate_execution_record
-        validate_execution_record(judge_execution, lambda record: record.get("independence_status") == "verified")
     provenance = validate_revision_provenance(
         request["revision_provenance"],
         target_artifact_fingerprint=amap["artifact_fingerprint"],
@@ -255,11 +260,15 @@ def derive_closure(
                 raise ValidationError(
                     f"repair verification evidence {key} is stale or foreign"
                 )
-    validate_reader_audit_current(audit, artifact_map=amap, reader_brief=brief, shared_writing=shared)
     all_passed = audit["status"] == route_review["status"] == judgment["status"] == "passed" and judge_execution is not None
     no_progress = _no_progress_terminal(repair_results, amap["artifact_fingerprint"])
     repair_blocked = any(row["progress_status"] == "blocked" for row in repair_results)
     status = "no_progress_blocked" if no_progress else ("passed" if all_passed and not repair_blocked else "blocked")
+    if status == "passed":
+        if execution_resolver is None:
+            raise ValidationError("final closure requires a local execution capture resolver")
+        from reader_execution import validate_judgment_execution_record
+        validate_judgment_execution_record(judge_execution, judgment, execution_resolver)
 
     defect_ids = [
         *(row["finding_id"] for row in audit["findings"]),
@@ -284,6 +293,14 @@ def derive_closure(
             "action": "human_review" if no_progress else "repair_and_rerun",
         }]
     )
+    # A same-call snapshot is useful only while the underlying bytes remain
+    # current. Re-read once before emitting or committing any closure receipt.
+    try:
+        final_bytes = Path(amap["artifact_path"]).read_bytes()
+    except OSError as exc:
+        raise ValidationError("ArtifactMap artifact is missing before closure") from exc
+    if "sha256:" + hashlib.sha256(final_bytes).hexdigest() != amap["artifact_fingerprint"]:
+        raise ValidationError("ArtifactMap became stale during closure")
     closure = {
         "schema_version": "2.0",
         "closure_id": request["closure_id"],
@@ -352,9 +369,12 @@ def main() -> int:
     parser.add_argument("--input", required=True)
     parser.add_argument("--output")
     parser.add_argument("--receipt-root")
+    parser.add_argument("--execution-root", help="Local immutable writer/judge capture root")
     args = parser.parse_args()
     try:
-        result = derive_closure(load_json(args.input), receipt_root=args.receipt_root)
+        from execution_record_resolver import LocalExecutionRecordResolver
+        resolver = LocalExecutionRecordResolver(args.execution_root) if args.execution_root else None
+        result = derive_closure(load_json(args.input), receipt_root=args.receipt_root, execution_resolver=resolver)
     except (OSError, ValueError, ValidationError) as exc:
         print(f"ERROR: {exc}")
         return 2

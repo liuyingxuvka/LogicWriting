@@ -172,4 +172,12 @@ def validate_execution_record(record: Mapping[str, Any], resolver: Callable[[Map
     return value
 
 
+def validate_judgment_execution_record(record, judgment, resolver):
+    """Require the current local capture owner to bind its actual JSON output."""
+    resolve_judgment = getattr(resolver, "resolve_judgment", None)
+    if not callable(resolve_judgment):
+        raise ValidationError("final judgment requires a local execution capture resolver with output binding")
+    return validate_execution_record(record, lambda current: resolve_judgment(current, judgment))
+
+
 __all__ = ["dispatch_writer", "dispatch_judge", "validate_execution_record"]

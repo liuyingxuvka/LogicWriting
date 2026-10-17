@@ -7,7 +7,7 @@ import pytest
 from _common import ValidationError, fingerprint, fingerprint_without
 from reader_pipeline import build_artifact_map, build_repair_request, record_repair_result
 from tests.v2_support import complete_chain, closure_input
-from derive_closure import derive_closure
+from tests.v2_support import derive_protocol_closure as derive_closure
 
 
 def _request(chain: dict) -> dict:

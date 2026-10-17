@@ -5,7 +5,7 @@ import copy
 import pytest
 
 from _common import ValidationError, fingerprint
-from derive_closure import derive_closure
+from tests.v2_support import derive_protocol_closure as derive_closure
 from reader_pipeline import validate_route_artifact_review
 from tests.v2_support import closure_input, complete_chain
 

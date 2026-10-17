@@ -16,7 +16,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Mapping
 
-from _common import ValidationError, fingerprint, fingerprint_text
+from _common import ValidationError, fingerprint, fingerprint_text, require_schema
 
 
 # The local backend records a very narrow class of provider diagnostics as
@@ -335,6 +335,41 @@ class LocalExecutionRecordResolver:
             "model_id": value["model_id"],
             "settings_fingerprint": value["settings_fingerprint"],
         }
+
+    def resolve_judgment(self, record: Mapping[str, Any], judgment: Mapping[str, Any]) -> dict[str, Any]:
+        """Bind the current ReaderJudgment to the verified provider JSON.
+
+        The execution fingerprint is filled by the orchestrator after output
+        capture, so it and the outer judgment fingerprint cannot self-hash in
+        provider output. All substantive existing ReaderJudgment fields must
+        otherwise match exactly; no score or completion marker is substituted.
+        """
+        verified = self.resolve(record)
+        try:
+            raw_bytes = Path(verified["output_path"]).read_bytes()
+            if _sha256_bytes(raw_bytes) != record["raw_output_fingerprint"]:
+                raise ValidationError("raw_output_fingerprint changed before judgment parsing")
+            raw = raw_bytes.decode("utf-8").strip()
+            if "```" in raw:
+                raw = next((chunk.strip().removeprefix("json").strip() for chunk in raw.split("```") if "{" in chunk), raw)
+            try:
+                payload = json.loads(raw)
+            except json.JSONDecodeError:
+                start, end = raw.find("{"), raw.rfind("}")
+                if start < 0 or end <= start:
+                    raise ValueError("judge output has no JSON object")
+                payload = json.loads(raw[start:end + 1])
+            require_schema("reader-judgment.schema.json", payload, label="captured ReaderJudgment")
+            if payload["judgment_fingerprint"] != fingerprint({key: value for key, value in payload.items() if key != "judgment_fingerprint"}):
+                raise ValidationError("captured ReaderJudgment fingerprint is stale")
+            ignored = {"execution_record_fingerprint", "judgment_fingerprint"}
+            if {key: value for key, value in payload.items() if key not in ignored} != {key: value for key, value in judgment.items() if key not in ignored}:
+                raise ValidationError("ReaderJudgment differs from the captured judge output")
+        except (OSError, UnicodeError, ValueError, KeyError, TypeError) as exc:
+            if isinstance(exc, ValidationError):
+                raise
+            raise ValidationError(f"captured judge output is invalid: {exc}") from exc
+        return verified
 
 
 __all__ = ["LocalExecutionRecordResolver"]

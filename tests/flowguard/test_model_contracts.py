@@ -45,7 +45,7 @@ def test_full_model_run_uses_a_current_conformance_report():
     report = check_plan("execution_binding")
     assert report["ok"]
     assert report["transitions"] > 0
-    assert report["known_bad"] == {"missing_capture": True, "shared_writer_context": True}
+    assert report["known_bad"] == {"missing_capture": True, "shared_writer_context": True, "caller_substituted_output": True}
 
 
 def test_router_selects_one_owner_and_preserves_bounded_child():
