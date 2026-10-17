@@ -33,9 +33,11 @@ not evidence; every pass claim needs its current terminal receipt.
   model mesh, installation parity, and exact known-bad cases.
 - [ ] Run the travel owner, including base, positive, exact-negative, time mode,
   feasibility, fit, fallback, text, and artifact-hash cases.
-- [ ] Run FlowGuard models, BCL, Primary Path Authority, model-test alignment,
-  TestMesh plan, and retirement workflow checks.
-- [ ] Run reader semantic review, public docs, privacy, and source-release checks.
+- [ ] Run the affected native state models and real failure cases. BCL, path
+  authority, alignment and TestMesh are explicit optional views, not release prerequisites.
+- [ ] Run public docs, privacy, source-release and offline reader protocol checks.
+- [ ] Keep preflight/held-out/quality producer experiments and their two read-only
+  consumers explicit opt-in with finite budgets; they are outside ordinary release.
 
 ## One final release owner
 
@@ -45,8 +47,8 @@ not evidence; every pass claim needs its current terminal receipt.
 - [ ] Run one final full validation owner after the integration snapshot is
   stable; do not use a scheduled task, unattended retry, or mutable background
   resume.
-- [ ] Verify OpenSpec and archive the completed change.
-- [ ] Rerun the stable post-archive release contract on the new source identity.
+- [ ] Complete archival and version edits before freezing the final source.
+- [ ] Run the stable post-archive contract once, including one full pytest owner.
 
 ## Installation cutover
 
@@ -64,9 +66,8 @@ not evidence; every pass claim needs its current terminal receipt.
 - [ ] Commit the frozen source snapshot.
 - [ ] Push the default branch, create signed/annotated `v4.0.4` as configured,
   and publish the GitHub Release without mutable-identity reuse.
-- [ ] Clone `LogicWriting` anonymously into a new directory.
-- [ ] Validate the fresh clone, install from it, and run all four representative
-  routes without old active skill ids.
+- [ ] Read back the branch, exact tag target and stable release identity; do not
+  repeat the full frozen gate after publishing unchanged source.
 
 ## Privatize predecessors in dependency order
 

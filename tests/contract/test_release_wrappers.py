@@ -366,48 +366,11 @@ def test_frozen_boundary_excludes_runtime_inputs_and_internal_records():
         (ROOT / runner.DEFAULT_CONTRACT).read_text(encoding="utf-8")
     )
     checks = {item["id"]: item for item in contract["checks"]}
-    judgment = next(
-        item for item in contract["checks"] if item["id"] == "check.reader.judgment"
-    )
-    assert judgment["args"] == [
-        "scripts/check_reader_judgment.py",
-        "--root",
-        ".",
-        "--runtime-root",
-        "{owner_run_root}",
-        "--dependency-producer",
-        "check.reader.execution-quality-producer",
-        "--json",
-    ]
-    assert checks["check.reader.execution-quality-producer"]["args"] == [
-        "scripts/run_reader_acceptance_owner.py",
-        "--root",
-        ".",
-        "--backend-plan",
-        "tests/fixtures/writing_quality/local-backend-plan.json",
-        "--preflight-run-root",
-        "{dependency:check.reader.preflight-producer:run_root}",
-        "--held-out-run-root",
-        "{dependency:check.reader.heldout-producer:run_root}",
-        "--output-dir",
-        "{owner_run_root}",
-        "--json",
-    ]
-    assert checks["check.writing.quality-benchmark"]["args"] == [
-        "scripts/check_writing_quality_run.py",
-        "--root",
-        ".",
-        "--run-root",
-        "{dependency:check.reader.execution-quality-producer:run_root}",
-        "--held-out-run-root",
-        "{dependency:check.reader.heldout-producer:run_root}",
-        "--dependency-producer",
-        "check.reader.execution-quality-producer",
-        "--json",
-    ]
+    commands, consumers = runner._validate_plan(contract)
+    assert commands and not consumers
     assert not any(
         str(selector).startswith("run-artifacts/")
-        for selector in judgment["input_selectors"]
+        for item in checks.values() for selector in item["input_selectors"]
     )
     exclusions = set(contract["freshness"]["exclude"])
     assert {
@@ -458,30 +421,30 @@ def test_manifest_reuses_frozen_hashes_and_caches_unlisted_paths(monkeypatch, tm
     assert known_hashes["uncached.txt"] == "sha256:computed"
 
 
-def test_reader_quality_contract_has_one_six_node_chain_and_two_terminal_consumers():
-    contract = yaml.safe_load(
-        (ROOT / "openspec" / "verification-contract.yaml").read_text(encoding="utf-8")
-    )
+def test_release_contract_has_one_pytest_owner_and_no_live_model_commands():
+    contract = yaml.safe_load((ROOT / "openspec/verification-contract.yaml").read_text())
     checks = {str(item["id"]): item for item in contract["checks"]}
-    expected = {
-        "check.reader.preflight-producer": ["check.tests.archive-lifecycle"],
-        "check.reader.heldout-producer": ["check.reader.preflight-producer"],
-        "check.reader.execution-quality-producer": ["check.reader.heldout-producer"],
-        "check.reader.judgment": ["check.reader.execution-quality-producer"],
-        "check.writing.quality-benchmark": ["check.reader.execution-quality-producer"],
-    }
-    # The release subgraph is the archive node plus these five reader nodes:
-    # three producers and two read-only consumers.
-    assert set(expected).issubset(checks)
-    for check_id, dependencies in expected.items():
-        assert checks[check_id]["depends_on_receipts"] == dependencies
-    assert "--preflight-case" in checks["check.reader.preflight-producer"]["args"]
-    assert "--held-out-only" in checks["check.reader.heldout-producer"]["args"]
-    assert "--preflight-run-root" in checks["check.reader.execution-quality-producer"]["args"]
-    assert "--held-out-run-root" in checks["check.reader.execution-quality-producer"]["args"]
-    assert "{owner_run_root}" in checks["check.reader.judgment"]["args"]
-    assert "{dependency:check.reader.execution-quality-producer:run_root}" in checks["check.writing.quality-benchmark"]["args"]
-    assert "--held-out-run-root" in checks["check.writing.quality-benchmark"]["args"]
+    pytest_owners = [item["id"] for item in checks.values() if item.get("args", [])[:2] == ["-m", "pytest"]]
+    assert pytest_owners == ["check.tests.full"]
+    for check_id, check in checks.items():
+        assert all(ref in checks and ref != check_id for ref in check.get("depends_on_receipts", []))
+        command = " ".join([str(check.get("command", "")), *map(str, check.get("args", []))])
+        assert "run_reader_acceptance_owner" not in command
+        assert "run_writing_quality_benchmark" not in command
+        assert "check_reader_judgment" not in command
+        assert "check_writing_quality_run" not in command
+    visiting, visited = set(), set()
+    def visit(check_id):
+        assert check_id not in visiting, "release dependency cycle"
+        if check_id in visited:
+            return
+        visiting.add(check_id)
+        for ref in checks[check_id].get("depends_on_receipts", []):
+            visit(ref)
+        visiting.remove(check_id)
+        visited.add(check_id)
+    for check_id in checks:
+        visit(check_id)
 
 
 def test_frozen_public_checks_bind_concrete_admitted_source_manifests():
@@ -997,9 +960,7 @@ def test_stable_release_contract_requires_post_archive_complete_gate():
     checks = {item["id"]: item for item in contract["checks"]}
 
     assert {
-        "check.models.alignment",
         "check.models.full",
-        "check.testmesh.plan",
         "check.public.docs",
         "check.privacy",
         "check.release.source",

@@ -6,7 +6,7 @@ obligations:
     source: "specs/evidence-freshness-closure/spec.md#Requirement: Release validation survives change archival"
     claim: Every live release consumer binds one stable contract outside change lifecycle directories.
     required: true
-    evidence: [check.tests.archive-lifecycle, check.models.alignment, check.testmesh.plan]
+    evidence: [check.tests.full, check.models.full]
   - id: req.release.post-archive
     source: "specs/evidence-freshness-closure/spec.md#Requirement: Archival changes release source identity"
     claim: The exact post-archive source snapshot passes complete release validation before tagging.
@@ -21,7 +21,7 @@ obligations:
     source: "docs/architecture.md#Four final-owner routes"
     claim: The released skill has one public entrypoint, four final-owner routes, neutral shared writing kernels, preserved route-native semantics, and no sibling-owner cycle.
     required: true
-    evidence: [check.source.reconciliation, check.routing.shared, check.routes.existing, check.fiction.native, check.travel.native, check.tests.full]
+    evidence: [check.source.reconciliation, check.tests.full, check.fiction.native, check.travel.native]
 
 test_mesh:
   frozen_source_case_ids:
@@ -59,38 +59,6 @@ checks:
     covers: [req.release.four-routes]
     expected: {exit_code: 0}
 
-  - id: check.routing.shared
-    kind: command
-    semantic_check_id: logic-writing.routing-shared.current
-    execution_id: logic-writing-release.routing-shared.v2
-    validation_scope: focused
-    snapshot_policy: frozen
-    toolchain_identity: python-pytest
-    input_selectors: [skills/logic-writing/scripts/select_route.py, skills/logic-writing/scripts/validate_shared_writing.py, skills/logic-writing/assets/schemas/shared-writing-contract.schema.json, skills/logic-writing/references/router.md, skills/logic-writing/references/shared/**, tests/unit/test_routing.py, tests/unit/test_shared_writing.py, tests/adversarial/test_boundaries.py, tests/e2e/test_routes.py]
-    depends_on_receipts: [check.source.reconciliation]
-    command: python
-    args: [-m, pytest, -q, tests/unit/test_routing.py, tests/unit/test_shared_writing.py, tests/adversarial/test_boundaries.py, tests/e2e/test_routes.py]
-    timeout_seconds: 1200
-    required: true
-    covers: [req.release.four-routes]
-    expected: {exit_code: 0}
-
-  - id: check.routes.existing
-    kind: command
-    semantic_check_id: logic-writing.existing-routes.current
-    execution_id: logic-writing-release.existing-routes.v2
-    validation_scope: focused
-    snapshot_policy: frozen
-    toolchain_identity: python-pytest
-    input_selectors: [skills/logic-writing/references/routes/investigation.md, skills/logic-writing/references/routes/academic-writing.md, skills/logic-writing/scripts/**, tests/unit/test_investigation.py, tests/unit/test_academic.py, tests/unit/test_shared_writing.py]
-    depends_on_receipts: [check.routing.shared]
-    command: python
-    args: [-m, pytest, -q, tests/unit/test_investigation.py, tests/unit/test_academic.py, tests/unit/test_shared_writing.py]
-    timeout_seconds: 1200
-    required: true
-    covers: [req.release.four-routes]
-    expected: {exit_code: 0}
-
   - id: check.fiction.native
     kind: command
     semantic_check_id: logic-writing.fiction-native.current
@@ -123,66 +91,24 @@ checks:
     covers: [req.release.four-routes]
     expected: {exit_code: 0}
 
-  - id: check.tests.archive-lifecycle
-    kind: command
-    semantic_check_id: logic-writing.archive-lifecycle.regression
-    execution_id: logic-writing-release.archive-lifecycle.v1
-    validation_scope: focused
-    snapshot_policy: frozen
-    toolchain_identity: python-pytest
-    input_selectors:
-      - AGENTS.md
-      - openspec/verification-contract.yaml
-      - scripts/run_frozen_validation.py
-      - scripts/check_public_docs.py
-      - scripts/check_privacy.py
-      - tests/contract/test_release_wrappers.py
-      - tests/flowguard/test_alignment_and_mesh.py
-      - .flowguard/models/_frozen_source_contract_exhaustion.py
-      - .flowguard/models/owners/test_mesh/model.py
-      - .flowguard/behavior/inventory/ledger.json
-    depends_on_receipts: [check.routes.existing, check.fiction.native, check.travel.native]
-    command: python
-    args: [-m, pytest, -q, tests/contract/test_release_wrappers.py, tests/flowguard/test_alignment_and_mesh.py]
-    timeout_seconds: 900
-    required: true
-    covers: [req.release.stable-contract, req.release.post-archive]
-    expected: {exit_code: 0}
-
   - id: check.reader.projection-conformance
     kind: command
     semantic_check_id: logic-writing.reader-projection.current
     execution_id: logic-writing-release.reader-projection.v1
     validation_scope: focused
     snapshot_policy: frozen
-    toolchain_identity: flowguard-0.69.0-python
+    toolchain_identity: flowguard-0.70.3-python
     input_selectors:
       - scripts/run_reader_projection_conformance.py
       - skills/logic-writing/scripts/reader_projection_conformance.py
       - skills/logic-writing/scripts/production_reader_pipeline.py
       - tests/v2_support.py
-    depends_on_receipts: [check.tests.archive-lifecycle]
+    depends_on_receipts: [check.source.reconciliation]
     command: python
     args: [scripts/run_reader_projection_conformance.py, --root, ., --json]
     timeout_seconds: 300
     required: true
     covers: [req.release.post-archive]
-    expected: {exit_code: 0}
-
-  - id: check.models.alignment
-    kind: command
-    semantic_check_id: logic-writing.flowguard.model-test-alignment
-    execution_id: logic-writing-release.model-test-alignment.v1
-    validation_scope: full
-    snapshot_policy: frozen
-    toolchain_identity: flowguard-0.69.0-python
-    input_selectors: [.flowguard/models/owners/model_test_alignment/**, .flowguard/models/**, .flowguard/behavior/inventory/**, openspec/verification-contract.yaml, tests/**]
-    depends_on_receipts: [check.tests.archive-lifecycle]
-    command: python
-    args: [.flowguard/verification/owners/model_test_alignment/run_checks.py, --json]
-    timeout_seconds: 600
-    required: true
-    covers: [req.release.stable-contract, req.release.post-archive]
     expected: {exit_code: 0}
 
   - id: check.models.full
@@ -191,108 +117,12 @@ checks:
     execution_id: logic-writing-release.models-full.v1
     validation_scope: full
     snapshot_policy: frozen
-    toolchain_identity: flowguard-0.69.0-python
+    toolchain_identity: flowguard-0.70.3-python
     input_selectors: [.flowguard/**, skills/logic-writing/scripts/**, tests/**, openspec/verification-contract.yaml]
-    depends_on_receipts: [check.models.alignment]
+    depends_on_receipts: [check.source.reconciliation]
     command: python
     args: [.flowguard/verification/run_models.py, --profile, full, --json]
     timeout_seconds: 3600
-    required: true
-    covers: [req.release.post-archive]
-    expected: {exit_code: 0}
-
-  - id: check.testmesh.plan
-    kind: command
-    semantic_check_id: logic-writing.flowguard.testmesh-stable-plan
-    execution_id: logic-writing-release.testmesh-plan.v1
-    validation_scope: full
-    snapshot_policy: frozen
-    toolchain_identity: flowguard-0.69.0-python
-    input_selectors: [.flowguard/models/owners/test_mesh/**, .flowguard/models/_frozen_source_contract_exhaustion.py, openspec/verification-contract.yaml, scripts/_release_common.py, scripts/run_frozen_validation.py, tests/flowguard/test_alignment_and_mesh.py]
-    depends_on_receipts: [check.models.alignment]
-    command: python
-    args: [.flowguard/verification/owners/test_mesh/run_checks.py, --json]
-    timeout_seconds: 600
-    required: true
-    covers: [req.release.stable-contract, req.release.post-archive]
-    expected: {exit_code: 0}
-
-  - id: check.reader.preflight-producer
-    kind: command
-    semantic_check_id: logic-writing.reader-execution-quality.preflight-producer
-    execution_id: logic-writing-release.reader-execution-quality-preflight.v1
-    validation_scope: full
-    snapshot_policy: frozen
-    toolchain_identity: codex-cli-0.155.0-gpt-6-astra-xhigh
-    input_selectors: [scripts/run_reader_acceptance_owner.py, scripts/run_writing_quality_benchmark.py, skills/logic-writing/scripts/**, skills/logic-writing/assets/schemas/**, tests/fixtures/writing_quality/**, skills/logic-writing/references/**]
-    depends_on_receipts: [check.tests.archive-lifecycle]
-    command: python
-    args: [scripts/run_reader_acceptance_owner.py, --root, ., --backend-plan, tests/fixtures/writing_quality/local-backend-plan.json, --preflight-case, I01, --repeats, 1, --output-dir, "{owner_run_root}", --json]
-    timeout_seconds: 90000
-    required: true
-    covers: [req.release.post-archive]
-    expected: {exit_code: 0}
-
-  - id: check.reader.heldout-producer
-    kind: command
-    semantic_check_id: logic-writing.reader-execution-quality.heldout-producer
-    execution_id: logic-writing-release.reader-execution-quality-heldout.v1
-    validation_scope: full
-    snapshot_policy: frozen
-    toolchain_identity: codex-cli-0.155.0-gpt-6-astra-xhigh
-    input_selectors: [scripts/run_reader_acceptance_owner.py, scripts/run_writing_quality_benchmark.py, scripts/check_writing_quality_run.py, skills/logic-writing/scripts/**, skills/logic-writing/assets/schemas/**, tests/fixtures/writing_quality/**, skills/logic-writing/references/**]
-    depends_on_receipts: [check.reader.preflight-producer]
-    command: python
-    args: [scripts/run_reader_acceptance_owner.py, --root, ., --backend-plan, tests/fixtures/writing_quality/local-backend-plan.json, --held-out-only, --preflight-run-root, "{dependency:check.reader.preflight-producer:run_root}", --output-dir, "{owner_run_root}", --json]
-    timeout_seconds: 90000
-    required: true
-    covers: [req.release.post-archive]
-    expected: {exit_code: 0}
-
-  - id: check.reader.execution-quality-producer
-    kind: command
-    semantic_check_id: logic-writing.reader-execution-quality.real-producer
-    execution_id: logic-writing-release.reader-execution-quality.v1
-    validation_scope: full
-    snapshot_policy: frozen
-    toolchain_identity: codex-cli-0.155.0-gpt-6-astra-xhigh
-    input_selectors: [scripts/run_reader_acceptance_owner.py, scripts/run_writing_quality_benchmark.py, skills/logic-writing/scripts/**, skills/logic-writing/assets/schemas/**, tests/fixtures/writing_quality/**, skills/logic-writing/references/**]
-    depends_on_receipts: [check.reader.heldout-producer]
-    command: python
-    args: [scripts/run_reader_acceptance_owner.py, --root, ., --backend-plan, tests/fixtures/writing_quality/local-backend-plan.json, --preflight-run-root, "{dependency:check.reader.preflight-producer:run_root}", --held-out-run-root, "{dependency:check.reader.heldout-producer:run_root}", --output-dir, "{owner_run_root}", --json]
-    timeout_seconds: 90000
-    required: true
-    covers: [req.release.post-archive]
-    expected: {exit_code: 0}
-
-  - id: check.reader.judgment
-    kind: command
-    semantic_check_id: logic-writing.reader-judgment.current-artifact
-    execution_id: logic-writing-release.reader-judgment.v3
-    validation_scope: full
-    snapshot_policy: frozen
-    toolchain_identity: logic-writing-judgment-validator-v2
-    input_selectors: [scripts/check_reader_judgment.py, skills/logic-writing/scripts/**, skills/logic-writing/assets/schemas/**, tests/fixtures/writing_quality/rubric.machine.json]
-    depends_on_receipts: [check.reader.execution-quality-producer]
-    command: python
-    args: [scripts/check_reader_judgment.py, --root, ., --runtime-root, "{owner_run_root}", --dependency-producer, check.reader.execution-quality-producer, --json]
-    timeout_seconds: 300
-    required: true
-    covers: [req.release.post-archive]
-    expected: {exit_code: 0}
-
-  - id: check.writing.quality-benchmark
-    kind: command
-    semantic_check_id: logic-writing.writing-quality-benchmark.acceptance
-    execution_id: logic-writing-release.writing-quality-benchmark.v2
-    validation_scope: full
-    snapshot_policy: frozen
-    toolchain_identity: logic-writing-quality-summary-validator-v1
-    input_selectors: [scripts/check_writing_quality_run.py, scripts/run_writing_quality_benchmark.py, tests/fixtures/writing_quality/**]
-    depends_on_receipts: [check.reader.execution-quality-producer]
-    command: python
-    args: [scripts/check_writing_quality_run.py, --root, ., --run-root, "{dependency:check.reader.execution-quality-producer:run_root}", --held-out-run-root, "{dependency:check.reader.heldout-producer:run_root}", --dependency-producer, check.reader.execution-quality-producer, --json]
-    timeout_seconds: 300
     required: true
     covers: [req.release.post-archive]
     expected: {exit_code: 0}
@@ -333,7 +163,7 @@ checks:
       - skills/logic-writing/scripts/**/*.py
       - tests/**/*.py
       - tests/fixtures/**/*
-    depends_on_receipts: [check.tests.archive-lifecycle]
+    depends_on_receipts: [check.source.reconciliation]
     command: python
     args: [scripts/check_public_docs.py, --root, ., --json]
     timeout_seconds: 300
@@ -381,7 +211,7 @@ checks:
     snapshot_policy: frozen
     toolchain_identity: python-pytest
     input_selectors: [skills/logic-writing/**, tests/**, .flowguard/**, openspec/**, docs/**, scripts/**, AGENTS.md, VERSION, pyproject.toml, README.md, README.zh-CN.md, CHANGELOG.md]
-    depends_on_receipts: [check.models.full, check.testmesh.plan, check.reader.judgment, check.writing.quality-benchmark, check.release.source]
+    depends_on_receipts: [check.fiction.native, check.travel.native, check.models.full, check.reader.projection-conformance, check.release.source]
     command: python
     args: [-m, pytest, -q]
     timeout_seconds: 3600
