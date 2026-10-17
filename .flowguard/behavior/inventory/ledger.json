@@ -804,7 +804,7 @@
       "variant_of_business_intent_id": ""
     },
     {
-      "actor": "SkillGuard installation owner",
+      "actor": "canonical directory installation owner",
       "actor_kind": "automation",
       "behavior_plane": "development_process",
       "business_intent_id": "intent:activate-recoverable-install",
@@ -843,7 +843,7 @@
         "error_signatures": [],
         "metadata": {},
         "path_patterns": [
-          "skills/logic-writing/.skillguard"
+          "skills/logic-writing/SKILL.md"
         ],
         "task_terms": [
           "install Logic Writing",
@@ -857,7 +857,7 @@
       "metadata": {},
       "miss_origin_state": "no_miss",
       "model_sync_state": "owner_model_current",
-      "owner": "SkillGuard",
+      "owner": "canonical directory staging",
       "path_authority": {
         "behavior_commitment_id": "",
         "business_intent": "",
@@ -915,7 +915,7 @@
       "variant_of_business_intent_id": ""
     },
     {
-      "actor": "SkillGuard global router",
+      "actor": "installed entrypoint check",
       "actor_kind": "automation",
       "behavior_plane": "development_process",
       "business_intent_id": "intent:project-one-global-route",
@@ -954,7 +954,7 @@
         "error_signatures": [],
         "metadata": {},
         "path_patterns": [
-          ".codex/.skillguard/global-router/global_registry.json"
+          "scripts/check_global_routing.py"
         ],
         "task_terms": [
           "global route",
@@ -968,7 +968,7 @@
       "metadata": {},
       "miss_origin_state": "no_miss",
       "model_sync_state": "owner_model_current",
-      "owner": "SkillGuard global router",
+      "owner": "installed entrypoint check",
       "path_authority": {
         "behavior_commitment_id": "",
         "business_intent": "",

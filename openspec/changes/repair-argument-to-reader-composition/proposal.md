@@ -1,3 +1,5 @@
+> Maintenance amendment (2026-10-17): the stable ordinary release contract and directory parity replace retired author wrappers. Quality experiments remain explicit opt-in; their pending live results do not block the offline patch release.
+
 ## Why
 
 The current LogicWriting pipeline can preserve a large model and a checklist
@@ -42,9 +44,7 @@ verifiable independent evaluation.
 ## Impact
 
 Affected files are the LogicWriting skill's reader pipeline, schemas, route
-references, SkillGuard contract-source metadata, focused unit/adversarial/e2e
 tests, and the candidate OpenSpec artifacts. The registered source checkout,
-installed projection, shared SkillGuard engine, and release state remain outside
 this candidate change while the A00 governance gate is blocked.
 
 ## Current implementation-round amendment (R00–R10, 2026-09-09)

@@ -169,25 +169,10 @@ def test_route_smoke_covers_both_owners_and_bounded_child():
 
 def test_global_route_checker_distinguishes_cutover_from_retirement(tmp_path):
     routing = _load("check_global_routing")
-    router = tmp_path / ".skillguard" / "global-router"
-    router.mkdir(parents=True)
     (tmp_path / "skills" / "research-investigation-workflow").mkdir(parents=True)
-    registry = {
-        "items": [
-            {
-                "skill_id": "logic-writing",
-                "status": "current",
-                "route_entrypoint": {"authority_decision": "current"},
-            },
-            {
-                "skill_id": "research-investigation-workflow",
-                "status": "blocked",
-                "route_entrypoint": {"authority_decision": "blocked"},
-            },
-        ]
-    }
-    (router / "global_registry.json").write_text(json.dumps(registry), encoding="utf-8")
-    (tmp_path / "AGENTS.md").write_text("current route: logic-writing\n", encoding="utf-8")
+    active = tmp_path / "skills" / "logic-writing"
+    active.mkdir(parents=True)
+    (active / "SKILL.md").write_text("---\nname: logic-writing\n---\n")
     assert routing.check(tmp_path, phase="cutover")["status"] == "passed"
     assert routing.check(tmp_path, phase="retired")["status"] == "failed"
 
@@ -361,60 +346,6 @@ def test_reader_judgment_owner_missing_record_with_input_is_unavailable(tmp_path
     assert report["execution_status"] == "execution_provider_unavailable"
 
 
-def test_skillguard_project_owner_stages_stable_project_identity(tmp_path, monkeypatch):
-    authority = _load("check_skillguard_authority")
-    repository = tmp_path / "random-frozen-root"
-    target = repository / "skills" / "logic-writing"
-    codex_home = tmp_path / "codex-home"
-    scripts = codex_home / "skills" / "skillguard" / "scripts"
-    scripts.mkdir(parents=True)
-    (scripts / "skillguard.py").write_text("# provider\n", encoding="utf-8")
-    (scripts / "skillguard_compile.py").write_text(
-        "# provider\n", encoding="utf-8"
-    )
-    (repository / ".skillguard").mkdir(parents=True)
-    (repository / ".skillguard" / "author-project.json").write_text(
-        json.dumps({"project_id": "LogicWriting"}), encoding="utf-8"
-    )
-    (repository / "AGENTS.md").write_text("project contract\n", encoding="utf-8")
-    (target / ".skillguard").mkdir(parents=True)
-    (target / "SKILL.md").write_text("skill contract\n", encoding="utf-8")
-    for name in (
-        "contract-source.json",
-        "compiled-contract.json",
-        "check-manifest.json",
-    ):
-        (target / ".skillguard" / name).write_text("{}\n", encoding="utf-8")
-
-    observed = {}
-
-    def fake_run(command, *, cwd, timeout):
-        observed["root"] = cwd
-        assert timeout == 900
-        assert cwd.name == "LogicWriting"
-        assert not (cwd / ".git").exists()
-        assert (cwd / "AGENTS.md").is_file()
-        assert (cwd / ".skillguard" / "author-project.json").is_file()
-        assert command[2] == "maintainer-audit"
-        assert (cwd / "skills" / "logic-writing" / "SKILL.md").is_file()
-        root_arg = Path(command[command.index("--root") + 1])
-        assert root_arg == cwd
-        return SimpleNamespace(
-            returncode=0,
-            stdout=json.dumps(
-                {"status": "pass", "decision": "pass", "findings": []}
-            ),
-            stderr="",
-        )
-
-    monkeypatch.setattr(authority, "run", fake_run)
-    report = authority.check(repository, target, codex_home, "project")
-
-    assert report["status"] == "passed"
-    assert report["execution_projection"] == "stable-project-id"
-    assert report["provider_result"]["status"] == "pass"
-    assert not observed["root"].exists()
-
 
 def test_frozen_boundary_excludes_runtime_inputs_and_internal_records():
     runner = _load("run_frozen_validation")
@@ -563,7 +494,6 @@ def test_frozen_public_checks_bind_concrete_admitted_source_manifests():
         ".gitattributes",
         ".gitignore",
         ".logicguard/readme-capability-model.yaml",
-        ".skillguard/author-project.json",
         "AGENTS.md",
         "CHANGELOG.md",
         "README.md",
@@ -574,8 +504,6 @@ def test_frozen_public_checks_bind_concrete_admitted_source_manifests():
         "scripts/check_public_docs.py",
         "scripts/check_release_surface.py",
         "scripts/author/evaluate_contract_calibration.py",
-        "skills/logic-writing/.skillguard/evidence-specs/semantic.json",
-        "skills/logic-writing/.skillguard/fixtures/contract-depth-positive.json",
     }
     forbidden = {
         ".flowguard/adoption_log.jsonl",
@@ -1076,7 +1004,6 @@ def test_stable_release_contract_requires_post_archive_complete_gate():
         "check.privacy",
         "check.release.source",
         "check.tests.full",
-        "check.skillguard.project",
         "check.openspec.strict",
     }.issubset(checks)
     assert checks["check.tests.full"]["args"] == ["-m", "pytest", "-q"]

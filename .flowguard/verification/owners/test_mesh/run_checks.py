@@ -1,20 +1,14 @@
-from __future__ import annotations
-
-import sys
+"""Direct native check for test_mesh."""
 from pathlib import Path
+import sys
+ROOT = Path(__file__).resolve().parents[3]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from flowguard.map.runner import run_owner
+from models.owners._native_checks import check_optional
 
-FLOWGUARD_ROOT = Path(__file__).resolve().parents[3]
-if str(FLOWGUARD_ROOT) not in sys.path:
-    sys.path.insert(0, str(FLOWGUARD_ROOT))
-
-"""Run the test mesh as one registered FlowGuard owner."""
-
-from models.owners._mesh_support import emit_runner, run_root_owner
-
-
-def main() -> int:
-    return emit_runner("test_mesh", run_root_owner("test_mesh"))
-
+def main():
+    return check_optional('test_mesh')
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(run_owner(main))

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 from pathlib import Path
 
 
@@ -8,21 +9,14 @@ ROOT = Path(__file__).resolve().parents[2]
 SKILL_ROOT = ROOT / "skills" / "logic-writing"
 
 
-def test_declared_route_resources_are_copied_into_consumer_projection():
+def test_declared_route_resources_are_copied_into_consumer_projection(tmp_path):
     manifest = json.loads(
         (SKILL_ROOT / "references" / "routes" / "required-resources.json").read_text(
             encoding="utf-8"
         )
     )
-    contract = json.loads(
-        (SKILL_ROOT / ".skillguard" / "compiled-contract.json").read_text(
-            encoding="utf-8"
-        )
-    )
-    inventory = {
-        str(row["path"]): row
-        for row in contract["content_impact_plan"]["inventory"]
-    }
+    stage = tmp_path / "skills" / "logic-writing"
+    shutil.copytree(SKILL_ROOT, stage, ignore=shutil.ignore_patterns("__pycache__"))
 
     def portable(path: str) -> str:
         prefix = "skills/logic-writing/"
@@ -43,12 +37,11 @@ def test_declared_route_resources_are_copied_into_consumer_projection():
 
     assert required_paths
     required_paths = {portable(path) for path in required_paths}
-    assert all(path in inventory for path in required_paths)
-    assert all(
-        inventory[path]["install_disposition"] == "copy"
-        for path in required_paths
-    )
-
-    projection_paths = set(contract["consumer_projection"]["file_paths"])
-    assert required_paths <= projection_paths
-    assert all(inventory[path]["install_disposition"] == "copy" for path in required_paths)
+    assert all((stage / path).is_file() for path in required_paths)
+    import sys
+    sys.path.insert(0, str(ROOT / "scripts"))
+    from check_installation_parity import check
+    assert check(SKILL_ROOT, tmp_path)["status"] == "passed"
+    target = stage / next(iter(sorted(required_paths)))
+    target.write_bytes(target.read_bytes() + b"\nchanged")
+    assert check(SKILL_ROOT, tmp_path)["status"] == "failed"

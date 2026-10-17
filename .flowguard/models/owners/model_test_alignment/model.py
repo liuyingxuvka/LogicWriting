@@ -23,9 +23,9 @@ FLOWGUARD_ROOT = Path(__file__).resolve().parents[3]
 if str(FLOWGUARD_ROOT) not in sys.path:
     sys.path.insert(0, str(FLOWGUARD_ROOT))
 
-from models.retirement_field_lifecycle import review_retirement_visibility_fields
-from models.reader_contract_field_lifecycle import review_reader_contract_fields
-from models.frozen_source_contract_exhaustion import (
+from models._retirement_field_lifecycle import review_retirement_visibility_fields
+from models._reader_contract_field_lifecycle import review_reader_contract_fields
+from models._frozen_source_contract_exhaustion import (
     CASE_IDS as FROZEN_SOURCE_CASE_IDS,
     EXECUTION_CASE_IDS as FROZEN_EXECUTION_CASE_IDS,
     OBSERVED_EXECUTION_CASE_IDS,
@@ -210,7 +210,7 @@ BINDINGS = (
         "C07:freeze-one-validation-owner",
         "logic_writing.release.validation",
         "contract:verification-owner-plan",
-        ".flowguard/models/common.py",
+        ".flowguard/models/_common.py",
         "FreezeValidation",
         "test:frozen-source-materialization",
         "test_schema_source_names_do_not_collide_with_openspec_generated_output_classifier",
@@ -225,7 +225,7 @@ BINDINGS = (
         "C08:activate-recoverable-install",
         "logic_writing.release.install",
         "contract:installation-projection",
-        ".flowguard/models/common.py",
+        ".flowguard/models/_common.py",
         "ActivateInstall",
         "test:installed-smoke",
         "test_release_requires_frozen_install_and_global_route",
@@ -239,7 +239,7 @@ BINDINGS = (
         "C09:project-one-global-route",
         "logic_writing.release.global-route",
         "contract:global-router-projection",
-        ".flowguard/models/common.py",
+        ".flowguard/models/_common.py",
         "ProjectGlobalRoute",
         "test:global-routing",
         "test_release_requires_frozen_install_and_global_route",
@@ -253,7 +253,7 @@ BINDINGS = (
         "C10:publish-logic-writing-release",
         "logic_writing.release.publish",
         "contract:release-gate",
-        ".flowguard/models/common.py",
+        ".flowguard/models/_common.py",
         "PublishRelease",
         "test:fresh-clone",
         "test_release_requires_frozen_install_and_global_route",
@@ -268,7 +268,7 @@ BINDINGS = (
         "C11:retire-predecessors-safely",
         "logic_writing.release.retirement",
         "contract:retirement-gate",
-        ".flowguard/models/common.py",
+        ".flowguard/models/_common.py",
         "PrivatizeLegacyRemote",
         "test:legacy-residual",
         "test_remote_retirement_privatizes_sequentially_and_records_handoff",
@@ -283,7 +283,7 @@ BINDINGS = (
         "C11:retire-predecessors-safely",
         "logic_writing.release.retirement",
         "contract:no-deletion-state-aliases",
-        ".flowguard/models/common.py",
+        ".flowguard/models/_common.py",
         "DevelopmentState",
         "test:retirement-field-replacement",
         "test_deleted_remote_fields_and_events_have_no_compatibility_alias",
@@ -483,7 +483,7 @@ def _frozen_execution_evidence() -> tuple[TestEvidence, ...]:
         elif post_archive_gate_case:
             test_name = "test_stable_release_contract_requires_post_archive_complete_gate"
         elif project_identity_case:
-            test_name = "test_skillguard_project_owner_stages_stable_project_identity"
+            test_name = "test_declared_route_resources_are_copied_into_consumer_projection"
         elif manifest_or_metadata_case:
             test_name = (
                 "test_frozen_public_checks_bind_concrete_admitted_source_manifests"

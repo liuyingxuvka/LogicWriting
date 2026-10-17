@@ -12,16 +12,16 @@ not evidence; every pass claim needs its current terminal receipt.
   projection.
 - [ ] Confirm LogicGuard, SourceGuard, and TraceGuard retain separate semantic
   ownership through exactly `researchguard logic`, `researchguard source`, and
-  `researchguard trace` from ResearchGuard `0.5.4`.
+  `researchguard trace` from ResearchGuard `0.5.6`.
 - [ ] Confirm no direct Guard module, retired satellite skill, alias,
   provider-root override, retry, fallback, or compatibility path remains.
 - [ ] Confirm WorldGuard, FlowGuard, Documents, and PDF provider boundaries
   remain native.
 - [ ] Freeze `VERSION`, `pyproject.toml`, both README source badges, changelog,
-  source reconciliation, OpenSpec version requirements, and the generated
-  SkillGuard consumer-distribution identity on the same `4.0.4` source tree.
+  source reconciliation, OpenSpec version requirements, and the canonical
+  skill-directory inventory on the same `4.0.4` source tree.
 - [ ] Freeze the OpenSpec obligations, FlowGuard BCL/model mesh/alignment,
-  TestMesh inventory, and SkillGuard declared-check authority.
+  ordinary check inventory.
 
 ## Focused validation
 
@@ -35,7 +35,6 @@ not evidence; every pass claim needs its current terminal receipt.
   feasibility, fit, fallback, text, and artifact-hash cases.
 - [ ] Run FlowGuard models, BCL, Primary Path Authority, model-test alignment,
   TestMesh plan, and retirement workflow checks.
-- [ ] Compile and check the sole current SkillGuard contract and calibration.
 - [ ] Run reader semantic review, public docs, privacy, and source-release checks.
 
 ## One final release owner
@@ -52,8 +51,9 @@ not evidence; every pass claim needs its current terminal receipt.
 ## Installation cutover
 
 - [ ] Preserve a recoverable backup of the current active installation.
-- [ ] Stage and activate `logic-writing` through SkillGuard.
-- [ ] Refresh the global router and confirm investigation, academic, fiction,
+- [ ] Copy the canonical skill to a temporary sibling, check directory byte parity,
+  then replace `logic-writing`; retain the previous directory outside the active root.
+- [ ] Check actual installed entrypoints and confirm investigation, academic, fiction,
   and travel intents resolve only to `logic-writing`.
 - [ ] Move active `travel-story-planner` and `storyline-design` skill
   directories to recoverable quarantine outside the active skill root.

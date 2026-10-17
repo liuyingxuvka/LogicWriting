@@ -1,16 +1,14 @@
-from __future__ import annotations
-
-import sys
+"""Direct native check for academic_route_model."""
 from pathlib import Path
+import sys
+ROOT = Path(__file__).resolve().parents[3]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from flowguard.map.runner import run_owner
+from models.owners._native_checks import check_plan
 
-FLOWGUARD_ROOT = Path(__file__).resolve().parents[3]
-if str(FLOWGUARD_ROOT) not in sys.path:
-    sys.path.insert(0, str(FLOWGUARD_ROOT))
-
-"""Run the academic route model as an independent child owner."""
-
-from models.owners._mesh_support import emit_runner, run_owner
-
+def main():
+    return check_plan('academic_route_model')
 
 if __name__ == "__main__":
-    raise SystemExit(emit_runner("academic_route_model", run_owner("academic_route_model")))
+    raise SystemExit(run_owner(main))

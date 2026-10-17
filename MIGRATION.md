@@ -12,7 +12,7 @@ or use an older provider path. This release does not add an automatic updater.
 
 For this patch, refresh the source metadata, run the current provider and
 negative-path checks, migrate the existing FlowGuard project authority through
-the official tool, compile and activate the SkillGuard projection, and verify
+the official tool, stage and compare the canonical skill directory before activation, and verify
 the source, installation, Git tag, and hosted release identities separately.
 
 ## Historical migration notes: Logic Writing 3.0.1
@@ -92,7 +92,7 @@ shared reader-state and model-artifact contract.
   effect-aware variation, exact artifact identity, and model-span binding.
 - FlowGuard now has disjoint fiction and travel children plus Travel-first,
   Storyline-second retirement order.
-- SkillGuard's sole current contract declares all four routes and their shared
+- The ordinary release contract declares all four routes and their shared
   kernel.
 
 ## Installation cutover

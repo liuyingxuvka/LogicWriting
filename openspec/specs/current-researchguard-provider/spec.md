@@ -61,7 +61,7 @@ The system SHALL consume ResearchGuard result and receipt material through opaqu
 
 ### Requirement: Installed projection matches the current source
 
-The system SHALL expose a SkillGuard-compiled consumer projection whose declared files, hashes, version, provider contract, and route behavior match the validated Logic Writing 4.0.3 source, and SHALL fail currentness checks when projection drift exists.
+The system SHALL expose a canonical staged skill directory whose declared files, hashes, version, provider contract, and route behavior match the validated Logic Writing 4.0.3 source, and SHALL fail currentness checks when projection drift exists.
 
 #### Scenario: Current installation is verified
 

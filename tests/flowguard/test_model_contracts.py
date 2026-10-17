@@ -11,7 +11,7 @@ FLOWGUARD_ROOT = Path(__file__).resolve().parents[2] / ".flowguard"
 if str(FLOWGUARD_ROOT) not in sys.path:
     sys.path.insert(0, str(FLOWGUARD_ROOT))
 
-from models.common import (  # noqa: E402
+from models._common import (  # noqa: E402
     DevelopmentEvent,
     DevelopmentState,
     OperationEvent,
@@ -19,7 +19,7 @@ from models.common import (  # noqa: E402
     development_workflow,
     operation_workflow,
 )
-from models.frozen_source_contract_exhaustion import (  # noqa: E402
+from models._frozen_source_contract_exhaustion import (  # noqa: E402
     CASE_IDS,
     review_frozen_source_name_family,
 )
@@ -28,19 +28,6 @@ from models.owners.model_test_alignment.model import (  # noqa: E402
     broken_missing_actual_artifact_plan,
 )
 from flowguard import review_model_test_alignment  # noqa: E402
-
-# The executable model runner belongs to the canonical verification role.
-# Load it by path so the test cannot accidentally revive the retired flat
-# `.flowguard/run_models.py` compatibility location.
-RUNNER_PATH = FLOWGUARD_ROOT / "verification" / "run_models.py"
-_runner_spec = importlib.util.spec_from_file_location(
-    "logic_writing_verification_runner", RUNNER_PATH
-)
-assert _runner_spec and _runner_spec.loader
-_runner = importlib.util.module_from_spec(_runner_spec)
-sys.modules[_runner_spec.name] = _runner
-_runner_spec.loader.exec_module(_runner)
-_current_conformance_report = _runner._current_conformance_report
 
 
 def _step(workflow, state, event):
@@ -52,20 +39,13 @@ def _step(workflow, state, event):
 
 
 def test_full_model_run_uses_a_current_conformance_report():
-    aligned = review_model_test_alignment(aligned_plan())
-    known_bad = review_model_test_alignment(
-        broken_missing_actual_artifact_plan()
-    )
-
-    report = _current_conformance_report(aligned, known_bad)
-
-    assert report.ok
-    assert report.model_fingerprint.startswith("sha256:")
-    assert report.prediction_fingerprint == report.model_fingerprint
-    assert [row.label for row in report.replayed_steps] == [
-        "current-model-code-test-alignment",
-        "known-bad-missing-artifact-rejected",
-    ]
+    # This owner executes transitions and its two real bad variants; no
+    # caller-written receipt can substitute for that execution.
+    from models.owners._native_checks import check_plan
+    report = check_plan("execution_binding")
+    assert report["ok"]
+    assert report["transitions"] > 0
+    assert report["known_bad"] == {"missing_capture": True, "shared_writer_context": True}
 
 
 def test_router_selects_one_owner_and_preserves_bounded_child():
@@ -338,11 +318,11 @@ def test_remote_retirement_privatizes_sequentially_and_records_handoff():
 def test_deleted_remote_fields_and_events_have_no_compatibility_alias():
     state_fields = set(DevelopmentState.__dataclass_fields__)
     assert {"retired_remote", "first_deletion_health_rechecked", "deletion_receipts"}.isdisjoint(state_fields)
-    from models.common import DEVELOPMENT_ACTIONS
+    from models._common import DEVELOPMENT_ACTIONS
 
     assert {"retire_legacy_remote", "recheck_after_first_deletion"}.isdisjoint(DEVELOPMENT_ACTIONS)
 
-    from models.retirement_field_lifecycle import review_retirement_visibility_fields
+    from models._retirement_field_lifecycle import review_retirement_visibility_fields
 
     review = review_retirement_visibility_fields()
     assert review.ok, review.summary

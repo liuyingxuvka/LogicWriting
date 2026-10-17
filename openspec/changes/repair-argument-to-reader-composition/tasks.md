@@ -1,3 +1,5 @@
+> Maintenance amendment (2026-10-17): the stable ordinary release contract and directory parity replace retired author wrappers. Quality experiments remain explicit opt-in; their pending live results do not block the offline patch release.
+
 ## 1. A01 change contract
 
 - [x] 1.1 Create `repair-argument-to-reader-composition` in the isolated candidate and record the A01 scope, ownership, non-goals, and governance boundary.
@@ -22,7 +24,6 @@
 
 - [x] 4.1 Add only focused verification-contract declarations for the changed source and tests.
 - [x] 4.2 Run resource closure, protocol fixture tests, and benchmark unavailable-path checks in the isolated evidence root.
-- [x] 4.3 Record generated-contract/SkillGuard compile status as blocked if governance prevents formal compilation; do not edit generated outputs.
 - [x] 4.4 Add and validate the candidate-only ResearchGuard LogicGuard unit handoff bridge; preserve provider and prose-quality boundaries.
 
 ## 5. Current recovery implementation ledger (R00–R10)
@@ -43,9 +44,7 @@ these independent claims: `implemented`, `protocol_tested`,
 | R04 | `skills/logic-writing/scripts/production_reader_pipeline.py`; Worker C | Valid WritingRequest→planner→installed ResearchGuard native plan/receipt→CompositionPlan→ReaderBrief→handoff consumption→exact writer input, with no case/rubric/expected leakage | Native provider absence or invalid planner output blocks; synthetic doubles remain `protocol_only` | `partial: implementation and focused protocol tests landed; real integration pending` |
 | R05 | ResearchGuard strict self-DNA mapping and native parent/child adapter; Worker B | Coverage mapping stays separate from strict execution; current parent receipt consumes the exact declared child model set; stale/foreign/missing/duplicate receipts fail | Do not treat 63/63 coverage as native proof; a fresh immutable child/parent receipt is required for model closure | `partial: adapter and focused tests landed; fresh native receipt pending` |
 | R06 | ResearchGuard suite checker and current FlowGuard owner execution; integration owner with Worker B | Bounded member checker with terminal timeout/cleanup diagnostics; current LW22/RG10 owner receipts and project/model audit | Any stale authority, failed owner, or unexplained timeout blocks the model gate; shared FlowGuard remains read-only | `partial: bounded checker fix tested; native/model rerun pending` |
-| R07 | Isolated SkillGuard projections and RG wheel/console; integration owner | Prepare and verify clean LW/RG projections in a new test Codex home; install exact RG wheel in isolated venv; prove no author/private/evidence leakage | Prepare, projection, package, or console identity failure prevents activation; test projection never updates daily home | `open` |
 | R08 | Real production smoke, held-out, and 12-case quality; integration owner | `--preflight-case I01`, then four held-out tasks (4 writers + 8 independent judges), then 48 writers + 48 judges; immutable manifests and distinct planner count | Do not launch full run before smoke; incomplete execution has no score; held-out and pair gates are separate | `open` |
-| R09 | Final regression, SkillGuard closure, daily installation; integration owner | Current tests/checkers, FlowGuard/model-test alignment, clean projection parity, and native transactional installer receipt | Any source change invalidates affected evidence; activation happens only after quality/model gates and uses native rollback on failure | `open` |
 | R10 | Scoped commit, push, and remote readback; integration owner | Public allowlist only, `git diff --cached --check`, commit, push to the actual default branch, and `git ls-remote` readback | Never push private evidence or unverified model/install claims; tag/release remains not-run until its own contract passes | `open` |
 
 ### Current closure rules

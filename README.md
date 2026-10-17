@@ -119,10 +119,11 @@ and [migration guide](MIGRATION.md) for the full boundaries.
 
 ## Install
 
-Copy or install `skills/logic-writing` as the single active skill directory,
-excluding its author-only `.skillguard` directory, then invoke
-`$logic-writing`. The installed consumer skill works independently: it does
-not need SkillGuard, SkillGuard receipts, or global-router state.
+Copy `skills/logic-writing` into a temporary sibling directory under your active
+skills root, compare its inventory and file hashes with the source, then replace
+`logic-writing` while keeping the previous directory outside that root for rollback.
+Invoke `$logic-writing` from the single active directory. No author tooling is
+part of the installed skill.
 
 ```text
 Use $logic-writing to turn this request into the correct reader-ready artifact.
@@ -136,7 +137,7 @@ not compatibility aliases. Their supported intents now route through
 
 The repository keeps separate owners for routing/shared writing, existing
 routes, fiction regression, travel regression, FlowGuard models and alignment,
-SkillGuard authority, reader judgment, public docs/privacy, and the final full
+independent reader judgment, public docs/privacy, and the final full
 suite. The release gate freezes one validation inventory and accepts one current
 terminal receipt per declared owner.
 

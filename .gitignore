@@ -17,7 +17,6 @@ build/
 docs/flowguard_adoption_log.md
 .logicguard/evidence/
 .flowguard/**/__pycache__/
-.skillguard/runs/
 run-artifacts/
 run_artifacts/
 validation-receipts/

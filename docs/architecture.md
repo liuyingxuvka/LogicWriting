@@ -113,9 +113,9 @@ disjoint domain state and side effects.
 
 OpenSpec records product obligations and acceptance checks. FlowGuard models
 state, ordering, ownership, known-bad behavior, and dependency-sensitive
-closure. SkillGuard compiles the target skill's exact declared-check inventory
-and installation projection. TestMesh freezes one final owner plan; receipt
-consumers never rerun the owner command.
+closure. The stable OpenSpec release contract owns the ordinary check inventory.
+Installation compares the canonical skill directory with its staged copy by file
+set and bytes. Receipt consumers never rerun the owner command.
 
 Final release validation runs only after source, toolchain, and inventory
 identities are frozen. Runtime outputs and progress logs are evidence, not

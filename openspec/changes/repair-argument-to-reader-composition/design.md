@@ -1,3 +1,5 @@
+> Maintenance amendment (2026-10-17): the stable ordinary release contract and directory parity replace retired author wrappers. Quality experiments remain explicit opt-in; their pending live results do not block the offline patch release.
+
 ## Context
 
 The candidate starts from LogicWriting `4.0.3` with one current route owner per request and a managed source contract whose compiled contract and check manifest are generated artifacts. The A00 governance gate is blocked, so this work is an isolated candidate only. Existing route packs already contain the runtime references and examples, but their consumer closure is implicit; the reader-v2 fixture currently exercises a synthetic complete chain and labels it as blind quality evidence.
@@ -6,20 +8,18 @@ The candidate starts from LogicWriting `4.0.3` with one current route owner per 
 
 **Goals:**
 
-- Make installation projection metadata express the four required route/example subtrees without editing generated SkillGuard outputs.
 - Validate staged consumer resources by recursive local reference traversal, manifest coverage, and JSON正文 associations.
 - Preserve twelve case inputs and make their protocol status explicit while adding a real-provider runner with a terminal unavailable state.
 - Record A01 requirements and a bounded implementation/verification map for this candidate.
 
 **Non-Goals:**
 
-- No changes to ResearchGuard, reader pipeline, `derive_closure`, SkillGuard engine, FlowGuard records, installed skills, or release publication.
 - No automatic provider discovery, paid API invocation, fixture score fallback, or fabricated article/judge output.
 - No attempt to claim formal author admission while A00 remains blocked.
 
 ## Decisions
 
-1. **Source metadata is declarative.** Add only `content_role_overrides` to `skills/logic-writing/.skillguard/contract-source.json`; the compiler remains the sole producer of `compiled-contract.json` and `check-manifest.json`. This keeps source authority separate from generated projections.
+1. **Canonical source is direct.** Copy the canonical skill directory; compare file sets and byte hashes without generated author contracts.
 2. **Closure is consumer-stage based.** The checker takes a source/stage root and a manifest, resolves Markdown links and JSON path fields from the selected route, and emits deterministic missing/escaped/test-only findings. This catches resources that route selection alone cannot observe.
 3. **Route references are explicit and depth-aware.** Fiction names compact/short and longform references separately; travel names its native compiler, workflow, traveler profile, and negative-evidence/fallback references. The writer still loads only the selected route's required set.
 4. **Benchmark execution is backend-injected.** The runner accepts a configured backend adapter or reports `execution_provider_unavailable`; it has no secret lookup or paid-service fallback. Protocol fixtures remain useful for transport/fingerprint regression but cannot supply quality scores.
@@ -34,7 +34,6 @@ The candidate starts from LogicWriting `4.0.3` with one current route owner per 
 
 ## Migration Plan
 
-Build a clean candidate consumer stage from the source, run resource closure, then run protocol tests and invoke the benchmark runner without a backend to verify the terminal unavailable receipt. If formal admission later permits compilation, regenerate SkillGuard projections through the governed owner and rerun affected checks; do not copy this candidate into the daily installation.
 
 ## Current implementation-round amendment (R00–R10, 2026-09-09)
 

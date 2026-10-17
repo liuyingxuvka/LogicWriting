@@ -1,16 +1,14 @@
-from __future__ import annotations
-
-import sys
+"""Direct native check for reader_artifact_model."""
 from pathlib import Path
+import sys
+ROOT = Path(__file__).resolve().parents[3]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from flowguard.map.runner import run_owner
+from models.owners._native_checks import check_plan
 
-FLOWGUARD_ROOT = Path(__file__).resolve().parents[3]
-if str(FLOWGUARD_ROOT) not in sys.path:
-    sys.path.insert(0, str(FLOWGUARD_ROOT))
-
-"""Consume reader leaf receipts and run the reader parent model once."""
-
-from models.owners._mesh_support import emit_runner, run_reader_artifact_parent
-
+def main():
+    return check_plan('reader_artifact_model')
 
 if __name__ == "__main__":
-    raise SystemExit(emit_runner("reader_artifact_model", run_reader_artifact_parent()))
+    raise SystemExit(run_owner(main))

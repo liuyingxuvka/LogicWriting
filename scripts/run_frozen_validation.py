@@ -35,7 +35,6 @@ IGNORED_PARTS = {
     ".pytest_cache",
     "evidence",
     "validation-receipts",
-    ".skillguard/runs",
 }
 
 
@@ -190,7 +189,7 @@ def _is_ignored(relative: Path, *, explicit: bool) -> bool:
         ".flowguard/adoption_log.jsonl",
     }:
         return True
-    return relative.as_posix().startswith("skills/logic-writing/.skillguard/runs/")
+    return False
 
 
 def _selector_files(root: Path, selector: str) -> list[Path]:
@@ -431,13 +430,6 @@ def _toolchain_observation(check: Mapping[str, Any]) -> dict[str, Any]:
             "schema_version": str(getattr(flowguard, "SCHEMA_VERSION", "unknown")),
             **_tree_identity(package_root, (package_root,)),
         }
-    if "skillguard" in lowered:
-        codex_home = Path(os.environ.get("CODEX_HOME", Path.home() / ".codex")).resolve()
-        skillguard_root = codex_home / "skills" / "skillguard"
-        observation["skillguard"] = _tree_identity(
-            skillguard_root,
-            tuple(skillguard_root / name for name in ("SKILL.md", "scripts", "references", "assets")),
-        )
     if "openspec" in lowered:
         try:
             completed = subprocess.run(

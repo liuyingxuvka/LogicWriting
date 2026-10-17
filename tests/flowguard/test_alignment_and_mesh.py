@@ -68,7 +68,7 @@ def test_frozen_runner_and_test_mesh_share_one_exact_inventory_revision():
 
 
 def test_frozen_execution_boundary_covers_runtime_and_internal_record_misses():
-    path = FLOWGUARD_ROOT / "models" / "frozen_source_contract_exhaustion.py"
+    path = FLOWGUARD_ROOT / "models" / "_frozen_source_contract_exhaustion.py"
     spec = importlib.util.spec_from_file_location(
         "logic_writing_frozen_execution_boundary", path
     )

@@ -16,60 +16,31 @@ OLD_IDS = {"research-investigation-workflow", "academic-thesis-revision-workflow
 def check(codex_home: Path, *, phase: str) -> dict:
     home = codex_home.resolve()
     findings: list[str] = []
-    registry_path = home / ".skillguard" / "global-router" / "global_registry.json"
-    if not registry_path.is_file():
-        return {"check": "global-routing", "status": "failed", "phase": phase, "findings": ["global_registry_missing"]}
-    try:
-        registry = json.loads(registry_path.read_text(encoding="utf-8"))
-    except json.JSONDecodeError:
-        return {"check": "global-routing", "status": "failed", "phase": phase, "findings": ["global_registry_invalid"]}
-    items = [item for item in registry.get("items", []) if isinstance(item, dict)]
-    new_items = [item for item in items if item.get("skill_id") == "logic-writing"]
-    current_new = [
-        item
-        for item in new_items
-        if item.get("status") == "current"
-        and (item.get("route_entrypoint") or {}).get("authority_decision") == "current"
-    ]
-    if len(current_new) != 1:
-        findings.append("logic_writing_current_route_count_mismatch")
-    old_items = [item for item in items if item.get("skill_id") in OLD_IDS]
-    if any(
-        item.get("status") == "current"
-        or (item.get("route_entrypoint") or {}).get("authority_decision") == "current"
-        for item in old_items
-    ):
-        findings.append("predecessor_route_still_authoritative")
+    active = home / "skills" / "logic-writing"
+    manifest = active / "SKILL.md"
+    text = manifest.read_text(encoding="utf-8") if manifest.is_file() else ""
+    import re
+    if not re.search(r"(?m)^name:\s*logic-writing\s*$", text):
+        findings.append("logic_writing_entrypoint_missing_or_wrong")
+    old_items = [old_id for old_id in OLD_IDS if (home / "skills" / old_id).exists()]
     if phase == "retired" and old_items:
-        findings.append("predecessor_route_still_registered")
-    for old_id in OLD_IDS:
-        exists = (home / "skills" / old_id).exists()
-        if phase == "retired" and exists:
-            findings.append(f"predecessor_skill_still_installed:{old_id}")
+        findings.extend(f"predecessor_skill_still_installed:{old_id}" for old_id in old_items)
+    for old_id in old_items:
+        if (home / "skills" / old_id / "SKILL.md").is_file():
+            findings.append(f"predecessor_entrypoint_still_active:{old_id}")
     prompt_path = home / "AGENTS.md"
     prompt = prompt_path.read_text(encoding="utf-8") if prompt_path.is_file() else ""
-    # The current SkillGuard global prompt is an author-only router pointer; it
-    # intentionally does not copy every consumer route into AGENTS.md.  Accept
-    # the current registry-hash pointer, while retaining the older literal
-    # route marker for bounded fixture compatibility.
-    registry_hash = str(registry.get("registry_hash") or "")
-    has_current_registry_pointer = bool(
-        registry_hash and f"registry_hash: {registry_hash}" in prompt
-    )
-    has_legacy_route_marker = "logic-writing" in prompt
-    if not (has_current_registry_pointer or has_legacy_route_marker):
-        findings.append("managed_global_prompt_missing_router_pointer")
     if phase == "retired" and any(old_id in prompt for old_id in OLD_IDS):
-        findings.append("managed_global_prompt_contains_predecessor")
+        findings.append("global_prompt_contains_predecessor")
     return {
         "check": "global-routing",
         "status": "passed" if not findings else "failed",
         "phase": phase,
-        "logic_writing_entries": len(new_items),
-        "current_logic_writing_entries": len(current_new),
+        "logic_writing_entries": int(manifest.is_file()),
+        "current_logic_writing_entries": int(not any("entrypoint" in item for item in findings)),
         "predecessor_entries": len(old_items),
         "findings": sorted(set(findings)),
-        "claim_boundary": "This checks the current local registry, managed prompt, and predecessor authority. It does not execute a user task or prove remote repository state.",
+        "claim_boundary": "This checks the actual installed entrypoint, local prompt, and predecessor directories. It does not execute a user task or prove remote repository state.",
     }
 
 

@@ -1,20 +1,14 @@
-from __future__ import annotations
-
-import sys
+"""Direct native check for development_process_flow."""
 from pathlib import Path
+import sys
+ROOT = Path(__file__).resolve().parents[3]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from flowguard.map.runner import run_owner
+from models.owners._native_checks import check_optional
 
-FLOWGUARD_ROOT = Path(__file__).resolve().parents[3]
-if str(FLOWGUARD_ROOT) not in sys.path:
-    sys.path.insert(0, str(FLOWGUARD_ROOT))
-
-"""Run the process parent over the current retirement child receipt."""
-
-from models.owners._mesh_support import emit_runner, run_development_parent
-
-
-def main() -> int:
-    return emit_runner("development_process_flow", run_development_parent())
-
+def main():
+    return check_optional('development_process_flow')
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(run_owner(main))

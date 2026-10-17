@@ -22,7 +22,7 @@ FLOWGUARD_ROOT = Path(__file__).resolve().parents[3]
 if str(FLOWGUARD_ROOT) not in sys.path:
     sys.path.insert(0, str(FLOWGUARD_ROOT))
 
-from models.frozen_source_contract_exhaustion import (  # noqa: E402
+from models._frozen_source_contract_exhaustion import (  # noqa: E402
     CASE_IDS as FROZEN_SOURCE_CASE_IDS,
     EXECUTION_CASE_IDS as FROZEN_EXECUTION_CASE_IDS,
     review_frozen_execution_boundary,

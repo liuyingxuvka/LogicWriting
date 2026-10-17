@@ -17,9 +17,6 @@ def _active_files(home: Path):
     prompt = home / "AGENTS.md"
     if prompt.is_file():
         yield prompt, "AGENTS.md"
-    router = home / ".skillguard" / "global-router"
-    for path in router.glob("*.json") if router.is_dir() else ():
-        yield path, f".skillguard/global-router/{path.name}"
     skills = home / "skills"
     if skills.is_dir():
         for path in skills.rglob("*"):
@@ -46,7 +43,7 @@ def check(codex_home: Path) -> dict:
         "check": "retirement-residuals",
         "status": "passed" if not findings else "failed",
         "findings": sorted(set(findings)),
-        "claim_boundary": "This scan covers active local skills, the managed prompt, and global routing records. Historical backups and public migration documentation are deliberately outside its scope.",
+        "claim_boundary": "This scan covers active local skills, the managed prompt. Historical backups and public migration documentation are deliberately outside its scope.",
     }
 
 

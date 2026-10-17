@@ -2,16 +2,16 @@
 
 ## Purpose
 
-Define the current SkillGuard-maintainer evidence boundary for the Logic Writing source repository. The target skill owns domain behavior and semantic checks; SkillGuard supervises author identity, evidence freshness, installation projection, and release parity without creating a consumer dependency or an updater.
+Define the current maintainer evidence boundary for the Logic Writing source repository. The target skill owns domain behavior and semantic checks; The stable release contract checks source identity, evidence freshness, staged directory parity, and release identity without creating a consumer dependency or an updater.
 
 ## Requirements
 
 ### Requirement: Target-owned validation depth
-The maintainer workflow SHALL preserve Logic Writing's sole native route and SHALL execute exactly the semantic checks declared by the target contract. SkillGuard MUST NOT invent, deepen, reinterpret, or replace target-domain criteria.
+The maintainer workflow SHALL preserve Logic Writing's sole native route and SHALL execute exactly the semantic checks declared by the target contract. Generic maintenance checks MUST NOT replace target-domain criteria.
 
-#### Scenario: Current declared checks are supervised
-- **WHEN** the Logic Writing maintenance unit is compiled and validated
-- **THEN** every target-declared check has exactly one execution owner and no undeclared domain check is added by SkillGuard
+#### Scenario: Current declared checks have one owner
+- **WHEN** the Logic Writing source snapshot is frozen and validated
+- **THEN** every target-declared check has exactly one execution owner and no undeclared domain check is added
 
 ### Requirement: Unit-local current evidence
 Reusable validation evidence SHALL be immutable, terminal, identity-exact, and local to the Logic Writing maintenance unit. Evidence from another unit, stale input, or a different execution environment MUST NOT satisfy the unit.
@@ -28,14 +28,14 @@ The maintainer workflow SHALL distinguish durable terminal producer evidence fro
 - **THEN** only the planned paths are quarantined or removed and source, business evidence, active processes, and protected release evidence remain untouched
 
 ### Requirement: Clean independent consumer
-The installed Logic Writing consumer SHALL contain only the target's declared consumer projection and SHALL operate without SkillGuard author state, receipts, router state, FlowGuard author models, caches, or release scratch data.
+The installed Logic Writing consumer SHALL contain only the target's declared consumer projection and SHALL operate without author state, routing registries, FlowGuard author models, caches, or release scratch data.
 
 #### Scenario: Staged consumer activation
 - **WHEN** a release candidate is installed locally
 - **THEN** its complete inventory matches the frozen installation projection, forbidden maintainer files are absent, and installed currentness can be checked without running a validation owner
 
 ### Requirement: Direct current authority and release parity
-The repository SHALL have one current author contract and MUST NOT retain the retired SkillGuard author identity as a compatibility or fallback authority. Source version `4.0.3`, installed projection, package metadata where applicable, Git commit, version tag, and GitHub Release SHALL be independently verified before release closure. This maintenance requirement does not create an automatic updater for other computers.
+The repository SHALL have one stable ordinary release contract and MUST NOT use retired author wrappers as a compatibility or fallback authority. Source version `4.0.3`, installed projection, package metadata where applicable, Git commit, version tag, and GitHub Release SHALL be independently verified before release closure. This maintenance requirement does not create an automatic updater for other computers.
 
 #### Scenario: Release identities agree
 - **WHEN** the final source snapshot and single full validation receipt are current

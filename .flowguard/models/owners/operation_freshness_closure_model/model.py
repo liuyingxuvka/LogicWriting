@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from dataclasses import replace
 
-from models.common import OPERATION_INVARIANTS, OperationEvent, operation_workflow
-from models.plans import formal_plan, scenario
+from models._common import OPERATION_INVARIANTS, OperationEvent, operation_workflow
+from models._plans import formal_plan, scenario
 from models.owners.reader_artifact_model.model import READY_PACKET
 
 

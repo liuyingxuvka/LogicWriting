@@ -1,18 +1,14 @@
-from __future__ import annotations
-
-import sys
+"""Direct native check for behavior_commitment_ledger."""
 from pathlib import Path
-
-FLOWGUARD_ROOT = Path(__file__).resolve().parents[3]
-if str(FLOWGUARD_ROOT) not in sys.path:
-    sys.path.insert(0, str(FLOWGUARD_ROOT))
-
-from models.owners._mesh_support import emit_runner, run_root_owner
-
+import sys
+ROOT = Path(__file__).resolve().parents[3]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from flowguard.map.runner import run_owner
+from models.owners._native_checks import check_optional
 
 def main():
-    return emit_runner("behavior_commitment_ledger", run_root_owner("behavior_commitment_ledger"))
-
+    return check_optional('behavior_commitment_ledger')
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(run_owner(main))

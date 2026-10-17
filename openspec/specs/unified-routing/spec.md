@@ -195,5 +195,5 @@ The changed provider topology SHALL be frozen as Logic Writing source version `4
 
 #### Scenario: Candidate source is checked before installation
 - **WHEN** the `4.0.3` candidate is validated on the release branch
-- **THEN** source-version checks and the recompiled SkillGuard contract SHALL pass on the exact candidate tree
+- **THEN** source-version checks and the ordinary release contract SHALL pass on the exact candidate tree
 - **AND** no installed projection, tag, or GitHub Release SHALL be claimed

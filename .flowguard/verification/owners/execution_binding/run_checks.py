@@ -1,16 +1,14 @@
-from __future__ import annotations
-
-import sys
+"""Direct native check for execution_binding."""
 from pathlib import Path
+import sys
+ROOT = Path(__file__).resolve().parents[3]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from flowguard.map.runner import run_owner
+from models.owners._native_checks import check_plan
 
-FLOWGUARD_ROOT = Path(__file__).resolve().parents[3]
-if str(FLOWGUARD_ROOT) not in sys.path:
-    sys.path.insert(0, str(FLOWGUARD_ROOT))
-
-"""Execute execution binding tests and publish a child receipt."""
-
-from models.owners._mesh_support import emit_runner, run_owner
-
+def main():
+    return check_plan('execution_binding')
 
 if __name__ == "__main__":
-    raise SystemExit(emit_runner("execution_binding", run_owner("execution_binding")))
+    raise SystemExit(run_owner(main))
