@@ -35,7 +35,6 @@ jobs:
       ci_url: ${{ steps.validation.outputs.ci_url }}
     env:
       SOURCE_SHA: ${{ inputs.source_sha || github.sha }}
-      RESEARCHGUARD_SOURCE_ROOT: ${{ runner.temp }}/ResearchGuard
       OPENSPEC_TELEMETRY: "0"
       PYTHONDONTWRITEBYTECODE: "1"
     steps:
@@ -56,6 +55,8 @@ jobs:
           node-version: "22"
 
       - name: Install the existing validation toolchain
+        env:
+          RESEARCHGUARD_SOURCE_ROOT: ${{ runner.temp }}/ResearchGuard
         shell: bash
         run: |
           git clone --depth 1 --branch v0.5.7 https://github.com/liuyingxuvka/ResearchGuard.git "$RESEARCHGUARD_SOURCE_ROOT"
@@ -63,6 +64,8 @@ jobs:
           npm install --global @fission-ai/openspec@1.7.0
 
       - name: Run the sole frozen release validation owner
+        env:
+          RESEARCHGUARD_SOURCE_ROOT: ${{ runner.temp }}/ResearchGuard
         id: validation
         shell: bash
         run: |

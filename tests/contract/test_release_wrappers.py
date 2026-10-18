@@ -1118,6 +1118,11 @@ def test_publish_workflow_uses_one_same_source_frozen_owner(tmp_path, monkeypatc
     gate_job = workflow["jobs"]["release-validation"]
     assert gate_job["outputs"]["source_sha"] == "${{ steps.validation.outputs.source_sha }}"
     assert gate_job["if"] == workflow["jobs"]["publish"]["if"]
+    # runner is a step context; using it in job-level env makes the workflow invalid.
+    assert "RESEARCHGUARD_SOURCE_ROOT" not in gate_job["env"]
+    for name in ("Install the existing validation toolchain", "Run the sole frozen release validation owner"):
+        step = next(step for step in gate_job["steps"] if step["name"] == name)
+        assert step["env"]["RESEARCHGUARD_SOURCE_ROOT"] == "${{ runner.temp }}/ResearchGuard"
     assert workflow["jobs"]["publish"]["env"]["VALIDATION_RESULT"] == "${{ needs.release-validation.result }}"
     sha, commands, state = _mock_release_environment(tmp_path, monkeypatch)
     exec(compile(gate, "release-validation", "exec"), {})

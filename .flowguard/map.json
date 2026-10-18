@@ -744,7 +744,7 @@
       "summary": "Ordinary validation, staging, release identity and predecessor retirement.",
       "responsibilities": [
         "Stage canonical skill files with exact inventory/byte parity and representative route/resource checks.",
-        "Run eleven ordinary release commands with one full pytest owner and no live quality experiment.",
+        "Run eleven ordinary release commands in one same-source CI validation owner, with provider checkout paths scoped to step-level runner context and no live quality experiment.",
         "Separate local source, actual installed directory and hosted main/tag/stable Release identities."
       ],
       "files": [
@@ -826,7 +826,7 @@
         ".flowguard/verification/owners/release_retirement_model/run_checks.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:818a7b974143b749b33df1ea557f37da43b79d1b67a128b59bc642a819aefb48"
+      "fingerprint": "sha256:46829bacbe0253d2a39184938b98efed3d3c69d6132c89aba236a1cce8f73279"
     },
     {
       "id": "providers",
