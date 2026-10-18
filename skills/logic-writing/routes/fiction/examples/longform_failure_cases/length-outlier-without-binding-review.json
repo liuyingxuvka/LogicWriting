@@ -15,7 +15,7 @@
       "resistance_or_cost": "The protagonist waits.",
       "reader_hypothesis_delta": "The reader expectation does not change.",
       "register_notes": ["No register drift."],
-      "variation_purpose": "none",
+      "variation_purpose": "rhythm",
       "status": "pass"
     }
   ],
@@ -24,7 +24,7 @@
     {
       "unit_ref": "chapter-09",
       "binding_density_review": "",
-      "status": "blocked"
+      "status": "pass"
     }
   ],
   "unbound_prose_refs": [],

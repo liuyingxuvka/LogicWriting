@@ -87,10 +87,6 @@ def test_owner_round_trip_is_a_bounded_reader_projection_result():
     assert payload["expected_trace"] is None
     assert payload["source_identity"]
 
-
-def test_owner_output_contains_no_private_trace_or_machine_path():
-    completed, payload = _run()
-    assert completed.returncode == 0, completed.stderr
     serialized = json.dumps(payload, ensure_ascii=False, sort_keys=True)
     assert payload["expected_trace"] is None
     assert not re.search(r"[A-Za-z]:[\\/]", serialized)

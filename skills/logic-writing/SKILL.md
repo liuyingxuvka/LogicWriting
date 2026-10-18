@@ -98,7 +98,7 @@ three direct semantic owners:
   material temporal, causal, implementation, competing-story,
   counterfactual, and prediction-boundary analysis.
 - ResearchGuard's `experiment` member and the umbrella `run` route are outside
-  Logic Writing `4.0.7`. Requests for them are visible scope blocks and do not
+  Logic Writing `4.0.8`. Requests for them are visible scope blocks and do not
   cause automatic multi-member execution.
 - WorldGuard owns material event, agent, space, resource, access, capability,
   conflict, authority, and norm consistency in real and fictional worlds.
@@ -274,8 +274,12 @@ shortcuts. A `ReaderRepairResult` may report progress only when real bytes
 changed, preservation passed, and the current independently validated
 judgment exposes a strict subset of the original defect IDs. A renamed,
 added, or caller-only defect list is no progress; a preservation violation or
-missing current evidence is blocked. Rebuild all byte-bound evidence and
-rerun the three quality owners after real new bytes exist. One real
+missing current evidence is blocked. The repair recorder requires the current
+ReaderBrief, SharedWriting, deterministic audit, route composition/review and
+judge execution record; its CLI uses `--execution-root` to verify the captured
+JSON and writer/judge context isolation before reporting current progress.
+Rebuild all byte-bound evidence and rerun the three quality owners after real
+new bytes exist. One real
 `no_progress` result is terminal: do not automatically write another draft or
 switch lineage without new input or a new diagnosis. Repeated closure calls
 never count as repair attempts.

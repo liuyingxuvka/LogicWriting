@@ -36,6 +36,14 @@ closure is not persisted. Supply `receipt_root` / `--receipt-root`, or set
 `LOGIC_WRITING_RECEIPT_ROOT` for non-persisting calls. A caller-authored `verified`
 marker does not license pass.
 
+Repair progress requires the same current chain and independently captured
+judge output even when the judgment still needs repair. The repair recorder
+accepts the current ReaderBrief, SharedWriting, deterministic audit, route
+composition/review and judge execution record; use
+`record_reader_repair.py --execution-root <capture-root>` to resolve its actual
+JSON and writer/judge isolation. A self-hashed judgment or caller defect list
+cannot authorize current progress.
+
 Repeated closure calls do not demonstrate work. One actual current `no_progress`
 repair result is terminal for that defect lineage. Preserve its input/output
 artifact chain and remaining-defect identity, then hand the artifact to human

@@ -6,6 +6,15 @@ releases, tags, package publications, installations, or predecessor deletions.
 The format follows the main ideas of Keep a Changelog, and the source version
 line follows semantic versioning.
 
+## [4.0.8]
+
+### Fixed
+
+- Authorize repair progress only from the complete current reader and route chain plus independently captured judge output, including judgments that still need repair; preserve strict defect reduction and the one-no-progress stop.
+- Bind seven named longform negative families to their intended native issues, with otherwise valid fixtures; input loading and schema failures cannot stand in for domain rejection.
+- Keep distinct relative and absolute longform closure cases in their single native owner, remove the duplicate lifecycle positive, and combine reader-projection assertions into one execution.
+- Use the official FlowGuard 0.70.6 toolchain while retaining the exact ResearchGuard 0.5.7 provider contract and existing synthetic hash fixtures.
+
 ## [4.0.7]
 
 ### Fixed

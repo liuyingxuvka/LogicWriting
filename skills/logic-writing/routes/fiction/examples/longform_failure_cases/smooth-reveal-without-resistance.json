@@ -12,14 +12,20 @@
       "observed_reader_delta": "The reader receives the correct answer.",
       "observed_state_delta": ["key promise is paid"],
       "downstream_use": ["climax"],
-      "resistance_or_cost": "none",
+      "resistance_or_cost": "The answer arrives without resistance or a consequential cost.",
       "reader_hypothesis_delta": "All alternatives close immediately.",
       "register_notes": ["No register note."],
       "variation_purpose": "payoff",
       "status": "pass"
     }
   ],
-  "drift_findings": [],
+  "drift_findings": [
+    {
+      "kind": "smooth_reveal_without_resistance",
+      "status": "drift",
+      "finding": "The reveal supplies the answer without modeled resistance or cost."
+    }
+  ],
   "length_outliers": [],
   "unbound_prose_refs": [],
   "unrealized_model_refs": [],

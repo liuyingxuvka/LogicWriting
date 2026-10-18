@@ -403,7 +403,6 @@ def run_closure_in_process(
 
 def static_cases(repo_root: Path, skill_root: Path) -> list[dict[str, Any]]:
     storyline = script(skill_root, "storyline_closure_check.py")
-    longform = script(skill_root, "longform_closure_check.py")
     cases: list[dict[str, Any]] = [
         {
             "id": "positive.static_compact_guard_pass",
@@ -424,18 +423,6 @@ def static_cases(repo_root: Path, skill_root: Path) -> list[dict[str, Any]]:
                 storyline,
                 fixture(skill_root, "short_story_project/expected-closure.json"),
                 "--repository-root",
-                str(repo_root),
-                "--json",
-            ],
-            "expected_exit_code": 0,
-        },
-        {
-            "id": "positive.longform_final_prose",
-            "argv": [
-                sys.executable,
-                longform,
-                fixture(skill_root, "longform_novel_project/longform-final-prose-closure.json"),
-                "--repo-root",
                 str(repo_root),
                 "--json",
             ],

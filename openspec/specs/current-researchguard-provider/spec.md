@@ -33,7 +33,7 @@ The system SHALL expose exactly three active direct ResearchGuard members—Logi
 
 ### Requirement: ExperimentGuard and umbrella requests are out of scope
 
-The system SHALL treat ExperimentGuard and the ResearchGuard umbrella route as unsupported in Logic Writing 4.0.7, SHALL return a visible scope-out/blocking result, and SHALL execute zero ResearchGuard provider commands for either request.
+The system SHALL treat ExperimentGuard and the ResearchGuard umbrella route as unsupported in Logic Writing 4.0.8, SHALL return a visible scope-out/blocking result, and SHALL execute zero ResearchGuard provider commands for either request.
 
 #### Scenario: ExperimentGuard is requested
 
@@ -61,7 +61,7 @@ The system SHALL consume ResearchGuard result and receipt material through opaqu
 
 ### Requirement: Installed projection matches the current source
 
-The system SHALL expose a canonical staged skill directory whose declared files, hashes, version, provider contract, and route behavior match the validated Logic Writing 4.0.7 source, and SHALL fail currentness checks when projection drift exists.
+The system SHALL expose a canonical staged skill directory whose declared files, hashes, version, provider contract, and route behavior match the validated Logic Writing 4.0.8 source, and SHALL fail currentness checks when projection drift exists.
 
 #### Scenario: Current installation is verified
 

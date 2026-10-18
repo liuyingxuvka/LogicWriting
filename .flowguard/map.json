@@ -102,7 +102,7 @@
         ".flowguard/verification/owners/research_packet_model/run_checks.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:abb06db6dd2f13229b28a7ccbfa022a230436e4c647857ff27fddf8450927706"
+      "fingerprint": "sha256:de5139304fb376f821e765cb27e83e2e504da9c620ec32486e52bc680d238783"
     },
     {
       "id": "reader-artifact",
@@ -111,7 +111,7 @@
       "responsibilities": [
         "Preserve requested intent, composition order, editorial dispositions and writer projection.",
         "Bind actual artifact bytes and spans to shared contracts, deterministic audit and route review.",
-        "Derive closure from one current snapshot, independent captured judgment, freshness and real repair stopping.",
+        "Derive closure and repair progress from the current reader/route chain and independent captured judgment, preserving freshness, strict defect reduction and real repair stopping.",
         "Resolve declared native dependencies as current passing authority originals before final pass, including non-persisting closure; automatic v2 closure covers text/markdown only.",
         "Validate the reader judgment envelope and consume existing execution-capture checks before issuing its current receipt."
       ],
@@ -259,7 +259,7 @@
         ".flowguard/verification/owners/reader_artifact_model/run_checks.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:ee9b39b2efc9a9368b1fc63b8419cf333f7a7f5dbb1c7a0e58a4c8ee6d8520c3"
+      "fingerprint": "sha256:fe972fa7b8cbe9224cb09b98e84dea5d69235fb9f229c2f92a1eb987e6783e6a"
     },
     {
       "id": "production-pipeline",
@@ -383,7 +383,7 @@
         "Route sixteen artifact types across supported prose phases.",
         "Preserve native world/state, promise, scene, chapter, voice and model/prose bindings.",
         "License long-form closure only from current linked project evidence and actual prose.",
-        "Exercise representative valid and unbound-prose native binding cases in daily pytest; run six unique native regression cases and retain the longform owner's full positive/negative matrix."
+        "Exercise representative valid and unbound-prose native binding cases in daily pytest; retain six unique native cases and one longform owner with true relative/absolute closure inputs and seven named domain-error oracles that reject malformed fixtures."
       ],
       "files": [
         "skills/logic-writing/routes/fiction/examples/execution-depth/intentionally-shallow.json",
@@ -577,7 +577,7 @@
         ".flowguard/verification/owners/fiction_route_model/run_checks.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:8cbb8975ba356d64967c7394564ded62b1962c95c392f210f610d8f5d5da2de2"
+      "fingerprint": "sha256:56cf0dfedc3ecf51c9522a11265b04342a92e7dbf3a26ea9be428ed6ffd8f1d1"
     },
     {
       "id": "travel",
@@ -834,7 +834,7 @@
         ".flowguard/verification/owners/release_retirement_model/run_checks.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:7b195257008ca1296e8dc25b834c01fdf72a8041d75fc1c29bbb9cda4d38fb4c"
+      "fingerprint": "sha256:781b912ccf81c59bdd8cc02be7d5ebaa63d32d016c4ba008a5bf326c726a844c"
     },
     {
       "id": "providers",
@@ -872,7 +872,7 @@
         ".flowguard/verification/owners/route_and_guard_model/run_checks.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:58f6955088c7e38efa0892a71aba028c7a399cd42e0fb0fe41c10d222c4fdd49"
+      "fingerprint": "sha256:f7ce34d2657d5ad9326beccac2e8739230cf84b157d795b362472095bf62c791"
     },
     {
       "id": "shared-contracts",

@@ -14,8 +14,8 @@
       "downstream_use": ["voice-style-review"],
       "resistance_or_cost": "The line bypasses the character's knowledge boundary.",
       "reader_hypothesis_delta": "The reader receives author certainty through dialogue.",
-      "register_notes": [],
-      "variation_purpose": "none",
+      "register_notes": ["The technical term belongs to narration but is assigned to a character without story-world knowledge."],
+      "variation_purpose": "contrast",
       "status": "pass"
     }
   ],

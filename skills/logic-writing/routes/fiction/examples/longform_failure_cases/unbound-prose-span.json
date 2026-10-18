@@ -8,14 +8,14 @@
     {
       "id": "bind-extra-scene",
       "prose_ref": "chapter-02#extra",
-      "model_refs": [],
+      "model_refs": ["story_unit:chapter-02"],
       "observed_reader_delta": "The scene is atmospheric but changes no reader state.",
-      "observed_state_delta": [],
-      "downstream_use": [],
-      "resistance_or_cost": "none",
-      "reader_hypothesis_delta": "none",
-      "register_notes": [],
-      "variation_purpose": "none",
+      "observed_state_delta": ["archive access remains contested"],
+      "downstream_use": ["chapter-03"],
+      "resistance_or_cost": "The archive door remains locked.",
+      "reader_hypothesis_delta": "The reader weighs two possible ways into the archive.",
+      "register_notes": ["Archive language belongs to this scene."],
+      "variation_purpose": "setup",
       "status": "pass"
     }
   ],

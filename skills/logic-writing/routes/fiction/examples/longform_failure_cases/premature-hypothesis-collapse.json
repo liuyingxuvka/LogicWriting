@@ -15,7 +15,7 @@
       "resistance_or_cost": "The model does not replace the lost uncertainty.",
       "reader_hypothesis_delta": "The reader has no live competing interpretation.",
       "register_notes": ["No register drift."],
-      "variation_purpose": "none",
+      "variation_purpose": "setup",
       "status": "pass"
     }
   ],

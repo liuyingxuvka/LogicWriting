@@ -60,7 +60,7 @@ jobs:
         shell: bash
         run: |
           git clone --depth 1 --branch v0.5.7 https://github.com/liuyingxuvka/ResearchGuard.git "$RESEARCHGUARD_SOURCE_ROOT"
-          python -m pip install pytest PyYAML "$RESEARCHGUARD_SOURCE_ROOT" "flowguard @ git+https://github.com/liuyingxuvka/FlowGuard.git@v0.70.5"
+          python -m pip install pytest PyYAML "$RESEARCHGUARD_SOURCE_ROOT" "flowguard @ https://github.com/liuyingxuvka/FlowGuard/releases/download/v0.70.6/flowguard-0.70.6-py3-none-any.whl#sha256=0ed10a2c1f6afa6c7c45be029a352252097af885f466ab222c86019cbdde401f"
           npm install --global @fission-ai/openspec@1.7.0
 
       - name: Run the sole frozen release validation owner
@@ -81,7 +81,7 @@ jobs:
           def head():
               return subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip().lower()
           assert head() == source_sha, "validation checkout does not match source_sha"
-          receipts = Path("/tmp/logicwriting-4.0.7-final-receipts")
+          receipts = Path("/tmp/logicwriting-4.0.8-final-receipts")
           try:
               subprocess.run([
                   sys.executable, "scripts/run_frozen_validation.py", "--root", ".",

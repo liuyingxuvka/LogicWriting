@@ -4,6 +4,8 @@ import importlib.util
 import copy
 import json
 import subprocess
+
+import pytest
 from pathlib import Path
 
 from select_route import select_route
@@ -94,3 +96,22 @@ def test_fiction_regression_timeout_is_recorded_after_tree_cleanup(monkeypatch, 
     assert result["stdout"] == "partialtail"
     assert result["stderr"] == "diagnostictail-diagnostic"
     assert process.communicate_calls == [1, 30]
+
+
+@pytest.mark.parametrize("input_kind", ["missing", "invalid_json", "invalid_schema"])
+def test_longform_binding_negative_cannot_pass_from_input_failure(tmp_path, input_kind):
+    path = ROUTE / "scripts" / "run_longform_regression.py"
+    spec = importlib.util.spec_from_file_location("longform_fixture_oracle", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    case = next(row for row in module.command_matrix(ROOT) if row["id"] == "negative.unbound_prose_span")
+    external = tmp_path / "input.json"
+    if input_kind == "invalid_json":
+        external.write_text("{invalid JSON", encoding="utf-8")
+    elif input_kind == "invalid_schema":
+        external.write_text("{}", encoding="utf-8")
+    case["argv"][2] = str(external)
+    result = module.run_case(case, ROOT)
+    assert result["actual_exit_code"] == 1
+    assert result["passed"] is False
+    assert {"read_error", "json_decode_error", "invalid_schema_version"} & set(result["observed_issue_codes"])

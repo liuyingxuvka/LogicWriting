@@ -78,7 +78,7 @@ def command_matrix(repo_root: Path) -> list[dict[str, Any]]:
         },
         {
             "id": "positive.longform_closure",
-            "argv": [sys.executable, script(repo_root, "longform_closure_check.py"), fixture(repo_root, f"{longform}/longform-final-prose-closure.json"), "--json"],
+            "argv": [sys.executable, script(repo_root, "longform_closure_check.py"), str(Path(fixture(repo_root, f"{longform}/longform-final-prose-closure.json")).relative_to(repo_root)), "--json"],
             "expected_exit_code": 0,
         },
         {
@@ -189,36 +189,43 @@ def command_matrix(repo_root: Path) -> list[dict[str, Any]]:
             "id": "negative.unbound_prose_span",
             "argv": [sys.executable, script(repo_root, "model_prose_binding_check.py"), fixture(repo_root, f"{failures}/unbound-prose-span.json"), "--json"],
             "expected_exit_code": 1,
+            "expected_issue_codes": {"unresolved_binding_gap"},
         },
         {
             "id": "negative.unrealized_model_ref",
             "argv": [sys.executable, script(repo_root, "model_prose_binding_check.py"), fixture(repo_root, f"{failures}/unrealized-model-ref.json"), "--json"],
             "expected_exit_code": 1,
+            "expected_issue_codes": {"unresolved_binding_gap"},
         },
         {
             "id": "negative.duplicate_binding_without_delta",
             "argv": [sys.executable, script(repo_root, "model_prose_binding_check.py"), fixture(repo_root, f"{failures}/duplicate-binding-without-delta.json"), "--json"],
             "expected_exit_code": 1,
+            "expected_issue_codes": {"duplicate_binding_without_delta"},
         },
         {
             "id": "negative.smooth_reveal_without_resistance",
             "argv": [sys.executable, script(repo_root, "model_prose_binding_check.py"), fixture(repo_root, f"{failures}/smooth-reveal-without-resistance.json"), "--json"],
             "expected_exit_code": 1,
+            "expected_issue_codes": {"unresolved_drift_finding"},
         },
         {
             "id": "negative.premature_hypothesis_collapse",
             "argv": [sys.executable, script(repo_root, "model_prose_binding_check.py"), fixture(repo_root, f"{failures}/premature-hypothesis-collapse.json"), "--json"],
             "expected_exit_code": 1,
+            "expected_issue_codes": {"unresolved_drift_finding"},
         },
         {
             "id": "negative.term_register_owner_drift",
             "argv": [sys.executable, script(repo_root, "model_prose_binding_check.py"), fixture(repo_root, f"{failures}/term-register-owner-drift.json"), "--json"],
             "expected_exit_code": 1,
+            "expected_issue_codes": {"unresolved_drift_finding"},
         },
         {
             "id": "negative.length_outlier_without_binding_review",
             "argv": [sys.executable, script(repo_root, "model_prose_binding_check.py"), fixture(repo_root, f"{failures}/length-outlier-without-binding-review.json"), "--json"],
             "expected_exit_code": 1,
+            "expected_issue_codes": {"missing_binding_density_review"},
         },
         {
             "id": "negative.final_prose_missing_model_prose_binding",
@@ -270,6 +277,18 @@ def run_case(case: dict[str, Any], repo_root: Path) -> dict[str, Any]:
             for issue in payload["issues"]
             if isinstance(issue, dict) and issue.get("code")
         }
+    # Loading failures do not prove a domain rejection.  The named binding
+    # families also need valid input around their intended domain defect;
+    # schema-negative cases owned by other validators keep their own oracles.
+    invalid_input_codes = {
+        "read_error", "json_decode_error", "invalid_root_type", "invalid_type",
+        "invalid_schema_version", "missing_required_field", "missing_required_list",
+        "invalid_row_type", "missing_binding_rows", "invalid_decision",
+    }
+    if expected != 0 and observed_codes & {"read_error", "json_decode_error"}:
+        passed = False
+    if Path(case["argv"][1]).name == "model_prose_binding_check.py" and observed_codes & invalid_input_codes:
+        passed = False
     if expected_codes and not set(expected_codes).issubset(observed_codes):
         passed = False
     if expected_any_codes and not (observed_codes & set(expected_any_codes)):

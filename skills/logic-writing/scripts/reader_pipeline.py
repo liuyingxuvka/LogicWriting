@@ -2087,6 +2087,14 @@ def record_repair_result(
     preservation_violations: Iterable[str],
     remaining_defect_ids: Iterable[str],
     current_judgment: Mapping[str, Any] | None = None,
+    reader_brief: Mapping[str, Any] | None = None,
+    shared_writing: Mapping[str, Any] | None = None,
+    deterministic_audit: Mapping[str, Any] | None = None,
+    route_composition: Mapping[str, Any] | None = None,
+    route_review: Mapping[str, Any] | None = None,
+    execution_record: Mapping[str, Any] | None = None,
+    execution_resolver: Any = None,
+    review_obligations: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     repair = require_mapping(request, "ReaderRepairRequest")
     require_schema("reader-repair-request.schema.json", repair, label="ReaderRepairRequest")
@@ -2112,13 +2120,42 @@ def record_repair_result(
 
     evidence = None
     if current_judgment is not None:
-        evidence = require_mapping(current_judgment, "current ReaderJudgment")
-        require_schema("reader-judgment.schema.json", evidence, label="current ReaderJudgment")
-        _require_exact_fingerprint(evidence, "judgment_fingerprint")
-        if evidence["artifact_fingerprint"] != amap["artifact_fingerprint"]:
-            raise ValidationError("current ReaderJudgment is stale for the output artifact")
-        if evidence["artifact_map_fingerprint"] != amap["map_fingerprint"]:
-            raise ValidationError("current ReaderJudgment is stale for the output ArtifactMap")
+        # A self-hashed judgment is only a declaration.  Progress (including a
+        # strict subset that still needs repair) requires the same current
+        # artifact/route chain and captured independent output as closure.
+        brief = require_mapping(reader_brief, "current ReaderBrief")
+        require_schema("reader-brief.schema.json", brief, label="current ReaderBrief")
+        _require_exact_fingerprint(brief, "brief_fingerprint")
+        for key, expected in {
+            "final_owner": repair["final_owner"],
+            "reader_intent_fingerprint": repair["reader_intent_fingerprint"],
+            "brief_fingerprint": repair["reader_brief_fingerprint"],
+        }.items():
+            if brief.get(key) != expected:
+                raise ValidationError(f"repair current ReaderBrief {key} is stale or foreign")
+        if brief.get("composition_plan", {}).get("plan_fingerprint") != repair["composition_plan_fingerprint"]:
+            raise ValidationError("repair current composition plan is stale or foreign")
+        route = require_mapping(route_composition, "current route composition")
+        if route.get("extension_fingerprint") != brief.get("route_extension", {}).get("extension_fingerprint"):
+            raise ValidationError("repair route composition does not bind the current ReaderBrief")
+        from derive_closure import REQUIRED_DIMENSIONS
+        review = validate_route_artifact_review(
+            route_review, owner=repair["final_owner"], route_composition=route,
+            artifact_map=amap, required_dimensions=REQUIRED_DIMENSIONS[repair["final_owner"]],
+            review_obligations=review_obligations,
+        )
+        if execution_record is None or execution_resolver is None:
+            raise ValidationError("repair progress requires a current judge execution and local capture resolver")
+        evidence = validate_reader_judgment(
+            current_judgment, artifact_map=amap, reader_brief=brief,
+            shared_writing=shared_writing, deterministic_audit=deterministic_audit,
+            route_review=review, execution_record=execution_record,
+            review_obligations=review_obligations,
+        )
+        if execution_record.get("terminal_status") != "completed" or execution_record.get("independence_status") != "verified":
+            raise ValidationError("repair progress requires a completed independent judge execution")
+        from reader_execution import validate_judgment_execution_record
+        validate_judgment_execution_record(execution_record, evidence, execution_resolver)
         evidence_ids = _canonicalize_ids(
             (row["observation_id"] for row in evidence["defects"]),
             "current ReaderJudgment defect ids",
