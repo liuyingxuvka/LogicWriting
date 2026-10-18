@@ -6,6 +6,14 @@ releases, tags, package publications, installations, or predecessor deletions.
 The format follows the main ideas of Keep a Changelog, and the source version
 line follows semantic versioning.
 
+## [4.0.7]
+
+### Fixed
+
+- Replace shallow travel/fiction inventory tests with direct native positive and exact negative checks for fallback reachability and unbound prose.
+- Run five shared longform positive cases only in their existing longform owner; retain the six unique native cases and all longform failure and artifact-binding checks.
+- Use FlowGuard 0.70.5 for ordinary maintenance while retaining the exact ResearchGuard 0.5.7 provider contract and its synthetic fixtures.
+
 ## [4.0.6]
 
 ### Fixed

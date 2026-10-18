@@ -40,7 +40,6 @@ def main(argv: list[str] | None = None) -> int:
     skill = "skills/logic-writing/routes/fiction"
     scripts = f"{skill}/scripts"
     short = f"{skill}/examples/short_story_project"
-    longform = f"{skill}/examples/longform_novel_project"
     cases = [
         ("documentation", [f"{scripts}/doc_contract_check.py", "--skill-root", "skills/logic-writing", "--json"]),
         ("reader-room-guidance", [f"{scripts}/reader_room_guidance_check.py", "--check", "all", "--json"]),
@@ -48,11 +47,6 @@ def main(argv: list[str] | None = None) -> int:
         ("short-turning-points", [f"{scripts}/turning_point_check.py", f"{short}/story-ledger.yaml", "--json"]),
         ("short-scene-contracts", [f"{scripts}/scene_contract_check.py", f"{short}/story-ledger.yaml", "--json"]),
         ("short-promises", [f"{scripts}/promise_payoff_check.py", f"{short}/story-ledger.yaml", "--json"]),
-        ("novel-ledger", [f"{scripts}/novel_ledger_check.py", f"{longform}/novel-ledger.json", "--json"]),
-        ("story-contribution", [f"{scripts}/story_contribution_check.py", f"{longform}/novel-ledger.json", "--json"]),
-        ("chapter-interfaces", [f"{scripts}/chapter_interface_check.py", f"{longform}/chapter-interfaces.json", "--json"]),
-        ("longform-promises", [f"{scripts}/promise_payoff_check.py", f"{longform}/promise-payoff.json", "--json"]),
-        ("voice-style", [f"{scripts}/voice_style_continuity_check.py", f"{longform}/voice-style-report.json", "--json"]),
     ]
     results = [run_case(repo, case_id, command) for case_id, command in cases]
     report = {

@@ -1,6 +1,6 @@
 # Release and predecessor-retirement checklist
 
-This checklist describes the `4.0.6` corrective release. Checkboxes are coordination aids,
+This checklist describes the `4.0.7` corrective release. Checkboxes are coordination aids,
 not evidence; every pass claim needs its current terminal receipt.
 
 ## Freeze the replacement
@@ -19,7 +19,7 @@ not evidence; every pass claim needs its current terminal receipt.
   remain native.
 - [ ] Freeze `VERSION`, `pyproject.toml`, both README source badges, changelog,
   source reconciliation, OpenSpec version requirements, and the canonical
-  skill-directory inventory on the same `4.0.6` source tree.
+  skill-directory inventory on the same `4.0.7` source tree.
 - [ ] Freeze the OpenSpec obligations, FlowGuard BCL/model mesh/alignment,
   ordinary check inventory.
 
@@ -64,7 +64,7 @@ not evidence; every pass claim needs its current terminal receipt.
 ## GitHub release
 
 - [ ] Commit the frozen source snapshot.
-- [ ] Push the default branch, create signed/annotated `v4.0.6` as configured,
+- [ ] Push the default branch, create signed/annotated `v4.0.7` as configured,
   and publish the GitHub Release without mutable-identity reuse.
 - [ ] Read back the branch, exact tag target and stable release identity; do not
   repeat the full frozen gate after publishing unchanged source.

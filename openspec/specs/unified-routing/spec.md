@@ -191,9 +191,9 @@ Current Logic Writing source, tests, models, and active change artifacts SHALL c
 - **THEN** it SHALL pass only if all Guard calls resolve to the ResearchGuard console/member topology and archived history is not treated as current authority
 
 ### Requirement: The single-console topology has one source version identity
-The changed provider topology SHALL be frozen as Logic Writing source version `4.0.6`. `VERSION`, package metadata, public source badges, changelog, source reconciliation, current OpenSpec release requirements, and the release-retirement checklist SHALL agree on that identity before a candidate commit is published.
+The changed provider topology SHALL be frozen as Logic Writing source version `4.0.7`. `VERSION`, package metadata, public source badges, changelog, source reconciliation, current OpenSpec release requirements, and the release-retirement checklist SHALL agree on that identity before a candidate commit is published.
 
 #### Scenario: Candidate source is checked before installation
-- **WHEN** the `4.0.6` candidate is validated on the release branch
+- **WHEN** the `4.0.7` candidate is validated on the release branch
 - **THEN** source-version checks and the ordinary release contract SHALL pass on the exact candidate tree
 - **AND** no installed projection, tag, or GitHub Release SHALL be claimed

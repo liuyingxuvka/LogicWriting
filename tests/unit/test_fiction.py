@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import importlib.util
+import copy
+import json
 import subprocess
 from pathlib import Path
 
@@ -34,18 +36,23 @@ def test_fiction_route_keeps_final_ownership_over_bounded_research():
     assert decision["child_routes"] == ["investigation"]
 
 
-def test_named_binding_failure_family_is_preserved():
-    failure_root = ROUTE / "examples" / "longform_failure_cases"
-    required = {
-        "unbound-prose-span.json",
-        "unrealized-model-ref.json",
-        "duplicate-binding-without-delta.json",
-        "smooth-reveal-without-resistance.json",
-        "premature-hypothesis-collapse.json",
-        "term-register-owner-drift.json",
-        "length-outlier-without-binding-review.json",
+def test_native_fiction_binding_rejects_unbound_prose(monkeypatch):
+    monkeypatch.syspath_prepend(str(ROUTE / "scripts"))
+    from model_prose_binding_check import validate
+
+    source_path = ROUTE / "examples" / "longform_novel_project" / "model-prose-binding.json"
+    binding = json.loads(source_path.read_text(encoding="utf-8"))
+    report = validate(binding, str(source_path), repository_root=ROOT)
+    assert report["passed"] is True
+    assert report["issues"] == []
+
+    unbound = copy.deepcopy(binding)
+    unbound["unbound_prose_refs"] = ["final-prose.md#unbound-span"]
+    report = validate(unbound, str(source_path), repository_root=ROOT)
+    assert report["passed"] is False
+    assert {row["code"] for row in report["issues"]} == {
+        "unresolved_binding_gap", "passed_with_binding_errors",
     }
-    assert required.issubset({path.name for path in failure_root.glob("*.json")})
 
 
 def test_fiction_regression_uses_bounded_budgets_for_slow_matrices():

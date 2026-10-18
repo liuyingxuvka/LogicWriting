@@ -31,7 +31,20 @@ def test_travel_plan_uses_neutral_reader_projection():
     assert plan["closure_report"]["surface_rows"][-2]["owner"] == "logic-writing.shared-reader-projection"
 
 
-def test_travel_case_families_remain_complete():
-    assert len(list((ROUTE / "examples" / "positive_cases").glob("*.json"))) >= 6
-    assert len(list((ROUTE / "examples" / "failure_cases").glob("*.json"))) >= 20
-    assert len(list((ROUTE / "examples" / "text_failure_cases").glob("*.json"))) >= 8
+def test_native_travel_plan_preserves_fallback_reachability(monkeypatch):
+    monkeypatch.syspath_prepend(str(ROUTE / "scripts"))
+    from fixture_mutation import apply_mutations
+    from travel_contract import validate_plan
+
+    base_path = ROUTE / "examples" / "good_city_couple_trip" / "plan.json"
+    base = json.loads(base_path.read_text(encoding="utf-8"))
+    assert validate_plan(base, plan_path=base_path, repository_root=ROOT) == []
+
+    case = json.loads((ROUTE / "examples" / "failure_cases" / "fallback_unreachable.json").read_text(encoding="utf-8"))
+    issues = validate_plan(apply_mutations(base, case["mutations"]), plan_path=base_path, repository_root=ROOT)
+    codes = {row["code"] for row in issues}
+    assert codes == {
+        "fallback_options.reachability.unproven",
+        "closure_report.status.mismatch",
+    }
+    assert codes == set(case["expected_issue_codes"])

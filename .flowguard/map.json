@@ -102,7 +102,7 @@
         ".flowguard/verification/owners/research_packet_model/run_checks.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:c790586d7e68c3128005ebda79c9e2e5ea36b593caf59443a49299b5c0cd4715"
+      "fingerprint": "sha256:abb06db6dd2f13229b28a7ccbfa022a230436e4c647857ff27fddf8450927706"
     },
     {
       "id": "reader-artifact",
@@ -259,7 +259,7 @@
         ".flowguard/verification/owners/reader_artifact_model/run_checks.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:fef1bf25ee0a9f77e22d2d62bbdc692b07cb5b6f0c9ae46622a545c8058deaac"
+      "fingerprint": "sha256:ee9b39b2efc9a9368b1fc63b8419cf333f7a7f5dbb1c7a0e58a4c8ee6d8520c3"
     },
     {
       "id": "production-pipeline",
@@ -382,7 +382,8 @@
       "responsibilities": [
         "Route sixteen artifact types across supported prose phases.",
         "Preserve native world/state, promise, scene, chapter, voice and model/prose bindings.",
-        "License long-form closure only from current linked project evidence and actual prose."
+        "License long-form closure only from current linked project evidence and actual prose.",
+        "Exercise representative valid and unbound-prose native binding cases in daily pytest; run six unique native regression cases and retain the longform owner's full positive/negative matrix."
       ],
       "files": [
         "skills/logic-writing/routes/fiction/examples/execution-depth/intentionally-shallow.json",
@@ -576,7 +577,7 @@
         ".flowguard/verification/owners/fiction_route_model/run_checks.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:da9146d07fa9d18d1215d1159eaa92947f48049aa85a1886d7e5d4f310351c2e"
+      "fingerprint": "sha256:8cbb8975ba356d64967c7394564ded62b1962c95c392f210f610d8f5d5da2de2"
     },
     {
       "id": "travel",
@@ -584,7 +585,8 @@
       "summary": "Native traveler feasibility, time/weather modes and guide/reverse review.",
       "responsibilities": [
         "Validate traveler fit, feasible schedule/resources/access, source/time/weather boundaries and fallback plans.",
-        "Bind the final guide and reverse review to exact guide bytes and neutral shared reader projection."
+        "Bind the final guide and reverse review to exact guide bytes and neutral shared reader projection.",
+        "Exercise valid native plans and exact unreachable-fallback rejection codes in daily pytest."
       ],
       "files": [
         "skills/logic-writing/routes/travel/examples/failure_cases/accessibility_review_missing.json",
@@ -832,7 +834,7 @@
         ".flowguard/verification/owners/release_retirement_model/run_checks.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:fde6e31bb81c6b26b6c9be427b58a2de62c477d87f518130a55bfdfc4cec4648"
+      "fingerprint": "sha256:7b195257008ca1296e8dc25b834c01fdf72a8041d75fc1c29bbb9cda4d38fb4c"
     },
     {
       "id": "providers",
@@ -870,7 +872,7 @@
         ".flowguard/verification/owners/route_and_guard_model/run_checks.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:82a5488fa46e0464af92a1a3defedaa9c654031c7da34713255e1fe725387c92"
+      "fingerprint": "sha256:58f6955088c7e38efa0892a71aba028c7a399cd42e0fb0fe41c10d222c4fdd49"
     },
     {
       "id": "shared-contracts",

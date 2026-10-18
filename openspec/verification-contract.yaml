@@ -78,7 +78,7 @@ checks:
     execution_id: logic-writing-release.reader-projection.v1
     validation_scope: focused
     snapshot_policy: frozen
-    toolchain_identity: flowguard-0.70.4-python
+    toolchain_identity: flowguard-0.70.5-python
     input_selectors:
       - scripts/run_reader_projection_conformance.py
       - skills/logic-writing/scripts/reader_projection_conformance.py
@@ -98,7 +98,7 @@ checks:
     execution_id: logic-writing-release.models-full.v1
     validation_scope: full
     snapshot_policy: frozen
-    toolchain_identity: flowguard-0.70.4-python
+    toolchain_identity: flowguard-0.70.5-python
     input_selectors: [.flowguard/**, skills/logic-writing/scripts/**, tests/**, openspec/verification-contract.yaml]
     depends_on_receipts: [check.source.reconciliation]
     command: python
