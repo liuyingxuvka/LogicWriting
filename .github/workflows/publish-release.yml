@@ -75,19 +75,32 @@ jobs:
           import re
           import subprocess
           import sys
-          import tempfile
 
           source_sha = os.environ["SOURCE_SHA"].lower()
           assert re.fullmatch(r"[0-9a-f]{40}", source_sha), "source_sha must be a full 40-character commit SHA"
           def head():
               return subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip().lower()
           assert head() == source_sha, "validation checkout does not match source_sha"
-          receipts = tempfile.mkdtemp(prefix="logic-writing-validation-", dir=os.environ["RUNNER_TEMP"])
-          subprocess.run([
-              sys.executable, "scripts/run_frozen_validation.py", "--root", ".",
-              "--contract", "openspec/verification-contract.yaml", "--receipt-root", receipts,
-              "--require-clean-git", "--json",
-          ], check=True)
+          receipts = Path("/tmp/logicwriting-4.0.6-final-receipts")
+          try:
+              subprocess.run([
+                  sys.executable, "scripts/run_frozen_validation.py", "--root", ".",
+                  "--contract", "openspec/verification-contract.yaml", "--receipt-root", str(receipts),
+                  "--require-clean-git", "--json",
+              ], check=True)
+          except subprocess.CalledProcessError:
+              # Preserve the native failure diagnostic from the sole validation owner.
+              import json
+              for result_path in sorted(receipts.glob("attempts/*/*/result.json")):
+                  result = json.loads(result_path.read_text(encoding="utf-8"))
+                  if result["status"] != "failed":
+                      continue
+                  for name in ("stdout.txt", "stderr.txt"):
+                      log = result_path.parent / name
+                      print(f"::group::{result['check_id']} {name}", flush=True)
+                      print(log.read_text(encoding="utf-8"), flush=True)
+                      print("::endgroup::", flush=True)
+              raise
           assert head() == source_sha, "source changed during validation"
           ci_url = f"{os.environ['GITHUB_SERVER_URL']}/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}"
           with Path(os.environ["GITHUB_OUTPUT"]).open("a", encoding="utf-8") as stream:

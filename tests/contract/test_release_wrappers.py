@@ -1132,7 +1132,7 @@ def test_publish_workflow_uses_one_same_source_frozen_owner(tmp_path, monkeypatc
     assert len(gate_commands) == 1
     assert gate_commands[0][2:6] == ["--root", ".", "--contract", "openspec/verification-contract.yaml"]
     assert "--require-clean-git" in gate_commands[0]
-    assert Path(gate_commands[0][gate_commands[0].index("--receipt-root") + 1]).parent == tmp_path
+    assert gate_commands[0][gate_commands[0].index("--receipt-root") + 1] == "/tmp/logicwriting-4.0.6-final-receipts"
     monkeypatch.setenv("VALIDATION_RESULT", "success")
     monkeypatch.setenv("VALIDATION_SOURCE_SHA", outputs["source_sha"])
     monkeypatch.setenv("VALIDATION_URL", outputs["ci_url"])
