@@ -15,7 +15,7 @@ world judgment or upgrade it into success.
 Run WorldGuard through its portable launcher:
 `python <skills root>/worldguard/scripts/run_worldguard.py check --contract <contract.yaml>`.
 The contract shape is described in WorldGuard's own
-`references/worldguard-contracts.md`. The default output is a short JSON summary with status, semantic_status, gaps, the non-PASS Guards and scope_limits; add --json only when the full report is needed.
+`references/worldguard-contracts.md`. Bind each claim to the model with `claim.asserts` (WorldGuard's `references/guard-inputs.md` shows one row per Guard); a claim without `asserts` comes back `GAP` with gap code `CLAIM_NOT_BOUND`, and a false row comes back `FAIL` with `CLAIM_ASSERTION_FALSE`. The default output is a short JSON summary with status, semantic_status, gaps, the non-PASS Guards and scope_limits; add --json only when the full report is needed.
 `scripts/provider_preflight.py worldguard` finds the `worldguard` skill installed
 next to `logic-writing`; pass `--provider-root <dir>` only when it is installed
 elsewhere.

@@ -186,7 +186,7 @@
         ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:f9a36e048c53c54f52727a485242aacfcd44f2076ce14c442f87f21c422efdb9"
+      "fingerprint": "sha256:dca8d4ea4a4f04486f1c4e563a31b881eecbd0fcd990a6a9831768a22ca01bae"
     },
     {
       "id": "fiction",
