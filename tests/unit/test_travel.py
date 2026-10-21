@@ -65,3 +65,24 @@ def test_allowed_claim_level_must_match_the_current_evidence(monkeypatch):
     plan["trip_context"]["allowed_claim_level"] = "bookable"
     codes = {row["code"] for row in validate_plan(plan, plan_path=base_path, repository_root=ROOT)}
     assert codes == {"trip_context.allowed_claim_level.derived_mismatch"}
+
+
+def test_travel_composition_must_name_trip_plan_ids(monkeypatch):
+    monkeypatch.syspath_prepend(str(ROUTE / "scripts"))
+    from travel_contract import validate_composition_refs
+    from tests.v2_support import make_intent, make_plan, make_route_composition
+
+    plan = json.loads((ROUTE / "examples" / "good_city_couple_trip" / "plan.json").read_text(encoding="utf-8"))
+    intent = make_intent()
+    composition = make_route_composition("travel-guide", intent, make_plan(intent, "travel-guide"))
+    codes = {row["code"] for row in validate_composition_refs(plan, composition)}
+    assert codes == {
+        "travel_composition.route_ref.unknown",
+        "travel_composition.fallback.unknown",
+        "travel_composition.risk.unknown",
+        "travel_composition.route_node.unknown",
+    }
+    composition["body_sections"][0]["route_refs"] = ["trace-primary"]
+    binding = composition["risk_fallback_bindings"][0]
+    binding.update({"risk_id": "pit-weather", "fallback_id": "fb-gallery", "reachable_from_route_node_ids": ["rn-p-station"]})
+    assert validate_composition_refs(plan, composition) == []

@@ -69,6 +69,12 @@ its own evidence, and a recheck instruction.
 LogicGuard compares the recommended route with live alternatives and limits.
 The travel route remains the only final owner.
 
+Keeping the trip model as a `travel-story-planner.plan.v2` plan is optional.
+When you keep one, it is the model the guide is written from: check it with
+`routes/travel/scripts/validate_travel_plan.py` and pass the travel route
+composition with `--composition`, so every `route_refs`, `fallback_id`,
+`risk_id` and `reachable_from_route_node_ids` entry must name an id in the plan.
+
 ## Project into traveler-native prose
 
 Compile checked route cards through the shared reader-projection kernel. Do not

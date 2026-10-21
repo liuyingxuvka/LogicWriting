@@ -1,6 +1,6 @@
 # Runtime Workflow
 
-Use this reference for every Travel Story Planner run after the skill is triggered. The workflow has one fixed Guard Mesh route. Missing evidence causes downgrade or block; there is no selectable lighter success route.
+Use this reference for every Travel Story Planner run after the skill is triggered. Use the steps that the requested claim level needs; a Guard runs only when its question is material. Missing evidence causes downgrade or block.
 
 ## Claim Levels
 

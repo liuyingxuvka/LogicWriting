@@ -553,3 +553,15 @@ fiction 按材料问题启用专家，compact 保留故事推进、承诺边界�
 | models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 2.49 |
 | map: `python -m flowguard map check` | check: 0 error(s), 7 warning(s), 0 info | 0.54 |
 | skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.13 |
+
+## LW-37
+
+旅行模型按需保留；一旦保留，composition 中路线/节点、备选和风险引用必须存在。真实 CLI 坏例精确拒绝四类未知 ID，正确引用及无 composition 路径通过。7 项旅行和完整 151 项测试、地图及技能通过；原有行程检查保持。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| travel-tests: `python -m pytest -q tests/unit/test_travel.py` | 7 passed in 0.19s | 0.64 |
+| composition-native-cli: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.56 |
+| pytest: `python -m pytest -q` | 151 passed in 6.69s | 7.03 |
+| map: `python -m flowguard map check` | check: 0 error(s), 7 warning(s), 0 info | 0.47 |
+| skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.12 |

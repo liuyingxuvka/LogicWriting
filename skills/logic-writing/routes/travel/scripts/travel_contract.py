@@ -995,6 +995,30 @@ def validate_plan(
     return issues
 
 
+def validate_composition_refs(plan: dict[str, Any], composition: dict[str, Any]) -> list[dict[str, str]]:
+    """Check that a v2 travel composition names routes, nodes, risks and fallbacks that exist in the trip plan."""
+    issues: list[dict[str, str]] = []
+    routes = [row for row in as_list(as_dict(plan.get("route_mesh")).get("routes")) if isinstance(row, dict)]
+    trace_ids = {row.get("trace_id") for row in routes}
+    node_ids = {node.get("route_node_id") for row in routes for node in as_list(row.get("route_nodes")) if isinstance(node, dict)}
+    fallback_ids = {row.get("fallback_id") for row in as_list(plan.get("fallback_options")) if isinstance(row, dict)}
+    risk_ids = {row.get("pit_id") for row in as_list(plan.get("negative_evidence")) if isinstance(row, dict)}
+    for section in as_list(composition.get("body_sections")):
+        section = as_dict(section)
+        for ref in as_list(section.get("route_refs")):
+            if ref not in trace_ids | node_ids:
+                issues.append(issue("travel_composition.route_ref.unknown", f"Section {section.get('section_id')} names route {ref}, which is not in the trip plan."))
+    for binding in as_list(composition.get("risk_fallback_bindings")):
+        binding = as_dict(binding)
+        if binding.get("fallback_id") not in fallback_ids:
+            issues.append(issue("travel_composition.fallback.unknown", f"Binding {binding.get('binding_id')} names fallback {binding.get('fallback_id')}, which is not in the trip plan."))
+        if binding.get("risk_id") not in risk_ids:
+            issues.append(issue("travel_composition.risk.unknown", f"Binding {binding.get('binding_id')} names risk {binding.get('risk_id')}, which is not in the trip plan."))
+        if set(as_list(binding.get("reachable_from_route_node_ids"))) - node_ids:
+            issues.append(issue("travel_composition.route_node.unknown", f"Binding {binding.get('binding_id')} names route nodes that are not in the trip plan."))
+    return issues
+
+
 def validate_plan_file(plan_path: Path, *, repository_root: Path | None = None) -> list[dict[str, str]]:
     try:
         payload = json.loads(plan_path.read_text(encoding="utf-8"))
@@ -1007,4 +1031,4 @@ def validate_plan_file(plan_path: Path, *, repository_root: Path | None = None) 
     return validate_plan(payload, plan_path=plan_path, repository_root=repository_root)
 
 
-__all__ = ["SCHEMA_VERSION", "issue", "validate_plan", "validate_plan_file"]
+__all__ = ["SCHEMA_VERSION", "issue", "validate_composition_refs", "validate_plan", "validate_plan_file"]
