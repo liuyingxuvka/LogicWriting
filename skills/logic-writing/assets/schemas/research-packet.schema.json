@@ -200,8 +200,6 @@
         "forecast_validation_missing",
         "principal_dependency_not_eligible",
         "missing_gap_id",
-        "missing_causal_trace",
-        "missing_prediction_boundary",
         "access_gap",
         "scope_not_covered",
         "source_conflict_unresolved",

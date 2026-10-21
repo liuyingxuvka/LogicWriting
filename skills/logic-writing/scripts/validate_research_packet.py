@@ -164,18 +164,6 @@ GAP_POLICIES: dict[str, tuple[str, str, str, str]] = {
         "Do not revise the document against an ambiguous research request.",
         "research-owner",
     ),
-    "missing_causal_trace": (
-        "causal",
-        "The causal conclusion has not yet been checked against a complete causal chain.",
-        "Do not infer causation from chronology alone.",
-        "trace-review",
-    ),
-    "missing_prediction_boundary": (
-        "forecast",
-        "The forecast does not yet state the conditions under which it could hold or fail.",
-        "Do not present the forecast without its prediction boundary.",
-        "trace-review",
-    ),
     "access_gap": (
         "source",
         "Relevant material could not yet be accessed.",

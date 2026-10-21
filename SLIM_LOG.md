@@ -446,3 +446,18 @@ SKILL 增补实际命令与输入字段，13 项命令在技能根帮助均正�
 | models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 2.13 |
 | map: `python -m flowguard map check` | check: 0 error(s), 3 warning(s), 0 info | 1.39 |
 | skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.14 |
+
+## LW-30
+
+删除两个仅由已退役 TraceGuard 收据产生的缺口代码，保留 causal_mechanism_missing、forecast_validation_missing 内容规则。调查 10 项、完整 164 项及三项回归和地图通过，两个死代码无活动残留。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| dead-code-residual: `git grep -n missing_causal_trace\|missing_prediction_boundary -- skills tests scripts` | exit 1; stated assertions verified | 0.02 |
+| live-rules: `git grep -n causal_mechanism_missing\|forecast_validation_missing -- skills/logic-writing/scripts` | exit 0; stated assertions verified | 0.01 |
+| investigation: `python -m pytest -q tests/unit/test_investigation.py` | 10 passed in 0.27s | 0.73 |
+| pytest: `python -m pytest -q` | 164 passed in 7.35s | 7.72 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 7.43 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 2.13 |
+| models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 5.78 |
+| map: `python -m flowguard map check` | check: 0 error(s), 3 warning(s), 0 info | 0.96 |
