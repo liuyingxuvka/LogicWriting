@@ -8,10 +8,7 @@ from flowguard import FunctionResult, Workflow
 from flowguard.explorer import Explorer
 
 from ._common import (
-    DEVELOPMENT_INVARIANTS,
     OPERATION_INVARIANTS,
-    DevelopmentEvent,
-    DevelopmentState,
     OperationEvent,
     OperationState,
 )
@@ -56,25 +53,6 @@ class BrokenArtifactUpdate:
         )
 
 
-class BrokenRemotePrivatization:
-    name = "BrokenRemotePrivatization"
-    reads = ("release_status", "install_status", "backups_verified")
-    writes = ("privatized_remote",)
-    input_description = "legacy repository privatization request and unvalidated development state"
-    output_description = "incorrectly privatized remote before cutover gates"
-    idempotency = "deterministic broken behavior"
-    accepted_input_type = DevelopmentEvent
-
-    def apply(self, event, state):
-        return (
-            FunctionResult(
-                event,
-                replace(state, privatized_remote=(event.target,)),
-                label="privatized_before_cutover",
-            ),
-        )
-
-
 class BrokenProcessOnlyPacket:
     name = "BrokenProcessOnlyPacket"
     reads = ("adapter_receipts", "route_status")
@@ -114,14 +92,6 @@ def run_known_bad_proofs():
             initial_states=(PASSED,),
             external_inputs=(OperationEvent("update_artifact", artifact_fingerprint="artifact:2"),),
             invariants=OPERATION_INVARIANTS,
-            max_sequence_length=1,
-            progress_steps=0,
-        ).explore(),
-        "privatize_legacy_before_installed_validation": Explorer(
-            workflow=Workflow((BrokenRemotePrivatization(),), name="known_bad_early_privatization"),
-            initial_states=(DevelopmentState(),),
-            external_inputs=(DevelopmentEvent("privatize_legacy_remote", target="travel"),),
-            invariants=DEVELOPMENT_INVARIANTS,
             max_sequence_length=1,
             progress_steps=0,
         ).explore(),

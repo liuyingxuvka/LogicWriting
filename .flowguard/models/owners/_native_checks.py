@@ -7,7 +7,7 @@ from flowguard.scenario import run_exact_sequence
 FACTORY_IDS = (
     "route_and_guard_model", "research_packet_model", "reader_artifact_model",
     "fiction_route_model", "travel_route_model", "investigation_route_model", "academic_route_model",
-    "execution_binding", "operation_freshness_closure_model", "release_retirement_model",
+    "operation_freshness_closure_model",
 )
 
 

@@ -318,3 +318,16 @@ Removed obsolete provider/current-release literals from active prompts, adapter 
 | docs: `python scripts/check_public_docs.py --root . --json` | exit 0; stated assertions verified | 0.08 |
 | pytest: `python -m pytest -q` | 162 passed in 6.46s | 6.91 |
 | map: `python -m flowguard map check` | check: 0 error(s), 10 warning(s), 0 info | 0.38 |
+
+## LW-23
+
+删除作者开发/发布/退役平面、捕获绑定及一次性字段迁移模型；保留八项对应操作路径的有限模型和三个真实反例，均通过。完整 162 项测试及三项回归通过，地图零错误，指定模型残留为零。抽象模型结果不作真实写作质量证明。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| residual: `git grep -n Development\|DEVELOPMENT_\|execution_binding\|release_retirement\|field_lifecycle\|FUNCTION_BLOCK_OWNERS -- .flowguard` | exit 1; stated assertions verified | 0.01 |
+| pytest: `python -m pytest -q` | 162 passed in 4.77s | 5.09 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 8.4 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.68 |
+| models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 1.7 |
+| map: `python -m flowguard map check` | check: 0 error(s), 10 warning(s), 0 info | 0.6 |

@@ -192,7 +192,6 @@
         "tests/v2_support.py"
       ],
       "models": [
-        ".flowguard/verification/owners/execution_binding/run_checks.py",
         ".flowguard/verification/owners/operation_freshness_closure_model/run_checks.py",
         ".flowguard/verification/owners/reader_artifact_model/run_checks.py"
       ],
@@ -586,9 +585,7 @@
       "tests": [
         "tests/contract/test_release_wrappers.py"
       ],
-      "models": [
-        ".flowguard/verification/owners/release_retirement_model/run_checks.py"
-      ],
+      "models": [],
       "status": "confirmed",
       "fingerprint": "sha256:781b912ccf81c59bdd8cc02be7d5ebaa63d32d016c4ba008a5bf326c726a844c"
     },
