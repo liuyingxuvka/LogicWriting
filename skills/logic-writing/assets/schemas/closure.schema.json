@@ -34,7 +34,7 @@
       "type": "array", "items": { "$ref": "#/$defs/fp" }, "uniqueItems": true
     },
     "native_receipt_fingerprints": {
-      "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/fp" }, "uniqueItems": true
+      "type": "array", "minItems": 0, "items": { "$ref": "#/$defs/fp" }, "uniqueItems": true
     },
     "status": { "enum": ["passed", "blocked", "no_progress_blocked"] },
     "residual_risk": {

@@ -245,7 +245,7 @@ provider is unavailable, preserve `render_not_run` or
 ### Derive closure
 
 Read [references/shared/closure.md](references/shared/closure.md). Final status
-comes from current native receipts and exact fingerprints. Caller-authored
+comes from the current actual-text checks and exact fingerprints. Caller-authored
 `pass`, `complete`, or `reader_native` fields are claims, not proof.
 
 Use `scripts/propagate_staleness.py` when an input identity changes, then use

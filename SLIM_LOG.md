@@ -46,3 +46,13 @@ Removed the machine-specific judge capture prerequisite and its capture-only ass
 | pytest: `python -m pytest -q` | 465 passed in 44.01s | 44.48 |
 | map: `python -m flowguard map check` | check: 0 error(s), 10 warning(s), 0 info | 0.98 |
 | skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.28 |
+
+## LW-04
+
+Allowed empty native-receipt and content-authority declarations without changing content boundaries. Added the specified real current-chain no-receipt closure case; 9 targeted and 466 full tests pass, map has zero errors. Source-present bridge explains the extra pass; no deviation.
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| targeted: `python -m pytest -q tests/unit/test_freshness_closure.py` | 9 passed in 1.93s | 2.29 |
+| pytest: `python -m pytest -q` | 466 passed in 54.48s | 54.88 |
+| map: `python -m flowguard map check` | check: 0 error(s), 10 warning(s), 0 info | 0.68 |

@@ -99,3 +99,14 @@ def test_foreign_reader_intent_is_rejected(tmp_path):
     request["reader_brief"]["reader_intent_fingerprint"] = fingerprint({"foreign": True})
     with pytest.raises(ValidationError):
         derive_closure(request)
+
+
+def test_brief_and_closure_need_no_native_receipts(tmp_path):
+    import derive_closure as closure_module
+    chain = complete_chain(tmp_path, native_receipts=[])
+    assert chain["reader_brief"]["native_dependency_receipt_fingerprints"] == []
+    request = closure_input(chain)
+    del request["native_receipt_fingerprints"]
+    result = closure_module.derive_closure(request)
+    assert result["closure"]["status"] == "passed"
+    assert result["closure"]["native_receipt_fingerprints"] == []

@@ -146,7 +146,7 @@ def derive_closure(
     required = (
         "closure_id", "route_decision", "reader_brief", "route_composition",
         "artifact_map", "shared_writing", "deterministic_audit", "route_review",
-        "judgment", "revision_provenance", "native_receipt_fingerprints",
+        "judgment", "revision_provenance",
     )
     missing = [field for field in required if field not in request]
     if missing:
@@ -209,8 +209,8 @@ def derive_closure(
     if provenance["final_owner"] != owner:
         raise ValidationError("revision provenance belongs to a sibling route")
 
-    native_receipts = list(request["native_receipt_fingerprints"])
-    if not native_receipts or len(native_receipts) != len(set(native_receipts)):
+    native_receipts = list(request.get("native_receipt_fingerprints", []))
+    if len(native_receipts) != len(set(native_receipts)):
         raise ValidationError("closure requires unique current native route receipt fingerprints")
     if native_receipts != brief["native_dependency_receipt_fingerprints"]:
         raise ValidationError("closure native receipts differ from the frozen ReaderBrief")
