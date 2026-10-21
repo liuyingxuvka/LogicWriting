@@ -942,3 +942,30 @@ Applied the user's patch-only target 4.0.9 in VERSION, pyproject and both README
 | fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 8.12 |
 | travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.47 |
 | skill: `python scripts/validate_skill.py --skill-root skills/logic-writing --json` | exit 0; stated assertions verified | 0.13 |
+
+## LW-58
+
+Added actual PATH fallback state/events, two invariants, two genuinely failing known-bad variants and ordinary TESTED_BY bindings without changing provider code. The conformance owner uses only nine cached subprocess calls, -B -E -S, a private temporary PATH and central minimum-version values. Both source mutations were rejected by their named invariant and by existing tests, then byte-exactly restored; all mandatory healthy checks pass on real FG0.70.7. Also replayed both native mutations and healthy models with the already-installed official FG0.70.6 (no environment change), with the same failures/healthy PASS. No PATH model temp folders or skill bytecode remain.
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| targeted-tests: `python -m pytest -q tests/unit/test_researchguard_provider_topology.py tests/unit/test_routing.py` | 25 passed in 0.35s | 1.05 |
+| change: `python -m flowguard change` | check: 0 error(s), 0 warning(s), 0 info | 1.66 |
+| route-model: `python -m flowguard map models route_and_guard_model` | models: 1 passed, 0 failed | 10.81 |
+| path-ignore-native-mutation: `python <external> LW-58 path-ignore` | models: 0 passed, 1 failed | 3.69 |
+| path-old-native-mutation: `python <external> LW-58 path-old` | models: 0 passed, 1 failed | 4.03 |
+| path-ignore-tests-mutation: `python <external> LW-58 path-ignore --tests` | 9 passed in 0.12s | 0.62 |
+| path-old-tests-mutation: `python <external> LW-58 path-old --tests` | 10 passed in 0.11s | 0.64 |
+| pytest: `python -m pytest -q` | 166 passed, 1 skipped in 8.54s | 9.03 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 7.77 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.59 |
+| models: `python -m flowguard map models` | models: 2 passed, 0 failed | 46.58 |
+| map: `python -m flowguard map check` | check: 0 error(s), 0 warning(s), 0 info | 0.65 |
+| lint: `python -m flowguard map lint` | exit 0; stated assertions verified | 0.77 |
+| release: `python -m flowguard release` | models: 2 declared, 2 executed | 29.02 |
+| skill: `python scripts/validate_skill.py --skill-root skills/logic-writing --json` | exit 0; stated assertions verified | 0.13 |
+| no-path-temporary-or-bytecode: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.04 |
+| old-fg-runtime-identity: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.08 |
+| old-fg-path-ignore-native-mutation: `python <external> LW-58 path-ignore --engine-python /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python` | models: 0 passed, 1 failed | 2.55 |
+| old-fg-path-old-native-mutation: `python <external> LW-58 path-old --engine-python /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python` | models: 0 passed, 1 failed | 2.6 |
+| old-fg-models: `python -m flowguard map models` | models: 2 passed, 0 failed | 23.38 |

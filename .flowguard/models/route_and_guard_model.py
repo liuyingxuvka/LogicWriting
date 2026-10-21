@@ -10,11 +10,20 @@ ExperimentGuard and the ResearchGuard umbrella are out of scope.
 
 Conformance replays model traces on the real `select_route` and on the real
 `provider_preflight.preflight` (the branches that need no installed provider).
+The PATH fallback is replayed by running the real `provider_preflight.py` in a
+Python without site-packages (so ResearchGuard is not in the running Python)
+with only a tiny fake `researchguard` console on PATH: one at the minimum
+version, one just below it, and none. The fake lives in a temporary folder and
+only the child process sees that PATH (and writes no bytecode), so nothing has
+to be installed and neither the caller's environment nor the skill folder changes.
 """
 
 from __future__ import annotations
 
+import json
+import os
 import shutil
+import subprocess
 import sys
 import tempfile
 from dataclasses import dataclass, replace
@@ -52,9 +61,17 @@ TESTED_BY = {
         "tests/unit/test_researchguard_provider_topology.py:test_scope_out_provider_runs_no_console",
         "tests/unit/test_researchguard_provider_topology.py:test_umbrella_scope_out_provider_runs_no_console",
     ],
+    "path_console_is_used": [
+        "tests/unit/test_researchguard_provider_topology.py:test_console_on_path_is_used_when_researchguard_is_in_another_python",
+    ],
+    "path_console_meets_minimum": [
+        "tests/unit/test_researchguard_provider_topology.py:test_too_old_console_on_path_blocks_with_the_install_message",
+        "tests/unit/test_researchguard_provider_topology.py:test_missing_console_blocks_without_old_module_import",
+    ],
 }
 
 ROOT = Path(__file__).resolve().parents[2]
+SCRIPTS = ROOT / "skills" / "logic-writing" / "scripts"
 FINAL_OWNERS = ("investigation", "academic-writing", "fiction-writing", "travel-guide")
 OWNER_OF = {
     "research_report": "investigation",
@@ -66,6 +83,7 @@ TRIVIAL = ("grammar_only",)
 UNKNOWN = ("unresolved",)
 MEMBERS = ("sourceguard", "logicguard", "traceguard")
 SCOPE_OUT = ("experimentguard", "researchguard")
+PATH_CONSOLES = ("current", "old", "absent")   # researchguard on PATH: at the minimum version, below it, none
 
 
 @dataclass(frozen=True)
@@ -76,6 +94,7 @@ class Event:
     conflict: bool = False          # request: a material ReaderIntent conflict exists
     provider: str = ""              # handoff: provider id
     provider_root: bool = False     # handoff: the caller passes a provider-root override
+    path_console: str = ""          # handoff: ResearchGuard is not in the running Python; a PATH_CONSOLES case
 
 
 @dataclass(frozen=True)
@@ -89,6 +108,9 @@ class State:
     provider_root: bool = False
     provider_status: str = ""       # status of the last preflight
     console: str = ""               # console the last preflight would use
+    path_console: str = ""          # PATH_CONSOLES case of the last preflight ("" when it was not a PATH case)
+    console_source: str = ""        # "path" when the console was found on PATH
+    install_hint: bool = False      # the result says how to install ResearchGuard
 
 
 class Step:
@@ -97,7 +119,7 @@ class Step:
     name = "Step"
     reads = ("status",)
     writes = ("deliverable", "conflict", "status", "owner", "children", "provider", "provider_root",
-              "provider_status", "console")
+              "provider_status", "console", "path_console", "console_source", "install_hint")
 
     def owner_for(self, event: Event) -> str:
         return OWNER_OF.get(event.deliverable, "")
@@ -106,6 +128,14 @@ class Step:
         if event.provider in SCOPE_OUT:
             return "blocked", ""
         return "blocked", "researchguard"       # members: the override is refused before any console runs
+
+    def path_result(self, event: Event) -> tuple[str, str, bool]:
+        """Status, console source and install hint when ResearchGuard is reachable only through PATH."""
+        if event.path_console == "current":
+            return "current_pass", "path", False
+        if event.path_console == "old":
+            return "blocked", "path", True
+        return "provider_unavailable", "", True
 
     def apply(self, event: Event, state: State):
         if event.kind == "request":
@@ -124,9 +154,12 @@ class Step:
             new = replace(state, deliverable=event.deliverable, conflict=event.conflict, status=status,
                           owner=owner, children=children)
             return (FunctionResult(f"{status}:{owner}", new, label=f"route_{status}"),)
-        status, console = self.provider_result(event)
-        new = replace(state, provider=event.provider, provider_root=event.provider_root,
-                      provider_status=status, console=console)
+        if event.path_console:
+            (status, source, hint), console = self.path_result(event), "researchguard"
+        else:
+            (status, console), source, hint = self.provider_result(event), "", False
+        new = replace(state, provider=event.provider, provider_root=event.provider_root, provider_status=status,
+                      console=console, path_console=event.path_console, console_source=source, install_hint=hint)
         return (FunctionResult(status, new, label=f"preflight_{status}"),)
 
 
@@ -144,6 +177,20 @@ class ProviderRootAccepted(Step):
         if event.provider in SCOPE_OUT:
             return "blocked", ""
         return ("current_pass", "provider-root") if event.provider_root else ("blocked", "researchguard")
+
+
+class PathConsoleIgnored(Step):
+    """Known-bad (before LW-42): ResearchGuard installed in another Python is never found on PATH."""
+
+    def path_result(self, event: Event) -> tuple[str, str, bool]:
+        return "provider_unavailable", "", True
+
+
+class OldPathConsoleAccepted(Step):
+    """Known-bad: the version of a console found on PATH is not checked against the minimum."""
+
+    def path_result(self, event: Event) -> tuple[str, str, bool]:
+        return ("current_pass", "path", False) if event.path_console == "old" else super().path_result(event)
 
 
 def _exactly_one_final_owner(state: State, trace) -> InvariantResult:
@@ -180,6 +227,18 @@ def _no_alternate_provider_path(state: State, trace) -> InvariantResult:
     return InvariantResult.pass_()
 
 
+def _path_console_is_used(state: State, trace) -> InvariantResult:
+    if state.path_console == "current" and (state.provider_status != "current_pass" or state.console_source != "path"):
+        return InvariantResult.fail("a researchguard console on PATH that meets the minimum was not used")
+    return InvariantResult.pass_()
+
+
+def _path_console_meets_minimum(state: State, trace) -> InvariantResult:
+    if state.path_console in {"old", "absent"} and (state.provider_status == "current_pass" or not state.install_hint):
+        return InvariantResult.fail("a missing or too-old researchguard console passed or gave no install command")
+    return InvariantResult.pass_()
+
+
 INVARIANTS = (
     Invariant("exactly_one_final_owner", "one request has exactly one final owner, or none", _exactly_one_final_owner),
     Invariant("owner_follows_the_terminal_deliverable", "the owner comes from the terminal deliverable",
@@ -189,6 +248,10 @@ INVARIANTS = (
               _members_use_one_console),
     Invariant("no_alternate_provider_path", "no provider-root override and no out-of-scope provider runs",
               _no_alternate_provider_path),
+    Invariant("path_console_is_used", "ResearchGuard installed in another Python is used through PATH",
+              _path_console_is_used),
+    Invariant("path_console_meets_minimum", "a missing or too-old console on PATH blocks and names the install command",
+              _path_console_meets_minimum),
 )
 EVENTS = (
     tuple(Event("request", deliverable=kind, research=research)
@@ -196,6 +259,7 @@ EVENTS = (
     + (Event("request", deliverable="paper", conflict=True),)
     + tuple(Event("handoff", provider=member, provider_root=True) for member in MEMBERS)
     + tuple(Event("handoff", provider=provider) for provider in SCOPE_OUT)
+    + tuple(Event("handoff", provider=member, path_console=case) for member in MEMBERS for case in PATH_CONSOLES)
 )
 
 
@@ -210,11 +274,65 @@ def build_explorer() -> Explorer:
 
 def broken_variants() -> dict:
     return {"research_child_takes_ownership": _explorer(ResearchChildTakesOwnership()),
-            "provider_root_accepted": _explorer(ProviderRootAccepted())}
+            "provider_root_accepted": _explorer(ProviderRootAccepted()),
+            "path_console_ignored": _explorer(PathConsoleIgnored()),
+            "old_path_console_accepted": _explorer(OldPathConsoleAccepted())}
+
+
+FAKE_CONSOLE = """import sys
+args = sys.argv[1:]
+if args == ["--version"]:
+    print("researchguard {version}")
+elif len(args) == 2 and args[0] in ("source", "logic", "trace") and args[1] == "--help":
+    print("usage: researchguard " + args[0])
+else:
+    sys.exit(2)
+"""
+
+
+class _PathConsoles:
+    """Runs the real preflight command where only a fake `researchguard` is on PATH (each case once per replay)."""
+
+    def __init__(self) -> None:
+        self.root = Path(tempfile.mkdtemp(prefix="lw-path-console-"))
+        self.results: dict[tuple[str, str], dict] = {}
+
+    def close(self) -> None:
+        shutil.rmtree(self.root, ignore_errors=True)
+
+    def _bin(self, case: str) -> Path:
+        from _common import RESEARCHGUARD_MIN_VERSION
+        major, minor, patch = RESEARCHGUARD_MIN_VERSION
+        below = (major, minor, patch - 1) if patch else (major, minor - 1, 99) if minor else (major - 1, 99, 99)
+        folder = self.root / case
+        folder.mkdir(exist_ok=True)
+        if case != "absent":
+            fake = folder / "fake_researchguard.py"
+            version = ".".join(map(str, RESEARCHGUARD_MIN_VERSION if case == "current" else below))
+            fake.write_text(FAKE_CONSOLE.format(version=version), encoding="utf-8")
+            if os.name == "nt":
+                (folder / "researchguard.cmd").write_text(f'@"{sys.executable}" -S "{fake}" %*\r\n', encoding="utf-8")
+            else:
+                launcher = folder / "researchguard"
+                launcher.write_text(f'#!/bin/sh\nexec "{sys.executable}" -S "{fake}" "$@"\n', encoding="utf-8")
+                launcher.chmod(0o755)
+        return folder
+
+    def preflight(self, provider: str, case: str) -> dict:
+        if (provider, case) not in self.results:
+            completed = subprocess.run(
+                [sys.executable, "-B", "-E", "-S", str(SCRIPTS / "provider_preflight.py"), provider],
+                env={**os.environ, "PATH": str(self._bin(case))}, capture_output=True, text=True, timeout=120,
+            )
+            self.results[(provider, case)] = json.loads(completed.stdout)
+        return self.results[(provider, case)]
 
 
 class _RealRouting:
-    """Calls the real select_route and provider preflight; no provider is executed."""
+    """Calls the real select_route and provider preflight; no real provider is executed."""
+
+    def __init__(self, consoles: _PathConsoles) -> None:
+        self.consoles = consoles
 
     def reset(self, initial_state: State) -> None:
         for path in (ROOT, ROOT / "skills" / "logic-writing" / "scripts"):
@@ -249,10 +367,15 @@ class _RealRouting:
                                 status=decision["status"], owner=owner, children=tuple(decision["child_routes"]))
                 output = f"{decision['status']}:{owner}"
         else:
-            result = self.preflight(event.provider, provider_root=str(self.root) if event.provider_root else None)
-            output = result["status"]
-            state = replace(state, provider=event.provider, provider_root=event.provider_root,
-                            provider_status=output, console=str(result["evidence"].get("provider_console_id", "")))
+            if event.path_console:
+                result = self.consoles.preflight(event.provider, event.path_console)
+            else:
+                result = self.preflight(event.provider, provider_root=str(self.root) if event.provider_root else None)
+            evidence, output = result["evidence"], result["status"]
+            state = replace(state, provider=event.provider, provider_root=event.provider_root, provider_status=output,
+                            console=str(evidence.get("provider_console_id", "")), path_console=event.path_console,
+                            console_source=str(evidence.get("console_source", "")),
+                            install_hint=bool(evidence.get("message")))
         self.state = state
         return ReplayObservation(function_name=step.function_name, observed_output=output, observed_state=state)
 
@@ -266,13 +389,17 @@ class _RealRouting:
 def conformance():
     """Replay traces covering every modeled transition against the real routing and preflight code."""
     last = None
-    for trace in select_covering_traces(build_explorer().explore().traces):
-        adapter = _RealRouting()
-        try:
-            last = replay_trace(trace=trace, adapter=adapter, invariants=INVARIANTS,
-                                rules=(projected_state_matches(), projected_output_matches()))
-        finally:
-            adapter.close()
-        if not last.ok:
-            return last
+    consoles = _PathConsoles()
+    try:
+        for trace in select_covering_traces(build_explorer().explore().traces):
+            adapter = _RealRouting(consoles)
+            try:
+                last = replay_trace(trace=trace, adapter=adapter, invariants=INVARIANTS,
+                                    rules=(projected_state_matches(), projected_output_matches()))
+            finally:
+                adapter.close()
+            if not last.ok:
+                return last
+    finally:
+        consoles.close()
     return last
