@@ -715,3 +715,17 @@ CI 新增读取唯一最低版本常量的 ResearchGuard 作业，publish 等待
 | spec-residual: `git grep -n -i -E receipt|0\.5\.7|4\.0\.8|skillguard|frozen|RepairRequest|consumption|no-progress|flowguard -- openspec/specs` | exit 0; stated assertions verified | 0.01 |
 | pytest: `python -m pytest -q` | 153 passed, 1 skipped in 7.95s | 8.49 |
 | map: `python -m flowguard map check` | check: 0 error(s), 4 warning(s), 0 info | 0.56 |
+
+## LW-46
+
+删除已结束退役流程的规格、过时 README 论证模型和贡献/迁移处置段落；保留旧技能无别名的现行规则和历史文档。活动退役残留为零，原始命中仅历史日志；8份现行规格，完整153项/1跳过、文档、隐私和地图通过。OpenSpec CLI 仍不存在，按行动允许未运行其可选严格校验；未操作远端分支。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| residual-raw: `git grep -n -i privatiz\|retirement\|predecessor repository -- . :!CHANGELOG.md :!openspec/changes :!docs/history :!skills :!tests` | exit 0; stated assertions verified | 0.03 |
+| residual-active: `git grep -n -i privatiz\|retirement\|predecessor repository -- . :!CHANGELOG.md :!openspec/changes :!docs/history :!skills :!tests :!SLIM_LOG.md` | exit 1; stated assertions verified | 0.03 |
+| spec-count: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.04 |
+| docs: `python scripts/check_public_docs.py --root . --json` | exit 0; stated assertions verified | 0.11 |
+| privacy: `python scripts/check_privacy.py --root . --json` | exit 0; stated assertions verified | 0.57 |
+| pytest: `python -m pytest -q` | 153 passed, 1 skipped in 6.79s | 7.1 |
+| map: `python -m flowguard map check` | check: 0 error(s), 4 warning(s), 0 info | 0.47 |

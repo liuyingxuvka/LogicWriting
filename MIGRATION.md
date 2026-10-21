@@ -34,8 +34,7 @@ no runtime aliases. Move any old active directories outside the skill root;
 all supported intents enter through `$logic-writing`. Keep separate native
 SourceGuard, LogicGuard, TraceGuard, WorldGuard, Documents and PDF
 responsibilities. Source parity, installation, Git tag and hosted Release
-identities are checked separately. Predecessor repository deletion remains
-user-owned.
+identities are checked separately.
 
 Earlier migration details are retained in
 [the historical record](docs/history/migration-before-4.0.5.md).

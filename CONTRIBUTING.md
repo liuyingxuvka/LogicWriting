@@ -49,8 +49,8 @@ Repository-level documentation belongs at the repository root or under
 4. Re-run only affected checks while the change is still moving.
 5. Run `python -m pytest -q` and the checks listed under `## Validation` in
    `AGENTS.md` before proposing a release.
-6. Review the public diff for unsupported maturity, release, installation, and
-   retirement claims.
+6. Review the public diff for unsupported maturity, release, and installation
+   claims.
 7. Run the semantic privacy gate before proposing publication.
 
 Do not make a report, receipt, or generated progress file a source-authority
@@ -93,7 +93,7 @@ Public documentation should:
 
 - explain the reader's problem before internal mechanics;
 - use ordinary language and define unavoidable terms;
-- distinguish current source facts from planned release or retirement state;
+- distinguish current source facts from planned release state;
 - avoid guarantees such as “complete,” “stable,” “publication-ready,” or
   “fully validated” unless current evidence licenses the exact claim;
 - keep the English README and Chinese mirror factually aligned;
@@ -124,9 +124,7 @@ Describe:
 - checks not run and why;
 - residual risk and claim boundary;
 - privacy review result;
-- migration or retirement impact, if any.
+- migration impact, if any.
 
-Do not describe publication, installation, repository privatization, or
-repository deletion as complete until the corresponding external state has
-been checked directly. An anonymous 404 for a private repository is not a
-deletion receipt.
+Do not describe publication or installation as complete until the
+corresponding external state has been checked directly.
