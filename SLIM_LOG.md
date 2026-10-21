@@ -522,3 +522,16 @@ SKILL 增补实际命令与输入字段，13 项命令在技能根帮助均正�
 | models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 1.42 |
 | map: `python -m flowguard map check` | check: 0 error(s), 6 warning(s), 0 info | 0.36 |
 | skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.2 |
+
+## LW-35
+
+fiction 按材料问题启用专家，compact 保留故事推进、承诺边界与写后复读；WorldGuard 用原生报告路径和总状态，不增加包装记录。五份指南各有唯一报告指引，非通过状态保持可见。完整 149 项、文档、技能和地图通过，旧生命周期/收据文字无活动残留。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| residual: `git grep -n -i receipt\|content-addressed Guard\|Guard lifecycle\|guarded story\|closure aggregation\|universal Guard -- skills/logic-writing/SKILL.md skills/logic-writing/references skills/logic-writing/routes/fiction/references` | exit 1; stated assertions verified | 0.01 |
+| worldguard-report-paths: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.03 |
+| docs: `python scripts/check_public_docs.py --root . --json` | exit 0; stated assertions verified | 0.08 |
+| pytest: `python -m pytest -q` | 149 passed in 5.07s | 5.47 |
+| map: `python -m flowguard map check` | check: 0 error(s), 6 warning(s), 0 info | 0.35 |
+| skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.35 |

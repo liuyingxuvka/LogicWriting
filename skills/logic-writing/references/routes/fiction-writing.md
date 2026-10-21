@@ -30,11 +30,11 @@ Long-form work additionally requires the [chapter interface blueprint](../../rou
 
 ## Choose depth from the terminal artifact
 
-Every substantive StorylineDesign run uses the same guarded story lifecycle.
-Artifact size changes evidence depth; it does not remove the lifecycle.
+Every substantive story run follows the same story lifecycle; artifact size
+changes evidence depth.
 
-- Compact work needs a clear movement, promise boundary, story-world trace,
-  theme boundary, canon boundary, and postwrite observation.
+- Compact work needs a clear story movement, a promise boundary and a re-read
+  of the actual text after writing.
 - Short stories add a story ledger, turning points, scene contracts, promises,
   and story closure.
 - Long form adds `novel_ledger`, chapter interfaces, continuity layers,
@@ -45,9 +45,12 @@ Artifact size changes evidence depth; it does not remove the lifecycle.
 
 ## Preserve specialist authority
 
-TraceGuard,
-WorldGuard, LogicGuard, and SourceGuard are passed, partial, blocked, stale, or
-`not_applicable_with_reason`; absence is never silently converted into success.
+Use TraceGuard, WorldGuard, LogicGuard or SourceGuard only when its question is
+material, through its own command, and report its own status unchanged; a
+skipped or missing Guard is never reported as a pass.
+When world consistency matters, run WorldGuard and attach the path of its
+`run_worldguard.py check` report and its overall status (`PASS`, `FAIL`,
+`GAP` or `BOUNDARY_EXCEEDED`); a non-pass status stays visible.
 TraceGuard owns temporal and revelation
 traces, WorldGuard owns material world consistency, LogicGuard owns support and
 structure, and SourceGuard owns source/canon discovery depth.
@@ -83,7 +86,7 @@ actual words, not on a plan that says the scene works.
 
 ## Bind and close the actual manuscript
 
-Use content-addressed Guard handoffs and one current project model mesh. The
+Use one current project model mesh. The
 model-prose binding links important model rows to exact manuscript spans and
 records the changed effect of any repeated binding. Reject unbound prose,
 unrealized rows, unsupported duplicate binding, a stale review, or a manuscript
@@ -97,7 +100,7 @@ about beauty or originality remains explicit; deterministic checks cannot
 manufacture it.
 
 The internal route pack under `routes/fiction/` preserves the verified compact,
-short-story, long-form, Guard-lifecycle, mesh, and known-bad regression families.
+short-story, long-form, mesh, and known-bad regression families.
 It is implementation material, not a separately installed skill or final owner.
 
 ## Independent actual-text review

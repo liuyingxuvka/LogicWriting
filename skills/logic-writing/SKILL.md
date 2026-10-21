@@ -187,7 +187,7 @@ evidence and owns the final artifact.
 Read [references/routes/fiction-writing.md](references/routes/fiction-writing.md).
 Choose compact, short-story, long-form, or final-manuscript depth from the
 terminal artifact. Preserve story contribution, turning points, scene/chapter
-interfaces, promises, continuity, voice, Guard handoffs, reader-state movement,
+interfaces, promises, continuity, voice, reader-state movement,
 actual-manuscript identity, semantic review, and model-prose binding.
 
 ### Travel guide
@@ -291,7 +291,7 @@ Repeated closure calls never count as repair attempts.
   review.
 - Do not close academic work without a current LogicGuard argument model,
   revision provenance, and actual-artifact reader review.
-- Do not close fiction without current story-model, continuity, Guard lifecycle,
+- Do not close fiction without current story-model, continuity,
   shared-writing, actual-artifact semantic review, and model-prose binding
   evidence appropriate to the selected depth.
 - Do not close travel without current source-time, feasibility, traveler-fit,

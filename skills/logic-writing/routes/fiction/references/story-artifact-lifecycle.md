@@ -10,8 +10,8 @@ route. Infer the requested artifact and then choose evidence depth from
 
 ## Core Rule
 
-Every story task uses the same Guarded Story Lifecycle. Artifact size changes
-the amount of evidence, not whether Guard stages exist. A micro story may use
+Every story task follows the same story lifecycle. Artifact size changes
+the amount of evidence; a Guard runs only when its question is material. A micro story may use
 compact rows. A novel uses layered rows. A short artifact does not get to skip
 TraceGuard, WorldGuard, LogicGuard, SourceGuard, model evidence, or
 closure boundaries when those surfaces are material.
@@ -32,7 +32,7 @@ goal intake
 -> reader-native brief or outline
 -> drafting or repair
 -> reverse outline or compact postwrite observation
--> closure aggregation
+-> closure on the actual text
 -> delivery with residual gaps
 ```
 
@@ -50,20 +50,14 @@ goal intake
   relationship arcs, promises, prose projection, reverse outlines, and final
   story closure.
 
-## Not Applicable Is Still Evidence
+## When A Guard Runs
 
-When a child Guard is not relevant, record the surface as
-`not_applicable_with_reason`. Do not silently omit it. A good reason names the
-claim boundary:
-
-- TraceGuard not applicable because no event order, causality, mystery, hidden
-  timeline, or revelation order is being claimed beyond a single static scene.
-- WorldGuard not applicable because no material world event, ability, access,
-  resource, rule, or consequence supports the requested claim.
-- LogicGuard not applicable because the artifact does not assert a material
-  theme, ending interpretation, moral, philosophical, or value claim.
-- SourceGuard not applicable because no user-supplied canon, prior draft,
-  adaptation, historical fact, or external source constrains the output.
+Run a Guard only when its question is material: event order, causality or
+reveal order for TraceGuard; world rules, access, resources or consequences
+for WorldGuard; a theme or ending claim for LogicGuard; supplied canon or
+sources for SourceGuard. When world consistency matters, run WorldGuard and attach the path of its
+`run_worldguard.py check` report and its overall status (`PASS`, `FAIL`,
+`GAP` or `BOUNDARY_EXCEEDED`); a non-pass status stays visible.
 
 ## Closure Rule
 
@@ -71,8 +65,7 @@ Before any complete, final, high-quality, publishable, book-level, or
 ready-to-use claim, aggregate:
 
 - the StorylineDesign model surface at the selected depth;
-- TraceGuard, WorldGuard, LogicGuard, and SourceGuard statuses or
-  not-applicable reasons;
+- the status of every Guard that ran;
 - prose projection and reverse-outline or postwrite evidence when prose exists;
 - skipped, stale, blocked, unsupported, downgraded, and human-review rows.
 

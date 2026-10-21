@@ -1,6 +1,6 @@
 # Longform Lifecycle
 
-Use this reference when a StorylineDesign task targets a novel, book, volume, series, chapter batch, continuity repair, or chapter-level prose that depends on adjacent chapters. Longform Mode is the deep tier of the universal guarded story lifecycle. It extends the normal workflow; it does not replace short-story structure, scene, promise/payoff, WorldGuard, prose-native, or closure checks.
+Use this reference when a StorylineDesign task targets a novel, book, volume, series, chapter batch, continuity repair, or chapter-level prose that depends on adjacent chapters. Longform Mode is the deep tier of the story lifecycle. It extends the normal workflow; it does not replace short-story structure, scene, promise/payoff, WorldGuard, prose-native, or closure checks.
 
 ## Longform Gate Vocabulary
 

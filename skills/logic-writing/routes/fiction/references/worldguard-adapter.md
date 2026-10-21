@@ -69,6 +69,12 @@ Required fields:
 - `adapter_status`: planned, mapped, pass, partial, blocked, gap, skipped, stale, or human_review.
 - `closure_effect`: continue, return_to_ledger, return_to_scene, return_to_structure, user_decision, or scoped_out.
 
+When WorldGuard runs, put the path of its `run_worldguard.py check` report in
+`worldguard_evidence_refs` and its overall status in lower case in
+`worldguard_status` (`PASS` -> `pass`, `FAIL` -> `fail`, `GAP` -> `gap`,
+`BOUNDARY_EXCEEDED` -> `boundary_exceeded`). Attach the report itself; no
+extra wrapper record is needed.
+
 ## Mapping Targets
 
 ### Events

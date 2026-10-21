@@ -49,14 +49,7 @@ Allowed decisions: passed, partial, blocked, downgraded, or human_review.
 
 ## Required Surfaces
 
-Every long-form closure level also carries universal Guard surfaces unless the claim boundary records a current reason:
-
-- `traceguard_storyline`;
-- `worldguard_story_claims`;
-- `logicguard_theme_support`;
-- `sourceguard_canon_support`.
-
-Use `not_applicable_with_reason` only when the reason is visible and does not hide a material story-world, theme, source, or process claim.
+`scripts/longform_closure_check.py` checks two things in the bundle: the `reverse_outline` surface (required for volume, book and series closure and for final prose) and, for final prose, the `final_artifact` identity and `source_requirements`. Run the other story models below with their own scripts. When world consistency matters, run WorldGuard and attach the path of its `run_worldguard.py check` report and its overall status (`PASS`, `FAIL`, `GAP` or `BOUNDARY_EXCEEDED`); a non-pass status stays visible.
 
 For chapter closure, require:
 
@@ -97,7 +90,7 @@ For series closure, also require:
 
 Each `required_surfaces` item should include:
 
-- `surface`: novel_ledger, story_contribution, chapter_interface, scene_contract, promise_payoff, worldguard, voice_style, reverse_outline, shortform_closure, or installed_parity;
+- `surface`: novel_ledger, story_contribution, chapter_interface, scene_contract, promise_payoff, worldguard, voice_style, or reverse_outline;
 - `status`: passed, partial, blocked, skipped, stale, unsupported, not_run, scoped_out, or human_review;
 - `evidence_ref`;
 - `blocks_closure`: true or false;

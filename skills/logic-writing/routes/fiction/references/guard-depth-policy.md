@@ -2,7 +2,7 @@
 
 Use this reference after intake to decide how much model and Guard evidence a
 StorylineDesign task needs. Depth scales with artifact size, dependency count,
-and claim strength. It does not remove Guard consideration.
+and claim strength. A Guard runs only when its question is material.
 
 ## Depth Tiers
 
@@ -16,9 +16,11 @@ Required evidence:
 - target artifact and claim boundary;
 - one compact story movement model: starting state, change, ending state;
 - main promise/payoff or explicit no-promise boundary;
-- TraceGuard, WorldGuard, LogicGuard, and SourceGuard status or
-  `not_applicable_with_reason`;
-- compact closure report with gaps and next actions.
+- a re-read of the actual text after writing, with gaps and next actions.
+
+When world consistency matters, run WorldGuard and attach the path of its
+`run_worldguard.py check` report and its overall status (`PASS`, `FAIL`,
+`GAP` or `BOUNDARY_EXCEEDED`); a non-pass status stays visible.
 
 ### Short Story
 
@@ -35,8 +37,7 @@ Required evidence:
   consequences affect payoff;
 - LogicGuard theme support when the ending or moral claim matters;
 - SourceGuard canon/source support when supplied material constrains output;
-- reverse outline or postwrite observation when prose exists;
-- closure aggregation.
+- reverse outline or postwrite observation when prose exists.
 
 ### Intermediate
 
@@ -70,7 +71,8 @@ Required evidence:
 - LogicGuard theme support when theme/ending interpretation is material;
 - SourceGuard canon/source support when supplied material constrains output;
 - reverse outlines from actual prose;
-- aggregate long-form closure.
+- `scripts/longform_closure_check.py` on the closure bundle (reverse outline
+  and, for final prose, source requirements).
 
 ### Final Manuscript
 
@@ -83,8 +85,7 @@ Additional evidence:
 - final artifact path or durable id;
 - final artifact hash;
 - artifact-bound semantic review that read the same artifact hash;
-- current postwrite reverse outline;
-- current Guard surfaces after the last prose change.
+- current postwrite reverse outline.
 
 ## Depth Escalators
 
