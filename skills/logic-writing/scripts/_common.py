@@ -105,6 +105,18 @@ def fingerprint_without(value: dict[str, Any], *keys: str) -> str:
     return fingerprint({key: item for key, item in value.items() if key not in set(keys)})
 
 
+def fill_fingerprint(record: Any, field: str) -> None:
+    """Compute a record's own fingerprint when the caller left it out; a given value is kept and checked."""
+    if isinstance(record, dict) and record.get(field) is None:
+        record[field] = fingerprint_without(record, field)
+
+
+def fill_missing(record: Any, field: str, value: Any) -> None:
+    """Copy a missing field from the record it must match; a given value is kept and checked."""
+    if isinstance(record, dict) and record.get(field) is None and value is not None:
+        record[field] = value
+
+
 def logic_writing_source_identity(skill_root: str | Path | None = None) -> dict[str, str]:
     """Return the complete byte identity used by the production reader.
 

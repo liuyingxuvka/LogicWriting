@@ -744,3 +744,17 @@ CLI 请求可直接引用相对 JSON 对象文件及上一步结果对象，内�
 | models: `python -m flowguard map models` | models: 2 passed, 0 failed | 15.71 |
 | map: `python -m flowguard map check` | check: 0 error(s), 5 warning(s), 0 info | 0.43 |
 | skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.13 |
+
+## LW-48
+
+路由 CLI 自动补全缺省的三个自身指纹；给定值仍保留并核对，select_route 本身不变。14项路由及真实无指纹 itinerary CLI 通过，错误给定指纹仍拒绝；完整157项/1跳过、三回归和地图通过。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| routing-tests: `python -m pytest -q tests/unit/test_routing.py` | 14 passed in 0.12s | 0.4 |
+| native-cli-no-fingerprints: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.21 |
+| pytest: `python -m pytest -q` | 157 passed, 1 skipped in 4.93s | 5.21 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 4.86 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.35 |
+| models: `python -m flowguard map models` | models: 2 passed, 0 failed | 13.95 |
+| map: `python -m flowguard map check` | check: 0 error(s), 6 warning(s), 0 info | 0.34 |

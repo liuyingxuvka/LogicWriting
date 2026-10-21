@@ -73,3 +73,31 @@ def test_request_identity_changes_with_reader_intent():
         if k != "request_fingerprint"
     })
     assert select_route(first)["request_fingerprint"] != select_route(second)["request_fingerprint"]
+
+
+def test_route_selection_fills_missing_request_fingerprints():
+    request = route_request("paper")
+    writing = request["writing_request"]
+    expected = (
+        writing["reader_intent"]["intent_fingerprint"],
+        writing["terminal_deliverable"]["fingerprint"],
+        writing["request_fingerprint"],
+    )
+    del writing["reader_intent"]["intent_fingerprint"]
+    del writing["terminal_deliverable"]["fingerprint"]
+    del writing["request_fingerprint"]
+    result = validate_request(request)
+    decision = result["route_decision"]
+    assert result["status"] == "current_pass"
+    assert (
+        decision["reader_intent_fingerprint"],
+        decision["terminal_deliverable"]["fingerprint"],
+        decision["request_fingerprint"],
+    ) == expected
+
+
+def test_a_given_wrong_request_fingerprint_is_still_rejected():
+    request = route_request("paper")
+    request["writing_request"]["request_fingerprint"] = "sha256:" + "0" * 64
+    with pytest.raises(ValidationError):
+        validate_request(request)

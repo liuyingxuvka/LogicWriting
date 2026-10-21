@@ -5,6 +5,7 @@ from __future__ import annotations
 from _common import (
     ValidationError,
     cli_validate,
+    fill_fingerprint,
     fingerprint,
     require_datetime,
     require_identifier,
@@ -117,8 +118,19 @@ def select_route(value):
     return decision
 
 
+def complete_request(value):
+    """Fill the fingerprints a caller left out of a route selection request."""
+    envelope = require_mapping(value, "route selection request")
+    request = envelope.get("writing_request")
+    if isinstance(request, dict):
+        fill_fingerprint(request.get("reader_intent"), "intent_fingerprint")
+        fill_fingerprint(request.get("terminal_deliverable"), "fingerprint")
+        fill_fingerprint(request, "request_fingerprint")
+    return envelope
+
+
 def validate_request(value):
-    result = select_route(value)
+    result = select_route(complete_request(value))
     return validation_result(
         status="current_pass" if result["status"] in {"current", "skipped"} else "blocked",
         route_decision=result,
