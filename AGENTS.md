@@ -14,14 +14,24 @@
 - Preserve SourceGuard, LogicGuard, TraceGuard, WorldGuard, Documents, and PDF as native domain owners.
 - Never put private investigations, machine-specific paths, credentials, or internal coordination records in public release files.
 - A task or release status is derived from current evidence; caller-authored `pass` or `complete` values are not proof.
+- Preserve four final owners, reader/writer execution isolation, exact artifact bytes, freshness, repair stopping, and native specialist authority.
 
 ## Validation
 
 - Run the affected tests while developing. CI (`.github/workflows/publish-release.yml`) runs `python -m pytest -q`, `python scripts/run_fiction_regression.py --repository-root . --json`, `python scripts/run_travel_regression.py --repository-root . --json`, `python -m flowguard map models` and `python -m flowguard map check` on the release commit; a second job installs ResearchGuard at `RESEARCHGUARD_MIN_VERSION` (`skills/logic-writing/scripts/_common.py`) and runs `python -m pytest -q` and the three member preflights.
 
-## Model map
+<!-- BEGIN FLOWGUARD PROJECT RULES -->
 
-- Use the current FlowGuard `map` surface, from the FlowGuard version the workflow installs (`.github/workflows/publish-release.yml`); older versions do not see same-directory script imports and report `dep_unused` errors. `.flowguard/map.json` binds each actual runtime/schema/config owner to native models and ordinary tests.
-- Inspect affected components before editing; update their model/anchors when behavior changes, then run affected native checks or pytest nodes.
-- Confirm a component pointer only after reviewing its current code and validating its affected behavior. A confirmed description is not cached test PASS.
-- Preserve four final owners, reader/writer execution isolation, exact artifact bytes, freshness, repair stopping, and native specialist authority.
+## FlowGuard map and model maintenance
+
+1. Start each session with `python -m flowguard read` before opening source.
+2. Before adding behavior, use `python -m flowguard read --find WORDS`; extend its existing owner.
+3. Open only the affected component's files (`python -m flowguard read --component ID`).
+4. After editing, run `python -m flowguard change`, fix errors, and run the affected tests and models it selects.
+5. Re-read each REVIEW component, update its description if behavior changed, then `python -m flowguard map confirm ID`.
+6. At final release, freeze the source and run the full suite and `python -m flowguard release` once on that revision (same-SHA CI may provide this); report failures and unrun checks honestly.
+
+Maintenance needs FlowGuard from the owner's repository at the version written once, in `.github/workflows/publish-release.yml`; older versions do not see same-directory script imports and report `dep_unused` errors (the PyPI package named `flowguard` is a different project).
+Raise that version, or `RESEARCHGUARD_MIN_VERSION` in `skills/logic-writing/scripts/_common.py`, only when Logic Writing starts using a newer feature of that tool; a FlowGuard or ResearchGuard release alone is no reason to change them or to release Logic Writing.
+
+<!-- END FLOWGUARD PROJECT RULES -->
