@@ -388,8 +388,7 @@
         "branch_id",
         "source_id",
         "destination_unit_id",
-        "claim_ids",
-        "current_native_evidence_ref"
+        "claim_ids"
       ],
       "properties": {
         "branch_id": {

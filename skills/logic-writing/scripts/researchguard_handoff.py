@@ -256,7 +256,7 @@ def _native_plan(value: Any) -> dict[str, Any]:
     for index, binding in enumerate(raw_bindings):
         if not isinstance(binding, Mapping):
             raise ValidationError(f"source branch binding {index} must be an object")
-        for field in ("branch_id", "source_id", "destination_unit_id", "current_native_evidence_ref"):
+        for field in ("branch_id", "source_id", "destination_unit_id"):
             require_string(binding, field)
         if binding["destination_unit_id"] not in known_units:
             raise ValidationError(f"source branch binding {index} references an unknown destination unit")
