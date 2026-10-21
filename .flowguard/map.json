@@ -46,14 +46,14 @@
         ".flowguard/verification/owners/route_and_guard_model/run_checks.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:b15a664711989daba851321f8c2593e15465579fe54bc78067a7d516857e3b5b"
+      "fingerprint": "sha256:11061d8b6e48585c2f404813df9c08ae81c8563a98e14e598aff23bf2d37f3db"
     },
     {
       "id": "research-packet",
       "layer": "domain",
-      "summary": "Preserve native evidence, argument/source identity and handoff consumption.",
+      "summary": "Validate investigation evidence records and the ResearchGuard synthesis-plan handoff.",
       "responsibilities": [
-        "Validate source identity, claim support and current native receipts.",
+        "Validate source registry, claim support and ResearchPacket content (source roles, dates, lineage, what each source can and cannot support) without requiring native receipts.",
         "Bind ResearchGuard synthesis plans to consumed reader units without replacing native member authority."
       ],
       "files": [
@@ -79,10 +79,10 @@
         "skills/logic-writing/scripts/validate_research_packet.py:validate_research_packet"
       ],
       "state": [
-        "Native plan/receipt/source fingerprints and consumed unit bindings."
+        "Native plan/source fingerprints and consumed unit bindings."
       ],
       "side_effects": [
-        "Read evidence files and persist existing domain receipt records."
+        "Read evidence files; write a result only to an explicit --output path."
       ],
       "depends_on": [
         "shared-contracts"
@@ -94,7 +94,7 @@
         ".flowguard/verification/owners/research_packet_model/run_checks.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:de5139304fb376f821e765cb27e83e2e504da9c620ec32486e52bc680d238783"
+      "fingerprint": "sha256:b1ab25acfd185c83420fe1565b3117429f66ea7380d82c594851cd70c3cb05cc"
     },
     {
       "id": "reader-artifact",
@@ -103,9 +103,7 @@
       "responsibilities": [
         "Preserve requested intent, composition order, editorial dispositions and writer projection.",
         "Bind actual artifact bytes and spans to shared contracts, deterministic audit and route review.",
-        "Derive closure and repair progress from the current reader/route chain and independent captured judgment, preserving freshness, strict defect reduction and real repair stopping.",
-        "Resolve declared native dependencies as current passing authority originals before final pass, including non-persisting closure; automatic v2 closure covers text/markdown only.",
-        "Validate the reader judgment envelope and consume existing execution-capture checks before issuing its current receipt."
+        "Derive closure and repair progress from the current reader/route chain and an independent reader judgment whose judge differs from the producer, preserving freshness, strict defect reduction and real repair stopping; automatic v2 closure covers text/markdown only."
       ],
       "files": [
         "skills/logic-writing/SKILL.md",
@@ -165,10 +163,9 @@
         "Current defect lineage, RepairRequest/RepairResult and stale dependencies."
       ],
       "side_effects": [
-        "Read exact artifact bytes; write existing reader/domain receipts on explicit persistence."
+        "Read exact artifact bytes; write a result only to an explicit --output path."
       ],
       "depends_on": [
-        "providers",
         "research-packet",
         "shared-contracts"
       ],
@@ -196,7 +193,7 @@
         ".flowguard/verification/owners/reader_artifact_model/run_checks.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:fe972fa7b8cbe9224cb09b98e84dea5d69235fb9f229c2f92a1eb987e6783e6a"
+      "fingerprint": "sha256:fc52baa7ba3a3aeb585b119ca6a0d5c6687f2bd0c1360850c2e74fe692b3a5c9"
     },
     {
       "id": "fiction",
@@ -206,7 +203,7 @@
         "Route sixteen artifact types across supported prose phases.",
         "Preserve native world/state, promise, scene, chapter, voice and model/prose bindings.",
         "License long-form closure only from current linked project evidence and actual prose.",
-        "Exercise representative valid and unbound-prose native binding cases in daily pytest; retain six unique native cases and one longform owner with true relative/absolute closure inputs and seven named domain-error oracles that reject malformed fixtures."
+        "Exercise representative valid and unbound-prose native binding cases in daily pytest; the fiction regression runs the route, native, longform and model-mesh suites."
       ],
       "files": [
         "skills/logic-writing/routes/fiction/examples/execution-depth/intentionally-shallow.json",
@@ -364,7 +361,7 @@
         ".flowguard/verification/owners/fiction_route_model/run_checks.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:56cf0dfedc3ecf51c9522a11265b04342a92e7dbf3a26ea9be428ed6ffd8f1d1"
+      "fingerprint": "sha256:6960b7712e011a3fde29a40a742ad9c66cb388169438e30fd6be6a918632193a"
     },
     {
       "id": "travel",
@@ -465,7 +462,7 @@
         ".flowguard/verification/owners/travel_route_model/run_checks.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:cec3b5c364f5ef31c6b065a7163a8c264df44a1f06e7ba10b9f8d327f1c141f1"
+      "fingerprint": "sha256:9ff7561b195cb67e48a8afd855b106502de02bcf03eb08e426c5aa7bc41c5063"
     },
     {
       "id": "investigation",
@@ -497,7 +494,7 @@
         ".flowguard/verification/owners/investigation_route_model/run_checks.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:94844fcb88fa093664e93ebf488e9d484ee0bbe0223ac35920fcc5eabadafb5e"
+      "fingerprint": "sha256:f1ef97a4d9e2f3f5398d0c8ab2e551eeaf02607e9983c89b0bd4a9f4fd81213d"
     },
     {
       "id": "academic",
@@ -529,16 +526,16 @@
         ".flowguard/verification/owners/academic_route_model/run_checks.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:6b773a9e0fcc31f789d6da7b3a25ad6d533cdb2712fc66970d032e3aecb25958"
+      "fingerprint": "sha256:c015169b581e9b40377caae18df9fb4e9ba3f00566183c79b68be65c7cfe8640"
     },
     {
       "id": "release",
       "layer": "domain",
-      "summary": "Ordinary validation, staging, release identity and predecessor retirement.",
+      "summary": "Repository checks, skill installer and the release workflow.",
       "responsibilities": [
-        "Stage canonical skill files with exact inventory/byte parity and representative route/resource checks.",
-        "Run eleven ordinary release commands in one same-source CI validation owner, with external receipts, native failure logs, provider checkout paths scoped to step-level runner context and no live quality experiment.",
-        "Separate local source, actual installed directory and hosted main/tag/stable Release identities."
+        "Check skill structure, public docs and privacy, and run the fiction and travel regressions.",
+        "Install the runtime skill files without repository fixtures and check an installed copy by file set and bytes.",
+        "Publish a release only after the workflow's tests, regressions, models and map check pass on the exact source commit."
       ],
       "files": [
         ".codex/skills/openspec-apply-change/SKILL.md",
@@ -573,23 +570,19 @@
       ],
       "entrypoints": [],
       "state": [
-        "Frozen source/toolchain/command receipts and source/tag/release identity."
+        "Source commit and VERSION/pyproject version identity."
       ],
       "side_effects": [
-        "Run explicit ordinary check processes, write their existing receipts, read public GitHub identity."
+        "Run check processes; copy skill files to an explicit install target; publish a GitHub release from the workflow."
       ],
-      "depends_on": [
-        "reader-artifact",
-        "research-packet",
-        "shared-contracts"
-      ],
+      "depends_on": [],
       "tests": [
         "tests/contract/test_install_skill.py",
         "tests/contract/test_release_wrappers.py"
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:781b912ccf81c59bdd8cc02be7d5ebaa63d32d016c4ba008a5bf326c726a844c"
+      "fingerprint": "sha256:521078f142fec56af4370f3ef7d62198130037c036d178446d06ad457022d8bb"
     },
     {
       "id": "providers",
@@ -612,7 +605,6 @@
         "Run one selected help/version availability path; no fallback, self-test or automatic domain execution."
       ],
       "depends_on": [
-        "research-packet",
         "shared-contracts"
       ],
       "tests": [
@@ -623,7 +615,7 @@
         ".flowguard/verification/owners/route_and_guard_model/run_checks.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:f7ce34d2657d5ad9326beccac2e8739230cf84b157d795b362472095bf62c791"
+      "fingerprint": "sha256:4fbaaa7b26aaa22542d7bdbe83f3d740ff32865cc4f379b741b9ea10c4068f65"
     },
     {
       "id": "shared-contracts",
@@ -651,178 +643,94 @@
         ".flowguard/verification/owners/research_packet_model/run_checks.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:fe7d7cb8451bbad7f9f723d81143d57f10af21fc58175bb849c6d877aa59eb9f"
+      "fingerprint": "sha256:556f39151669a14ad9c3b40f25a08294516911d3955b604c0fb5372101690739"
     }
   ],
   "flows": [],
   "accepted_debts": [
     {
       "code": "dep_unused",
-      "component": "routing",
+      "component": "academic",
       "contains": "reader-artifact",
-      "reason": "Real script import: skills/logic-writing/scripts/select_route.py:16 from reader_pipeline import validate_writing_request resolves to skills/logic-writing/scripts/reader_pipeline.py via the existing script-directory loading path; current FlowGuard module discovery does not resolve this bare script module. This documents one real acyclic dependency, not a cycle waiver."
+      "reason": "Real script import: skills/logic-writing/routes/academic/scripts/validate_academic_artifact.py:13 imports derive_closure through the skill's script-directory loading path; FlowGuard module discovery does not resolve bare script modules."
     },
     {
       "code": "dep_unused",
-      "component": "routing",
+      "component": "academic",
       "contains": "shared-contracts",
-      "reason": "Real script import: skills/logic-writing/scripts/select_route.py:5 from _common import ValidationError, cli_validate, fingerprint, require_datetime, require_identifier, require_mapping, require_schema, require_string_list, validation_result resolves to skills/logic-writing/scripts/_common.py via the existing script-directory loading path; current FlowGuard module discovery does not resolve this bare script module. This documents one real acyclic dependency, not a cycle waiver."
+      "reason": "Real script import: skills/logic-writing/routes/academic/scripts/validate_academic_artifact.py:12 imports _common through the skill's script-directory loading path; FlowGuard module discovery does not resolve bare script modules."
+    },
+    {
+      "code": "dep_unused",
+      "component": "fiction",
+      "contains": "reader-artifact",
+      "reason": "Real script import: skills/logic-writing/routes/fiction/scripts/validate_fiction_artifact.py:13 imports derive_closure through the skill's script-directory loading path; FlowGuard module discovery does not resolve bare script modules."
+    },
+    {
+      "code": "dep_unused",
+      "component": "fiction",
+      "contains": "shared-contracts",
+      "reason": "Real script import: skills/logic-writing/routes/fiction/scripts/validate_fiction_artifact.py:12 imports _common through the skill's script-directory loading path; FlowGuard module discovery does not resolve bare script modules."
+    },
+    {
+      "code": "dep_unused",
+      "component": "investigation",
+      "contains": "reader-artifact",
+      "reason": "Real script import: skills/logic-writing/routes/investigation/scripts/validate_investigation_artifact.py:13 imports derive_closure through the skill's script-directory loading path; FlowGuard module discovery does not resolve bare script modules."
+    },
+    {
+      "code": "dep_unused",
+      "component": "investigation",
+      "contains": "shared-contracts",
+      "reason": "Real script import: skills/logic-writing/routes/investigation/scripts/validate_investigation_artifact.py:12 imports _common through the skill's script-directory loading path; FlowGuard module discovery does not resolve bare script modules."
+    },
+    {
+      "code": "dep_unused",
+      "component": "providers",
+      "contains": "shared-contracts",
+      "reason": "Real script import: skills/logic-writing/scripts/provider_preflight.py:16 imports _common through the skill's script-directory loading path; FlowGuard module discovery does not resolve bare script modules."
+    },
+    {
+      "code": "dep_unused",
+      "component": "reader-artifact",
+      "contains": "research-packet",
+      "reason": "Real script import: skills/logic-writing/scripts/reader_pipeline.py:1027 imports researchguard_handoff through the skill's script-directory loading path; FlowGuard module discovery does not resolve bare script modules."
+    },
+    {
+      "code": "dep_unused",
+      "component": "reader-artifact",
+      "contains": "shared-contracts",
+      "reason": "Real script import: skills/logic-writing/scripts/audit_reader_output.py:5 imports _common through the skill's script-directory loading path; FlowGuard module discovery does not resolve bare script modules."
     },
     {
       "code": "dep_unused",
       "component": "research-packet",
       "contains": "shared-contracts",
-      "reason": "Real script import: skills/logic-writing/scripts/build_reader_brief_receipt.py:8 from _common import ValidationError, fingerprint, fingerprint_without, require_mapping, require_schema resolves to skills/logic-writing/scripts/_common.py via the existing script-directory loading path; current FlowGuard module discovery does not resolve this bare script module. This documents one real acyclic dependency, not a cycle waiver."
+      "reason": "Real script import: skills/logic-writing/scripts/build_source_unit_manifest.py:12 imports _common through the skill's script-directory loading path; FlowGuard module discovery does not resolve bare script modules."
     },
     {
       "code": "dep_unused",
-      "component": "reader-artifact",
-      "contains": "execution-binding",
-      "reason": "Real script import: skills/logic-writing/scripts/derive_closure.py:270 from reader_execution import validate_judgment_execution_record resolves to skills/logic-writing/scripts/reader_execution.py via the existing script-directory loading path; current FlowGuard module discovery does not resolve this bare script module. This documents one real acyclic dependency, not a cycle waiver."
-    },
-    {
-      "code": "dep_unused",
-      "component": "reader-artifact",
-      "contains": "providers",
-      "reason": "Real script import: skills/logic-writing/scripts/build_obligation_manifest.py:30 from validate_adapter_result import validate_adapter_result resolves to skills/logic-writing/scripts/validate_adapter_result.py via the existing script-directory loading path; current FlowGuard module discovery does not resolve this bare script module. This documents one real acyclic dependency, not a cycle waiver."
-    },
-    {
-      "code": "dep_unused",
-      "component": "reader-artifact",
-      "contains": "research-packet",
-      "reason": "Real script import: skills/logic-writing/scripts/build_obligation_manifest.py:25 from receipt_authority import _store_content_object, resolve_content_object, resolve_current_receipt resolves to skills/logic-writing/scripts/receipt_authority.py via the existing script-directory loading path; current FlowGuard module discovery does not resolve this bare script module. This documents one real acyclic dependency, not a cycle waiver."
-    },
-    {
-      "code": "dep_unused",
-      "component": "reader-artifact",
-      "contains": "shared-contracts",
-      "reason": "Real script import: skills/logic-writing/scripts/audit_reader_output.py:5 from _common import cli_validate, require_mapping, validation_result resolves to skills/logic-writing/scripts/_common.py via the existing script-directory loading path; current FlowGuard module discovery does not resolve this bare script module. This documents one real acyclic dependency, not a cycle waiver."
-    },
-    {
-      "code": "dep_unused",
-      "component": "production-pipeline",
-      "contains": "providers",
-      "reason": "Real script import: skills/logic-writing/scripts/production_reader_pipeline.py:40 import provider_preflight resolves to skills/logic-writing/scripts/provider_preflight.py via the existing script-directory loading path; current FlowGuard module discovery does not resolve this bare script module. This documents one real acyclic dependency, not a cycle waiver."
-    },
-    {
-      "code": "dep_unused",
-      "component": "production-pipeline",
+      "component": "routing",
       "contains": "reader-artifact",
-      "reason": "Real script import: skills/logic-writing/scripts/production_reader_pipeline.py:41 from reader_pipeline import _canonical_plan_order, build_reader_brief, utc_now, validate_writing_request, validate_writer_input resolves to skills/logic-writing/scripts/reader_pipeline.py via the existing script-directory loading path; current FlowGuard module discovery does not resolve this bare script module. This documents one real acyclic dependency, not a cycle waiver."
+      "reason": "Real script import: skills/logic-writing/scripts/select_route.py:16 imports reader_pipeline through the skill's script-directory loading path; FlowGuard module discovery does not resolve bare script modules."
     },
     {
       "code": "dep_unused",
-      "component": "production-pipeline",
-      "contains": "research-packet",
-      "reason": "Real script import: skills/logic-writing/scripts/production_reader_pipeline.py:39 from build_source_unit_manifest import fingerprint_bytes resolves to skills/logic-writing/scripts/build_source_unit_manifest.py via the existing script-directory loading path; current FlowGuard module discovery does not resolve this bare script module. This documents one real acyclic dependency, not a cycle waiver."
-    },
-    {
-      "code": "dep_unused",
-      "component": "production-pipeline",
-      "contains": "routing",
-      "reason": "Real script import: skills/logic-writing/scripts/production_reader_pipeline.py:49 from select_route import select_route resolves to skills/logic-writing/scripts/select_route.py via the existing script-directory loading path; current FlowGuard module discovery does not resolve this bare script module. This documents one real acyclic dependency, not a cycle waiver."
-    },
-    {
-      "code": "dep_unused",
-      "component": "production-pipeline",
+      "component": "routing",
       "contains": "shared-contracts",
-      "reason": "Real script import: skills/logic-writing/scripts/production_reader_pipeline.py:32 from _common import ValidationError, fingerprint, fingerprint_without, logic_writing_source_identity, require_mapping resolves to skills/logic-writing/scripts/_common.py via the existing script-directory loading path; current FlowGuard module discovery does not resolve this bare script module. This documents one real acyclic dependency, not a cycle waiver."
-    },
-    {
-      "code": "dep_unused",
-      "component": "execution-binding",
-      "contains": "shared-contracts",
-      "reason": "Real script import: skills/logic-writing/scripts/execution_record_resolver.py:19 from _common import ValidationError, fingerprint, fingerprint_text, require_schema resolves to skills/logic-writing/scripts/_common.py via the existing script-directory loading path; current FlowGuard module discovery does not resolve this bare script module. This documents one real acyclic dependency, not a cycle waiver."
-    },
-    {
-      "code": "dep_unused",
-      "component": "fiction",
-      "contains": "reader-artifact",
-      "reason": "Real script import: skills/logic-writing/routes/fiction/scripts/build_manuscript_artifact_map.py:13 from reader_pipeline import build_artifact_map resolves to skills/logic-writing/scripts/reader_pipeline.py via the existing script-directory loading path; current FlowGuard module discovery does not resolve this bare script module. This documents one real acyclic dependency, not a cycle waiver."
-    },
-    {
-      "code": "dep_unused",
-      "component": "fiction",
-      "contains": "shared-contracts",
-      "reason": "Real script import: skills/logic-writing/routes/fiction/scripts/build_manuscript_artifact_map.py:12 from _common import cli_validate, require_mapping, validation_result resolves to skills/logic-writing/scripts/_common.py via the existing script-directory loading path; current FlowGuard module discovery does not resolve this bare script module. This documents one real acyclic dependency, not a cycle waiver."
+      "reason": "Real script import: skills/logic-writing/scripts/select_route.py:5 imports _common through the skill's script-directory loading path; FlowGuard module discovery does not resolve bare script modules."
     },
     {
       "code": "dep_unused",
       "component": "travel",
       "contains": "reader-artifact",
-      "reason": "Real script import: skills/logic-writing/routes/travel/scripts/build_guide_artifact_map.py:13 from reader_pipeline import build_artifact_map resolves to skills/logic-writing/scripts/reader_pipeline.py via the existing script-directory loading path; current FlowGuard module discovery does not resolve this bare script module. This documents one real acyclic dependency, not a cycle waiver."
+      "reason": "Real script import: skills/logic-writing/routes/travel/scripts/validate_travel_artifact.py:13 imports derive_closure through the skill's script-directory loading path; FlowGuard module discovery does not resolve bare script modules."
     },
     {
       "code": "dep_unused",
       "component": "travel",
       "contains": "shared-contracts",
-      "reason": "Real script import: skills/logic-writing/routes/travel/scripts/build_guide_artifact_map.py:12 from _common import cli_validate, require_mapping, validation_result resolves to skills/logic-writing/scripts/_common.py via the existing script-directory loading path; current FlowGuard module discovery does not resolve this bare script module. This documents one real acyclic dependency, not a cycle waiver."
-    },
-    {
-      "code": "dep_unused",
-      "component": "investigation",
-      "contains": "reader-artifact",
-      "reason": "Real script import: skills/logic-writing/routes/investigation/scripts/validate_investigation_artifact.py:13 from reader_pipeline import validate_route_artifact_review resolves to skills/logic-writing/scripts/reader_pipeline.py via the existing script-directory loading path; current FlowGuard module discovery does not resolve this bare script module. This documents one real acyclic dependency, not a cycle waiver."
-    },
-    {
-      "code": "dep_unused",
-      "component": "investigation",
-      "contains": "shared-contracts",
-      "reason": "Real script import: skills/logic-writing/routes/investigation/scripts/validate_investigation_artifact.py:12 from _common import cli_validate, require_mapping, validation_result resolves to skills/logic-writing/scripts/_common.py via the existing script-directory loading path; current FlowGuard module discovery does not resolve this bare script module. This documents one real acyclic dependency, not a cycle waiver."
-    },
-    {
-      "code": "dep_unused",
-      "component": "academic",
-      "contains": "reader-artifact",
-      "reason": "Real script import: skills/logic-writing/routes/academic/scripts/validate_academic_artifact.py:13 from reader_pipeline import validate_route_artifact_review resolves to skills/logic-writing/scripts/reader_pipeline.py via the existing script-directory loading path; current FlowGuard module discovery does not resolve this bare script module. This documents one real acyclic dependency, not a cycle waiver."
-    },
-    {
-      "code": "dep_unused",
-      "component": "academic",
-      "contains": "shared-contracts",
-      "reason": "Real script import: skills/logic-writing/routes/academic/scripts/validate_academic_artifact.py:12 from _common import cli_validate, require_mapping, validation_result resolves to skills/logic-writing/scripts/_common.py via the existing script-directory loading path; current FlowGuard module discovery does not resolve this bare script module. This documents one real acyclic dependency, not a cycle waiver."
-    },
-    {
-      "code": "dep_unused",
-      "component": "release",
-      "contains": "execution-binding",
-      "reason": "Real script import: scripts/check_reader_judgment.py:313 from reader_execution import dispatch_judge resolves to skills/logic-writing/scripts/reader_execution.py via the existing script-directory loading path; current FlowGuard module discovery does not resolve this bare script module. This documents one real acyclic dependency, not a cycle waiver."
-    },
-    {
-      "code": "dep_unused",
-      "component": "release",
-      "contains": "production-pipeline",
-      "reason": "Real script import: scripts/check_writing_quality_run.py:27 from production_reader_pipeline import validate_reader_spine, validate_reader_spine_prompt resolves to skills/logic-writing/scripts/production_reader_pipeline.py via the existing script-directory loading path; current FlowGuard module discovery does not resolve this bare script module. This documents one real acyclic dependency, not a cycle waiver."
-    },
-    {
-      "code": "dep_unused",
-      "component": "release",
-      "contains": "reader-artifact",
-      "reason": "Real script import: scripts/check_reader_judgment.py:364 from validate_judgment_receipt import validate_judgment_receipt resolves to skills/logic-writing/scripts/validate_judgment_receipt.py via the existing script-directory loading path; current FlowGuard module discovery does not resolve this bare script module. This documents one real acyclic dependency, not a cycle waiver."
-    },
-    {
-      "code": "dep_unused",
-      "component": "release",
-      "contains": "research-packet",
-      "reason": "Real script import: scripts/check_writing_quality_run.py:28 from researchguard_handoff import validate_handoff_consumption resolves to skills/logic-writing/scripts/researchguard_handoff.py via the existing script-directory loading path; current FlowGuard module discovery does not resolve this bare script module. This documents one real acyclic dependency, not a cycle waiver."
-    },
-    {
-      "code": "dep_unused",
-      "component": "release",
-      "contains": "shared-contracts",
-      "reason": "Real script import: scripts/check_reader_judgment.py:456 from _common import fingerprint resolves to skills/logic-writing/scripts/_common.py via the existing script-directory loading path; current FlowGuard module discovery does not resolve this bare script module. This documents one real acyclic dependency, not a cycle waiver."
-    },
-    {
-      "code": "dep_unused",
-      "component": "providers",
-      "contains": "research-packet",
-      "reason": "Real script import: skills/logic-writing/scripts/validate_adapter_result.py:27 from build_source_unit_manifest import fingerprint_bytes resolves to skills/logic-writing/scripts/build_source_unit_manifest.py via the existing script-directory loading path; current FlowGuard module discovery does not resolve this bare script module. This documents one real acyclic dependency, not a cycle waiver."
-    },
-    {
-      "code": "dep_unused",
-      "component": "providers",
-      "contains": "shared-contracts",
-      "reason": "Real script import: skills/logic-writing/scripts/provider_preflight.py:16 from _common import dump_json, fingerprint, validation_result resolves to skills/logic-writing/scripts/_common.py via the existing script-directory loading path; current FlowGuard module discovery does not resolve this bare script module. This documents one real acyclic dependency, not a cycle waiver."
+      "reason": "Real script import: skills/logic-writing/routes/travel/scripts/validate_travel_artifact.py:12 imports _common through the skill's script-directory loading path; FlowGuard module discovery does not resolve bare script modules."
     }
   ]
 }

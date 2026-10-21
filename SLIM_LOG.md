@@ -405,3 +405,28 @@ SKILL 增补实际命令与输入字段，13 项命令在技能根帮助均正�
 | models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 1.18 |
 | map: `python -m flowguard map check` | check: 0 error(s), 10 warning(s), 0 info | 0.39 |
 | skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.13 |
+
+## LW-28
+
+复核当前代码后更新四组件职责、真实依赖和十四条现存裸模块 import 说明，逐个确认十组件；引用行号全部与实源吻合。地图零错误零警告，verify 通过且八模型通过，完整 165 项及三回归通过。lint 零错误，保留工具自身与体量提示，未把它们冒称已清零。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| confirm-routing: `python -m flowguard map confirm routing` | exit 0; stated assertions verified | 0.16 |
+| confirm-research-packet: `python -m flowguard map confirm research-packet` | exit 0; stated assertions verified | 0.15 |
+| confirm-reader-artifact: `python -m flowguard map confirm reader-artifact` | exit 0; stated assertions verified | 0.38 |
+| confirm-fiction: `python -m flowguard map confirm fiction` | exit 0; stated assertions verified | 0.4 |
+| confirm-travel: `python -m flowguard map confirm travel` | exit 0; stated assertions verified | 0.25 |
+| confirm-investigation: `python -m flowguard map confirm investigation` | exit 0; stated assertions verified | 0.13 |
+| confirm-academic: `python -m flowguard map confirm academic` | exit 0; stated assertions verified | 0.2 |
+| confirm-release: `python -m flowguard map confirm release` | exit 0; stated assertions verified | 0.18 |
+| confirm-providers: `python -m flowguard map confirm providers` | exit 0; stated assertions verified | 0.11 |
+| confirm-shared-contracts: `python -m flowguard map confirm shared-contracts` | exit 0; stated assertions verified | 0.16 |
+| verify: `python -m flowguard map verify` | models: 8 declared, 8 executed | 11.01 |
+| lint: `python -m flowguard map lint` | exit 0; stated assertions verified | 0.31 |
+| format: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.03 |
+| pytest: `python -m pytest -q` | 165 passed in 6.17s | 6.52 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 7.69 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.59 |
+| models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 1.72 |
+| map: `python -m flowguard map check` | check: 0 error(s), 0 warning(s), 0 info | 0.4 |
