@@ -21,7 +21,7 @@
 
 ## Model map
 
-- Use the current FlowGuard `map` surface. `.flowguard/map.json` binds each actual runtime/schema/config owner to native models and ordinary tests.
+- Use the current FlowGuard `map` surface, from the FlowGuard version the workflow installs (`.github/workflows/publish-release.yml`); older versions do not see same-directory script imports and report `dep_unused` errors. `.flowguard/map.json` binds each actual runtime/schema/config owner to native models and ordinary tests.
 - Inspect affected components before editing; update their model/anchors when behavior changes, then run affected native checks or pytest nodes.
 - Confirm a component pointer only after reviewing its current code and validating its affected behavior. A confirmed description is not cached test PASS.
 - Preserve four final owners, reader/writer execution isolation, exact artifact bytes, freshness, repair stopping, and native specialist authority.

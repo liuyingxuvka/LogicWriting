@@ -515,7 +515,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:8c35fd544a04086a3baaa69db7de426410450f963643fb8d88709ffd63161372"
+      "fingerprint": "sha256:3fc41acde42d0a5640943a72776668974a6849f171b7b703f11361774f371b43"
     },
     {
       "id": "providers",
@@ -584,85 +584,49 @@
       "code": "dep_unused",
       "component": "academic",
       "contains": "reader-artifact",
-      "reason": "Real script import: skills/logic-writing/routes/academic/scripts/validate_academic_artifact.py:13 imports derive_closure through the skill's script-directory loading path; FlowGuard module discovery does not resolve bare script modules."
+      "reason": "Real script import: skills/logic-writing/routes/academic/scripts/validate_academic_artifact.py:13 imports derive_closure from skills/logic-writing/scripts through the sys.path entry the route script adds; FlowGuard resolves script imports only inside the importing script's own directory."
     },
     {
       "code": "dep_unused",
       "component": "academic",
       "contains": "shared-contracts",
-      "reason": "Real script import: skills/logic-writing/routes/academic/scripts/validate_academic_artifact.py:12 imports _common through the skill's script-directory loading path; FlowGuard module discovery does not resolve bare script modules."
+      "reason": "Real script import: skills/logic-writing/routes/academic/scripts/validate_academic_artifact.py:12 imports _common from skills/logic-writing/scripts through the sys.path entry the route script adds; FlowGuard resolves script imports only inside the importing script's own directory."
     },
     {
       "code": "dep_unused",
       "component": "fiction",
       "contains": "reader-artifact",
-      "reason": "Real script import: skills/logic-writing/routes/fiction/scripts/validate_fiction_artifact.py:13 imports derive_closure through the skill's script-directory loading path; FlowGuard module discovery does not resolve bare script modules."
+      "reason": "Real script import: skills/logic-writing/routes/fiction/scripts/validate_fiction_artifact.py:13 imports derive_closure from skills/logic-writing/scripts through the sys.path entry the route script adds; FlowGuard resolves script imports only inside the importing script's own directory."
     },
     {
       "code": "dep_unused",
       "component": "fiction",
       "contains": "shared-contracts",
-      "reason": "Real script import: skills/logic-writing/routes/fiction/scripts/validate_fiction_artifact.py:12 imports _common through the skill's script-directory loading path; FlowGuard module discovery does not resolve bare script modules."
+      "reason": "Real script import: skills/logic-writing/routes/fiction/scripts/validate_fiction_artifact.py:12 imports _common from skills/logic-writing/scripts through the sys.path entry the route script adds; FlowGuard resolves script imports only inside the importing script's own directory."
     },
     {
       "code": "dep_unused",
       "component": "investigation",
       "contains": "reader-artifact",
-      "reason": "Real script import: skills/logic-writing/routes/investigation/scripts/validate_investigation_artifact.py:13 imports derive_closure through the skill's script-directory loading path; FlowGuard module discovery does not resolve bare script modules."
+      "reason": "Real script import: skills/logic-writing/routes/investigation/scripts/validate_investigation_artifact.py:13 imports derive_closure from skills/logic-writing/scripts through the sys.path entry the route script adds; FlowGuard resolves script imports only inside the importing script's own directory."
     },
     {
       "code": "dep_unused",
       "component": "investigation",
       "contains": "shared-contracts",
-      "reason": "Real script import: skills/logic-writing/routes/investigation/scripts/validate_investigation_artifact.py:12 imports _common through the skill's script-directory loading path; FlowGuard module discovery does not resolve bare script modules."
-    },
-    {
-      "code": "dep_unused",
-      "component": "providers",
-      "contains": "shared-contracts",
-      "reason": "Real script import: skills/logic-writing/scripts/provider_preflight.py:16 imports _common through the skill's script-directory loading path; FlowGuard module discovery does not resolve bare script modules."
-    },
-    {
-      "code": "dep_unused",
-      "component": "reader-artifact",
-      "contains": "research-packet",
-      "reason": "Real script import: skills/logic-writing/scripts/reader_pipeline.py:1000 imports researchguard_handoff through the skill's script-directory loading path; FlowGuard module discovery does not resolve bare script modules."
-    },
-    {
-      "code": "dep_unused",
-      "component": "reader-artifact",
-      "contains": "shared-contracts",
-      "reason": "Real script import: skills/logic-writing/scripts/audit_reader_output.py:5 imports _common through the skill's script-directory loading path; FlowGuard module discovery does not resolve bare script modules."
-    },
-    {
-      "code": "dep_unused",
-      "component": "research-packet",
-      "contains": "shared-contracts",
-      "reason": "Real script import: skills/logic-writing/scripts/build_source_unit_manifest.py:12 imports _common through the skill's script-directory loading path; FlowGuard module discovery does not resolve bare script modules."
-    },
-    {
-      "code": "dep_unused",
-      "component": "routing",
-      "contains": "reader-artifact",
-      "reason": "Real script import: skills/logic-writing/scripts/select_route.py:17 imports reader_pipeline through the skill's script-directory loading path; FlowGuard module discovery does not resolve bare script modules."
-    },
-    {
-      "code": "dep_unused",
-      "component": "routing",
-      "contains": "shared-contracts",
-      "reason": "Real script import: skills/logic-writing/scripts/select_route.py:5 imports _common through the skill's script-directory loading path; FlowGuard module discovery does not resolve bare script modules."
+      "reason": "Real script import: skills/logic-writing/routes/investigation/scripts/validate_investigation_artifact.py:12 imports _common from skills/logic-writing/scripts through the sys.path entry the route script adds; FlowGuard resolves script imports only inside the importing script's own directory."
     },
     {
       "code": "dep_unused",
       "component": "travel",
       "contains": "reader-artifact",
-      "reason": "Real script import: skills/logic-writing/routes/travel/scripts/validate_travel_artifact.py:13 imports derive_closure through the skill's script-directory loading path; FlowGuard module discovery does not resolve bare script modules."
+      "reason": "Real script import: skills/logic-writing/routes/travel/scripts/validate_travel_artifact.py:13 imports derive_closure from skills/logic-writing/scripts through the sys.path entry the route script adds; FlowGuard resolves script imports only inside the importing script's own directory."
     },
     {
       "code": "dep_unused",
       "component": "travel",
       "contains": "shared-contracts",
-      "reason": "Real script import: skills/logic-writing/routes/travel/scripts/validate_travel_artifact.py:12 imports _common through the skill's script-directory loading path; FlowGuard module discovery does not resolve bare script modules."
+      "reason": "Real script import: skills/logic-writing/routes/travel/scripts/validate_travel_artifact.py:12 imports _common from skills/logic-writing/scripts through the sys.path entry the route script adds; FlowGuard resolves script imports only inside the importing script's own directory."
     }
   ]
 }

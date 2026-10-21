@@ -908,3 +908,20 @@ Updated all six changed descriptions and reviewed/confirmed all ten components; 
 | new-fg-lint: `python -m flowguard map lint` | exit 0; stated assertions verified | 0.36 |
 
 1 failed verification attempt(s) retained in the external transcript; purpose-preserving correction is described above.
+
+## LW-56
+
+Executed with the real private FlowGuard 0.70.7 installation, never skipped. Removed exactly the six same-directory import debts now resolved by native discovery; retained all eight cross-directory route debts and made their reasons accurate. CI pins v0.70.7 once, while AGENTS refers to that authority. ResearchGuard minimum remains centrally 0.5.0. Actual map has zero errors/warnings; lint has no stale debt; release and all required regression/skill/full checks pass.
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| new-fg-precondition: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.11 |
+| confirm-release: `python -m flowguard map confirm release` | exit 0; stated assertions verified | 0.21 |
+| map: `python -m flowguard map check` | check: 0 error(s), 0 warning(s), 0 info | 0.43 |
+| lint: `python -m flowguard map lint` | exit 0; stated assertions verified | 0.83 |
+| debt-and-tag-authority: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.05 |
+| release: `python -m flowguard release` | models: 2 declared, 2 executed | 38.22 |
+| pytest: `python -m pytest -q` | 166 passed, 1 skipped in 11.95s | 12.67 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 8.74 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.66 |
+| skill: `python scripts/validate_skill.py --skill-root skills/logic-writing --json` | exit 0; stated assertions verified | 0.22 |
