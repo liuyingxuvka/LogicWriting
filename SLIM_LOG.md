@@ -134,3 +134,16 @@ Removed obsolete provider/current-release literals from active prompts, adapter 
 | travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.51 |
 | models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 1.35 |
 | map: `python -m flowguard map check` | check: 0 error(s), 12 warning(s), 0 info | 0.89 |
+
+## LW-11
+
+删除可选 capability、BCL 及仅测试工具和模型本身的测试；保留唯一模型运行器与原生 owner。模型通过，完整 451 项测试通过；地图首次检查暴露漏删的目录内两个测试路径，补齐清单指定的四项删除后零错误。残留只有待 LW12 删除的包装器测试字符串。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 2.4 |
+| residual: `git grep -n capabilities/\|check_optional\|owner-bindings -- .flowguard tests AGENTS.md` | exit 0; stated assertions verified | 0.01 |
+| pytest: `python -m pytest -q` | 451 passed in 46.39s | 46.9 |
+| map: `python -m flowguard map check` | check: 0 error(s), 12 warning(s), 0 info | 1.05 |
+
+1 failed verification attempt(s) retained in the external transcript; purpose-preserving correction is described above.

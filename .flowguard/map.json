@@ -796,8 +796,7 @@
         "scripts/run_travel_regression.py",
         "scripts/run_writing_quality_benchmark.py",
         "scripts/validate_skill.py",
-        "scripts/verify_skill_suite_markers.py",
-        "tests/fixtures/flowguard/proof_unit_pass.json"
+        "scripts/verify_skill_suite_markers.py"
       ],
       "entrypoints": [
         "scripts/run_frozen_validation.py:run_validation",
@@ -820,10 +819,7 @@
       "tests": [
         "tests/contract/test_consumer_distribution.py",
         "tests/contract/test_frozen_validation_timeout.py",
-        "tests/contract/test_logic_writing_model_depth.py",
-        "tests/contract/test_release_wrappers.py",
-        "tests/flowguard/test_alignment_and_mesh.py",
-        "tests/flowguard/test_model_contracts.py"
+        "tests/contract/test_release_wrappers.py"
       ],
       "models": [
         ".flowguard/verification/owners/release_retirement_model/run_checks.py"

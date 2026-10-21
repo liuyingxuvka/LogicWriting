@@ -28,7 +28,6 @@
 - Use the current FlowGuard `map` surface. `.flowguard/map.json` binds each actual runtime/schema/config owner to native models and ordinary tests.
 - Inspect affected components before editing; update their model/anchors when behavior changes, then run affected native checks or pytest nodes.
 - Confirm a component pointer only after reviewing its current code and validating its affected behavior. A confirmed description is not cached test PASS.
-- Optional BCL, path-authority, alignment, plan-detailing, development-process and TestMesh views use `.flowguard/capabilities/<name>/run_checks.py` explicitly; they are outside the default model registry and ordinary release.
 - Preserve four final owners, reader/writer execution isolation, exact artifact bytes, freshness, repair stopping, and native specialist authority.
 
 
