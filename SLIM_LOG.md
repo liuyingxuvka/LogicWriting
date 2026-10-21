@@ -640,3 +640,16 @@ fiction 按材料问题启用专家，compact 保留故事推进、承诺边界�
 | map: `python -m flowguard map check` | check: 0 error(s), 0 warning(s), 0 info | 0.55 |
 | skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.19 |
 | format: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.04 |
+
+## LW-41
+
+维护依赖改为官方 FlowGuard Git 标签 v0.70.6，取消逐字节 wheel URL，仍只保留工作流这一处声明且不使用同名 PyPI 项目。完整152项、地图及 YAML 检查通过；活动版本声明精确一行，原始日志命中单独保留；GitHub 工作流无 wheel/sha256 固定残留。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| workflow: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.06 |
+| version-raw: `git grep -n 0\.70\.[0-9] -- . :!CHANGELOG.md :!openspec :!docs` | exit 0; stated assertions verified | 0.02 |
+| version-active: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.06 |
+| wheel-residual: `git grep -n -i whl\|sha256= -- .github` | exit 1; stated assertions verified | 0.0 |
+| pytest: `python -m pytest -q` | 152 passed in 6.07s | 6.42 |
+| map: `python -m flowguard map check` | check: 0 error(s), 1 warning(s), 0 info | 0.52 |

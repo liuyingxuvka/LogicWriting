@@ -53,7 +53,7 @@ jobs:
           RESEARCHGUARD_SOURCE_ROOT: ${{ runner.temp }}/ResearchGuard
         run: |
           git clone --depth 1 https://github.com/liuyingxuvka/ResearchGuard.git "$RESEARCHGUARD_SOURCE_ROOT"
-          python -m pip install pytest PyYAML "$RESEARCHGUARD_SOURCE_ROOT" "flowguard @ https://github.com/liuyingxuvka/FlowGuard/releases/download/v0.70.6/flowguard-0.70.6-py3-none-any.whl#sha256=0ed10a2c1f6afa6c7c45be029a352252097af885f466ab222c86019cbdde401f"
+          python -m pip install pytest PyYAML "$RESEARCHGUARD_SOURCE_ROOT" "flowguard @ git+https://github.com/liuyingxuvka/FlowGuard.git@v0.70.6"
 
       - name: Run tests
         timeout-minutes: 20
