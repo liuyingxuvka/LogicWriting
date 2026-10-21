@@ -991,3 +991,28 @@ Updated only the current 4.0.9 release notes to cover LW01–59 and the actual P
 | release: `python -m flowguard release` | models: 2 declared, 2 executed | 35.56 |
 | skill: `python scripts/validate_skill.py --skill-root skills/logic-writing --json` | exit 0; stated assertions verified | 0.13 |
 | section5-extra: `python <external>` | exit 0; stated assertions verified | 16.83 |
+
+## Section 5 final local verification and freeze
+
+All LW-01–LW-59 actions are implemented and individually committed; none was skipped. This freeze uses source version 4.0.9 and the actual private FlowGuard 0.70.7 wheel built noneditable from frozen FG98 source. No global engine or skill installation, push, tag or publication is performed by this worker. The candidate wheel is not represented as an official released asset.
+
+The final full test invocation is the LW-59 checkpoint with explicit immutable ResearchGuard 0.5.9 source: 166 passed, 1 skipped. That skip is the native bridge's documented old-source boundary; the new ResearchGuard 0.5.10 source was not frozen yet. The coordinator explicitly reserves its one focused ready-native bridge check and the final new-provider joint gate until that source is frozen. This local result does not claim that future compatibility passed. No complete suite is repeated merely to reprint the same local result.
+
+Fiction and travel regressions passed; fiction case IDs remain route/native/longform/model-mesh. Both models passed with actual conformance; exact native mutation controls reject false closure, omitted PATH fallback and accepted old PATH versions, with source restored byte-for-byte. Real FG0.70.6 additionally executes the unchanged model source successfully and detects the two PATH defects; only the new FG0.70.7 is used for strict map validation after dependency-debt reduction.
+
+Strict map: 0 errors, 0 warnings. Lint: 0 errors, 6 architecture warnings, 44 info. Both `python -m flowguard map verify` and `python -m flowguard release` pass; their output explicitly states they do not run tests. Eight cross-directory dependency debts remain. Skill, public documentation and privacy checks all pass. The final optional OpenSpec CLI check was not run because that executable is absent.
+
+The three actual ResearchGuard member preflights pass in the installed-provider environment and also through the real console on PATH under Python -B -E -S. A temporary LW installation plus the immutable original WG0.7.15 sibling copy passes the WorldGuard preflight and installed-file byte check; the owned temporary directory is removed. This does not represent a real user skill install or final new-WG combined install.
+
+Residual scans retain raw unfiltered output externally; the only added scan exception is the root execution journal as explicitly authorized. Historical baseline statements in this journal remain truthful:
+- reader-doc-no-receipts: 0 allowed active hit(s), 0 historical root-journal hit(s), no unexpected active hits.
+- no-skillguard: 0 allowed active hit(s), 3 historical root-journal hit(s), no unexpected active hits.
+- old-provider-fixture-only: 6 allowed active hit(s), 0 historical root-journal hit(s), no unexpected active hits.
+- old-source-version: 0 allowed active hit(s), 1 historical root-journal hit(s), no unexpected active hits.
+- removed-owners: 0 allowed active hit(s), 35 historical root-journal hit(s), no unexpected active hits.
+- removed-native-interfaces: 0 allowed active hit(s), 0 historical root-journal hit(s), no unexpected active hits.
+- old-skill-paths: 0 allowed active hit(s), 0 historical root-journal hit(s), no unexpected active hits.
+
+Tracked files: 665 → 345. Skill Python lines: 27030 → 14448. Test Python lines: 11768 → 3291. These are source-size measurements, not controlled performance benchmarks. Current CHANGELOG Done/Skipped lines match all 59 action records and the user's patch-only target 4.0.9.
+
+The worker stops repository writes after the release-source freeze; final combined checks, publication and real installation remain coordinator actions.
