@@ -3,6 +3,10 @@
 Use Documents for DOCX, Word, or Google Docs reading and mutation; real tracked
 changes; comments; styles and layout; document rendering; and page inspection.
 
+Check availability with `python scripts/provider_preflight.py documents
+--provider-root <skills root>/docx`; a skill named `docx` or `documents` is
+accepted. Add `--require-render` when page rendering is needed.
+
 Logic Writing supplies revision content, provenance decisions, semantic
 constraints, and the artifact fingerprint. Documents owns file mutation and
 visual document evidence. If its dependency loader or LibreOffice is

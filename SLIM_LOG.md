@@ -69,3 +69,14 @@ Allowed bounded fiction/travel evidence-gap packets with explicit gap IDs, while
 | travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.62 |
 | models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 2.48 |
 | map: `python -m flowguard map check` | check: 0 error(s), 11 warning(s), 0 info | 1.17 |
+
+## LW-06
+
+Recognizes the docx skill without requiring an unrelated render token; PDF behavior and explicit render-tool checks remain. The new alias fixture and a real CLI smoke pass; 35 targeted and 469 full tests pass, zero map errors and no unbound new test. Only the smoke directory uses an isolated temporary name.
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| targeted: `python -m pytest -q tests/unit/test_provider_preflight.py tests/contract/test_adapters.py` | 35 passed in 2.28s | 2.6 |
+| docx-smoke: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.15 |
+| pytest: `python -m pytest -q` | 469 passed in 68.98s (0:01:08) | 69.43 |
+| map: `python -m flowguard map check` | check: 0 error(s), 11 warning(s), 0 info | 0.84 |

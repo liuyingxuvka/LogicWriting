@@ -39,7 +39,7 @@ MODULE_PROVIDERS = {
 }
 SKILL_PROVIDERS = {
     "worldguard": ("worldguard", ()),
-    "documents": ("documents", ("docx", "render")),
+    "documents": ("documents", ("docx",)),
     "pdf": ("pdf", ("pdf", "render")),
 }
 PROBE_TIMEOUT_SECONDS = 60
@@ -282,13 +282,14 @@ def preflight(provider: str, *, provider_root: str | None = None, require_render
         root = Path(provider_root).expanduser().resolve() if provider_root else None
         manifest_name, manifest_text = _skill_manifest(root) if root else (None, "")
         token_probe = {token: token.casefold() in manifest_text.casefold() for token in capability_tokens}
-        available = bool(root and manifest_name == expected_name and all(token_probe.values()))
+        accepted_names = {expected_name, "docx"} if provider == "documents" else {expected_name}
+        available = bool(root and manifest_name in accepted_names and all(token_probe.values()))
         status = "current_pass" if available else "provider_unavailable"
         evidence.update(
             {
                 "skill_manifest_present": bool(root and (root / "SKILL.md").is_file()),
                 "declared_provider_id": manifest_name,
-                "provider_id_matches": manifest_name == expected_name,
+                "provider_id_matches": manifest_name in accepted_names,
                 "capability_probe": token_probe,
             }
         )

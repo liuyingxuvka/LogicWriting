@@ -862,6 +862,7 @@
       ],
       "tests": [
         "tests/contract/test_adapters.py",
+        "tests/unit/test_provider_preflight.py",
         "tests/unit/test_researchguard_provider_topology.py"
       ],
       "models": [
