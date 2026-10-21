@@ -100,14 +100,20 @@ flowchart TD
 
 ## 安装和使用
 
-只安装 `skills/logic-writing` 这一个活动技能目录，然后调用：
+```text
+python scripts/install_skill.py --target ~/.claude/skills      # 或 "$CODEX_HOME/skills"
+python scripts/install_skill.py --target ~/.claude/skills --check
+```
+
+安装脚本把 `skills/logic-writing` 复制到 `<target>/logic-writing`（替换旧副本），
+不复制只供本仓库测试使用的样例和回归脚本；`--check` 在已安装副本与源码不一致时返回 1。
+ResearchGuard（0.5.0 或更新）和 WorldGuard 需要另外安装。然后调用：
 
 ```text
 使用 $logic-writing，把这个请求路由到正确的最终负责人，并交付人能读懂的成品。
 ```
 
-安装先复制到临时兄弟目录，核对与源码的文件清单及逐字节哈希，再替换活动目录；
-旧目录移到技能根以外保留回滚能力。旧的 `storyline-design` 和 `travel-story-planner` 不提供兼容别名；
+旧的 `storyline-design` 和 `travel-story-planner` 不提供兼容别名；
 它们支持的需求现在统一从 `$logic-writing` 进入。
 
 ## 验证边界

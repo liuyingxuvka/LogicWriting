@@ -359,3 +359,22 @@ SKILL 增补实际命令与输入字段，13 项命令在技能根帮助均正�
 | models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 1.52 |
 | map: `python -m flowguard map check` | check: 0 error(s), 10 warning(s), 0 info | 0.72 |
 | skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.15 |
+
+## LW-25
+
+增加仅复制运行时文件的安装器和逐字节 --check，保留旅行运行时所需 fixture_mutation。两个真实临时安装/篡改副本测试通过，孤立临时目录安装及检查通过、未设变量路径拒绝。完整 165 项、三回归、技能、地图、文档、隐私通过；未改用户实际技能目录。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| installer-tests: `python -m pytest -q tests/contract/test_install_skill.py` | 2 passed in 0.86s | 1.24 |
+| temp-install: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.18 |
+| unset-target: `python scripts/install_skill.py --target $NOPE_UNSET/skills --check` | exit 2; stated assertions verified | 0.04 |
+| staged-residual: `git grep -n staged consumer must -- skills/logic-writing/references` | exit 1; stated assertions verified | 0.0 |
+| docs: `python scripts/check_public_docs.py --root . --json` | exit 0; stated assertions verified | 0.1 |
+| privacy: `python scripts/check_privacy.py --root . --json` | exit 0; stated assertions verified | 0.98 |
+| pytest: `python -m pytest -q` | 165 passed in 6.70s | 7.15 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 8.59 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.78 |
+| models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 1.36 |
+| map: `python -m flowguard map check` | check: 0 error(s), 10 warning(s), 0 info | 0.61 |
+| skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.14 |

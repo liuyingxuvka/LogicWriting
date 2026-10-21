@@ -114,11 +114,16 @@ and [migration guide](MIGRATION.md) for the full boundaries.
 
 ## Install
 
-Copy `skills/logic-writing` into a temporary sibling directory under your active
-skills root, compare its inventory and file hashes with the source, then replace
-`logic-writing` while keeping the previous directory outside that root for rollback.
-Invoke `$logic-writing` from the single active directory. No author tooling is
-part of the installed skill.
+```text
+python scripts/install_skill.py --target ~/.claude/skills      # or "$CODEX_HOME/skills"
+python scripts/install_skill.py --target ~/.claude/skills --check
+```
+
+The installer copies `skills/logic-writing` to `<target>/logic-writing`,
+replacing an older copy, and leaves out the fixtures and regression runners that
+only this repository's tests use. `--check` exits 1 when the installed copy
+differs from the source. ResearchGuard (0.5.0 or newer) and WorldGuard are
+installed separately. Then invoke `$logic-writing`:
 
 ```text
 Use $logic-writing to turn this request into the correct reader-ready artifact.

@@ -19,8 +19,6 @@ The selected travel route requires the [traveler-native guide compiler](../../ro
 [runtime workflow](../../routes/travel/references/runtime-workflow.md),
 [traveler profile](../../routes/travel/references/traveler-profile.md), and
 [negative-evidence and fallback contract](../../routes/travel/references/negative-evidence-and-fallback.md).
-The staged consumer must also retain the travel examples and every manifest-listed
-guide正文 association before route execution can be considered available.
 
 Build the guide ArtifactMap from current bytes. Review actual spans for guide
 kind, traveler fit, unit responsibility and handoffs, narrative body,

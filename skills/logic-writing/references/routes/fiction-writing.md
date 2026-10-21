@@ -27,8 +27,6 @@ short-story reader-native work requires the [prose-native contract](../../routes
 Long-form work additionally requires the [chapter interface blueprint](../../routes/fiction/references/chapter-interface-prose-blueprint.md),
 [novel ledger](../../routes/fiction/references/novel-ledger.md), and
 [long-form lifecycle](../../routes/fiction/references/longform-lifecycle.md).
-The staged consumer must retain the fiction examples and their associated prose
-payloads; a route selection alone does not prove these resources are installed.
 
 ## Choose depth from the terminal artifact
 
