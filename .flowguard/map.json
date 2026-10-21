@@ -838,7 +838,7 @@
       "summary": "Explicit native provider boundaries and availability checks.",
       "responsibilities": [
         "Preflight only the selected native ResearchGuard member or explicit portable/document provider.",
-        "Require ResearchGuard 0.5.7 installed console identity; keep WorldGuard static portable launcher availability separate from domain judgment."
+        "Require ResearchGuard >= 0.5.0 (minimum declared once in skills/logic-writing/scripts/_common.py); keep WorldGuard portable launcher availability separate from domain judgment."
       ],
       "files": [
         "skills/logic-writing/assets/schemas/adapter-request.schema.json",

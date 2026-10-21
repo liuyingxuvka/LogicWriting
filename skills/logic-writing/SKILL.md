@@ -83,8 +83,9 @@ one paragraph by default.
 
 This skill is an orchestration shell. It consumes provider-owned results and
 receipts through an opaque, fingerprinted reference; it does not recreate their
-domain decisions or manufacture a native receipt. ResearchGuard `0.5.7` is one
-versioned suite and one executable console. Logic Writing activates exactly
+domain decisions or manufacture a native receipt. ResearchGuard is one suite
+with one executable console; `scripts/provider_preflight.py` checks its
+minimum version. Logic Writing activates exactly
 three direct semantic owners:
 
 - `researchguard source` / `primary:researchguard:source`: SourceGuard owns
@@ -98,7 +99,7 @@ three direct semantic owners:
   material temporal, causal, implementation, competing-story,
   counterfactual, and prediction-boundary analysis.
 - ResearchGuard's `experiment` member and the umbrella `run` route are outside
-  Logic Writing `4.0.8`. Requests for them are visible scope blocks and do not
+  Logic Writing. Requests for them are visible scope blocks and do not
   cause automatic multi-member execution.
 - WorldGuard owns material event, agent, space, resource, access, capability,
   conflict, authority, and norm consistency in real and fictional worlds.
@@ -111,10 +112,8 @@ Before every required adapter call, verify that its real provider is available.
 For the three ResearchGuard owners, preflight the installed `researchguard`
 console and the selected member command only. Never import an old member
 package, invoke `python -m`, locate a sibling checkout, try another member, or
-accept a provider-root override. Require distribution metadata and console
-output to identify ResearchGuard `0.5.7`. If the one current path is
-unavailable, mismatched, or times out, return the typed degraded state and stop
-that handoff.
+accept a provider-root override. If the console is missing, older than the
+minimum version, or times out, report that status and stop that handoff.
 
 Validate the bounded handoff with `scripts/validate_adapter_request.py` before
 the native call and `scripts/validate_adapter_result.py` after it. These

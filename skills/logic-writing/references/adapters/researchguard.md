@@ -1,6 +1,7 @@
 # ResearchGuard provider boundary
 
-Logic Writing uses the released ResearchGuard `0.5.7` provider and three
+Logic Writing uses ResearchGuard (minimum version checked by
+`scripts/provider_preflight.py`) and three
 direct semantic member owners. ResearchGuard also has other native members,
 but they are not active Logic Writing routes in this patch.
 Preflight the selected owner with `scripts/provider_preflight.py`:
@@ -13,9 +14,9 @@ Preflight the selected owner with `scripts/provider_preflight.py`:
 
 Resolve the console from the installed ResearchGuard distribution record, not
 from ambient PATH state. The console version probe and selected member help
-probe establish provider availability only. The distribution version, console
-output, and supported version must all be `0.5.7`. They do not prove that
-native domain work ran.
+probe establish provider availability only. The distribution and console
+versions must match and meet the minimum. They do not prove that native domain
+work ran.
 
 Use exactly one row per handoff. A missing or ambiguous installed console,
 failed command, or timeout is `provider_unavailable`. Do not use PATH as a
@@ -49,7 +50,7 @@ identity or a second provider hash; raw or already-labelled native values must
 still be valid lowercase SHA-256 digests.
 
 `experimentguard` and the `researchguard run` umbrella are explicit scope-outs
-for Logic Writing `4.0.8`; they execute no provider command.
+for Logic Writing; they execute no provider command.
 
 After a semantic handoff is joined to a current ReaderBrief, the adapter emits
 one `researchguard.logic.consumption-binding.v1` artifact. The

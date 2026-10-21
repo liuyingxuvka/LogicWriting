@@ -95,3 +95,16 @@ WorldGuard defaults to the sibling skill without changing its help-only availabi
 | travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 1.13 |
 | models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 2.49 |
 | map: `python -m flowguard map check` | check: 0 error(s), 12 warning(s), 0 info | 0.98 |
+
+## LW-08
+
+Removed obsolete provider/current-release literals from active prompts, adapter guidance and handoff schema without changing the single minimum or historical fixtures. Public docs/static skill checks pass; 471 full and 44 explicit-baseline native bridge/pipeline tests pass; map zero errors and scoped version residual scan empty. No deviation.
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| version-residual: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.06 |
+| docs: `python scripts/check_public_docs.py --root . --json` | exit 0; stated assertions verified | 0.12 |
+| skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.31 |
+| pytest: `python -m pytest -q` | 471 passed in 61.43s (0:01:01) | 61.98 |
+| map: `python -m flowguard map check` | check: 0 error(s), 12 warning(s), 0 info | 2.01 |
+| native-bridge-pipeline: `python -m pytest -q tests/contract/test_researchguard_handoff.py tests/e2e/test_production_reader_pipeline.py tests/contract/test_production_reader_native_lifecycle.py` | 44 passed in 4.79s | 5.34 |

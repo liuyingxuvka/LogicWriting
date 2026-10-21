@@ -30,7 +30,6 @@ HANDOFF_SCHEMA = "researchguard-logic-handoff.schema.json"
 NATIVE_PLAN_SCHEMA = "researchguard.logic.synthesis-plan.v1"
 NATIVE_REQUEST_SCHEMA = "researchguard.logic.synthesis-request.v1"
 PROVIDER_ID = "researchguard"
-PROVIDER_VERSION = "0.5.7"
 MEMBER_ID = "logicguard"
 PRIMARY_PATH_ID = "primary:researchguard:logic"
 READY_STATUS = "research_handoff_ready"
@@ -348,7 +347,6 @@ def build_researchguard_handoff(
     handoff = {
         "schema_version": "1.0",
         "provider_id": PROVIDER_ID,
-        "provider_version": PROVIDER_VERSION,
         "member_id": MEMBER_ID,
         "primary_path_id": PRIMARY_PATH_ID,
         "native_result_schema_version": NATIVE_PLAN_SCHEMA,

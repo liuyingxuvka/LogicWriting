@@ -31,8 +31,8 @@ RESEARCHGUARD_MEMBERS = {
     },
 }
 SCOPE_OUT_PROVIDERS = {
-    "experimentguard": "ExperimentGuard is not an active Logic Writing 4.0.8 provider.",
-    "researchguard": "The ResearchGuard umbrella route is not an active Logic Writing 4.0.8 provider.",
+    "experimentguard": "ExperimentGuard is not an active Logic Writing provider.",
+    "researchguard": "The ResearchGuard umbrella route is not an active Logic Writing provider.",
 }
 MODULE_PROVIDERS = {
     "flowguard": ("flowguard", ("SCHEMA_VERSION", "FlowGuardCheckPlan")),

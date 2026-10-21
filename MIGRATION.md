@@ -1,9 +1,10 @@
 # Migration to Logic Writing 4.0.8
 
-This patch keeps the `logic-writing` entrypoint and four final owners. Use
-ResearchGuard 0.5.7 for the three native research members and FlowGuard 0.70.6
-for repository model maintenance. WorldGuard uses its explicitly selected
-portable skill launcher. No SkillGuard installation or author state is used.
+This patch keeps the `logic-writing` entrypoint and four final owners. The
+three native research members need ResearchGuard at or above the minimum
+version declared in `skills/logic-writing/scripts/_common.py`; repository
+maintenance uses FlowGuard. WorldGuard is found next to `logic-writing` in the
+skills root, or through `--provider-root`.
 
 Keep manuscripts, evidence libraries, travel plans and other user material.
 Rebuild affected current byte references and reader evidence after changes;
@@ -19,11 +20,10 @@ or native checks during development. Freeze source after archive/version edits
 and run the stable offline release contract once, including one full pytest.
 Live quality experiments and their read-only consumers remain explicit opt-in.
 
-Final reader closure and passing judgment receipts now require the existing
-local capture resolver. The captured existing ReaderJudgment JSON must match
-its current input identities and substantive output; the orchestrator fills
-its execution fingerprint after capture. Plans, caller scores and completion
-markers cannot substitute for actual judgment output.
+Final reader closure needs the deterministic audit, the route review and a
+ReaderJudgment from a reader that did not write the text; no execution capture
+is required. Plans, caller scores and completion markers cannot substitute for
+reading the actual text.
 
 ## Installation
 

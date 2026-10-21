@@ -6,7 +6,7 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "schema_version", "provider_id", "provider_version", "member_id", "primary_path_id",
+    "schema_version", "provider_id", "member_id", "primary_path_id",
     "native_result_schema_version", "native_result_fingerprint", "native_result_locator",
     "native_request_schema_version", "native_request_fingerprint", "model_id", "model_fingerprint",
     "reader_intent_fingerprint", "composition_plan_fingerprint", "writer_input_fingerprint", "stage",
@@ -17,7 +17,6 @@
   "properties": {
     "schema_version": { "const": "1.0" },
     "provider_id": { "const": "researchguard" },
-    "provider_version": { "const": "0.5.7" },
     "member_id": { "const": "logicguard" },
     "primary_path_id": { "const": "primary:researchguard:logic" },
     "native_result_schema_version": { "const": "researchguard.logic.synthesis-plan.v1" },
