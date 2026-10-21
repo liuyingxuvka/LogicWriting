@@ -453,7 +453,7 @@ def _mandatory_gaps(
                     claim_ids=[claim["claim_id"]],
                 )
             )
-    if final_owner == "academic-writing" and gap_id is None:
+    if final_owner != "investigation" and gap_id is None:
         gaps.append(_make_gap("missing_gap_id"))
     gaps.extend(_trace_gaps(claim_support, claim_report, projections))
     for projection in projections:
@@ -529,8 +529,8 @@ def assemble_research_packet(
     require_string(request, "packet_id")
     require_fingerprint(request, "request_fingerprint")
     final_owner = require_string(request, "final_owner")
-    if final_owner not in {"investigation", "academic-writing"}:
-        raise ValidationError("final_owner must be investigation or academic-writing")
+    if final_owner not in {"investigation", "academic-writing", "fiction-writing", "travel-guide"}:
+        raise ValidationError("final_owner must be one of the four final routes")
     gap_id = request.get("gap_id")
     if gap_id is not None and (not isinstance(gap_id, str) or not gap_id.strip()):
         raise ValidationError("gap_id must be null or a non-empty identifier")

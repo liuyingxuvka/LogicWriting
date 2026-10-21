@@ -24,7 +24,7 @@
     "schema_version": { "const": "1.0" },
     "packet_id": { "$ref": "#/$defs/identifier" },
     "request_fingerprint": { "$ref": "#/$defs/fingerprint" },
-    "final_owner": { "enum": ["investigation", "academic-writing"] },
+    "final_owner": { "enum": ["investigation", "academic-writing", "fiction-writing", "travel-guide"] },
     "gap_id": {
       "anyOf": [
         { "$ref": "#/$defs/identifier" },

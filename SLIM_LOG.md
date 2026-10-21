@@ -56,3 +56,16 @@ Allowed empty native-receipt and content-authority declarations without changing
 | targeted: `python -m pytest -q tests/unit/test_freshness_closure.py` | 9 passed in 1.93s | 2.29 |
 | pytest: `python -m pytest -q` | 466 passed in 54.48s | 54.88 |
 | map: `python -m flowguard map check` | check: 0 error(s), 10 warning(s), 0 info | 0.68 |
+
+## LW-05
+
+Allowed bounded fiction/travel evidence-gap packets with explicit gap IDs, while preserving the parent as the only final owner. Added both real packet fixtures; 12 targeted and 468 full tests pass; all three regression owners exit zero and map has no errors. No deviation.
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| targeted: `python -m pytest -q tests/unit/test_investigation.py` | 12 passed in 3.32s | 3.73 |
+| pytest: `python -m pytest -q` | 468 passed in 65.73s (0:01:05) | 66.25 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 11.58 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.62 |
+| models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 2.48 |
+| map: `python -m flowguard map check` | check: 0 error(s), 11 warning(s), 0 info | 1.17 |

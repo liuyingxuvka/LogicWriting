@@ -173,3 +173,25 @@ def test_caller_cannot_write_packet_status_or_safe_wording(current_packet, recei
 
     with pytest.raises(ValidationError, match="unsupported fields"):
         assemble_research_packet(request, receipt_root=receipt_root)
+
+
+@pytest.mark.parametrize("parent", ["fiction-writing", "travel-guide"])
+def test_fiction_and_travel_parents_receive_a_bounded_gap_packet(current_packet, receipt_root, parent):
+    request = {
+        "schema_version": "1.0",
+        "packet_id": f"packet:{parent}-gap",
+        "request_fingerprint": fingerprint({"question": f"Evidence gap for {parent}"}),
+        "final_owner": parent,
+        "gap_id": f"gap:{parent}",
+        "source_registry": current_packet["registry"],
+        "claim_support": current_packet["ledger"],
+        "native_receipt_fingerprints": [
+            current_packet["observation_receipt"]["receipt_fingerprint"],
+            current_packet["semantic_receipt"]["receipt_fingerprint"],
+        ],
+        "additional_unresolved_gaps": [],
+    }
+
+    packet = assemble_research_packet(request, receipt_root=receipt_root)
+    assert packet["final_owner"] == parent
+    assert packet["status"] == "current_pass"
