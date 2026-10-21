@@ -689,3 +689,18 @@ ResearchGuard 在当前 Python 无发行包时通过 PATH 解析唯一控制台�
 | travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.54 |
 | models: `python -m flowguard map models` | models: 2 passed, 0 failed | 22.43 |
 | map: `python -m flowguard map check` | check: 0 error(s), 4 warning(s), 0 info | 0.41 |
+
+## LW-44
+
+CI 新增读取唯一最低版本常量的 ResearchGuard 作业，publish 等待两个作业。独立本地 Python3.12 环境正式安装官方 v0.5.0（源码 tracked 未变），无源码隔离副本完整153项通过/1跳过，三个实际成员预检均 current_pass；主环境完整153项/1跳过和地图通过。CI 保留 Python3.11，未冒称本地运行等同 hosted。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| workflow: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.11 |
+| minimum-metadata: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.28 |
+| minimum-pytest: `python <external>` | 153 passed, 1 skipped in 9.18s | 11.74 |
+| minimum-logicguard: `python skills/logic-writing/scripts/provider_preflight.py logicguard` | exit 0; stated assertions verified | 3.67 |
+| minimum-sourceguard: `python skills/logic-writing/scripts/provider_preflight.py sourceguard` | exit 0; stated assertions verified | 3.14 |
+| minimum-traceguard: `python skills/logic-writing/scripts/provider_preflight.py traceguard` | exit 0; stated assertions verified | 3.71 |
+| pytest: `python -m pytest -q` | 153 passed, 1 skipped in 5.42s | 5.84 |
+| map: `python -m flowguard map check` | check: 0 error(s), 4 warning(s), 0 info | 0.35 |

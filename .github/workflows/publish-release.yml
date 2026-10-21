@@ -76,8 +76,38 @@ jobs:
           echo "source_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           echo "ci_url=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >> "$GITHUB_OUTPUT"
 
+  researchguard-minimum:
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.event.head_commit.message, 'Release LogicWriting v')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Check out the selected source
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.source_sha || github.sha }}
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Install ResearchGuard at the declared minimum
+        run: |
+          minimum="$(cd skills/logic-writing/scripts && python -c 'from _common import RESEARCHGUARD_MIN_VERSION as v; print(".".join(map(str, v)))')"
+          python -m pip install pytest PyYAML "git+https://github.com/liuyingxuvka/ResearchGuard.git@v$minimum"
+
+      - name: Run tests and member preflights on the minimum
+        run: |
+          python -m pytest -q
+          for member in logicguard sourceguard traceguard; do python skills/logic-writing/scripts/provider_preflight.py "$member"; done
+
   publish:
-    needs: release-validation
+    needs: [release-validation, researchguard-minimum]
     if: github.event_name == 'workflow_dispatch' || startsWith(github.event.head_commit.message, 'Release LogicWriting v')
     runs-on: ubuntu-latest
     timeout-minutes: 30
