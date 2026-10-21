@@ -18,14 +18,12 @@
     "route_audit_fingerprint",
     "judgment_fingerprint",
     "revision_provenance_fingerprint",
-    "repair_result_fingerprints",
     "status",
     "residual_risk",
     "next_actions",
     "safe_claim",
     "unsafe_claim_boundary",
     "broad_claim_allowed",
-    "terminal",
     "closure_fingerprint"
   ],
   "properties": {
@@ -73,18 +71,10 @@
     "revision_provenance_fingerprint": {
       "$ref": "#/$defs/fp"
     },
-    "repair_result_fingerprints": {
-      "type": "array",
-      "items": {
-        "$ref": "#/$defs/fp"
-      },
-      "uniqueItems": true
-    },
     "status": {
       "enum": [
         "passed",
-        "blocked",
-        "no_progress_blocked"
+        "needs_repair"
       ]
     },
     "residual_risk": {
@@ -108,9 +98,6 @@
       "minLength": 1
     },
     "broad_claim_allowed": {
-      "type": "boolean"
-    },
-    "terminal": {
       "type": "boolean"
     },
     "closure_fingerprint": {
@@ -139,9 +126,6 @@
           },
           "broad_claim_allowed": {
             "const": true
-          },
-          "terminal": {
-            "const": true
           }
         }
       }
@@ -150,7 +134,7 @@
       "if": {
         "properties": {
           "status": {
-            "const": "blocked"
+            "const": "needs_repair"
           }
         },
         "required": [
@@ -167,40 +151,6 @@
           },
           "broad_claim_allowed": {
             "const": false
-          },
-          "terminal": {
-            "const": false
-          }
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "status": {
-            "const": "no_progress_blocked"
-          }
-        },
-        "required": [
-          "status"
-        ]
-      },
-      "then": {
-        "properties": {
-          "repair_result_fingerprints": {
-            "minItems": 1
-          },
-          "residual_risk": {
-            "minItems": 1
-          },
-          "next_actions": {
-            "minItems": 1
-          },
-          "broad_claim_allowed": {
-            "const": false
-          },
-          "terminal": {
-            "const": true
           }
         }
       }
@@ -234,8 +184,7 @@
             "investigation",
             "academic-writing",
             "fiction-writing",
-            "travel-guide",
-            "human_review"
+            "travel-guide"
           ]
         },
         "reason": {
@@ -257,15 +206,11 @@
             "investigation",
             "academic-writing",
             "fiction-writing",
-            "travel-guide",
-            "human_review"
+            "travel-guide"
           ]
         },
         "action": {
-          "enum": [
-            "repair_and_rerun",
-            "human_review"
-          ]
+          "const": "repair_and_rerun"
         }
       }
     }

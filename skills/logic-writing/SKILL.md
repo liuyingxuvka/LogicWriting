@@ -87,11 +87,9 @@ Field shapes are in `assets/schemas/`.
 8. `python scripts/derive_closure.py --input closure-input.json` with
    `closure_id`, `route_decision`, `reader_brief`, `route_composition`,
    `artifact_map`, `shared_writing`, `deterministic_audit`, `route_review`,
-   `judgment`, `revision_provenance` (and `repair_requests`, `repair_results`
-   after a repair round).
+   `judgment`, `revision_provenance`.
 
-After a failed round, `scripts/build_reader_repair.py` and
-`scripts/record_reader_repair.py` record the repair. Before a specialist
+Before a specialist
 handoff, `python scripts/provider_preflight.py <provider>` checks that the
 provider is installed; for the three ResearchGuard members run it with the
 Python environment where ResearchGuard is installed. Specialists run through
@@ -278,21 +276,11 @@ Never strengthen these states into pass: `not_run`, `stale`,
 `render_not_run`, `bounded`, `partial`, `blocked`, or `failed`.
 
 Only the selected final route may issue final closure. Child routes close only
-their bounded request. Every non-pass result creates a typed
-`ReaderRepairRequest` naming the current judgment defect IDs, actual target
-units, required structural change, content to preserve, and forbidden
-shortcuts. A `ReaderRepairResult` may report progress only when real bytes
-changed, preservation passed, and the current independently validated
-judgment exposes a strict subset of the original defect IDs. A renamed,
-added, or caller-only defect list is no progress; a preservation violation or
-missing current evidence is blocked. The repair recorder (`scripts/record_reader_repair.py`) requires the current
-ReaderBrief, SharedWriting, deterministic audit, route composition/review and
-the current ReaderJudgment.
-Rebuild all byte-bound evidence and rerun the three quality owners after real
-new bytes exist. One real
-`no_progress` result is terminal: do not automatically write another draft or
-switch lineage without new input or a new diagnosis. Repeated closure calls
-never count as repair attempts.
+their bounded request. Closure status is `passed` or `needs_repair`. If the
+audit or the independent read reports defects, revise the actual text, rebuild
+the ArtifactMap and rerun the audit and the read. If a revision round fixes
+none of the reported defects, stop and return the artifact with the audit note.
+Repeated closure calls never count as repair attempts.
 
 ## Hard Gates
 

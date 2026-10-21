@@ -162,5 +162,6 @@ unbound prose, unrealized rows, or bindings to an older draft.
 One context independent of the writer may assess this route's semantic
 obligations and the eight reader dimensions together. Preserve both existing
 `route_review` and `ReaderJudgment`, including actual spans, reverse outline,
-required dimensions, scores and their current execution/fingerprint bindings.
-A real `no_progress` repair result ends automatic work on that lineage.
+required dimensions, scores and their current fingerprint bindings. If a
+revision round fixes none of the reported defects, stop and return the artifact
+with the audit note.

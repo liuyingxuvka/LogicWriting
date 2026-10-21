@@ -54,7 +54,7 @@ def test_protocol_fixture_has_twelve_balanced_cases():
 )
 def test_each_route_exposes_repair_and_stale_edit(owner, tmp_path):
     chain = complete_chain(tmp_path / owner, owner, pass_quality=False)
-    assert derive_closure(closure_input(chain))["closure"]["status"] == "blocked"
+    assert derive_closure(closure_input(chain))["closure"]["status"] == "needs_repair"
     chain["artifact_path"].write_text("materially changed", encoding="utf-8")
     with pytest.raises(ValidationError, match="stale"):
         validate_artifact_map(chain["artifact_map"])

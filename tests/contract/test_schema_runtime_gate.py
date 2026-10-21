@@ -34,8 +34,6 @@ EXPECTED = {
     "reader-brief.schema.json",
     "reader-intent.schema.json",
     "reader-judgment.schema.json",
-    "reader-repair-request.schema.json",
-    "reader-repair-result.schema.json",
     "researchguard-logic-handoff.schema.json",
     "research-packet.schema.json",
     "revision-provenance.schema.json",

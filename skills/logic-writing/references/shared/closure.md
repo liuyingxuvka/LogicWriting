@@ -21,9 +21,8 @@ records it as required and accounts for source-unit treatments. Neither case
 may omit the field or infer applicability from the final owner.
 
 A pass requires the deterministic audit, route review, and independent
-judgment all to pass. Any defect produces a typed repair request for actual
-units and preservation duties. After real new bytes exist, rebuild every
-dependent record.
+judgment all to pass; otherwise closure is `needs_repair`. After real new bytes
+exist, rebuild every dependent record.
 
 The route review and the eight reader dimensions may be assessed together by
 one reader that did not write the text (a fresh sub-agent or a separate
@@ -32,13 +31,7 @@ the quoted actual spans. If no separate context is available, self-review is
 allowed but must be reported as self-review in the audit note. A
 caller-authored `verified` marker does not license pass.
 
-Repair progress requires the same current chain and the current ReaderJudgment
-of the revised text, even when that judgment still needs repair. The repair
-recorder accepts the current ReaderBrief, SharedWriting, deterministic audit,
-route composition/review and ReaderJudgment. A caller-only defect list cannot
-authorize progress.
-
-Repeated closure calls do not demonstrate work. One actual current `no_progress`
-repair result is terminal for that defect lineage. Preserve its input/output
-artifact chain and remaining-defect identity, then hand the artifact to human
-review. Do not start a second unchanged attempt or another automatic draft.
+If the audit or the independent read reports defects, revise the actual text,
+rebuild the ArtifactMap and rerun the audit and the read. If a revision round
+fixes none of the reported defects, stop and return the artifact with the audit
+note. Repeated closure calls do not demonstrate work.

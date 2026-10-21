@@ -473,3 +473,20 @@ SKILL 增补实际命令与输入字段，13 项命令在技能根帮助均正�
 | pytest: `python -m pytest -q` | 164 passed in 6.69s | 7.08 |
 | map: `python -m flowguard map check` | check: 0 error(s), 4 warning(s), 0 info | 0.38 |
 | skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.2 |
+
+## LW-32
+
+按清单将类型化修复记录换为明确的实际改文、重建映射、重跑审计/阅读及无缺陷修复即停止规则；收尾仅 passed/needs_repair，保留字节复读、评审独立、覆盖、分数和缺陷修复项检查。完整 149 项、缺源码副本 148 项/1 跳过、定向测试、三回归、地图和技能通过。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| residual: `git grep -n -i ReaderRepair\|repair recorder\|record_reader_repair\|build_reader_repair\|repair_result\|no_progress\|reader-repair -- skills tests scripts README.md README.zh-CN.md AGENTS.md docs CONTRIBUTING.md MIGRATION.md` | exit 1; stated assertions verified | 0.02 |
+| help: `python skills/logic-writing/scripts/derive_closure.py --help` | exit 0; stated assertions verified | 0.09 |
+| targeted: `python -m pytest -q tests/unit/test_freshness_closure.py tests/e2e/test_routes.py tests/e2e/test_reader_v2_benchmark.py tests/unit/test_academic.py` | 37 passed in 1.73s | 2.11 |
+| pytest-no-source: `python <external>` | 148 passed, 1 skipped in 5.43s | 5.91 |
+| pytest: `python -m pytest -q` | 149 passed in 6.76s | 7.08 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 7.64 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.49 |
+| models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 1.31 |
+| map: `python -m flowguard map check` | check: 0 error(s), 5 warning(s), 0 info | 0.91 |
+| skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.19 |

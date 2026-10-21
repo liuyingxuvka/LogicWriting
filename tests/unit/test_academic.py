@@ -64,4 +64,4 @@ def test_academic_closure_binds_revision_and_actual_artifact_chain(tmp_path):
 def test_academic_route_review_failure_blocks_final_claim(tmp_path):
     chain = complete_chain(tmp_path, "academic-writing", pass_quality=False)
     closure = derive_closure(closure_input(chain))["closure"]
-    assert closure["status"] == "blocked"
+    assert closure["status"] == "needs_repair"

@@ -1,8 +1,8 @@
 """Current Logic Writing reader-composition kernel.
 
 This module owns only route-neutral identity, composition coverage, mechanical
-artifact mapping, deterministic checks, independent-review binding, and typed
-repair. Route semantics remain in the four selected route validators.
+artifact mapping, deterministic checks, and independent-review binding. Route
+semantics remain in the four selected route validators.
 """
 
 from __future__ import annotations
@@ -177,35 +177,6 @@ def _ids(rows: Iterable[Mapping[str, Any]], field: str, label: str) -> tuple[str
     if not all(values) or len(values) != len(set(values)):
         raise ValidationError(f"{label} ids must be non-empty and unique")
     return values
-
-
-def _sorted_unique_ids(values: Iterable[str], label: str) -> list[str]:
-    """Return the one canonical representation used by repair contracts.
-
-    Repair progress is a set comparison, so accepting multiple serialisations
-    of the same set would make the fingerprints and the lineage ambiguous.
-    Reject duplicates and non-canonical order rather than silently repairing a
-    caller-authored receipt.
-    """
-    rows = list(values)
-    if any(not isinstance(value, str) or not value for value in rows):
-        raise ValidationError(f"{label} must contain non-empty strings")
-    canonical = sorted(rows)
-    if len(canonical) != len(set(canonical)):
-        raise ValidationError(f"{label} must be unique")
-    if rows != canonical:
-        raise ValidationError(f"{label} must be sorted")
-    return canonical
-
-
-def _canonicalize_ids(values: Iterable[str], label: str) -> list[str]:
-    """Canonicalize caller input before it is persisted in a repair object."""
-    rows = list(values)
-    if any(not isinstance(value, str) or not value for value in rows):
-        raise ValidationError(f"{label} must contain non-empty strings")
-    if len(rows) != len(set(rows)):
-        raise ValidationError(f"{label} must be unique")
-    return sorted(rows)
 
 
 def validate_reader_intent(value: Any) -> dict[str, Any]:
@@ -1966,226 +1937,6 @@ def _reader_judgment_from_current(value, *, amap, brief, contract, audit, route_
     return judgment
 
 
-DEFAULT_FORBIDDEN_SHORTCUTS = (
-    "Do not repair coherence by adding transition words alone.",
-    "Do not turn prose into more bullet cards.",
-    "Do not delete limitations or citation duties.",
-    "Do not copy safe meanings as an allowed-wording script.",
-    "Do not explain paragraph jobs in reader-facing meta-language.",
-)
-
-
-def build_repair_request(
-    *,
-    repair_id: str,
-    attempt_number: int,
-    reader_brief: Mapping[str, Any],
-    artifact_map: Mapping[str, Any],
-    shared_writing: Mapping[str, Any],
-    deterministic_audit: Mapping[str, Any],
-    route_review: Mapping[str, Any],
-    judgment: Mapping[str, Any],
-    defect_lineage: str,
-) -> dict[str, Any]:
-    brief = require_mapping(reader_brief, "ReaderBrief")
-    amap = validate_artifact_map(artifact_map)
-    contract = validate_shared_writing(shared_writing, artifact_map=amap, reader_brief=brief)
-    validated = validate_reader_judgment(
-        judgment,
-        artifact_map=amap,
-        reader_brief=brief,
-        shared_writing=contract,
-        deterministic_audit=deterministic_audit,
-        route_review=route_review,
-    )
-    if validated["status"] == "passed":
-        raise ValidationError("a passing ReaderJudgment cannot produce a RepairRequest")
-    defect_ids = _canonicalize_ids(
-        (row["observation_id"] for row in validated["defects"]),
-        "initial_defect_ids",
-    )
-    # A route or deterministic failure must already have an addressable,
-    # independently judged defect.  An empty caller-supplied set cannot be
-    # used to bypass an upstream non-pass state.
-    if not defect_ids:
-        raise ValidationError(
-            "a non-passing ReaderJudgment must expose the current route/"
-            "deterministic defect before a repair request can be built"
-        )
-    target_units = list(dict.fromkeys(
-        unit_id
-        for row in validated["required_repairs"]
-        for unit_id in row["target_unit_ids"]
-    ))
-    required_changes = [row["required_change"] for row in validated["required_repairs"]]
-    preserve_ids = [
-        row["content_unit_id"]
-        for row in brief["content_boundaries"]["content_units"]
-        if row["required"]
-    ]
-    request = {
-        "schema_version": "2.1",
-        "repair_id": repair_id,
-        "attempt_number": attempt_number,
-        "final_owner": brief["final_owner"],
-        "source_artifact_fingerprint": amap["artifact_fingerprint"],
-        "reader_intent_fingerprint": brief["reader_intent_fingerprint"],
-        "reader_brief_fingerprint": brief["brief_fingerprint"],
-        "composition_plan_fingerprint": brief["composition_plan"]["plan_fingerprint"],
-        "artifact_map_fingerprint": amap["map_fingerprint"],
-        "shared_writing_contract_fingerprint": contract["contract_fingerprint"],
-        "audit_fingerprint": deterministic_audit["audit_fingerprint"],
-        "route_audit_fingerprint": route_review["review_fingerprint"],
-        "judgment_fingerprint": validated["judgment_fingerprint"],
-        "defect_lineage": defect_lineage,
-        "initial_defect_ids": defect_ids,
-        "defect_set_fingerprint": fingerprint(defect_ids),
-        "target_unit_ids": target_units,
-        "required_changes": required_changes,
-        "preserve_content_unit_ids": preserve_ids,
-        "must_preserve_tokens": [row["token"] for row in brief["content_boundaries"]["must_preserve_tokens"]],
-        "forbidden_shortcuts": list(DEFAULT_FORBIDDEN_SHORTCUTS),
-    }
-    request["request_fingerprint"] = fingerprint(request)
-    require_schema("reader-repair-request.schema.json", request, label="ReaderRepairRequest")
-    return request
-
-
-def record_repair_result(
-    *,
-    request: Mapping[str, Any],
-    output_artifact_map: Mapping[str, Any],
-    changed_unit_ids: Iterable[str],
-    preserved_content_unit_ids: Iterable[str],
-    preservation_violations: Iterable[str],
-    remaining_defect_ids: Iterable[str],
-    current_judgment: Mapping[str, Any] | None = None,
-    reader_brief: Mapping[str, Any] | None = None,
-    shared_writing: Mapping[str, Any] | None = None,
-    deterministic_audit: Mapping[str, Any] | None = None,
-    route_composition: Mapping[str, Any] | None = None,
-    route_review: Mapping[str, Any] | None = None,
-    review_obligations: Mapping[str, Any] | None = None,
-) -> dict[str, Any]:
-    repair = require_mapping(request, "ReaderRepairRequest")
-    require_schema("reader-repair-request.schema.json", repair, label="ReaderRepairRequest")
-    _require_exact_fingerprint(repair, "request_fingerprint")
-    amap = validate_artifact_map(output_artifact_map)
-    initial_ids = _sorted_unique_ids(repair["initial_defect_ids"], "initial_defect_ids")
-    if repair["defect_set_fingerprint"] != fingerprint(initial_ids):
-        raise ValidationError("ReaderRepairRequest defect set fingerprint is stale")
-    remaining = _canonicalize_ids(remaining_defect_ids, "remaining_defect_ids")
-    remaining_fp = fingerprint(remaining)
-    if not set(remaining).issubset(initial_ids):
-        # A new or renamed id is a new observation, not evidence that an
-        # original defect was repaired.
-        remaining_is_strict_subset = False
-    else:
-        remaining_is_strict_subset = len(remaining) < len(initial_ids)
-    changed = list(changed_unit_ids)
-    if len(changed) != len(set(changed)) or any(not isinstance(value, str) or not value for value in changed):
-        raise ValidationError("changed_unit_ids must be non-empty and unique")
-    violations = list(preservation_violations)
-    same_bytes = repair["source_artifact_fingerprint"] == amap["artifact_fingerprint"]
-    same_defects = remaining_fp == repair["defect_set_fingerprint"]
-
-    evidence = None
-    if current_judgment is not None:
-        # A self-hashed judgment is only a declaration.  Progress (including a
-        # strict subset that still needs repair) requires the same current
-        # artifact/route chain and captured independent output as closure.
-        brief = require_mapping(reader_brief, "current ReaderBrief")
-        require_schema("reader-brief.schema.json", brief, label="current ReaderBrief")
-        _require_exact_fingerprint(brief, "brief_fingerprint")
-        for key, expected in {
-            "final_owner": repair["final_owner"],
-            "reader_intent_fingerprint": repair["reader_intent_fingerprint"],
-            "brief_fingerprint": repair["reader_brief_fingerprint"],
-        }.items():
-            if brief.get(key) != expected:
-                raise ValidationError(f"repair current ReaderBrief {key} is stale or foreign")
-        if brief.get("composition_plan", {}).get("plan_fingerprint") != repair["composition_plan_fingerprint"]:
-            raise ValidationError("repair current composition plan is stale or foreign")
-        route = require_mapping(route_composition, "current route composition")
-        if route.get("extension_fingerprint") != brief.get("route_extension", {}).get("extension_fingerprint"):
-            raise ValidationError("repair route composition does not bind the current ReaderBrief")
-        from derive_closure import REQUIRED_DIMENSIONS
-        review = validate_route_artifact_review(
-            route_review, owner=repair["final_owner"], route_composition=route,
-            artifact_map=amap, required_dimensions=REQUIRED_DIMENSIONS[repair["final_owner"]],
-            review_obligations=review_obligations,
-        )
-        evidence = validate_reader_judgment(
-            current_judgment, artifact_map=amap, reader_brief=brief,
-            shared_writing=shared_writing, deterministic_audit=deterministic_audit,
-            route_review=review,
-            review_obligations=review_obligations,
-        )
-        evidence_ids = _canonicalize_ids(
-            (row["observation_id"] for row in evidence["defects"]),
-            "current ReaderJudgment defect ids",
-        )
-        if evidence_ids != remaining:
-            raise ValidationError(
-                "remaining_defect_ids do not match the current ReaderJudgment defects"
-            )
-        if evidence["status"] == "repair" and not evidence_ids:
-            raise ValidationError(
-                "a repairing ReaderJudgment must expose route/deterministic defects"
-            )
-        verification_evidence = {
-            "status": "current",
-            "artifact_fingerprint": evidence["artifact_fingerprint"],
-            "artifact_map_fingerprint": evidence["artifact_map_fingerprint"],
-            "audit_fingerprint": evidence["deterministic_audit_fingerprint"],
-            "route_audit_fingerprint": evidence["route_audit_fingerprint"],
-            "judgment_fingerprint": evidence["judgment_fingerprint"],
-        }
-    else:
-        # A legacy caller can still record a safe non-progressing result, but
-        # it can never claim progress from its own defect list.  The missing
-        # current evidence remains visible and blocks closure.
-        verification_evidence = {
-            "status": "missing",
-            "artifact_fingerprint": amap["artifact_fingerprint"],
-            "artifact_map_fingerprint": amap["map_fingerprint"],
-            "audit_fingerprint": repair["audit_fingerprint"],
-            "route_audit_fingerprint": repair["route_audit_fingerprint"],
-            "judgment_fingerprint": repair["judgment_fingerprint"],
-        }
-    if current_judgment is None or violations:
-        progress = "blocked"
-    elif same_bytes or same_defects or not remaining_is_strict_subset:
-        progress = "no_progress"
-    else:
-        progress = "progressed"
-    result = {
-        "schema_version": "2.1",
-        "repair_id": repair["repair_id"],
-        "request_fingerprint": repair["request_fingerprint"],
-        "defect_lineage": repair["defect_lineage"],
-        "input_artifact_fingerprint": repair["source_artifact_fingerprint"],
-        "output_artifact_fingerprint": amap["artifact_fingerprint"],
-        "changed_unit_ids": changed,
-        "preservation_check": {
-            "status": "failed" if violations else "passed",
-            "preserved_content_unit_ids": list(preserved_content_unit_ids),
-            "violations": violations,
-        },
-        "remaining_defect_ids": remaining,
-        "remaining_defect_set_fingerprint": remaining_fp,
-        "verification_evidence": verification_evidence,
-        "progress_status": progress,
-        "rerun_required": [
-            "artifact_map", "shared_writing", "deterministic_audit",
-            "route_audit", "reader_judgment",
-        ],
-    }
-    result["result_fingerprint"] = fingerprint(result)
-    require_schema("reader-repair-result.schema.json", result, label="ReaderRepairResult")
-    return result
-
-
 def validate_revision_provenance(value: Any, *, target_artifact_fingerprint: str) -> dict[str, Any]:
     provenance = require_mapping(value, "revision provenance")
     require_schema("revision-provenance.schema.json", provenance, label="revision provenance")
@@ -2203,8 +1954,6 @@ __all__ = [
     "build_reader_audit",
     "build_reader_brief",
     "build_writer_input",
-    "build_repair_request",
-    "record_repair_result",
     "validate_artifact_map",
     "validate_composition_plan",
     "validate_reader_intent",

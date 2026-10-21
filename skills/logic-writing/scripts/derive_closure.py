@@ -13,7 +13,6 @@ from _common import (
     ValidationError,
     dump_json,
     fingerprint,
-    fingerprint_without,
     load_json,
     require_mapping,
     require_schema,
@@ -58,81 +57,6 @@ def _exact(value: Mapping[str, Any], field: str, label: str) -> str:
     if not isinstance(actual, str):
         raise ValidationError(f"{label}.{field} is required")
     return actual
-
-
-def _canonical_ids(value: Any, label: str) -> list[str]:
-    if not isinstance(value, list):
-        raise ValidationError(f"{label} must be a sorted string array")
-    if any(not isinstance(item, str) or not item for item in value):
-        raise ValidationError(f"{label} must contain non-empty strings")
-    if value != sorted(value) or len(value) != len(set(value)):
-        raise ValidationError(f"{label} must be unique and sorted")
-    return list(value)
-
-
-def _validate_repair_request(value: Any) -> dict[str, Any]:
-    request = require_mapping(value, "ReaderRepairRequest")
-    require_schema("reader-repair-request.schema.json", request, label="ReaderRepairRequest")
-    if request["request_fingerprint"] != fingerprint_without(dict(request), "request_fingerprint"):
-        raise ValidationError("ReaderRepairRequest request_fingerprint is stale")
-    initial = _canonical_ids(request["initial_defect_ids"], "initial_defect_ids")
-    if request["defect_set_fingerprint"] != fingerprint(initial):
-        raise ValidationError("ReaderRepairRequest defect set fingerprint is stale")
-    return request
-
-
-def _validate_repair_result(
-    value: Any,
-    *,
-    previous_output_fingerprint: str | None = None,
-    expected_request: Mapping[str, Any] | None = None,
-) -> dict[str, Any]:
-    result = require_mapping(value, "ReaderRepairResult")
-    require_schema("reader-repair-result.schema.json", result, label="ReaderRepairResult")
-    if result["result_fingerprint"] != fingerprint_without(dict(result), "result_fingerprint"):
-        raise ValidationError("ReaderRepairResult result_fingerprint is stale")
-    remaining = _canonical_ids(result["remaining_defect_ids"], "remaining_defect_ids")
-    if result["remaining_defect_set_fingerprint"] != fingerprint(remaining):
-        raise ValidationError("ReaderRepairResult remaining defect set fingerprint is stale")
-    evidence = require_mapping(result["verification_evidence"], "repair verification evidence")
-    if evidence["status"] not in {"current", "missing"}:
-        raise ValidationError("ReaderRepairResult verification evidence has an invalid status")
-    if evidence["status"] == "missing" and result["progress_status"] != "blocked":
-        raise ValidationError("missing repair verification evidence cannot report progress")
-    if evidence["artifact_fingerprint"] != result["output_artifact_fingerprint"]:
-        raise ValidationError("repair verification evidence is stale for the output artifact")
-    if previous_output_fingerprint is not None and result["input_artifact_fingerprint"] != previous_output_fingerprint:
-        raise ValidationError("repair results do not form an artifact chain")
-    if expected_request is not None:
-        initial = set(expected_request["initial_defect_ids"])
-        if result["request_fingerprint"] != expected_request["request_fingerprint"]:
-            raise ValidationError("ReaderRepairResult belongs to a foreign request")
-        if result["repair_id"] != expected_request["repair_id"]:
-            raise ValidationError("ReaderRepairResult belongs to a foreign repair")
-        if result["defect_lineage"] != expected_request["defect_lineage"]:
-            raise ValidationError("ReaderRepairResult defect lineage changed")
-        if result["input_artifact_fingerprint"] != expected_request["source_artifact_fingerprint"]:
-            raise ValidationError("ReaderRepairResult input is not the request artifact")
-        if not set(remaining).issubset(initial):
-            raise ValidationError("ReaderRepairResult introduces or renames defect ids")
-    return result
-
-
-def _no_progress_terminal(results: list[Mapping[str, Any]], artifact_fingerprint: str) -> bool:
-    if not results:
-        return False
-    no_progress_indexes = [
-        index for index, result in enumerate(results)
-        if result["progress_status"] == "no_progress"
-    ]
-    if not no_progress_indexes:
-        return False
-    first = no_progress_indexes[0]
-    if first != len(results) - 1:
-        raise ValidationError(
-            "a real no_progress result is terminal; later repair attempts are not allowed"
-        )
-    return results[-1]["output_artifact_fingerprint"] == artifact_fingerprint
 
 
 def derive_closure(
@@ -200,55 +124,8 @@ def derive_closure(
         raise ValidationError("revision provenance belongs to a sibling route")
 
 
-    repair_requests = [
-        _validate_repair_request(row)
-        for row in request.get("repair_requests", [])
-    ]
-    if len({row["request_fingerprint"] for row in repair_requests}) != len(repair_requests):
-        raise ValidationError("repair requests must have unique fingerprints")
-    requests_by_fingerprint = {
-        row["request_fingerprint"]: row for row in repair_requests
-    }
-    repair_results: list[dict[str, Any]] = []
-    previous_output: str | None = None
-    for row in request.get("repair_results", []):
-        result_input = require_mapping(row, "ReaderRepairResult")
-        repair_request = (
-            requests_by_fingerprint.get(result_input["request_fingerprint"])
-            if requests_by_fingerprint
-            else None
-        )
-        if requests_by_fingerprint and repair_request is None:
-            raise ValidationError("ReaderRepairResult has no matching repair request")
-        current = _validate_repair_result(
-            result_input,
-            previous_output_fingerprint=previous_output,
-            expected_request=repair_request,
-        )
-        repair_results.append(current)
-        previous_output = current["output_artifact_fingerprint"]
-    if repair_requests and len(repair_results) != len(repair_requests):
-        raise ValidationError("repair requests and results must be paired")
-    if repair_results and repair_results[-1]["output_artifact_fingerprint"] != amap["artifact_fingerprint"]:
-        raise ValidationError("last repair result does not bind the current artifact")
-    if repair_results and repair_results[-1]["verification_evidence"]["status"] == "current":
-        evidence = repair_results[-1]["verification_evidence"]
-        expected_evidence = {
-            "artifact_fingerprint": amap["artifact_fingerprint"],
-            "artifact_map_fingerprint": amap["map_fingerprint"],
-            "audit_fingerprint": audit["audit_fingerprint"],
-            "route_audit_fingerprint": route_review["review_fingerprint"],
-            "judgment_fingerprint": judgment["judgment_fingerprint"],
-        }
-        for key, expected_value in expected_evidence.items():
-            if evidence[key] != expected_value:
-                raise ValidationError(
-                    f"repair verification evidence {key} is stale or foreign"
-                )
     all_passed = audit["status"] == route_review["status"] == judgment["status"] == "passed"
-    no_progress = _no_progress_terminal(repair_results, amap["artifact_fingerprint"])
-    repair_blocked = any(row["progress_status"] == "blocked" for row in repair_results)
-    status = "no_progress_blocked" if no_progress else ("passed" if all_passed and not repair_blocked else "blocked")
+    status = "passed" if all_passed else "needs_repair"
 
     defect_ids = [
         *(row["finding_id"] for row in audit["findings"]),
@@ -265,14 +142,7 @@ def derive_closure(
         }
         for defect_id in dict.fromkeys(defect_ids)
     ]
-    next_actions = (
-        []
-        if status == "passed"
-        else [{
-            "owner": "human_review" if no_progress else owner,
-            "action": "human_review" if no_progress else "repair_and_rerun",
-        }]
-    )
+    next_actions = [] if status == "passed" else [{"owner": owner, "action": "repair_and_rerun"}]
     # A same-call snapshot is useful only while the underlying bytes remain
     # current. Re-read once before emitting or committing any closure receipt.
     try:
@@ -295,7 +165,6 @@ def derive_closure(
         "route_audit_fingerprint": route_review["review_fingerprint"],
         "judgment_fingerprint": judgment["judgment_fingerprint"],
         "revision_provenance_fingerprint": provenance["provenance_fingerprint"],
-        "repair_result_fingerprints": [row["result_fingerprint"] for row in repair_results],
         "status": status,
         "residual_risk": [] if status == "passed" else residual,
         "next_actions": next_actions,
@@ -309,7 +178,6 @@ def derive_closure(
             "Structural licensing and actual-artifact review do not establish universal factual or aesthetic truth."
         ),
         "broad_claim_allowed": status == "passed",
-        "terminal": status in {"passed", "no_progress_blocked"},
     }
     closure["closure_fingerprint"] = fingerprint(closure)
     require_schema("closure.schema.json", closure, label="closure")

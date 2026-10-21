@@ -22,7 +22,7 @@ def test_each_final_owner_delivers_one_complete_current_artifact(owner, tmp_path
 def test_route_quality_repair_cannot_be_overwritten_by_shared_kernel(tmp_path):
     chain = complete_chain(tmp_path, "travel-guide", pass_quality=False)
     result = derive_closure(closure_input(chain))
-    assert result["closure"]["status"] == "blocked"
+    assert result["closure"]["status"] == "needs_repair"
     assert result["closure"]["next_actions"][0]["owner"] == "travel-guide"
 
 
