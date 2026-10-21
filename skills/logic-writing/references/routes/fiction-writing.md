@@ -70,6 +70,33 @@ and norms can coexist. Fiction validators check character knowledge, point of
 view, tense, narration distance, promise movement, arc movement, dialogue
 distinction, exposition pressure, voice, and allowed variation.
 
+## Run the story models
+
+The story model files are checked by scripts under `routes/fiction/scripts/`.
+Run them from the skill root with Python 3.10 or newer; each takes one JSON
+file, prints its report with `--json`, and exits 0 only when the file passes.
+Run the ones that match the chosen depth after every material change to the
+model or the prose, and put each failing check with its issue codes in the
+audit note.
+
+- Short story: `story_ledger_check.py`, `turning_point_check.py`,
+  `scene_contract_check.py` and `promise_payoff_check.py` on the story ledger.
+- Long form: `novel_ledger_check.py` and `story_contribution_check.py` on the
+  novel ledger, `chapter_interface_check.py` on the chapter interfaces,
+  `promise_payoff_check.py` on the promise ledger,
+  `voice_style_continuity_check.py` on the voice/style report, and
+  `storyline_project_mesh_check.py --repo-root <project folder>` on the
+  project mesh.
+- Final prose: `model_prose_binding_check.py --repo-root <project folder>` on
+  the model-prose binding and `semantic_review_check.py --repo-root <project
+  folder>` on the review of the actual manuscript, then
+  `longform_closure_check.py --repo-root <project folder>` on the closure
+  bundle.
+
+Example: `python routes/fiction/scripts/story_ledger_check.py story-ledger.json --json`.
+`storyline_route_check.py <request.json> --json` shows which surfaces a
+request needs. Compact work has no script: re-read the actual text.
+
 ## Write in the reader room
 
 Use the shared writing contract and reader-native manuscript review. Keep

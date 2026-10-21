@@ -86,3 +86,22 @@ def test_travel_composition_must_name_trip_plan_ids(monkeypatch):
     binding = composition["risk_fallback_bindings"][0]
     binding.update({"risk_id": "pit-weather", "fallback_id": "fb-gallery", "reachable_from_route_node_ids": ["rn-p-station"]})
     assert validate_composition_refs(plan, composition) == []
+
+
+def test_text_check_runs_on_one_actual_guide(tmp_path):
+    import subprocess
+    import sys
+
+    script = ROUTE / "scripts" / "validate_travel_text_outputs.py"
+    good = ROUTE / "examples" / "good_text_outputs"
+    run = subprocess.run(
+        [sys.executable, str(script), "--guide", str(good / "city_couple_native_guide.txt"),
+         "--review", str(good / "city_couple_native_guide.review.json"), "--json"],
+        capture_output=True, text=True,
+    )
+    assert run.returncode == 0, run.stdout + run.stderr
+    bullets = tmp_path / "guide.md"
+    bullets.write_text("- Day 1: museum\n- Day 2: market\n- Day 3: train\n", encoding="utf-8")
+    run = subprocess.run([sys.executable, str(script), "--guide", str(bullets), "--json"], capture_output=True, text=True)
+    assert run.returncode == 1
+    assert "text.bullet_list_only" in {row["code"] for row in json.loads(run.stdout)["issues"]}

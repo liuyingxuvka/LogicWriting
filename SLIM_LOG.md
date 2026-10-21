@@ -565,3 +565,34 @@ fiction 按材料问题启用专家，compact 保留故事推进、承诺边界�
 | pytest: `python -m pytest -q` | 151 passed in 6.69s | 7.03 |
 | map: `python -m flowguard map check` | check: 0 error(s), 7 warning(s), 0 info | 0.47 |
 | skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.12 |
+
+## LW-38
+
+路线手册列明按深度运行的真实模型命令；旅行文本入口可直接检查实际攻略。13 个故事脚本从技能根帮助正常，攻略+评审通过、缺天气评审及纯列表坏文明确拒绝，原有夹具回归保持。8 项旅行、完整 152 项及三回归、文档、技能、地图通过。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| story-help-story_ledger_check: `python <external> --help` | exit 0; stated assertions verified | 0.09 |
+| story-help-turning_point_check: `python <external> --help` | exit 0; stated assertions verified | 0.05 |
+| story-help-scene_contract_check: `python <external> --help` | exit 0; stated assertions verified | 0.06 |
+| story-help-promise_payoff_check: `python <external> --help` | exit 0; stated assertions verified | 0.05 |
+| story-help-novel_ledger_check: `python <external> --help` | exit 0; stated assertions verified | 0.1 |
+| story-help-story_contribution_check: `python <external> --help` | exit 0; stated assertions verified | 0.09 |
+| story-help-chapter_interface_check: `python <external> --help` | exit 0; stated assertions verified | 0.09 |
+| story-help-voice_style_continuity_check: `python <external> --help` | exit 0; stated assertions verified | 0.07 |
+| story-help-storyline_project_mesh_check: `python <external> --help` | exit 0; stated assertions verified | 0.08 |
+| story-help-model_prose_binding_check: `python <external> --help` | exit 0; stated assertions verified | 0.09 |
+| story-help-semantic_review_check: `python <external> --help` | exit 0; stated assertions verified | 0.09 |
+| story-help-longform_closure_check: `python <external> --help` | exit 0; stated assertions verified | 0.1 |
+| story-help-storyline_route_check: `python <external> --help` | exit 0; stated assertions verified | 0.09 |
+| text-positive: `python skills/logic-writing/routes/travel/scripts/validate_travel_text_outputs.py --guide skills/logic-writing/routes/travel/examples/good_text_outputs/city_couple_native_guide.txt --review skills/logic-writing/routes/travel/examples/good_text_outputs/city_couple_native_guide.review.json` | exit 0; stated assertions verified | 0.09 |
+| weather-without-review: `python skills/logic-writing/routes/travel/scripts/validate_travel_text_outputs.py --guide skills/logic-writing/routes/travel/examples/good_text_outputs/city_couple_native_guide.txt` | exit 1; stated assertions verified | 0.06 |
+| text-fixtures: `python skills/logic-writing/routes/travel/scripts/validate_travel_text_outputs.py --good-dir skills/logic-writing/routes/travel/examples/good_text_outputs/ --failure-dir skills/logic-writing/routes/travel/examples/text_failure_cases --repository-root . --json` | exit 0; stated assertions verified | 0.12 |
+| travel-tests: `python -m pytest -q tests/unit/test_travel.py` | 8 passed in 0.24s | 0.58 |
+| docs: `python scripts/check_public_docs.py --root . --json` | exit 0; stated assertions verified | 0.11 |
+| pytest: `python -m pytest -q` | 152 passed in 7.01s | 7.48 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 5.94 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.79 |
+| models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 1.7 |
+| map: `python -m flowguard map check` | check: 0 error(s), 7 warning(s), 0 info | 0.38 |
+| skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.17 |

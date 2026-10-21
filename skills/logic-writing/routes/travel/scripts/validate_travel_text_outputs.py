@@ -339,11 +339,27 @@ def validate_failure_dir(failure_dir: Path, repository_root: Path) -> list[dict[
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--good-dir", required=True)
-    parser.add_argument("--failure-dir", required=True)
+    parser.add_argument("--guide", help="check one actual traveler-facing guide")
+    parser.add_argument("--review", help="optional reverse guide review JSON for --guide")
+    parser.add_argument("--good-dir")
+    parser.add_argument("--failure-dir")
     parser.add_argument("--repository-root", default=".")
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
+
+    if args.guide:
+        review = json.loads(Path(args.review).read_text(encoding="utf-8")) if args.review else None
+        issues = validate_text(Path(args.guide).read_text(encoding="utf-8"), review)
+        payload = {"ok": not issues, "guide": args.guide, "issues": issues}
+        if args.json:
+            print(json.dumps(payload, indent=2))
+        else:
+            print("PASS" if not issues else "FAIL")
+            for row in issues:
+                print(f"- {row['code']}: {row['message']}")
+        return 0 if not issues else 1
+    if not args.good_dir or not args.failure_dir:
+        parser.error("pass --guide, or both --good-dir and --failure-dir")
 
     good_results = validate_good_dir(Path(args.good_dir))
     failure_results = validate_failure_dir(Path(args.failure_dir), Path(args.repository_root).resolve())

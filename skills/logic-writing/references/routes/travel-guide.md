@@ -75,6 +75,21 @@ When you keep one, it is the model the guide is written from: check it with
 composition with `--composition`, so every `route_refs`, `fallback_id`,
 `risk_id` and `reachable_from_route_node_ids` entry must name an id in the plan.
 
+## Run the trip model checks
+
+Run these from the skill root with Python 3.10 or newer; each exits 0 only
+when its input passes. Put each failing check with its issue codes in the
+audit note.
+
+- `python routes/travel/scripts/validate_travel_plan.py <plan.json> --json`
+  checks the optional trip plan; add `--composition <travel-composition.json>`
+  to check that the composition names ids in the plan.
+- `python routes/travel/scripts/validate_travel_text_outputs.py --guide <guide.md> --review <review.json> --json`
+  checks the actual guide text: internal labels, bullet-only text, local
+  texture, named risks and fallbacks, weather evidence and day headings.
+  `--review` is the reverse guide review; a guide that mentions weather needs
+  it.
+
 ## Project into traveler-native prose
 
 Compile checked route cards through the shared reader-projection kernel. Do not
