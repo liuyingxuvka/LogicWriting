@@ -121,7 +121,6 @@
         "skills/logic-writing/assets/schemas/composition-plan.schema.json",
         "skills/logic-writing/assets/schemas/fiction-composition.schema.json",
         "skills/logic-writing/assets/schemas/investigation-composition.schema.json",
-        "skills/logic-writing/assets/schemas/local-single-judgment.schema.json",
         "skills/logic-writing/assets/schemas/reader-audit.schema.json",
         "skills/logic-writing/assets/schemas/reader-brief.schema.json",
         "skills/logic-writing/assets/schemas/reader-intent.schema.json",
@@ -177,7 +176,6 @@
         "Read exact artifact bytes; write existing reader/domain receipts on explicit persistence."
       ],
       "depends_on": [
-        "execution-binding",
         "providers",
         "research-packet",
         "shared-contracts"
@@ -187,8 +185,6 @@
         "tests/adversarial/test_reader_integrity_regressions.py",
         "tests/authority/test_receipt_authority.py",
         "tests/conftest.py",
-        "tests/contract/test_local_execution_backend.py",
-        "tests/contract/test_local_execution_backend_lifecycle.py",
         "tests/contract/test_privacy_scan.py",
         "tests/contract/test_schema_runtime_gate.py",
         "tests/contract/test_schemas.py",
@@ -211,44 +207,6 @@
       ],
       "status": "confirmed",
       "fingerprint": "sha256:fe972fa7b8cbe9224cb09b98e84dea5d69235fb9f229c2f92a1eb987e6783e6a"
-    },
-    {
-      "id": "execution-binding",
-      "layer": "domain",
-      "summary": "Real writer/judge captures, context separation and execution-bound judgment.",
-      "responsibilities": [
-        "Capture actual local writer and judge execution, separate writer and judge contexts.",
-        "Resolve current inputs, raw output bytes and structured judgment rather than trusting completion or independence markers."
-      ],
-      "files": [
-        "skills/logic-writing/assets/schemas/reader-execution-record.schema.json",
-        "skills/logic-writing/scripts/execution_record_resolver.py",
-        "skills/logic-writing/scripts/local_execution_backend.py",
-        "skills/logic-writing/scripts/reader_execution.py"
-      ],
-      "entrypoints": [
-        "skills/logic-writing/scripts/local_execution_backend.py:LocalCodexBackend",
-        "skills/logic-writing/scripts/execution_record_resolver.py:LocalExecutionRecordResolver",
-        "skills/logic-writing/scripts/reader_execution.py:validate_judgment_execution_record"
-      ],
-      "state": [
-        "Capture manifest, actual raw output hash, three judgment input fingerprints and execution identity."
-      ],
-      "side_effects": [
-        "Explicit backend invocation creates capture files; validation reads them without a new model call."
-      ],
-      "depends_on": [
-        "shared-contracts"
-      ],
-      "tests": [
-        "tests/contract/test_local_execution_backend.py",
-        "tests/contract/test_local_execution_backend_lifecycle.py"
-      ],
-      "models": [
-        ".flowguard/verification/owners/execution_binding/run_checks.py"
-      ],
-      "status": "confirmed",
-      "fingerprint": "sha256:8888087a85ef273b6dd76507f8697e47c647c8b10176c9a9a992b430d07dbbbc"
     },
     {
       "id": "fiction",
@@ -678,7 +636,6 @@
         "Run explicit ordinary check processes, write their existing receipts, read public GitHub identity."
       ],
       "depends_on": [
-        "execution-binding",
         "reader-artifact",
         "research-packet",
         "shared-contracts"

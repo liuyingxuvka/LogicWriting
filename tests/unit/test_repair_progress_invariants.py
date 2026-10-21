@@ -7,8 +7,6 @@ import pytest
 
 from _common import ValidationError, fingerprint, fingerprint_text, fingerprint_without
 from reader_pipeline import build_artifact_map, build_reader_audit, build_repair_request, record_repair_result
-from execution_record_resolver import LocalExecutionRecordResolver
-from tests.contract.test_local_execution_backend import _make_capture
 from tests.v2_support import complete_chain, closure_input
 from tests.v2_support import derive_protocol_closure as derive_closure
 
@@ -34,7 +32,7 @@ def _changed_output(chain: dict, *, suffix: str = " 修补后的句子。") -> d
 
 
 def _current_evidence(chain: dict, output: dict, defect_ids: list[str]) -> dict:
-    """Build current offline local-capture evidence; no live judge or quality claim."""
+    """Build the current judgment evidence for the revised artifact; no live judge or quality claim."""
     units = [row for row in output["units"] if row["unit_kind"] in {"paragraph", "list", "table", "quote", "scene"}]
     def evidence(unit):
         excerpt = unit["text"][:60]
@@ -75,20 +73,10 @@ def _current_evidence(chain: dict, output: dict, defect_ids: list[str]) -> dict:
     }]
     current["scores"] = {key: 3 if defect_ids else 5 for key in current["scores"]}
     current["status"] = "repair" if defect_ids else "passed"
-    current.pop("execution_record_fingerprint", None)
-    current["judgment_fingerprint"] = fingerprint_without(current, "judgment_fingerprint")
-    run_root, record = _make_capture(chain["artifact_path"].parent / "current-capture", role="judge",
-        output=json.dumps(current) + "\n", request_fields={
-            "reader_intent_fingerprint": chain["intent"]["intent_fingerprint"],
-            "writer_input_fingerprint": chain["reader_brief"]["writer_input_fingerprint"],
-            "artifact_fingerprint": output["artifact_fingerprint"], "rubric_fingerprint": fingerprint({"test": "repair"}),
-        })
-    current["execution_record_fingerprint"] = record["record_fingerprint"]
     current["judgment_fingerprint"] = fingerprint_without(current, "judgment_fingerprint")
     return {"current_judgment": current, "reader_brief": chain["reader_brief"],
             "shared_writing": shared, "deterministic_audit": audit,
-            "route_composition": chain["route_composition"], "route_review": route,
-            "execution_record": record, "execution_resolver": LocalExecutionRecordResolver(run_root)}
+            "route_composition": chain["route_composition"], "route_review": route}
 
 
 def _record(chain: dict, request: dict, output: dict, *, defects: list[str], **kwargs) -> dict:
@@ -259,33 +247,17 @@ def test_captured_strict_subset_can_progress_while_judgment_still_needs_repair(t
 
 
 @pytest.mark.parametrize("tamper", ["status", "remaining_ids"])
-def test_current_capture_and_remaining_defects_cannot_be_rewritten(tmp_path, tamper):
+def test_current_judgment_and_remaining_defects_cannot_be_rewritten(tmp_path, tamper):
     chain = complete_chain(tmp_path, pass_quality=False)
     request = _request(chain)
     output = _changed_output(chain)
     evidence = _current_evidence(chain, output, ["judge:defect"])
     remaining = ["judge:defect"]
-    if tamper == "capture":
-        path = evidence["execution_resolver"].run_root / evidence["execution_record"]["raw_output_locator"]
-        path.write_text("{}", encoding="utf-8")
-    elif tamper in {"status", "judgment"}:
-        if tamper == "status":
-            evidence["current_judgment"]["status"] = "passed"
-        else:
-            # Validly rehashed envelope; substantive output no longer matches capture.
-            evidence["current_judgment"]["defects"][0]["message"] = "A caller rewrote this observation."
+    if tamper == "status":
+        evidence["current_judgment"]["status"] = "passed"
         evidence["current_judgment"]["judgment_fingerprint"] = fingerprint_without(evidence["current_judgment"], "judgment_fingerprint")
-    elif tamper == "remaining_ids":
-        remaining = []
     else:
-        record = evidence["execution_record"]
-        if tamper == "writer_context":
-            record["writer_context_ids"] = [record["context_id"]]
-        else:
-            record["terminal_status"] = "failed"
-        record["record_fingerprint"] = fingerprint_without(record, "record_fingerprint")
-        evidence["current_judgment"]["execution_record_fingerprint"] = record["record_fingerprint"]
-        evidence["current_judgment"]["judgment_fingerprint"] = fingerprint_without(evidence["current_judgment"], "judgment_fingerprint")
+        remaining = []
     with pytest.raises(ValidationError):
         record_repair_result(request=request, output_artifact_map=output,
             changed_unit_ids=[chain["paragraph"]["artifact_unit_id"]], preserved_content_unit_ids=["content:answer"],

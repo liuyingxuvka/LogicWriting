@@ -487,35 +487,6 @@ def complete_chain(
         "reviewed_at": NOW,
     }
     route_review["review_fingerprint"] = fingerprint(route_review)
-    judge_execution = {
-        "schema_version": "1.0",
-        "record_id": f"execution:judge:{owner}",
-        "role": "judge",
-        "backend_id": "synthetic-protocol-only",
-        "run_id": f"run:judge:{owner}",
-        "context_id": f"context:judge:{owner}",
-        "parent_orchestrator_run_id": f"run:orchestrator:{owner}",
-        "input_reader_intent_fingerprint": chain["intent"]["intent_fingerprint"],
-        "input_writer_input_fingerprint": chain["reader_brief"]["writer_input_fingerprint"],
-        "input_artifact_fingerprint": chain["artifact_map"]["artifact_fingerprint"],
-        "rubric_fingerprint": fingerprint({"profile": owner, "protocol_only": True}),
-        "model_id": "synthetic-protocol-only",
-        "settings_fingerprint": fingerprint({"protocol_only": True}),
-        "started_at": NOW,
-        "finished_at": NOW,
-        "terminal_status": "completed",
-        "output_fingerprint": fingerprint({"judgment": owner, "protocol_only": True}),
-        "provider_completion_ref": f"synthetic://protocol-only/{owner}",
-        "independence_status": "verified",
-        "evaluation_mode": "single",
-        "pair_inputs": [],
-        "pair_input_fingerprint": None,
-        # The synthetic protocol chain models a single-article judge.  Keep
-        # its writer context explicit so the execution validator can enforce
-        # the same one-writer binding required by the native hold-out path.
-        "writer_context_ids": ["context:writer:synthetic"],
-    }
-    judge_execution["record_fingerprint"] = fingerprint(judge_execution)
     scores = {key: 5 if pass_quality else 3 for key in (
         "clarity", "structure_fidelity", "coherence", "naturalness", "reader_fit",
         "content_fidelity", "genre_fit", "instruction_fidelity",
@@ -535,7 +506,6 @@ def complete_chain(
         "deterministic_audit_fingerprint": chain["deterministic_audit"]["audit_fingerprint"],
         "route_audit_fingerprint": route_review["review_fingerprint"],
         "artifact_fingerprint": chain["artifact_map"]["artifact_fingerprint"],
-        "execution_record_fingerprint": judge_execution["record_fingerprint"],
         "reverse_outline": reverse_outline,
         "scores": scores,
         "defects": [] if pass_quality else [{
@@ -582,7 +552,6 @@ def complete_chain(
         "revision_provenance": provenance,
         "native_receipt_fingerprints": native_receipts,
         "closure_id": f"closure:{owner}",
-        "reader_execution_records": [judge_execution],
     })
     return chain
 
@@ -597,16 +566,10 @@ def closure_input(chain: dict) -> dict:
     } | {
         "repair_requests": chain.get("repair_requests", []),
         "repair_results": chain.get("repair_results", []),
-        "reader_execution_records": chain.get("reader_execution_records", []),
     }
 
 
 def derive_protocol_closure(value, **kwargs):
-    """Explicit test double for protocol state tests; never real execution evidence."""
+    """Derive closure for protocol state tests."""
     from derive_closure import derive_closure
-    from types import SimpleNamespace
-    resolver = SimpleNamespace(resolve_judgment=lambda record, judgment: record.get("backend_id") == "synthetic-protocol-only")
-    from unittest.mock import patch
-    native_root = Path(value["artifact_map"]["artifact_path"]).parent / "native-receipts"
-    with patch.dict("os.environ", {"LOGIC_WRITING_RECEIPT_ROOT": str(native_root)}):
-        return derive_closure(value, execution_resolver=resolver, **kwargs)
+    return derive_closure(value, **kwargs)

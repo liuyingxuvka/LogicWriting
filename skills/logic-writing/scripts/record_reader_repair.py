@@ -9,7 +9,7 @@ from _common import ValidationError, dump_json, load_json, require_mapping, vali
 from reader_pipeline import record_repair_result
 
 
-def validate_request(value, *, execution_resolver=None):
+def validate_request(value):
     request = require_mapping(value, "ReaderRepair result request")
     result = record_repair_result(
         request=request.get("repair_request"),
@@ -24,8 +24,6 @@ def validate_request(value, *, execution_resolver=None):
         deterministic_audit=request.get("deterministic_audit"),
         route_composition=request.get("route_composition"),
         route_review=request.get("route_review"),
-        execution_record=request.get("execution_record"),
-        execution_resolver=execution_resolver,
         review_obligations=request.get("review_obligations"),
     )
     return validation_result(

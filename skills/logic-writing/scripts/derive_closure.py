@@ -137,8 +137,6 @@ def _no_progress_terminal(results: list[Mapping[str, Any]], artifact_fingerprint
 
 def derive_closure(
     value: Any,
-    *,
-    execution_resolver=None,
 ) -> dict[str, Any]:
     request = copy.deepcopy(require_mapping(value, "closure input"))
     required = (
@@ -184,11 +182,6 @@ def derive_closure(
         amap=amap,
         required_dimensions=REQUIRED_DIMENSIONS[owner],
     )
-    execution_records = [require_mapping(row, "ReaderExecutionRecord") for row in request.get("reader_execution_records", [])]
-    judges = [row for row in execution_records if row.get("role") == "judge"]
-    if len(judges) > 1:
-        raise ValidationError("exactly one judge ReaderExecutionRecord is required")
-    judge_execution = judges[0] if judges else None
     judgment = _reader_judgment_from_current(
         request["judgment"],
         amap=amap,
@@ -196,7 +189,6 @@ def derive_closure(
         contract=shared,
         audit=audit,
         route_review=route_review,
-        execution_record=judge_execution,
     )
     provenance = validate_revision_provenance(
         request["revision_provenance"],
@@ -307,7 +299,6 @@ def derive_closure(
         "deterministic_audit_fingerprint": audit["audit_fingerprint"],
         "route_audit_fingerprint": route_review["review_fingerprint"],
         "judgment_fingerprint": judgment["judgment_fingerprint"],
-        "reader_execution_record_fingerprints": [row["record_fingerprint"] for row in execution_records],
         "revision_provenance_fingerprint": provenance["provenance_fingerprint"],
         "repair_result_fingerprints": [row["result_fingerprint"] for row in repair_results],
         "native_receipt_fingerprints": native_receipts,

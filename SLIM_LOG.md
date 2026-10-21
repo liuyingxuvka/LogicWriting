@@ -192,3 +192,17 @@ Removed obsolete provider/current-release literals from active prompts, adapter 
 | models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 2.59 |
 | map: `python -m flowguard map check` | check: 0 error(s), 8 warning(s), 0 info | 0.64 |
 | skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.29 |
+
+## LW-15
+
+删除不再消费的评审执行捕获、专用后端与模式；fiction 超时使用有界 communicate/kill，新增相应行为断言。保留当前判断语义、缺陷严格收缩、blocked/no_progress/progressed 和无进展终止检查。完整 220 项、三项回归、地图及技能通过，指定捕获残留为零。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| residual: `git grep -n execution_record\|execution_resolver\|reader_execution\|local_execution_backend\|LocalExecutionRecordResolver\|_load_cleanup_helpers\|cleanup_evidence -- skills tests scripts` | exit 1; stated assertions verified | 0.02 |
+| pytest: `python -m pytest -q` | 220 passed in 29.64s | 30.06 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 8.62 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.62 |
+| models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 1.44 |
+| map: `python -m flowguard map check` | check: 0 error(s), 8 warning(s), 0 info | 1.33 |
+| skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.21 |

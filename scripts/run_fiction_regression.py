@@ -25,19 +25,6 @@ CASE_TIMEOUT_SECONDS = {
 }
 
 
-def _load_cleanup_helpers():
-    """Load the repository's audited Windows process-tree cleanup helpers."""
-
-    helper_root = Path(__file__).resolve().parents[1] / "skills" / "logic-writing" / "scripts"
-    helper_text = str(helper_root)
-    if helper_text not in sys.path:
-        sys.path.insert(0, helper_text)
-    from local_execution_backend import (  # type: ignore[import-not-found]
-        _terminate_process_tree,
-        _windows_descendant_pids_with_retry,
-    )
-
-    return _terminate_process_tree, _windows_descendant_pids_with_retry
 
 
 def _text(value: str | bytes | None) -> str:
@@ -48,32 +35,10 @@ def _text(value: str | bytes | None) -> str:
     return value
 
 
-def _normal_cleanup_evidence(pid: int) -> dict[str, object]:
-    """Record whether a normally exited owner left descendants behind."""
-
-    try:
-        _, descendant_probe = _load_cleanup_helpers()
-        descendants = descendant_probe(pid)
-    except Exception as exc:  # pragma: no cover - defensive receipt path
-        return {
-            "root_pid": pid,
-            "descendants_observed": False,
-            "descendants_remaining": None,
-            "confirmed": False,
-            "error": f"{type(exc).__name__}: {exc}",
-        }
-    return {
-        "root_pid": pid,
-        "descendants_observed": descendants is not None,
-        "descendant_pids": list(descendants or []),
-        "descendants_remaining": None if descendants is None else bool(descendants),
-        "confirmed": descendants is not None and not descendants,
-        "error": None,
-    }
 
 
 def _run_case(command: list[str], cwd: Path, timeout_seconds: int) -> dict[str, object]:
-    """Run one owner with a bounded wait and fail-closed timeout cleanup."""
+    """Run one owner with a bounded wait; a timeout kills it and fails the case."""
 
     process = subprocess.Popen(
         command,
@@ -85,46 +50,18 @@ def _run_case(command: list[str], cwd: Path, timeout_seconds: int) -> dict[str, 
         errors="replace",
     )
     timed_out = False
-    cleanup_evidence: dict[str, object]
     try:
         stdout, stderr = process.communicate(timeout=timeout_seconds)
-    except subprocess.TimeoutExpired as exc:
+    except subprocess.TimeoutExpired:
         timed_out = True
-        stdout = _text(exc.stdout)
-        stderr = _text(exc.stderr)
-        try:
-            terminate_process_tree, _ = _load_cleanup_helpers()
-            cleanup_evidence = terminate_process_tree(process)
-        except Exception as cleanup_exc:  # pragma: no cover - defensive receipt path
-            cleanup_evidence = {
-                "root_pid": int(getattr(process, "pid", 0) or 0),
-                "confirmed": False,
-                "error": f"{type(cleanup_exc).__name__}: {cleanup_exc}",
-            }
-        try:
-            tail_stdout, tail_stderr = process.communicate(timeout=30)
-            stdout += _text(tail_stdout)
-            stderr += _text(tail_stderr)
-        except subprocess.TimeoutExpired as drain_exc:
-            stdout += _text(drain_exc.stdout)
-            stderr += _text(drain_exc.stderr)
-            cleanup_evidence = dict(cleanup_evidence)
-            cleanup_evidence["pipe_drain_timeout"] = True
-            cleanup_evidence["confirmed"] = False
-        except Exception as drain_exc:  # pragma: no cover - defensive receipt path
-            cleanup_evidence = dict(cleanup_evidence)
-            cleanup_evidence["pipe_drain_error"] = f"{type(drain_exc).__name__}: {drain_exc}"
-            cleanup_evidence["confirmed"] = False
-    else:
-        cleanup_evidence = _normal_cleanup_evidence(int(getattr(process, "pid", 0) or 0))
+        process.kill()
+        stdout, stderr = process.communicate(timeout=30)
     return {
         "returncode": process.returncode,
         "stdout": _text(stdout),
         "stderr": _text(stderr),
         "timed_out": timed_out,
         "timeout_seconds": timeout_seconds,
-        "cleanup_confirmed": bool(cleanup_evidence.get("confirmed")),
-        "cleanup_evidence": cleanup_evidence,
     }
 
 
@@ -149,10 +86,7 @@ def main() -> int:
         completed = _run_case(command, root, CASE_TIMEOUT_SECONDS[case_id])
         returncode = completed["returncode"]
         timed_out = bool(completed["timed_out"])
-        cleanup_confirmed = bool(completed["cleanup_confirmed"])
-        # A timed-out owner is always a failed regression result.  Its cleanup
-        # evidence remains visible so a caller can distinguish a clean timeout
-        # from an unconfirmed process leak.
+        # A timed-out owner is always a failed regression result.
         passed = returncode == 0 and not timed_out
         results.append({
             "case_id": case_id,
@@ -160,8 +94,6 @@ def main() -> int:
             "returncode": returncode,
             "timed_out": timed_out,
             "timeout_seconds": completed["timeout_seconds"],
-            "cleanup_confirmed": cleanup_confirmed,
-            "cleanup_evidence": completed["cleanup_evidence"],
             "stdout_sha256": hashlib.sha256(str(completed["stdout"]).encode("utf-8")).hexdigest(),
             "stdout_tail": "" if passed else str(completed["stdout"])[-4000:],
             "stderr_tail": str(completed["stderr"])[-4000:],

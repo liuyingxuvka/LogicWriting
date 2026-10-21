@@ -64,7 +64,7 @@ def test_fiction_regression_uses_bounded_budgets_for_slow_matrices():
     assert all(0 < value <= 900 for value in module.CASE_TIMEOUT_SECONDS.values())
 
 
-def test_fiction_regression_timeout_is_recorded_after_tree_cleanup(monkeypatch, tmp_path: Path):
+def test_fiction_regression_timeout_kills_the_case(monkeypatch, tmp_path: Path):
     module = _fiction_regression_module()
 
     class FakeProcess:
@@ -72,29 +72,25 @@ def test_fiction_regression_timeout_is_recorded_after_tree_cleanup(monkeypatch, 
         returncode = -9
 
         def __init__(self):
-            self.communicate_calls: list[int] = []
+            self.communicate_calls = []
+            self.killed = False
+
+        def kill(self):
+            self.killed = True
 
         def communicate(self, timeout=None):
             self.communicate_calls.append(timeout)
             if len(self.communicate_calls) == 1:
-                raise subprocess.TimeoutExpired(["fake-owner"], timeout, output="partial", stderr="diagnostic")
-            return "tail", "tail-diagnostic"
+                raise subprocess.TimeoutExpired(["fake-owner"], timeout)
+            return "all output", "all diagnostics"
 
     process = FakeProcess()
     monkeypatch.setattr(module.subprocess, "Popen", lambda *args, **kwargs: process)
-    monkeypatch.setattr(
-        module,
-        "_load_cleanup_helpers",
-        lambda: (lambda _process: {"confirmed": True, "root_pid": 321}, lambda _pid: []),
-    )
-
     result = module._run_case(["fake-owner"], tmp_path, 1)
-
     assert result["timed_out"] is True
-    assert result["cleanup_confirmed"] is True
-    assert result["cleanup_evidence"]["root_pid"] == 321
-    assert result["stdout"] == "partialtail"
-    assert result["stderr"] == "diagnostictail-diagnostic"
+    assert process.killed is True
+    assert result["stdout"] == "all output"
+    assert result["stderr"] == "all diagnostics"
     assert process.communicate_calls == [1, 30]
 
 

@@ -1898,7 +1898,6 @@ def validate_reader_judgment(
     shared_writing: Mapping[str, Any],
     deterministic_audit: Mapping[str, Any],
     route_review: Mapping[str, Any],
-    execution_record: Mapping[str, Any] | None = None,
     review_obligations: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     amap = validate_artifact_map(artifact_map)
@@ -1911,12 +1910,12 @@ def validate_reader_judgment(
                                               contract=contract, audited_at=candidate.get("audited_at"))
     audit = _compare_reader_audit(candidate, current)
     return _reader_judgment_from_current(value, amap=amap, brief=brief, contract=contract, audit=audit,
-                                         route_review=route_review, execution_record=execution_record,
+                                         route_review=route_review,
                                          review_obligations=review_obligations)
 
 
 def _reader_judgment_from_current(value, *, amap, brief, contract, audit, route_review,
-                                   execution_record=None, review_obligations=None):
+                                   review_obligations=None):
     judgment = require_mapping(value, "ReaderJudgment")
     require_schema("reader-judgment.schema.json", judgment, label="ReaderJudgment")
     _require_exact_fingerprint(judgment, "judgment_fingerprint")
@@ -2073,8 +2072,6 @@ def record_repair_result(
     deterministic_audit: Mapping[str, Any] | None = None,
     route_composition: Mapping[str, Any] | None = None,
     route_review: Mapping[str, Any] | None = None,
-    execution_record: Mapping[str, Any] | None = None,
-    execution_resolver: Any = None,
     review_obligations: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     repair = require_mapping(request, "ReaderRepairRequest")
@@ -2128,7 +2125,7 @@ def record_repair_result(
         evidence = validate_reader_judgment(
             current_judgment, artifact_map=amap, reader_brief=brief,
             shared_writing=shared_writing, deterministic_audit=deterministic_audit,
-            route_review=review, execution_record=execution_record,
+            route_review=review,
             review_obligations=review_obligations,
         )
         evidence_ids = _canonicalize_ids(
