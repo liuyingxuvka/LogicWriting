@@ -107,7 +107,7 @@ python scripts/install_skill.py --target ~/.claude/skills --check
 
 安装脚本把 `skills/logic-writing` 复制到 `<target>/logic-writing`（替换旧副本），
 不复制只供本仓库测试使用的样例和回归脚本；`--check` 在已安装副本与源码不一致时返回 1。
-ResearchGuard（0.5.0 或更新）和 WorldGuard 需要另外安装。然后调用：
+ResearchGuard 和 WorldGuard 需要另外安装。然后调用：
 
 ```text
 使用 $logic-writing，把这个请求路由到正确的最终负责人，并交付人能读懂的成品。

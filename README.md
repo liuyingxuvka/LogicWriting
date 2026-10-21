@@ -122,7 +122,7 @@ python scripts/install_skill.py --target ~/.claude/skills --check
 The installer copies `skills/logic-writing` to `<target>/logic-writing`,
 replacing an older copy, and leaves out the fixtures and regression runners that
 only this repository's tests use. `--check` exits 1 when the installed copy
-differs from the source. ResearchGuard (0.5.0 or newer) and WorldGuard are
+differs from the source. ResearchGuard and WorldGuard are
 installed separately. Then invoke `$logic-writing`:
 
 ```text
