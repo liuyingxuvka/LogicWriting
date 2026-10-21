@@ -80,35 +80,29 @@ The route SHALL use LogicGuard to compare support, warrants, assumptions, scope,
 - **AND** final wording SHALL be qualified or withheld
 
 #### Scenario: LogicGuard model is bounded
-- **WHEN** the current LogicGuard receipt covers only a bounded subset
+- **WHEN** the current LogicGuard result covers only a bounded subset
 - **THEN** the report SHALL match that bounded scope
 - **AND** SHALL NOT claim comprehensive or robust reasoning
 
-### Requirement: Investigation returns a typed ResearchPacket
-A completed investigation SHALL return a packet containing the source registry, evidence anchors, critical-claim and key-number ledger, support and limiting evidence, alternatives and confounders, relevant execution/effect/causal chains, source lineage and independence status, unresolved gaps, safe wording, unsafe boundaries, native receipt references, exact input manifest, and a packet fingerprint.
+### Requirement: Investigation evidence may be kept in an optional ResearchPacket
+A completed investigation SHALL turn its claim-and-evidence ledger into the ReaderBrief content boundaries. When the evidence is large or another route sent a bounded evidence-gap request, the route MAY keep it as a ResearchPacket containing the source registry, evidence anchors, critical-claim and key-number ledger, support and limiting evidence, alternatives and confounders, source lineage and independence status, unresolved gaps, safe wording, unsafe boundaries, and a packet fingerprint.
 
 #### Scenario: Academic parent consumes the packet
 - **WHEN** investigation was invoked by an academic parent
 - **THEN** the packet SHALL contain the requested `gap_id`
 - **AND** SHALL contain no academic final-closure claim
-- **AND** the academic parent SHALL verify its fingerprint before use
 
 #### Scenario: Packet omits a critical counterevidence gap
 - **WHEN** a critical claim required counter or limiting evidence but the packet omits its status
 - **THEN** packet validation SHALL return `partial` or `blocked`
 
-#### Scenario: Gap is only an opaque string
-- **WHEN** an unresolved gap lacks a stable identity, affected claims or sources, reader-safe wording, unsafe boundary, and next owner
-- **THEN** packet validation SHALL reject it
-- **AND** SHALL NOT copy the opaque code into reader-facing prose
+#### Scenario: Causal claim lacks a mechanism source
+- **WHEN** a causal claim has no usable source for its declared mechanism
+- **THEN** claim support reports `causal_mechanism_missing` and the claim SHALL remain ineligible for principal-finding wording
 
-#### Scenario: Causal claim has only a temporal receipt
-- **WHEN** a causal claim has chronology evidence but no current `causal_trace` evidence for the declared mechanism and scope
-- **THEN** the causal claim SHALL remain ineligible for principal-finding wording
-
-#### Scenario: Forecast lacks prediction-boundary evidence
-- **WHEN** a forecast has a source marked as validation evidence but no current `prediction_boundary` receipt for the claim scope
-- **THEN** the forecast SHALL remain ineligible for principal-finding wording
+#### Scenario: Forecast lacks validation evidence
+- **WHEN** a forecast has no usable validation source for its scope
+- **THEN** claim support reports `forecast_validation_missing` and the forecast SHALL remain ineligible for principal-finding wording
 
 ### Requirement: Claim-to-source links identify observed anchors
 Every supported claim SHALL map each cited source to one or more observed anchor ids and classify that link as support, limit, counterevidence, or context. A claim-level source list without anchor-level links SHALL NOT license reader-facing wording.
@@ -129,15 +123,15 @@ The route SHALL preserve `provider_unavailable`, `not_run`, `planning_only`, `ac
 - **THEN** the route SHALL return `provider_unavailable` or `planning_only`
 - **AND** SHALL NOT claim that external search was executed
 
-#### Scenario: Native receipt is bounded
-- **WHEN** SourceGuard, TraceGuard, or LogicGuard returns a bounded native receipt
+#### Scenario: Native result is bounded
+- **WHEN** SourceGuard, TraceGuard, or LogicGuard returns a bounded result
 - **THEN** the investigation SHALL NOT use complete, comprehensive, conclusive, or fully investigated wording
 
 ### Requirement: Investigation completion is verifier-derived
 The route SHALL NOT accept caller-authored `complete`, `passed`, or `closure_status` fields as authoritative completion evidence.
 
-#### Scenario: Caller submits complete without receipts
-- **WHEN** a ledger says `complete` but lacks required source, trace, or semantic-fit receipts
+#### Scenario: Caller submits complete without evidence
+- **WHEN** a ledger says `complete` but lacks required source, trace, or claim-support evidence
 - **THEN** the verifier SHALL ignore the declared status
 - **AND** derive `partial`, `downgraded`, or `blocked` from the actual missing evidence
 

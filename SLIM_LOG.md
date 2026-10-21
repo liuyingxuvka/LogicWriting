@@ -704,3 +704,14 @@ CI 新增读取唯一最低版本常量的 ResearchGuard 作业，publish 等待
 | minimum-traceguard: `python skills/logic-writing/scripts/provider_preflight.py traceguard` | exit 0; stated assertions verified | 3.71 |
 | pytest: `python -m pytest -q` | 153 passed, 1 skipped in 5.42s | 5.84 |
 | map: `python -m flowguard map check` | check: 0 error(s), 4 warning(s), 0 info | 0.35 |
+
+## LW-45
+
+将现行 OpenSpec 规格同步为最低版本/PATH预检、实际成品收尾、可选证据记录和文字修复规则，保留其余领域要求及7份历史变更。9份现行规格与残留边界符合，完整153项/1跳过和地图通过。openspec CLI 本机不存在，按行动明确允许未运行其可选严格校验，未把该项记成通过。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| inventory: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.04 |
+| spec-residual: `git grep -n -i -E receipt|0\.5\.7|4\.0\.8|skillguard|frozen|RepairRequest|consumption|no-progress|flowguard -- openspec/specs` | exit 0; stated assertions verified | 0.01 |
+| pytest: `python -m pytest -q` | 153 passed, 1 skipped in 7.95s | 8.49 |
+| map: `python -m flowguard map check` | check: 0 error(s), 4 warning(s), 0 info | 0.56 |

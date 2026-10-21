@@ -95,4 +95,4 @@ Fiction repair SHALL route workflow leakage and card-like prose to integration, 
 
 #### Scenario: Continuity is repaired with one connector sentence
 - **WHEN** two story units still lack the required state handoff after a connector sentence is added
-- **THEN** the repair records no progress and the route remains open
+- **THEN** the defect stays reported and the route remains open

@@ -46,11 +46,15 @@ The travel route SHALL compile checked route artifacts into lived-sequence prose
 - **THEN** traveler-native validation SHALL fail
 
 ### Requirement: Final travel closure binds the actual guide
-The final guide SHALL be repository-contained, content-addressed, tied to the same trip id and allowed claim level, and reverse-reviewed from the delivered bytes for evidence, feasibility, fit, fallbacks, headings, weather boundaries, local texture, and reader-room leakage.
+The final guide SHALL be the actual text bound by its ArtifactMap, tied to the trip id and to the allowed claim level that the evidence supports, and reverse-reviewed from the delivered text for evidence, feasibility, fit, fallbacks, headings, weather boundaries, local texture, and reader-room leakage.
 
 #### Scenario: Reverse review covers another guide
-- **WHEN** the reverse-guide receipt names a different path, hash, or trip id
+- **WHEN** the reverse guide review names a different trip id or observations that are not in the actual guide
 - **THEN** final travel closure SHALL fail
+
+#### Scenario: Claim level exceeds the evidence
+- **WHEN** `trip_context.allowed_claim_level` is not the level the current evidence supports
+- **THEN** the plan check reports `trip_context.allowed_claim_level.derived_mismatch`
 
 ### Requirement: Travel selects a guide kind before composition
 The travel route SHALL select itinerary, destination guide, lodging strategy, route plan, traveler-fit recommendation, or revision before applying structure requirements. Only a multi-day itinerary SHALL require day units; other guide kinds SHALL use their reader task and user structure.

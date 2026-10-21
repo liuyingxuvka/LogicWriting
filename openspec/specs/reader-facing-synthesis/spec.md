@@ -20,7 +20,7 @@ A ReaderBrief SHALL include the reader question, audience, genre, necessary conc
 - **AND** a ReaderBrief SHALL be generated first
 
 #### Scenario: Brief omits a material limitation
-- **WHEN** a current specialist receipt narrows an important claim but the ReaderBrief omits that boundary
+- **WHEN** a current specialist result narrows an important claim but the ReaderBrief omits that boundary
 - **THEN** ReaderBrief validation SHALL fail
 - **AND** the writer SHALL not receive the stronger claim
 
@@ -41,20 +41,8 @@ The caller MAY supply only the reader context: brief identity, question, audienc
 - **THEN** ReaderBrief construction SHALL return `blocked`
 - **AND** SHALL NOT manufacture an empty or generic conclusion
 
-### Requirement: ReaderBrief derivation has independent authority
-The system SHALL issue a managed `reader_brief` Receipt separate from the ReaderBrief content. It SHALL bind the exact ResearchPacket, reader context, builder source, ReaderBrief output, and every consumed native receipt dependency. The Receipt fingerprint SHALL NOT be embedded in the ReaderBrief itself.
-
-#### Scenario: Brief self-fingerprint matches but derivation receipt is absent
-- **WHEN** a ReaderBrief has a valid content fingerprint but no current managed derivation Receipt
-- **THEN** the prose writer and actual-text audit SHALL reject it as unauthoritative
-
-#### Scenario: Packet changes after brief derivation
-- **WHEN** the ResearchPacket fingerprint changes
-- **THEN** the prior ReaderBrief derivation Receipt SHALL become stale
-- **AND** downstream prose and audits SHALL not remain current
-
 ### Requirement: ReaderBrief links are internally complete
-The ReaderBrief SHALL bind one current RouteDecision, ReaderIntent, route content projection, whole-artifact CompositionPlan, selected route extension, native dependency receipts, content authority fingerprints, and one final owner. Every required user-outline row, content obligation, limitation, citation duty, exact-preservation duty, planned unit, and route surface SHALL be consumed exactly as declared or receive a visible conflict or omission disposition.
+The ReaderBrief SHALL bind one current RouteDecision, ReaderIntent, route content projection, whole-artifact CompositionPlan, selected route extension, and one final owner. Every required user-outline row, content obligation, limitation, citation duty, exact-preservation duty, planned unit, and route surface SHALL be consumed exactly as declared or receive a visible conflict or omission disposition.
 
 #### Scenario: Required user section is not planned
 - **WHEN** the ReaderIntent contains a required outline row that is absent from the CompositionPlan
@@ -165,7 +153,7 @@ Material style or clarity edits SHALL stale every audit whose meaning, paragraph
 
 #### Scenario: Style revision changes meaning
 - **WHEN** a style revision changes claim strength, paragraph dependency, citation placement, scope, or limitation placement
-- **THEN** the prior reader-facing and semantic-fit receipts SHALL become `stale`
+- **THEN** the prior reader-facing audits and reviews SHALL become `stale`
 
 ### Requirement: Reader quality uses deterministic and judgment evidence separately
 The system SHALL keep deterministic artifact checks and qualitative reader judgment as separate evidence classes; neither SHALL be represented as the other.
@@ -287,16 +275,16 @@ When a planned unit requires prose, deterministic and qualitative review SHALL d
 - **WHEN** an operational appendix is declared as an allowed list zone
 - **THEN** its bullets do not count against the narrative-body prose ratio
 
-### Requirement: Every non-pass produces a typed repair cycle
-Every blocking audit or required reader repair SHALL produce a RepairRequest bound to the current artifact, ReaderBrief, CompositionPlan, audit, judgment, target units, required changes, preservation boundary, and forbidden shortcuts. A RepairResult SHALL bind input and output artifact fingerprints, changed units, preservation checks, remaining defect identity, and progress status before affected evidence is rebuilt.
+### Requirement: A non-pass is repaired on the actual text
+When the deterministic audit or the independent read reports defects, closure SHALL be `needs_repair`; the writer SHALL revise the actual text, rebuild the ArtifactMap and rerun the audit and the read, and SHALL stop and return the artifact with the audit note when a revision round fixes none of the reported defects.
 
 #### Scenario: Repair adds only connector words
-- **WHEN** a coherence repair changes only transition phrases while the defect set remains unchanged
-- **THEN** the result records no progress and does not close the artifact
+- **WHEN** a revision changes only transition phrases while the reported defects remain
+- **THEN** the round fixed nothing and the writer stops with the audit note
 
 #### Scenario: Repair changes current bytes
-- **WHEN** a valid repair modifies the artifact
-- **THEN** the old ArtifactMap, SharedWriting binding, audit, judgment, and closure become stale and are regenerated for the new bytes
+- **WHEN** a revision modifies the artifact
+- **THEN** the old ArtifactMap, SharedWriting binding, audit, judgment, and closure become stale and are rebuilt for the new bytes
 
 ### Requirement: Current reader contracts use direct replacement
 The current runtime SHALL reject ReaderBrief v1, SharedWriting v1, ReaderAudit v1, ReaderJudgment v1, legacy information sequence, principal findings as layout authority, allowed wording, and legacy closure reader chains. No normal-runtime converter, alias, dual emission, or fallback SHALL be provided.

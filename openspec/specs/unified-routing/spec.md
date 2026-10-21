@@ -85,7 +85,7 @@ Every route decision SHALL bind to the current user request, terminal deliverabl
 - **THEN** the final owner SHALL remain `academic-writing`
 
 ### Requirement: Ambiguity remains explicit
-If the terminal deliverable cannot be determined safely, the system SHALL ask one focused question or return `needs_human_review`; it SHALL NOT activate both routes as a fallback.
+If the terminal deliverable cannot be determined safely, the system SHALL ask one focused question or return `ambiguous`; it SHALL NOT activate both routes as a fallback.
 
 #### Scenario: Ambiguous research piece
 - **WHEN** the user asks for a research piece without enough information to distinguish a general report from an academic artifact
@@ -105,15 +105,15 @@ The system SHALL skip the unified workflow for quick factual lookups, grammar-on
 - **THEN** the system SHALL activate `investigation`
 
 ### Requirement: Required specialist absence blocks domain substitution
-The system SHALL preflight every required specialist and SHALL NOT implement an improvised replacement for an unavailable SourceGuard, LogicGuard, TraceGuard, FlowGuard, Documents, or PDF authority.
+The system SHALL preflight every required specialist and SHALL NOT implement an improvised replacement for an unavailable SourceGuard, LogicGuard, TraceGuard, WorldGuard, Documents, or PDF authority.
 
 #### Scenario: Required provider is unavailable
-- **WHEN** a selected route requires a specialist that cannot be imported or invoked with its declared capability
-- **THEN** the adapter SHALL return `provider_unavailable`
+- **WHEN** a selected route requires a specialist that cannot be found or invoked with its declared capability
+- **THEN** the preflight SHALL return `provider_unavailable`
 - **AND** Logic Writing SHALL narrow or block the claim instead of simulating the missing specialist
 
 ### Requirement: Shared kernels never become final routes
-The system SHALL treat reader projection, artifact identity, receipt authority, and closure composition as shared kernels with no independent terminal success path.
+The system SHALL treat reader projection, artifact identity, and closure composition as shared kernels with no independent terminal success path.
 
 #### Scenario: Shared reader projection finishes
 - **WHEN** shared reader projection returns a reader-native artifact
@@ -153,47 +153,35 @@ The current runtime SHALL accept only the current WritingRequest and RouteDecisi
 
 ### Requirement: Research Guard members use one executable provider
 
-Logic Writing SHALL preserve `logicguard`, `sourceguard`, and `traceguard` as distinct semantic owners while invoking each only through the `researchguard` console and its exact current primary path. The distribution metadata, console output, and supported provider identity SHALL all be ResearchGuard `0.5.7`. Logic Writing MUST NOT import an old member package, invoke an old module command, locate a sibling checkout, try another member when the selected member is unavailable, or execute ExperimentGuard or the ResearchGuard umbrella route.
+Logic Writing SHALL preserve `logicguard`, `sourceguard`, and `traceguard` as distinct semantic owners and SHALL invoke each only through the `researchguard` console and its primary path. Logic Writing MUST NOT import an old member package, invoke an old module command, locate a sibling checkout, try another member when the selected member is unavailable, or execute ExperimentGuard or the umbrella route.
 
 #### Scenario: LogicGuard member is available
 - **WHEN** Logic Writing preflights the LogicGuard semantic owner
 - **THEN** it SHALL verify `researchguard --version` and `researchguard logic --help`, bind `primary:researchguard:logic`, and run no alternate provider probe
 
 #### Scenario: ResearchGuard console is absent
-- **WHEN** the `researchguard` console cannot be resolved
+- **WHEN** the `researchguard` console can be found neither in the running Python nor on PATH
 - **THEN** Logic Writing SHALL return `provider_unavailable` and SHALL NOT import `logicguard`, run `python -m logicguard`, or select SourceGuard or TraceGuard
 
 #### Scenario: Member capability times out
 - **WHEN** the selected ResearchGuard member capability probe exceeds its configured bound
 - **THEN** Logic Writing SHALL preserve the timeout as visible provider evidence and terminate that provider preflight without recovery through another path
 
-#### Scenario: Unsupported ResearchGuard version is installed
-- **WHEN** the distribution metadata or console output is not exactly `0.5.7`
-- **THEN** Logic Writing SHALL return a visible blocked identity result and SHALL NOT execute the selected member probe or a fallback provider
+#### Scenario: ResearchGuard is older than the minimum
+- **WHEN** the installed distribution or console reports a version below `RESEARCHGUARD_MIN_VERSION`
+- **THEN** Logic Writing SHALL return a visible blocked result and SHALL NOT execute the selected member probe or a fallback provider
 
 #### Scenario: Out-of-scope member is requested
 - **WHEN** a caller requests `experimentguard` or the ResearchGuard umbrella `run` route
 - **THEN** Logic Writing SHALL return a visible scope block and SHALL execute zero ResearchGuard commands
-
-#### Scenario: Provider identity and member topology are current
-- **WHEN** a supported direct member is selected and the installed distribution, console, and exact three-member topology all report ResearchGuard `0.5.7`
-- **THEN** the provider preflight SHALL continue only to that selected member
 
 #### Scenario: Provider failure does not trigger fallback
 - **WHEN** the selected provider owner fails or times out
 - **THEN** the router SHALL preserve the failure or timeout boundary and SHALL NOT retry through another member, legacy module, or umbrella command
 
 ### Requirement: Retired direct Guard routes have zero current authority
-Current Logic Writing source, tests, models, and active change artifacts SHALL contain no executable call or current route binding for the retired LogicGuard satellite skill ids, `traceguard-library`, or the former direct member module commands.
+Current Logic Writing source, tests, and models SHALL contain no executable call or route binding for the retired LogicGuard satellite skill ids, `traceguard-library`, or the former direct member module commands.
 
-#### Scenario: Current consumer topology is scanned
-- **WHEN** the target-owned zero-residual checker scans current governed files
-- **THEN** it SHALL pass only if all Guard calls resolve to the ResearchGuard console/member topology and archived history is not treated as current authority
-
-### Requirement: The single-console topology has one source version identity
-The changed provider topology SHALL be frozen as Logic Writing source version `4.0.8`. `VERSION`, package metadata, public source badges, changelog, source reconciliation, current OpenSpec release requirements, and the release-retirement checklist SHALL agree on that identity before a candidate commit is published.
-
-#### Scenario: Candidate source is checked before installation
-- **WHEN** the `4.0.8` candidate is validated on the release branch
-- **THEN** source-version checks and the ordinary release contract SHALL pass on the exact candidate tree
-- **AND** no installed projection, tag, or GitHub Release SHALL be claimed
+#### Scenario: Current source is searched
+- **WHEN** the current source is searched for Guard calls
+- **THEN** every Guard call goes through the `researchguard` console and one of its three members, and archived history is not treated as current authority

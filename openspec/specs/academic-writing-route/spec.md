@@ -81,8 +81,8 @@ When PDF content or layout is material, the route SHALL delegate extraction, ren
 - **AND** layout-correctness claims SHALL remain `not_run`
 
 #### Scenario: PDF changes after page inspection
-- **WHEN** the PDF bytes change after a visual inspection receipt
-- **THEN** that receipt SHALL become `stale`
+- **WHEN** the PDF bytes change after a visual inspection
+- **THEN** that inspection SHALL become `stale`
 - **AND** the current pages SHALL be rendered and inspected again before visual closure
 
 ### Requirement: Citations bind to actual academic claims
@@ -113,19 +113,19 @@ The academic route SHALL declare `artifact_mode`. When the mode is `revise_exist
 - **THEN** the affected provenance and downstream artifact evidence become stale
 
 ### Requirement: Final academic closure binds the actual artifact
-Structure, citation, reader-facing, document, and postwrite receipts SHALL bind to the fingerprint of the final current artifact.
+Structure, citation, reader-facing, document, and postwrite checks SHALL bind to the fingerprint of the final current artifact.
 
 #### Scenario: Final prose changes after audit
 - **WHEN** a material paragraph, heading, source marker, figure or table reference, or conclusion changes after audit
-- **THEN** affected receipts SHALL become `stale`
+- **THEN** affected checks SHALL become `stale`
 - **AND** required audits SHALL rerun before final closure
 
 #### Scenario: ResearchPacket changes
 - **WHEN** the artifact consumes a revised investigation packet
-- **THEN** every dependent claim, citation, paragraph, and closure receipt SHALL be reevaluated against the new packet fingerprint
+- **THEN** every dependent claim, citation, paragraph, and closure check SHALL be reevaluated against the new packet
 
 ### Requirement: Only academic writing issues academic final closure
-No child investigation, LogicGuard synthesis result, Documents render, PDF render, or FlowGuard process result SHALL independently close an academic artifact.
+No child investigation, LogicGuard synthesis result, Documents render, or PDF render SHALL independently close an academic artifact.
 
 #### Scenario: Child routes pass but postwrite audit is missing
 - **WHEN** investigation, LogicGuard modeling, and document rendering pass
