@@ -2,8 +2,8 @@
 
 The native plan remains provider-owned.  This module validates the small,
 versioned handoff surface that Logic Writing is allowed to consume and keeps
-the native result and receipt as opaque references.  It deliberately does not
-invoke ResearchGuard, manufacture a receipt, or decide whether prose is good.
+the native result as an opaque reference.  It deliberately does not invoke
+ResearchGuard or decide whether prose is good.
 """
 
 from __future__ import annotations
@@ -316,8 +316,6 @@ def build_researchguard_handoff(
     composition_plan_fingerprint: str | None = None,
     writer_input_fingerprint: str | None = None,
     native_result_locator: str,
-    native_receipt_fingerprint: str | None = None,
-    native_receipt_locator: str | None = None,
 ) -> dict[str, Any]:
     """Create the current LW handoff projection for one native plan."""
 
@@ -333,10 +331,6 @@ def build_researchguard_handoff(
             require_fingerprint({field: value}, field)
     if not isinstance(native_result_locator, str) or not native_result_locator.strip():
         raise ValidationError("native_result_locator must identify the opaque native result")
-    if native_receipt_fingerprint is not None:
-        require_fingerprint({"native_receipt_fingerprint": native_receipt_fingerprint}, "native_receipt_fingerprint")
-    if native_receipt_locator is not None and (not isinstance(native_receipt_locator, str) or not native_receipt_locator.strip()):
-        raise ValidationError("native_receipt_locator must be null or non-empty")
 
     ready = plan["status"] == READY_STATUS
     units = [_unit_projection(row) for row in plan["units"]] if ready else []
@@ -363,8 +357,6 @@ def build_researchguard_handoff(
         "body_unit_order": body_order,
         "units": units,
         "candidate_dispositions": [_disposition_projection(row) for row in plan["candidate_dispositions"]],
-        "native_receipt_fingerprint": native_receipt_fingerprint,
-        "native_receipt_locator": native_receipt_locator,
         "stage": "consumption_ready" if composition_plan_fingerprint and writer_input_fingerprint else "semantic",
         "source_branch_bindings": [copy.deepcopy(row) for row in native.get("source_branch_bindings", [])],
         "claim_boundary": "This is a LogicGuard unit handoff into the Logic Writing reader workspace. It does not prove factual truth, prose quality, or final closure.",
@@ -381,8 +373,6 @@ def validate_researchguard_handoff(
     reader_intent_fingerprint: str,
     composition_plan_fingerprint: str | None = None,
     writer_input_fingerprint: str | None = None,
-    native_receipt_fingerprint: str | None = None,
-    native_receipt_locator: str | None = None,
 ) -> dict[str, Any]:
     """Rebuild and compare a handoff so stale or caller-authored fields fail."""
 
@@ -397,16 +387,6 @@ def validate_researchguard_handoff(
         composition_plan_fingerprint=composition_plan_fingerprint,
         writer_input_fingerprint=writer_input_fingerprint,
         native_result_locator=handoff["native_result_locator"],
-        native_receipt_fingerprint=(
-            native_receipt_fingerprint
-            if native_receipt_fingerprint is not None
-            else handoff.get("native_receipt_fingerprint")
-        ),
-        native_receipt_locator=(
-            native_receipt_locator
-            if native_receipt_locator is not None
-            else handoff.get("native_receipt_locator")
-        ),
     )
     left = {key: item for key, item in handoff.items() if key != "handoff_fingerprint"}
     right = {key: item for key, item in expected.items() if key != "handoff_fingerprint"}

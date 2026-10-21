@@ -672,3 +672,20 @@ ResearchGuard 在当前 Python 无发行包时通过 PATH 解析唯一控制台�
 | models: `python -m flowguard map models` | models: 2 passed, 0 failed | 23.43 |
 | map: `python -m flowguard map check` | check: 0 error(s), 4 warning(s), 0 info | 0.86 |
 | skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.13 |
+
+## LW-43
+
+移除原生 depth 收据传参与交接字段，按用户 patch 版本覆盖将新源码门槛设为0.5.10。0.5.9基线桥接9项通过/1项明确跳过；仅将基线副本版本升为0.5.10的未就绪原生计划实际导致失败，证明不会静默跳过（非新RG兼容宣称）。完整153项/1跳过、三回归及地图通过。模式既有格式不同，按JSON字段精确删除，不改其余语义。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| schema: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.02 |
+| retired-imports: `git grep -n guard-contract\|native_depth_receipt\|suite_fingerprint\|researchguard\.suite -- *.py` | exit 1; stated assertions verified | 0.01 |
+| receipt-fields: `git grep -n native_receipt\|depth_receipt\|_build_native_depth_analysis -- skills tests` | exit 1; stated assertions verified | 0.01 |
+| native-old-baseline: `python -m pytest -q -rs tests/contract/test_researchguard_handoff.py` | 9 passed, 1 skipped in 0.37s | 0.74 |
+| strict-new-threshold: `python <external>` | exit 0; stated assertions verified | 0.79 |
+| pytest: `python -m pytest -q` | 153 passed, 1 skipped in 4.70s | 5.03 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 5.52 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.54 |
+| models: `python -m flowguard map models` | models: 2 passed, 0 failed | 22.43 |
+| map: `python -m flowguard map check` | check: 0 error(s), 4 warning(s), 0 info | 0.41 |

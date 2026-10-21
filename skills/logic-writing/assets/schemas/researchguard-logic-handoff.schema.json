@@ -28,8 +28,6 @@
     "units",
     "candidate_dispositions",
     "source_branch_bindings",
-    "native_receipt_fingerprint",
-    "native_receipt_locator",
     "claim_boundary",
     "handoff_fingerprint"
   ],
@@ -146,23 +144,6 @@
         "$ref": "#/$defs/sourceBranchBinding"
       },
       "uniqueItems": true
-    },
-    "native_receipt_fingerprint": {
-      "anyOf": [
-        {
-          "type": "null"
-        },
-        {
-          "$ref": "#/$defs/fingerprint"
-        }
-      ]
-    },
-    "native_receipt_locator": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "minLength": 1
     },
     "claim_boundary": {
       "type": "string",

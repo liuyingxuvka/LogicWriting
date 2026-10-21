@@ -4,6 +4,7 @@ import copy
 import json
 import os
 from pathlib import Path
+import re
 import sys
 
 import pytest
@@ -15,7 +16,7 @@ from researchguard_handoff import (
 )
 
 
-def _native_researchguard_ready_plan(tmp_path: Path) -> tuple[dict, str, str]:
+def _native_researchguard_ready_plan(tmp_path: Path) -> tuple[dict, str]:
     """Run the real local ResearchGuard native synthesizer for the bridge test.
 
     The consumer test deliberately imports the formal local source tree instead
@@ -52,8 +53,8 @@ def _native_researchguard_ready_plan(tmp_path: Path) -> tuple[dict, str, str]:
         sys.modules.pop(key, None)
     sys.path.insert(0, str(rg_root / "src"))
     try:
+        from researchguard import __version__ as source_version
         from researchguard.logic import load_model_from_dict, model_fingerprint, synthesize_artifact_plan
-        from researchguard.logic.execution_depth import _build_native_depth_analysis
 
         nodes: dict[str, dict[str, object]] = {}
         edges: list[dict[str, str]] = []
@@ -116,14 +117,7 @@ def _native_researchguard_ready_plan(tmp_path: Path) -> tuple[dict, str, str]:
             }],
             "source_branch_bindings": [],
         }
-        native_receipt = _build_native_depth_analysis(model, budget=20)
-        native_plan = synthesize_artifact_plan(
-            model,
-            selection_request=request,
-            native_depth_receipt=native_receipt,
-        ).to_dict()
-        assert native_plan["status"] == "research_handoff_ready", native_plan.get("open_gaps")
-        receipt_payload = native_receipt.to_dict()
+        native_plan = synthesize_artifact_plan(model, selection_request=request).to_dict()
     finally:
         for key in list(sys.modules):
             if key == "researchguard" or key.startswith("researchguard."):
@@ -131,11 +125,16 @@ def _native_researchguard_ready_plan(tmp_path: Path) -> tuple[dict, str, str]:
         sys.path[:] = saved_path
         sys.modules.update(saved_modules)
 
+    version = tuple(int(part) for part in re.match(r"(\d+)\.(\d+)\.(\d+)", source_version).groups())
+    if native_plan["status"] != "research_handoff_ready" and version < (0, 5, 10):
+        pytest.skip(
+            f"ResearchGuard {source_version} needs a separately computed depth result before synthesis; "
+            "the bridge test needs a source that computes depth inside synthesize (0.5.10 or newer)"
+        )
+    assert native_plan["status"] == "research_handoff_ready", native_plan.get("open_gaps")
     plan_path = tmp_path / "researchguard-native-plan.json"
-    receipt_path = tmp_path / "researchguard-native-depth-receipt.json"
     plan_path.write_text(json.dumps(native_plan, ensure_ascii=False, sort_keys=True, indent=2) + "\n", encoding="utf-8")
-    receipt_path.write_text(json.dumps(receipt_payload, ensure_ascii=False, sort_keys=True, indent=2) + "\n", encoding="utf-8")
-    return native_plan, str(plan_path.resolve()), str(receipt_path.resolve())
+    return native_plan, str(plan_path.resolve())
 
 
 def _plan(*, status: str = "research_handoff_ready", gaps: list[str] | None = None) -> dict:
@@ -192,8 +191,6 @@ def _inputs() -> dict[str, str]:
         "reader_intent_fingerprint": fingerprint({"intent": "intent-1"}),
         "composition_plan_fingerprint": fingerprint({"plan": "plan-1"}),
         "writer_input_fingerprint": fingerprint({"writer": "writer-1"}),
-        "native_receipt_fingerprint": fingerprint({"receipt": "receipt-1"}),
-        "native_receipt_locator": "fixture://researchguard/logic/receipt-1",
     }
 
 
@@ -349,14 +346,12 @@ def test_reader_brief_requires_an_exhaustive_native_unit_mapping(tmp_path):
 def test_real_native_researchguard_plan_round_trips_into_reader_brief(tmp_path):
     """Prove the local provider-to-consumer path with native bytes and joins."""
 
-    native_plan, native_plan_path, native_receipt_path = _native_researchguard_ready_plan(tmp_path)
+    native_plan, native_plan_path = _native_researchguard_ready_plan(tmp_path)
     from reader_pipeline import build_reader_brief, validate_writer_input
     from tests.v2_support import make_reader_chain
 
     chain = make_reader_chain(tmp_path / "reader-chain", owner="investigation")
     base_brief = chain["reader_brief"]
-    native_receipt = json.loads(Path(native_receipt_path).read_text(encoding="utf-8"))
-    native_receipt_fingerprint = fingerprint(native_receipt)
     mapping = [{
         "native_unit_id": "u0",
         "planned_unit_ids": [chain["plan"]["planned_units"][0]["planned_unit_id"]],
@@ -367,8 +362,6 @@ def test_real_native_researchguard_plan_round_trips_into_reader_brief(tmp_path):
         native_plan,
         reader_intent_fingerprint=base_brief["reader_intent_fingerprint"],
         native_result_locator=native_plan_path,
-        native_receipt_fingerprint=native_receipt_fingerprint,
-        native_receipt_locator=native_receipt_path,
     )
     brief = build_reader_brief(
         route_decision=chain["route_decision"],
