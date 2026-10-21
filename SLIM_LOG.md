@@ -21,3 +21,16 @@ The sibling ResearchGuard source exists, so the native bridge ran rather than pr
 ## LW-01 — native source absence is a skip
 
 Changed only `pytest.fail` to `pytest.skip` in the source-unavailable branch; retained source discovery and all other bridge assertions. `python -m pytest -q tests/contract/test_researchguard_handoff.py`: **12 passed** (0.48 s) with the explicit baseline source. A bounded source-unavailable probe produced the unchanged skip message. `python -m pytest -q`: **480 passed** (47.21 s). The expected extra passing test instead of one skip is the documented source-present case; no action failure or unrelated edit.
+
+## LW-02 — one minimum ResearchGuard version
+
+Centralized `>= 0.5.0` in `_common.py`; provider preflight and the production console use it, while the real console/distribution agreement and member probes remain. Removed the exact fiction handoff version checks and the topology text lock, and removed only that deleted script from the map. Historical fixture versions and `researchguard_handoff.PROVIDER_VERSION` are unchanged.
+
+- Specified provider/adapter/pipeline selection: **69 passed** (3.45 s).
+- Real `logicguard`, `sourceguard`, `traceguard` preflights: **current_pass**, suite `0.5.9`.
+- `0.4.11` rejected with the unified install hint; `0.5.9` accepted. Python without ResearchGuard: **provider_unavailable** with the same install hint (expected nonzero exit).
+- Fiction regression: **passed**, exit 0 (12.73 s).
+- Full pytest: **480 passed** (54.67 s); explicit immutable baseline source makes the bridge run rather than skip.
+- Map: **0 errors, 9 warnings**, including expected STALE entries awaiting LW-28. No obsolete exact-version constant remains in skill/scripts/tests.
+
+No purpose/verification deviation; environment installation uses the read-only baseline archive copy described above.

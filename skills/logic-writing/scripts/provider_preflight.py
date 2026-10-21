@@ -13,7 +13,7 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from _common import dump_json, fingerprint, validation_result
+from _common import dump_json, fingerprint, researchguard_version_problem, validation_result
 
 
 RESEARCHGUARD_MEMBERS = {
@@ -30,7 +30,6 @@ RESEARCHGUARD_MEMBERS = {
         "primary_path_id": "primary:researchguard:trace",
     },
 }
-SUPPORTED_RESEARCHGUARD_VERSION = "0.5.7"
 SCOPE_OUT_PROVIDERS = {
     "experimentguard": "ExperimentGuard is not an active Logic Writing 4.0.8 provider.",
     "researchguard": "The ResearchGuard umbrella route is not an active Logic Writing 4.0.8 provider.",
@@ -202,10 +201,11 @@ def preflight(provider: str, *, provider_root: str | None = None, require_render
             distribution = _researchguard_distribution()
             distribution_version = str(getattr(distribution, "version", "") or "") if distribution else None
             evidence["distribution_version"] = distribution_version
-            if distribution is not None and distribution_version != SUPPORTED_RESEARCHGUARD_VERSION:
+            version_problem = researchguard_version_problem(distribution_version) if distribution is not None else None
+            if version_problem:
                 status = "blocked"
                 evidence["reason"] = "unsupported_researchguard_version"
-                evidence["supported_version"] = SUPPORTED_RESEARCHGUARD_VERSION
+                evidence["message"] = version_problem
                 evidence["console_resolved"] = False
                 console = None
             else:
@@ -214,6 +214,8 @@ def preflight(provider: str, *, provider_root: str | None = None, require_render
             if not console and status != "blocked":
                 status = "provider_unavailable"
                 evidence["reason"] = "researchguard_console_identity_unavailable"
+                if distribution is None:
+                    evidence["message"] = researchguard_version_problem(None)
             elif console:
                 version_probe = _run_console_probe(console, ("--version",))
                 version_text = str(version_probe.get("stdout", ""))
@@ -225,14 +227,13 @@ def preflight(provider: str, *, provider_root: str | None = None, require_render
                 console_version = version_match.group(1) if version_match else None
                 version_identity_matches = (
                     bool(version_probe.get("passed"))
-                    and console_version == SUPPORTED_RESEARCHGUARD_VERSION
+                    and researchguard_version_problem(console_version) is None
                     and console_version == distribution_version
                 )
                 version_probe.pop("stdout", None)
                 evidence.update(
                     {
                         "suite_version": console_version,
-                        "supported_version": SUPPORTED_RESEARCHGUARD_VERSION,
                         "version_identity_matches": version_identity_matches,
                         "version_probe": version_probe,
                     }

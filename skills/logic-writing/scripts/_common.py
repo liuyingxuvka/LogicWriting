@@ -298,3 +298,15 @@ def cli_validate(validate_fn, description: str) -> int:
     except (ValidationError, OSError, json.JSONDecodeError) as exc:
         dump_json(validation_result(status="blocked", errors=(str(exc),)), args.output)
         return 1
+
+
+RESEARCHGUARD_MIN_VERSION = (0, 5, 0)
+RESEARCHGUARD_INSTALL_HINT = 'python -m pip install "git+https://github.com/liuyingxuvka/ResearchGuard.git"'
+
+
+def researchguard_version_problem(version: str | None) -> str | None:
+    match = re.match(r"^\s*(\d+)\.(\d+)\.(\d+)", version or "")
+    if match and tuple(int(part) for part in match.groups()) >= RESEARCHGUARD_MIN_VERSION:
+        return None
+    minimum = ".".join(str(part) for part in RESEARCHGUARD_MIN_VERSION)
+    return f"ResearchGuard >= {minimum} is required, found {version or 'not installed'}; install with: {RESEARCHGUARD_INSTALL_HINT}"

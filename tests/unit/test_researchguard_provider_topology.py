@@ -6,7 +6,6 @@ from types import SimpleNamespace
 
 import provider_preflight
 
-from scripts.check_researchguard_topology import RETIRED_SKILL_IDS, check
 
 
 class _Distribution:
@@ -104,6 +103,7 @@ def test_missing_console_blocks_without_old_module_import(monkeypatch):
 
     assert result["status"] == "provider_unavailable"
     assert result["evidence"]["console_resolved"] is False
+    assert result["evidence"]["message"].startswith("ResearchGuard >= 0.5.0 is required, found not installed")
 
 
 def test_member_timeout_is_visible_and_has_no_retry(monkeypatch, tmp_path):
@@ -199,26 +199,17 @@ def test_member_provider_root_is_rejected_before_console_execution(monkeypatch, 
     assert "provider-root overrides" in result["evidence"]["reason"]
 
 
-def test_current_consumer_has_zero_retired_researchguard_routes(tmp_path):
-    root = Path(__file__).resolve().parents[2]
-    report = check(root)
-    assert report["ok"], report["findings"]
 
-    # Only the current generated FG inventory cache is outside source topology.
-    for relative in (
-        "skills/logic-writing/scripts/provider_preflight.py",
-        "skills/logic-writing/scripts/validate_adapter_result.py",
-        "skills/logic-writing/assets/schemas/adapter-result.schema.json",
-    ):
-        target = tmp_path / relative
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_bytes((root / relative).read_bytes())
-    generated = tmp_path / ".flowguard/cache/inventory.json"
-    generated.parent.mkdir(parents=True)
-    generated.write_text(RETIRED_SKILL_IDS[0], encoding="utf-8")
-    assert check(tmp_path)["ok"]
-    active = tmp_path / "skills/logic-writing/cache/active.md"
-    active.parent.mkdir(parents=True)
-    active.write_text(RETIRED_SKILL_IDS[0], encoding="utf-8")
-    assert any(row["path"] == active.relative_to(tmp_path).as_posix()
-               for row in check(tmp_path)["findings"])
+
+def test_newer_researchguard_release_meets_the_minimum(monkeypatch, tmp_path):
+    _install_distribution_probe(monkeypatch, tmp_path, version="0.5.9")
+
+    def completed(argv, **_kwargs):
+        if argv[1:] == ["--version"]:
+            return SimpleNamespace(returncode=0, stdout="researchguard 0.5.9\n", stderr="")
+        return SimpleNamespace(returncode=0, stdout="member help\n", stderr="")
+
+    monkeypatch.setattr(provider_preflight.subprocess, "run", completed)
+    result = provider_preflight.preflight("logicguard")
+    assert result["status"] == "current_pass"
+    assert result["evidence"]["suite_version"] == "0.5.9"

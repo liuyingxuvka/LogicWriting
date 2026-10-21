@@ -35,6 +35,7 @@ from _common import (
     fingerprint_without,
     logic_writing_source_identity,
     require_mapping,
+    researchguard_version_problem,
 )
 from build_source_unit_manifest import fingerprint_bytes
 import provider_preflight
@@ -53,7 +54,6 @@ from text_extent import describe_extent
 SCHEMA = "logic-writing.production-reader-input.v1"
 READER_SPINE_SCHEMA = "logic-writing.reader-spine.v1"
 READER_DIAGNOSTIC_SCHEMA = "logic-writing.reader-quality-diagnostics.v1"
-PROVIDER_VERSION = provider_preflight.SUPPORTED_RESEARCHGUARD_VERSION
 _RESEARCH_KEYS = {"guard_declaration", "candidate_model", "support_files", "selection_request", "budget"}
 _COMPOSE_KEYS = {"composition_plan", "route_composition", "native_handoff_mapping"}
 _PLANNER_RECORD_SCHEMA = "logic-writing.planner-execution-record.v1"
@@ -556,9 +556,9 @@ class InstalledResearchGuardProvider:
             raise ProductionPipelineBlocked("native_provider_unavailable", report)
         distribution = provider_preflight._researchguard_distribution()
         console = provider_preflight._researchguard_console(distribution)
-        if distribution is None or str(distribution.version) != PROVIDER_VERSION or not console:
+        if distribution is None or researchguard_version_problem(str(distribution.version)) or not console:
             raise ProductionPipelineBlocked("native_provider_identity_mismatch", report)
-        return console, {"provider_id": "researchguard", "version": PROVIDER_VERSION,
+        return console, {"provider_id": "researchguard", "version": str(distribution.version),
                          "primary_path_id": "primary:researchguard:logic",
                          "console": _ref(Path(console)), "preflight": report}
 
