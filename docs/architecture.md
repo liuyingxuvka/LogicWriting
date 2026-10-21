@@ -98,11 +98,14 @@ typed non-pass states.
 ## FlowGuard models
 
 This repository is maintained with FlowGuard; user writing tasks do not use it.
-`.flowguard/models/` holds finite models of the agent-operation plane only:
-routing and Guard ownership, the research packet, the shared reader artifact,
-the four routes, and freshness/closure. `python .flowguard/verification/run_models.py --json`
-runs them. They check ordering and ownership in abstract state; ordinary pytest
-checks the real scripts.
+`.flowguard/models/` holds two models. `route_and_guard_model` checks that one
+request gets exactly one final owner and that the ResearchGuard members run only
+through the `researchguard` console. `reader_artifact_model` checks, for each of
+the four final owners, that closure passes only on an independent review of the
+current bytes. Each model explores its states, keeps known-bad variants that
+must fail, and replays its traces on the real scripts (`select_route`,
+`provider_preflight`, the reader chain and `derive_closure`).
+`python -m flowguard map models` runs them.
 
 Shared kernel state is limited to route decision, artifact identity, reader
 projection identity, and freshness. Fiction and travel own disjoint domain

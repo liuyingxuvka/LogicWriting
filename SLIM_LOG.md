@@ -596,3 +596,22 @@ fiction 按材料问题启用专家，compact 保留故事推进、承诺边界�
 | models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 1.7 |
 | map: `python -m flowguard map check` | check: 0 error(s), 7 warning(s), 0 info | 0.38 |
 | skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.17 |
+
+## LW-39
+
+将八个抽象模型替换为两个含状态探索、已知坏变体、实现/测试锚点及真实脚本轨迹重放的模型。正确实现两项通过；实际改坏收尾和路由分别令指定不变量失败，随后逐字节还原（外部 SHA 证据）。完整 152 项、fiction/travel、文档、隐私及地图通过。原始旧运行器扫描仅命中历史日志，活动面无残留。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| models-positive: `python -m flowguard map models` | models: 2 passed, 0 failed | 29.86 |
+| reader-mutation: `python <external> reader` | models: 1 passed, 1 failed | 4.84 |
+| routing-mutation: `python <external> routing` | models: 1 passed, 1 failed | 12.97 |
+| residual-raw: `git grep -n run_models\|verification/owners\|_native_checks\|models/owners -- . :!CHANGELOG.md :!openspec` | models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 1.7 | | 0.02 |
+| residual-active: `git grep -n run_models\|verification/owners\|_native_checks\|models/owners -- . :!CHANGELOG.md :!openspec :!SLIM_LOG.md` | exit 1; stated assertions verified | 0.01 |
+| registry: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.03 |
+| docs: `python scripts/check_public_docs.py --root . --json` | exit 0; stated assertions verified | 0.08 |
+| privacy: `python scripts/check_privacy.py --root . --json` | exit 0; stated assertions verified | 0.9 |
+| pytest: `python -m pytest -q` | 152 passed in 4.36s | 4.67 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 4.71 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.36 |
+| map: `python -m flowguard map check` | check: 0 error(s), 8 warning(s), 0 info | 0.32 |

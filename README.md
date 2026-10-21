@@ -136,8 +136,9 @@ not compatibility aliases. Their supported intents now route through
 ## Validation
 
 Before publishing, the release workflow runs the full pytest suite, the fiction
-and travel regressions, the finite models in `.flowguard/` and the FlowGuard map
-check on the exact source commit. These checks cover the scripts and contracts,
+and travel regressions, the models in `.flowguard/models/` (which replay their
+traces on the real scripts) and the FlowGuard map check on the exact source
+commit. These checks cover the scripts and contracts,
 not the quality of a particular piece of writing: a reader-facing final closure
 still needs an independent read of the actual artifact.
 

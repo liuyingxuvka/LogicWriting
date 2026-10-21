@@ -17,7 +17,7 @@
 
 ## Validation
 
-- Run the affected tests while developing. CI (`.github/workflows/publish-release.yml`) runs `python -m pytest -q`, `python scripts/run_fiction_regression.py --repository-root . --json`, `python scripts/run_travel_regression.py --repository-root . --json`, `python .flowguard/verification/run_models.py --json` and `python -m flowguard map check` on the release commit.
+- Run the affected tests while developing. CI (`.github/workflows/publish-release.yml`) runs `python -m pytest -q`, `python scripts/run_fiction_regression.py --repository-root . --json`, `python scripts/run_travel_regression.py --repository-root . --json`, `python -m flowguard map models` and `python -m flowguard map check` on the release commit.
 
 ## Model map
 
