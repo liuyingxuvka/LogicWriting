@@ -15,8 +15,7 @@ world judgment or upgrade it into success.
 Run WorldGuard through its portable launcher:
 `python <skills root>/worldguard/scripts/run_worldguard.py check --contract <contract.yaml>`.
 The contract shape is described in WorldGuard's own
-`references/worldguard-contracts.md`. Write the full output to a file and read
-only `status`, `semantic_status`, `gaps`, and `scope_limits`.
+`references/worldguard-contracts.md`. The default output is a short JSON summary with status, semantic_status, gaps, the non-PASS Guards and scope_limits; add --json only when the full report is needed.
 `scripts/provider_preflight.py worldguard` finds the `worldguard` skill installed
 next to `logic-writing`; pass `--provider-root <dir>` only when it is installed
 elsewhere.
@@ -25,3 +24,5 @@ Report WorldGuard's own status unchanged. In route ledgers write it in lower
 case: `PASS` -> `pass`, `FAIL` -> `fail`, `GAP` -> `gap`,
 `BOUNDARY_EXCEEDED` -> `boundary_exceeded`; use `not_run` when WorldGuard did
 not run.
+
+Exit code 0 means PASS, 1 means a non-pass verdict (read status and gaps), 2 means the input could not be read; a non-zero exit is a result, not a crash.
