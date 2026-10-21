@@ -969,3 +969,25 @@ Added actual PATH fallback state/events, two invariants, two genuinely failing k
 | old-fg-path-ignore-native-mutation: `python <external> LW-58 path-ignore --engine-python /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python` | models: 0 passed, 1 failed | 2.55 |
 | old-fg-path-old-native-mutation: `python <external> LW-58 path-old --engine-python /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python` | models: 0 passed, 1 failed | 2.6 |
 | old-fg-models: `python -m flowguard map models` | models: 2 passed, 0 failed | 23.38 |
+
+## LW-59
+
+Updated only the current 4.0.9 release notes to cover LW01–59 and the actual PATH fallback replay. Final checkpoint passed on private real FG0.70.7: full166/1 old-RG source skip, fiction/travel, both executable models, strict map0/0, lint0errors/6 architecture warnings/44info, map verify, release, skill/privacy/docs. Section5 extra checks preserve unfiltered residual hits and classify only root SLIM_LOG history by the explicit coordinator exception; actual installed-member and isolated real-PATH preflights pass. Scratch-only LW+immutable WG0.7.15 sibling installation/check passes and is removed, not a real user installation. OpenSpec executable remains unavailable (optional). New RG0.5.10 native focused bridge and final joint gate wait for that owner's frozen handoff by explicit coordinator instruction; they are not claimed passed here. Existing official FG0.70.6 healthy-model evidence from LW58 covers the identical runtime model source.
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| changelog-coverage: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.05 |
+| version-authority: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.06 |
+| change: `python -m flowguard change` | check: 0 error(s), 0 warning(s), 0 info | 0.53 |
+| public-docs: `python scripts/check_public_docs.py --root . --json` | exit 0; stated assertions verified | 0.11 |
+| privacy: `python scripts/check_privacy.py --root . --json` | exit 0; stated assertions verified | 0.53 |
+| pytest: `python -m pytest -q` | 166 passed, 1 skipped in 10.99s | 11.54 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 9.16 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.61 |
+| models: `python -m flowguard map models` | models: 2 passed, 0 failed | 32.59 |
+| map: `python -m flowguard map check` | check: 0 error(s), 0 warning(s), 0 info | 0.36 |
+| lint: `python -m flowguard map lint` | exit 0; stated assertions verified | 0.44 |
+| verify: `python -m flowguard map verify` | models: 2 declared, 2 executed | 28.51 |
+| release: `python -m flowguard release` | models: 2 declared, 2 executed | 35.56 |
+| skill: `python scripts/validate_skill.py --skill-root skills/logic-writing --json` | exit 0; stated assertions verified | 0.13 |
+| section5-extra: `python <external>` | exit 0; stated assertions verified | 16.83 |

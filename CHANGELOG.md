@@ -25,7 +25,7 @@ Slim release from the slim/2026-10 audit.
 
 - Receipt authority, invocation envelopes, review-execution capture, closure receipts, the ResearchGuard handoff consumption binding and the native depth-receipt fields.
 - The production reader pipeline, the writing-quality experiment harness, the frozen release gate, text and constant locks, the 16.7 MB `.flowguard/models/authority/` store, predecessor retirement records and outdated OpenSpec specs.
-- Eight abstract FlowGuard models; the two remaining models replay their traces on the real reader chain and on real routing and preflight.
+- Eight abstract FlowGuard models; the two remaining models replay their traces on the real reader chain and on real routing and preflight, including the ResearchGuard PATH fallback (a fake `researchguard` command on a temporary PATH).
 
 ### Fixed
 
@@ -36,7 +36,7 @@ Slim release from the slim/2026-10 audit.
 
 ### Audit actions
 
-- Done: LW-01–LW-57.
+- Done: LW-01–LW-59.
 - Skipped: none.
 
 ## [4.0.8]
