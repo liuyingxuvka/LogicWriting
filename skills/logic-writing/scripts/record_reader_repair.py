@@ -40,12 +40,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input", required=True)
     parser.add_argument("--output")
-    parser.add_argument("--execution-root", help="Local immutable writer/judge capture root")
     args = parser.parse_args()
     try:
-        from execution_record_resolver import LocalExecutionRecordResolver
-        resolver = LocalExecutionRecordResolver(args.execution_root) if args.execution_root else None
-        result = validate_request(load_json(args.input), execution_resolver=resolver)
+        result = validate_request(load_json(args.input))
     except (ValidationError, OSError, json.JSONDecodeError) as exc:
         result = validation_result(status="blocked", errors=(str(exc),))
     dump_json(result, args.output)

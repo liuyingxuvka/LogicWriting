@@ -258,7 +258,7 @@ def test_captured_strict_subset_can_progress_while_judgment_still_needs_repair(t
     assert result["verification_evidence"]["status"] == "current"
 
 
-@pytest.mark.parametrize("tamper", ["capture", "status", "judgment", "remaining_ids", "writer_context", "failed_execution"])
+@pytest.mark.parametrize("tamper", ["status", "remaining_ids"])
 def test_current_capture_and_remaining_defects_cannot_be_rewritten(tmp_path, tamper):
     chain = complete_chain(tmp_path, pass_quality=False)
     request = _request(chain)

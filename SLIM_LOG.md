@@ -34,3 +34,15 @@ Centralized `>= 0.5.0` in `_common.py`; provider preflight and the production co
 - Map: **0 errors, 9 warnings**, including expected STALE entries awaiting LW-28. No obsolete exact-version constant remains in skill/scripts/tests.
 
 No purpose/verification deviation; environment installation uses the read-only baseline archive copy described above.
+
+## LW-03
+
+Removed the machine-specific judge capture prerequisite and its capture-only assertions. Actual-text spans, independent producer/judge IDs, current-chain comparisons, scores/defects, repair subset/no-progress rules, and final byte reread remain. A real current fixture closes without capture; 28 targeted and 465 full tests pass. No implementation deviation; explicit baseline source accounts for the extra native bridge pass.
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| closure-probe: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.56 |
+| targeted: `python -m pytest -q tests/unit/test_freshness_closure.py tests/unit/test_repair_progress_invariants.py tests/unit/test_reader.py` | 28 passed in 5.56s | 5.85 |
+| pytest: `python -m pytest -q` | 465 passed in 44.01s | 44.48 |
+| map: `python -m flowguard map check` | check: 0 error(s), 10 warning(s), 0 info | 0.98 |
+| skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.28 |

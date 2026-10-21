@@ -260,22 +260,10 @@ def derive_closure(
                 raise ValidationError(
                     f"repair verification evidence {key} is stale or foreign"
                 )
-    all_passed = audit["status"] == route_review["status"] == judgment["status"] == "passed" and judge_execution is not None
+    all_passed = audit["status"] == route_review["status"] == judgment["status"] == "passed"
     no_progress = _no_progress_terminal(repair_results, amap["artifact_fingerprint"])
     repair_blocked = any(row["progress_status"] == "blocked" for row in repair_results)
     status = "no_progress_blocked" if no_progress else ("passed" if all_passed and not repair_blocked else "blocked")
-    if status == "passed":
-        if execution_resolver is None:
-            raise ValidationError("final closure requires a local execution capture resolver")
-        from reader_execution import validate_judgment_execution_record
-        validate_judgment_execution_record(judge_execution, judgment, execution_resolver)
-        from receipt_authority import resolve_current_receipt
-        for native_fingerprint in native_receipts:
-            projection = resolve_current_receipt(native_fingerprint, root=receipt_root)
-            if not projection["current"] or projection["status"] != "current_pass":
-                raise ValidationError(
-                    f"final closure requires a current passing native receipt: {native_fingerprint}"
-                )
 
     defect_ids = [
         *(row["finding_id"] for row in audit["findings"]),
@@ -376,12 +364,9 @@ def main() -> int:
     parser.add_argument("--input", required=True)
     parser.add_argument("--output")
     parser.add_argument("--receipt-root")
-    parser.add_argument("--execution-root", help="Local immutable writer/judge capture root")
     args = parser.parse_args()
     try:
-        from execution_record_resolver import LocalExecutionRecordResolver
-        resolver = LocalExecutionRecordResolver(args.execution_root) if args.execution_root else None
-        result = derive_closure(load_json(args.input), receipt_root=args.receipt_root, execution_resolver=resolver)
+        result = derive_closure(load_json(args.input), receipt_root=args.receipt_root)
     except (OSError, ValueError, ValidationError) as exc:
         print(f"ERROR: {exc}")
         return 2

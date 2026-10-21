@@ -227,23 +227,15 @@ Preserve three quality responsibilities:
    separated, for reverse outline, clarity, coherence, naturalness, reader fit,
    genre fit, content fidelity, and instruction fidelity.
 
-One review context independent of the writer may perform both the selected
-route's semantic review and the eight reader dimensions in the same actual-text
-review. Record both existing results (`route_review` and `ReaderJudgment`); bind
-the judgment to the current route-review fingerprint and the real captured judge
-execution. These are separate responsibilities, not a requirement for two judge
-calls. Existing single/pair quality experiments keep their declared scoring and
-call budgets. Do not invent a combined output schema or infer either result from
-a plan, a score, or a caller-supplied independence marker.
-The captured output uses the existing ReaderJudgment JSON. After capture, fill
-its execution-record fingerprint and recompute the outer judgment fingerprint;
-all other fields must match the captured JSON. No new combined schema is used.
-
-Self-scored quality, plan review, or a route saying its draft is good cannot
-substitute for these checks. Final closure and a passing judgment receipt require the existing local capture
-resolver; the closure CLI accepts `--execution-root` for that capture. A material
-edit stales the ArtifactMap, bindings,
-audits, judgment, and closure.
+After the deterministic audit, have a reader that did not write the text read
+the actual file, preferably a fresh sub-agent or a separate session. That one
+read may cover both the selected route's review dimensions and the eight reader
+dimensions; it quotes the actual spans it relies on. Record its result as the
+route review and the `ReaderJudgment`, with `producer_id` and `judge_id`
+different. If no separate context is available, self-review is allowed, but
+report it as self-review in the audit note. A plan review, a score, or a route
+saying its own draft is good cannot replace reading the actual text. A material
+edit stales the ArtifactMap, bindings, audits, judgment, and closure.
 
 For document files, keep content evidence and visual evidence separate. Text
 extraction is not proof of correct rendering. If LibreOffice or another required
@@ -274,10 +266,9 @@ shortcuts. A `ReaderRepairResult` may report progress only when real bytes
 changed, preservation passed, and the current independently validated
 judgment exposes a strict subset of the original defect IDs. A renamed,
 added, or caller-only defect list is no progress; a preservation violation or
-missing current evidence is blocked. The repair recorder requires the current
+missing current evidence is blocked. The repair recorder (`scripts/record_reader_repair.py`) requires the current
 ReaderBrief, SharedWriting, deterministic audit, route composition/review and
-judge execution record; its CLI uses `--execution-root` to verify the captured
-JSON and writer/judge context isolation before reporting current progress.
+the current ReaderJudgment.
 Rebuild all byte-bound evidence and rerun the three quality owners after real
 new bytes exist. One real
 `no_progress` result is terminal: do not automatically write another draft or

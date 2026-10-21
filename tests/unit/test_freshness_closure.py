@@ -34,12 +34,6 @@ def test_complete_current_chain_closes(owner, tmp_path, monkeypatch):
     monkeypatch.setattr(reader_pipeline, "_build_reader_audit_from_current", audited)
     result = derive_closure(request)
     assert calls == {"map": 1, "audit": 1}
-    # The actual public final boundary cannot license a synthetic marker.
-    with pytest.raises(ValidationError, match="capture resolver"):
-        closure_module.derive_closure(request)
-    from execution_record_resolver import LocalExecutionRecordResolver
-    with pytest.raises(ValidationError):
-        closure_module.derive_closure(request, execution_resolver=LocalExecutionRecordResolver(tmp_path))
     def changed_during_audit(**kwargs):
         report = original_audit(**kwargs)
         artifact = Path(chain["artifact_map"]["artifact_path"])

@@ -217,7 +217,6 @@
       ],
       "tests": [
         "tests/__init__.py",
-        "tests/adversarial/test_judgment_execution_binding.py",
         "tests/adversarial/test_reader_integrity_regressions.py",
         "tests/authority/test_receipt_authority.py",
         "tests/conftest.py",
@@ -292,7 +291,6 @@
       ],
       "tests": [
         "tests/__init__.py",
-        "tests/adversarial/test_judgment_execution_binding.py",
         "tests/adversarial/test_reader_integrity_regressions.py",
         "tests/conftest.py",
         "tests/contract/test_held_out_quality.py",
@@ -364,7 +362,6 @@
         "shared-contracts"
       ],
       "tests": [
-        "tests/adversarial/test_judgment_execution_binding.py",
         "tests/contract/test_local_execution_backend.py",
         "tests/contract/test_local_execution_backend_lifecycle.py",
         "tests/contract/test_quality_execution_opt_in.py"

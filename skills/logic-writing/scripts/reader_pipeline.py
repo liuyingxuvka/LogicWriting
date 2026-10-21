@@ -1957,24 +1957,6 @@ def _reader_judgment_from_current(value, *, amap, brief, contract, audit, route_
     unrequested = {row["observation_id"] for row in judgment["defects"]} - repair_ids
     if unrequested:
         raise ValidationError(f"ReaderJudgment defects lack repair requests: {sorted(unrequested)}")
-    execution_ok = False
-    if execution_record is not None:
-        from reader_execution import validate_execution_record
-        execution = validate_execution_record(execution_record, lambda record: record.get("independence_status") == "verified")
-        if judgment.get("execution_record_fingerprint") != execution["record_fingerprint"]:
-            raise ValidationError("ReaderJudgment execution record is stale or foreign")
-        if execution["role"] != "judge" or execution["evaluation_mode"] != "single":
-            raise ValidationError("ReaderJudgment requires a single-artifact judge execution")
-        for field, expected_value in {
-            "input_reader_intent_fingerprint": brief["reader_intent_fingerprint"],
-            "input_writer_input_fingerprint": brief["writer_input_fingerprint"],
-            "input_artifact_fingerprint": amap["artifact_fingerprint"],
-        }.items():
-            if execution[field] != expected_value:
-                raise ValidationError(f"ReaderJudgment execution {field} is stale or foreign")
-        execution_ok = execution["role"] == "judge" and execution["terminal_status"] == "completed" and execution["independence_status"] == "verified"
-    elif judgment["status"] == "passed":
-        raise ValidationError("ReaderJudgment passed without a real judge execution record")
     score_pass = min(judgment["scores"].values()) >= 4
     blocking = any(row["severity"] == "blocking" for row in judgment["defects"])
     derived = (
@@ -1983,7 +1965,6 @@ def _reader_judgment_from_current(value, *, amap, brief, contract, audit, route_
         and score_pass
         and not blocking
         and not judgment["required_repairs"]
-        and execution_ok
         else "repair"
     )
     if judgment["status"] != derived:
@@ -2144,18 +2125,12 @@ def record_repair_result(
             artifact_map=amap, required_dimensions=REQUIRED_DIMENSIONS[repair["final_owner"]],
             review_obligations=review_obligations,
         )
-        if execution_record is None or execution_resolver is None:
-            raise ValidationError("repair progress requires a current judge execution and local capture resolver")
         evidence = validate_reader_judgment(
             current_judgment, artifact_map=amap, reader_brief=brief,
             shared_writing=shared_writing, deterministic_audit=deterministic_audit,
             route_review=review, execution_record=execution_record,
             review_obligations=review_obligations,
         )
-        if execution_record.get("terminal_status") != "completed" or execution_record.get("independence_status") != "verified":
-            raise ValidationError("repair progress requires a completed independent judge execution")
-        from reader_execution import validate_judgment_execution_record
-        validate_judgment_execution_record(execution_record, evidence, execution_resolver)
         evidence_ids = _canonicalize_ids(
             (row["observation_id"] for row in evidence["defects"]),
             "current ReaderJudgment defect ids",

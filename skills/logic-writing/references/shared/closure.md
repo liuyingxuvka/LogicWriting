@@ -25,24 +25,18 @@ judgment all to pass. Any defect produces a typed repair request for actual
 units and preservation duties. After real new bytes exist, rebuild every
 dependent record.
 
-The route review and reader dimensions may be assessed together in one context
-independent of the writer. Preserve both existing results, all route dimensions,
-reverse outline and actual spans; the judgment binds the current route review
-and real judge execution. Final pass and broad claims require capture resolution;
-`derive_closure.py --execution-root <capture-root>` uses the existing local
-execution resolver. Final pass also resolves each declared native receipt through
-the existing authority and requires it to be current and passing, even when the
-closure is not persisted. Supply `receipt_root` / `--receipt-root`, or set
-`LOGIC_WRITING_RECEIPT_ROOT` for non-persisting calls. A caller-authored `verified`
-marker does not license pass.
+The route review and the eight reader dimensions may be assessed together by
+one reader that did not write the text (a fresh sub-agent or a separate
+session). Preserve both results, all route dimensions, the reverse outline and
+the quoted actual spans. If no separate context is available, self-review is
+allowed but must be reported as self-review in the audit note. A
+caller-authored `verified` marker does not license pass.
 
-Repair progress requires the same current chain and independently captured
-judge output even when the judgment still needs repair. The repair recorder
-accepts the current ReaderBrief, SharedWriting, deterministic audit, route
-composition/review and judge execution record; use
-`record_reader_repair.py --execution-root <capture-root>` to resolve its actual
-JSON and writer/judge isolation. A self-hashed judgment or caller defect list
-cannot authorize current progress.
+Repair progress requires the same current chain and the current ReaderJudgment
+of the revised text, even when that judgment still needs repair. The repair
+recorder accepts the current ReaderBrief, SharedWriting, deterministic audit,
+route composition/review and ReaderJudgment. A caller-only defect list cannot
+authorize progress.
 
 Repeated closure calls do not demonstrate work. One actual current `no_progress`
 repair result is terminal for that defect lineage. Preserve its input/output
