@@ -831,3 +831,17 @@ ReaderBrief CLI 补全缺省的计划/路线指纹，原生合成计划可由入
 | models: `python -m flowguard map models` | models: 2 passed, 0 failed | 14.51 |
 | map: `python -m flowguard map check` | check: 0 error(s), 9 warning(s), 0 info | 0.39 |
 | skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.12 |
+
+## LW-53
+
+三处成员用法明确指向单一researchguard技能的source/logic/trace路由；控制台命令、主路径ID、范围外成员及预检不变。三份指引各唯一，原始及活动退役技能入口扫描无匹配；完整163项/1跳过、技能和地图通过。对新技能结构的文档同步不冒称旧基线已合并。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| merged-route-guidance: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.04 |
+| old-direct-skills: `git grep -n -E \$(logicguard|sourceguard|traceguard|experimentguard)\b|skills/(logicguard|sourceguard|traceguard|experimentguard) -- *.md *.py *.yaml *.json :!CHANGELOG.md :!openspec :!docs/history :!SLIM_LOG.md` | exit 1; stated assertions verified | 0.03 |
+| pytest: `python -m pytest -q` | 163 passed, 1 skipped in 7.88s | 8.32 |
+| map: `python -m flowguard map check` | check: 0 error(s), 9 warning(s), 0 info | 0.32 |
+| skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.12 |
+| old-direct-skills-raw: `git grep -n -E \$(logicguard|sourceguard|traceguard|experimentguard)\b|skills/(logicguard|sourceguard|traceguard|experimentguard) -- *.md *.py *.yaml *.json` | exit 1; stated assertions verified | 0.02 |
+| old-direct-skills-active: `git grep -n -E \$(logicguard|sourceguard|traceguard|experimentguard)\b|skills/(logicguard|sourceguard|traceguard|experimentguard) -- *.md *.py *.yaml *.json :!CHANGELOG.md :!openspec/changes/archive :!docs/history :!SLIM_LOG.md` | exit 1; stated assertions verified | 0.02 |

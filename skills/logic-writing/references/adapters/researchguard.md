@@ -6,11 +6,11 @@ direct semantic member owners. ResearchGuard also has other native members,
 but they are not active Logic Writing routes in this patch.
 Preflight the selected owner with `scripts/provider_preflight.py`:
 
-| Semantic owner | Console command | Primary path |
-| --- | --- | --- |
-| LogicGuard | `researchguard logic` | `primary:researchguard:logic` |
-| SourceGuard | `researchguard source` | `primary:researchguard:source` |
-| TraceGuard | `researchguard trace` | `primary:researchguard:trace` |
+| Semantic owner | Console command | Primary path | `researchguard` skill route |
+| --- | --- | --- | --- |
+| LogicGuard | `researchguard logic` | `primary:researchguard:logic` | `logic` |
+| SourceGuard | `researchguard source` | `primary:researchguard:source` | `source` |
+| TraceGuard | `researchguard trace` | `primary:researchguard:trace` | `trace` |
 
 Resolve the console from the ResearchGuard distribution installed in the
 running Python; when ResearchGuard is installed in another environment (pipx or

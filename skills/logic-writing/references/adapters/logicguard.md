@@ -12,7 +12,8 @@ LogicGuard route when clear:
 - artifact synthesis for story plans and paragraph blueprints;
 - main LogicGuard route for mixed or ambiguous argument work.
 
-These five capabilities are internal LogicGuard routes. They are not separate
+These five capabilities are internal LogicGuard routes, described in the
+`researchguard` skill's `logic` route. They are not separate
 installed skills or alternate execution paths. Bind the provider handoff to
 `primary:researchguard:logic`; a failed route remains visible and is not retried
 through another member.

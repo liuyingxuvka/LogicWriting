@@ -139,6 +139,8 @@ three direct semantic owners:
   and synthesis plans. Its source-library, structured-artifact,
   model-deepening, artifact-synthesis, and project-library-viewer capabilities
   are internal routes, not separate installed skills.
+- How to run each member is in the one `researchguard` skill: its `source`,
+  `logic` and `trace` routes.
 - `researchguard trace` / `primary:researchguard:trace`: TraceGuard owns
   material temporal, causal, implementation, competing-story,
   counterfactual, and prediction-boundary analysis.
