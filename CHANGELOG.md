@@ -38,6 +38,7 @@ Slim release from the slim/2026-10 audit.
 
 - Done: LW-01–LW-59.
 - Skipped: none.
+- Cross-repo pass: XR-04, XR-05, XR-06, XR-07, XR-11, XR-12; skipped none. Details in the cross-repo action list.
 
 ## [4.0.8]
 
