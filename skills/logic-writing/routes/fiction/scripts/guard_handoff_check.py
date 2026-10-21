@@ -25,7 +25,6 @@ HANDOFF_SCHEMA_VERSION = "storyline-design.guard_handoff.v1"
 REPORT_SCHEMA_VERSION = "storyline-design.guard_handoff_check.report.v1"
 TERMINAL_STATUSES = {"passed", "not_applicable_with_reason", "scoped_out"}
 EXPECTED_GUARD_BY_SURFACE = {
-    "flowguard_process": "flowguard",
     "traceguard_storyline": "traceguard",
     "worldguard_story_claims": "worldguard",
     "logicguard_theme_support": "logicguard",

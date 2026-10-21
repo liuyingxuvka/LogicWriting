@@ -11,7 +11,7 @@
 ## Product boundaries
 
 - `logic-writing` is the only supported entrypoint. Do not add aliases or fallback routes for predecessor skill ids.
-- Preserve SourceGuard, LogicGuard, TraceGuard, WorldGuard, FlowGuard, Documents, and PDF as native domain owners.
+- Preserve SourceGuard, LogicGuard, TraceGuard, WorldGuard, Documents, and PDF as native domain owners.
 - Never put private investigations, machine-specific paths, credentials, or internal coordination records in public release files.
 - A task or release status is derived from current evidence; caller-authored `pass` or `complete` values are not proof.
 

@@ -1,6 +1,6 @@
 # External Guard Receipt Handoff
 
-StorylineDesign does not execute or reinterpret FlowGuard, TraceGuard,
+StorylineDesign does not execute or reinterpret TraceGuard,
 WorldGuard, LogicGuard, or SourceGuard. Each Guard keeps its native owner.
 StorylineDesign may count a Guard surface as passed only by consuming a
 content-addressed terminal handoff.

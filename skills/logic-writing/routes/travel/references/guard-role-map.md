@@ -11,7 +11,6 @@ Use this map before planning routes. Travel Story Planner coordinates these surf
 | Route trace assembly | TraceGuard | temporal route trace, route branches, movement edges, weakest links, fallback links, gap handoff | live fact proof or final prose |
 | Recommendation support | LogicGuard | whether the final recommendation is supported by candidate, trace, feasibility, fit, and limitation evidence | source discovery, route building, or live fact checking |
 | Reader projection | Logic Writing shared reader kernel | traveler-native journey sequence from checked route cards | inventing facts, hiding gaps, or validating feasibility |
-| Process freshness | FlowGuard | stage order, invalidation, skipped checks, stale evidence, install sync, final claim boundary | travel domain facts |
 | Travel runtime contract | Travel Story Planner | travel hard gates, validators, failure fixtures, and closure meaning | replacing Guard-family domain owners |
 
 ## Required Handoffs
@@ -25,7 +24,6 @@ traveler_profile
 -> traveler_fit_review
 -> LogicGuard recommendation_support
 -> shared.reader_native_projection
--> FlowGuard process closure
 ```
 
 ## Handoff Rules

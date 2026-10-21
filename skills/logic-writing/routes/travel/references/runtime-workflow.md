@@ -27,9 +27,8 @@ If evidence is missing for the requested level, downgrade the output instead of 
 13. Build traveler-native guide compiler surfaces: guide projection, travel scene contracts, experience promises, day interfaces when multi-day, local texture index, weather evidence summary, day-heading plan, and reverse-guide review plan.
 14. Project routes into story-shaped traveler-facing prose and an operational appendix without exposing model-room labels. Multi-day guides need visible day or date headings with prose under each day.
 15. Run reverse-guide review against the actual traveler-facing text and return to the earliest failed surface when it finds internal leakage, weak local texture, missing promise payoff, generic risks, missing weather evidence, missing day headings, or broken day handoff.
-16. Use FlowGuard to check process order, stale evidence, installed-copy sync, router evidence, and final claim freshness.
-17. Use the Travel-owned closure to report passed, partial, downgraded, blocked, and skipped checks.
-18. Write `travel-story-planner.plan.v2`, materialize the final guide, bind its repository path and SHA-256, and run the native regression owner. A report or checkbox is not executable closure.
+16. Use the Travel-owned closure to report passed, partial, downgraded, blocked, and skipped checks.
+17. Write `travel-story-planner.plan.v2`, materialize the final guide, bind its repository path and SHA-256, and run the native regression owner. A report or checkbox is not executable closure.
 
 The current executable schema has no former-schema reader. A non-current plan is an explicit repair item.
 

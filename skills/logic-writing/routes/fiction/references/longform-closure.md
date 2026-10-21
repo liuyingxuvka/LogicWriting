@@ -51,7 +51,6 @@ Allowed decisions: passed, partial, blocked, downgraded, or human_review.
 
 Every long-form closure level also carries universal Guard surfaces unless the claim boundary records a current reason:
 
-- `flowguard_process`;
 - `traceguard_storyline`;
 - `worldguard_story_claims`;
 - `logicguard_theme_support`;

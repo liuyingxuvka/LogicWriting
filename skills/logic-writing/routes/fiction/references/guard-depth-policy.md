@@ -14,7 +14,6 @@ or sample prose where no final readiness claim is made.
 Required evidence:
 
 - target artifact and claim boundary;
-- compact FlowGuard process route;
 - one compact story movement model: starting state, change, ending state;
 - main promise/payoff or explicit no-promise boundary;
 - TraceGuard, WorldGuard, LogicGuard, and SourceGuard status or
@@ -28,7 +27,6 @@ or final readiness claims for one bounded story.
 
 Required evidence:
 
-- compact FlowGuard process route with stale-evidence rules;
 - story ledger or equivalent rows for structure, scenes, promises, continuity,
   and support;
 - TraceGuard storyline evidence when chronology, causality, mystery, or
@@ -60,7 +58,6 @@ final manuscript claims.
 
 Required evidence:
 
-- FlowGuard process route with child Guard handoffs and validation freshness;
 - novel ledger as root index;
 - story contribution rows;
 - chapter interfaces and prose blueprints;

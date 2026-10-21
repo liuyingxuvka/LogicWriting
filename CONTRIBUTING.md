@@ -13,7 +13,7 @@ Every change should preserve these boundaries:
    `travel-guide`.
 3. Academic, fiction, and travel routes may request bounded investigation work
    but keep final ownership. A sibling final route is never a child owner.
-4. SourceGuard, LogicGuard, TraceGuard, WorldGuard, FlowGuard, Documents, and PDF retain
+4. SourceGuard, LogicGuard, TraceGuard, WorldGuard, Documents, and PDF retain
    their native domain decisions and native evidence.
 5. `ResearchPacket` remains the investigation evidence handoff; fiction and
    travel keep their route-native models.

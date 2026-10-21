@@ -1,6 +1,6 @@
 ---
 name: logic-writing
-description: Use for deep source-backed investigation, academic writing, fiction planning or revision, and evidence-heavy travel guides. Routes each task to exactly one of four final owners, coordinates the LogicGuard, SourceGuard, and TraceGuard members through the single ResearchGuard console plus WorldGuard, FlowGuard, Documents, and PDF without replacing them, and turns internal models into clear prose for real readers. Skip quick lookups, grammar-only edits, casual copy, and lightweight attraction lists.
+description: Use for deep source-backed investigation, academic writing, fiction planning or revision, and evidence-heavy travel guides. Routes each task to exactly one of four final owners, coordinates the LogicGuard, SourceGuard, and TraceGuard members through the single ResearchGuard console plus WorldGuard, Documents, and PDF without replacing them, and turns internal models into clear prose for real readers. Skip quick lookups, grammar-only edits, casual copy, and lightweight attraction lists.
 ---
 
 # Logic Writing
@@ -103,7 +103,6 @@ three direct semantic owners:
   cause automatic multi-member execution.
 - WorldGuard owns material event, agent, space, resource, access, capability,
   conflict, authority, and norm consistency in real and fictional worlds.
-- FlowGuard owns process order, state, freshness, and closure behavior.
 - Documents owns DOCX/Word/Google Docs mutation, tracked changes, comments,
   rendering, and page-level document QA.
 - PDF owns PDF extraction, creation, rendering, and visual inspection.

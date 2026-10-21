@@ -26,7 +26,6 @@ The current validator owns requested-to-allowed claim derivation and critical su
 Skill development closure needs:
 
 - OpenSpec artifacts complete and verified;
-- FlowGuard process checks pass with shortcut counterexamples blocked;
 - bundle validator pass;
 - good plan validators pass;
 - traveler-native text output validator pass;

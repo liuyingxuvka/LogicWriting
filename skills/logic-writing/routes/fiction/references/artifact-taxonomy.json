@@ -12,7 +12,6 @@
       "base_required_surfaces": [
         "target_artifact",
         "claim_boundary",
-        "flowguard_process",
         "assumptions_and_gaps",
         "partial_boundary"
       ],
@@ -28,7 +27,6 @@
       "base_required_surfaces": [
         "target_artifact",
         "claim_boundary",
-        "flowguard_process",
         "compact_story_movement",
         "main_promise_boundary",
         "traceguard_storyline",
@@ -49,7 +47,6 @@
       "base_required_surfaces": [
         "target_artifact",
         "claim_boundary",
-        "flowguard_process",
         "traceguard_storyline",
         "worldguard_story_claims",
         "logicguard_theme_support",
@@ -79,7 +76,6 @@
       "base_required_surfaces": [
         "target_artifact",
         "claim_boundary",
-        "flowguard_process",
         "traceguard_storyline",
         "worldguard_story_claims",
         "logicguard_theme_support",

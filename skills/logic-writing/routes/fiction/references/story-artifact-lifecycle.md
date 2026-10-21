@@ -13,7 +13,7 @@ route. Infer the requested artifact and then choose evidence depth from
 Every story task uses the same Guarded Story Lifecycle. Artifact size changes
 the amount of evidence, not whether Guard stages exist. A micro story may use
 compact rows. A novel uses layered rows. A short artifact does not get to skip
-FlowGuard, TraceGuard, WorldGuard, LogicGuard, SourceGuard, model evidence, or
+TraceGuard, WorldGuard, LogicGuard, SourceGuard, model evidence, or
 closure boundaries when those surfaces are material.
 
 ## Universal Lifecycle
@@ -23,7 +23,6 @@ Run substantive work through this order:
 ```text
 goal intake
 -> artifact route and claim-boundary inference
--> FlowGuard process route / story development flowgraph
 -> evidence-depth decision
 -> StorylineDesign ledger or compact story model
 -> child Guard consideration: TraceGuard, WorldGuard, LogicGuard, SourceGuard
@@ -39,8 +38,6 @@ goal intake
 
 ## Child Guard Ownership
 
-- FlowGuard owns stage order, child Guard handoff order, evidence freshness,
-  stale evidence, skipped checks, artifact versions, and final claim boundary.
 - TraceGuard owns true event order, causal chain, protagonist investigation
   order, reader revelation order, trace gaps, and competing explanations.
 - WorldGuard owns story-world event, capability, access, resource, authority,
@@ -73,7 +70,6 @@ claim boundary:
 Before any complete, final, high-quality, publishable, book-level, or
 ready-to-use claim, aggregate:
 
-- the FlowGuard process route and evidence-freshness status;
 - the StorylineDesign model surface at the selected depth;
 - TraceGuard, WorldGuard, LogicGuard, and SourceGuard statuses or
   not-applicable reasons;

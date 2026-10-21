@@ -35,7 +35,7 @@ Retain the previous directory outside the active skill root for rollback.
 The old `storyline-design` and `travel-story-planner` ids remain retired with
 no runtime aliases. Move any old active directories outside the skill root;
 all supported intents enter through `$logic-writing`. Keep separate native
-SourceGuard, LogicGuard, TraceGuard, WorldGuard, FlowGuard, Documents and PDF
+SourceGuard, LogicGuard, TraceGuard, WorldGuard, Documents and PDF
 responsibilities. Source parity, installation, Git tag and hosted Release
 identities are checked separately. Predecessor repository deletion remains
 user-owned.

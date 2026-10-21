@@ -270,3 +270,19 @@ Removed obsolete provider/current-release literals from active prompts, adapter 
 | travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.57 |
 | models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 2.44 |
 | map: `python -m flowguard map check` | check: 0 error(s), 10 warning(s), 0 info | 0.75 |
+
+## LW-20
+
+将 FlowGuard 流程要求、适配器和预检移出用户写作任务，保留仓库维护地图及正文泄漏检测。实际枚举中第三处提示原文少了 compact，按同一目的删除并复核；活动技能仅余四处允许的检测常量。完整 169 项和三回归、文档、地图、技能通过；flowguard 预检明确拒绝为非法选择。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| provider-scope: `python skills/logic-writing/scripts/provider_preflight.py flowguard` | exit 2; stated assertions verified | 0.1 |
+| residual: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.08 |
+| docs: `python scripts/check_public_docs.py --root . --json` | exit 0; stated assertions verified | 0.08 |
+| pytest: `python -m pytest -q` | 169 passed in 5.70s | 6.1 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 11.27 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 1.65 |
+| models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 3.69 |
+| map: `python -m flowguard map check` | check: 0 error(s), 10 warning(s), 0 info | 1.48 |
+| skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.4 |

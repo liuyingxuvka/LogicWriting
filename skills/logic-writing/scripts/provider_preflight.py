@@ -34,9 +34,7 @@ SCOPE_OUT_PROVIDERS = {
     "experimentguard": "ExperimentGuard is not an active Logic Writing provider.",
     "researchguard": "The ResearchGuard umbrella route is not an active Logic Writing provider.",
 }
-MODULE_PROVIDERS = {
-    "flowguard": ("flowguard", ("SCHEMA_VERSION", "FlowGuardCheckPlan")),
-}
+
 SKILL_PROVIDERS = {
     "worldguard": ("worldguard", ()),
     "documents": ("documents", ("docx",)),
@@ -252,30 +250,6 @@ def preflight(provider: str, *, provider_root: str | None = None, require_render
                     available = bool(member_probe.get("passed"))
                     evidence["member_capability_probe"] = member_probe
                     status = "current_pass" if available else "provider_unavailable"
-    elif provider in MODULE_PROVIDERS:
-        module_name, required_capabilities = MODULE_PROVIDERS[provider]
-        try:
-            module = importlib.import_module(module_name)
-            missing = [name for name in required_capabilities if not hasattr(module, name)]
-            version = getattr(module, "__version__", None) or getattr(module, "SCHEMA_VERSION", None)
-            available = not missing and version is not None
-            evidence.update(
-                {
-                    "module_importable": True,
-                    "provider_version": str(version) if version is not None else None,
-                    "capability_probe": {name: hasattr(module, name) for name in required_capabilities},
-                    "missing_capabilities": missing,
-                }
-            )
-        except Exception as exc:
-            available = False
-            evidence.update(
-                {
-                    "module_importable": False,
-                    "probe_error": f"{type(exc).__name__}: {exc}",
-                }
-            )
-        status = "current_pass" if available else "provider_unavailable"
     elif provider == "worldguard":
         status, portable_evidence = _worldguard_preflight(provider_root)
         evidence.update(portable_evidence)
@@ -332,7 +306,6 @@ def main():
     parser.add_argument(
         "provider",
         choices=tuple(RESEARCHGUARD_MEMBERS)
-        + tuple(MODULE_PROVIDERS)
         + tuple(SKILL_PROVIDERS)
         + tuple(SCOPE_OUT_PROVIDERS),
     )

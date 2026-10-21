@@ -19,7 +19,6 @@ import storyline_route_check
 
 
 UNIVERSAL_GUARD_SURFACES = [
-    "flowguard_process",
     "traceguard_storyline",
     "worldguard_story_claims",
     "logicguard_theme_support",

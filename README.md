@@ -87,7 +87,6 @@ Logic Writing is an orchestration shell, not a replacement for its providers:
   counterfactual, and prediction-boundary analysis.
 - WorldGuard owns material consistency across events, agents, spaces,
   resources, capabilities, conflicts, authority, and norms.
-- FlowGuard owns workflow order, state, freshness, and closure behavior.
 - Documents and PDF own their native file mutation, extraction, rendering, and
   visual inspection boundaries.
 

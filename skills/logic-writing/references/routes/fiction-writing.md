@@ -47,7 +47,7 @@ Artifact size changes evidence depth; it does not remove the lifecycle.
 
 ## Preserve specialist authority
 
-FlowGuard process-route evidence owns lifecycle order and freshness. TraceGuard,
+TraceGuard,
 WorldGuard, LogicGuard, and SourceGuard are passed, partial, blocked, stale, or
 `not_applicable_with_reason`; absence is never silently converted into success.
 TraceGuard owns temporal and revelation
