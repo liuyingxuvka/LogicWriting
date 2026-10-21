@@ -59,7 +59,6 @@
       "files": [
         "skills/logic-writing/assets/schemas/claim-support.schema.json",
         "skills/logic-writing/assets/schemas/research-packet.schema.json",
-        "skills/logic-writing/assets/schemas/researchguard-consumption-binding.schema.json",
         "skills/logic-writing/assets/schemas/researchguard-logic-handoff.schema.json",
         "skills/logic-writing/assets/schemas/source-registry.schema.json",
         "skills/logic-writing/assets/schemas/source-unit-manifest.schema.json",
@@ -75,7 +74,6 @@
       ],
       "entrypoints": [
         "skills/logic-writing/scripts/researchguard_handoff.py:build_researchguard_handoff",
-        "skills/logic-writing/scripts/researchguard_handoff.py:validate_handoff_consumption",
         "skills/logic-writing/scripts/validate_research_packet.py:validate_research_packet"
       ],
       "state": [

@@ -72,8 +72,8 @@ Field shapes are in `assets/schemas/`.
    `writing_request`, `decision_id`, `decided_at`; returns the RouteDecision.
 2. `python scripts/build_reader_brief.py --input brief-request.json` with
    `route_decision`, `content_boundaries`, `composition_plan`,
-   `route_composition`, `brief_id` (add `native_handoff` and `native_plan`
-   only when a ResearchGuard synthesis plan is used).
+   `route_composition`, `brief_id` (add `native_handoff`, `native_plan` and
+   `native_handoff_mapping` only when a ResearchGuard synthesis plan is used).
 3. Write the artifact as UTF-8 text or Markdown.
 4. `python scripts/build_artifact_map.py --input map-request.json` with
    `artifact_path`, `map_id`, `language`, `artifact_format`.
@@ -160,11 +160,7 @@ ReaderBrief. This bridge carries the reader-selected unit order, argument
 closure, source branch ids, and dispositions while retaining the native result
 locator as an opaque reference. A blocked or stale native plan remains
 blocked; the bridge never licenses prose quality or final closure.
-Join the semantic handoff to the current ReaderBrief with
-`bind_handoff_consumption` and validate the resulting
-`researchguard.logic.consumption-binding.v1` against its bundled schema. The
-binding must exhaustively cover native units and planned units while preserving
-all current input fingerprints.
+
 Read [references/adapters/researchguard.md](references/adapters/researchguard.md)
 before a ResearchGuard handoff, then load only the selected member adapter
 reference under `references/adapters/`.

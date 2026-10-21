@@ -9,11 +9,8 @@ import sys
 import pytest
 
 from _common import ValidationError, fingerprint, fingerprint_without
-from schema_validation import SchemaValidationError, assert_schema_valid
 from researchguard_handoff import (
-    bind_handoff_consumption,
     build_researchguard_handoff,
-    validate_handoff_consumption,
     validate_researchguard_handoff,
 )
 
@@ -314,79 +311,39 @@ def test_native_predecessor_graph_rejects_cycles_outside_body_order():
 
 
 
-def test_semantic_handoff_can_be_joined_only_by_an_exhaustive_reader_mapping():
-    plan = _plan()
-    native_inputs = {
-        "reader_intent_fingerprint": fingerprint({"intent": "intent-1"}),
-        "native_receipt_fingerprint": fingerprint({"receipt": "receipt-1"}),
-        "native_receipt_locator": "fixture://researchguard/logic/receipt-1",
-    }
-    handoff = build_researchguard_handoff(
-        plan,
-        **native_inputs,
-        native_result_locator="fixture://researchguard/logic/synthesis-plan-semantic",
-    )
-    assert handoff["stage"] == "semantic"
-    composition = {
-        "planned_units": [{"planned_unit_id": "planned:root"}],
-    }
-    brief = {
-        "brief_fingerprint": "",
-        "reader_intent_fingerprint": native_inputs["reader_intent_fingerprint"],
-        "writer_input_fingerprint": fingerprint({"writer": "current"}),
-        "composition_plan": composition,
-    }
-    brief["brief_fingerprint"] = fingerprint_without(brief, "brief_fingerprint")
-    mapping = [{
-        "native_unit_id": "unit:root",
-        "planned_unit_ids": ["planned:root"],
-        "disposition": "body",
-        "reason": "The selected native unit is the central reader unit.",
-    }]
-    binding = bind_handoff_consumption(handoff, brief, mapping)
-    assert binding["schema_version"] == "researchguard.logic.consumption-binding.v1"
-    assert_schema_valid("researchguard-consumption-binding.schema.json", binding)
-    assert validate_handoff_consumption(binding, handoff, brief, mapping) == binding
-    forged = copy.deepcopy(binding)
-    forged.pop("unit_mapping")
-    with pytest.raises(SchemaValidationError, match="unit_mapping"):
-        assert_schema_valid("researchguard-consumption-binding.schema.json", forged)
-    with pytest.raises(ValidationError, match="unit_mapping"):
-        bind_handoff_consumption(handoff, brief, [])
 
 
-def test_consumption_binding_rejects_partial_planned_unit_coverage():
-    plan = _plan()
-    native_inputs = {
-        "reader_intent_fingerprint": fingerprint({"intent": "intent-1"}),
-        "native_receipt_fingerprint": fingerprint({"receipt": "receipt-1"}),
-        "native_receipt_locator": "fixture://researchguard/logic/receipt-1",
-    }
+
+
+def test_reader_brief_requires_an_exhaustive_native_unit_mapping(tmp_path):
+    from reader_pipeline import build_reader_brief
+    from tests.v2_support import make_reader_chain
+
+    chain = make_reader_chain(tmp_path / "reader-chain", owner="investigation")
+    base_brief = chain["reader_brief"]
     handoff = build_researchguard_handoff(
-        plan,
-        **native_inputs,
-        native_result_locator="fixture://researchguard/logic/synthesis-plan-partial",
+        _plan(),
+        reader_intent_fingerprint=base_brief["reader_intent_fingerprint"],
+        native_result_locator="fixture://researchguard/logic/synthesis-plan-mapping",
     )
-    brief = {
-        "brief_fingerprint": "",
-        "reader_intent_fingerprint": native_inputs["reader_intent_fingerprint"],
-        "writer_input_fingerprint": fingerprint({"writer": "current"}),
-        "composition_plan": {
-            "planned_units": [
-                {"planned_unit_id": "planned:root"},
-                {"planned_unit_id": "planned:descendant"},
-            ],
-        },
+    request = {
+        "route_decision": chain["route_decision"],
+        "content_boundaries": base_brief["content_boundaries"],
+        "composition_plan": chain["plan"],
+        "route_composition": chain["route_composition"],
+        "brief_id": "brief:native-mapping",
+        "native_handoff": handoff,
     }
-    brief["brief_fingerprint"] = fingerprint_without(brief, "brief_fingerprint")
     mapping = [{
         "native_unit_id": "unit:root",
-        "planned_unit_ids": ["planned:root"],
+        "planned_unit_ids": ["unit:answer"],
         "disposition": "body",
-        "reason": "The central native unit is mapped to the lead planned unit.",
+        "reason": "The native conclusion is the central reader unit.",
     }]
-    with pytest.raises(ValidationError, match="every planned unit"):
-        bind_handoff_consumption(handoff, brief, mapping)
+    brief = build_reader_brief(**request, native_handoff_mapping=mapping)
+    assert brief["writer_input"]["native_handoff_mapping"] == mapping
+    with pytest.raises(ValidationError, match="exactly cover the current native units"):
+        build_reader_brief(**request, native_handoff_mapping=[])
 
 
 def test_real_native_researchguard_plan_round_trips_into_reader_brief(tmp_path):
@@ -424,8 +381,5 @@ def test_real_native_researchguard_plan_round_trips_into_reader_brief(tmp_path):
         native_handoff_mapping=mapping,
     )
     validate_writer_input(brief["writer_input"], reader_brief=brief, composition_plan=chain["plan"])
-    binding = bind_handoff_consumption(handoff, brief, mapping)
-    assert validate_handoff_consumption(binding, handoff, brief, mapping) == binding
     assert brief["writer_input"]["native_handoff"]["native_result_fingerprint"] == fingerprint(native_plan)
-    assert binding["native_unit_ids"] == ["u0"]
-    assert binding["planned_unit_ids"] == ["unit:answer"]
+    assert brief["writer_input"]["native_handoff_mapping"] == mapping

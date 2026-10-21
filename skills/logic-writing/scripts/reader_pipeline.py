@@ -1045,9 +1045,7 @@ def build_reader_brief(
         if native_handoff_mapping is None:
             raise ValidationError("a ResearchGuard handoff requires an explicit native-to-reader unit mapping")
         # Validate the mapping against the current composition before the
-        # writer projection is constructed.  The full binding (including the
-        # brief and writer fingerprints) is emitted by bind_handoff_consumption
-        # after this function returns.
+        # writer projection is constructed.
         planned_ids = {
             str(row["planned_unit_id"])
             for row in plan.get("planned_units", [])

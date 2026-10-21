@@ -49,11 +49,7 @@ still be valid lowercase SHA-256 digests.
 `experimentguard` and the `researchguard run` umbrella are explicit scope-outs
 for Logic Writing; they execute no provider command.
 
-After a semantic handoff is joined to a current ReaderBrief, the adapter emits
-one `researchguard.logic.consumption-binding.v1` artifact. The
-`researchguard-consumption-binding.schema.json` contract requires an
-exhaustive native-unit to planned-unit mapping and binds the handoff,
-ReaderIntent, CompositionPlan, ReaderBrief, and writer projection fingerprints.
-Use `bind_handoff_consumption` and `validate_handoff_consumption`; an empty,
-partial, stale, blocked, or unknown-unit mapping cannot enter the writing
-workspace.
+`scripts/build_reader_brief.py` takes the semantic handoff as `native_handoff`
+with a `native_handoff_mapping` that maps every native unit to planned units
+and covers every planned unit; an empty, partial, blocked, or unknown-unit
+mapping cannot enter the writing workspace.

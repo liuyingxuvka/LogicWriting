@@ -46,7 +46,6 @@ SUPPORTED_SCHEMA_NAMES = (
     "reader-repair-request.schema.json",
     "reader-repair-result.schema.json",
     "researchguard-logic-handoff.schema.json",
-    "researchguard-consumption-binding.schema.json",
     "research-packet.schema.json",
     "revision-provenance.schema.json",
     "route-decision.schema.json",

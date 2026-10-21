@@ -430,3 +430,19 @@ SKILL 增补实际命令与输入字段，13 项命令在技能根帮助均正�
 | travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.59 |
 | models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 1.72 |
 | map: `python -m flowguard map check` | check: 0 error(s), 0 warning(s), 0 info | 0.4 |
+
+## LW-29
+
+删除重复消费绑定记录及模式，完整映射仅由建 ReaderBrief 的原有检查负责；新增空映射实际拒绝断言，原生计划身份仍绑定。桥接有源码 10 项通过、缺源码 9 项通过/1 跳过，完整 164 项及三回归、地图、技能通过，指定活动残留为零。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| native-bridge: `python -m pytest -q tests/contract/test_researchguard_handoff.py` | 10 passed in 0.84s | 1.38 |
+| native-bridge-no-source: `python -c <bounded action probe; transcript external>` | 9 passed, 1 skipped in 0.27s | 0.84 |
+| residual: `git grep -n consumption-binding\|bind_handoff_consumption\|validate_handoff_consumption\|CONSUMPTION_BINDING_SCHEMA -- skills tests scripts .flowguard` | exit 1; stated assertions verified | 0.02 |
+| pytest: `python -m pytest -q` | 164 passed in 14.54s | 15.11 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 9.31 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.52 |
+| models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 2.13 |
+| map: `python -m flowguard map check` | check: 0 error(s), 3 warning(s), 0 info | 1.39 |
+| skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.14 |
