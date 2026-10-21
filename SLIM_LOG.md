@@ -80,3 +80,18 @@ Recognizes the docx skill without requiring an unrelated render token; PDF behav
 | docx-smoke: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.15 |
 | pytest: `python -m pytest -q` | 469 passed in 68.98s (0:01:08) | 69.43 |
 | map: `python -m flowguard map check` | check: 0 error(s), 11 warning(s), 0 info | 0.84 |
+
+## LW-07
+
+WorldGuard defaults to the sibling skill without changing its help-only availability probe or upgrading native non-pass states. Travel may honestly record not_run. The isolated install smoke used unchanged baseline WorldGuard and passed sibling discovery; 41 targeted and 471 full tests plus all regressions pass, map zero errors. Scratch uses an owned temporary directory instead of a shared fixed path.
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| targeted: `python -m pytest -q tests/unit/test_provider_preflight.py tests/unit/test_travel.py tests/contract/test_adapters.py` | 41 passed in 4.52s | 5.19 |
+| no-sibling: `python skills/logic-writing/scripts/provider_preflight.py worldguard` | exit 1; stated assertions verified | 0.16 |
+| installed-baseline-worldguard: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.5 |
+| pytest: `python -m pytest -q` | 471 passed in 56.15s | 57.3 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 11.09 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 1.13 |
+| models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 2.49 |
+| map: `python -m flowguard map check` | check: 0 error(s), 12 warning(s), 0 info | 0.98 |

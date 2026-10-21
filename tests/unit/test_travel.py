@@ -48,3 +48,13 @@ def test_native_travel_plan_preserves_fallback_reachability(monkeypatch):
         "closure_report.status.mismatch",
     }
     assert codes == set(case["expected_issue_codes"])
+
+
+def test_world_check_may_record_not_run(monkeypatch):
+    monkeypatch.syspath_prepend(str(ROUTE / "scripts"))
+    from travel_contract import validate_plan
+    base_path = ROUTE / "examples/good_city_couple_trip/plan.json"
+    plan = json.loads(base_path.read_text(encoding="utf-8"))
+    plan["world_feasibility"]["checks"][0]["status"] = "not_run"
+    codes = {row["code"] for row in validate_plan(plan, plan_path=base_path, repository_root=ROOT)}
+    assert "world_feasibility.status.invalid" not in codes

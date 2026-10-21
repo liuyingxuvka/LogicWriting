@@ -124,10 +124,12 @@ def _skill_manifest(root: Path):
 
 def _worldguard_preflight(provider_root):
     """Check only the explicitly selected portable launcher and its help."""
-    evidence = {"provider_console_id": "worldguard-portable", "provider_execution": "help_only"}
-    if not provider_root:
-        return "provider_unavailable", {**evidence, "reason": "provider_root_required"}
-    root = Path(provider_root).expanduser().resolve()
+    evidence = {"provider_console_id": "worldguard-portable", "provider_execution": "help_only",
+                "provider_root_source": "explicit" if provider_root else "sibling_skill"}
+    if provider_root:
+        root = Path(provider_root).expanduser().resolve()
+    else:
+        root = Path(__file__).resolve().parents[2] / "worldguard"
     paths = {name: root / name for name in (
         "SKILL.md", "scripts/run_worldguard.py", "runtime/worldguard/__init__.py", "runtime/worldguard/cli.py",
     )}
