@@ -36,3 +36,32 @@ def test_check_reports_a_changed_installed_copy(tmp_path):
     checked = run(INSTALL, "--target", tmp_path, "--check")
     assert checked.returncode == 1
     assert "differs: SKILL.md" in checked.stdout
+
+
+def test_comparison_rechecks_same_size_and_mtime_bytes_in_one_process(tmp_path):
+    import importlib.util
+    import os
+    import shutil
+
+    spec = importlib.util.spec_from_file_location("installer_byte_check", INSTALL)
+    installer = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(installer)
+    source, target = tmp_path / "source", tmp_path / "target"
+    names = ("SKILL.md", "agents/openai.yaml")
+    for name in names:
+        for root in (source, target):
+            path = root / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(installer.SOURCE / name, path)
+    assert installer.differences(source, target) == []
+    for name in names:
+        path = target / name
+        original, stat = path.read_bytes(), path.stat()
+        path.write_bytes(bytes([original[0] ^ 1]) + original[1:])
+        os.utime(path, ns=(stat.st_atime_ns, stat.st_mtime_ns))
+        assert path.stat().st_size == stat.st_size
+        assert path.stat().st_mtime_ns == stat.st_mtime_ns
+        assert installer.differences(source, target) == [f"differs: {name}"]
+        path.write_bytes(original)
+        os.utime(path, ns=(stat.st_atime_ns, stat.st_mtime_ns))
+        assert installer.differences(source, target) == []

@@ -758,3 +758,16 @@ CLI 请求可直接引用相对 JSON 对象文件及上一步结果对象，内�
 | travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.35 |
 | models: `python -m flowguard map models` | models: 2 passed, 0 failed | 13.95 |
 | map: `python -m flowguard map check` | check: 0 error(s), 6 warning(s), 0 info | 0.34 |
+
+## Installer helper byte comparison
+
+A repeated `differences()` call in one process could reuse `filecmp`'s cached
+result after a same-size, same-mtime byte edit. Fresh CLI processes correctly
+detected changed copies. Compare current bytes directly instead; file filters,
+file-set comparison and installation behavior stay the same.
+
+A real two-file temporary-copy regression first failed against the previous
+helper. After the fix, the three installer tests pass, including unchanged,
+same-size/same-mtime modified and restored copies. The release component was
+reviewed and confirmed; the map has zero errors. Detailed reproduction and
+exact source evidence stay outside the repository.

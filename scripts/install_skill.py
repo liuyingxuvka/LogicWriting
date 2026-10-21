@@ -12,7 +12,6 @@ ResearchGuard and WorldGuard are installed separately.
 from __future__ import annotations
 
 import argparse
-import filecmp
 import os
 import shutil
 import sys
@@ -50,7 +49,7 @@ def differences(src: Path, dst: Path) -> list[str]:
     present = skill_files(dst, installed=True)
     out = [f"only in source: {rel}" for rel in sorted(wanted - present)]
     out += [f"only in target: {rel}" for rel in sorted(present - wanted)]
-    out += [f"differs: {rel}" for rel in sorted(wanted & present) if not filecmp.cmp(src / rel, dst / rel, shallow=False)]
+    out += [f"differs: {rel}" for rel in sorted(wanted & present) if (src / rel).read_bytes() != (dst / rel).read_bytes()]
     return out
 
 
