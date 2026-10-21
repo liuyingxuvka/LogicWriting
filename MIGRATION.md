@@ -1,4 +1,4 @@
-# Migration to Logic Writing 4.0.8
+# Migration to the current Logic Writing
 
 This patch keeps the `logic-writing` entrypoint and four final owners. The
 three native research members need ResearchGuard at or above the minimum

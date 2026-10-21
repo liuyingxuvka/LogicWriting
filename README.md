@@ -19,10 +19,6 @@ one final owner, calls specialist Guard owners through their current provider
 entrypoints for native judgments, and turns the result into language a real
 reader can follow.
 
-> Source status: repository metadata declares `4.0.8`. Release, installation,
-> and predecessor-retirement claims require their own current receipts; the
-> version string alone proves none of them.
-
 ## Why one skill
 
 These writing jobs share a real core: preserve the complete ReaderIntent, plan

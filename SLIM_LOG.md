@@ -304,3 +304,17 @@ Removed obsolete provider/current-release literals from active prompts, adapter 
 | travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.64 |
 | models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 2.67 |
 | map: `python -m flowguard map check` | check: 0 error(s), 10 warning(s), 0 info | 0.78 |
+
+## LW-22
+
+删除一次性前身合并/退役记录和历史脚本，去掉 README 冻结声明，迁移页标题不再维护当前版本字面量。活动当前版本声明精确剩四行；原始扫描的历史日志命中另存并明确分类，仅根 SLIM_LOG 享有授权例外。完整 162 项、文档及地图通过。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| versions-raw: `git grep -n 4\.0\.8 -- . :!CHANGELOG.md :!openspec` | exit 0; stated assertions verified | 0.01 |
+| versions-active: `git grep -n 4\.0\.8 -- . :!CHANGELOG.md :!openspec :!SLIM_LOG.md` | exit 0; stated assertions verified | 0.01 |
+| skillguard-raw: `git grep -n -i skillguard -- . :!CHANGELOG.md :!openspec/changes` | exit 1; stated assertions verified | 0.01 |
+| skillguard-active: `git grep -n -i skillguard -- . :!CHANGELOG.md :!openspec/changes :!SLIM_LOG.md` | exit 1; stated assertions verified | 0.01 |
+| docs: `python scripts/check_public_docs.py --root . --json` | exit 0; stated assertions verified | 0.08 |
+| pytest: `python -m pytest -q` | 162 passed in 6.46s | 6.91 |
+| map: `python -m flowguard map check` | check: 0 error(s), 10 warning(s), 0 info | 0.38 |
