@@ -240,11 +240,9 @@ Read [references/shared/closure.md](references/shared/closure.md). Final status
 comes from the current actual-text checks and exact fingerprints. Caller-authored
 `pass`, `complete`, or `reader_native` fields are claims, not proof.
 
-Use `scripts/propagate_staleness.py` when an input identity changes, then use
-`scripts/derive_closure.py` on the complete current v2 chain. Staleness
-crosses from operation to release, or back, only through an explicit dependency
-edge. A changed user artifact therefore cannot invalidate release evidence by
-implication, and a green release receipt cannot validate reader-facing prose.
+Run `scripts/derive_closure.py` on the complete current v2 chain. It re-reads
+the current artifact bytes, so an edit made after review makes closure fail
+instead of passing.
 
 Never strengthen these states into pass: `not_run`, `stale`,
 `provider_unavailable`, `dependency_unavailable`, `access_gap`,

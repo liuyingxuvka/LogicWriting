@@ -177,3 +177,18 @@ Removed obsolete provider/current-release literals from active prompts, adapter 
 | models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 3.03 |
 | map: `python -m flowguard map check` | check: 0 error(s), 8 warning(s), 0 info | 1.15 |
 | skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.33 |
+
+## LW-14
+
+删除无消费方的陈旧传播和叶子收据写入层；derive_closure 返回当前收尾结果，命令仅保留 input/output。保留实际字节重读和路线评审清单。完整 248 项测试、三项回归、静态技能和地图通过，指定活动残留为零。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| help: `python skills/logic-writing/scripts/derive_closure.py --help` | exit 0; stated assertions verified | 0.16 |
+| residual: `git grep -n propagate_staleness\|reader_receipts\|validate_judgment_receipt\|receipt_store\|build_obligation_manifest\|build_reader_brief_receipt -- skills tests scripts AGENTS.md README.md README.zh-CN.md CONTRIBUTING.md` | exit 1; stated assertions verified | 0.02 |
+| pytest: `python -m pytest -q` | 248 passed in 26.17s | 26.66 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 14.21 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.51 |
+| models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 2.59 |
+| map: `python -m flowguard map check` | check: 0 error(s), 8 warning(s), 0 info | 0.64 |
+| skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.29 |

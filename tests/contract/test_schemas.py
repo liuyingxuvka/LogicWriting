@@ -50,7 +50,3 @@ def test_current_reader_contracts_reject_unknown_fields(v2_examples, name):
     value["legacy_reader_alias"] = True
     with pytest.raises(SchemaValidationError, match="additionalProperties"):
         assert_schema_valid(name, value)
-
-
-def test_schema_inventory_has_no_unregistered_files():
-    assert len(SUPPORTED_SCHEMA_NAMES) == 30

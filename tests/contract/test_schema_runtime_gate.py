@@ -33,7 +33,6 @@ EXPECTED = {
     "fiction-composition.schema.json",
     "investigation-composition.schema.json",
     "local-single-judgment.schema.json",
-    "obligation-manifest.schema.json",
     "reader-audit.schema.json",
     "reader-brief.schema.json",
     "reader-execution-record.schema.json",
@@ -201,7 +200,7 @@ def test_runtime_does_not_depend_on_site_packages():
     )
 
     assert completed.returncode == 0, completed.stderr
-    assert completed.stdout.strip() == "30"
+    assert completed.stdout.strip() == str(len(EXPECTED))
 
 
 def test_schema_runtime_source_has_no_secondary_validator_import():

@@ -13,7 +13,6 @@ from receipt_authority import (
     resolve_current_receipt,
     resolve_latest_receipt_by_owner,
 )
-from receipt_store import store_receipt
 from tests.support import make_adapter_result, make_closure_contract, make_reader_chain
 from validate_adapter_result import build_adapter_receipt
 
@@ -85,18 +84,6 @@ def test_public_authority_api_does_not_export_generic_commit_or_input_rewind():
     assert "current_inputs" not in resolve_current_receipt.__code__.co_varnames
 
 
-def test_untrusted_store_cannot_create_authority(current_packet, tmp_path):
-    untrusted_root = tmp_path / "untrusted-only"
-    failed = copy.deepcopy(current_packet["observation_receipt"])
-    failed["status"] = "failed"
-    failed["receipt_fingerprint"] = fingerprint(
-        {key: value for key, value in failed.items() if key != "receipt_fingerprint"}
-    )
-
-    stored = store_receipt(failed, untrusted_root)
-    assert stored["authoritative"] is False
-    with pytest.raises(ValidationError, match="not registered"):
-        resolve_current_receipt(failed["receipt_fingerprint"], root=untrusted_root)
 
 
 def test_latest_failed_attempt_supersedes_older_pass(current_packet, receipt_root):
@@ -161,24 +148,4 @@ def test_index_rollback_with_extra_objects_is_rejected(current_packet, receipt_r
         resolve_current_receipt(
             current_packet["observation_receipt"]["receipt_fingerprint"],
             root=receipt_root,
-        )
-
-
-@pytest.mark.parametrize("route,domain", [
-    ("derive-reader-closure", "final_closure"),
-    ("derive-final-closure", "process_freshness"),
-])
-def test_final_closure_builder_rejects_foreign_route_domain(current_packet, receipt_root, route, domain):
-    from reader_receipts import _commit
-    closure = {"closure_fingerprint": fingerprint({"closure": "wrong identity"})}
-    with pytest.raises(ValidationError, match="does not own this receipt route/domain"):
-        _commit(
-            closure, root=receipt_root, builder_id="logic-writing.final-closure.v2",
-            native_route=route, evidence_domain=domain, semantic_owner_id="reader-closure:foreign",
-            covered_obligation_ids=["reader.full-current-chain"],
-            input_fingerprints={"artifact": fingerprint({"artifact": "current"})},
-            output_field="closure_fingerprint", artifact_fingerprint=fingerprint({"artifact": "current"}),
-            dependency_receipt_fingerprints=[current_packet["observation_receipt"]["receipt_fingerprint"]],
-            status="current_pass", safe_claim="fixture only", unsafe_claim_boundary="not writing evidence",
-            run_id="foreign-final-closure",
         )

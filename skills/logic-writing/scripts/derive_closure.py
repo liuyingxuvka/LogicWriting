@@ -28,7 +28,6 @@ from reader_pipeline import (
     validate_route_composition,
     _shared_writing_from_current,
 )
-from reader_receipts import _commit
 
 
 REQUIRED_DIMENSIONS = {
@@ -139,7 +138,6 @@ def _no_progress_terminal(results: list[Mapping[str, Any]], artifact_fingerprint
 def derive_closure(
     value: Any,
     *,
-    receipt_root: str | Path | None = None,
     execution_resolver=None,
 ) -> dict[str, Any]:
     request = copy.deepcopy(require_mapping(value, "closure input"))
@@ -331,42 +329,16 @@ def derive_closure(
     closure["closure_fingerprint"] = fingerprint(closure)
     require_schema("closure.schema.json", closure, label="closure")
 
-    result: dict[str, Any] = {"closure": closure}
-    if receipt_root is not None:
-        receipt = _commit(
-            closure,
-            root=receipt_root,
-            builder_id="logic-writing.final-closure.v2",
-            native_route="derive-final-closure",
-            evidence_domain="final_closure",
-            semantic_owner_id=f"reader-closure:{closure['closure_id']}",
-            covered_obligation_ids=["reader.full-current-chain"],
-            input_fingerprints={
-                "reader_intent": closure["reader_intent_fingerprint"],
-                "composition_plan": closure["composition_plan_fingerprint"],
-                "artifact_map": closure["artifact_map_fingerprint"],
-                "judgment": closure["judgment_fingerprint"],
-            },
-            output_field="closure_fingerprint",
-            artifact_fingerprint=closure["artifact_fingerprint"],
-            dependency_receipt_fingerprints=native_receipts,
-            status="current_pass" if status == "passed" else "blocked",
-            safe_claim=closure["safe_claim"],
-            unsafe_claim_boundary=closure["unsafe_claim_boundary"],
-            run_id=f"reader-closure:{closure['closure_id']}:{closure['closure_fingerprint'][7:19]}",
-        )
-        result["receipt"] = receipt
-    return result
+    return {"closure": closure}
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", required=True)
     parser.add_argument("--output")
-    parser.add_argument("--receipt-root")
     args = parser.parse_args()
     try:
-        result = derive_closure(load_json(args.input), receipt_root=args.receipt_root)
+        result = derive_closure(load_json(args.input))
     except (OSError, ValueError, ValidationError) as exc:
         print(f"ERROR: {exc}")
         return 2
