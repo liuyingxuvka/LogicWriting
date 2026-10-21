@@ -147,3 +147,18 @@ Removed obsolete provider/current-release literals from active prompts, adapter 
 | map: `python -m flowguard map check` | check: 0 error(s), 12 warning(s), 0 info | 1.05 |
 
 1 failed verification attempt(s) retained in the external transcript; purpose-preserving correction is described above.
+
+## LW-12
+
+将冻结包装器替换为六个普通 CI 步骤，ResearchGuard 使用默认分支，保留原官方 FlowGuard wheel、精确源码身份与发布前置依赖。显式基线源码下 430 项通过；隔离源码副本在无 RG 环境/无同级源码下 429 项通过、1 项跳过（仅验缺源码分支，非安装）。三项回归、地图通过；原始残留仅是保留的非 Git 回退常量及两项测试。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| workflow: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.08 |
+| residual-raw: `git grep -n run_frozen_validation\|verification-contract\|check_release_surface -- . :!CHANGELOG.md :!openspec/changes :!openspec/specs :!.codex` | exit 0; stated assertions verified | 0.02 |
+| pytest: `python -m pytest -q` | 430 passed in 68.77s (0:01:08) | 69.3 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 15.04 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.85 |
+| models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 2.36 |
+| map: `python -m flowguard map check` | check: 0 error(s), 10 warning(s), 0 info | 1.2 |
+| pytest-no-source: `python <external>` | 429 passed, 1 skipped in 45.63s | 46.25 |

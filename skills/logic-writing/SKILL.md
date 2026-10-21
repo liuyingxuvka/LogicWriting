@@ -293,8 +293,6 @@ never count as repair attempts.
 - Do not convert a missing provider, stale receipt, skipped check, partial
   search, failed rendering, or unsupported claim into success.
 - Do not expose internal workflow vocabulary in ordinary final prose.
-- Do not release or install a maintained copy unless the frozen validation
-  owners agree on the same source identity.
 
 ## Output Requirements
 

@@ -27,7 +27,7 @@ jobs:
   release-validation:
     if: github.event_name == 'workflow_dispatch' || startsWith(github.event.head_commit.message, 'Release LogicWriting v')
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 60
     permissions:
       contents: read
     outputs:
@@ -35,7 +35,6 @@ jobs:
       ci_url: ${{ steps.validation.outputs.ci_url }}
     env:
       SOURCE_SHA: ${{ inputs.source_sha || github.sha }}
-      OPENSPEC_TELEMETRY: "0"
       PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - name: Check out the selected source
@@ -49,64 +48,33 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Set up Node for the existing OpenSpec check
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-
-      - name: Install the existing validation toolchain
+      - name: Install test dependencies
         env:
           RESEARCHGUARD_SOURCE_ROOT: ${{ runner.temp }}/ResearchGuard
-        shell: bash
         run: |
-          git clone --depth 1 --branch v0.5.7 https://github.com/liuyingxuvka/ResearchGuard.git "$RESEARCHGUARD_SOURCE_ROOT"
+          git clone --depth 1 https://github.com/liuyingxuvka/ResearchGuard.git "$RESEARCHGUARD_SOURCE_ROOT"
           python -m pip install pytest PyYAML "$RESEARCHGUARD_SOURCE_ROOT" "flowguard @ https://github.com/liuyingxuvka/FlowGuard/releases/download/v0.70.6/flowguard-0.70.6-py3-none-any.whl#sha256=0ed10a2c1f6afa6c7c45be029a352252097af885f466ab222c86019cbdde401f"
-          npm install --global @fission-ai/openspec@1.7.0
 
-      - name: Run the sole frozen release validation owner
+      - name: Run tests
+        timeout-minutes: 20
         env:
           RESEARCHGUARD_SOURCE_ROOT: ${{ runner.temp }}/ResearchGuard
-        id: validation
-        shell: bash
-        run: |
-          python - <<'PY'
-          import os
-          from pathlib import Path
-          import re
-          import subprocess
-          import sys
+        run: python -m pytest -q
 
-          source_sha = os.environ["SOURCE_SHA"].lower()
-          assert re.fullmatch(r"[0-9a-f]{40}", source_sha), "source_sha must be a full 40-character commit SHA"
-          def head():
-              return subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip().lower()
-          assert head() == source_sha, "validation checkout does not match source_sha"
-          receipts = Path("/tmp/logicwriting-4.0.8-final-receipts")
-          try:
-              subprocess.run([
-                  sys.executable, "scripts/run_frozen_validation.py", "--root", ".",
-                  "--contract", "openspec/verification-contract.yaml", "--receipt-root", str(receipts),
-                  "--require-clean-git", "--json",
-              ], check=True)
-          except subprocess.CalledProcessError:
-              # Preserve the native failure diagnostic from the sole validation owner.
-              import json
-              for result_path in sorted(receipts.glob("attempts/*/*/result.json")):
-                  result = json.loads(result_path.read_text(encoding="utf-8"))
-                  if result["status"] != "failed":
-                      continue
-                  for name in ("stdout.txt", "stderr.txt"):
-                      log = result_path.parent / name
-                      print(f"::group::{result['check_id']} {name}", flush=True)
-                      print(log.read_text(encoding="utf-8"), flush=True)
-                      print("::endgroup::", flush=True)
-              raise
-          assert head() == source_sha, "source changed during validation"
-          ci_url = f"{os.environ['GITHUB_SERVER_URL']}/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}"
-          with Path(os.environ["GITHUB_OUTPUT"]).open("a", encoding="utf-8") as stream:
-              stream.write(f"source_sha={source_sha}\nci_url={ci_url}\n")
-          print(f"Frozen ordinary validation passed for {source_sha}: {ci_url}")
-          PY
+      - name: Run route regressions, models and map check
+        timeout-minutes: 20
+        run: |
+          python scripts/run_fiction_regression.py --repository-root . --json
+          python scripts/run_travel_regression.py --repository-root . --json
+          python .flowguard/verification/run_models.py --json
+          python -m flowguard map check
+
+      - name: Record the validated source
+        id: validation
+        run: |
+          test "$(git rev-parse HEAD)" = "$(echo "$SOURCE_SHA" | tr 'A-F' 'a-f')"
+          echo "source_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "ci_url=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >> "$GITHUB_OUTPUT"
 
   publish:
     needs: release-validation
@@ -188,10 +156,6 @@ jobs:
           tag = f"v{version}"
           if Path("VERSION").exists():
               assert Path("VERSION").read_text(encoding="utf-8").strip() == version, "VERSION differs from pyproject"
-          identity = ast.parse(Path("scripts/check_release_surface.py").read_text(encoding="utf-8"))
-          versions = [ast.literal_eval(node.value) for node in identity.body if isinstance(node, ast.Assign)
-                      and any(isinstance(target, ast.Name) and target.id == "VERSION" for target in node.targets)]
-          assert versions == [version], "source version declaration differs from pyproject"
           if os.environ["EVENT_NAME"] == "push":
               assert output("git", "show", "-s", "--format=%s", "HEAD") == f"Release LogicWriting {tag}", "push release subject must match the current version exactly"
           changes = Path("CHANGELOG.md").read_text(encoding="utf-8")
@@ -238,9 +202,3 @@ jobs:
           assert set(expected_assets) <= {asset["name"] for asset in published["assets"]}, "published release assets are incomplete"
           print(published["html_url"])
           PY
-
-      - name: Verify the published identity
-        shell: bash
-        run: |
-          git fetch --no-tags origin refs/heads/main:refs/remotes/origin/main "refs/tags/v$(cat VERSION):refs/tags/v$(cat VERSION)"
-          python scripts/check_release_surface.py --root . --mode published --require-clean --json

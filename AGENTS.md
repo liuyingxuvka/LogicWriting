@@ -17,11 +17,7 @@
 
 ## Validation
 
-- Follow `openspec/verification-contract.yaml` as the sole current repository release contract. Change-local contracts verify only their own active change and archived contracts are historical evidence, never live fallbacks.
-- After archiving any release-affecting OpenSpec change, rerun the complete stable release gate on the changed source snapshot before tagging.
-- Reuse only immutable terminal-success receipts whose exact inputs and execution identity remain current.
-- Run affected checks during development and one full validation owner after the release snapshot is frozen.
-- After any timeout or interruption, confirm the complete descendant process tree is gone before accepting evidence or starting another validation owner.
+- Run the affected tests while developing. CI (`.github/workflows/publish-release.yml`) runs `python -m pytest -q`, `python scripts/run_fiction_regression.py --repository-root . --json`, `python scripts/run_travel_regression.py --repository-root . --json`, `python .flowguard/verification/run_models.py --json` and `python -m flowguard map check` on the release commit.
 
 ## Model map
 
