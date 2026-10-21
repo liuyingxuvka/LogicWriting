@@ -925,3 +925,20 @@ Executed with the real private FlowGuard 0.70.7 installation, never skipped. Rem
 | fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 8.74 |
 | travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.66 |
 | skill: `python scripts/validate_skill.py --skill-root skills/logic-writing --json` | exit 0; stated assertions verified | 0.22 |
+
+## LW-57
+
+Applied the user's patch-only target 4.0.9 in VERSION, pyproject and both README badge mirrors; preserved all historical release sections. Added exactly one matching changelog section, including the two independently verified supplemental installer-byte and opaque-scalar fixes. ResearchGuard minimum remains 0.5.0 and the old-source bridge skip is explicit. All action-required native models/release, full166/1skip, regressions, skill/privacy/docs and version-authority checks pass.
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| version-authority: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.09 |
+| confirm-release: `python -m flowguard map confirm release` | exit 0; stated assertions verified | 0.13 |
+| map: `python -m flowguard map check` | check: 0 error(s), 0 warning(s), 0 info | 0.73 |
+| release: `python -m flowguard release` | models: 2 declared, 2 executed | 36.54 |
+| public-docs: `python scripts/check_public_docs.py --root . --json` | exit 0; stated assertions verified | 0.08 |
+| privacy: `python scripts/check_privacy.py --root . --json` | exit 0; stated assertions verified | 0.52 |
+| pytest: `python -m pytest -q` | 166 passed, 1 skipped in 8.32s | 8.85 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 8.12 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.47 |
+| skill: `python scripts/validate_skill.py --skill-root skills/logic-writing --json` | exit 0; stated assertions verified | 0.13 |

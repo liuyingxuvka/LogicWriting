@@ -6,6 +6,39 @@ releases, tags, package publications, installations, or predecessor deletions.
 The format follows the main ideas of Keep a Changelog, and the source version
 line follows semantic versioning.
 
+## [4.0.9]
+
+Slim release from the slim/2026-10 audit.
+
+### Changed
+
+- Require ResearchGuard 0.5.0 or newer, declared once as `RESEARCHGUARD_MIN_VERSION` in `skills/logic-writing/scripts/_common.py`, instead of the exact 0.5.7 contract. The member preflight also finds the `researchguard` command on PATH, and a release job runs the tests and member preflights on that minimum.
+- Point the SourceGuard, LogicGuard and TraceGuard steps at the `source`, `logic` and `trace` routes of the merged `researchguard` skill.
+- Let command-line requests name upstream records as JSON file paths, while scalar IDs, artifact paths and opaque native locators remain strings; the commands compute the fingerprints and references a caller leaves out and still check the ones given.
+- Derive closure as `passed` or `needs_repair` from the current reader and route chain and an independent reader judgment; `derive_closure.py` exits 1 when closure does not pass, and repair is one text rule instead of typed repair requests.
+- Make the ResearchPacket an optional evidence record and the travel workflow and itinerary model on demand; the fiction and travel route guides name the story and itinerary checks to run.
+- Publish after ordinary CI steps (tests, fiction and travel regressions, FlowGuard models and map check) instead of the frozen validation gate; keep the OpenSpec specs in line with current behavior.
+- Add `scripts/install_skill.py`, which installs only the runtime skill files and can `--check` an installed copy.
+- Write the skill description in the "Use for ... Not for ..." form.
+
+### Removed
+
+- Receipt authority, invocation envelopes, review-execution capture, closure receipts, the ResearchGuard handoff consumption binding and the native depth-receipt fields.
+- The production reader pipeline, the writing-quality experiment harness, the frozen release gate, text and constant locks, the 16.7 MB `.flowguard/models/authority/` store, predecessor retirement records and outdated OpenSpec specs.
+- Eight abstract FlowGuard models; the two remaining models replay their traces on the real reader chain and on real routing and preflight.
+
+### Fixed
+
+- SourceGuard, LogicGuard and TraceGuard work again with ResearchGuard 0.5.9.
+- fiction and travel accept evidence-gap packets, the Documents preflight accepts a skill named `docx`, and WorldGuard is found next to the skill by default.
+- `scripts/validate_skill.py` no longer writes `__pycache__` into the skill.
+- Installed-skill checks compare actual file bytes even after a same-process cache warmup with unchanged file size and timestamps.
+
+### Audit actions
+
+- Done: LW-01–LW-57.
+- Skipped: none.
+
 ## [4.0.8]
 
 ### Fixed
