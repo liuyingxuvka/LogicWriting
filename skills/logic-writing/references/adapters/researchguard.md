@@ -34,8 +34,8 @@ For the LogicGuard artifact-synthesis route, the current native result is
 copies only the ordered argument units, their closure/role bindings, source
 branch ids, and complete candidate dispositions into
 `assets/schemas/researchguard-logic-handoff.schema.json`; it binds the ReaderIntent,
-CompositionPlan, and writer projection fingerprints. The native result and any
-native receipt remain opaque references. A blocked native status or support
+CompositionPlan, and writer projection fingerprints. The native result remains
+an opaque reference. A blocked native status or support
 gap produces a blocked handoff and cannot enter the writer projection.
 
 ResearchGuard's native `model_fingerprint` and

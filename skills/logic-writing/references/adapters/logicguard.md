@@ -29,8 +29,8 @@ The artifact-synthesis handoff has one current typed bridge:
 body-unit order, predecessor order, argument closure, and candidate
 dispositions before it emits the reader projection. The bridge preserves
 `reader_intent_fingerprint`, `composition_plan_fingerprint`, and
-`writer_input_fingerprint` together with opaque native result/receipt
-locators. It does not turn a native handoff into a quality or final-closure
+`writer_input_fingerprint` together with the opaque native result
+locator. It does not turn a native handoff into a quality or final-closure
 pass; `blocked_support_gap`, `blocked_budget`, `blocked_invalid_request`,
 stale identity, or missing provider evidence remain non-passing.
 The parent hierarchy is closed before this bridge is emitted: parent links and

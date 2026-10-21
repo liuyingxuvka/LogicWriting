@@ -199,11 +199,6 @@ def derive_closure(
     if provenance["final_owner"] != owner:
         raise ValidationError("revision provenance belongs to a sibling route")
 
-    native_receipts = list(request.get("native_receipt_fingerprints", []))
-    if len(native_receipts) != len(set(native_receipts)):
-        raise ValidationError("closure requires unique current native route receipt fingerprints")
-    if native_receipts != brief["native_dependency_receipt_fingerprints"]:
-        raise ValidationError("closure native receipts differ from the frozen ReaderBrief")
 
     repair_requests = [
         _validate_repair_request(row)
@@ -301,7 +296,6 @@ def derive_closure(
         "judgment_fingerprint": judgment["judgment_fingerprint"],
         "revision_provenance_fingerprint": provenance["provenance_fingerprint"],
         "repair_result_fingerprints": [row["result_fingerprint"] for row in repair_results],
-        "native_receipt_fingerprints": native_receipts,
         "status": status,
         "residual_risk": [] if status == "passed" else residual,
         "next_actions": next_actions,

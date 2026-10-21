@@ -2,8 +2,8 @@
 
 ReaderBrief is the sanitized handoff from content authority to the selected
 final writer. It preserves the exact `ReaderIntent`, terminal deliverable,
-content boundaries, whole-artifact `CompositionPlan`, selected route extension,
-native receipt identities, and content-authority fingerprints.
+content boundaries, whole-artifact `CompositionPlan`, and the selected route
+extension.
 
 `ReaderIntent` is not a topic summary. It keeps language, audience, purpose,
 artifact mode and format, requested or existing structure, locked headings,
@@ -22,4 +22,4 @@ presentation mode, and target extent. Every required outline row and content
 unit must be planned or explicitly dispositioned.
 
 The brief excludes Guard names, raw ledgers, agent instructions, and status
-prose from the reader artifact. Keep those in receipts and audit output.
+prose from the reader artifact. Keep those in the audit output.

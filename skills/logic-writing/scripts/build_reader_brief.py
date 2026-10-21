@@ -12,8 +12,6 @@ def build_reader_brief(
     content_boundaries,
     composition_plan,
     route_composition,
-    native_dependency_receipt_fingerprints,
-    content_authority_fingerprints,
     brief_id,
     native_handoff=None,
     native_plan=None,
@@ -24,8 +22,6 @@ def build_reader_brief(
         content_boundaries=content_boundaries,
         composition_plan=composition_plan,
         route_composition=route_composition,
-        native_dependency_receipt_fingerprints=native_dependency_receipt_fingerprints,
-        content_authority_fingerprints=content_authority_fingerprints,
         brief_id=brief_id,
         native_handoff=native_handoff,
         native_plan=native_plan,
@@ -40,12 +36,6 @@ def validate_request(value):
         content_boundaries=request.get("content_boundaries"),
         composition_plan=request.get("composition_plan"),
         route_composition=request.get("route_composition"),
-        native_dependency_receipt_fingerprints=request.get(
-            "native_dependency_receipt_fingerprints", []
-        ),
-        content_authority_fingerprints=request.get(
-            "content_authority_fingerprints", {}
-        ),
         brief_id=request.get("brief_id"),
         native_handoff=request.get("native_handoff"),
         native_plan=request.get("native_plan"),

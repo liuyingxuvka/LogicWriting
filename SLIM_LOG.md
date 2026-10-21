@@ -223,3 +223,21 @@ Removed obsolete provider/current-release literals from active prompts, adapter 
 | skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.15 |
 
 1 failed verification attempt(s) retained in the external transcript; purpose-preserving correction is described above.
+
+## LW-17
+
+删除已无生产方的 ReaderBrief/收尾收据字段及交接就绪的收据前置条件，保留原生计划身份、顺序、论证闭合和阻断检查。完整 173 项通过；缺源码隔离副本 172 项通过、1 项跳过；三项回归、地图、技能及两项残留检查通过。模式编辑的 required 同名属性误处理由收集检查捕获，按模式语义精确修正后重验通过。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| prompt-residual: `git grep -n -i receipt -- skills/logic-writing/SKILL.md skills/logic-writing/references/shared skills/logic-writing/references/adapters skills/logic-writing/references/routes/*.md skills/logic-writing/references/router.md` | exit 1; stated assertions verified | 0.01 |
+| field-residual: `git grep -n native_dependency_receipt_fingerprints\|content_authority_fingerprints\|native_receipt_fingerprints\|NATIVE_FP -- skills tests` | exit 1; stated assertions verified | 0.01 |
+| pytest: `python -m pytest -q` | 173 passed in 6.81s | 7.22 |
+| pytest-no-source: `python <external>` | 172 passed, 1 skipped in 5.36s | 5.91 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 10.7 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.51 |
+| models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 1.36 |
+| map: `python -m flowguard map check` | check: 0 error(s), 10 warning(s), 0 info | 0.85 |
+| skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.12 |
+
+1 failed verification attempt(s) retained in the external transcript; purpose-preserving correction is described above.

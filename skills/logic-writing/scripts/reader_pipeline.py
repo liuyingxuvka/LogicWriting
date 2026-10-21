@@ -996,8 +996,6 @@ def build_reader_brief(
     content_boundaries: Mapping[str, Any],
     composition_plan: Mapping[str, Any],
     route_composition: Mapping[str, Any],
-    native_dependency_receipt_fingerprints: Iterable[str],
-    content_authority_fingerprints: Mapping[str, str],
     brief_id: str,
     native_handoff: Mapping[str, Any] | None = None,
     native_plan: Mapping[str, Any] | None = None,
@@ -1093,7 +1091,6 @@ def build_reader_brief(
         "profile": route[ROUTE_PROFILE_FIELD[owner]],
         "schema_name": ROUTE_SCHEMA[owner],
         "extension_fingerprint": route["extension_fingerprint"],
-        "native_receipt_fingerprints": list(native_dependency_receipt_fingerprints),
     }
     writer_input = build_writer_input(
         owner=owner,
@@ -1115,8 +1112,6 @@ def build_reader_brief(
         "content_boundaries": boundaries,
         "composition_plan": plan,
         "route_extension": route_envelope,
-        "native_dependency_receipt_fingerprints": list(native_dependency_receipt_fingerprints),
-        "content_authority_fingerprints": dict(content_authority_fingerprints),
         "writer_input": writer_input,
         "writer_input_fingerprint": fingerprint(writer_input),
     }

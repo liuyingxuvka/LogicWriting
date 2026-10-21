@@ -340,8 +340,6 @@ def build_researchguard_handoff(
         raise ValidationError("native_receipt_locator must be null or non-empty")
 
     ready = plan["status"] == READY_STATUS
-    if ready and (native_receipt_fingerprint is None or native_receipt_locator is None):
-        raise ValidationError("a ready ResearchGuard handoff requires an opaque native receipt")
     units = [_unit_projection(row) for row in plan["units"]] if ready else []
     body_order = list(plan["body_unit_order"]) if ready else []
     handoff = {

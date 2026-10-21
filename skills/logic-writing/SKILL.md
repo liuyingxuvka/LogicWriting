@@ -122,8 +122,8 @@ For LogicGuard artifact synthesis, map the current
 `scripts/researchguard_handoff.py` and its
 `assets/schemas/researchguard-logic-handoff.schema.json` contract before constructing the
 ReaderBrief. This bridge carries the reader-selected unit order, argument
-closure, source branch ids, and dispositions while retaining native result and
-receipt locators as opaque references. A blocked or stale native plan remains
+closure, source branch ids, and dispositions while retaining the native result
+locator as an opaque reference. A blocked or stale native plan remains
 blocked; the bridge never licenses prose quality or final closure.
 Join the semantic handoff to the current ReaderBrief with
 `bind_handoff_consumption` and validate the resulting

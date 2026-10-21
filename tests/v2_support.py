@@ -13,7 +13,6 @@ from reader_pipeline import build_artifact_map, build_reader_audit, build_reader
 
 
 NOW = "2026-07-29T12:00:00Z"
-NATIVE_FP = fingerprint({"native": "current-pass"})
 
 
 def _with_fp(value: dict, field: str) -> dict:
@@ -271,7 +270,7 @@ def make_route_composition(owner: str, intent: dict, plan: dict) -> dict:
     return _with_fp(common, "extension_fingerprint")
 
 
-def make_reader_chain(workdir: Path, owner: str = "investigation", *, language: str = "zh-CN", native_receipts: list[str] | None = None) -> dict:
+def make_reader_chain(workdir: Path, owner: str = "investigation", *, language: str = "zh-CN") -> dict:
     workdir.mkdir(parents=True, exist_ok=True)
     intent = make_intent(language=language)
     plan = make_plan(intent, owner)
@@ -333,8 +332,6 @@ def make_reader_chain(workdir: Path, owner: str = "investigation", *, language: 
         content_boundaries=boundaries,
         composition_plan=plan,
         route_composition=route,
-        native_dependency_receipt_fingerprints=native_receipts if native_receipts is not None else [NATIVE_FP],
-        content_authority_fingerprints={"content:answer": fingerprint({"content": owner})},
         brief_id=f"brief:{owner}",
     )
     artifact_path = workdir / f"{owner}.md"
@@ -419,13 +416,11 @@ def complete_chain(
     *,
     pass_quality: bool = True,
     language: str = "zh-CN",
-    native_receipts: list[str] | None = None,
 ) -> dict:
     """Build a synthetic protocol chain with registered native fixture evidence."""
     from derive_closure import REQUIRED_DIMENSIONS
 
-    native_receipts = native_receipts if native_receipts is not None else []
-    chain = make_reader_chain(workdir, owner, language=language, native_receipts=native_receipts)
+    chain = make_reader_chain(workdir, owner, language=language)
     evidence = span_evidence(chain)
     body_units = [
         row for row in chain["artifact_map"]["units"]
@@ -543,7 +538,6 @@ def complete_chain(
         "route_review": route_review,
         "judgment": judgment,
         "revision_provenance": provenance,
-        "native_receipt_fingerprints": native_receipts,
         "closure_id": f"closure:{owner}",
     })
     return chain
@@ -554,7 +548,7 @@ def closure_input(chain: dict) -> dict:
         key: chain[key] for key in (
             "closure_id", "route_decision", "reader_brief", "route_composition",
             "artifact_map", "shared_writing", "deterministic_audit", "route_review",
-            "judgment", "revision_provenance", "native_receipt_fingerprints",
+            "judgment", "revision_provenance",
         )
     } | {
         "repair_requests": chain.get("repair_requests", []),

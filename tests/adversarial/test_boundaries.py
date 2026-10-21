@@ -46,12 +46,6 @@ def test_route_review_cannot_omit_one_required_dimension(tmp_path):
         derive_closure(request)
 
 
-def test_native_receipt_set_is_frozen_in_reader_brief(tmp_path):
-    chain = complete_chain(tmp_path)
-    request = closure_input(chain)
-    request["native_receipt_fingerprints"] = [fingerprint({"foreign": True})]
-    with pytest.raises(ValidationError, match="differ"):
-        derive_closure(request)
 
 
 def test_same_agent_cannot_self_judge(tmp_path):

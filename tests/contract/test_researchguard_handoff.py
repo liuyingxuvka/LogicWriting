@@ -312,16 +312,6 @@ def test_native_predecessor_graph_rejects_cycles_outside_body_order():
         )
 
 
-def test_current_pass_requires_non_null_native_receipt_identity_in_schema():
-    handoff = build_researchguard_handoff(
-        _plan(),
-        **_inputs(),
-        native_result_locator="fixture://researchguard/logic/synthesis-plan-schema",
-    )
-    forged = copy.deepcopy(handoff)
-    forged["native_receipt_fingerprint"] = None
-    with pytest.raises(SchemaValidationError, match="native_receipt_fingerprint"):
-        assert_schema_valid("researchguard-logic-handoff.schema.json", forged)
 
 
 def test_semantic_handoff_can_be_joined_only_by_an_exhaustive_reader_mapping():
@@ -428,8 +418,6 @@ def test_real_native_researchguard_plan_round_trips_into_reader_brief(tmp_path):
         content_boundaries=base_brief["content_boundaries"],
         composition_plan=chain["plan"],
         route_composition=chain["route_composition"],
-        native_dependency_receipt_fingerprints=[native_receipt_fingerprint],
-        content_authority_fingerprints=base_brief["content_authority_fingerprints"],
         brief_id="brief:logic-writing-native-bridge",
         native_handoff=handoff,
         native_plan=native_plan,
