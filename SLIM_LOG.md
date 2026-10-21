@@ -729,3 +729,18 @@ CI 新增读取唯一最低版本常量的 ResearchGuard 作业，publish 等待
 | privacy: `python scripts/check_privacy.py --root . --json` | exit 0; stated assertions verified | 0.57 |
 | pytest: `python -m pytest -q` | 153 passed, 1 skipped in 6.79s | 7.1 |
 | map: `python -m flowguard map check` | check: 0 error(s), 4 warning(s), 0 info | 0.47 |
+
+## LW-47
+
+CLI 请求可直接引用相对 JSON 对象文件及上一步结果对象，内联输入继续支持；SharedWriting/修订结果同时返回已校验记录。两个实际多文件/前步输出用例通过，缺文件明确失败；完整155项/1跳过、三回归、地图和技能通过，新测试已绑定且无未归属警告。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| cli-inputs: `python -m pytest -q tests/unit/test_cli_inputs.py` | 2 passed in 0.59s | 0.87 |
+| load-request-entrypoints: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.03 |
+| pytest: `python -m pytest -q` | 155 passed, 1 skipped in 4.87s | 5.17 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 5.54 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.43 |
+| models: `python -m flowguard map models` | models: 2 passed, 0 failed | 15.71 |
+| map: `python -m flowguard map check` | check: 0 error(s), 5 warning(s), 0 info | 0.43 |
+| skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.13 |

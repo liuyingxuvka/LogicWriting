@@ -66,7 +66,9 @@ providers and ResearchGuard members retain their own domain work.
 Run each script from the skill root with Python 3.10 or newer. Every script
 reads one JSON file given as `--input <file>`, prints its JSON result (or
 writes it to `--output <file>`), and exits 0 only when the result passes.
-Field shapes are in `assets/schemas/`.
+A top-level field that holds an object may instead name a `.json` file
+(relative to the request file), including a file an earlier step wrote with
+`--output`. Field shapes are in `assets/schemas/`.
 
 1. `python scripts/select_route.py --input route-request.json` with
    `writing_request`, `decision_id`, `decided_at`; returns the RouteDecision.

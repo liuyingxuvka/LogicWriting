@@ -19,6 +19,7 @@ def validate_revision_provenance(value, *, target_artifact_fingerprint=None, **_
         applicability=validated["applicability"],
         provenance_fingerprint=validated["provenance_fingerprint"],
         target_artifact_fingerprint=validated["target_artifact_fingerprint"],
+        revision_provenance=validated,
     )
 
 

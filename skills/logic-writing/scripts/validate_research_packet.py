@@ -14,6 +14,7 @@ from _common import (
     dump_json,
     fingerprint,
     load_json,
+    load_request,
     require_fingerprint,
     require_list,
     require_mapping,
@@ -493,7 +494,7 @@ def main() -> int:
     parser.add_argument("--output")
     args = parser.parse_args()
     try:
-        value = load_json(args.input)
+        value = load_request(args.input)
         result = (
             validate_research_packet(value)
             if args.validate_packet

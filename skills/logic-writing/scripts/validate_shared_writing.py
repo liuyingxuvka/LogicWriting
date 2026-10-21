@@ -21,6 +21,7 @@ def validate_shared_writing(value, *, artifact_map=None, reader_brief=None):
         artifact_fingerprint=validated["artifact_fingerprint"],
         final_owner=validated["final_owner"],
         contract_fingerprint=validated["contract_fingerprint"],
+        shared_writing=validated,
         findings=[],
     )
 

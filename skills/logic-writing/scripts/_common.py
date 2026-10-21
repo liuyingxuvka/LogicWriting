@@ -269,6 +269,30 @@ def load_json(path: str | Path | None) -> Any:
     return json.loads(Path(path).read_text(encoding="utf-8"))
 
 
+def load_request(path: str | Path | None) -> Any:
+    """Load a request whose top-level object fields may name JSON files instead.
+
+    A path is relative to the request file.  A file that holds another script's
+    result contributes the object stored under the same field name, or its only
+    object.
+    """
+    value = load_json(path)
+    if not isinstance(value, dict):
+        return value
+    base = Path.cwd() if path in {None, "-"} else Path(path).resolve().parent
+    for key, item in list(value.items()):
+        if isinstance(item, str) and item.endswith(".json"):
+            loaded = load_json(base / Path(item).expanduser())
+            if isinstance(loaded, dict) and {"status", "errors", "warnings"} <= set(loaded):
+                objects = [entry for entry in loaded.values() if isinstance(entry, dict)]
+                if isinstance(loaded.get(key), dict):
+                    loaded = loaded[key]
+                elif len(objects) == 1:
+                    loaded = objects[0]
+            value[key] = loaded
+    return value
+
+
 def dump_json(value: Any, path: str | Path | None = None) -> None:
     text = json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
     if path in {None, "-"}:
@@ -292,7 +316,7 @@ def cli_validate(validate_fn, description: str) -> int:
     parser.add_argument("--output")
     args = parser.parse_args()
     try:
-        result = validate_fn(load_json(args.input))
+        result = validate_fn(load_request(args.input))
         dump_json(result, args.output)
         return 0 if result.get("status") in {PASS, "passed"} else 1
     except (ValidationError, OSError, json.JSONDecodeError) as exc:

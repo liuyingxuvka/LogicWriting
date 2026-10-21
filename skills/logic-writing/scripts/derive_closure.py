@@ -14,6 +14,7 @@ from _common import (
     dump_json,
     fingerprint,
     load_json,
+    load_request,
     require_mapping,
     require_schema,
 )
@@ -191,7 +192,7 @@ def main() -> int:
     parser.add_argument("--output")
     args = parser.parse_args()
     try:
-        result = derive_closure(load_json(args.input))
+        result = derive_closure(load_request(args.input))
     except (OSError, ValueError, ValidationError) as exc:
         print(f"ERROR: {exc}")
         return 2

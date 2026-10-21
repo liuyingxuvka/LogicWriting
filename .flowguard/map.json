@@ -565,7 +565,8 @@
       "side_effects": [],
       "depends_on": [],
       "tests": [
-        "tests/contract/test_schemas.py"
+        "tests/contract/test_schemas.py",
+        "tests/unit/test_cli_inputs.py"
       ],
       "models": [],
       "status": "confirmed",
