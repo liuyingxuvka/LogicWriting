@@ -84,16 +84,16 @@ register owner, changed effect of repetition, and current model-artifact span.
 
 ## Reverse-review the actual guide
 
-Open the repository-contained final guide, recompute its SHA-256, and reverse
-review the delivered bytes for trip id, allowed claim level, evidence, day
+Reverse review the actual guide (its ArtifactMap binds the current bytes) for
+trip id, allowed claim level, evidence, day
 headings, weather mode and hazards, feasibility, traveler fit, named risks,
 reachable fallbacks, local texture, shopping/food/rest details when promised,
-and internal workflow leakage. A changed guide hash, missing current limitation,
-or observation not present in the actual guide blocks closure.
+and internal workflow leakage. A missing current limitation or an observation
+not present in the actual guide blocks closure.
 
 The internal route pack under `routes/travel/` preserves the verified base,
-positive, exact-negative, time-mode, feasibility, fit, fallback, artifact-hash,
-and traveler-native text families. It is not a separately installed skill.
+positive, exact-negative, time-mode, feasibility, fit, fallback, and
+traveler-native text families. It is not a separately installed skill.
 
 ## Independent actual-text review
 

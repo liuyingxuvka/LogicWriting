@@ -1,12 +1,9 @@
 from __future__ import annotations
 
-import hashlib
 import json
 from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any, Iterable
-
-from validate_travel_text_outputs import validate_review, validate_text
 
 
 SCHEMA_VERSION = "travel-story-planner.plan.v2"
@@ -50,24 +47,7 @@ ROUTE_STATUSES = {"pass", "partial", "gap", "fail", "stale", "blocked"}
 FIT_STATUSES = {"pass", "downgraded", "revise", "human_review", "blocked"}
 GUIDE_STATUSES = {"pass", "partial", "revise", "downgraded", "blocked", "human_review", "scoped_out"}
 PROMISE_STATUSES = {"paid", "inverted", "deferred_with_boundary", "downgraded", "human_review"}
-REQUIRED_CLOSURE_SURFACES = {
-    "trip_context",
-    "traveler_profile",
-    "source_portfolio",
-    "experience_candidate_pool",
-    "negative_evidence",
-    "fallback_options",
-    "candidate_feasibility",
-    "route_mesh",
-    "route_feasibility",
-    "trip_fit_review",
-    "recommendation_support",
-    "traveler_native_guide",
-    "final_artifact",
-    "reverse_guide_review",
-    "reader_projection",
-    "claim_boundary",
-}
+
 
 
 def issue(code: str, message: str) -> dict[str, str]:
@@ -138,23 +118,8 @@ def _parse_iso_datetime(value: Any) -> datetime | None:
         return None
 
 
-def _sha256_bytes(data: bytes) -> str:
-    return hashlib.sha256(data).hexdigest().upper()
 
 
-def _contained_file(repository_root: Path, relative_path: Any) -> Path | None:
-    if not isinstance(relative_path, str) or not relative_path or "\\" in relative_path:
-        return None
-    rel = Path(relative_path)
-    if rel.is_absolute() or any(part in {"", ".", ".."} for part in rel.parts):
-        return None
-    root = repository_root.resolve()
-    candidate = (root / rel).resolve()
-    try:
-        candidate.relative_to(root)
-    except ValueError:
-        return None
-    return candidate
 
 
 def _claim_rank(level: str) -> int:
@@ -853,47 +818,6 @@ def validate_weather_evidence(
     return weather
 
 
-def validate_final_guide(
-    guide: dict[str, Any],
-    context: dict[str, Any],
-    repository_root: Path,
-    issues: list[dict[str, str]],
-) -> None:
-    artifact = as_dict(guide.get("final_artifact"))
-    if not artifact:
-        issues.append(issue("traveler_native_guide.final_artifact.missing", "final_artifact is required."))
-        return
-    require_fields(artifact, ("path", "sha256", "generated_from_plan_id", "generated_at"), "traveler_native_guide.final_artifact", "final_artifact", issues)
-    if artifact.get("generated_from_plan_id") != context.get("trip_id"):
-        issues.append(issue("traveler_native_guide.final_artifact.plan_id_mismatch", "Final artifact is bound to another trip."))
-    path = _contained_file(repository_root, artifact.get("path"))
-    if path is None:
-        issues.append(issue("traveler_native_guide.final_artifact.path_invalid", "Final artifact path must be repository-contained POSIX relative path."))
-        return
-    if not path.is_file():
-        issues.append(issue("traveler_native_guide.final_artifact.missing_file", f"Final artifact does not exist: {artifact.get('path')}"))
-        return
-    data = path.read_bytes()
-    actual_hash = _sha256_bytes(data)
-    if str(artifact.get("sha256", "")).upper() != actual_hash:
-        issues.append(issue("traveler_native_guide.final_artifact.hash_mismatch", "Final artifact hash does not match current bytes."))
-    try:
-        text = data.decode("utf-8")
-    except UnicodeDecodeError:
-        issues.append(issue("traveler_native_guide.final_artifact.encoding", "Final artifact must be UTF-8 text."))
-        return
-    reverse = as_dict(guide.get("reverse_guide_review"))
-    if not reverse:
-        issues.append(issue("traveler_native_guide.reverse_review.missing", "reverse_guide_review is required."))
-        return
-    if reverse.get("final_artifact_path") != artifact.get("path"):
-        issues.append(issue("traveler_native_guide.reverse_review.path_mismatch", "Reverse review belongs to another artifact path."))
-    if str(reverse.get("final_artifact_sha256", "")).upper() != actual_hash:
-        issues.append(issue("traveler_native_guide.reverse_review.hash_mismatch", "Reverse review does not bind current artifact bytes."))
-    for row in validate_text(text, reverse):
-        issues.append(issue(f"traveler_native_guide.artifact.{row['code']}", row["message"]))
-    for row in validate_review(reverse):
-        issues.append(issue(f"traveler_native_guide.artifact.{row['code']}", row["message"]))
 
 
 def validate_guide(
@@ -905,7 +829,6 @@ def validate_guide(
     fallback_index: dict[str, dict[str, Any]],
     route_index: dict[str, dict[str, Any]],
     node_index: dict[str, dict[str, Any]],
-    repository_root: Path,
     issues: list[dict[str, str]],
 ) -> dict[str, Any]:
     guide = as_dict(data.get("traveler_native_guide"))
@@ -1008,7 +931,6 @@ def validate_guide(
     if set(map(str, as_list(texture.get("named_fallback_ids")))) - set(fallback_index):
         issues.append(issue("traveler_native_guide.local_texture.fallback_unknown", "local texture references unknown fallbacks."))
     validate_weather_evidence(guide, context, source_index, fallback_index, issues)
-    validate_final_guide(guide, context, repository_root, issues)
     return guide
 
 
@@ -1042,68 +964,6 @@ def derive_allowed_claim_level(
     return "initial_plan", "current_fact_or_weather_gap"
 
 
-def validate_closure_report(
-    data: dict[str, Any],
-    context: dict[str, Any],
-    source_index: dict[str, dict[str, Any]],
-    world_index: dict[str, dict[str, Any]],
-    route_index: dict[str, dict[str, Any]],
-    fit: dict[str, Any],
-    recommendation: dict[str, Any],
-    guide: dict[str, Any],
-    preclosure_issues: list[dict[str, str]],
-    issues: list[dict[str, str]],
-) -> None:
-    closure = as_dict(data.get("closure_report"))
-    if not closure:
-        issues.append(issue("closure_report.missing", "closure_report is required."))
-        return
-    require_fields(closure, ("status", "requested_claim_level", "allowed_claim_level", "derivation_reason", "surface_rows", "residual_risk", "next_action", "claim_boundary"), "closure_report", "closure_report", issues)
-    for list_field in ("failures", "blockers", "skipped_checks"):
-        if list_field not in closure or not isinstance(closure.get(list_field), list):
-            issues.append(issue(f"closure_report.{list_field}.missing", f"closure_report.{list_field} must be an explicit list."))
-    derived_level, derived_reason = derive_allowed_claim_level(context, source_index, world_index, route_index, fit, recommendation, guide)
-    declared_allowed = closure.get("allowed_claim_level")
-    if closure.get("requested_claim_level") != context.get("requested_claim_level"):
-        issues.append(issue("closure_report.requested_claim_level.mismatch", "Closure requested level differs from trip_context."))
-    if declared_allowed != context.get("allowed_claim_level"):
-        issues.append(issue("closure_report.allowed_claim_level.context_mismatch", "Closure allowed level differs from trip_context."))
-    if declared_allowed != derived_level:
-        issues.append(issue("closure_report.allowed_claim_level.derived_mismatch", f"Closure declares {declared_allowed}, but current evidence derives {derived_level}."))
-    if closure.get("derivation_reason") != derived_reason:
-        issues.append(issue("closure_report.derivation_reason.mismatch", "Closure derivation_reason is not verifier-owned current output."))
-    requested = str(context.get("requested_claim_level"))
-    expected_status = "passed" if declared_allowed == requested and not preclosure_issues else "downgraded" if _claim_rank(str(declared_allowed)) < _claim_rank(requested) and not preclosure_issues else "blocked"
-    if closure.get("status") != expected_status:
-        issues.append(issue("closure_report.status.mismatch", f"Closure status must be {expected_status}."))
-    surface_index = index_rows(as_list(closure.get("surface_rows")), "surface", "closure_report.surface", issues)
-    missing_surfaces = sorted(REQUIRED_CLOSURE_SURFACES - set(surface_index))
-    if missing_surfaces:
-        issues.append(issue("closure_report.surface.missing", "Missing closure surfaces: " + ", ".join(missing_surfaces)))
-    for surface, row in surface_index.items():
-        require_fields(row, ("owner", "status", "evidence_ids", "missing_or_stale", "downgrade_or_blocker", "next_action"), "closure_report.surface", f"Closure surface {surface}", issues)
-    all_sources_current = bool(source_index) and all(
-        row.get("access_status") == "inspected" and row.get("freshness_status") == "current"
-        for row in source_index.values()
-    )
-    all_world_pass = bool(world_index) and all(row.get("status") == "pass" for row in world_index.values())
-    all_routes_pass = bool(route_index) and all(row.get("feasibility_status") == "pass" for row in route_index.values())
-    expected_surface_statuses = {
-        "source_portfolio": "pass" if all_sources_current else "partial",
-        "candidate_feasibility": "pass" if all_world_pass else "partial",
-        "route_mesh": "pass" if all_routes_pass else "partial",
-        "route_feasibility": "pass" if all_routes_pass and all_world_pass else "partial",
-        "trip_fit_review": str(fit.get("status")),
-        "recommendation_support": str(recommendation.get("status")),
-        "claim_boundary": "pass" if expected_status == "passed" else expected_status,
-    }
-    if not preclosure_issues:
-        for surface, expected_surface_status in expected_surface_statuses.items():
-            row = surface_index.get(surface)
-            if row is not None and row.get("status") != expected_surface_status:
-                issues.append(issue("closure_report.surface.status_mismatch", f"Closure surface {surface} must report current verifier-owned status {expected_surface_status}."))
-    if closure.get("status") == "passed" and (as_list(closure.get("failures")) or as_list(closure.get("blockers")) or as_list(closure.get("skipped_checks"))):
-        issues.append(issue("closure_report.passed_with_gaps", "Passed closure cannot carry failures, blockers, or skipped checks."))
 
 
 def validate_plan(
@@ -1115,7 +975,6 @@ def validate_plan(
     issues: list[dict[str, str]] = []
     if data.get("schema_version") != SCHEMA_VERSION:
         return [issue("schema_version.invalid", f"Only {SCHEMA_VERSION} is current; no former plan reader exists.")]
-    root = (repository_root or Path.cwd()).resolve()
     context = validate_trip_context(data, issues)
     profile = validate_traveler_profile(data, issues)
     source_index, _source_classes = validate_source_portfolio(data, context, issues)
@@ -1128,9 +987,11 @@ def validate_plan(
     fit = validate_trip_fit(data, context, profile, route_index, issues)
     recommendation = validate_recommendation(data, candidate_index, route_index, world_index, fit, issues)
     validate_reader_projection(data, candidate_index, route_index, world_index, issues)
-    guide = validate_guide(data, context, source_index, candidate_index, pit_index, fallback_index, route_index, node_index, root, issues)
-    preclosure_issues = list(issues)
-    validate_closure_report(data, context, source_index, world_index, route_index, fit, recommendation, guide, preclosure_issues, issues)
+    guide = validate_guide(data, context, source_index, candidate_index, pit_index, fallback_index, route_index, node_index, issues)
+    derived_level, derived_reason = derive_allowed_claim_level(context, source_index, world_index, route_index, fit, recommendation, guide)
+    allowed = context.get("allowed_claim_level")
+    if allowed in CLAIM_LEVELS and allowed != derived_level:
+        issues.append(issue("trip_context.allowed_claim_level.derived_mismatch", f"trip_context declares {allowed}, but the current evidence supports {derived_level} ({derived_reason})."))
     return issues
 
 

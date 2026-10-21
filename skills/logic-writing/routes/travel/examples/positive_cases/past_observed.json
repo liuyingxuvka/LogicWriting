@@ -14,24 +14,6 @@
     {"op": "set", "path": ["traveler_native_guide", "weather_evidence_summary", "source_ids"], "value": ["src-history"]},
     {"op": "set", "path": ["traveler_native_guide", "weather_evidence_summary", "covered_dates"], "value": ["2026-06-01", "2026-06-02", "2026-06-03"]},
     {"op": "set", "path": ["traveler_native_guide", "weather_evidence_summary", "missing_or_downgraded_hazards"], "value": []},
-    {"op": "set", "path": ["traveler_native_guide", "weather_evidence_summary", "claim_status"], "value": "checked"},
-    {"op": "set", "path": ["traveler_native_guide", "final_artifact", "path"], "value": "skills/logic-writing/routes/travel/examples/positive_cases/past-observed-guide.md"},
-    {"op": "set", "path": ["traveler_native_guide", "final_artifact", "sha256"], "value": "36228760F7AC85AEDC9B1936ACE03D373A1FC00437B96A6756BEACFED85FC92C"},
-    {"op": "set", "path": ["traveler_native_guide", "final_artifact", "generated_from_plan_id"], "value": "fixture-city-past-2026"},
-    {"op": "set", "path": ["traveler_native_guide", "reverse_guide_review", "final_artifact_ref"], "value": "skills/logic-writing/routes/travel/examples/positive_cases/past-observed-guide.md"},
-    {"op": "set", "path": ["traveler_native_guide", "reverse_guide_review", "final_artifact_path"], "value": "skills/logic-writing/routes/travel/examples/positive_cases/past-observed-guide.md"},
-    {"op": "set", "path": ["traveler_native_guide", "reverse_guide_review", "final_artifact_sha256"], "value": "36228760F7AC85AEDC9B1936ACE03D373A1FC00437B96A6756BEACFED85FC92C"},
-    {"op": "set", "path": ["traveler_native_guide", "reverse_guide_review", "observed_local_food_details"], "value": ["cafe rest"]},
-    {"op": "set", "path": ["traveler_native_guide", "reverse_guide_review", "observed_shopping_details"], "value": ["design-shop", "souvenir stop"]},
-    {"op": "set", "path": ["traveler_native_guide", "reverse_guide_review", "observed_rest_nodes"], "value": ["central hotel", "cafe rest"]},
-    {"op": "set", "path": ["traveler_native_guide", "reverse_guide_review", "observed_weather_evidence"], "value": ["observed", "archive"]},
-    {"op": "set", "path": ["traveler_native_guide", "reverse_guide_review", "observed_weather_source_type"], "value": ["weather_historical"]},
-    {"op": "set", "path": ["traveler_native_guide", "reverse_guide_review", "observed_weather_source_mode"], "value": "historical_observed"},
-    {"op": "set", "path": ["traveler_native_guide", "reverse_guide_review", "observed_weather_missing_or_downgraded_hazards"], "value": []},
-    {"op": "set", "path": ["traveler_native_guide", "reverse_guide_review", "weather_claim_status"], "value": "checked"},
-    {"op": "set", "path": ["traveler_native_guide", "reverse_guide_review", "observed_risks"], "value": ["fatigue", "observed rain"]},
-    {"op": "set", "path": ["traveler_native_guide", "reverse_guide_review", "observed_fallbacks"], "value": ["indoor gallery"]},
-    {"op": "set", "path": ["closure_report", "derivation_reason"], "value": "past_planning_boundary"},
-    {"op": "set", "path": ["closure_report", "blockers"], "value": ["past dates cannot carry a current bookable claim"]}
+    {"op": "set", "path": ["traveler_native_guide", "weather_evidence_summary", "claim_status"], "value": "checked"}
   ]
 }

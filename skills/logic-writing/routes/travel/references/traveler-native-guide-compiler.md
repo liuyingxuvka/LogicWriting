@@ -99,10 +99,10 @@ Missing texture does not become confident prose. It becomes a search action, a d
 After final traveler-facing text exists, run a reverse guide review from the actual text:
 
 ```text
-final_artifact_ref -> final_artifact_path -> final_artifact_sha256 -> observed_days -> observed_day_headings -> observed_local_food_details -> observed_shopping_details -> observed_rest_nodes -> observed_weather_evidence -> observed_weather_source_type -> observed_weather_source_mode -> observed_weather_checked_hazards -> observed_weather_missing_or_downgraded_hazards -> weather_claim_status -> weather_route_adjustments -> observed_risks -> observed_fallbacks -> internal_label_leakage -> promise_alignment_status -> continuity_status -> status
+observed_days -> observed_day_headings -> observed_local_food_details -> observed_shopping_details -> observed_rest_nodes -> observed_weather_evidence -> observed_weather_source_type -> observed_weather_source_mode -> observed_weather_checked_hazards -> observed_weather_missing_or_downgraded_hazards -> weather_claim_status -> weather_route_adjustments -> observed_risks -> observed_fallbacks -> internal_label_leakage -> promise_alignment_status -> continuity_status -> status
 ```
 
-The final artifact path must be repository-contained and exist. Its SHA-256, generated trip id, reverse-review path, and reverse-review SHA-256 bind the same current bytes. Observed headings and named food/shop/rest details must actually occur in those bytes.
+Observed headings and named food/shop/rest details must actually occur in the actual guide text.
 
 Return to the earliest affected surface when the review finds internal jargon leakage, missing promise payoff, unsupported facts, repeated day function, weak local texture, generic risk notes, missing weather evidence, missing day headings, or missing continuity.
 

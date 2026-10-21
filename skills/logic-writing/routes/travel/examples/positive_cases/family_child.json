@@ -8,17 +8,6 @@
     {"op": "set", "path": ["traveler_profile", "companions"], "value": "family"},
     {"op": "set_where", "path": ["trip_fit_review", "dimension_rows"], "match_field": "dimension", "match_value": "age", "set_field": "input_values", "value": [8, 38]},
     {"op": "set_where", "path": ["trip_fit_review", "dimension_rows"], "match_field": "dimension", "match_value": "companions", "set_field": "input_values", "value": ["family"]},
-    {"op": "append", "path": ["trip_fit_review", "dimension_rows"], "value": {"dimension": "child_or_elderly_protection", "status": "pass", "affected_trace_ids": ["trace-primary", "trace-comfort"], "evidence_ids": ["child-age", "early-return"], "mitigation_ids": ["fb-gallery", "fb-rest"], "input_field": "traveler_profile.ages", "input_values": [8, 38]}},
-    {"op": "set", "path": ["traveler_native_guide", "final_artifact", "path"], "value": "skills/logic-writing/routes/travel/examples/positive_cases/family-child-guide.md"},
-    {"op": "set", "path": ["traveler_native_guide", "final_artifact", "sha256"], "value": "963E1B8ED8C6B5034295F281870431169EE4613208509564FED5BA0E79C99DA8"},
-    {"op": "set", "path": ["traveler_native_guide", "final_artifact", "generated_from_plan_id"], "value": "fixture-city-family-child"},
-    {"op": "set", "path": ["traveler_native_guide", "reverse_guide_review", "final_artifact_ref"], "value": "skills/logic-writing/routes/travel/examples/positive_cases/family-child-guide.md"},
-    {"op": "set", "path": ["traveler_native_guide", "reverse_guide_review", "final_artifact_path"], "value": "skills/logic-writing/routes/travel/examples/positive_cases/family-child-guide.md"},
-    {"op": "set", "path": ["traveler_native_guide", "reverse_guide_review", "final_artifact_sha256"], "value": "963E1B8ED8C6B5034295F281870431169EE4613208509564FED5BA0E79C99DA8"},
-    {"op": "set", "path": ["traveler_native_guide", "reverse_guide_review", "observed_local_food_details"], "value": ["local bistro dinner", "market snack"]},
-    {"op": "set", "path": ["traveler_native_guide", "reverse_guide_review", "observed_shopping_details"], "value": ["design shop street", "souvenir stop"]},
-    {"op": "set", "path": ["traveler_native_guide", "reverse_guide_review", "observed_rest_nodes"], "value": ["central hotel", "quiet cafe rest"]},
-    {"op": "set", "path": ["traveler_native_guide", "reverse_guide_review", "observed_risks"], "value": ["child fatigue"]},
-    {"op": "set", "path": ["traveler_native_guide", "reverse_guide_review", "observed_fallbacks"], "value": ["indoor gallery", "hotel-area cafe"]}
+    {"op": "append", "path": ["trip_fit_review", "dimension_rows"], "value": {"dimension": "child_or_elderly_protection", "status": "pass", "affected_trace_ids": ["trace-primary", "trace-comfort"], "evidence_ids": ["child-age", "early-return"], "mitigation_ids": ["fb-gallery", "fb-rest"], "input_field": "traveler_profile.ages", "input_values": [8, 38]}}
   ]
 }

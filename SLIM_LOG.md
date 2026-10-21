@@ -535,3 +535,21 @@ fiction 按材料问题启用专家，compact 保留故事推进、承诺边界�
 | pytest: `python -m pytest -q` | 149 passed in 5.07s | 5.47 |
 | map: `python -m flowguard map check` | check: 0 error(s), 6 warning(s), 0 info | 0.35 |
 | skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.35 |
+
+## LW-36
+
+旅行移除重复文稿哈希/收尾报告，允许结论级别继续由当前来源、天气、日期证据推导，并与声明精确比较。真实可达性坏例和越级坏例保留精确代码；20 负例、6 正例、6 旅行测试、完整 150 项、三回归、地图和技能通过。共享读者链仍绑定实际成品字节。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| plan-positive: `python skills/logic-writing/routes/travel/scripts/validate_travel_plan.py skills/logic-writing/routes/travel/examples/good_city_couple_trip/plan.json` | exit 0; stated assertions verified | 0.1 |
+| negative-cases: `python skills/logic-writing/routes/travel/scripts/validate_failure_cases.py --cases-dir skills/logic-writing/routes/travel/examples/failure_cases --repository-root . --json` | exit 0; stated assertions verified | 0.22 |
+| positive-cases: `python skills/logic-writing/routes/travel/scripts/validate_positive_cases.py --cases-dir skills/logic-writing/routes/travel/examples/positive_cases --repository-root . --json` | exit 0; stated assertions verified | 0.08 |
+| residual: `git grep -n validate_final_guide\|validate_closure_report\|REQUIRED_CLOSURE_SURFACES\|closure_report\|reverse_guide_review -- skills/logic-writing/routes/travel skills/logic-writing/references tests` | exit 1; stated assertions verified | 0.01 |
+| travel-tests: `python -m pytest -q tests/unit/test_travel.py` | 6 passed in 0.10s | 0.36 |
+| pytest: `python -m pytest -q` | 150 passed in 5.46s | 5.82 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 5.91 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.51 |
+| models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 2.49 |
+| map: `python -m flowguard map check` | check: 0 error(s), 7 warning(s), 0 info | 0.54 |
+| skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.13 |

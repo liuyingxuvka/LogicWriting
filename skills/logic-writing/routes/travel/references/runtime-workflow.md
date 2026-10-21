@@ -8,7 +8,7 @@ Use this reference for every Travel Story Planner run after the skill is trigger
 - `bookable`: current source checks support reservations, timing, transport, and key risks.
 - `day_of`: current checks support same-day execution, including weather, closures, transport, queues, and nearby fallbacks.
 
-If evidence is missing for the requested level, downgrade the output instead of writing confident prose.
+If evidence is missing for the requested level, downgrade the output instead of writing confident prose. The plan validator derives the allowed level from the evidence: far-future, past, or undated evidence cannot exceed `initial_plan`; a near-future `bookable` claim needs inspected current sources and forecast-compatible weather evidence; `day_of` also needs day-of chronology and current forecast plus alert evidence. `trip_context.allowed_claim_level` must equal that derived level.
 
 ## Flow
 
@@ -27,8 +27,7 @@ If evidence is missing for the requested level, downgrade the output instead of 
 13. Build traveler-native guide compiler surfaces: guide projection, travel scene contracts, experience promises, day interfaces when multi-day, local texture index, weather evidence summary, day-heading plan, and reverse-guide review plan.
 14. Project routes into story-shaped traveler-facing prose and an operational appendix without exposing model-room labels. Multi-day guides need visible day or date headings with prose under each day.
 15. Run reverse-guide review against the actual traveler-facing text and return to the earliest failed surface when it finds internal leakage, weak local texture, missing promise payoff, generic risks, missing weather evidence, missing day headings, or broken day handoff.
-16. Use the Travel-owned closure to report passed, partial, downgraded, blocked, and skipped checks.
-17. Write `travel-story-planner.plan.v2`, materialize the final guide, bind its repository path and SHA-256, and run the native regression owner. A report or checkbox is not executable closure.
+16. Report passed, partial, downgraded, blocked, and skipped checks in the audit note; closure of the actual guide comes from the shared reader chain (`scripts/derive_closure.py`).
 
 The current executable schema has no former-schema reader. A non-current plan is an explicit repair item.
 

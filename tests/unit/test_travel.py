@@ -27,7 +27,6 @@ def test_travel_plan_uses_neutral_reader_projection():
     plan = json.loads((ROUTE / "examples" / "good_city_couple_trip" / "plan.json").read_text(encoding="utf-8"))
     assert "reader_projection" in plan
     assert "story_output" not in plan
-    assert plan["closure_report"]["surface_rows"][-2]["owner"] == "logic-writing.shared-reader-projection"
 
 
 def test_native_travel_plan_preserves_fallback_reachability(monkeypatch):
@@ -42,10 +41,7 @@ def test_native_travel_plan_preserves_fallback_reachability(monkeypatch):
     case = json.loads((ROUTE / "examples" / "failure_cases" / "fallback_unreachable.json").read_text(encoding="utf-8"))
     issues = validate_plan(apply_mutations(base, case["mutations"]), plan_path=base_path, repository_root=ROOT)
     codes = {row["code"] for row in issues}
-    assert codes == {
-        "fallback_options.reachability.unproven",
-        "closure_report.status.mismatch",
-    }
+    assert codes == {"fallback_options.reachability.unproven"}
     assert codes == set(case["expected_issue_codes"])
 
 
@@ -57,3 +53,15 @@ def test_world_check_may_record_not_run(monkeypatch):
     plan["world_feasibility"]["checks"][0]["status"] = "not_run"
     codes = {row["code"] for row in validate_plan(plan, plan_path=base_path, repository_root=ROOT)}
     assert "world_feasibility.status.invalid" not in codes
+
+
+def test_allowed_claim_level_must_match_the_current_evidence(monkeypatch):
+    monkeypatch.syspath_prepend(str(ROUTE / "scripts"))
+    from travel_contract import validate_plan
+
+    base_path = ROUTE / "examples" / "good_city_couple_trip" / "plan.json"
+    plan = json.loads(base_path.read_text(encoding="utf-8"))
+    assert plan["trip_context"]["allowed_claim_level"] == "initial_plan"
+    plan["trip_context"]["allowed_claim_level"] = "bookable"
+    codes = {row["code"] for row in validate_plan(plan, plan_path=base_path, repository_root=ROOT)}
+    assert codes == {"trip_context.allowed_claim_level.derived_mismatch"}
