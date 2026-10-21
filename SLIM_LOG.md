@@ -845,3 +845,14 @@ ReaderBrief CLI 补全缺省的计划/路线指纹，原生合成计划可由入
 | skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.12 |
 | old-direct-skills-raw: `git grep -n -E \$(logicguard|sourceguard|traceguard|experimentguard)\b|skills/(logicguard|sourceguard|traceguard|experimentguard) -- *.md *.py *.yaml *.json` | exit 1; stated assertions verified | 0.02 |
 | old-direct-skills-active: `git grep -n -E \$(logicguard|sourceguard|traceguard|experimentguard)\b|skills/(logicguard|sourceguard|traceguard|experimentguard) -- *.md *.py *.yaml *.json :!CHANGELOG.md :!openspec/changes/archive :!docs/history :!SLIM_LOG.md` | exit 1; stated assertions verified | 0.02 |
+
+## LW-54
+
+描述精简为257字符的用途/最近相邻技能边界，保持YAML正确、name、代理默认提示及正文不变。描述三个条件、完整163项/1跳过、静态技能和地图均通过；最终发布仍等待新版工具链与后续行动。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| description: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.05 |
+| pytest: `python -m pytest -q` | 163 passed, 1 skipped in 4.89s | 5.19 |
+| map: `python -m flowguard map check` | check: 0 error(s), 9 warning(s), 0 info | 0.36 |
+| skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.13 |

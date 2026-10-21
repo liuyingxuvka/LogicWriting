@@ -1,6 +1,6 @@
 ---
 name: logic-writing
-description: Use for deep source-backed investigation, academic writing, fiction planning or revision, and evidence-heavy travel guides. Routes each task to exactly one of four final owners, coordinates the LogicGuard, SourceGuard, and TraceGuard members through the single ResearchGuard console plus WorldGuard, Documents, and PDF without replacing them, and turns internal models into clear prose for real readers. Skip quick lookups, grammar-only edits, casual copy, and lightweight attraction lists.
+description: "Use for a finished piece for real readers: a source-backed investigation report, an academic paper or revision, fiction or a story plan, or an evidence-heavy travel guide. Not for checking claims, sources or causal timelines on their own; use researchguard."
 ---
 
 # Logic Writing
