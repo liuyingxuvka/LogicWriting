@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import py_compile
 import re
 import sys
 from pathlib import Path
@@ -79,9 +78,9 @@ def validate_skill(root: Path):
     compiled = 0
     for script in sorted((root / "scripts").glob("*.py")):
         try:
-            py_compile.compile(str(script), doraise=True)
+            compile(script.read_text(encoding="utf-8"), str(script), "exec")
             compiled += 1
-        except py_compile.PyCompileError as exc:
+        except SyntaxError as exc:
             errors.append(f"{script.name}: {exc.msg}")
     if compiled < 10:
         warnings.append("unexpectedly small script inventory")

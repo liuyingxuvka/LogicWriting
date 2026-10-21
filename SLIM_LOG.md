@@ -108,3 +108,14 @@ Removed obsolete provider/current-release literals from active prompts, adapter 
 | pytest: `python -m pytest -q` | 471 passed in 61.43s (0:01:01) | 61.98 |
 | map: `python -m flowguard map check` | check: 0 error(s), 12 warning(s), 0 info | 2.01 |
 | native-bridge-pipeline: `python -m pytest -q tests/contract/test_researchguard_handoff.py tests/e2e/test_production_reader_pipeline.py tests/contract/test_production_reader_native_lifecycle.py` | 44 passed in 4.79s | 5.34 |
+
+## LW-09
+
+静态技能校验使用内存编译检查语法，保留原有前置声明、链接和占位符检查；完整 471 项测试通过，技能校验和测试均未生成字节码缓存。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.31 |
+| no-skill-bytecode: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.04 |
+| pytest: `python -m pytest -q` | 471 passed in 52.17s | 52.71 |
+| no-test-bytecode: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.03 |
