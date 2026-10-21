@@ -130,3 +130,34 @@ def test_fiction_and_travel_parents_receive_a_bounded_gap_packet(current_packet,
     packet = assemble_research_packet(request)
     assert packet["final_owner"] == parent
     assert packet["status"] == "current_pass"
+
+
+def test_packet_assembly_fills_request_and_registry_fingerprints(current_packet, tmp_path):
+    import json
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    ledger = copy.deepcopy(current_packet["ledger"])
+    del ledger["source_registry_fingerprint"]
+    request = {
+        "schema_version": "1.0",
+        "packet_id": "packet:no-hashes",
+        "final_owner": "investigation",
+        "source_registry": "registry.json",
+        "claim_support": "ledger.json",
+        "additional_unresolved_gaps": [],
+    }
+    (tmp_path / "registry.json").write_text(json.dumps(current_packet["registry"]), encoding="utf-8")
+    (tmp_path / "ledger.json").write_text(json.dumps(ledger), encoding="utf-8")
+    (tmp_path / "request.json").write_text(json.dumps(request), encoding="utf-8")
+    scripts = Path(__file__).resolve().parents[2] / "skills" / "logic-writing" / "scripts"
+    run = subprocess.run([sys.executable, str(scripts / "validate_research_packet.py"), "--input", str(tmp_path / "request.json")],
+                         capture_output=True, text=True)
+    assert run.returncode == 0, run.stdout + run.stderr
+    packet = json.loads(run.stdout)
+    assert packet["status"] == "current_pass"
+    assert packet["claim_support"]["source_registry_fingerprint"] == fingerprint(current_packet["registry"])
+    checked = subprocess.run([sys.executable, str(scripts / "validate_claim_support.py"), "--input", str(tmp_path / "ledger.json"),
+                              "--source-registry", str(tmp_path / "registry.json")], capture_output=True, text=True)
+    assert checked.returncode == 0, checked.stdout + checked.stderr

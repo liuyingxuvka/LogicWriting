@@ -11,6 +11,7 @@ from _common import (
     ValidationError,
     contains_internal_language,
     dump_json,
+    fill_missing,
     fingerprint,
     load_json,
     require_fingerprint,
@@ -24,6 +25,12 @@ from _common import (
     validation_result,
 )
 from validate_source_registry import ROLES, validate_source_registry
+
+
+def fill_registry_reference(ledger: Any, registry: Any) -> Any:
+    """Copy the SourceRegistry fingerprint into a ClaimSupport ledger that left it out."""
+    fill_missing(ledger, "source_registry_fingerprint", fingerprint(registry) if isinstance(registry, Mapping) else None)
+    return ledger
 
 
 CLAIM_TYPES = {
@@ -425,9 +432,10 @@ if __name__ == "__main__":
     parser.add_argument("--output")
     args = parser.parse_args()
     try:
+        registry = load_json(args.source_registry)
         result = validate_claim_support(
-            load_json(args.input),
-            load_json(args.source_registry),
+            fill_registry_reference(load_json(args.input), registry),
+            registry,
         )
         dump_json(result, args.output)
         raise SystemExit(0 if result["status"] == "current_pass" else 1)

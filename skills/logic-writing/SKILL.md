@@ -68,7 +68,12 @@ reads one JSON file given as `--input <file>`, prints its JSON result (or
 writes it to `--output <file>`), and exits 0 only when the result passes.
 A top-level field that holds an object may instead name a `.json` file
 (relative to the request file), including a file an earlier step wrote with
-`--output`. Field shapes are in `assets/schemas/`.
+`--output`. Leave every script-derived `*_fingerprint` field out of the records you write:
+the scripts compute each record's own fingerprint and copy the ones it must
+share with other records in the same request; a value you do give is still
+checked. Keep external byte identities such as `observed_content_fingerprint`
+and revision `source_artifact_fingerprint` as required by each entrypoint schema;
+these identify actual source bytes. Field shapes are in `assets/schemas/`.
 
 1. `python scripts/select_route.py --input route-request.json` with
    `writing_request`, `decision_id`, `decided_at`; returns the RouteDecision.

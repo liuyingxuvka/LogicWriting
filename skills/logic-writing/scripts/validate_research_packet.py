@@ -12,6 +12,7 @@ from _common import (
     NATIVE_OWNERS,
     ValidationError,
     dump_json,
+    fill_missing,
     fingerprint,
     load_json,
     load_request,
@@ -24,7 +25,7 @@ from _common import (
     validation_result,
 )
 from schema_validation import SchemaValidationError, assert_schema_valid
-from validate_claim_support import validate_claim_support
+from validate_claim_support import fill_registry_reference, validate_claim_support
 from validate_source_registry import validate_source_registry
 
 
@@ -331,9 +332,21 @@ def _derived_wording(
 
 
 
-def assemble_research_packet(
-    request: Mapping[str, Any],
-) -> dict[str, Any]:
+def fill_assembly_fingerprints(request: Any) -> Any:
+    """Fill the fingerprints a caller left out of a packet assembly request.
+
+    A missing request fingerprint identifies this packet request (packet id,
+    final owner and gap id); a ClaimSupport ledger gets the fingerprint of the
+    SourceRegistry next to it.  Values the caller gives are kept and checked.
+    """
+    if isinstance(request, dict):
+        fill_missing(request, "request_fingerprint", fingerprint(
+            {key: request.get(key) for key in ("packet_id", "final_owner", "gap_id")}))
+        fill_registry_reference(request.get("claim_support"), request.get("source_registry"))
+    return request
+
+
+def assemble_research_packet(request: Mapping[str, Any]) -> dict[str, Any]:
     """Build a packet without accepting caller-authored status or wording."""
 
     request = require_mapping(dict(request), "ResearchPacket assembly request")
@@ -498,7 +511,7 @@ def main() -> int:
         result = (
             validate_research_packet(value)
             if args.validate_packet
-            else assemble_research_packet(value)
+            else assemble_research_packet(fill_assembly_fingerprints(value))
         )
         dump_json(result, args.output)
         return 0 if result["status"] == "current_pass" else 1

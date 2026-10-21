@@ -816,3 +816,18 @@ ReaderBrief CLI 补全缺省的计划/路线指纹，原生合成计划可由入
 | map: `python -m flowguard map check` | check: 0 error(s), 9 warning(s), 0 info | 0.65 |
 
 1 failed verification attempt(s) retained in the external transcript; purpose-preserving correction is described above.
+
+## LW-52
+
+研究记录 CLI 补全缺省请求身份和来源登记引用，内容规则和给定值核对不变。SKILL按授权仅要求省略脚本派生指纹，明确保留observed_content_fingerprint及修订source_artifact_fingerprint真实字节身份，避免参考原句过宽；仅规范等价函数签名格式以应用参考补丁。11项调查、完整163项/1跳过、三回归、地图和技能通过。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| investigation: `python -m pytest -q tests/unit/test_investigation.py` | 11 passed in 0.38s | 0.65 |
+| fingerprint-guidance: `git grep -n Leave every -- skills/logic-writing/SKILL.md` | exit 0; stated assertions verified | 0.0 |
+| pytest: `python -m pytest -q` | 163 passed, 1 skipped in 5.82s | 6.22 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 5.26 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.37 |
+| models: `python -m flowguard map models` | models: 2 passed, 0 failed | 14.51 |
+| map: `python -m flowguard map check` | check: 0 error(s), 9 warning(s), 0 info | 0.39 |
+| skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.12 |
