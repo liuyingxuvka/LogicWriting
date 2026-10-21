@@ -800,3 +800,19 @@ ReaderBrief CLI 补全缺省的计划/路线指纹，原生合成计划可由入
 | travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.45 |
 | models: `python -m flowguard map models` | models: 2 passed, 0 failed | 17.99 |
 | map: `python -m flowguard map check` | check: 0 error(s), 9 warning(s), 0 info | 0.85 |
+
+## LW-51
+
+收尾入口补全判断/修订的脚本派生指纹，既有给定值、底层核对、实际字节重读和外部来源身份保留。真实文件链收尾passed，九份核心手写输入均无SHA值，临时目录已清理；完整162项/1跳过及三回归、地图通过。外部探针首次误把null来源字段名当成手写哈希，按清单改核SHA值后通过，产品收尾始终passed。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| freshness: `python -m pytest -q tests/unit/test_freshness_closure.py` | 9 passed in 0.93s | 1.21 |
+| native-file-chain: `python <external> 51` | exit 0; stated assertions verified | 0.31 |
+| pytest: `python -m pytest -q` | 162 passed, 1 skipped in 5.59s | 5.9 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 5.77 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.43 |
+| models: `python -m flowguard map models` | models: 2 passed, 0 failed | 15.23 |
+| map: `python -m flowguard map check` | check: 0 error(s), 9 warning(s), 0 info | 0.65 |
+
+1 failed verification attempt(s) retained in the external transcript; purpose-preserving correction is described above.

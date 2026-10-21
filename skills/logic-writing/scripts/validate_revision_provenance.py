@@ -3,11 +3,11 @@
 from __future__ import annotations
 
 from _common import cli_validate, require_mapping, validation_result
-from reader_pipeline import validate_revision_provenance as _validate_revision
+from reader_pipeline import fill_closure_fingerprints, validate_revision_provenance as _validate_revision
 
 
 def validate_revision_provenance(value, *, target_artifact_fingerprint=None, **_ignored):
-    envelope = require_mapping(value, "revision provenance validation request")
+    envelope = fill_closure_fingerprints(require_mapping(value, "revision provenance validation request"))
     provenance = envelope.get("provenance", envelope)
     target = target_artifact_fingerprint or envelope.get("target_artifact_fingerprint") or provenance.get("target_artifact_fingerprint")
     validated = _validate_revision(

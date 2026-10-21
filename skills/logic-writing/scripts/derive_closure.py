@@ -22,6 +22,7 @@ from reader_pipeline import (
     validate_artifact_map,
     _compare_reader_audit,
     _build_reader_audit_from_current,
+    fill_closure_fingerprints,
     _reader_judgment_from_current,
     validate_revision_provenance,
     _route_review_from_current,
@@ -192,7 +193,7 @@ def main() -> int:
     parser.add_argument("--output")
     args = parser.parse_args()
     try:
-        result = derive_closure(load_request(args.input))
+        result = derive_closure(fill_closure_fingerprints(load_request(args.input)))
     except (OSError, ValueError, ValidationError) as exc:
         print(f"ERROR: {exc}")
         return 2

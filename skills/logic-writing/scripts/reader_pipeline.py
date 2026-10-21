@@ -2041,6 +2041,52 @@ def fill_check_fingerprints(request: dict[str, Any]) -> dict[str, Any]:
     return request
 
 
+def fill_closure_fingerprints(request: dict[str, Any]) -> dict[str, Any]:
+    """Fill the fingerprints a caller left out of a closure request.
+
+    SharedWriting and the route review are completed as in
+    fill_check_fingerprints.  The ReaderJudgment copies its references from the
+    ReaderBrief, ArtifactMap, SharedWriting, deterministic audit and route
+    review in the same request; its evaluation profile is identified by the
+    final owner and the scored dimensions.  Revision provenance takes the
+    current artifact and ReaderIntent fingerprints.  Each record gets its own
+    fingerprint last; values the caller gives are kept and checked.
+    """
+    fill_check_fingerprints(request)
+    amap = _mapping(request.get("artifact_map"))
+    brief = _mapping(request.get("reader_brief"))
+    units = {row.get("artifact_unit_id"): row for row in amap.get("units", []) if isinstance(row, Mapping)}
+    judgment = request.get("judgment")
+    if isinstance(judgment, dict):
+        for field, value in (
+            ("reader_intent_fingerprint", brief.get("reader_intent_fingerprint")),
+            ("reader_brief_fingerprint", brief.get("brief_fingerprint")),
+            ("composition_plan_fingerprint", _mapping(brief.get("composition_plan")).get("plan_fingerprint")),
+            ("artifact_map_fingerprint", amap.get("map_fingerprint")),
+            ("shared_writing_contract_fingerprint", _mapping(request.get("shared_writing")).get("contract_fingerprint")),
+            ("deterministic_audit_fingerprint", _mapping(request.get("deterministic_audit")).get("audit_fingerprint")),
+            ("route_audit_fingerprint", _mapping(request.get("route_review")).get("review_fingerprint")),
+            ("artifact_fingerprint", amap.get("artifact_fingerprint")),
+        ):
+            fill_missing(judgment, field, value)
+        if isinstance(judgment.get("scores"), Mapping):
+            fill_missing(judgment, "evaluation_profile_fingerprint", fingerprint(
+                {"final_owner": judgment.get("final_owner"), "dimensions": sorted(judgment["scores"])}))
+        for row in judgment.get("reverse_outline") or []:
+            _fill_evidence(_mapping(row).get("evidence"), units)
+        for row in [*(judgment.get("defects") or []), *(judgment.get("strengths") or [])]:
+            _fill_evidence(_mapping(row).get("evidence"), units)
+        fill_fingerprint(judgment, "judgment_fingerprint")
+    for key in ("revision_provenance", "provenance"):
+        provenance = request.get(key)
+        if isinstance(provenance, dict):
+            fill_missing(provenance, "target_artifact_fingerprint",
+                         request.get("target_artifact_fingerprint") or amap.get("artifact_fingerprint"))
+            fill_missing(provenance, "reader_intent_fingerprint", brief.get("reader_intent_fingerprint"))
+            fill_fingerprint(provenance, "provenance_fingerprint")
+    return request
+
+
 __all__ = [
     "build_artifact_map",
     "build_reader_audit",
@@ -2048,6 +2094,7 @@ __all__ = [
     "build_writer_input",
     "fill_brief_fingerprints",
     "fill_check_fingerprints",
+    "fill_closure_fingerprints",
     "validate_artifact_map",
     "validate_composition_plan",
     "validate_reader_intent",

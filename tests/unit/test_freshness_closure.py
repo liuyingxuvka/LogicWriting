@@ -82,3 +82,37 @@ def test_foreign_reader_intent_is_rejected(tmp_path):
     request["reader_brief"]["reader_intent_fingerprint"] = fingerprint({"foreign": True})
     with pytest.raises(ValidationError):
         derive_closure(request)
+
+
+def test_closure_command_fills_judgment_and_provenance_fingerprints(tmp_path):
+    import json
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    from _common import fingerprint_without
+
+    request = closure_input(complete_chain(tmp_path))
+    judgment = request["judgment"]
+    for field in [key for key in judgment if key.endswith("_fingerprint")]:
+        del judgment[field]
+    for row in [*judgment["reverse_outline"], *judgment["defects"], *judgment["strengths"]]:
+        row["evidence"].pop("locator", None)
+        row["evidence"].pop("excerpt_fingerprint", None)
+    provenance = request["revision_provenance"]
+    for field in ("reader_intent_fingerprint", "target_artifact_fingerprint", "provenance_fingerprint"):
+        del provenance[field]
+    path = tmp_path / "closure-input.json"
+    path.write_text(json.dumps(request), encoding="utf-8")
+    script = Path(__file__).resolve().parents[2] / "skills" / "logic-writing" / "scripts" / "derive_closure.py"
+    run = subprocess.run([sys.executable, str(script), "--input", str(path)], capture_output=True, text=True)
+    assert run.returncode == 0, run.stdout + run.stderr
+    closure = json.loads(run.stdout)["closure"]
+    assert closure["status"] == "passed"
+    assert closure["revision_provenance_fingerprint"].startswith("sha256:")
+
+    from reader_pipeline import fill_closure_fingerprints
+
+    filled = fill_closure_fingerprints(json.loads(path.read_text(encoding="utf-8")))
+    assert filled["judgment"]["judgment_fingerprint"] == fingerprint_without(filled["judgment"], "judgment_fingerprint")
+    assert closure["judgment_fingerprint"] == filled["judgment"]["judgment_fingerprint"]
