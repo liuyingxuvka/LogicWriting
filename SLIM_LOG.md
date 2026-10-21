@@ -390,3 +390,18 @@ SKILL 增补实际命令与输入字段，13 项命令在技能根帮助均正�
 | privacy: `python scripts/check_privacy.py --root . --json` | exit 0; stated assertions verified | 1.39 |
 | pytest: `python -m pytest -q` | 165 passed in 6.28s | 6.72 |
 | map: `python -m flowguard map check` | check: 0 error(s), 10 warning(s), 0 info | 0.42 |
+
+## LW-27
+
+删除九个已无产生路径的收据/权威缺口代码，保留因果机制、预测验证及其他内容缺口。调查与原生桥接 21 项、完整 165 项、三项回归、技能和地图通过，指定死代码残留为零。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| residual: `git grep -n _receipt_not_\|receipt_missing\|authority_not_resolved\|missing_native_receipts -- skills/logic-writing/scripts skills/logic-writing/assets tests` | exit 1; stated assertions verified | 0.01 |
+| targeted: `python -m pytest -q tests/unit/test_investigation.py tests/contract/test_researchguard_handoff.py` | 21 passed in 0.54s | 0.93 |
+| pytest: `python -m pytest -q` | 165 passed in 5.55s | 5.91 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 7.55 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.61 |
+| models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 1.18 |
+| map: `python -m flowguard map check` | check: 0 error(s), 10 warning(s), 0 info | 0.39 |
+| skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.13 |

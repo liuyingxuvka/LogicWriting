@@ -86,24 +86,6 @@ GAP_POLICIES: dict[str, tuple[str, str, str, str]] = {
         "Do not rely on that source as factual support.",
         "source-research",
     ),
-    "observation_authority_not_resolved": (
-        "source",
-        "The underlying source record has not yet been confirmed against the material itself.",
-        "Do not treat an unconfirmed source description as observed evidence.",
-        "source-research",
-    ),
-    "observation_receipt_not_current": (
-        "source",
-        "The source observation belongs to an earlier version of the material.",
-        "Do not rely on an observation made against superseded material.",
-        "source-research",
-    ),
-    "observation_receipt_not_in_packet": (
-        "source",
-        "The source observation has not been included in the evidence package.",
-        "Do not use the source until its observation is attached to this package.",
-        "source-research",
-    ),
     "ledger_has_no_claims": (
         "claim",
         "No conclusion has yet been formulated for evidence review.",
@@ -170,30 +152,6 @@ GAP_POLICIES: dict[str, tuple[str, str, str, str]] = {
         "Do not present the forecast as validated.",
         "trace-review",
     ),
-    "semantic_fit_receipt_missing": (
-        "claim",
-        "The connection between this conclusion and its cited material has not yet been reviewed.",
-        "Do not treat a citation as proof until its relevance is checked.",
-        "argument-review",
-    ),
-    "semantic_fit_authority_not_resolved": (
-        "claim",
-        "The evidence-to-conclusion review cannot yet be confirmed.",
-        "Do not rely on an unconfirmed relevance judgment.",
-        "argument-review",
-    ),
-    "semantic_fit_receipt_not_current": (
-        "claim",
-        "The evidence-to-conclusion review belongs to an earlier version of the research.",
-        "Do not reuse an earlier relevance judgment after the evidence changes.",
-        "argument-review",
-    ),
-    "semantic_fit_receipt_not_in_packet": (
-        "claim",
-        "The evidence-to-conclusion review has not been included in this package.",
-        "Do not use the conclusion until its relevance review is attached.",
-        "argument-review",
-    ),
     "principal_dependency_not_eligible": (
         "claim",
         "This conclusion depends on an earlier point that is not yet supported.",
@@ -217,18 +175,6 @@ GAP_POLICIES: dict[str, tuple[str, str, str, str]] = {
         "The forecast does not yet state the conditions under which it could hold or fail.",
         "Do not present the forecast without its prediction boundary.",
         "trace-review",
-    ),
-    "native_receipt_not_current": (
-        "packet",
-        "Part of the evidence was produced for an earlier version of the work.",
-        "Do not present the package as fully current.",
-        "research-owner",
-    ),
-    "missing_native_receipts": (
-        "packet",
-        "No specialist evidence has yet been attached to this research package.",
-        "Do not present the package as evidence-backed.",
-        "research-owner",
     ),
     "access_gap": (
         "source",
