@@ -128,11 +128,14 @@ def _worldguard_preflight(provider_root):
         root = Path(provider_root).expanduser().resolve()
     else:
         root = Path(__file__).resolve().parents[2] / "worldguard"
-    paths = {name: root / name for name in (
-        "SKILL.md", "scripts/run_worldguard.py", "runtime/worldguard/__init__.py", "runtime/worldguard/cli.py",
-    )}
+    package, tree = root / "runtime" / "worldguard", root
+    if not (package / "__init__.py").is_file():
+        # Inside the WorldGuard repository the skill has no runtime copy; its launcher imports the repository package.
+        package, tree = root.parent.parent / "worldguard", root.parent.parent
+    paths = {"SKILL.md": root / "SKILL.md", "scripts/run_worldguard.py": root / "scripts" / "run_worldguard.py",
+             "runtime/worldguard/__init__.py": package / "__init__.py", "runtime/worldguard/cli.py": package / "cli.py"}
     for path in paths.values():
-        if not path.resolve().is_relative_to(root):
+        if not path.resolve().is_relative_to(tree):
             return "blocked", {**evidence, "reason": "provider_path_escaped_root"}
         if not path.is_file():
             return "provider_unavailable", {**evidence, "reason": "portable_resource_missing"}

@@ -33,3 +33,29 @@ def test_worldguard_is_found_next_to_logic_writing(monkeypatch, tmp_path: Path):
     result = provider_preflight.preflight("worldguard")
     assert result["status"] == "current_pass"
     assert result["evidence"]["provider_root_source"] == "sibling_skill"
+
+
+def test_worldguard_repository_skill_uses_the_repository_package(monkeypatch, tmp_path: Path):
+    from types import SimpleNamespace
+
+    repo = tmp_path / "worldguard-repo"
+    root = repo / "skills" / "worldguard"
+    (root / "scripts").mkdir(parents=True)
+    (repo / "worldguard").mkdir()
+    (root / "SKILL.md").write_text("---\nname: worldguard\n---\nPortable world checks.\n", encoding="utf-8")
+    (root / "scripts/run_worldguard.py").write_text(
+        'from pathlib import Path\nimport sys\nRUNTIME_ROOT = Path(__file__).resolve().parents[1] / "runtime"\n'
+        'if (RUNTIME_ROOT / "worldguard" / "__init__.py").is_file():\n    sys.path.insert(0, str(RUNTIME_ROOT))\n'
+        'from worldguard.cli import main\n', encoding="utf-8")
+    (repo / "worldguard/__init__.py").write_text('__version__ = "0.7.16"\n', encoding="utf-8")
+    (repo / "worldguard/cli.py").write_text("def main(): pass\n", encoding="utf-8")
+    monkeypatch.setattr(
+        provider_preflight.subprocess,
+        "run",
+        lambda *_args, **_kwargs: SimpleNamespace(returncode=0, stdout="--contract --example"),
+    )
+
+    result = provider_preflight.preflight("worldguard", provider_root=str(root))
+
+    assert result["status"] == "current_pass"
+    assert result["evidence"]["provider_version"] == "0.7.16"

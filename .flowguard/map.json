@@ -523,7 +523,8 @@
       "summary": "Explicit native provider boundaries and availability checks.",
       "responsibilities": [
         "Preflight only the selected native ResearchGuard member or explicit portable/document provider.",
-        "Require ResearchGuard >= 0.5.0 (minimum declared once in skills/logic-writing/scripts/_common.py), found in the running Python or else as the researchguard command on PATH; keep WorldGuard portable launcher availability separate from domain judgment."
+        "Require ResearchGuard >= 0.5.0 (minimum declared once in skills/logic-writing/scripts/_common.py), found in the running Python or else as the researchguard command on PATH; keep WorldGuard portable launcher availability separate from domain judgment.",
+        "Find the WorldGuard package in the skill's runtime/ copy, or two levels above the skill inside the WorldGuard repository."
       ],
       "files": [
         "skills/logic-writing/scripts/provider_preflight.py"
@@ -548,7 +549,7 @@
         ".flowguard/models/route_and_guard_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:6e4c94566c7061015c0503de12a067034c14c611d2b6b7a4e5f2b18dc63b0d1a"
+      "fingerprint": "sha256:948eca2ed8af6291b558ee3d8a4e916e18a531abc712e45107faa9f6fbd9d530"
     },
     {
       "id": "shared-contracts",
