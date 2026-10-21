@@ -65,7 +65,6 @@
         "skills/logic-writing/assets/schemas/source-unit-manifest.schema.json",
         "skills/logic-writing/references/adapters/researchguard.md",
         "skills/logic-writing/references/adapters/sourceguard.md",
-        "skills/logic-writing/references/routes/required-resources.json",
         "skills/logic-writing/references/shared/research-packet.md",
         "skills/logic-writing/scripts/build_source_unit_manifest.py",
         "skills/logic-writing/scripts/researchguard_handoff.py",
@@ -89,8 +88,7 @@
         "shared-contracts"
       ],
       "tests": [
-        "tests/contract/test_researchguard_handoff.py",
-        "tests/unit/test_consumer_resource_closure.py"
+        "tests/contract/test_researchguard_handoff.py"
       ],
       "models": [
         ".flowguard/verification/owners/research_packet_model/run_checks.py"
@@ -150,8 +148,6 @@
         "skills/logic-writing/scripts/text_extent.py",
         "skills/logic-writing/scripts/validate_revision_provenance.py",
         "skills/logic-writing/scripts/validate_shared_writing.py",
-        "tests/fixtures/forward/reader-quality-assessment.json",
-        "tests/fixtures/forward/reader-ready-report.md",
         "tests/fixtures/reader_v2/benchmark.json",
         "tests/adversarial/test_reader_integrity_regressions.py",
         "tests/unit/test_composition_graph.py",
@@ -325,7 +321,6 @@
         "skills/logic-writing/routes/fiction/references/voice-style-continuity.md",
         "skills/logic-writing/routes/fiction/references/workflow.md",
         "skills/logic-writing/routes/fiction/references/worldguard-adapter.md",
-        "skills/logic-writing/routes/fiction/scripts/build_manuscript_artifact_map.py",
         "skills/logic-writing/routes/fiction/scripts/chapter_interface_check.py",
         "skills/logic-writing/routes/fiction/scripts/evidence_identity.py",
         "skills/logic-writing/routes/fiction/scripts/guard_handoff_check.py",
@@ -442,7 +437,6 @@
         "skills/logic-writing/routes/travel/references/traveler-profile.md",
         "skills/logic-writing/routes/travel/references/trip-fit-review.md",
         "skills/logic-writing/routes/travel/references/world-feasibility.md",
-        "skills/logic-writing/routes/travel/scripts/build_guide_artifact_map.py",
         "skills/logic-writing/routes/travel/scripts/fixture_mutation.py",
         "skills/logic-writing/routes/travel/scripts/travel_contract.py",
         "skills/logic-writing/routes/travel/scripts/validate_failure_cases.py",
@@ -571,18 +565,12 @@
         "openspec/specs/unified-routing/spec.md",
         "pyproject.toml",
         "scripts/_release_common.py",
-        "scripts/check_consumer_resource_closure.py",
-        "scripts/check_global_routing.py",
-        "scripts/check_installed_routes.py",
         "scripts/check_privacy.py",
         "scripts/check_public_docs.py",
-        "scripts/check_retirement_residuals.py",
         "scripts/check_source_reconciliation.py",
         "scripts/run_fiction_regression.py",
-        "scripts/run_logic_writing_model_regression.py",
         "scripts/run_travel_regression.py",
-        "scripts/validate_skill.py",
-        "scripts/verify_skill_suite_markers.py"
+        "scripts/validate_skill.py"
       ],
       "entrypoints": [],
       "state": [

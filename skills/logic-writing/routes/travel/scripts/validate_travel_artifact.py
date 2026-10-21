@@ -10,14 +10,10 @@ SCRIPTS = Path(__file__).resolve().parents[3] / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 
 from _common import cli_validate, require_mapping, validation_result
+from derive_closure import REQUIRED_DIMENSIONS
 from reader_pipeline import validate_route_artifact_review
 
 OWNER = "travel-guide"
-REQUIRED_DIMENSIONS = (
-    "guide_kind", "traveler_fit", "unit_responsibility", "handoffs",
-    "narrative_body", "operational_appendix", "risk_fallback",
-    "source_recheck", "local_texture",
-)
 
 
 def validate_travel_artifact(value):
@@ -27,7 +23,7 @@ def validate_travel_artifact(value):
         owner=OWNER,
         route_composition=request["route_composition"],
         artifact_map=request["artifact_map"],
-        required_dimensions=REQUIRED_DIMENSIONS,
+        required_dimensions=REQUIRED_DIMENSIONS[OWNER],
     )
     return validation_result(
         status="current_pass" if review["status"] == "passed" else "partial",

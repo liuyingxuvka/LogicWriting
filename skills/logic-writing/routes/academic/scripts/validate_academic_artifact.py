@@ -10,14 +10,10 @@ SCRIPTS = Path(__file__).resolve().parents[3] / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 
 from _common import cli_validate, require_mapping, validation_result
+from derive_closure import REQUIRED_DIMENSIONS
 from reader_pipeline import validate_route_artifact_review
 
 OWNER = "academic-writing"
-REQUIRED_DIMENSIONS = (
-    "research_question", "central_contribution", "hierarchy_progression",
-    "paragraph_contribution", "evidence_citation", "method_depth",
-    "figure_table_jobs", "qualification_implication",
-)
 
 
 def validate_academic_artifact(value):
@@ -27,7 +23,7 @@ def validate_academic_artifact(value):
         owner=OWNER,
         route_composition=request["route_composition"],
         artifact_map=request["artifact_map"],
-        required_dimensions=REQUIRED_DIMENSIONS,
+        required_dimensions=REQUIRED_DIMENSIONS[OWNER],
     )
     return validation_result(
         status="current_pass" if review["status"] == "passed" else "partial",

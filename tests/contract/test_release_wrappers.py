@@ -49,40 +49,10 @@ def _load(name: str):
 
 
 
-def test_route_smoke_covers_both_owners_and_bounded_child():
-    routes = _load("check_installed_routes")
-    report = routes.check(ROOT / "skills" / "logic-writing")
-    assert report["status"] == "passed"
-    assert [item["scenario"] for item in report["scenarios"]] == [
-        "investigation",
-        "academic-writing",
-        "academic-with-investigation-child",
-        "fiction-writing",
-        "travel-guide",
-    ]
 
 
-def test_global_route_checker_distinguishes_cutover_from_retirement(tmp_path):
-    routing = _load("check_global_routing")
-    (tmp_path / "skills" / "research-investigation-workflow").mkdir(parents=True)
-    active = tmp_path / "skills" / "logic-writing"
-    active.mkdir(parents=True)
-    (active / "SKILL.md").write_text("---\nname: logic-writing\n---\n")
-    assert routing.check(tmp_path, phase="cutover")["status"] == "passed"
-    assert routing.check(tmp_path, phase="retired")["status"] == "failed"
 
 
-def test_retirement_residual_checker_rejects_active_reference(tmp_path):
-    residuals = _load("check_retirement_residuals")
-    skills = tmp_path / "skills" / "supporting-skill"
-    skills.mkdir(parents=True)
-    (tmp_path / "AGENTS.md").write_text("logic-writing\n", encoding="utf-8")
-    (skills / "SKILL.md").write_text("Use logic-writing.\n", encoding="utf-8")
-    assert residuals.check(tmp_path)["status"] == "passed"
-    (skills / "SKILL.md").write_text(
-        "Use academic-thesis-revision-workflow.\n", encoding="utf-8"
-    )
-    assert residuals.check(tmp_path)["status"] == "failed"
 
 
 

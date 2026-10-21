@@ -286,3 +286,21 @@ Removed obsolete provider/current-release literals from active prompts, adapter 
 | models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 3.69 |
 | map: `python -m flowguard map check` | check: 0 error(s), 10 warning(s), 0 info | 1.48 |
 | skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.4 |
+
+## LW-21
+
+删除无人消费/失效脚本、两份 ArtifactMap 副本及专用测试，四路线评审维度统一引用 derive_closure。四个原生命令帮助正常；完整 162 项测试、三项回归及地图通过，维度仅有唯一声明，指定残留为零。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| academic-help: `python skills/logic-writing/routes/academic/scripts/validate_academic_artifact.py --help` | exit 0; stated assertions verified | 0.19 |
+| investigation-help: `python skills/logic-writing/routes/investigation/scripts/validate_investigation_artifact.py --help` | exit 0; stated assertions verified | 0.19 |
+| fiction-help: `python skills/logic-writing/routes/fiction/scripts/validate_fiction_artifact.py --help` | exit 0; stated assertions verified | 0.2 |
+| travel-help: `python skills/logic-writing/routes/travel/scripts/validate_travel_artifact.py --help` | exit 0; stated assertions verified | 0.2 |
+| dimensions: `git grep -n REQUIRED_DIMENSIONS =  -- skills` | exit 0; stated assertions verified | 0.01 |
+| residual: `git grep -n verify_skill_suite_markers\|run_logic_writing_model_regression\|check_installed_routes\|check_global_routing\|check_retirement_residuals\|check_consumer_resource_closure\|required-resources\|build_guide_artifact_map\|build_manuscript_artifact_map -- skills scripts tests` | exit 1; stated assertions verified | 0.01 |
+| pytest: `python -m pytest -q` | 162 passed in 7.46s | 7.96 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 7.5 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.64 |
+| models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 2.67 |
+| map: `python -m flowguard map check` | check: 0 error(s), 10 warning(s), 0 info | 0.78 |
