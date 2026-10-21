@@ -45,6 +45,7 @@ TESTED_BY = {
     ],
     "members_use_one_console": [
         "tests/unit/test_researchguard_provider_topology.py:test_each_member_uses_one_researchguard_console",
+        "tests/unit/test_researchguard_provider_topology.py:test_console_on_path_is_used_when_researchguard_is_in_another_python",
     ],
     "no_alternate_provider_path": [
         "tests/unit/test_researchguard_provider_topology.py:test_member_provider_root_is_rejected_before_console_execution",

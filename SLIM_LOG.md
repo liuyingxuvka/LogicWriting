@@ -875,3 +875,36 @@ The new CLI regression failed with an existing locator being converted into an o
 | `python -m flowguard map check` | 0 errors, 6 pre-existing stale component warnings; final map refresh remains LW-55 work |
 
 No complete suite or release wrapper was repeated for this supplemental fix.
+
+## LW-55
+
+Updated all six changed descriptions and reviewed/confirmed all ten components; kept the supplemental structured/scalar input boundary. Bound the real PATH test to members_use_one_console and refreshed only actual debt import lines. On the prior FlowGuard 0.70.6, full tests were 166 passed/1 old-source skip and native closure mutation failed needs_repair_never_passes, then restored byte-exactly. Installed the noneditable candidate wheel built from frozen FG98 bc8c519 into this repository's private environment only; actual module/metadata/console are 0.70.7 and both models/release checks genuinely ran, without skipping. Candidate wheel is not an official published asset. The initial skill-check option was corrected to --skill-root; original failed invocation is retained externally.
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| confirm-routing: `python -m flowguard map confirm routing` | exit 0; stated assertions verified | 0.13 |
+| confirm-research-packet: `python -m flowguard map confirm research-packet` | exit 0; stated assertions verified | 0.13 |
+| confirm-reader-artifact: `python -m flowguard map confirm reader-artifact` | exit 0; stated assertions verified | 0.13 |
+| confirm-fiction: `python -m flowguard map confirm fiction` | exit 0; stated assertions verified | 0.16 |
+| confirm-travel: `python -m flowguard map confirm travel` | exit 0; stated assertions verified | 0.14 |
+| confirm-investigation: `python -m flowguard map confirm investigation` | exit 0; stated assertions verified | 0.12 |
+| confirm-academic: `python -m flowguard map confirm academic` | exit 0; stated assertions verified | 0.15 |
+| confirm-release: `python -m flowguard map confirm release` | exit 0; stated assertions verified | 0.12 |
+| confirm-providers: `python -m flowguard map confirm providers` | exit 0; stated assertions verified | 0.18 |
+| confirm-shared-contracts: `python -m flowguard map confirm shared-contracts` | exit 0; stated assertions verified | 0.12 |
+| map: `python -m flowguard map check` | check: 0 error(s), 0 warning(s), 0 info | 0.43 |
+| verify: `python -m flowguard map verify` | models: 2 declared, 2 executed | 20.92 |
+| lint: `python -m flowguard map lint` | exit 0; stated assertions verified | 0.31 |
+| release: `python -m flowguard release` | models: 2 declared, 2 executed | 30.45 |
+| pytest: `python -m pytest -q` | 166 passed, 1 skipped in 8.77s | 9.15 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 6.12 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.45 |
+| skill: `python scripts/validate_skill.py --skill-root skills/logic-writing --json` | exit 0; stated assertions verified | 0.16 |
+| closure-native-mutation: `python <external> LW-55 closure` | models: 0 passed, 1 failed | 4.27 |
+| map-json-format: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.05 |
+| new-fg-map: `python -m flowguard map check` | check: 0 error(s), 0 warning(s), 0 info | 1.95 |
+| new-fg-models: `python -m flowguard map models` | models: 2 passed, 0 failed | 20.34 |
+| new-fg-release: `python -m flowguard release` | models: 2 declared, 2 executed | 24.43 |
+| new-fg-lint: `python -m flowguard map lint` | exit 0; stated assertions verified | 0.36 |
+
+1 failed verification attempt(s) retained in the external transcript; purpose-preserving correction is described above.

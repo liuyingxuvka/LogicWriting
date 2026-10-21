@@ -18,7 +18,8 @@
       "summary": "Select exactly one final owner and bounded investigation child.",
       "responsibilities": [
         "Choose one final owner from the requested terminal artifact.",
-        "Keep substantial research as a bounded investigation child; sibling routes never take final ownership."
+        "Keep substantial research as a bounded investigation child; sibling routes never take final ownership.",
+        "The route-selection command computes the request fingerprints a caller leaves out and still checks the ones given."
       ],
       "files": [
         "skills/logic-writing/assets/schemas/route-decision.schema.json",
@@ -46,7 +47,7 @@
         ".flowguard/models/route_and_guard_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:11061d8b6e48585c2f404813df9c08ae81c8563a98e14e598aff23bf2d37f3db"
+      "fingerprint": "sha256:ecf4664474c52b8f5692b94bf9796478c646c1262283f4a65fff0c124173b92a"
     },
     {
       "id": "research-packet",
@@ -54,7 +55,8 @@
       "summary": "Validate investigation evidence records and the ResearchGuard synthesis-plan handoff.",
       "responsibilities": [
         "Validate source registry, claim support and the optional ResearchPacket evidence record (source roles, dates, lineage, what each source can and cannot support) without requiring native receipts.",
-        "Map ResearchGuard synthesis plans into the reader handoff without replacing native member authority; the native-to-reader unit mapping is checked when the ReaderBrief is built."
+        "Map ResearchGuard synthesis plans into the reader handoff without receipt fields and without replacing native member authority; the native-to-reader unit mapping is checked when the ReaderBrief is built.",
+        "Packet and claim-support commands fill a missing request fingerprint and SourceRegistry reference."
       ],
       "files": [
         "skills/logic-writing/assets/schemas/claim-support.schema.json",
@@ -99,7 +101,8 @@
       "responsibilities": [
         "Preserve requested intent, composition order, editorial dispositions and writer projection.",
         "Bind actual artifact bytes and spans to shared contracts, deterministic audit and route review.",
-        "Derive closure (passed or needs_repair) from the current reader/route chain and an independent reader judgment whose judge differs from the producer; an edit after review makes closure fail; automatic v2 closure covers text/markdown only."
+        "Derive closure (passed or needs_repair) from the current reader/route chain and an independent reader judgment whose judge differs from the producer; an edit after review makes closure fail; automatic v2 closure covers text/markdown only.",
+        "Reader-chain commands take upstream records as file paths and compute the fingerprints and references a caller leaves out (fill_brief_fingerprints, fill_check_fingerprints, fill_closure_fingerprints); values the caller gives are still checked."
       ],
       "files": [
         "skills/logic-writing/SKILL.md",
@@ -304,7 +307,7 @@
         ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:2909a961d9ffe43c4803c23f5585c0e27a52a50a2ac9590e3172fa7286e00506"
+      "fingerprint": "sha256:f80834b3310338364b824cd64e431891f81a10240a36cd2d67f83a25039667d8"
     },
     {
       "id": "travel",
@@ -393,7 +396,7 @@
         ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:9823509a5cb4ab2e8551dc10cbb8bdbe2772338f423a1b5be697ca5bd07f6fd3"
+      "fingerprint": "sha256:7ba622d71ffac1f804842f1af97749ff230b1e0874220ea62bab036f11490dd2"
     },
     {
       "id": "investigation",
@@ -425,7 +428,7 @@
         ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:3be25917427e6e020967b88c582b2410d662332a7b2d0a7f83c80f8ab6feb04d"
+      "fingerprint": "sha256:f7d623060f8f5010bd5a88c561dce75509db7a53a8e472261102509d5780790d"
     },
     {
       "id": "academic",
@@ -457,7 +460,7 @@
         ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:c9949187c49b172499bd443ca4545d10695584e0d28dcadb965c2841ec7e8542"
+      "fingerprint": "sha256:5bb9c77fc9fff13fac6089b025a2c1804c0fb46b186f28ea8de14858ea80f75e"
     },
     {
       "id": "release",
@@ -466,7 +469,8 @@
       "responsibilities": [
         "Check skill structure, public docs and privacy, and run the fiction and travel regressions.",
         "Install the runtime skill files without repository fixtures and check an installed copy by file set and bytes.",
-        "Publish a release only after the workflow's tests, regressions, models and map check pass on the exact source commit."
+        "Publish a release only after the workflow's tests, regressions, models and map check pass on the exact source commit, and the tests and member preflights also pass with ResearchGuard at RESEARCHGUARD_MIN_VERSION.",
+        "Keep the OpenSpec specs in line with current behavior."
       ],
       "files": [
         ".codex/skills/openspec-apply-change/SKILL.md",
@@ -519,7 +523,7 @@
       "summary": "Explicit native provider boundaries and availability checks.",
       "responsibilities": [
         "Preflight only the selected native ResearchGuard member or explicit portable/document provider.",
-        "Require ResearchGuard >= 0.5.0 (minimum declared once in skills/logic-writing/scripts/_common.py); keep WorldGuard portable launcher availability separate from domain judgment."
+        "Require ResearchGuard >= 0.5.0 (minimum declared once in skills/logic-writing/scripts/_common.py), found in the running Python or else as the researchguard command on PATH; keep WorldGuard portable launcher availability separate from domain judgment."
       ],
       "files": [
         "skills/logic-writing/scripts/provider_preflight.py"
@@ -544,15 +548,15 @@
         ".flowguard/models/route_and_guard_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:4fbaaa7b26aaa22542d7bdbe83f3d740ff32865cc4f379b741b9ea10c4068f65"
+      "fingerprint": "sha256:6e4c94566c7061015c0503de12a067034c14c611d2b6b7a4e5f2b18dc63b0d1a"
     },
     {
       "id": "shared-contracts",
       "layer": "domain",
-      "summary": "Shared canonical identity and JSON schema validation used by existing domain owners.",
+      "summary": "Shared canonical identity, request loading and JSON schema validation used by existing domain owners.",
       "responsibilities": [
         "Preserve canonical content fingerprints and strict JSON schema validation shared by existing domain owners.",
-        "Resolve JSON file references only for reviewed structured request fields; preserve scalar identifiers, artifact paths and opaque native result locators."
+        "Load command requests whose reviewed object and list fields name JSON files; preserve scalar identifiers, artifact paths and opaque native result locators, and fill fingerprints a caller leaves out (load_request, fill_fingerprint, fill_missing)."
       ],
       "files": [
         "skills/logic-writing/scripts/_common.py",
@@ -622,7 +626,7 @@
       "code": "dep_unused",
       "component": "reader-artifact",
       "contains": "research-packet",
-      "reason": "Real script import: skills/logic-writing/scripts/reader_pipeline.py:998 imports researchguard_handoff through the skill's script-directory loading path; FlowGuard module discovery does not resolve bare script modules."
+      "reason": "Real script import: skills/logic-writing/scripts/reader_pipeline.py:1000 imports researchguard_handoff through the skill's script-directory loading path; FlowGuard module discovery does not resolve bare script modules."
     },
     {
       "code": "dep_unused",
@@ -640,7 +644,7 @@
       "code": "dep_unused",
       "component": "routing",
       "contains": "reader-artifact",
-      "reason": "Real script import: skills/logic-writing/scripts/select_route.py:16 imports reader_pipeline through the skill's script-directory loading path; FlowGuard module discovery does not resolve bare script modules."
+      "reason": "Real script import: skills/logic-writing/scripts/select_route.py:17 imports reader_pipeline through the skill's script-directory loading path; FlowGuard module discovery does not resolve bare script modules."
     },
     {
       "code": "dep_unused",
