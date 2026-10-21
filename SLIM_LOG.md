@@ -254,3 +254,19 @@ Removed obsolete provider/current-release literals from active prompts, adapter 
 | travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.89 |
 | models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 2.6 |
 | map: `python -m flowguard map check` | check: 0 error(s), 10 warning(s), 0 info | 1.05 |
+
+## LW-19
+
+删除文档原话/标题/常量锁与无用示例，保留必需文件、内部文件禁公开、本地链接、占位符、原生故事语义和散列隐私扫描。完整 169 项通过；fiction 原生四项、三项回归、文档、隐私及地图通过，指定活动残留为零。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| docs: `python scripts/check_public_docs.py --root . --json` | exit 0; stated assertions verified | 0.12 |
+| native: `python skills/logic-writing/routes/fiction/scripts/run_native_regression.py --repo-root . --json` | exit 0; stated assertions verified | 0.29 |
+| residual: `git grep -n doc_contract_check\|reader_room_guidance_check\|final_closure_text_check\|reader_room_failure_cases -- skills tests scripts` | exit 1; stated assertions verified | 0.01 |
+| privacy: `python scripts/check_privacy.py --root . --json` | exit 0; stated assertions verified | 0.74 |
+| pytest: `python -m pytest -q` | 169 passed in 9.79s | 10.3 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 11.07 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.57 |
+| models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 2.44 |
+| map: `python -m flowguard map check` | check: 0 error(s), 10 warning(s), 0 info | 0.75 |

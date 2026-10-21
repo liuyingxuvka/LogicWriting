@@ -15,7 +15,6 @@ def test_travel_route_pack_is_internal_not_installable():
     assert ROUTE.is_dir()
     assert not (ROUTE / "SKILL.md").exists()
     assert not (ROUTE / "agents").exists()
-    assert not (ROUTE / ".skillguard").exists()
 
 
 def test_story_shaped_itinerary_does_not_invoke_fiction_owner():

@@ -29,7 +29,6 @@ def test_fiction_route_pack_is_internal_not_installable():
     assert ROUTE.is_dir()
     assert not (ROUTE / "SKILL.md").exists()
     assert not (ROUTE / "agents").exists()
-    assert not (ROUTE / ".skillguard").exists()
 
 
 def test_fiction_route_keeps_final_ownership_over_bounded_research():

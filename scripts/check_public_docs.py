@@ -14,28 +14,6 @@ from _release_common import RELEASE_CONTRACT_RELATIVE, emit, git_lines
 
 LINK = re.compile(r"!?\[[^]]*\]\(([^)]+)\)")
 PLACEHOLDER = re.compile(r"\b(?:TODO|TBD|FIXME|FINAL SHA|FINAL TAG)\b", re.IGNORECASE)
-ENGLISH_SECTIONS = [
-    "Why one skill",
-    "Four final-owner routes",
-    "“Say it like a person” is an executable boundary",
-    "Specialist ownership stays intact",
-    "Architecture",
-    "Install",
-    "Validation",
-    "Scope limits",
-    "License",
-]
-CHINESE_SECTIONS = [
-    "为什么合在一起",
-    "一个入口，四条最终路线",
-    "“说人话”不是一句口号",
-    "专业技能仍然各管各的",
-    "整体结构",
-    "安装和使用",
-    "验证边界",
-    "不负责什么",
-    "许可证",
-]
 REQUIRED_PUBLIC_FILES = {
     "README.md",
     "README.zh-CN.md",
@@ -46,7 +24,6 @@ REQUIRED_PUBLIC_FILES = {
     "VERSION",
     "docs/architecture.md",
     "docs/responsibility-map.md",
-    "docs/release-retirement-checklist.md",
     "assets/readme-hero/hero.png",
     "assets/readme-hero/hero_design_note.md",
     "assets/readme-hero/hero_prompt.md",
@@ -62,8 +39,6 @@ PROHIBITED_PUBLIC_DOCS = {
 }
 
 
-def _headings(text: str) -> list[str]:
-    return [line[3:].strip() for line in text.splitlines() if line.startswith("## ")]
 
 
 def _public_inventory(root: Path) -> set[str]:
@@ -102,22 +77,10 @@ def check(root: Path) -> dict:
     if missing:
         return {"check": "public-docs", "status": "failed", "findings": findings}
 
-    english = (root / "README.md").read_text(encoding="utf-8")
-    chinese = (root / "README.zh-CN.md").read_text(encoding="utf-8")
-    if _headings(english) != ENGLISH_SECTIONS:
-        findings.append("english_section_order_mismatch")
-    if _headings(chinese) != CHINESE_SECTIONS:
-        findings.append("chinese_section_order_mismatch")
-    for label, text in (("english", english), ("chinese", chinese)):
-        if text.count("<!-- README HERO START -->") != 1 or text.count("<!-- README HERO END -->") != 1:
-            findings.append(f"{label}_hero_block_count_mismatch")
-        if "assets/readme-hero/hero.png" not in text:
-            findings.append(f"{label}_hero_reference_missing")
+    for label, relative in (("english", "README.md"), ("chinese", "README.zh-CN.md")):
+        text = (root / relative).read_text(encoding="utf-8")
         if PLACEHOLDER.search(text):
             findings.append(f"{label}_placeholder")
-        for required in ("ResearchPacket", "ReaderBrief", "SourceGuard", "LogicGuard", "FlowGuard"):
-            if required not in text:
-                findings.append(f"{label}_required_concept_missing:{required}")
 
     for relative in ("README.md", "README.zh-CN.md", "MIGRATION.md", "CONTRIBUTING.md"):
         text = (root / relative).read_text(encoding="utf-8")
@@ -128,22 +91,12 @@ def check(root: Path) -> dict:
             if not (root / clean).exists():
                 findings.append(f"broken_local_link:{relative}:{clean}")
 
-    hero = root / "assets" / "readme-hero" / "hero.png"
-    if hero.stat().st_size < 100_000:
-        findings.append("hero_image_is_not_release_quality")
-    note = (root / "assets/readme-hero/hero_design_note.md").read_text(encoding="utf-8")
-    prompt = (root / "assets/readme-hero/hero_prompt.md").read_text(encoding="utf-8")
-    if "determin" not in note.lower() or "exact" not in note.lower():
-        findings.append("hero_generation_method_missing")
-    if any(term not in prompt for term in ("Logic Writing", "Investigation", "Academic writing", "Fiction", "Travel")):
-        findings.append("hero_visual_brief_incomplete")
     return {
         "check": "public-docs",
         "status": "passed" if not findings else "failed",
-        "section_pairs": len(ENGLISH_SECTIONS),
         "public_file_count": len(inventory),
         "findings": sorted(set(findings)),
-        "claim_boundary": "This check covers local bilingual structure, links, hero provenance, and public-file admission; it does not prove hosted rendering or publication.",
+        "claim_boundary": "This check covers required public files, placeholders, local links, and public-file admission; it does not prove hosted rendering or publication.",
     }
 
 

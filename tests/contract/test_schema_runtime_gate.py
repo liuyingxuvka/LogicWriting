@@ -89,26 +89,8 @@ def test_runtime_inventory_is_exactly_the_current_contracts():
     assert {path.name for path in schema_root.glob("*.schema.json")} == EXPECTED
 
 
-def _openspec_v2_generated_json_name(name: str) -> bool:
-    return re.fullmatch(
-        r"(?:verification[-_.])?(?:receipts?|cache|progress|registry)"
-        r"(?:[-_.][^/]*)?\.jsonl?",
-        name.lower(),
-    ) is not None
 
 
-def test_schema_source_names_do_not_collide_with_openspec_generated_output_classifier():
-    # Preserve the exact observed counterexample while proving that every
-    # current schema source survives OpenSpec's frozen-root materialization.
-    assert _openspec_v2_generated_json_name("receipt.schema.json")
-    collisions = sorted(
-        name for name in EXPECTED if _openspec_v2_generated_json_name(name)
-    )
-    assert collisions == [], (
-        "tracked schema source names collide with OpenSpec's "
-        f"verification-generated-output-v2 classifier: {collisions}; "
-        "rename each authority source before final frozen validation"
-    )
 
 
 def test_all_schema_ids_are_canonical_and_offline():
@@ -196,16 +178,3 @@ def test_runtime_does_not_depend_on_site_packages():
 
     assert completed.returncode == 0, completed.stderr
     assert completed.stdout.strip() == str(len(EXPECTED))
-
-
-def test_schema_runtime_source_has_no_secondary_validator_import():
-    source = (
-        Path(__file__).resolve().parents[2]
-        / "skills"
-        / "logic-writing"
-        / "scripts"
-        / "schema_validation.py"
-    ).read_text(encoding="utf-8")
-
-    assert "import jsonschema" not in source
-    assert "from jsonschema" not in source

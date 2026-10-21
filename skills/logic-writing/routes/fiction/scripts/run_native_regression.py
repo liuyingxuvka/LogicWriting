@@ -41,8 +41,6 @@ def main(argv: list[str] | None = None) -> int:
     scripts = f"{skill}/scripts"
     short = f"{skill}/examples/short_story_project"
     cases = [
-        ("documentation", [f"{scripts}/doc_contract_check.py", "--skill-root", "skills/logic-writing", "--json"]),
-        ("reader-room-guidance", [f"{scripts}/reader_room_guidance_check.py", "--check", "all", "--json"]),
         ("short-story-ledger", [f"{scripts}/story_ledger_check.py", f"{short}/story-ledger.yaml", "--json"]),
         ("short-turning-points", [f"{scripts}/turning_point_check.py", f"{short}/story-ledger.yaml", "--json"]),
         ("short-scene-contracts", [f"{scripts}/scene_contract_check.py", f"{short}/story-ledger.yaml", "--json"]),
