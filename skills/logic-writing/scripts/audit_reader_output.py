@@ -3,11 +3,11 @@
 from __future__ import annotations
 
 from _common import cli_validate, require_mapping, validation_result
-from reader_pipeline import build_reader_audit, validate_reader_audit_current
+from reader_pipeline import build_reader_audit, fill_check_fingerprints, validate_reader_audit_current
 
 
 def audit_reader_output(value):
-    request = require_mapping(value, "ReaderAudit request")
+    request = fill_check_fingerprints(require_mapping(value, "ReaderAudit request"))
     audit = build_reader_audit(
         audit_id=request.get("audit_id"),
         artifact_map=request.get("artifact_map"),

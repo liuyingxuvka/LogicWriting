@@ -786,3 +786,17 @@ ReaderBrief CLI 补全缺省的计划/路线指纹，原生合成计划可由入
 | models: `python -m flowguard map models` | models: 2 passed, 0 failed | 25.8 |
 | map: `python -m flowguard map check` | check: 0 error(s), 5 warning(s), 0 info | 0.74 |
 | skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.19 |
+
+## LW-50
+
+共享契约和路线评审入口补全缺省引用、片段 locator/指纹及自身指纹，给定值与底层核对规则保持。真实文件链继续四步均退出0，手写契约/评审无指纹字段；定向测试、完整161项/1跳过、三回归和地图通过。四路线既有领域/公共导入与内容规则保持。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| shared-writing: `python -m pytest -q tests/unit/test_shared_writing.py` | 5 passed in 0.17s | 0.46 |
+| native-file-chain: `python <external> 50` | exit 0; stated assertions verified | 0.89 |
+| pytest: `python -m pytest -q` | 161 passed, 1 skipped in 5.64s | 6.01 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 5.46 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.45 |
+| models: `python -m flowguard map models` | models: 2 passed, 0 failed | 17.99 |
+| map: `python -m flowguard map check` | check: 0 error(s), 9 warning(s), 0 info | 0.85 |

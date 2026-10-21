@@ -1979,12 +1979,75 @@ def fill_brief_fingerprints(request: dict[str, Any]) -> dict[str, Any]:
     return request
 
 
+def _mapping(value: Any) -> Mapping[str, Any]:
+    return value if isinstance(value, Mapping) else {}
+
+
+def _fill_evidence(evidence: Any, units: Mapping[str, Mapping[str, Any]]) -> None:
+    if not isinstance(evidence, dict):
+        return
+    fill_missing(evidence, "locator", _mapping(units.get(evidence.get("artifact_unit_id"))).get("locator"))
+    if isinstance(evidence.get("excerpt"), str):
+        fill_missing(evidence, "excerpt_fingerprint", fingerprint_text(evidence["excerpt"]))
+
+
+def fill_check_fingerprints(request: dict[str, Any]) -> dict[str, Any]:
+    """Fill the fingerprints a caller left out of a SharedWriting contract or a route review.
+
+    References are copied from the ReaderBrief, ArtifactMap and route composition
+    in the same request, span locators and fingerprints from the ArtifactMap unit
+    they name, excerpt fingerprints from the excerpt text, and each record gets
+    its own fingerprint last.  Values the caller gives are kept and checked.
+    """
+    amap = _mapping(request.get("artifact_map"))
+    brief = _mapping(request.get("reader_brief"))
+    units = {row.get("artifact_unit_id"): row for row in amap.get("units", []) if isinstance(row, Mapping)}
+    for key in ("contract", "shared_writing"):
+        contract = request.get(key)
+        if not isinstance(contract, dict):
+            continue
+        for field, value in (
+            ("route_decision_fingerprint", brief.get("route_decision_fingerprint")),
+            ("reader_intent_fingerprint", brief.get("reader_intent_fingerprint")),
+            ("reader_brief_fingerprint", brief.get("brief_fingerprint")),
+            ("composition_plan_fingerprint", _mapping(brief.get("composition_plan")).get("plan_fingerprint")),
+            ("route_extension_fingerprint", _mapping(brief.get("route_extension")).get("extension_fingerprint")),
+            ("artifact_map_fingerprint", amap.get("map_fingerprint")),
+            ("artifact_fingerprint", amap.get("artifact_fingerprint")),
+        ):
+            fill_missing(contract, field, value)
+        for binding in contract.get("unit_bindings") or []:
+            for span in _mapping(binding).get("artifact_spans") or []:
+                if isinstance(span, dict):
+                    unit = _mapping(units.get(span.get("artifact_unit_id")))
+                    fill_missing(span, "locator", unit.get("locator"))
+                    fill_missing(span, "content_fingerprint", unit.get("content_fingerprint"))
+        fill_fingerprint(contract, "contract_fingerprint")
+    extension_fp = _mapping(request.get("route_composition")).get("extension_fingerprint") or _mapping(
+        brief.get("route_extension")).get("extension_fingerprint")
+    for key in ("review", "route_review"):
+        review = request.get(key)
+        if not isinstance(review, dict):
+            continue
+        fill_missing(review, "route_extension_fingerprint", extension_fp)
+        fill_missing(review, "artifact_map_fingerprint", amap.get("map_fingerprint"))
+        fill_missing(review, "artifact_fingerprint", amap.get("artifact_fingerprint"))
+        for row in review.get("dimensions") or []:
+            for evidence in _mapping(row).get("evidence") or []:
+                _fill_evidence(evidence, units)
+        for finding in review.get("findings") or []:
+            _fill_evidence(_mapping(finding).get("evidence"), units)
+        fill_fingerprint(review, "review_fingerprint")
+    return request
+
+
 __all__ = [
     "build_artifact_map",
     "build_reader_audit",
     "build_reader_brief",
     "build_writer_input",
     "fill_brief_fingerprints",
+    "fill_check_fingerprints",
     "validate_artifact_map",
     "validate_composition_plan",
     "validate_reader_intent",

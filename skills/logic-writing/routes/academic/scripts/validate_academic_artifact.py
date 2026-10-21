@@ -11,13 +11,13 @@ sys.path.insert(0, str(SCRIPTS))
 
 from _common import cli_validate, require_mapping, validation_result
 from derive_closure import REQUIRED_DIMENSIONS
-from reader_pipeline import validate_route_artifact_review
+from reader_pipeline import fill_check_fingerprints, validate_route_artifact_review
 
 OWNER = "academic-writing"
 
 
 def validate_academic_artifact(value):
-    request = require_mapping(value, "academic artifact review request")
+    request = fill_check_fingerprints(require_mapping(value, "academic artifact review request"))
     review = validate_route_artifact_review(
         request["review"],
         owner=OWNER,
