@@ -53,6 +53,21 @@ def test_quality_failure_blocks_without_claiming_terminal(tmp_path):
     assert result["closure"]["terminal"] is False
 
 
+def test_cli_exits_nonzero_unless_closure_passed(tmp_path):
+    import json
+    import subprocess
+    import sys
+    from pathlib import Path
+    script = Path(__file__).resolve().parents[2] / "skills" / "logic-writing" / "scripts" / "derive_closure.py"
+    for pass_quality, expected in ((True, 0), (False, 1)):
+        workdir = tmp_path / ("pass" if pass_quality else "fail")
+        workdir.mkdir()
+        request = workdir / "closure-input.json"
+        request.write_text(json.dumps(closure_input(complete_chain(workdir, pass_quality=pass_quality))), encoding="utf-8")
+        run = subprocess.run([sys.executable, str(script), "--input", str(request)], capture_output=True, text=True)
+        assert run.returncode == expected, run.stdout + run.stderr
+
+
 def test_repeating_closure_does_not_count_as_repair(tmp_path):
     request = closure_input(complete_chain(tmp_path, pass_quality=False))
     first = derive_closure(request)

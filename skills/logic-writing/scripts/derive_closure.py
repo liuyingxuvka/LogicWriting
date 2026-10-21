@@ -328,7 +328,7 @@ def main() -> int:
         print(f"ERROR: {exc}")
         return 2
     dump_json(result, args.output)
-    return 0
+    return 0 if result["closure"]["status"] == "passed" else 1
 
 
 if __name__ == "__main__":

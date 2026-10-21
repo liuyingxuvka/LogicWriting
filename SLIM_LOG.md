@@ -331,3 +331,31 @@ Removed obsolete provider/current-release literals from active prompts, adapter 
 | travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.68 |
 | models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 1.7 |
 | map: `python -m flowguard map check` | check: 0 error(s), 10 warning(s), 0 info | 0.6 |
+
+## LW-24
+
+SKILL 增补实际命令与输入字段，13 项命令在技能根帮助均正常；收尾未通过返回 1，真实 CLI 正负结果由新测试断言。9 项收尾和完整 163 项测试通过，三项回归、地图、技能通过。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| freshness: `python -m pytest -q tests/unit/test_freshness_closure.py` | 9 passed in 0.95s | 1.3 |
+| command-heading: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.05 |
+| select_route-help: `python <external> --help` | exit 0; stated assertions verified | 0.17 |
+| build_reader_brief-help: `python <external> --help` | exit 0; stated assertions verified | 0.17 |
+| build_artifact_map-help: `python <external> --help` | exit 0; stated assertions verified | 0.16 |
+| validate_shared_writing-help: `python <external> --help` | exit 0; stated assertions verified | 0.19 |
+| audit_reader_output-help: `python <external> --help` | exit 0; stated assertions verified | 0.19 |
+| derive_closure-help: `python <external> --help` | exit 0; stated assertions verified | 0.19 |
+| build_reader_repair-help: `python <external> --help` | exit 0; stated assertions verified | 0.17 |
+| record_reader_repair-help: `python <external> --help` | exit 0; stated assertions verified | 0.19 |
+| provider_preflight-help: `python <external> --help` | exit 0; stated assertions verified | 0.22 |
+| validate_investigation_artifact-help: `python <external> --help` | exit 0; stated assertions verified | 0.19 |
+| validate_academic_artifact-help: `python <external> --help` | exit 0; stated assertions verified | 0.17 |
+| validate_fiction_artifact-help: `python <external> --help` | exit 0; stated assertions verified | 0.16 |
+| validate_travel_artifact-help: `python <external> --help` | exit 0; stated assertions verified | 0.16 |
+| pytest: `python -m pytest -q` | 163 passed in 6.82s | 7.69 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 10.11 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.83 |
+| models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 1.52 |
+| map: `python -m flowguard map check` | check: 0 error(s), 10 warning(s), 0 info | 0.72 |
+| skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.15 |

@@ -61,6 +61,42 @@ the selected work. Do not load both route playbooks by default. Local scripts
 validate the reader records and calculate closure; installed
 providers and ResearchGuard members retain their own domain work.
 
+## Commands
+
+Run each script from the skill root with Python 3.10 or newer. Every script
+reads one JSON file given as `--input <file>`, prints its JSON result (or
+writes it to `--output <file>`), and exits 0 only when the result passes.
+Field shapes are in `assets/schemas/`.
+
+1. `python scripts/select_route.py --input route-request.json` with
+   `writing_request`, `decision_id`, `decided_at`; returns the RouteDecision.
+2. `python scripts/build_reader_brief.py --input brief-request.json` with
+   `route_decision`, `content_boundaries`, `composition_plan`,
+   `route_composition`, `brief_id` (add `native_handoff` and `native_plan`
+   only when a ResearchGuard synthesis plan is used).
+3. Write the artifact as UTF-8 text or Markdown.
+4. `python scripts/build_artifact_map.py --input map-request.json` with
+   `artifact_path`, `map_id`, `language`, `artifact_format`.
+5. `python scripts/validate_shared_writing.py --input shared-writing.json`
+   with `contract`, `artifact_map`, `reader_brief`.
+6. `python scripts/audit_reader_output.py --input audit-request.json` with
+   `audit_id`, `artifact_map`, `reader_brief`, `shared_writing`, `audited_at`.
+7. `python routes/<route>/scripts/validate_<route>_artifact.py --input review.json`
+   with `review`, `route_composition`, `artifact_map`; `<route>` is
+   `investigation`, `academic`, `fiction`, or `travel`.
+8. `python scripts/derive_closure.py --input closure-input.json` with
+   `closure_id`, `route_decision`, `reader_brief`, `route_composition`,
+   `artifact_map`, `shared_writing`, `deterministic_audit`, `route_review`,
+   `judgment`, `revision_provenance` (and `repair_requests`, `repair_results`
+   after a repair round).
+
+After a failed round, `scripts/build_reader_repair.py` and
+`scripts/record_reader_repair.py` record the repair. Before a specialist
+handoff, `python scripts/provider_preflight.py <provider>` checks that the
+provider is installed; for the three ResearchGuard members run it with the
+Python environment where ResearchGuard is installed. Specialists run through
+their own commands, not through these scripts.
+
 ## Required Workflow
 
 ### Freeze the current reader contract
