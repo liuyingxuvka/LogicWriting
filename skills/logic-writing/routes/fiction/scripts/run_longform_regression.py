@@ -90,6 +90,7 @@ def command_matrix(repo_root: Path) -> list[dict[str, Any]]:
             "id": "negative.substitute_reverse_outline_as_ledger",
             "argv": [sys.executable, script(repo_root, "longform_closure_check.py"), fixture(repo_root, f"{failures}/substitute-reverse-outline-as-ledger.json"), "--json"],
             "expected_exit_code": 1,
+            "expected_issue_codes": {"surface_evidence_invalid"},
         },
         {
             "id": "negative.weak_reverse_outline_direct",
@@ -100,12 +101,7 @@ def command_matrix(repo_root: Path) -> list[dict[str, Any]]:
             "id": "negative.markdown_surface_substitution",
             "argv": [sys.executable, script(repo_root, "longform_closure_check.py"), fixture(repo_root, f"{failures}/markdown-model-surface-substitution.json"), "--json"],
             "expected_exit_code": 1,
-        },
-        {
-            "id": "negative.final_prose_fake_ai_review",
-            "argv": [sys.executable, script(repo_root, "longform_closure_check.py"), fixture(repo_root, f"{failures}/final-prose-fake-ai-review.json"), "--json"],
-            "expected_exit_code": 1,
-            "expected_issue_codes": {"invalid_content_reference"},
+            "expected_issue_codes": {"surface_evidence_not_local_json"},
         },
         {
             "id": "negative.final_prose_hash_mismatch",
@@ -132,18 +128,6 @@ def command_matrix(repo_root: Path) -> list[dict[str, Any]]:
             "expected_issue_codes": {"content_file_missing"},
         },
         {
-            "id": "negative.final_prose_stale_semantic_review",
-            "argv": [sys.executable, script(repo_root, "longform_closure_check.py"), fixture(repo_root, f"{failures}/final-prose-stale-semantic-review.json"), "--json"],
-            "expected_exit_code": 1,
-            "expected_issue_codes": {"stale_semantic_review"},
-        },
-        {
-            "id": "negative.final_prose_stale_model_binding",
-            "argv": [sys.executable, script(repo_root, "longform_closure_check.py"), fixture(repo_root, f"{failures}/final-prose-stale-model-binding.json"), "--json"],
-            "expected_exit_code": 1,
-            "expected_issue_codes": {"stale_model_prose_binding"},
-        },
-        {
             "id": "negative.final_chapter_prose_bypass",
             "argv": [sys.executable, script(repo_root, "longform_closure_check.py"), fixture(repo_root, f"{failures}/final-chapter-prose-bypass.json"), "--json"],
             "expected_exit_code": 1,
@@ -154,11 +138,6 @@ def command_matrix(repo_root: Path) -> list[dict[str, Any]]:
             "argv": [sys.executable, script(repo_root, "longform_closure_check.py"), fixture(repo_root, f"{failures}/final-volume-prose-bypass.json"), "--json"],
             "expected_exit_code": 1,
             "expected_issue_codes": {"missing_final_prose_surface"},
-        },
-        {
-            "id": "negative.longform_closure_missing_interface",
-            "argv": [sys.executable, script(repo_root, "longform_closure_check.py"), fixture(repo_root, f"{failures}/longform-closure-missing-interface.json"), "--json"],
-            "expected_exit_code": 1,
         },
         {
             "id": "negative.fake_chapter_interface",
@@ -226,12 +205,6 @@ def command_matrix(repo_root: Path) -> list[dict[str, Any]]:
             "argv": [sys.executable, script(repo_root, "model_prose_binding_check.py"), fixture(repo_root, f"{failures}/length-outlier-without-binding-review.json"), "--json"],
             "expected_exit_code": 1,
             "expected_issue_codes": {"missing_binding_density_review"},
-        },
-        {
-            "id": "negative.final_prose_missing_model_prose_binding",
-            "argv": [sys.executable, script(repo_root, "longform_closure_check.py"), fixture(repo_root, f"{failures}/final-prose-missing-model-prose-binding.json"), "--json"],
-            "expected_exit_code": 1,
-            "expected_issue_codes": {"missing_final_prose_surface"},
         },
     ]
     failure_path = current_failure_path()

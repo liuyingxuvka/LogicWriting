@@ -490,3 +490,19 @@ SKILL 增补实际命令与输入字段，13 项命令在技能根帮助均正�
 | models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 1.31 |
 | map: `python -m flowguard map check` | check: 0 error(s), 5 warning(s), 0 info | 0.91 |
 | skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.19 |
+
+## LW-33
+
+长篇收尾仅保留实际反向大纲、最终手稿身份和来源要求，不重复运行其他故事模型；这些模型的专用原生正负检查保留。原生正例通过、真实哈希漂移返回 content_hash_mismatch，31 项长篇回归通过；完整 149 项、四项 fiction 子套件、旅行/有限模型及地图通过。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| imports: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.06 |
+| native-positive: `python skills/logic-writing/routes/fiction/scripts/longform_closure_check.py skills/logic-writing/routes/fiction/examples/longform_novel_project/longform-final-prose-closure.json --repo-root . --json` | exit 0; stated assertions verified | 0.11 |
+| native-negative: `python skills/logic-writing/routes/fiction/scripts/longform_closure_check.py skills/logic-writing/routes/fiction/examples/longform_failure_cases/final-prose-hash-mismatch.json --repo-root . --json` | exit 1; stated assertions verified | 0.07 |
+| longform: `python skills/logic-writing/routes/fiction/scripts/run_longform_regression.py --repo-root . --json` | exit 0; stated assertions verified | 2.48 |
+| pytest: `python -m pytest -q` | 149 passed in 4.59s | 5.09 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 6.39 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.57 |
+| models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 2.2 |
+| map: `python -m flowguard map check` | check: 0 error(s), 6 warning(s), 0 info | 1.02 |
