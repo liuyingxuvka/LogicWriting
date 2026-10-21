@@ -98,6 +98,7 @@ def test_missing_console_blocks_without_old_module_import(monkeypatch):
         "import_module",
         lambda name: (_ for _ in ()).throw(AssertionError(f"unexpected import: {name}")),
     )
+    monkeypatch.setattr(provider_preflight.shutil, "which", lambda _name: None)
 
     result = provider_preflight.preflight("logicguard")
 
@@ -213,3 +214,46 @@ def test_newer_researchguard_release_meets_the_minimum(monkeypatch, tmp_path):
     result = provider_preflight.preflight("logicguard")
     assert result["status"] == "current_pass"
     assert result["evidence"]["suite_version"] == "0.5.9"
+
+
+def test_console_on_path_is_used_when_researchguard_is_in_another_python(monkeypatch, tmp_path):
+    calls: list[list[str]] = []
+    console = tmp_path / "researchguard"
+    monkeypatch.setattr(provider_preflight, "_researchguard_distribution", lambda: None)
+    monkeypatch.setattr(provider_preflight.shutil, "which", lambda name: str(console) if name == "researchguard" else None)
+
+    def path_console(argv, **_kwargs):
+        calls.append(list(argv))
+        if argv[1:] == ["--version"]:
+            return SimpleNamespace(returncode=0, stdout="researchguard 0.5.9\n", stderr="")
+        return SimpleNamespace(returncode=0, stdout="member help\n", stderr="")
+
+    monkeypatch.setattr(provider_preflight.subprocess, "run", path_console)
+
+    result = provider_preflight.preflight("sourceguard")
+
+    assert result["status"] == "current_pass"
+    assert result["evidence"]["provider_console_id"] == "researchguard"
+    assert result["evidence"]["console_source"] == "path"
+    assert result["evidence"]["suite_version"] == "0.5.9"
+    assert calls == [[str(console), "--version"], [str(console), "source", "--help"]]
+
+
+def test_too_old_console_on_path_blocks_with_the_install_message(monkeypatch, tmp_path):
+    calls: list[list[str]] = []
+    console = tmp_path / "researchguard"
+    monkeypatch.setattr(provider_preflight, "_researchguard_distribution", lambda: None)
+    monkeypatch.setattr(provider_preflight.shutil, "which", lambda name: str(console) if name == "researchguard" else None)
+
+    def old_console(argv, **_kwargs):
+        calls.append(list(argv))
+        return SimpleNamespace(returncode=0, stdout="researchguard 0.4.11\n", stderr="")
+
+    monkeypatch.setattr(provider_preflight.subprocess, "run", old_console)
+
+    result = provider_preflight.preflight("logicguard")
+
+    assert result["status"] == "blocked"
+    assert result["evidence"]["reason"] == "unsupported_researchguard_version"
+    assert result["evidence"]["message"].startswith("ResearchGuard >= 0.5.0 is required, found 0.4.11")
+    assert calls == [[str(console), "--version"]]

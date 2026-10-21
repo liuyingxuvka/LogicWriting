@@ -12,17 +12,17 @@ Preflight the selected owner with `scripts/provider_preflight.py`:
 | SourceGuard | `researchguard source` | `primary:researchguard:source` |
 | TraceGuard | `researchguard trace` | `primary:researchguard:trace` |
 
-Resolve the console from the installed ResearchGuard distribution record, not
-from ambient PATH state. The console version probe and selected member help
-probe establish provider availability only. The distribution and console
-versions must match and meet the minimum. They do not prove that native domain
-work ran.
+Resolve the console from the ResearchGuard distribution installed in the
+running Python; when ResearchGuard is installed in another environment (pipx or
+a separate venv), use the `researchguard` command on PATH. The console version
+probe and selected member help probe establish provider availability only. The
+console version must meet the minimum and, when the running Python has the
+distribution, match it. They do not prove that native domain work ran.
 
 Use exactly one row per handoff. A missing or ambiguous installed console,
-failed command, or timeout is `provider_unavailable`. Do not use PATH as a
-second resolver, import a former member package, run a module command, supply a
-checkout path, retry through another member, or reinterpret a non-pass native
-result.
+failed command, or timeout is `provider_unavailable`. Do not import a former
+member package, run a module command, supply a checkout path, retry through
+another member, or reinterpret a non-pass native result.
 
 Keep the selected member's own route and status unchanged; Logic Writing never
 rewrites a member result.

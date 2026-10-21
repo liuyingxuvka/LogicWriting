@@ -91,8 +91,9 @@ Field shapes are in `assets/schemas/`.
 
 Before a specialist
 handoff, `python scripts/provider_preflight.py <provider>` checks that the
-provider is installed; for the three ResearchGuard members run it with the
-Python environment where ResearchGuard is installed. Specialists run through
+provider is installed; for the three ResearchGuard members it uses the
+ResearchGuard installed in the running Python, or else the `researchguard`
+command on PATH. Specialists run through
 their own commands, not through these scripts.
 
 ## Required Workflow

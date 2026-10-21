@@ -209,7 +209,10 @@ def preflight(provider: str, *, provider_root: str | None = None, require_render
                 evidence["console_resolved"] = False
                 console = None
             else:
-                console = _researchguard_console(distribution)
+                # ResearchGuard installed in another Python (pipx or a separate venv) is found on PATH.
+                console = _researchguard_console(distribution) if distribution is not None else shutil.which("researchguard")
+                if console:
+                    evidence["console_source"] = "distribution" if distribution is not None else "path"
             evidence["console_resolved"] = bool(console)
             if not console and status != "blocked":
                 status = "provider_unavailable"
@@ -228,7 +231,7 @@ def preflight(provider: str, *, provider_root: str | None = None, require_render
                 version_identity_matches = (
                     bool(version_probe.get("passed"))
                     and researchguard_version_problem(console_version) is None
-                    and console_version == distribution_version
+                    and (distribution is None or console_version == distribution_version)
                 )
                 version_probe.pop("stdout", None)
                 evidence.update(
@@ -238,7 +241,12 @@ def preflight(provider: str, *, provider_root: str | None = None, require_render
                         "version_probe": version_probe,
                     }
                 )
-                if not version_identity_matches:
+                too_old = distribution is None and console_version is not None and researchguard_version_problem(console_version)
+                if too_old:
+                    status = "blocked"
+                    evidence["reason"] = "unsupported_researchguard_version"
+                    evidence["message"] = too_old
+                elif not version_identity_matches:
                     status = "blocked"
                     evidence["reason"] = "researchguard_identity_mismatch"
                 else:

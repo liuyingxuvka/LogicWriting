@@ -653,3 +653,22 @@ fiction 按材料问题启用专家，compact 保留故事推进、承诺边界�
 | wheel-residual: `git grep -n -i whl\|sha256= -- .github` | exit 1; stated assertions verified | 0.0 |
 | pytest: `python -m pytest -q` | 152 passed in 6.07s | 6.42 |
 | map: `python -m flowguard map check` | check: 0 error(s), 1 warning(s), 0 info | 0.52 |
+
+## LW-42
+
+ResearchGuard 在当前 Python 无发行包时通过 PATH 解析唯一控制台，有发行包时仍核对版本一致；最低版本、覆盖路径拒绝和范围外拒绝不变。13项定向及完整154项通过；实际无包 Python 的 PATH 成功/缺失拒绝和本 venv distribution 路径均验证，三回归、地图和技能通过。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| provider-tests: `python -m pytest -q tests/unit/test_researchguard_provider_topology.py tests/unit/test_provider_preflight.py` | 13 passed in 0.09s | 0.51 |
+| foreign-python-metadata: `python -c <bounded action probe; transcript external>` | exit 1; stated assertions verified | 0.12 |
+| real-path-console: `/usr/bin/python3 skills/logic-writing/scripts/provider_preflight.py logicguard` | exit 0; stated assertions verified | 0.63 |
+| real-missing-console: `/usr/bin/python3 skills/logic-writing/scripts/provider_preflight.py logicguard` | exit 1; stated assertions verified | 0.08 |
+| real-distribution-console: `python skills/logic-writing/scripts/provider_preflight.py traceguard` | exit 0; stated assertions verified | 0.56 |
+| docs-residual: `git grep -n Do not use PATH\|Python environment where ResearchGuard is installed -- skills/logic-writing/references/adapters/researchguard.md skills/logic-writing/SKILL.md` | exit 1; stated assertions verified | 0.0 |
+| pytest: `python -m pytest -q` | 154 passed in 7.61s | 8.0 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 8.66 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.63 |
+| models: `python -m flowguard map models` | models: 2 passed, 0 failed | 23.43 |
+| map: `python -m flowguard map check` | check: 0 error(s), 4 warning(s), 0 info | 0.86 |
+| skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.13 |
