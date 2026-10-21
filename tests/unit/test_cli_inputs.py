@@ -54,3 +54,21 @@ def test_a_field_may_name_an_earlier_scripts_output(tmp_path):
     built = run("build_reader_brief.py", brief_input)
     assert built.returncode == 0, built.stdout + built.stderr
     assert json.loads(built.stdout)["reader_brief"]["final_owner"] == "investigation"
+
+
+def test_json_named_artifact_path_and_scalar_id_are_not_expanded(tmp_path):
+    import hashlib
+
+    artifact = tmp_path / "reader.json"
+    artifact.write_text('{"measurement": 12}\n', encoding="utf-8")
+    request = tmp_path / "map-request.json"
+    request.write_text(json.dumps({
+        "artifact_path": str(artifact),
+        "map_id": "not-a-file.json",
+        "language": "en",
+    }), encoding="utf-8")
+    built = run("build_artifact_map.py", request)
+    assert built.returncode == 0, built.stdout + built.stderr
+    amap = json.loads(built.stdout)["artifact_map"]
+    assert amap["map_id"] == "not-a-file.json"
+    assert amap["artifact_fingerprint"] == "sha256:" + hashlib.sha256(artifact.read_bytes()).hexdigest()

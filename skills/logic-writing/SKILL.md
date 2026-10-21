@@ -68,7 +68,8 @@ reads one JSON file given as `--input <file>`, prints its JSON result (or
 writes it to `--output <file>`), and exits 0 only when the result passes.
 A top-level field that holds an object may instead name a `.json` file
 (relative to the request file), including a file an earlier step wrote with
-`--output`. Leave every script-derived `*_fingerprint` field out of the records you write:
+`--output`. Scalar IDs, artifact paths and opaque native result locators stay
+strings even when they end in `.json`. Leave every script-derived `*_fingerprint` field out of the records you write:
 the scripts compute each record's own fingerprint and copy the ones it must
 share with other records in the same request; a value you do give is still
 checked. Keep external byte identities such as `observed_content_fingerprint`

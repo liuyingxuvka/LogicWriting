@@ -281,19 +281,34 @@ def load_json(path: str | Path | None) -> Any:
     return json.loads(Path(path).read_text(encoding="utf-8"))
 
 
+_REQUEST_CONTAINER_FIELDS = frozenset({
+    # Reviewed envelopes for the route, brief, map/audit, review and closure CLIs.
+    "writing_request", "material_assumptions", "intent_conflicts",
+    "route_decision", "content_boundaries", "composition_plan", "route_composition",
+    "native_handoff", "native_plan", "native_handoff_mapping", "artifact_map",
+    "reader_brief", "contract", "shared_writing", "review", "route_review",
+    "deterministic_audit", "judgment", "revision_provenance", "provenance",
+    # Research-packet envelopes and direct records accepted by existing CLIs.
+    "source_registry", "claim_support", "additional_unresolved_gaps",
+    "member_fingerprints", "unresolved_gaps", "safe_wording", "unsafe_wording",
+    "unit_bindings", "coverage_dispositions", "unit_treatments",
+})
+
+
 def load_request(path: str | Path | None) -> Any:
     """Load a request whose top-level object fields may name JSON files instead.
 
-    A path is relative to the request file.  A file that holds another script's
-    result contributes the object stored under the same field name, or its only
-    object.
+    Only known container fields accept file references; scalar IDs, artifact
+    paths and opaque native locators remain strings. A reference is relative to
+    the request file. A file that holds another script's result contributes the
+    object stored under the same field name, or its only object.
     """
     value = load_json(path)
     if not isinstance(value, dict):
         return value
     base = Path.cwd() if path in {None, "-"} else Path(path).resolve().parent
     for key, item in list(value.items()):
-        if isinstance(item, str) and item.endswith(".json"):
+        if key in _REQUEST_CONTAINER_FIELDS and isinstance(item, str) and item.endswith(".json"):
             loaded = load_json(base / Path(item).expanduser())
             if isinstance(loaded, dict) and {"status", "errors", "warnings"} <= set(loaded):
                 objects = [entry for entry in loaded.values() if isinstance(entry, dict)]

@@ -90,7 +90,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:90b736c2b752a282fa8922ca00fd116833407eda7b0757604e1d8288c632443c"
+      "fingerprint": "sha256:c6e687cef89fa0e760e09dc9e820a38a30efb56dd0f268076857b8c8776d6e77"
     },
     {
       "id": "reader-artifact",
@@ -183,7 +183,7 @@
         ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:45f8830dcb175959b3cac7076963a4ee7faf4be2320d1875e36d9e5731f0fdee"
+      "fingerprint": "sha256:909c7828e79db62fff91080417addf9e838f9e08a066bd3b6861f8999461fd0f"
     },
     {
       "id": "fiction",
@@ -551,7 +551,8 @@
       "layer": "domain",
       "summary": "Shared canonical identity and JSON schema validation used by existing domain owners.",
       "responsibilities": [
-        "Preserve canonical content fingerprints and strict JSON schema validation shared by existing domain owners."
+        "Preserve canonical content fingerprints and strict JSON schema validation shared by existing domain owners.",
+        "Resolve JSON file references only for reviewed structured request fields; preserve scalar identifiers, artifact paths and opaque native result locators."
       ],
       "files": [
         "skills/logic-writing/scripts/_common.py",
@@ -570,7 +571,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:435a55c3adbc381013c66d88fcc891d00b004ce4cad8c9851b77782e7fac39a2"
+      "fingerprint": "sha256:4922c0dee799f5859205ae2a577c9b40030846feb82fe8346e8d102cbfe420a2"
     }
   ],
   "flows": [],

@@ -856,3 +856,22 @@ ReaderBrief CLI 补全缺省的计划/路线指纹，原生合成计划可由入
 | pytest: `python -m pytest -q` | 163 passed, 1 skipped in 4.89s | 5.19 |
 | map: `python -m flowguard map check` | check: 0 error(s), 9 warning(s), 0 info | 0.36 |
 | skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.13 |
+
+## Supplemental fix after LW-54: preserve scalar JSON locators (LW-47)
+
+An independent CLI replay found that LW-47 expanded every top-level string ending in `.json`, including a native-result locator. The existing shared loader now resolves file references only for the reviewed structured fields of its 12 CLI consumers, including the existing list-valued records. Scalar IDs, artifact paths and opaque native locators retain their string identity. Relative request references and previous-step output references still work. No provider algorithm or version changed.
+
+The new CLI regression failed with an existing locator being converted into an object and a missing locator being read as a file. A separate artifact-path/scalar-ID regression also failed before the fix. The first unit-probe helper import was corrected before that definitive RED; raw failures remain in external evidence.
+
+| Check / command | Actual result |
+|---|---|
+| `python -m pytest -q tests/unit/test_cli_inputs.py tests/contract/test_researchguard_handoff.py` | 15 passed, 1 skipped; immutable ResearchGuard 0.5.9 source is not ready without an external depth result; this is not a new-provider PASS |
+| `python -m pytest -q tests/contract/test_schemas.py tests/contract/test_schema_runtime_gate.py` | 20 passed |
+| `python -m flowguard map models reader_artifact_model route_and_guard_model` | 2 passed, 0 failed |
+| Real CLI plain-locator replay: valid owner fixture | current_pass, exit 0; fixture evidence, not a native provider success claim |
+| Real CLI plain-locator replay: genuine ResearchGuard 0.5.9 gap result | blocked ResearchGuard handoff, exit 1; gap remains blocked |
+| Given wrong composition fingerprint through the file-reference CLI | rejected, exit 1 |
+| `python -m flowguard map confirm shared-contracts reader-artifact research-packet` | confirmed 3 components after review |
+| `python -m flowguard map check` | 0 errors, 6 pre-existing stale component warnings; final map refresh remains LW-55 work |
+
+No complete suite or release wrapper was repeated for this supplemental fix.

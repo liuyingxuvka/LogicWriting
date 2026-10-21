@@ -405,3 +405,54 @@ def test_brief_command_builds_the_handoff_from_the_native_plan(tmp_path):
     del request["native_result_locator"]
     with pytest.raises(ValidationError, match="native_result_locator"):
         build_brief_request(request)
+
+
+@pytest.mark.parametrize("locator_exists", [True, False])
+def test_brief_cli_preserves_opaque_native_plan_locator(tmp_path, locator_exists):
+    """A locator is opaque even when its spelling names a JSON file."""
+    import subprocess
+    from tests.v2_support import make_reader_chain
+
+    chain = make_reader_chain(tmp_path / "reader-chain", owner="investigation")
+    plan = _plan()  # Valid owner fixture; this is not a native provider execution.
+    (tmp_path / "native-plan.json").write_text(json.dumps(plan), encoding="utf-8")
+    locator = tmp_path / "opaque-result.json"
+    if locator_exists:
+        locator.write_text(json.dumps({"unrelated": "opaque locator bytes"}), encoding="utf-8")
+    mapping = [{
+        "native_unit_id": "unit:root",
+        "planned_unit_ids": ["unit:answer"],
+        "disposition": "body",
+        "reason": "The native conclusion is the central reader unit.",
+    }]
+    (tmp_path / "mapping.json").write_text(json.dumps(mapping), encoding="utf-8")
+    request = {
+        "route_decision": chain["route_decision"],
+        "content_boundaries": chain["reader_brief"]["content_boundaries"],
+        "composition_plan": chain["plan"],
+        "route_composition": chain["route_composition"],
+        "brief_id": "brief:opaque-locator",
+        "native_plan": "native-plan.json",
+        "native_result_locator": str(locator),
+        "native_handoff_mapping": "mapping.json",
+    }
+    request_path = tmp_path / "request.json"
+    request_path.write_text(json.dumps(request), encoding="utf-8")
+    command = [sys.executable, str(Path(__file__).resolve().parents[2]
+               / "skills/logic-writing/scripts/build_reader_brief.py"),
+               "--input", str(request_path)]
+    built = subprocess.run(command, capture_output=True, text=True, cwd=tmp_path.parent)
+    assert built.returncode == 0, built.stdout + built.stderr
+    writer_input = json.loads(built.stdout)["reader_brief"]["writer_input"]
+    assert writer_input["native_handoff"]["native_result_locator"] == str(locator)
+    assert writer_input["native_handoff"]["native_result_fingerprint"] == fingerprint(plan)
+    assert writer_input["native_handoff_mapping"] == mapping
+
+    # A supplied wrong derived identity remains invalid after file expansion.
+    request["composition_plan"]["plan_fingerprint"] = "sha256:" + "0" * 64
+    request_path.write_text(json.dumps(request), encoding="utf-8")
+    rejected = subprocess.run(command, capture_output=True, text=True, cwd=tmp_path.parent)
+    assert rejected.returncode == 1
+    blocked = json.loads(rejected.stdout)
+    assert blocked["status"] == "blocked"
+    assert "fingerprint" in " ".join(blocked["errors"])
