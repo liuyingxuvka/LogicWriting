@@ -506,3 +506,19 @@ SKILL 增补实际命令与输入字段，13 项命令在技能根帮助均正�
 | travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.57 |
 | models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 2.2 |
 | map: `python -m flowguard map check` | check: 0 error(s), 6 warning(s), 0 info | 1.02 |
+
+## LW-34
+
+删除 fiction 手写 Guard 交接/收据检查、无调用方短篇聚合器及32份专用样例，分类表不再要求这些 surface。保留世界主张、手稿字节身份和所有故事模型/示例。完整 149 项、四项 fiction 子套件、其他回归、地图和技能通过，指定活动残留为零。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| residual-raw: `git grep -n guard_handoff_check\|guard_receipts\|guard_handoffs\|storyline_closure\|expected-closure\|guard-receipt-handoff\|depth-[a-z]*-evidence\|execution-depth -- . :!CHANGELOG.md :!openspec` | exit 1; stated assertions verified | 0.04 |
+| residual-active: `git grep -n guard_handoff_check\|guard_receipts\|guard_handoffs\|storyline_closure\|expected-closure\|guard-receipt-handoff\|depth-[a-z]*-evidence\|execution-depth -- . :!CHANGELOG.md :!openspec :!SLIM_LOG.md` | exit 1; stated assertions verified | 0.04 |
+| taxonomy: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.03 |
+| pytest: `python -m pytest -q` | 149 passed in 4.48s | 4.8 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 5.44 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.58 |
+| models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 1.42 |
+| map: `python -m flowguard map check` | check: 0 error(s), 6 warning(s), 0 info | 0.36 |
+| skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.2 |

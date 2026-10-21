@@ -29,10 +29,6 @@
         "claim_boundary",
         "compact_story_movement",
         "main_promise_boundary",
-        "traceguard_storyline",
-        "worldguard_story_claims",
-        "logicguard_theme_support",
-        "sourceguard_canon_support",
         "compact_closure"
       ],
       "phase_required_surfaces": {
@@ -47,15 +43,10 @@
       "base_required_surfaces": [
         "target_artifact",
         "claim_boundary",
-        "traceguard_storyline",
-        "worldguard_story_claims",
-        "logicguard_theme_support",
-        "sourceguard_canon_support",
         "story_ledger",
         "turning_point",
         "scene_contract",
-        "promise_payoff",
-        "storyline_closure"
+        "promise_payoff"
       ],
       "phase_required_surfaces": {
         "pre_draft": [],
@@ -76,10 +67,6 @@
       "base_required_surfaces": [
         "target_artifact",
         "claim_boundary",
-        "traceguard_storyline",
-        "worldguard_story_claims",
-        "logicguard_theme_support",
-        "sourceguard_canon_support",
         "novel_ledger",
         "story_contribution",
         "chapter_interface",

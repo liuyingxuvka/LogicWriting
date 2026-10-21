@@ -1304,19 +1304,6 @@
       "rerun_required_when": [
         "promise or payoff rows change"
       ]
-    },
-    {
-      "id": "validation-closure",
-      "check_name": "storyline_closure_check.py",
-      "checked_rows": [
-        "expected-closure.json"
-      ],
-      "status": "pass",
-      "evidence_ref": "evidence/example/storyline_closure_check_report.json",
-      "invalidates": [],
-      "rerun_required_when": [
-        "any child validation row changes"
-      ]
     }
   ],
   "closure": {
