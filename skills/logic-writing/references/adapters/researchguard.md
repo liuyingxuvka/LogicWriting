@@ -29,8 +29,10 @@ rewrites a member result.
 
 For the LogicGuard artifact-synthesis route, the current native result is
 `researchguard.logic.synthesis-plan.v1`, produced from the required
-`researchguard.logic.synthesis-request.v1`. Pass that result through
-`scripts/researchguard_handoff.py` before building a ReaderBrief. The handoff
+`researchguard.logic.synthesis-request.v1`. Give that result to
+`scripts/build_reader_brief.py` as `native_plan`, with `native_result_locator`
+naming where the result is kept; the script builds the handoff with
+`scripts/researchguard_handoff.py`. The handoff
 copies only the ordered argument units, their closure/role bindings, source
 branch ids, and complete candidate dispositions into
 `assets/schemas/researchguard-logic-handoff.schema.json`; it binds the ReaderIntent,
@@ -49,7 +51,7 @@ still be valid lowercase SHA-256 digests.
 `experimentguard` and the `researchguard run` umbrella are explicit scope-outs
 for Logic Writing; they execute no provider command.
 
-`scripts/build_reader_brief.py` takes the semantic handoff as `native_handoff`
-with a `native_handoff_mapping` that maps every native unit to planned units
+`scripts/build_reader_brief.py` needs a `native_handoff_mapping` that maps
+every native unit of that handoff to planned units
 and covers every planned unit; an empty, partial, blocked, or unknown-unit
 mapping cannot enter the writing workspace.

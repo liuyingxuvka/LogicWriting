@@ -771,3 +771,18 @@ helper. After the fix, the three installer tests pass, including unchanged,
 same-size/same-mtime modified and restored copies. The release component was
 reviewed and confirmed; the map has zero errors. Detailed reproduction and
 exact source evidence stay outside the repository.
+
+## LW-49
+
+ReaderBrief CLI 补全缺省的计划/路线指纹，原生合成计划可由入口建立交接，缺 locator 仍拒绝；底层校验和映射完整性不变。真实两步文件链通过，三个手写输入无指纹字段；定向测试、完整160项/1跳过、三回归、地图和技能通过。总数较清单多1来自已授权安装helper回归。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| reader-and-native-bridge: `python -m pytest -q tests/unit/test_reader.py tests/contract/test_researchguard_handoff.py tests/unit/test_cli_inputs.py` | 19 passed, 1 skipped in 1.67s | 2.19 |
+| native-file-chain: `python <external> 49` | exit 0; stated assertions verified | 0.67 |
+| pytest: `python -m pytest -q` | 160 passed, 1 skipped in 6.59s | 7.22 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 7.66 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.51 |
+| models: `python -m flowguard map models` | models: 2 passed, 0 failed | 25.8 |
+| map: `python -m flowguard map check` | check: 0 error(s), 5 warning(s), 0 info | 0.74 |
+| skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.19 |

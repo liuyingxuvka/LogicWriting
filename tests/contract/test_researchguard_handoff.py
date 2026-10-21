@@ -376,3 +376,32 @@ def test_real_native_researchguard_plan_round_trips_into_reader_brief(tmp_path):
     validate_writer_input(brief["writer_input"], reader_brief=brief, composition_plan=chain["plan"])
     assert brief["writer_input"]["native_handoff"]["native_result_fingerprint"] == fingerprint(native_plan)
     assert brief["writer_input"]["native_handoff_mapping"] == mapping
+
+
+def test_brief_command_builds_the_handoff_from_the_native_plan(tmp_path):
+    from build_reader_brief import validate_request as build_brief_request
+    from tests.v2_support import make_reader_chain
+
+    chain = make_reader_chain(tmp_path / "reader-chain", owner="investigation")
+    request = {
+        "route_decision": chain["route_decision"],
+        "content_boundaries": chain["reader_brief"]["content_boundaries"],
+        "composition_plan": chain["plan"],
+        "route_composition": chain["route_composition"],
+        "brief_id": "brief:native-plan-only",
+        "native_plan": _plan(),
+        "native_result_locator": "fixture://researchguard/logic/synthesis-plan-cli",
+        "native_handoff_mapping": [{
+            "native_unit_id": "unit:root",
+            "planned_unit_ids": ["unit:answer"],
+            "disposition": "body",
+            "reason": "The native conclusion is the central reader unit.",
+        }],
+    }
+    result = build_brief_request(copy.deepcopy(request))
+    handoff = result["reader_brief"]["writer_input"]["native_handoff"]
+    assert handoff["native_result_locator"] == "fixture://researchguard/logic/synthesis-plan-cli"
+    assert handoff["native_result_fingerprint"] == fingerprint(_plan())
+    del request["native_result_locator"]
+    with pytest.raises(ValidationError, match="native_result_locator"):
+        build_brief_request(request)

@@ -80,3 +80,25 @@ def test_judgment_excerpt_must_exist_in_current_unit(tmp_path):
             deterministic_audit=chain["deterministic_audit"],
             route_review=chain["route_review"],
         )
+
+
+def test_brief_request_fills_plan_and_route_fingerprints(tmp_path):
+    from build_reader_brief import validate_request as build_brief_request
+
+    chain = make_reader_chain(tmp_path)
+    plan = copy.deepcopy(chain["plan"])
+    route = copy.deepcopy(chain["route_composition"])
+    for field in ("reader_intent_fingerprint", "plan_fingerprint"):
+        del plan[field]
+    for field in ("reader_intent_fingerprint", "composition_plan_fingerprint", "extension_fingerprint"):
+        del route[field]
+    result = build_brief_request({
+        "route_decision": chain["route_decision"],
+        "content_boundaries": chain["reader_brief"]["content_boundaries"],
+        "composition_plan": plan,
+        "route_composition": route,
+        "brief_id": chain["reader_brief"]["brief_id"],
+    })
+    assert result["status"] == "current_pass"
+    assert result["reader_brief"]["brief_fingerprint"] == chain["reader_brief"]["brief_fingerprint"]
+    assert result["route_composition"] == chain["route_composition"]

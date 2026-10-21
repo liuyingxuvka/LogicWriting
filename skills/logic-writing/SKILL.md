@@ -74,8 +74,10 @@ A top-level field that holds an object may instead name a `.json` file
    `writing_request`, `decision_id`, `decided_at`; returns the RouteDecision.
 2. `python scripts/build_reader_brief.py --input brief-request.json` with
    `route_decision`, `content_boundaries`, `composition_plan`,
-   `route_composition`, `brief_id` (add `native_handoff`, `native_plan` and
-   `native_handoff_mapping` only when a ResearchGuard synthesis plan is used).
+   `route_composition`, `brief_id` (add `native_plan`, `native_result_locator`
+   and `native_handoff_mapping` only when a ResearchGuard synthesis plan is
+   used). Later steps can name this result file for `reader_brief` and
+   `route_composition`.
 3. Write the artifact as UTF-8 text or Markdown.
 4. `python scripts/build_artifact_map.py --input map-request.json` with
    `artifact_path`, `map_id`, `language`, `artifact_format`.

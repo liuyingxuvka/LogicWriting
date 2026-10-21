@@ -14,6 +14,8 @@ from typing import Any, Iterable, Mapping
 
 from _common import (
     ValidationError,
+    fill_fingerprint,
+    fill_missing,
     fingerprint,
     fingerprint_text,
     fingerprint_without,
@@ -1949,11 +1951,40 @@ def validate_revision_provenance(value: Any, *, target_artifact_fingerprint: str
     return provenance
 
 
+def fill_brief_fingerprints(request: dict[str, Any]) -> dict[str, Any]:
+    """Fill the fingerprints a caller left out of a ReaderBrief build request.
+
+    The CompositionPlan and route composition get their own fingerprints and the
+    references they share with the RouteDecision; a ResearchGuard synthesis plan
+    given without a handoff is turned into the handoff.  Values the caller gives
+    are kept and checked by build_reader_brief as before.
+    """
+    decision = request.get("route_decision")
+    intent_fp = decision.get("reader_intent_fingerprint") if isinstance(decision, Mapping) else None
+    plan = request.get("composition_plan")
+    fill_missing(plan, "reader_intent_fingerprint", intent_fp)
+    fill_fingerprint(plan, "plan_fingerprint")
+    route = request.get("route_composition")
+    fill_missing(route, "reader_intent_fingerprint", intent_fp)
+    fill_missing(route, "composition_plan_fingerprint", plan.get("plan_fingerprint") if isinstance(plan, Mapping) else None)
+    fill_fingerprint(route, "extension_fingerprint")
+    if request.get("native_plan") is not None and request.get("native_handoff") is None and intent_fp:
+        from researchguard_handoff import build_researchguard_handoff
+
+        request["native_handoff"] = build_researchguard_handoff(
+            request["native_plan"],
+            reader_intent_fingerprint=intent_fp,
+            native_result_locator=request.get("native_result_locator"),
+        )
+    return request
+
+
 __all__ = [
     "build_artifact_map",
     "build_reader_audit",
     "build_reader_brief",
     "build_writer_input",
+    "fill_brief_fingerprints",
     "validate_artifact_map",
     "validate_composition_plan",
     "validate_reader_intent",

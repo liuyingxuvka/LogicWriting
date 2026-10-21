@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from _common import cli_validate, require_mapping, validation_result
 from reader_pipeline import build_reader_brief as _build_reader_brief
+from reader_pipeline import fill_brief_fingerprints
 
 
 def build_reader_brief(
@@ -30,7 +31,7 @@ def build_reader_brief(
 
 
 def validate_request(value):
-    request = require_mapping(value, "ReaderBrief build request")
+    request = fill_brief_fingerprints(require_mapping(value, "ReaderBrief build request"))
     brief = build_reader_brief(
         route_decision=request.get("route_decision"),
         content_boundaries=request.get("content_boundaries"),
@@ -45,6 +46,8 @@ def validate_request(value):
         status="current_pass",
         reader_brief=brief,
         reader_brief_fingerprint=brief["brief_fingerprint"],
+        composition_plan=request["composition_plan"],
+        route_composition=request["route_composition"],
     )
 
 
