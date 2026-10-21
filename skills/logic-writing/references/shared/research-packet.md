@@ -1,6 +1,9 @@
 # ResearchPacket
 
-A ResearchPacket is the only default evidence handoff between routes. It binds:
+A ResearchPacket is an optional structured evidence record. Keep one when the
+evidence is too large to hold in the content boundaries alone, or when another
+route sent a bounded evidence-gap request; `scripts/validate_research_packet.py`
+checks it. It binds:
 
 - route decision and request fingerprint;
 - exact SourceRegistry and ClaimSupport manifests;

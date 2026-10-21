@@ -173,7 +173,8 @@ Read [references/routes/investigation.md](references/routes/investigation.md).
 Begin with the claim, decision, scope, source roles, and stopping rule. Preserve
 concrete sources through LogicGuard's source library before deeper synthesis.
 Use SourceGuard to plan discovery, and invoke TraceGuard only when the claim
-actually depends on a trace. Return a current ResearchPacket before prose.
+actually depends on a trace. Build the claim-and-evidence ledger before prose;
+its rows become the content boundaries.
 
 ### Academic writing
 
@@ -295,7 +296,8 @@ never count as repair attempts.
 
 ## Hard Gates
 
-- Do not draft a final investigation from an incomplete ResearchPacket.
+- Do not write a confident final answer while a critical claim has no usable
+  support; bound it or report it.
 - Do not close an investigation without current SourceGuard source-observation
   evidence, a current LogicGuard argument model, and actual-artifact reader
   review.

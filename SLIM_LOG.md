@@ -461,3 +461,15 @@ SKILL 增补实际命令与输入字段，13 项命令在技能根帮助均正�
 | travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 2.13 |
 | models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 5.78 |
 | map: `python -m flowguard map check` | check: 0 error(s), 3 warning(s), 0 info | 0.96 |
+
+## LW-31
+
+将 ResearchPacket 明确为按需的结构化证据记录，写作前仍整理主张/证据并形成内容边界，关键主张缺可用支持必须收窄或报告。三个内容校验器和有界缺口请求保留。完整 164 项、技能与地图通过，旧硬门槛残留为零。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| residual: `git grep -n Return a current ResearchPacket\|incomplete ResearchPacket\|only default evidence handoff -- skills` | exit 1; stated assertions verified | 0.01 |
+| optional-wording: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.05 |
+| pytest: `python -m pytest -q` | 164 passed in 6.69s | 7.08 |
+| map: `python -m flowguard map check` | check: 0 error(s), 4 warning(s), 0 info | 0.38 |
+| skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.2 |
