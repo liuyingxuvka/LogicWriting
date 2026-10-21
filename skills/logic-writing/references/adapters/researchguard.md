@@ -60,12 +60,3 @@ ReaderIntent, CompositionPlan, ReaderBrief, and writer projection fingerprints.
 Use `bind_handoff_consumption` and `validate_handoff_consumption`; an empty,
 partial, stale, blocked, or unknown-unit mapping cannot enter the writing
 workspace.
-
-The production reader's two planner calls have a separate execution boundary.
-Each call must return `logic-writing.planner-execution-record.v1` with a
-completed terminal status, an absolute byte-fingerprinted backend capture, and
-the capture's sibling `events.jsonl`. The production adapter accepts only one
-matching thread, a completed turn, an agent message, and no command, shell,
-browser, web, MCP, or function event. The planner input is a frozen projection
-of the WritingRequest and content boundaries; rubric, benchmark, judge, and
-expected-answer material is outside that projection and blocks the run.

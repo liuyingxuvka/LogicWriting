@@ -133,13 +133,6 @@ Join the semantic handoff to the current ReaderBrief with
 `researchguard.logic.consumption-binding.v1` against its bundled schema. The
 binding must exhaustively cover native units and planned units while preserving
 all current input fingerprints.
-The production reader planner also requires a current
-`logic-writing.planner-execution-record.v1`: both planner calls must finish
-with a byte-bound backend capture and a sibling event stream proving one
-completed, tool-free local turn. Planner inputs are frozen facts only; judge,
-benchmark, expected-answer, and rubric metadata are rejected before the first
-call.
-
 Read [references/adapters/researchguard.md](references/adapters/researchguard.md)
 before a ResearchGuard handoff, then load only the selected member adapter
 reference under `references/adapters/`.

@@ -162,3 +162,18 @@ Removed obsolete provider/current-release literals from active prompts, adapter 
 | models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 2.36 |
 | map: `python -m flowguard map check` | check: 0 error(s), 10 warning(s), 0 info | 1.2 |
 | pytest-no-source: `python <external>` | 429 passed, 1 skipped in 45.63s | 46.25 |
+
+## LW-13
+
+删除只有仓库外实验入口使用的生产流水线、质量实验装置及其测试/夹具；保留真实两房间写作投影、协议夹具和原生 ResearchGuard 桥接。完整 258 项及桥接 12 项测试通过，三项回归、静态技能、地图与活动残留检查通过。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| residual: `git grep -n production_reader_pipeline\|run_writing_quality_benchmark\|planner-execution-record\|reader_projection_conformance -- skills tests scripts .github AGENTS.md README.md README.zh-CN.md CONTRIBUTING.md docs` | exit 1; stated assertions verified | 0.01 |
+| native-bridge: `python -m pytest -q tests/contract/test_researchguard_handoff.py` | 12 passed in 0.82s | 1.48 |
+| pytest: `python -m pytest -q` | 258 passed in 35.17s | 35.68 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 17.36 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 1.05 |
+| models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 3.03 |
+| map: `python -m flowguard map check` | check: 0 error(s), 8 warning(s), 0 info | 1.15 |
+| skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.33 |

@@ -46,28 +46,6 @@ def test_protocol_fixture_has_twelve_balanced_cases():
     assert {row["language"] for row in cases} == {"zh-CN", "en"}
 
 
-def test_real_quality_runner_requires_live_authorization_by_default(tmp_path):
-    root = Path(__file__).resolve().parents[2]
-    completed = subprocess.run(
-        [
-            sys.executable,
-            str(root / "scripts" / "run_writing_quality_benchmark.py"),
-            "--root",
-            str(root),
-            "--output-dir",
-            str(tmp_path / "resources-benchmark-evidence"),
-        ],
-        cwd=root,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    assert completed.returncode == 2
-    result = json.loads(completed.stdout)
-    assert result["status"] == "not_run"
-    assert result["terminal_reason"] == "live_execution_not_authorized"
-    assert result["actual_execution_count"] == 0
-    assert not (tmp_path / "resources-benchmark-evidence" / "executions.json").exists()
 
 
 @pytest.mark.parametrize(
