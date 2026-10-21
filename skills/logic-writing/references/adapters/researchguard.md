@@ -24,11 +24,8 @@ second resolver, import a former member package, run a module command, supply a
 checkout path, retry through another member, or reinterpret a non-pass native
 result.
 
-Keep `native_owner` equal to the selected semantic member. Bind executable
-route evidence to the exact current primary path and preserve the member's own
-native route and receipt fields when the member returns them as an opaque
-provider-owned reference. Logic Writing may add its own binding/closure
-receipt, but it must not rebuild the ResearchGuard native receipt schema.
+Keep the selected member's own route and status unchanged; Logic Writing never
+rewrites a member result.
 
 For the LogicGuard artifact-synthesis route, the current native result is
 `researchguard.logic.synthesis-plan.v1`, produced from the required

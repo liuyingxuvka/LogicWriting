@@ -12,6 +12,5 @@ Supply stable claims, events, actors, sources, time clues, alternative stories,
 and the exact question the trace must answer. Preserve native uncertainty,
 unresolved links, and holdout/future-validation limits. Earlier-than does not
 mean caused-by, and a plausible mechanism is not execution evidence.
-Preserve the member's native
-result and receipt as an opaque reference rather than fabricating a local
-TraceGuard-native receipt.
+Preserve the member's native result as it is; never write one on the
+member's behalf.

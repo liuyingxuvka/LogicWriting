@@ -101,7 +101,7 @@ the artifact.
 
 For DOCX/Word/Google Docs mutation, tracked changes, comments, styles, render,
 and page inspection, use Documents. For PDF extraction, creation, rendering,
-and visual inspection, use PDF. Keep semantic, textual, and layout receipts
+and visual inspection, use PDF. Keep semantic, textual, and layout results
 separate.
 
 Citations must sit on the claims they support and use a source whose role fits
@@ -121,14 +121,14 @@ not analytical contribution.
 Rebuild the structural map and reverse outline from the current final file or
 text. Check source-role fit, progression, method depth, provenance, paragraph
 handoffs, citations, figures/tables, limitations, and genre. Any material edit
-stales affected receipts. Only the academic route may close the final artifact.
+stales affected results. Only the academic route may close the final artifact.
 
 Reconcile the final revision ledger against the original source-unit manifest:
 each original unit must be preserved, rewritten, moved, intentionally omitted
 with a reason, or visibly unresolved with a next owner. Each new unit must have
 a target locator and reason. For tracked-change or comment deliverables, verify
 the real file contains the requested markings; a prose summary of changes is
-not a document-mutation receipt.
+not evidence of a document mutation.
 
 Review paragraph pairs and section boundaries in context, not only isolated
 sentences. Repair modes include clarifying a referent, moving an explanation

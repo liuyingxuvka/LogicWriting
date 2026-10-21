@@ -19,7 +19,6 @@ from _common import (
     require_string,
     validation_result,
 )
-from receipt_authority import _commit_managed_receipt, _store_content_object
 
 
 HEADING = re.compile(r"^#{1,6}\s+")
@@ -217,58 +216,6 @@ def validate_source_unit_manifest(
     return manifest
 
 
-def build_source_unit_manifest_receipt(
-    *,
-    manifest_id: str,
-    source_path: str | Path,
-    target_path: str | Path,
-    receipt_root: str | Path,
-    run_id: str,
-) -> dict[str, Any]:
-    """Build, preserve, and attest the complete source/target unit universe."""
-
-    manifest = build_source_unit_manifest(
-        manifest_id=manifest_id,
-        source_path=source_path,
-        target_path=target_path,
-    )
-    object_fingerprint = _store_content_object(manifest, root=receipt_root)
-    builder_fingerprint = fingerprint_bytes(Path(__file__).read_bytes())
-    receipt = _commit_managed_receipt(
-        {
-            "schema_version": "2.0",
-            "producer_skill": "logic-writing",
-            "semantic_owner_id": f"source-unit-manifest:{manifest_id}",
-            "native_route": "build-source-unit-manifest",
-            "run_id": require_string({"run_id": run_id}, "run_id"),
-            "covered_obligation_ids": ["revision.source-unit-universe"],
-            "input_fingerprints": {
-                f"source-unit-manifest:{manifest_id}:source": manifest["source"]["artifact_fingerprint"],
-                f"source-unit-manifest:{manifest_id}:target": manifest["target"]["artifact_fingerprint"],
-                f"source-unit-manifest:{manifest_id}:builder": builder_fingerprint,
-            },
-            "output_fingerprints": {
-                "source_unit_manifest": manifest["manifest_fingerprint"],
-                "source_unit_manifest_object": object_fingerprint,
-            },
-            "artifact_fingerprint": manifest["target"]["artifact_fingerprint"],
-            "covered_scope": "every visible unit in the exact source and target UTF-8 artifact bytes",
-            "evidence_domain": "revision_provenance",
-            "status": "current_pass",
-            "safe_claim": "The complete visible source and target unit universe is fixed for these exact bytes.",
-            "unsafe_claim_boundary": "This manifest does not decide whether any revision treatment is justified.",
-            "sequence_id": run_id,
-            "dependency_receipt_fingerprints": [],
-        },
-        root=receipt_root,
-        builder_id="logic-writing.source-unit-manifest.v2",
-        source_fingerprint=fingerprint_bytes(Path(__file__).read_bytes()),
-    )
-    return validation_result(
-        status="current_pass",
-        manifest=manifest,
-        receipt=receipt,
-    )
 
 
 def main() -> int:
@@ -278,8 +225,6 @@ def main() -> int:
     parser.add_argument("--manifest-id")
     parser.add_argument("--input")
     parser.add_argument("--output")
-    parser.add_argument("--receipt-root")
-    parser.add_argument("--run-id")
     args = parser.parse_args()
     try:
         result = (
@@ -289,14 +234,6 @@ def main() -> int:
                 target_path=args.target,
             )
             if args.input
-            else build_source_unit_manifest_receipt(
-                manifest_id=require_string({"manifest_id": args.manifest_id}, "manifest_id"),
-                source_path=args.source,
-                target_path=args.target,
-                receipt_root=args.receipt_root,
-                run_id=require_string({"run_id": args.run_id}, "run_id"),
-            )
-            if args.receipt_root
             else build_source_unit_manifest(
                 manifest_id=require_string({"manifest_id": args.manifest_id}, "manifest_id"),
                 source_path=args.source,
@@ -316,7 +253,6 @@ if __name__ == "__main__":
 
 __all__ = [
     "build_source_unit_manifest",
-    "build_source_unit_manifest_receipt",
     "extract_visible_units",
     "fingerprint_bytes",
     "read_text_artifact",

@@ -1,4 +1,4 @@
-"""Validate claim/source semantics and exact LogicGuard receipt authority."""
+"""Validate claim/source semantics against the current SourceRegistry."""
 
 from __future__ import annotations
 
@@ -23,7 +23,6 @@ from _common import (
     reject_unknown_keys,
     validation_result,
 )
-from receipt_authority import resolve_current_receipt
 from validate_source_registry import ROLES, validate_source_registry
 
 
@@ -67,19 +66,12 @@ CLAIM_FIELDS = {
     "alternatives",
     "safe_wording",
     "unsafe_wording",
-    "semantic_fit_receipt_fingerprint",
     "requires_independent_support",
     "mechanism_source_ids",
     "forecast_validation_source_ids",
 }
 
 
-def _semantic_basis(claim: Mapping[str, Any]) -> dict[str, Any]:
-    return {
-        key: item
-        for key, item in claim.items()
-        if key != "semantic_fit_receipt_fingerprint"
-    }
 
 
 def _reader_text(text: str, label: str) -> str:
@@ -202,8 +194,6 @@ def _validate_alternatives(
 def validate_claim_support(
     value: Mapping[str, Any],
     source_registry: Mapping[str, Any] | None = None,
-    *,
-    receipt_root: str | Path | None = None,
 ) -> dict[str, Any]:
     value = require_mapping(dict(value), "ClaimSupport ledger")
     require_schema("claim-support.schema.json", value, label="ClaimSupport ledger")
@@ -220,7 +210,7 @@ def validate_claim_support(
         raise ValidationError(
             "source_registry_fingerprint does not match the supplied SourceRegistry"
         )
-    registry_report = validate_source_registry(registry, receipt_root=receipt_root)
+    registry_report = validate_source_registry(registry)
     source_by_id = {source["source_id"]: source for source in registry["sources"]}
     authoritative_source_ids = set(registry_report["usable_source_ids"])
 
@@ -230,7 +220,6 @@ def validate_claim_support(
     )
     claim_id_set = set(claim_ids)
     findings: list[dict[str, str]] = []
-    semantic_receipts: list[str] = []
     semantic_basis_fingerprints: dict[str, str] = {}
     order_by_claim: dict[str, int] = {}
 
@@ -376,51 +365,7 @@ def validate_claim_support(
             if not forecast or not set(forecast).issubset(usable_ids):
                 _finding(findings, claim_id, "forecast_validation_missing")
 
-        semantic_reference = claim.get("semantic_fit_receipt_fingerprint")
-        semantic_basis = fingerprint(_semantic_basis(claim))
-        semantic_basis_fingerprints[claim_id] = semantic_basis
-        if semantic_reference is None:
-            if support_required:
-                _finding(findings, claim_id, "semantic_fit_receipt_missing")
-        else:
-            require_fingerprint(
-                {"semantic_fit_receipt_fingerprint": semantic_reference},
-                "semantic_fit_receipt_fingerprint",
-            )
-            if receipt_root is None:
-                _finding(findings, claim_id, "semantic_fit_authority_not_resolved")
-            else:
-                projection = resolve_current_receipt(
-                    semantic_reference,
-                    root=receipt_root,
-                    expected={"producer_skill": "logicguard"},
-                )
-                receipt = projection["receipt"]
-                if receipt["evidence_domain"] not in {
-                    "argument_model",
-                    "citation_semantics",
-                }:
-                    raise ValidationError(
-                        f"claim {claim_id}: semantic-fit receipt has the wrong evidence domain"
-                    )
-                if (
-                    receipt["input_fingerprints"].get("source_registry")
-                    != actual_registry_fingerprint
-                ):
-                    raise ValidationError(
-                        f"claim {claim_id}: semantic-fit receipt does not bind this SourceRegistry"
-                    )
-                if (
-                    receipt["output_fingerprints"].get("claim_semantic_fit")
-                    != semantic_basis
-                ):
-                    raise ValidationError(
-                        f"claim {claim_id}: semantic-fit receipt does not bind the exact claim boundary"
-                    )
-                if not projection["current"] or projection["status"] != "current_pass":
-                    _finding(findings, claim_id, "semantic_fit_receipt_not_current")
-                else:
-                    semantic_receipts.append(semantic_reference)
+        semantic_basis_fingerprints[claim_id] = fingerprint(claim)
 
     orders = sorted(order_by_claim.values())
     if orders != list(range(1, len(claims) + 1)):
@@ -469,7 +414,6 @@ def validate_claim_support(
             if claim["claim_id"] in eligible
         ],
         unsafe_boundaries=[claim["unsafe_wording"] for claim in claims],
-        semantic_receipt_fingerprints=list(dict.fromkeys(semantic_receipts)),
         semantic_basis_fingerprints=semantic_basis_fingerprints,
     )
 
@@ -478,14 +422,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input", required=True)
     parser.add_argument("--source-registry", required=True)
-    parser.add_argument("--receipt-root")
     parser.add_argument("--output")
     args = parser.parse_args()
     try:
         result = validate_claim_support(
             load_json(args.input),
             load_json(args.source_registry),
-            receipt_root=args.receipt_root,
         )
         dump_json(result, args.output)
         raise SystemExit(0 if result["status"] == "current_pass" else 1)

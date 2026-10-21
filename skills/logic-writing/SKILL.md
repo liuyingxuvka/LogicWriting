@@ -58,7 +58,7 @@ Read [references/router.md](references/router.md) for routing details.
 
 Read only the route, shared contract, schema, and adapter reference needed for
 the selected work. Do not load both route playbooks by default. Local scripts
-validate envelopes, derive freshness, and calculate closure; installed
+validate the reader records and calculate closure; installed
 providers and ResearchGuard members retain their own domain work.
 
 ## Required Workflow
@@ -81,9 +81,9 @@ one paragraph by default.
 
 ### Preserve specialist ownership
 
-This skill is an orchestration shell. It consumes provider-owned results and
-receipts through an opaque, fingerprinted reference; it does not recreate their
-domain decisions or manufacture a native receipt. ResearchGuard is one suite
+This skill is an orchestration shell. It consumes provider-owned results as
+they are; it does not recreate their domain decisions or write a result on a
+provider's behalf. ResearchGuard is one suite
 with one executable console; `scripts/provider_preflight.py` checks its
 minimum version. Logic Writing activates exactly
 three direct semantic owners:
@@ -115,10 +115,7 @@ package, invoke `python -m`, locate a sibling checkout, try another member, or
 accept a provider-root override. If the console is missing, older than the
 minimum version, or times out, report that status and stop that handoff.
 
-Validate the bounded handoff with `scripts/validate_adapter_request.py` before
-the native call and `scripts/validate_adapter_result.py` after it. These
-envelopes preserve the specialist's own route, receipt, scope, and failure
-state; they do not re-run or reinterpret the specialist's native check.
+
 
 For LogicGuard artifact synthesis, map the current
 `researchguard.logic.synthesis-plan.v1` through
@@ -281,7 +278,7 @@ never count as repair attempts.
 - Do not let one sibling route call another or issue its closure.
 - Do not route LogicGuard, SourceGuard, or TraceGuard through any executable
   other than the single `researchguard` console.
-- Do not convert a missing provider, stale receipt, skipped check, partial
+- Do not convert a missing provider, stale result, skipped check, partial
   search, failed rendering, or unsupported claim into success.
 - Do not expose internal workflow vocabulary in ordinary final prose.
 

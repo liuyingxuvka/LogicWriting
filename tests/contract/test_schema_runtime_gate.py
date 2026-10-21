@@ -23,8 +23,6 @@ from tests.v2_support import make_intent
 
 
 EXPECTED = {
-    "adapter-request.schema.json",
-    "adapter-result.schema.json",
     "academic-composition.schema.json",
     "artifact-map.schema.json",
     "claim-support.schema.json",
@@ -40,7 +38,6 @@ EXPECTED = {
     "reader-repair-result.schema.json",
     "researchguard-logic-handoff.schema.json",
     "researchguard-consumption-binding.schema.json",
-    "evidence-receipt.schema.json",
     "research-packet.schema.json",
     "revision-provenance.schema.json",
     "route-decision.schema.json",

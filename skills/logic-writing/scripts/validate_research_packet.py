@@ -22,7 +22,6 @@ from _common import (
     reject_unknown_keys,
     validation_result,
 )
-from receipt_authority import resolve_current_receipt
 from schema_validation import SchemaValidationError, assert_schema_valid
 from validate_claim_support import validate_claim_support
 from validate_source_registry import validate_source_registry
@@ -36,7 +35,6 @@ ASSEMBLY_FIELDS = {
     "gap_id",
     "source_registry",
     "claim_support",
-    "native_receipt_fingerprints",
     "additional_unresolved_gaps",
 }
 PACKET_FIELDS = {
@@ -47,7 +45,6 @@ PACKET_FIELDS = {
     "gap_id",
     "source_registry",
     "claim_support",
-    "native_receipts",
     "member_fingerprints",
     "unresolved_gaps",
     "safe_wording",
@@ -303,31 +300,8 @@ def _dedupe_gaps(gaps: Iterable[Mapping[str, Any]]) -> list[dict[str, Any]]:
     return [by_id[key] for key in sorted(by_id)]
 
 
-def _latest_projection(
-    receipt_fingerprint: str,
-    *,
-    root: str | Path,
-) -> dict[str, Any]:
-    projection = resolve_current_receipt(receipt_fingerprint, root=root)
-    latest = projection["latest_receipt_fingerprint"]
-    if latest != receipt_fingerprint:
-        projection = resolve_current_receipt(latest, root=root)
-    return projection
 
 
-def _receipt_ref(projection: Mapping[str, Any]) -> dict[str, Any]:
-    receipt = projection["receipt"]
-    return {
-        "receipt_fingerprint": projection["receipt_fingerprint"],
-        "producer_skill": receipt["producer_skill"],
-        "native_route": receipt["native_route"],
-        "evidence_domain": receipt["evidence_domain"],
-        "status": projection["status"],
-        "artifact_fingerprint": receipt["artifact_fingerprint"],
-        "covered_scope": receipt["covered_scope"],
-        "covered_obligation_ids": receipt["covered_obligation_ids"],
-        "current": projection["current"],
-    }
 
 
 def _additional_gaps(
@@ -365,44 +339,6 @@ def _additional_gaps(
     return _dedupe_gaps(gaps)
 
 
-def _trace_gaps(
-    claim_support: Mapping[str, Any],
-    claim_report: Mapping[str, Any],
-    projections: list[Mapping[str, Any]],
-) -> list[dict[str, Any]]:
-    gaps: list[dict[str, Any]] = []
-    basis = claim_report["semantic_basis_fingerprints"]
-    for claim in claim_support["claims"]:
-        claim_id = claim["claim_id"]
-        if claim["claim_type"] == "causal":
-            key = f"claim:{claim_id}:causal_trace"
-            matched = any(
-                projection["receipt"]["producer_skill"] == "traceguard"
-                and projection["receipt"]["evidence_domain"] == "causal_trace"
-                and projection["current"]
-                and projection["status"] == "current_pass"
-                and projection["receipt"]["output_fingerprints"].get(key)
-                == basis[claim_id]
-                for projection in projections
-            )
-            if not matched:
-                gaps.append(_make_gap("missing_causal_trace", claim_ids=[claim_id]))
-        if claim["claim_type"] == "forecast":
-            key = f"claim:{claim_id}:prediction_boundary"
-            matched = any(
-                projection["receipt"]["producer_skill"] == "traceguard"
-                and projection["receipt"]["evidence_domain"] == "prediction_boundary"
-                and projection["current"]
-                and projection["status"] == "current_pass"
-                and projection["receipt"]["output_fingerprints"].get(key)
-                == basis[claim_id]
-                for projection in projections
-            )
-            if not matched:
-                gaps.append(
-                    _make_gap("missing_prediction_boundary", claim_ids=[claim_id])
-                )
-    return gaps
 
 
 def _mandatory_gaps(
@@ -413,7 +349,6 @@ def _mandatory_gaps(
     claim_report: Mapping[str, Any],
     source_registry: Mapping[str, Any],
     claim_support: Mapping[str, Any],
-    projections: list[Mapping[str, Any]],
 ) -> list[dict[str, Any]]:
     gaps: list[dict[str, Any]] = []
     for finding in source_report["findings"]:
@@ -434,33 +369,8 @@ def _mandatory_gaps(
                 else [finding["claim_id"]],
             )
         )
-    receipt_set = {item["receipt_fingerprint"] for item in projections}
-    for source in source_registry["sources"]:
-        reference = source.get("observation_receipt_fingerprint")
-        if reference is not None and reference not in receipt_set:
-            gaps.append(
-                _make_gap(
-                    "observation_receipt_not_in_packet",
-                    source_ids=[source["source_id"]],
-                )
-            )
-    for claim in claim_support["claims"]:
-        reference = claim.get("semantic_fit_receipt_fingerprint")
-        if reference is not None and reference not in receipt_set:
-            gaps.append(
-                _make_gap(
-                    "semantic_fit_receipt_not_in_packet",
-                    claim_ids=[claim["claim_id"]],
-                )
-            )
     if final_owner != "investigation" and gap_id is None:
         gaps.append(_make_gap("missing_gap_id"))
-    gaps.extend(_trace_gaps(claim_support, claim_report, projections))
-    for projection in projections:
-        if not projection["current"] or projection["status"] != "current_pass":
-            gaps.append(_make_gap("native_receipt_not_current"))
-    if not projections:
-        gaps.append(_make_gap("missing_native_receipts"))
     return _dedupe_gaps(gaps)
 
 
@@ -484,35 +394,10 @@ def _derived_wording(
     return safe, unsafe
 
 
-def _resolve_packet_receipts(
-    fingerprints: Iterable[str],
-    *,
-    receipt_root: str | Path,
-) -> list[dict[str, Any]]:
-    projections: list[dict[str, Any]] = []
-    seen: set[str] = set()
-    for receipt_fingerprint in fingerprints:
-        projection = _latest_projection(receipt_fingerprint, root=receipt_root)
-        receipt = projection["receipt"]
-        if receipt["producer_skill"] not in NATIVE_OWNERS:
-            raise ValidationError(
-                "ResearchPacket receipts must retain a native specialist owner"
-            )
-        if receipt["evidence_domain"] not in PACKET_DOMAINS:
-            raise ValidationError(
-                f"unsupported ResearchPacket evidence domain: {receipt['evidence_domain']}"
-            )
-        current_fingerprint = projection["receipt_fingerprint"]
-        if current_fingerprint not in seen:
-            projections.append(projection)
-            seen.add(current_fingerprint)
-    return projections
 
 
 def assemble_research_packet(
     request: Mapping[str, Any],
-    *,
-    receipt_root: str | Path,
 ) -> dict[str, Any]:
     """Build a packet without accepting caller-authored status or wording."""
 
@@ -536,22 +421,12 @@ def assemble_research_packet(
         raise ValidationError("gap_id must be null or a non-empty identifier")
     source_registry = require_mapping(request.get("source_registry"), "source_registry")
     claim_support = require_mapping(request.get("claim_support"), "claim_support")
-    receipt_fingerprints = require_string_list(
-        request.get("native_receipt_fingerprints"),
-        "native_receipt_fingerprints",
-    )
-    projections = _resolve_packet_receipts(
-        receipt_fingerprints,
-        receipt_root=receipt_root,
-    )
     source_report = validate_source_registry(
         source_registry,
-        receipt_root=receipt_root,
     )
     claim_report = validate_claim_support(
         claim_support,
         source_registry,
-        receipt_root=receipt_root,
     )
     claim_ids = {item["claim_id"] for item in claim_support["claims"]}
     source_ids = {item["source_id"] for item in source_registry["sources"]}
@@ -567,19 +442,13 @@ def assemble_research_packet(
         claim_report=claim_report,
         source_registry=source_registry,
         claim_support=claim_support,
-        projections=projections,
     )
     gaps = _dedupe_gaps([*mandatory, *extras])
-    status = "blocked" if not projections else "partial" if gaps else "current_pass"
-    native_receipts = [_receipt_ref(projection) for projection in projections]
+    status = "partial" if gaps else "current_pass"
     safe_wording, unsafe_wording = _derived_wording(claim_report, gaps)
     member_fingerprints = {
         "source_registry": fingerprint(source_registry),
         "claim_support": fingerprint(claim_support),
-        **{
-            f"native_receipt:{index}": item["receipt_fingerprint"]
-            for index, item in enumerate(native_receipts)
-        },
     }
     packet: dict[str, Any] = {
         "schema_version": "1.0",
@@ -588,7 +457,6 @@ def assemble_research_packet(
         "final_owner": final_owner,
         "source_registry": source_registry,
         "claim_support": claim_support,
-        "native_receipts": native_receipts,
         "member_fingerprints": member_fingerprints,
         "unresolved_gaps": gaps,
         "safe_wording": safe_wording,
@@ -598,16 +466,14 @@ def assemble_research_packet(
     if gap_id is not None:
         packet["gap_id"] = gap_id
     packet["packet_fingerprint"] = fingerprint(packet)
-    validate_research_packet(packet, receipt_root=receipt_root)
+    validate_research_packet(packet)
     return packet
 
 
 def validate_research_packet(
     value: Mapping[str, Any],
-    *,
-    receipt_root: str | Path,
 ) -> dict[str, Any]:
-    """Validate exact members, current authority, structured gaps, and status."""
+    """Validate exact members, structured gaps, and status."""
 
     packet = require_mapping(dict(value), "ResearchPacket")
     reject_unknown_keys(packet, PACKET_FIELDS, "ResearchPacket")
@@ -620,33 +486,16 @@ def validate_research_packet(
     except SchemaValidationError as exc:
         raise ValidationError(str(exc)) from exc
 
-    projections: list[dict[str, Any]] = []
-    for item in packet["native_receipts"]:
-        projection = resolve_current_receipt(
-            item["receipt_fingerprint"],
-            root=receipt_root,
-        )
-        if item != _receipt_ref(projection):
-            raise ValidationError(
-                "ResearchPacket receipt projection does not match authoritative original"
-            )
-        projections.append(projection)
     source_report = validate_source_registry(
         packet["source_registry"],
-        receipt_root=receipt_root,
     )
     claim_report = validate_claim_support(
         packet["claim_support"],
         packet["source_registry"],
-        receipt_root=receipt_root,
     )
     expected_members = {
         "source_registry": fingerprint(packet["source_registry"]),
         "claim_support": fingerprint(packet["claim_support"]),
-        **{
-            f"native_receipt:{index}": item["receipt_fingerprint"]
-            for index, item in enumerate(packet["native_receipts"])
-        },
     }
     if packet["member_fingerprints"] != expected_members:
         raise ValidationError("member_fingerprints do not match exact packet members")
@@ -658,7 +507,6 @@ def validate_research_packet(
         claim_report=claim_report,
         source_registry=packet["source_registry"],
         claim_support=packet["claim_support"],
-        projections=projections,
     )
     normalized_actual: list[dict[str, Any]] = []
     for raw in packet["unresolved_gaps"]:
@@ -694,13 +542,7 @@ def validate_research_packet(
         raise ValidationError("ResearchPacket safe_wording is not verifier-derived")
     if packet["unsafe_wording"] != expected_unsafe:
         raise ValidationError("ResearchPacket unsafe_wording is not verifier-derived")
-    expected_status = (
-        "blocked"
-        if not projections
-        else "partial"
-        if actual
-        else "current_pass"
-    )
+    expected_status = "partial" if actual else "current_pass"
     if packet["status"] != expected_status:
         raise ValidationError("ResearchPacket status is not verifier-derived")
     if require_fingerprint(packet, "packet_fingerprint") != fingerprint(
@@ -713,16 +555,15 @@ def validate_research_packet(
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input", required=True)
-    parser.add_argument("--receipt-root", required=True)
     parser.add_argument("--validate-packet", action="store_true")
     parser.add_argument("--output")
     args = parser.parse_args()
     try:
         value = load_json(args.input)
         result = (
-            validate_research_packet(value, receipt_root=args.receipt_root)
+            validate_research_packet(value)
             if args.validate_packet
-            else assemble_research_packet(value, receipt_root=args.receipt_root)
+            else assemble_research_packet(value)
         )
         dump_json(result, args.output)
         return 0 if result["status"] == "current_pass" else 1

@@ -206,3 +206,20 @@ Removed obsolete provider/current-release literals from active prompts, adapter 
 | models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 1.44 |
 | map: `python -m flowguard map check` | check: 0 error(s), 8 warning(s), 0 info | 1.33 |
 | skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.21 |
+
+## LW-16
+
+移除本地权威收据和适配信封，来源/主张/结果包仍验证原有内容资格及调用者不可自写状态或安全措辞。完整 176 项测试、三项回归、地图和技能通过。一次测试编辑误删邻接代码已由全量测试检出并从上一提交精确恢复、重做字段删除后验证；失败日志保留。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| residual: `git grep -n receipt_authority\|validate_adapter_\|build_adapter_receipt\|resolve_current_receipt\|receipt_root\|receipt-root\|evidence-receipt\|adapter-result\|adapter-request\|observation_receipt_fingerprint\|semantic_fit_receipt_fingerprint -- skills tests scripts AGENTS.md README.md CONTRIBUTING.md` | exit 1; stated assertions verified | 0.02 |
+| prompt-receipts: `git grep -n -i receipt\|envelope\|validate_adapter -- skills/logic-writing/SKILL.md skills/logic-writing/references/shared skills/logic-writing/references/adapters skills/logic-writing/references/routes/*.md` | exit 0; stated assertions verified | 0.0 |
+| pytest: `python -m pytest -q` | 176 passed in 6.45s | 6.77 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 9.72 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.64 |
+| models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 1.92 |
+| map: `python -m flowguard map check` | check: 0 error(s), 10 warning(s), 0 info | 1.06 |
+| skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.15 |
+
+1 failed verification attempt(s) retained in the external transcript; purpose-preserving correction is described above.

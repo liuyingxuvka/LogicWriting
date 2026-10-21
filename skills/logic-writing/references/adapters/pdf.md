@@ -1,7 +1,7 @@
 # PDF adapter
 
 Use PDF for extraction, PDF creation, page rendering, and visual inspection.
-Bind every receipt to the exact PDF fingerprint and distinguish:
+Bind every result to the exact PDF fingerprint and distinguish:
 
 - text/content extraction;
 - structural parsing;

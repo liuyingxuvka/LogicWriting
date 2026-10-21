@@ -22,7 +22,6 @@ from _common import (
     reject_unknown_keys,
     validation_result,
 )
-from receipt_authority import resolve_current_receipt
 
 
 ROLES = {
@@ -54,19 +53,12 @@ SOURCE_FIELDS = {
     "observation_status",
     "access_status",
     "observed_content_fingerprint",
-    "observation_receipt_fingerprint",
     "anchors",
     "can_support",
     "cannot_support",
 }
 
 
-def _observation_basis(source):
-    return {
-        key: item
-        for key, item in source.items()
-        if key != "observation_receipt_fingerprint"
-    }
 
 
 def _validate_source(source):
@@ -90,13 +82,8 @@ def _validate_source(source):
         raise ValidationError(f"source {source_id}: invalid observation/access/independence state")
     require_string(source, "lineage_id")
     observed_fingerprint = source.get("observed_content_fingerprint")
-    observation_receipt = source.get("observation_receipt_fingerprint")
-    for label, value in (
-        ("observed_content_fingerprint", observed_fingerprint),
-        ("observation_receipt_fingerprint", observation_receipt),
-    ):
-        if value is not None and (not isinstance(value, str) or not re.fullmatch(r"sha256:[a-f0-9]{64}", value)):
-            raise ValidationError(f"source {source_id}: {label} must be null or a lowercase sha256 fingerprint")
+    if observed_fingerprint is not None and (not isinstance(observed_fingerprint, str) or not re.fullmatch(r"sha256:[a-f0-9]{64}", observed_fingerprint)):
+        raise ValidationError(f"source {source_id}: observed_content_fingerprint must be null or a lowercase sha256 fingerprint")
     anchors = require_list(source.get("anchors"), "anchors")
     anchor_ids = []
     for anchor in anchors:
@@ -140,11 +127,10 @@ def _validate_source(source):
         access != "available"
         or not can_support
         or observed_fingerprint is None
-        or observation_receipt is None
         or not anchors
     ):
         raise ValidationError(
-            f"source {source_id}: claim_usable requires available observed content, anchors, and a SourceGuard observation receipt"
+            f"source {source_id}: claim_usable requires available observed content, and anchors"
         )
     if observation != "claim_usable" and can_support:
         raise ValidationError(f"source {source_id}: only a claim_usable record can support claims")
@@ -153,11 +139,7 @@ def _validate_source(source):
     return source
 
 
-def validate_source_registry(
-    value,
-    *,
-    receipt_root: str | Path | None = None,
-):
+def validate_source_registry(value):
     value = require_mapping(value, "SourceRegistry")
     require_schema("source-registry.schema.json", value, label="SourceRegistry")
     reject_unknown_keys(value, REGISTRY_FIELDS, "SourceRegistry")
@@ -192,41 +174,12 @@ def validate_source_registry(
     ]
     if not sources:
         findings.append({"source_id": "registry", "code": "registry_has_no_sources"})
-    observation_receipts: list[str] = []
     observation_basis_fingerprints: dict[str, str] = {}
     authoritative_usable: list[str] = []
     for source in sources:
-        if source["observation_status"] != "claim_usable":
-            continue
-        source_id = source["source_id"]
-        reference = source["observation_receipt_fingerprint"]
-        basis_fingerprint = fingerprint(_observation_basis(source))
-        observation_basis_fingerprints[source_id] = basis_fingerprint
-        if receipt_root is None:
-            findings.append(
-                {"source_id": source_id, "code": "observation_authority_not_resolved"}
-            )
-            continue
-        projection = resolve_current_receipt(
-            reference,
-            root=receipt_root,
-            expected={
-                "producer_skill": "sourceguard",
-                "evidence_domain": "source_observation",
-                "artifact_fingerprint": source["observed_content_fingerprint"],
-            },
-        )
-        receipt = projection["receipt"]
-        if receipt["output_fingerprints"].get("source_observation") != basis_fingerprint:
-            raise ValidationError(
-                f"source {source_id}: observation receipt does not bind the exact source record and support boundary"
-            )
-        if not projection["current"] or projection["status"] != "current_pass":
-            findings.append(
-                {"source_id": source_id, "code": "observation_receipt_not_current"}
-            )
-        else:
-            observation_receipts.append(reference)
+        if source["observation_status"] == "claim_usable":
+            source_id = source["source_id"]
+            observation_basis_fingerprints[source_id] = fingerprint(source)
             authoritative_usable.append(source_id)
     findings = list(
         {
@@ -258,7 +211,6 @@ def validate_source_registry(
             }
         ),
         lineage_members=lineages,
-        observation_receipt_fingerprints=observation_receipts,
         observation_basis_fingerprints=observation_basis_fingerprints,
     )
 
@@ -266,13 +218,11 @@ def validate_source_registry(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input", required=True)
-    parser.add_argument("--receipt-root")
     parser.add_argument("--output")
     args = parser.parse_args()
     try:
         result = validate_source_registry(
             load_json(args.input),
-            receipt_root=args.receipt_root,
         )
         dump_json(result, args.output)
         raise SystemExit(0 if result["status"] == "current_pass" else 1)

@@ -419,20 +419,13 @@ def complete_chain(
     *,
     pass_quality: bool = True,
     language: str = "zh-CN",
-    native_root: Path | None = None,
     native_receipts: list[str] | None = None,
 ) -> dict:
     """Build a synthetic protocol chain with registered native fixture evidence."""
     from derive_closure import REQUIRED_DIMENSIONS
 
-    from tests.support import make_current_packet
-    native_root = native_root if native_root is not None else workdir / "native-receipts"
-    packet = make_current_packet(native_root) if native_receipts is None else None
-    if native_receipts is None:
-        native_receipts = [packet["observation_receipt"]["receipt_fingerprint"]]
+    native_receipts = native_receipts if native_receipts is not None else []
     chain = make_reader_chain(workdir, owner, language=language, native_receipts=native_receipts)
-    chain["native_receipt_root"] = native_root
-    chain["native_packet"] = packet
     evidence = span_evidence(chain)
     body_units = [
         row for row in chain["artifact_map"]["units"]

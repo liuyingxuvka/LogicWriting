@@ -6,8 +6,7 @@ from _common import cli_validate, require_mapping, validation_result
 from reader_pipeline import build_reader_audit, validate_reader_audit_current
 
 
-def audit_reader_output(value, *, receipt_root=None):
-    del receipt_root
+def audit_reader_output(value):
     request = require_mapping(value, "ReaderAudit request")
     audit = build_reader_audit(
         audit_id=request.get("audit_id"),

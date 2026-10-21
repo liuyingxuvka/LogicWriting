@@ -93,8 +93,7 @@ retain a rival when the available evidence cannot discriminate between them.
 ## 4. Assemble the ResearchPacket
 
 Include exact source and claim-support manifests, critical numbers, alternatives,
-lineages, unresolved gaps, safe and unsafe wording, native receipt identities,
-and a packet fingerprint. The verifier derives packet status; a caller's
+lineages, unresolved gaps, safe and unsafe wording, and a packet fingerprint. The verifier derives packet status; a caller's
 `complete` field has no authority.
 
 Every citation anchor in the packet must resolve to observed content and stay

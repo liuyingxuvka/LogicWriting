@@ -58,7 +58,6 @@
       ],
       "files": [
         "skills/logic-writing/assets/schemas/claim-support.schema.json",
-        "skills/logic-writing/assets/schemas/evidence-receipt.schema.json",
         "skills/logic-writing/assets/schemas/research-packet.schema.json",
         "skills/logic-writing/assets/schemas/researchguard-consumption-binding.schema.json",
         "skills/logic-writing/assets/schemas/researchguard-logic-handoff.schema.json",
@@ -69,7 +68,6 @@
         "skills/logic-writing/references/routes/required-resources.json",
         "skills/logic-writing/references/shared/research-packet.md",
         "skills/logic-writing/scripts/build_source_unit_manifest.py",
-        "skills/logic-writing/scripts/receipt_authority.py",
         "skills/logic-writing/scripts/researchguard_handoff.py",
         "skills/logic-writing/scripts/validate_claim_support.py",
         "skills/logic-writing/scripts/validate_research_packet.py",
@@ -91,7 +89,6 @@
         "shared-contracts"
       ],
       "tests": [
-        "tests/authority/test_receipt_authority.py",
         "tests/contract/test_researchguard_handoff.py",
         "tests/unit/test_consumer_resource_closure.py"
       ],
@@ -183,7 +180,6 @@
       "tests": [
         "tests/__init__.py",
         "tests/adversarial/test_reader_integrity_regressions.py",
-        "tests/authority/test_receipt_authority.py",
         "tests/conftest.py",
         "tests/contract/test_privacy_scan.py",
         "tests/contract/test_schema_runtime_gate.py",
@@ -659,11 +655,7 @@
         "Require ResearchGuard >= 0.5.0 (minimum declared once in skills/logic-writing/scripts/_common.py); keep WorldGuard portable launcher availability separate from domain judgment."
       ],
       "files": [
-        "skills/logic-writing/assets/schemas/adapter-request.schema.json",
-        "skills/logic-writing/assets/schemas/adapter-result.schema.json",
-        "skills/logic-writing/scripts/provider_preflight.py",
-        "skills/logic-writing/scripts/validate_adapter_request.py",
-        "skills/logic-writing/scripts/validate_adapter_result.py"
+        "skills/logic-writing/scripts/provider_preflight.py"
       ],
       "entrypoints": [
         "skills/logic-writing/scripts/provider_preflight.py:preflight"
@@ -679,7 +671,6 @@
         "shared-contracts"
       ],
       "tests": [
-        "tests/contract/test_adapters.py",
         "tests/unit/test_provider_preflight.py",
         "tests/unit/test_researchguard_provider_topology.py"
       ],

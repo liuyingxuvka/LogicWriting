@@ -19,9 +19,8 @@ through another member.
 
 LogicGuard checks structural support, not factual truth. Its model or story plan
 is not final prose and cannot satisfy an audit of the actual delivered artifact.
-Preserve the member's native
-result and receipt as an opaque reference rather than fabricating a local
-LogicGuard-native receipt.
+Preserve the member's native result as it is; never write one on the
+member's behalf.
 
 The artifact-synthesis handoff has one current typed bridge:
 `researchguard.logic.synthesis-plan.v1` →

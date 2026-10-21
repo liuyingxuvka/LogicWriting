@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/liuyingxuvka/LogicWriting/schemas/research-packet.schema.json",
   "title": "Logic Writing ResearchPacket",
-  "description": "The sole current cross-route research handoff. Its assembler resolves every receipt fingerprint to an authoritative original before projecting receipt metadata.",
+  "description": "The cross-route research handoff: source registry, claim support, verifier-derived gaps and wording.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -12,7 +12,6 @@
     "final_owner",
     "source_registry",
     "claim_support",
-    "native_receipts",
     "member_fingerprints",
     "unresolved_gaps",
     "safe_wording",
@@ -21,59 +20,106 @@
     "packet_fingerprint"
   ],
   "properties": {
-    "schema_version": { "const": "1.0" },
-    "packet_id": { "$ref": "#/$defs/identifier" },
-    "request_fingerprint": { "$ref": "#/$defs/fingerprint" },
-    "final_owner": { "enum": ["investigation", "academic-writing", "fiction-writing", "travel-guide"] },
-    "gap_id": {
-      "anyOf": [
-        { "$ref": "#/$defs/identifier" },
-        { "type": "null" }
+    "schema_version": {
+      "const": "1.0"
+    },
+    "packet_id": {
+      "$ref": "#/$defs/identifier"
+    },
+    "request_fingerprint": {
+      "$ref": "#/$defs/fingerprint"
+    },
+    "final_owner": {
+      "enum": [
+        "investigation",
+        "academic-writing",
+        "fiction-writing",
+        "travel-guide"
       ]
     },
-    "source_registry": { "$ref": "source-registry.schema.json" },
-    "claim_support": { "$ref": "claim-support.schema.json" },
-    "native_receipts": {
-      "type": "array",
-      "items": { "$ref": "#/$defs/nativeReceiptRef" }
+    "gap_id": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/identifier"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "source_registry": {
+      "$ref": "source-registry.schema.json"
+    },
+    "claim_support": {
+      "$ref": "claim-support.schema.json"
     },
     "member_fingerprints": {
       "type": "object",
       "minProperties": 2,
-      "required": ["source_registry", "claim_support"],
-      "propertyNames": { "pattern": "^(?:source_registry|claim_support|native_receipt:[0-9]+)$" },
-      "additionalProperties": { "$ref": "#/$defs/fingerprint" }
+      "required": [
+        "source_registry",
+        "claim_support"
+      ],
+      "propertyNames": {
+        "pattern": "^(?:source_registry|claim_support)$"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/fingerprint"
+      }
     },
     "unresolved_gaps": {
       "type": "array",
-      "items": { "$ref": "#/$defs/gap" },
+      "items": {
+        "$ref": "#/$defs/gap"
+      },
       "uniqueItems": true
     },
     "safe_wording": {
       "type": "array",
       "minItems": 1,
-      "items": { "type": "string", "minLength": 1 },
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
       "uniqueItems": true
     },
     "unsafe_wording": {
       "type": "array",
       "minItems": 1,
-      "items": { "type": "string", "minLength": 1 },
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
       "uniqueItems": true
     },
-    "status": { "enum": ["current_pass", "partial", "blocked"] },
-    "packet_fingerprint": { "$ref": "#/$defs/fingerprint" }
+    "status": {
+      "enum": [
+        "current_pass",
+        "partial",
+        "blocked"
+      ]
+    },
+    "packet_fingerprint": {
+      "$ref": "#/$defs/fingerprint"
+    }
   },
   "allOf": [
     {
       "if": {
-        "required": ["status"],
-        "properties": { "status": { "const": "current_pass" } }
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "status": {
+            "const": "current_pass"
+          }
+        }
       },
       "then": {
         "properties": {
-          "native_receipts": { "minItems": 1 },
-          "unresolved_gaps": { "maxItems": 0 }
+          "unresolved_gaps": {
+            "maxItems": 0
+          }
         }
       }
     }
@@ -85,7 +131,10 @@
       "maxLength": 128,
       "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
     },
-    "fingerprint": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "fingerprint": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
     "status": {
       "enum": [
         "current_pass",
@@ -183,20 +232,35 @@
         "next_owner"
       ],
       "properties": {
-        "gap_entry_id": { "$ref": "#/$defs/identifier" },
-        "code": { "$ref": "#/$defs/gapCode" },
+        "gap_entry_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "code": {
+          "$ref": "#/$defs/gapCode"
+        },
         "affected_claim_ids": {
           "type": "array",
-          "items": { "$ref": "#/$defs/identifier" },
+          "items": {
+            "$ref": "#/$defs/identifier"
+          },
           "uniqueItems": true
         },
         "affected_source_ids": {
           "type": "array",
-          "items": { "$ref": "#/$defs/identifier" },
+          "items": {
+            "$ref": "#/$defs/identifier"
+          },
           "uniqueItems": true
         },
         "scope": {
-          "enum": ["source", "claim", "packet", "handoff", "causal", "forecast"]
+          "enum": [
+            "source",
+            "claim",
+            "packet",
+            "handoff",
+            "causal",
+            "forecast"
+          ]
         },
         "safe_wording": {
           "type": "string",
@@ -209,41 +273,14 @@
           "pattern": "^(?!.*\\b(?:SourceGuard|LogicGuard|TraceGuard|FlowGuard)\\b)(?!.*\\b(?:current_pass|provider_unavailable|render_not_run|closure_status)\\b).+$"
         },
         "next_owner": {
-          "enum": ["source-research", "argument-review", "trace-review", "research-owner", "writer"]
+          "enum": [
+            "source-research",
+            "argument-review",
+            "trace-review",
+            "research-owner",
+            "writer"
+          ]
         }
-      }
-    },
-    "nativeReceiptRef": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "receipt_fingerprint",
-        "producer_skill",
-        "native_route",
-        "evidence_domain",
-        "status",
-        "artifact_fingerprint",
-        "covered_scope",
-        "covered_obligation_ids",
-        "current"
-      ],
-      "properties": {
-        "receipt_fingerprint": { "$ref": "#/$defs/fingerprint" },
-        "producer_skill": {
-          "enum": ["sourceguard", "logicguard", "traceguard", "worldguard", "flowguard", "documents", "pdf"]
-        },
-        "native_route": { "$ref": "#/$defs/identifier" },
-        "evidence_domain": { "$ref": "#/$defs/evidenceDomain" },
-        "status": { "$ref": "#/$defs/status" },
-        "artifact_fingerprint": { "$ref": "#/$defs/fingerprint" },
-        "covered_scope": { "type": "string", "minLength": 1 },
-        "covered_obligation_ids": {
-          "type": "array",
-          "minItems": 1,
-          "items": { "$ref": "#/$defs/identifier" },
-          "uniqueItems": true
-        },
-        "current": { "type": "boolean" }
       }
     }
   }

@@ -13,27 +13,10 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 
-@pytest.fixture
-def receipt_root(tmp_path: Path) -> Path:
-    return tmp_path / "receipts"
 
 
 @pytest.fixture
-def current_packet(receipt_root: Path):
+def current_packet():
     from tests.support import make_current_packet
 
-    return make_current_packet(receipt_root)
-
-
-@pytest.fixture
-def reader_chain(tmp_path: Path, receipt_root: Path):
-    from tests.v2_support import complete_chain
-
-    return complete_chain(tmp_path)
-
-
-@pytest.fixture
-def revision_chain(tmp_path: Path, receipt_root: Path):
-    from tests.v2_support import complete_chain
-
-    return complete_chain(tmp_path)["revision_provenance"]
+    return make_current_packet()

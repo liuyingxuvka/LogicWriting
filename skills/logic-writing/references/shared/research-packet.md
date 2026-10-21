@@ -10,7 +10,6 @@ A ResearchPacket is the only default evidence handoff between routes. It binds:
 - execution, effect, causal, or forecast chains when applicable;
 - unresolved gaps and access failures;
 - safe wording and prohibited overclaims;
-- current native receipt ids and fingerprints;
 - packet status and packet fingerprint.
 
 Status is verifier-derived. Every manifest member must exist and match its
