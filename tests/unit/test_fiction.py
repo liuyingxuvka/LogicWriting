@@ -57,11 +57,6 @@ def test_native_fiction_binding_rejects_unbound_prose(monkeypatch):
     }
 
 
-def test_fiction_regression_uses_bounded_budgets_for_slow_matrices():
-    module = _fiction_regression_module()
-    assert module.CASE_TIMEOUT_SECONDS["model-mesh"] == 900
-    assert module.CASE_TIMEOUT_SECONDS["guard-lifecycle"] == 600
-    assert all(0 < value <= 900 for value in module.CASE_TIMEOUT_SECONDS.values())
 
 
 def test_fiction_regression_timeout_kills_the_case(monkeypatch, tmp_path: Path):

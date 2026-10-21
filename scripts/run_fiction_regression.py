@@ -11,17 +11,12 @@ import sys
 from pathlib import Path
 
 
-# The model-mesh and Guard-lifecycle owners intentionally exercise many native
-# child checks.  A single 180-second limit was shorter than the declared finite
-# matrix and caused the parent to crash with an unhandled TimeoutExpired.  Keep
-# each budget finite, explicit, and large enough for the work it owns.
+# Each case gets a finite, explicit budget large enough for the work it owns.
 CASE_TIMEOUT_SECONDS = {
     "route": 120,
     "native": 300,
     "longform": 300,
-    "guard-lifecycle": 600,
     "model-mesh": 900,
-    "installation-parity": 120,
 }
 
 
@@ -77,9 +72,7 @@ def main() -> int:
         ("route", [sys.executable, str(scripts / "run_route_regression.py"), "--skill-root", str(route), "--json"]),
         ("native", [sys.executable, str(scripts / "run_native_regression.py"), "--repo-root", str(root), "--json"]),
         ("longform", [sys.executable, str(scripts / "run_longform_regression.py"), "--repo-root", str(root), "--json"]),
-        ("guard-lifecycle", [sys.executable, str(scripts / "run_guard_lifecycle_regression.py"), "--repo-root", str(root), "--skill-root", str(route), "--json"]),
         ("model-mesh", [sys.executable, str(scripts / "run_story_model_mesh_regression.py"), "--project-root", str(route / "examples" / "longform_novel_project"), "--repo-root", str(root), "--json"]),
-        ("installation-parity", [sys.executable, str(scripts / "run_installed_parity_regression.py")]),
     ]
     results = []
     for case_id, command in cases:

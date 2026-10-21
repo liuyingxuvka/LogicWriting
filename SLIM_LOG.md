@@ -241,3 +241,16 @@ Removed obsolete provider/current-release literals from active prompts, adapter 
 | skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.12 |
 
 1 failed verification attempt(s) retained in the external transcript; purpose-preserving correction is described above.
+
+## LW-18
+
+删除 Guard 收据生命周期与前身安装一致性两套回归及专用夹具，fiction 仅调度 route/native/longform/model-mesh 四项，均通过；完整 171 项测试通过，地图零错误，活动残留为零。故事模型和当前长篇原生检查保留。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| residual: `git grep -n run_guard_lifecycle_regression\|run_installed_parity_regression\|installed_parity_check\|check_installation_parity\|guard_lifecycle_cases -- skills scripts tests` | exit 1; stated assertions verified | 0.02 |
+| pytest: `python -m pytest -q` | 171 passed in 6.77s | 7.11 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 9.69 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.89 |
+| models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 2.6 |
+| map: `python -m flowguard map check` | check: 0 error(s), 10 warning(s), 0 info | 1.05 |
