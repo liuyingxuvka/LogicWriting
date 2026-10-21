@@ -37,7 +37,7 @@ def _native_researchguard_ready_plan(tmp_path: Path) -> tuple[dict, str, str]:
         None,
     )
     if rg_root is None:
-        pytest.fail(
+        pytest.skip(
             "local ResearchGuard source is required for the native bridge test; "
             "set RESEARCHGUARD_SOURCE_ROOT to the formal repository"
         )
