@@ -119,3 +119,18 @@ Removed obsolete provider/current-release literals from active prompts, adapter 
 | no-skill-bytecode: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.04 |
 | pytest: `python -m pytest -q` | 471 passed in 52.17s | 52.71 |
 | no-test-bytecode: `python -c <bounded action probe; transcript external>` | exit 0; stated assertions verified | 0.03 |
+
+## LW-10
+
+删除无人读取的历史模型权威快照及唯一 ignore 项，保留活组件、指纹和其他模型；完整 471 项测试及三项回归通过，地图零错误，隐私扫描通过（1.17 秒）。提交前原始和活动残留扫描均无命中；历史日志保留按授权单独识别。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| residual-raw: `git grep -n models/authority -- . :!CHANGELOG.md :!openspec/changes` | exit 1; stated assertions verified | 0.01 |
+| residual-active: `git grep -n models/authority -- . :!CHANGELOG.md :!openspec/changes :!SLIM_LOG.md` | exit 1; stated assertions verified | 0.01 |
+| privacy: `python scripts/check_privacy.py --root . --json` | exit 0; stated assertions verified | 1.17 |
+| pytest: `python -m pytest -q` | 471 passed in 52.09s | 52.65 |
+| fiction: `python scripts/run_fiction_regression.py --repository-root . --json` | exit 0; stated assertions verified | 11.24 |
+| travel: `python scripts/run_travel_regression.py --repository-root . --json` | exit 0; stated assertions verified | 0.51 |
+| models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 1.35 |
+| map: `python -m flowguard map check` | check: 0 error(s), 12 warning(s), 0 info | 0.89 |

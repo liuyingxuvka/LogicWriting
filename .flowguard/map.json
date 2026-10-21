@@ -8,7 +8,6 @@
     "docs/**",
     "assets/**",
     "openspec/changes/archive/**",
-    ".flowguard/models/authority/**",
     ".flowguard/structure/reverse-surfaces/**"
   ],
   "test_command": "python -m pytest -q",
