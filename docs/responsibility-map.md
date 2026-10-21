@@ -26,7 +26,6 @@ focused question identifies the terminal deliverable.
 | LogicGuard | Source preservation, argument/structure/citation/model judgment | Factual truth or quality of final prose |
 | TraceGuard | Temporal, causal, implementation, competing-story, counterfactual, prediction traces | General argument or artifact closure |
 | WorldGuard | Event, agent, space, resource, capability, conflict, authority, and norm consistency | Story payoff, traveler fit, or factual truth outside its model |
-| FlowGuard | Process/state/order/freshness/closure behavior | Source quality, reader clarity, or visual correctness |
 | Documents | Editable-document reading, mutation, comments, tracked changes, rendering, page inspection | Argument support or PDF-specific evidence |
 | PDF | PDF extraction, creation, rendering, visual inspection | Editable-source correctness or claim support |
 
@@ -53,7 +52,7 @@ fiction as a child route.
 | Story promise, continuity, voice, or binding failure | `fiction-writing` | Return to the earliest failed story surface |
 | Travel feasibility, fit, time mode, or fallback failure | `travel-guide` | Repair the owning trip surface; prose cannot override it |
 | Generic handoff, explanation pressure, register drift, or unbound prose | Final route with shared kernel | Repair structure/projection and audit current bytes again |
-| Stale receipt or artifact hash | Owning route with FlowGuard freshness | Rerun only affected current owners |
+| Stale artifact hash | Owning route (closure re-reads the current bytes) | Rebuild the ArtifactMap and rerun only the affected checks |
 | Missing document/PDF provider evidence | Owning route with Documents/PDF | Preserve not-run boundary; do not substitute evidence class |
 
 No owner may convert another owner's missing, bounded, partial, stale, blocked,

@@ -378,3 +378,15 @@ SKILL 增补实际命令与输入字段，13 项命令在技能根帮助均正�
 | models: `python .flowguard/verification/run_models.py --json` | exit 0; stated assertions verified | 1.36 |
 | map: `python -m flowguard map check` | check: 0 error(s), 10 warning(s), 0 info | 0.61 |
 | skill: `python scripts/validate_skill.py --skill-root skills/logic-writing` | skill static validation: passed | 0.14 |
+
+## LW-26
+
+同步 README、架构、职责、维护和迁移文档，删掉已不存在的冻结门禁/本地收据权威/实验机制；准确说明原生返回值、独立实际成品阅读和普通 CI。保留前身仓库处置边界和历史迁移文档。完整 165 项、文档链接、隐私及地图通过，指定活动残留为零。
+
+| Check / command | Actual result | Seconds |
+|---|---|---|
+| residual: `git grep -n -i frozen validation\|source freeze\|receipt authority\|request/result envelopes\|FlowGuard mesh\|Audit handoff\|temporary sibling\|offline release contract -- README.md README.zh-CN.md AGENTS.md CONTRIBUTING.md MIGRATION.md docs/architecture.md docs/responsibility-map.md` | exit 1; stated assertions verified | 0.01 |
+| docs: `python scripts/check_public_docs.py --root . --json` | exit 0; stated assertions verified | 0.14 |
+| privacy: `python scripts/check_privacy.py --root . --json` | exit 0; stated assertions verified | 1.39 |
+| pytest: `python -m pytest -q` | 165 passed in 6.28s | 6.72 |
+| map: `python -m flowguard map check` | check: 0 error(s), 10 warning(s), 0 info | 0.42 |

@@ -16,9 +16,8 @@ Use `.flowguard/map.json` to find the existing runtime/schema/test owner and its
 native state models. Former writer projection, editorial disposition,
 composition graph and artifact audit declarations belong to reader-artifact;
 ResearchGuard handoff belongs to research-packet. Run affected ordinary tests
-or native checks during development. Freeze source after archive/version edits
-and run the stable offline release contract once, including one full pytest.
-Live quality experiments and their read-only consumers remain explicit opt-in.
+or native checks during development. Before a release, CI runs the full pytest suite, the fiction and travel
+regressions, the models and the map check on the exact source commit.
 
 Final reader closure needs the deterministic audit, the route review and a
 ReaderJudgment from a reader that did not write the text; no execution capture
@@ -27,10 +26,8 @@ reading the actual text.
 
 ## Installation
 
-Copy `skills/logic-writing` to a temporary sibling of the active directory.
-Compare exact source/stage file sets and byte hashes, check required route
-resources and the five route smoke scenarios, then replace `logic-writing`.
-Retain the previous directory outside the active skill root for rollback.
+Install with `python scripts/install_skill.py --target <skills dir>`; add
+`--check` to compare an installed copy with the source (see README).
 
 The old `storyline-design` and `travel-story-planner` ids remain retired with
 no runtime aliases. Move any old active directories outside the skill root;

@@ -46,8 +46,7 @@ The shared layer owns only behavior that means the same thing in every genre:
 - register ownership and effect-aware variation;
 - model-row to exact artifact-span binding;
 - internal-language and explanation-pressure review;
-- actual-artifact identity, receipt authority, freshness, and closure
-  composition.
+- actual-artifact identity, freshness, and closure composition.
 
 It deliberately does not define a universal packet. Investigation retains
 ResearchPacket and claim/source semantics. Fiction retains story models,
@@ -89,34 +88,30 @@ It never calls the fiction route.
 
 ## Specialist boundary
 
-SourceGuard, LogicGuard, TraceGuard, WorldGuard, FlowGuard, Documents, and PDF
-remain native owners. Logic Writing validates bounded request/result envelopes
-and consumes their current receipts. Provider absence, access gaps, partial
+SourceGuard, LogicGuard and TraceGuard (all through the single `researchguard`
+console), WorldGuard, Documents, and PDF remain native owners. Logic Writing
+reads their results as they are and never writes a result on their behalf.
+Provider absence, access gaps, partial
 results, stale identities, failed rendering, or human-review boundaries remain
 typed non-pass states.
 
-## FlowGuard mesh
+## FlowGuard models
 
-The parent lifecycle keeps the operation plane separate from the development
-plane. Its operation children are routing/Guard authority, research packet,
-shared reader artifact, fiction, travel, and freshness/closure. The development
-child owns frozen validation, staged installation, global route projection,
-GitHub release, local predecessor quarantine, Travel-first privatization,
-replacement health recheck, Storyline privatization, and the user's later
-deletion handoff.
+This repository is maintained with FlowGuard; user writing tasks do not use it.
+`.flowguard/models/` holds finite models of the agent-operation plane only:
+routing and Guard ownership, the research packet, the shared reader artifact,
+the four routes, and freshness/closure. `python .flowguard/verification/run_models.py --json`
+runs them. They check ordering and ownership in abstract state; ordinary pytest
+checks the real scripts.
 
 Shared kernel state is limited to route decision, artifact identity, reader
-projection identity, receipt authority, and freshness. Fiction and travel own
-disjoint domain state and side effects.
+projection identity, and freshness. Fiction and travel own disjoint domain
+state and side effects.
 
 ## Validation ownership
 
-OpenSpec records product obligations and acceptance checks. FlowGuard models
-state, ordering, ownership, known-bad behavior, and dependency-sensitive
-closure. The stable OpenSpec release contract owns the ordinary check inventory.
-Installation compares the canonical skill directory with its staged copy by file
-set and bytes. Receipt consumers never rerun the owner command.
-
-Final release validation runs only after source, toolchain, and inventory
-identities are frozen. Runtime outputs and progress logs are evidence, not
-source authority.
+OpenSpec records product obligations and acceptance checks. The release
+workflow (`.github/workflows/publish-release.yml`) runs pytest, the fiction and
+travel regressions, the models and the map check on the exact source commit
+before it publishes. `python scripts/install_skill.py --target <dir> --check`
+compares an installed copy with the source by file set and bytes.

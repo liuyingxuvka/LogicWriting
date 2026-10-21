@@ -135,11 +135,11 @@ not compatibility aliases. Their supported intents now route through
 
 ## Validation
 
-The ordinary release contract runs native fiction/travel checks, finite state
-models, offline reader protocol checks, public docs/privacy, and one full pytest
-owner after source freeze. Live reader-quality producers and their read-only
-consumers remain explicit experiments with finite call budgets. Independent
-actual-artifact judgment remains required for a reader-facing final closure.
+Before publishing, the release workflow runs the full pytest suite, the fiction
+and travel regressions, the finite models in `.flowguard/` and the FlowGuard map
+check on the exact source commit. These checks cover the scripts and contracts,
+not the quality of a particular piece of writing: a reader-facing final closure
+still needs an independent read of the actual artifact.
 
 Focused examples:
 

@@ -47,8 +47,8 @@ Repository-level documentation belongs at the repository root or under
 2. Identify the owning route, schema, adapter, or evidence domain.
 3. Update the smallest set of source and tests that owns that behavior.
 4. Re-run only affected checks while the change is still moving.
-5. Freeze source and tool identities before the final full validation owner
-   runs.
+5. Run `python -m pytest -q` and the checks listed under `## Validation` in
+   `AGENTS.md` before proposing a release.
 6. Review the public diff for unsupported maturity, release, installation, and
    retirement claims.
 7. Run the semantic privacy gate before proposing publication.
@@ -69,12 +69,6 @@ python -m pytest -q
 Run them against the current checkout. A command listed in this document is an
 available check, not evidence that it has passed. When a check is skipped,
 blocked, interrupted, or stale, report that state and the affected claim.
-
-Model or multi-skill regression runs need one declared execution owner and a
-frozen input identity. Do not accept a still-running background process,
-progress message, or duplicated run as terminal evidence. If a launcher is
-interrupted, confirm that its process tree has ended before starting a new
-owner.
 
 ## Test expectations
 
