@@ -43,6 +43,13 @@ WorldGuard SHALL own material world consistency, while fiction route validators 
 - **WHEN** a fictional world claim materially affects events, resources, access, capability, conflict, authority, or norms
 - **THEN** the route SHALL NOT scope out WorldGuard merely because the setting is fictional
 
+### Requirement: Structured voice reaches the writer
+Fiction composition MAY provide `voice_contract` with point of view and tense plus optional narration distance, register, and allowed variation. The writer projection SHALL carry that object unchanged; a missing payload SHALL remain an explicit voice gap. `voice_contract_ref` SHALL be an identifier. Changes to the contract SHALL change the route extension and ReaderBrief identities.
+
+#### Scenario: A voice reference has no payload
+- **WHEN** a composition names a voice reference but omits `voice_contract`
+- **THEN** the writer projection SHALL keep the unresolved voice gap rather than infer a voice from the identifier
+
 ### Requirement: Fiction final prose binds model and manuscript
 The route SHALL open the real manuscript, recompute its identity, reverse-outline actual events and reader-state changes, bind important prose spans to current model rows, and reject unbound prose, unrealized rows, unsupported duplicate binding, and stale semantic review.
 

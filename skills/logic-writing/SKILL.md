@@ -201,6 +201,8 @@ Choose compact, short-story, long-form, or final-manuscript depth from the
 terminal artifact. Preserve story contribution, turning points, scene/chapter
 interfaces, promises, continuity, voice, reader-state movement,
 actual-manuscript identity, semantic review, and model-prose binding.
+Provide POV and tense in the optional `voice_contract`; the writer receives that
+object, while an unfilled voice reference remains a gap.
 
 ### Travel guide
 

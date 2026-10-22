@@ -29,6 +29,8 @@ Investigation keeps evidence semantics, academic writing keeps scholarly
 hierarchy and provenance, fiction keeps story semantics, and travel keeps
 operational semantics.
 
+Fiction can carry an optional structured `voice_contract` (POV and tense) into the writer input; without it, the voice reference remains an explicit gap.
+
 Investigation and academic evidence handoffs use a current `ResearchPacket`;
 the writer receives a sanitized `ReaderBrief` rather than internal ledgers.
 

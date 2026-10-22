@@ -18,6 +18,11 @@ output-room compliance, story movement, resistance/cost, promise and reveal
 handling, continuity, POV/voice, reader-state change, and real-span binding.
 A clean plan is not evidence that the prose works.
 
+Use `voice_contract` for POV and tense, with optional narration distance, register,
+and allowed variation. Keep `voice_contract_ref` an identifier; without the
+contract payload, the writer input retains a voice gap. Changing the contract
+changes the route extension and ReaderBrief fingerprints.
+
 ## Consumer resource closure
 
 The selected fiction depth loads only its declared route references. Compact and

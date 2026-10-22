@@ -508,11 +508,7 @@ def _writer_route_projection(
         }
     if owner == "fiction-writing":
         voice_ref = route.get("voice_contract_ref", "")
-        voice_payload = (
-            route.get("voice_contract")
-            or route.get("voice_contract_payload")
-            or route.get("voice")
-        )
+        voice_payload = route.get("voice_contract")
         if voice_ref and not isinstance(voice_payload, Mapping):
             _add_projection_gap(gaps, str(voice_ref), "fiction voice reference has no current POV/voice payload")
         voice = dict(voice_payload) if isinstance(voice_payload, Mapping) else {}

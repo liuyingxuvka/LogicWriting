@@ -109,7 +109,8 @@
         "Bind actual artifact bytes and spans to shared contracts, deterministic audit and route review.",
         "Derive closure (passed or needs_repair) from the current reader/route chain and an independent reader judgment whose judge differs from the producer; an edit after review makes closure fail; automatic v2 closure covers text/markdown only.",
         "Reader-chain commands take upstream records as file paths and compute the fingerprints and references a caller leaves out (fill_brief_fingerprints, fill_check_fingerprints, fill_closure_fingerprints); values the caller gives are still checked.",
-        "Name the resolved absolute path when an artifact file cannot be read."
+        "Name the resolved absolute path when an artifact file cannot be read.",
+        "Project the optional fiction voice_contract into writer input, leaving a missing payload as a gap and binding changes in the route and brief fingerprints."
       ],
       "files": [
         "skills/logic-writing/SKILL.md",
@@ -195,7 +196,7 @@
         ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:9bb5434c4b1f0de1635f7d83b432fabd50dcbcfb44aeac0b3a1a77f20cc5e3c3"
+      "fingerprint": "sha256:5f18d439ac4e087e843d0895fef2f044c96601b2281cd9356ba9c82679a6510f"
     },
     {
       "id": "fiction",
@@ -205,7 +206,8 @@
         "Route sixteen artifact types across supported prose phases.",
         "Preserve native world/state, promise, scene, chapter, voice and model/prose bindings.",
         "Check long-form closure bundles for the reverse outline and, for final prose, the manuscript identity and source requirements; the other story models run with their own scripts.",
-        "Exercise representative valid and unbound-prose native binding cases in daily pytest; the fiction regression runs the route, native, longform and model-mesh suites."
+        "Exercise representative valid and unbound-prose native binding cases in daily pytest; the fiction regression runs the route, native, longform and model-mesh suites.",
+        "Accept one structured voice_contract with POV and tense; voice_contract_ref is an identifier, not inferred prose."
       ],
       "files": [
         "skills/logic-writing/routes/fiction/examples/longform_failure_cases/duplicate-binding-without-delta.json",
@@ -527,7 +529,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:fa09e74ba06dd8dac44682d4816809c8981f439c9e9c47174123035bdc31e15d"
+      "fingerprint": "sha256:272a95c3fdc005c1eb5736cf09ab46b15fbc025525e3f0b9ec3c0390361dfa08"
     },
     {
       "id": "providers",

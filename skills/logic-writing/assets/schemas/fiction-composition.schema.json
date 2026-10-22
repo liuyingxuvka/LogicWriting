@@ -20,7 +20,17 @@
     "artifact_kind": { "enum": ["short_story", "chapter", "novella", "novel", "outline", "story_plan", "series_bible", "story_audit", "revision"] },
     "prose_phase": { "enum": ["not_applicable", "initial_draft", "integrated_draft", "repair"] },
     "structure_authority": { "enum": ["user_fixed", "user_partial", "existing_artifact", "route_selected"] },
-    "voice_contract_ref": { "type": "string", "minLength": 1 },
+    "voice_contract_ref": { "$ref": "#/$defs/id" },
+    "voice_contract": {
+      "type": "object", "additionalProperties": false, "required": ["pov", "tense"],
+      "properties": {
+        "pov": { "type": "string", "minLength": 1 },
+        "tense": { "type": "string", "minLength": 1 },
+        "narration_distance": { "type": "string", "minLength": 1 },
+        "register": { "type": "string", "minLength": 1 },
+        "allowed_variation": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true }
+      }
+    },
     "story_movements": { "type": "array", "items": { "$ref": "#/$defs/storyMovement" }, "uniqueItems": true },
     "unit_plans": { "type": "array", "items": { "$ref": "#/$defs/unitPlan" }, "uniqueItems": true },
     "promise_and_reveal_bindings": { "type": "array", "items": { "$ref": "#/$defs/promiseReveal" }, "uniqueItems": true },

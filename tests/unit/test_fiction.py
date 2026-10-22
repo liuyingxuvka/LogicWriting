@@ -9,7 +9,9 @@ import pytest
 from pathlib import Path
 
 from select_route import select_route
-from tests.v2_support import route_request
+from tests.v2_support import make_reader_chain, route_request
+from _common import ValidationError
+from build_reader_brief import validate_request as build_brief_request
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -103,3 +105,44 @@ def test_longform_binding_negative_cannot_pass_from_input_failure(tmp_path, inpu
     assert result["actual_exit_code"] == 1
     assert result["passed"] is False
     assert {"read_error", "json_decode_error", "invalid_schema_version"} & set(result["observed_issue_codes"])
+
+
+def _fiction_brief_request(chain, route):
+    return {
+        "route_decision": copy.deepcopy(chain["route_decision"]),
+        "content_boundaries": copy.deepcopy(chain["reader_brief"]["content_boundaries"]),
+        "composition_plan": copy.deepcopy(chain["plan"]),
+        "route_composition": route,
+        "brief_id": "brief:voice-contract",
+    }
+
+
+def test_voice_contract_reaches_the_writer_without_a_gap(tmp_path):
+    chain = make_reader_chain(tmp_path, "fiction-writing")
+    assert any(row["reason"] == "fiction voice reference has no current POV/voice payload"
+               for row in chain["reader_brief"]["writer_input"]["gaps"])
+    voice = {"pov": "close third person", "tense": "past", "narration_distance": "close",
+             "register": "plain", "allowed_variation": ["short fragments"]}
+    route = copy.deepcopy(chain["route_composition"])
+    route["voice_contract"] = voice
+    route.pop("extension_fingerprint")
+    first = build_brief_request(_fiction_brief_request(chain, route))["reader_brief"]
+    assert first["writer_input"]["gaps"] == []
+    assert first["writer_input"]["route_semantics"]["voice"] == voice
+    changed = copy.deepcopy(route)
+    changed["voice_contract"]["tense"] = "present"
+    with pytest.raises(ValidationError, match="extension_fingerprint"):
+        build_brief_request(_fiction_brief_request(chain, changed))
+    changed.pop("extension_fingerprint")
+    second = build_brief_request(_fiction_brief_request(chain, changed))["reader_brief"]
+    assert second["route_extension"]["extension_fingerprint"] != first["route_extension"]["extension_fingerprint"]
+    assert second["brief_fingerprint"] != first["brief_fingerprint"]
+
+
+def test_voice_reference_must_be_an_identifier(tmp_path):
+    chain = make_reader_chain(tmp_path, "fiction-writing")
+    route = copy.deepcopy(chain["route_composition"])
+    route["voice_contract_ref"] = "close third, Tova"
+    route.pop("extension_fingerprint")
+    with pytest.raises(ValidationError, match=r"\$\.voice_contract_ref"):
+        build_brief_request(_fiction_brief_request(chain, route))
