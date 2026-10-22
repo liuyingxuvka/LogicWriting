@@ -28,6 +28,7 @@ from flowguard.conformance import projected_output_matches, projected_state_matc
 from flowguard.explorer import Explorer
 
 MODEL_ID = "reader_artifact_model"
+PARENT = "reader-artifact"
 COMPONENTS = ["reader-artifact", "investigation", "academic", "fiction", "travel"]
 IMPLEMENTED_BY = {
     "BuildReaderBrief": "skills/logic-writing/scripts/reader_pipeline.py:build_reader_brief",

@@ -2,7 +2,12 @@
   "schema": "flowguard.map.v1",
   "project": "logic-writing",
   "layers": [
-    "domain"
+    "release",
+    "entry",
+    "routes",
+    "reader",
+    "evidence",
+    "foundation"
   ],
   "ignore": [
     "docs/**",
@@ -14,7 +19,7 @@
   "components": [
     {
       "id": "routing",
-      "layer": "domain",
+      "layer": "entry",
       "summary": "Select exactly one final owner and bounded investigation child.",
       "responsibilities": [
         "Choose one final owner from the requested terminal artifact.",
@@ -51,7 +56,7 @@
     },
     {
       "id": "research-packet",
-      "layer": "domain",
+      "layer": "evidence",
       "summary": "Validate investigation evidence records and the ResearchGuard synthesis-plan handoff.",
       "responsibilities": [
         "Validate source registry, claim support and the optional ResearchPacket evidence record (source roles, dates, lineage, what each source can and cannot support) without requiring native receipts.",
@@ -97,7 +102,7 @@
     },
     {
       "id": "reader-artifact",
-      "layer": "domain",
+      "layer": "reader",
       "summary": "Reader intent, composition, writer projection, actual-byte map/audit, review and closure.",
       "responsibilities": [
         "Preserve requested intent, composition order, editorial dispositions and writer projection.",
@@ -182,7 +187,9 @@
         "tests/unit/test_review_obligations.py",
         "tests/unit/test_shared_writing.py",
         "tests/unit/test_writer_projection.py",
-        "tests/v2_support.py"
+        "tests/v2_support.py",
+        "tests/e2e/test_routes.py",
+        "tests/adversarial/test_boundaries.py"
       ],
       "models": [
         ".flowguard/models/reader_artifact_model.py"
@@ -192,7 +199,7 @@
     },
     {
       "id": "fiction",
-      "layer": "domain",
+      "layer": "routes",
       "summary": "Native fiction taxonomy, state, model/prose binding and long-form closure.",
       "responsibilities": [
         "Route sixteen artifact types across supported prose phases.",
@@ -313,7 +320,7 @@
     },
     {
       "id": "travel",
-      "layer": "domain",
+      "layer": "routes",
       "summary": "Native traveler feasibility, time/weather modes and guide/reverse review.",
       "responsibilities": [
         "Validate traveler fit, feasible schedule/resources/access, source/time/weather boundaries and fallback plans.",
@@ -402,7 +409,7 @@
     },
     {
       "id": "investigation",
-      "layer": "domain",
+      "layer": "routes",
       "summary": "Investigation final-owner semantics.",
       "responsibilities": [
         "Keep investigation as final owner or a bounded child with visible evidence/argument/trace limits.",
@@ -434,7 +441,7 @@
     },
     {
       "id": "academic",
-      "layer": "domain",
+      "layer": "routes",
       "summary": "Academic final-owner semantics and revision.",
       "responsibilities": [
         "Preserve academic argument, section jobs, citation and revision-provenance boundaries.",
@@ -466,7 +473,7 @@
     },
     {
       "id": "release",
-      "layer": "domain",
+      "layer": "release",
       "summary": "Repository checks, skill installer, ordinary CI and publishing after same-source CI.",
       "responsibilities": [
         "Check skill structure, public docs and privacy, and run the fiction and travel regressions.",
@@ -524,7 +531,7 @@
     },
     {
       "id": "providers",
-      "layer": "domain",
+      "layer": "entry",
       "summary": "Explicit native provider boundaries and availability checks.",
       "responsibilities": [
         "Preflight only the selected native ResearchGuard member or explicit portable/document provider.",
@@ -559,7 +566,7 @@
     },
     {
       "id": "shared-contracts",
-      "layer": "domain",
+      "layer": "foundation",
       "summary": "Shared canonical identity, request loading and JSON schema validation used by existing domain owners.",
       "responsibilities": [
         "Preserve canonical content fingerprints and strict JSON schema validation shared by existing domain owners.",

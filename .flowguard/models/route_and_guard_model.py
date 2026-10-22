@@ -35,6 +35,8 @@ from flowguard.conformance import projected_output_matches, projected_state_matc
 from flowguard.explorer import Explorer
 
 MODEL_ID = "route_and_guard_model"
+# This model spans routing and providers, whose nearest common node is the root.
+PARENT = "system"
 COMPONENTS = ["routing", "providers"]
 IMPLEMENTED_BY = {
     "SelectRoute": "skills/logic-writing/scripts/select_route.py:select_route",
