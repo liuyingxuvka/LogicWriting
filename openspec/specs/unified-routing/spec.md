@@ -144,6 +144,13 @@ The router and selected route SHALL resolve reader-intent precedence from explic
 - **WHEN** a locked user structure cannot satisfy a mandatory evidence or safety boundary
 - **THEN** the route returns a visible reader-intent conflict instead of silently replacing the structure
 
+### Requirement: Material open choices require a user answer before planning
+The router SHALL check material conflicts, trivial requests, then material unresolved choices before normal owner selection. A material choice SHALL return `needs_user_choice` with no final owner or child routes, the first question in its reason, and all material `choice_id`/`question` rows in `open_choices`. ReaderBrief SHALL surface the first material question before route identity or planning checks. The caller SHALL ask that question, preserve the user's answer in ReaderIntent, and route again; non-material choices SHALL NOT block.
+
+#### Scenario: Reader language is undecided
+- **WHEN** ReaderIntent contains a material open language choice
+- **THEN** routing returns `needs_user_choice` and brief creation asks the user before planning
+
 ### Requirement: Current request contracts reject legacy constraint baskets
 The current runtime SHALL accept only the current WritingRequest and RouteDecision contracts and SHALL reject the former free-form constraints field, legacy schema versions, aliases, converters, and fallback readers.
 

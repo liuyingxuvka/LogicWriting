@@ -120,7 +120,9 @@ Before route work, validate one `WritingRequest` and preserve its complete
 requested or existing structure, headings, list/table policy, style, extent,
 citations, required and forbidden content, reference examples, and unresolved
 choices. Do not collapse these fields into a short topic summary. A material
-conflict blocks drafting until it is resolved.
+conflict blocks drafting until it is resolved. A material unresolved choice
+returns `needs_user_choice`: ask the first question, record the user's answer
+in ReaderIntent, and route again before planning.
 
 The selected final route owns one whole-artifact `CompositionPlan`. Plan the
 opening, central throughline, conclusion, hierarchy, reader-state progression,

@@ -48,7 +48,10 @@ the writer receives a sanitized `ReaderBrief` rather than internal ledgers.
 Routing follows the terminal deliverable, not the first activity or the subject.
 A paper about tourism is academic. A researched historical novel is fiction. A
 story-shaped itinerary is travel. A child investigation may return a bounded
-evidence packet, but it cannot close its parent artifact.
+evidence packet, but it cannot close its parent artifact. A material unresolved
+reader choice returns `needs_user_choice` without assigning an owner. Ask the
+first question, record the user's answer in ReaderIntent, and route again;
+non-material choices do not block.
 
 ## “Say it like a person” is an executable boundary
 

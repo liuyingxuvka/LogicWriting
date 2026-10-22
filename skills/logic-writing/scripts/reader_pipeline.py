@@ -206,6 +206,19 @@ def validate_reader_intent(value: Any) -> dict[str, Any]:
     return intent
 
 
+def open_material_choices(intent: Mapping[str, Any]) -> list[dict[str, str]]:
+    """Project the declared material questions without choosing an answer."""
+    choices = intent.get("unresolved_choices", [])
+    if not isinstance(choices, list):
+        return []
+    return [
+        {"choice_id": row["choice_id"], "question": row["question"]}
+        for row in choices
+        if isinstance(row, Mapping) and row.get("material") is True
+        and isinstance(row.get("choice_id"), str) and isinstance(row.get("question"), str)
+    ]
+
+
 def validate_writing_request(value: Any) -> dict[str, Any]:
     request = require_mapping(value, "WritingRequest")
     require_schema("writing-request.schema.json", request, label="WritingRequest")
@@ -971,6 +984,14 @@ def build_reader_brief(
     native_handoff_mapping: Iterable[Mapping[str, Any]] | None = None,
 ) -> dict[str, Any]:
     decision = require_mapping(route_decision, "RouteDecision")
+    raw_intent = require_mapping(decision.get("reader_intent"), "ReaderIntent")
+    choices = open_material_choices(raw_intent)
+    if choices:
+        first = choices[0]
+        raise ValidationError(
+            f"ReaderIntent has an open material choice {first['choice_id']}: "
+            f"{first['question']}; ask the user before planning"
+        )
     require_schema("route-decision.schema.json", decision, label="RouteDecision")
     _require_exact_fingerprint(decision, "decision_fingerprint")
     if decision["status"] != "current" or decision["final_owner"] not in FINAL_OWNERS:

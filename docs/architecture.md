@@ -99,8 +99,9 @@ typed non-pass states.
 
 This repository is maintained with FlowGuard; user writing tasks do not use it.
 `.flowguard/models/` holds two models. `route_and_guard_model` checks that one
-request gets exactly one final owner and that the ResearchGuard members run only
-through the `researchguard` console. `reader_artifact_model` checks, for each of
+current request gets exactly one final owner, material open choices stop
+routing before planning, and ResearchGuard members run only through the
+`researchguard` console. `reader_artifact_model` checks, for each of
 the four final owners, that closure follows a quality review of the current
 bytes and that broad claims require an independent context. A passing self-review
 keeps an explicit risk and no broad claim. Each model explores its states, keeps known-bad variants that

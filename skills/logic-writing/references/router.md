@@ -20,6 +20,13 @@ feasibility, but it must not silently rewrite the requested language, audience,
 purpose, artifact mode, format, length, tone, structure constraints, or list
 policy. A material request or intent change makes the decision stale.
 
+Routing checks conflicts first, then trivial requests, then material unresolved
+choices. Such a choice returns `needs_user_choice`, no owner or child routes,
+and all open material questions in `open_choices`. Ask the first question,
+record the user's answer in ReaderIntent, and route again before planning.
+Non-material choices do not block. A brief also refuses an open material choice
+before checking route identity or planning inputs.
+
 If the requested genre and final artifact conflict, explain the conflict and
 ask one focused question. Do not run both routes in parallel and decide later.
 

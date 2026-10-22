@@ -21,13 +21,24 @@
     "child_routes": { "type": "array", "items": { "const": "investigation" }, "maxItems": 1, "uniqueItems": true },
     "material_assumptions": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
     "intent_conflicts": { "type": "array", "items": { "$ref": "composition-plan.schema.json#/$defs/conflict" }, "uniqueItems": true },
-    "status": { "enum": ["current", "skipped", "ambiguous", "blocked", "stale"] },
+    "status": { "enum": ["current", "skipped", "ambiguous", "blocked", "stale", "needs_user_choice"] },
+    "open_choices": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false, "required": ["choice_id", "question"],
+        "properties": { "choice_id": { "$ref": "#/$defs/identifier" }, "question": { "type": "string", "minLength": 1 } }
+      }
+    },
     "reason": { "type": "string", "minLength": 1 },
     "stale_because": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
     "decided_at": { "type": "string", "format": "date-time" },
     "decision_fingerprint": { "$ref": "#/$defs/fingerprint" }
   },
   "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "needs_user_choice" } }, "required": ["status"] },
+      "then": { "required": ["open_choices"], "properties": { "open_choices": { "minItems": 1 } } }
+    },
     {
       "if": { "properties": { "status": { "const": "current" } }, "required": ["status"] },
       "then": {

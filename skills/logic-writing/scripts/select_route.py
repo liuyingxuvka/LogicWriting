@@ -14,7 +14,7 @@ from _common import (
     require_string_list,
     validation_result,
 )
-from reader_pipeline import validate_writing_request
+from reader_pipeline import open_material_choices, validate_writing_request
 
 
 INVESTIGATION_DELIVERABLES = {
@@ -64,6 +64,7 @@ def select_route(value):
         raise ValidationError("intent_conflicts must be an array")
     material_conflicts = [row for row in conflicts if isinstance(row, dict) and row.get("material") is True]
 
+    choices = open_material_choices(request["reader_intent"])
     kind = request["terminal_deliverable"]["kind"]
     child_routes: list[str] = []
     if material_conflicts:
@@ -74,6 +75,10 @@ def select_route(value):
         owner = None
         status = "skipped"
         reason = f"terminal deliverable {kind} does not activate Logic Writing"
+    elif choices:
+        owner = None
+        status = "needs_user_choice"
+        reason = f"a material reader choice is still open: {choices[0]['question']}"
     elif kind in INVESTIGATION_DELIVERABLES:
         owner = "investigation"
         status = "current"
@@ -113,6 +118,8 @@ def select_route(value):
         "stale_because": [],
         "decided_at": decided_at,
     }
+    if status == "needs_user_choice":
+        decision["open_choices"] = choices
     decision["decision_fingerprint"] = fingerprint(decision)
     require_schema("route-decision.schema.json", decision, label="RouteDecision")
     return decision
@@ -132,7 +139,8 @@ def complete_request(value):
 def validate_request(value):
     result = select_route(complete_request(value))
     return validation_result(
-        status="current_pass" if result["status"] in {"current", "skipped"} else "blocked",
+        status=("needs_user_choice" if result["status"] == "needs_user_choice" else
+                "current_pass" if result["status"] in {"current", "skipped"} else "blocked"),
         route_decision=result,
     )
 

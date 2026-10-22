@@ -22,7 +22,7 @@
       "layer": "entry",
       "summary": "Select exactly one final owner and bounded investigation child.",
       "responsibilities": [
-        "Choose one final owner from the requested terminal artifact.",
+        "Choose one final owner from the requested terminal artifact; an open material reader choice stops routing with needs_user_choice after conflict and trivial-request checks.",
         "Keep substantial research as a bounded investigation child; sibling routes never take final ownership.",
         "The route-selection command computes the request fingerprints a caller leaves out and still checks the ones given."
       ],
@@ -36,7 +36,7 @@
         "skills/logic-writing/scripts/select_route.py:select_route"
       ],
       "state": [
-        "Current request/intent fingerprints and selected owner."
+        "Current request/intent fingerprints, selected owner and open material choice questions."
       ],
       "side_effects": [],
       "depends_on": [
@@ -52,7 +52,7 @@
         ".flowguard/models/route_and_guard_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:ecf4664474c52b8f5692b94bf9796478c646c1262283f4a65fff0c124173b92a"
+      "fingerprint": "sha256:300ff46742ad8f99696bc78019ac938b2495a806b8ee974d7d9a34910d66fd10"
     },
     {
       "id": "research-packet",
@@ -105,7 +105,7 @@
       "layer": "reader",
       "summary": "Reader intent, composition, writer projection, actual-byte map/audit, review and closure.",
       "responsibilities": [
-        "Preserve requested intent, composition order, editorial dispositions and writer projection.",
+        "Preserve requested intent, composition order, editorial dispositions and writer projection; surface an open material choice before route identity or planning checks.",
         "Bind actual artifact bytes and spans to shared contracts, deterministic audit and route review.",
         "Derive passed or needs_repair from current reader/route quality and record judge_kind; only independent_context with distinct IDs allows a broad claim. Self-review keeps explicit risk. Edits stale closure; automatic v2 closure covers text/markdown only.",
         "Reader-chain commands take upstream records as file paths and compute the fingerprints and references a caller leaves out (fill_brief_fingerprints, fill_check_fingerprints, fill_closure_fingerprints); values the caller gives are still checked.",
@@ -198,7 +198,7 @@
         ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:093fa8fc5fb6430aecb56e554e9154cbd7a4a05de73e35cc16a6e8cd06fc9bb3"
+      "fingerprint": "sha256:8210459e4a204adc9649c60ed385634c7a57e88eb1838aa81828facef4de22b7"
     },
     {
       "id": "fiction",
@@ -531,7 +531,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:ebff96cfc095081ff8bc89c2085c70745dd94ca409381f68e5d56b3f9ea222c8"
+      "fingerprint": "sha256:3e71f3c5d7a63f21e4b423d49859fcf283cc878fc2c552f5e83f5d4f00f08f05"
     },
     {
       "id": "providers",

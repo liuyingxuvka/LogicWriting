@@ -4,8 +4,9 @@ A request names its terminal deliverable. Logic Writing selects exactly one of
 the four final owners from that deliverable; a needed evidence search becomes a
 bounded `investigation` child of academic, fiction or travel work; a trivial
 request is skipped, an unknown one is ambiguous, and a material ReaderIntent
-conflict blocks. LogicGuard, SourceGuard and TraceGuard run only through the
-single `researchguard` console: a provider-root override is refused, and
+conflict blocks; an open material choice asks the user before routing.
+LogicGuard, SourceGuard and TraceGuard run only through the single
+`researchguard` console: a provider-root override is refused, and
 ExperimentGuard and the ResearchGuard umbrella are out of scope.
 
 Conformance replays model traces on the real `select_route` and on the real
@@ -43,6 +44,9 @@ IMPLEMENTED_BY = {
     "ProviderPreflight": "skills/logic-writing/scripts/provider_preflight.py:preflight",
 }
 TESTED_BY = {
+    "open_material_choice_blocks": [
+        "tests/unit/test_routing.py:test_open_material_choice_asks_the_user_first",
+    ],
     "exactly_one_final_owner": [
         "tests/unit/test_routing.py:test_terminal_deliverable_selects_exactly_one_owner",
         "tests/unit/test_routing.py:test_ambiguous_deliverable_blocks_without_guessing_owner",
@@ -94,6 +98,7 @@ class Event:
     deliverable: str = ""           # request: terminal deliverable kind
     research: bool = False          # request: substantial research is needed
     conflict: bool = False          # request: a material ReaderIntent conflict exists
+    open_choice: bool = False       # request: a material reader choice remains open
     provider: str = ""              # handoff: provider id
     provider_root: bool = False     # handoff: the caller passes a provider-root override
     path_console: str = ""          # handoff: ResearchGuard is not in the running Python; a PATH_CONSOLES case
@@ -103,7 +108,8 @@ class Event:
 class State:
     deliverable: str = ""
     conflict: bool = False
-    status: str = ""                # "" | current | skipped | ambiguous | blocked
+    open_choice: bool = False
+    status: str = ""                # "" | current | skipped | ambiguous | blocked | needs_user_choice
     owner: str = ""
     children: tuple[str, ...] = ()
     provider: str = ""
@@ -120,11 +126,14 @@ class Step:
 
     name = "Step"
     reads = ("status",)
-    writes = ("deliverable", "conflict", "status", "owner", "children", "provider", "provider_root",
+    writes = ("deliverable", "conflict", "open_choice", "status", "owner", "children", "provider", "provider_root",
               "provider_status", "console", "path_console", "console_source", "install_hint")
 
     def owner_for(self, event: Event) -> str:
         return OWNER_OF.get(event.deliverable, "")
+
+    def has_open_choice(self, event: Event) -> bool:
+        return event.open_choice
 
     def provider_result(self, event: Event) -> tuple[str, str]:
         if event.provider in SCOPE_OUT:
@@ -151,12 +160,14 @@ class Step:
                 status, owner = "blocked", ""
             elif event.deliverable in TRIVIAL:
                 status, owner = "skipped", ""
+            elif self.has_open_choice(event):
+                status, owner = "needs_user_choice", ""
             elif owner:
                 status = "current"
             else:
                 status = "ambiguous"
             children = self.child_routes(event, status, owner)
-            new = replace(state, deliverable=event.deliverable, conflict=event.conflict, status=status,
+            new = replace(state, deliverable=event.deliverable, conflict=event.conflict, open_choice=event.open_choice, status=status,
                           owner=owner, children=children)
             return (FunctionResult(f"{status}:{owner}", new, label=f"route_{status}"),)
         if event.path_console:
@@ -166,6 +177,13 @@ class Step:
         new = replace(state, provider=event.provider, provider_root=event.provider_root, provider_status=status,
                       console=console, path_console=event.path_console, console_source=source, install_hint=hint)
         return (FunctionResult(status, new, label=f"preflight_{status}"),)
+
+
+class OpenChoiceIgnored(Step):
+    """Known-bad: choose an owner before the user answers a material question."""
+
+    def has_open_choice(self, event: Event) -> bool:
+        return False
 
 
 class ResearchChildTakesOwnership(Step):
@@ -217,8 +235,8 @@ class OldPathConsoleAccepted(Step):
 def _exactly_one_final_owner(state: State, trace) -> InvariantResult:
     if state.status == "current" and (state.owner not in FINAL_OWNERS or state.owner in state.children):
         return InvariantResult.fail("a current route lacks exactly one final owner")
-    if state.status in {"skipped", "ambiguous", "blocked"} and state.owner:
-        return InvariantResult.fail("a skipped, ambiguous or blocked request still names an owner")
+    if state.status in {"skipped", "ambiguous", "blocked", "needs_user_choice"} and state.owner:
+        return InvariantResult.fail("a non-current route still names an owner")
     return InvariantResult.pass_()
 
 
@@ -260,7 +278,15 @@ def _path_console_meets_minimum(state: State, trace) -> InvariantResult:
     return InvariantResult.pass_()
 
 
+def _open_material_choice_blocks(state: State, trace) -> InvariantResult:
+    if state.open_choice and state.status == "current":
+        return InvariantResult.fail("an open material reader choice was silently routed")
+    return InvariantResult.pass_()
+
+
 INVARIANTS = (
+    Invariant("open_material_choice_blocks", "a material choice stops routing until the user answers",
+              _open_material_choice_blocks),
     Invariant("exactly_one_final_owner", "one request has exactly one final owner, or none", _exactly_one_final_owner),
     Invariant("owner_follows_the_terminal_deliverable", "the owner comes from the terminal deliverable",
               _owner_follows_the_terminal_deliverable),
@@ -277,7 +303,10 @@ INVARIANTS = (
 EVENTS = (
     tuple(Event("request", deliverable=kind, research=research)
           for kind in (*OWNER_OF, *TRIVIAL, *UNKNOWN) for research in (False, True))
-    + (Event("request", deliverable="paper", conflict=True),)
+    + (Event("request", deliverable="paper", conflict=True),
+       Event("request", deliverable="paper", open_choice=True),
+       Event("request", deliverable="paper", conflict=True, open_choice=True),
+       Event("request", deliverable="grammar_only", open_choice=True))
     + tuple(Event("handoff", provider=member, provider_root=True) for member in MEMBERS)
     + tuple(Event("handoff", provider=provider) for provider in SCOPE_OUT)
     + tuple(Event("handoff", provider=member, path_console=case) for member in MEMBERS for case in PATH_CONSOLES)
@@ -294,7 +323,8 @@ def build_explorer() -> Explorer:
 
 
 def broken_variants() -> dict:
-    return {"research_child_takes_ownership": _explorer(ResearchChildTakesOwnership()),
+    return {"open_choice_ignored": _explorer(OpenChoiceIgnored()),
+            "research_child_takes_ownership": _explorer(ResearchChildTakesOwnership()),
             "provider_root_accepted": _explorer(ProviderRootAccepted()),
             "path_console_ignored": _explorer(PathConsoleIgnored()),
             "old_path_console_accepted": _explorer(OldPathConsoleAccepted()),
@@ -362,9 +392,10 @@ class _RealRouting:
             if str(path) not in sys.path:
                 sys.path.insert(0, str(path))
         import provider_preflight
-        from select_route import select_route
+        from select_route import complete_request, select_route
         from tests.v2_support import route_request
         self.preflight, self.select_route, self.route_request = provider_preflight.preflight, select_route, route_request
+        self.complete_request = complete_request
         self.root = Path(tempfile.mkdtemp(prefix="lw-route-model-"))
         self.state = initial_state
 
@@ -384,9 +415,17 @@ class _RealRouting:
                         "conflict_id": "conflict:structure", "fields": ["structure"],
                         "reason": "Two incompatible fixed outlines were supplied.", "material": True,
                     }]
+                if event.open_choice:
+                    intent = request["writing_request"]["reader_intent"]
+                    intent["unresolved_choices"] = [{
+                        "choice_id": "ch-lang", "question": "English or Chinese?", "material": True,
+                    }]
+                    intent.pop("intent_fingerprint")
+                    request["writing_request"].pop("request_fingerprint")
+                    self.complete_request(request)
                 decision = self.select_route(request)
                 owner = decision["final_owner"] or ""
-                state = replace(state, deliverable=event.deliverable, conflict=event.conflict,
+                state = replace(state, deliverable=event.deliverable, conflict=event.conflict, open_choice=event.open_choice,
                                 status=decision["status"], owner=owner, children=tuple(decision["child_routes"]))
                 output = f"{decision['status']}:{owner}"
         else:
