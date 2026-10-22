@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -16,6 +17,23 @@ from researchguard_handoff import (
 )
 
 
+def _researchguard_source_root() -> Path | None:
+    configured = os.environ.get("RESEARCHGUARD_SOURCE_ROOT") or os.environ.get("RESEARCHGUARD_ROOT")
+    candidates = []
+    if configured:
+        candidates.append(Path(configured))
+    spec = importlib.util.find_spec("researchguard")
+    if spec is not None and spec.origin:
+        origin = Path(spec.origin).resolve()
+        if origin.name == "__init__.py" and origin.parent.name == "researchguard" and origin.parent.parent.name == "src":
+            candidates.append(origin.parents[2])
+    candidates.append(Path(__file__).resolve().parents[2].parent / "ResearchGuard")
+    return next(
+        (candidate.resolve() for candidate in candidates if (candidate / "src" / "researchguard").is_dir()),
+        None,
+    )
+
+
 def _native_researchguard_ready_plan(tmp_path: Path) -> tuple[dict, str]:
     """Run the real local ResearchGuard native synthesizer for the bridge test.
 
@@ -25,19 +43,12 @@ def _native_researchguard_ready_plan(tmp_path: Path) -> tuple[dict, str]:
     available; it never substitutes a fixture or a caller-authored pass.
     """
 
-    configured = os.environ.get("RESEARCHGUARD_SOURCE_ROOT") or os.environ.get("RESEARCHGUARD_ROOT")
-    candidates = []
-    if configured:
-        candidates.append(Path(configured))
-    candidates.append(Path(__file__).resolve().parents[2].parent / "ResearchGuard")
-    rg_root = next(
-        (candidate.resolve() for candidate in candidates if (candidate / "src" / "researchguard").is_dir()),
-        None,
-    )
+    rg_root = _researchguard_source_root()
     if rg_root is None:
         pytest.skip(
             "local ResearchGuard source is required for the native bridge test; "
-            "set RESEARCHGUARD_SOURCE_ROOT to the formal repository"
+            "set RESEARCHGUARD_SOURCE_ROOT/RESEARCHGUARD_ROOT, install an editable source checkout, "
+            "or place the formal ResearchGuard repository beside LogicWriting"
         )
 
     # Ensure this test loads the selected source tree even if a stale installed

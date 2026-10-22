@@ -56,7 +56,8 @@
       "responsibilities": [
         "Validate source registry, claim support and the optional ResearchPacket evidence record (source roles, dates, lineage, what each source can and cannot support) without requiring native receipts.",
         "Map ResearchGuard synthesis plans into the reader handoff without receipt fields and without replacing native member authority; the native-to-reader unit mapping is checked when the ReaderBrief is built.",
-        "Packet and claim-support commands fill a missing request fingerprint and SourceRegistry reference."
+        "Packet and claim-support commands fill a missing request fingerprint and SourceRegistry reference.",
+        "The native bridge test finds the formal ResearchGuard source through an explicit environment path, an editable src checkout, or the sibling repository."
       ],
       "files": [
         "skills/logic-writing/assets/schemas/claim-support.schema.json",
@@ -92,7 +93,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:5b1d406bc91730501ad9c613d42cf25464abb75987950b452ed70ffe972b5108"
+      "fingerprint": "sha256:71f3044be4d695773f219879eabf382d226e10973db66f882f1c4c734f9002f0"
     },
     {
       "id": "reader-artifact",
