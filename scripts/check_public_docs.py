@@ -29,6 +29,8 @@ REQUIRED_PUBLIC_FILES = {
     "assets/readme-hero/hero_prompt.md",
 }
 PROHIBITED_PUBLIC_DOCS = {
+    "SLIM_LOG.md",
+    "XR_LOG.md",
     "docs/coordination.md",
     "docs/flowguard_adoption_log.md",
     "docs/flowguard_behavior_commitment_ledger.md",

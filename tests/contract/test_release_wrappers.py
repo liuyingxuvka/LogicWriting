@@ -136,6 +136,17 @@ def test_public_docs_frozen_fallback_uses_contract_admission(tmp_path, monkeypat
     assert "docs/architecture.md" in inventory
 
 
+def test_public_docs_reject_executor_journals(monkeypatch):
+    public_docs = _load("check_public_docs")
+    monkeypatch.setattr(public_docs, "_public_inventory", lambda _root: {"SLIM_LOG.md", "XR_LOG.md"})
+
+    report = public_docs.check(ROOT)
+
+    assert report["status"] == "failed"
+    assert "internal_record_is_public:SLIM_LOG.md" in report["findings"]
+    assert "internal_record_is_public:XR_LOG.md" in report["findings"]
+
+
 def test_privacy_frozen_fallback_uses_contract_admission(tmp_path, monkeypatch):
     privacy = _load("check_privacy")
     monkeypatch.setattr(privacy, "git_lines", lambda *_args: [])

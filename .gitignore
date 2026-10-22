@@ -25,6 +25,9 @@ openspec/**/verification-report.json
 openspec/**/verification-receipts/
 
 # Local tool and editor state.
+SLIM_LOG.md
+XR_LOG.md
+worklog_*.md
 .DS_Store
 Thumbs.db
 .idea/
