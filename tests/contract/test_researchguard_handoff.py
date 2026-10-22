@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 import re
 import sys
+from types import ModuleType
 
 import pytest
 
@@ -20,9 +21,13 @@ from researchguard_handoff import (
 def _researchguard_source_root() -> Path | None:
     configured = os.environ.get("RESEARCHGUARD_SOURCE_ROOT") or os.environ.get("RESEARCHGUARD_ROOT")
     candidates = []
-    if configured:
-        candidates.append(Path(configured))
-    spec = importlib.util.find_spec("researchguard")
+    if configured and (Path(configured) / "src" / "researchguard").is_dir():
+        return Path(configured).resolve()
+    try:
+        spec = importlib.util.find_spec("researchguard")
+    except ValueError:
+        # A stale imported module may have no __spec__; the sibling source remains usable.
+        spec = None
     if spec is not None and spec.origin:
         origin = Path(spec.origin).resolve()
         if origin.name == "__init__.py" and origin.parent.name == "researchguard" and origin.parent.parent.name == "src":
@@ -32,6 +37,20 @@ def _researchguard_source_root() -> Path | None:
         (candidate.resolve() for candidate in candidates if (candidate / "src" / "researchguard").is_dir()),
         None,
     )
+
+
+@pytest.mark.parametrize("source_kind", ["explicit", "sibling"])
+def test_source_discovery_preserves_old_paths_with_a_stale_module(tmp_path, monkeypatch, source_kind):
+    source = tmp_path / "ResearchGuard"
+    (source / "src" / "researchguard").mkdir(parents=True)
+    monkeypatch.setitem(sys.modules, "researchguard", ModuleType("researchguard"))
+    monkeypatch.delenv("RESEARCHGUARD_SOURCE_ROOT", raising=False)
+    monkeypatch.delenv("RESEARCHGUARD_ROOT", raising=False)
+    if source_kind == "explicit":
+        monkeypatch.setenv("RESEARCHGUARD_SOURCE_ROOT", str(source))
+    else:
+        monkeypatch.setitem(globals(), "__file__", str(tmp_path / "LogicWriting" / "tests" / "contract" / "test_researchguard_handoff.py"))
+    assert _researchguard_source_root() == source.resolve()
 
 
 def _native_researchguard_ready_plan(tmp_path: Path) -> tuple[dict, str]:
