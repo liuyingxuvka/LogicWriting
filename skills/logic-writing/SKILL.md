@@ -76,6 +76,10 @@ share with other records in the same request; a value you do give is still
 checked. Keep external byte identities such as `observed_content_fingerprint`
 and revision `source_artifact_fingerprint` as required by each entrypoint schema;
 these identify actual source bytes. Field shapes are in `assets/schemas/`.
+A failed result file without the requested record reports its first error; fix
+that step before continuing. A vanished artifact unit is named before any
+fingerprints are filled. Correct the binding or evidence against the current
+ArtifactMap; the scripts never guess a replacement unit.
 
 1. `python scripts/select_route.py --input route-request.json` with
    `writing_request`, `decision_id`, `decided_at`; returns the RouteDecision.

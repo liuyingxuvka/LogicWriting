@@ -23,3 +23,8 @@ as “this leads to the next section” does not create a missing dependency.
 
 Any byte change invalidates the ArtifactMap and every dependent span,
 SharedWriting binding, review, judgment, and closure.
+
+Before filling fingerprints, the scripts check all binding and review-evidence
+unit references against the current ArtifactMap. A missing unit error names its
+binding or review evidence and the current map range; it does not rebind by
+position or rewrite a supplied locator or excerpt.

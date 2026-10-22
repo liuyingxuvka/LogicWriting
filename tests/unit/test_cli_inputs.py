@@ -5,6 +5,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 from tests.v2_support import closure_input, complete_chain, make_reader_chain, route_request
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -134,3 +136,43 @@ def test_inline_artifact_paths_use_request_folder_and_stdin_stays_relative(tmp_p
     assert loaded["shared_writing"]["artifact_path"] == str(tmp_path / "shared.md")
     monkeypatch.setattr(sys, "stdin", io.StringIO(json.dumps(payload)))
     assert load_request("-") == payload
+
+
+@pytest.mark.parametrize("case", ["blocked", "partial_errors", "blocked_empty", "matching_partial", "success_sole", "raw_status"])
+def test_a_failed_result_is_not_used_as_the_next_input(tmp_path, case):
+    from _common import ValidationError, load_request
+
+    records = tmp_path / "records"
+    records.mkdir()
+    payload = {"status": "blocked", "errors": ["first reason\ncontinued", "later error"],
+               "warnings": [], "unrelated": {"other": True}}
+    if case == "partial_errors":
+        payload["status"] = "partial"
+    elif case == "blocked_empty":
+        payload["errors"] = []
+    elif case == "matching_partial":
+        payload.update(status="partial", shared_writing={"artifact_path": "piece.md"})
+    elif case == "success_sole":
+        payload.update(status="current_pass", errors=[])
+    elif case == "raw_status":
+        payload = {"status": "draft", "content": "raw object"}
+    (records / "earlier.json").write_text(json.dumps(payload), encoding="utf-8")
+    request = tmp_path / "request.json"
+    request.write_text(json.dumps({"shared_writing": "records/earlier.json"}), encoding="utf-8")
+    if case in {"blocked", "partial_errors", "blocked_empty"}:
+        with pytest.raises(ValidationError) as raised:
+            load_request(request)
+        message = str(raised.value)
+        assert message.startswith(f"input earlier.json is a failed result (status {payload['status']}): ")
+        assert "\n" not in message
+        if case != "blocked_empty":
+            assert message.endswith("first reason continued")
+            assert "later error" not in message
+    else:
+        loaded = load_request(request)["shared_writing"]
+        if case == "matching_partial":
+            assert loaded == {"artifact_path": str(records / "piece.md")}
+        elif case == "success_sole":
+            assert loaded == {"other": True}
+        else:
+            assert loaded == payload

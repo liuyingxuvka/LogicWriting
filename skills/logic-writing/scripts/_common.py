@@ -298,11 +298,19 @@ def load_request(path: str | Path | None) -> Any:
             loaded = load_json(reference_path)
             record_base = reference_path.resolve().parent
             if isinstance(loaded, dict) and {"status", "errors", "warnings"} <= set(loaded):
-                objects = [entry for entry in loaded.values() if isinstance(entry, dict)]
                 if isinstance(loaded.get(key), dict):
                     loaded = loaded[key]
-                elif len(objects) == 1:
-                    loaded = objects[0]
+                elif loaded["errors"] or loaded["status"] == "blocked":
+                    errors = loaded["errors"]
+                    detail = errors[0] if isinstance(errors, list) and errors else errors or "no error detail"
+                    detail = " ".join(str(detail).split())
+                    raise ValidationError(
+                        f"input {reference_path.name} is a failed result (status {loaded['status']}): {detail}"
+                    )
+                else:
+                    objects = [entry for entry in loaded.values() if isinstance(entry, dict)]
+                    if len(objects) == 1:
+                        loaded = objects[0]
             value[key] = loaded
         if file_request and key in {"contract", "shared_writing"} and isinstance(value[key], dict):
             _absolute_artifact_path(value[key], record_base)

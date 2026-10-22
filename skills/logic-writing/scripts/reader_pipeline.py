@@ -1987,6 +1987,43 @@ def _fill_evidence(evidence: Any, units: Mapping[str, Mapping[str, Any]]) -> Non
         fill_missing(evidence, "excerpt_fingerprint", fingerprint_text(evidence["excerpt"]))
 
 
+def _check_artifact_unit_membership(request, units):
+    unit_ids = list(units)
+    bounds = f"{unit_ids[0]} … {unit_ids[-1]}" if unit_ids else "no units"
+
+    def check(unit_id, prefix):
+        if isinstance(unit_id, str) and unit_id not in units:
+            raise ValidationError(
+                f"{prefix} names artifact unit {unit_id}, which is not in the current ArtifactMap (it has {bounds})"
+            )
+
+    def rows(value):
+        return value if isinstance(value, list) else ()
+
+    for key in ("contract", "shared_writing"):
+        contract = request.get(key)
+        if not isinstance(contract, dict):
+            continue
+        for binding in rows(contract.get("unit_bindings")):
+            binding = _mapping(binding)
+            if not isinstance(binding.get("binding_id"), str):
+                continue
+            prefix = f"binding {binding['binding_id']}"
+            for span in rows(binding.get("artifact_spans")):
+                check(_mapping(span).get("artifact_unit_id"), prefix)
+            for unit_id in rows(binding.get("artifact_unit_ids")):
+                check(unit_id, prefix)
+    for key in ("review", "route_review"):
+        review = request.get(key)
+        if not isinstance(review, dict):
+            continue
+        for row in rows(review.get("dimensions")):
+            for evidence in rows(_mapping(row).get("evidence")):
+                check(_mapping(evidence).get("artifact_unit_id"), "review evidence")
+        for finding in rows(review.get("findings")):
+            check(_mapping(_mapping(finding).get("evidence")).get("artifact_unit_id"), "review evidence")
+
+
 def fill_check_fingerprints(request: dict[str, Any]) -> dict[str, Any]:
     """Fill the fingerprints a caller left out of a SharedWriting contract or a route review.
 
@@ -1998,6 +2035,7 @@ def fill_check_fingerprints(request: dict[str, Any]) -> dict[str, Any]:
     amap = _mapping(request.get("artifact_map"))
     brief = _mapping(request.get("reader_brief"))
     units = {row.get("artifact_unit_id"): row for row in amap.get("units", []) if isinstance(row, Mapping)}
+    _check_artifact_unit_membership(request, units)
     for key in ("contract", "shared_writing"):
         contract = request.get(key)
         if not isinstance(contract, dict):

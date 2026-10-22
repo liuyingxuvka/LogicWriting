@@ -57,6 +57,12 @@ A dependent final claim SHALL be no stronger than the weakest unresolved importa
 - **THEN** closure MAY pass only when the item is outside the requested claim scope
 - **AND** the skip SHALL remain visible
 
+#### Scenario: An earlier result failed or an artifact unit disappeared
+- **WHEN** a referenced result envelope failed and has no requested record
+- **THEN** request loading SHALL report its first error in one plain line before a sole-object fallback
+- **WHEN** a binding or review evidence names a unit absent from the current ArtifactMap
+- **THEN** validation SHALL name that unit before filling any fingerprints and SHALL NOT guess replacement bindings
+
 ### Requirement: Planning artifacts cannot satisfy proof obligations
 Search plans, candidates, utility scores, outlines, story plans, progress logs, and check manifests SHALL NOT satisfy factual, semantic, rendered-artifact, reader-quality, or final-closure obligations.
 

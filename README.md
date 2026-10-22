@@ -31,6 +31,8 @@ operational semantics.
 
 Fiction can carry an optional structured `voice_contract` (POV and tense) into the writer input; without it, the voice reference remains an explicit gap.
 
+A failed input result without the requested record reports its first error directly. Bindings and review evidence that name vanished artifact units stop before any fingerprints are filled; correct them against the current ArtifactMap.
+
 Investigation and academic evidence handoffs use a current `ResearchPacket`;
 the writer receives a sanitized `ReaderBrief` rather than internal ledgers.
 

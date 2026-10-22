@@ -88,3 +88,49 @@ def test_contract_and_route_review_fingerprints_are_filled(monkeypatch, tmp_path
     reviewed = validate_investigation_artifact({"review": review, "route_composition": chain["route_composition"],
                                                 "artifact_map": chain["artifact_map"]})
     assert reviewed["route_review"] == chain["route_review"]
+
+
+@pytest.mark.parametrize("record_key, location", [
+    ("contract", "artifact_spans"), ("contract", "artifact_unit_ids"),
+    ("shared_writing", "artifact_spans"), ("shared_writing", "artifact_unit_ids"),
+    ("review", "dimensions"), ("review", "findings"),
+    ("route_review", "dimensions"), ("route_review", "findings"),
+])
+def test_binding_to_a_vanished_unit_names_the_unit_before_any_fill(tmp_path, record_key, location):
+    from reader_pipeline import fill_check_fingerprints
+    from tests.v2_support import complete_chain
+
+    chain = complete_chain(tmp_path, pass_quality=False)
+    contract = copy.deepcopy(chain["shared_writing"])
+    contract.pop("contract_fingerprint")
+    contract.pop("reader_brief_fingerprint")
+    request = {"artifact_map": chain["artifact_map"], "reader_brief": chain["reader_brief"],
+               "contract": contract}
+    missing = "artifact:paragraph:9999"
+    if location in {"artifact_spans", "artifact_unit_ids"}:
+        if record_key != "contract":
+            request[record_key] = copy.deepcopy(contract)
+        binding = request[record_key]["unit_bindings"][0]
+        if location == "artifact_spans":
+            binding["artifact_spans"][0] = {**binding["artifact_spans"][0], "artifact_unit_id": missing}
+        else:
+            binding["artifact_unit_ids"] = [missing]
+        prefix = f"binding {binding['binding_id']}"
+    else:
+        review = copy.deepcopy(chain["route_review"])
+        request[record_key] = review
+        if location == "dimensions":
+            evidence = review["dimensions"][0]["evidence"][0]
+            review["dimensions"][0]["evidence"][0] = {**evidence, "artifact_unit_id": missing}
+        else:
+            evidence = review["findings"][0]["evidence"]
+            review["findings"][0]["evidence"] = {**evidence, "artifact_unit_id": missing}
+        prefix = "review evidence"
+    original = copy.deepcopy(request)
+    with pytest.raises(ValidationError) as raised:
+        fill_check_fingerprints(request)
+    message = str(raised.value)
+    assert message.startswith(f"{prefix} names artifact unit {missing}, which is not in the current ArtifactMap")
+    unit_ids = [row["artifact_unit_id"] for row in chain["artifact_map"]["units"]]
+    assert f"{unit_ids[0]} … {unit_ids[-1]}" in message
+    assert request == original
