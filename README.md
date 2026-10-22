@@ -72,8 +72,9 @@ The shared writing kernel asks every important unit:
 It rejects internal workflow leakage, generic handoffs, prose that announces
 its own job, flattened voices, card-like fragmentation, repetition without
 changed effect, unbound prose, unrealized model rows, and reviews tied to an
-older artifact hash. Deterministic checks, route-semantic review, and an
-independent reader judgment all inspect the actual artifact. A repair must
+older artifact hash. Deterministic checks, route-semantic review, and a reader judgment all inspect
+the actual artifact. Record `judge_kind` as `independent_context` or `self_review`;
+a passing self-review keeps an explicit risk and never allows a broad claim. A repair must
 produce real new bytes and rerun the dependent checks.
 
 ## Specialist ownership stays intact

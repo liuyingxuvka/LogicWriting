@@ -5,7 +5,7 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "schema_version", "closure_id", "final_owner", "artifact_fingerprint",
+    "schema_version", "closure_id", "final_owner", "judge_kind", "artifact_fingerprint",
     "reader_intent_fingerprint", "composition_plan_fingerprint", "route_extension_fingerprint",
     "artifact_map_fingerprint", "shared_writing_contract_fingerprint",
     "deterministic_audit_fingerprint", "route_audit_fingerprint", "judgment_fingerprint",
@@ -16,6 +16,7 @@
     "schema_version": { "const": "2.0" },
     "closure_id": { "$ref": "#/$defs/id" },
     "final_owner": { "enum": ["investigation", "academic-writing", "fiction-writing", "travel-guide"] },
+    "judge_kind": { "enum": ["independent_context", "self_review"] },
     "artifact_fingerprint": { "$ref": "#/$defs/fp" },
     "reader_intent_fingerprint": { "$ref": "#/$defs/fp" },
     "composition_plan_fingerprint": { "$ref": "#/$defs/fp" },
@@ -36,22 +37,38 @@
   },
   "allOf": [
     {
-      "if": { "properties": { "status": { "const": "passed" } }, "required": ["status"] },
+      "if": {"properties": {"status": {"const": "passed"}}, "required": ["status"]},
       "then": {
         "properties": {
-          "residual_risk": { "maxItems": 0 },
-          "next_actions": { "maxItems": 0 },
-          "broad_claim_allowed": { "const": true }
+          "next_actions": {"maxItems": 0}
         }
       }
     },
     {
-      "if": { "properties": { "status": { "const": "needs_repair" } }, "required": ["status"] },
+      "if": {"properties": {"status": {"const": "passed"}, "judge_kind": {"const": "independent_context"}}, "required": ["status", "judge_kind"]},
       "then": {
         "properties": {
-          "residual_risk": { "minItems": 1 },
-          "next_actions": { "minItems": 1 },
-          "broad_claim_allowed": { "const": false }
+          "residual_risk": {"maxItems": 0},
+          "broad_claim_allowed": {"const": true}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"judge_kind": {"const": "self_review"}}, "required": ["judge_kind"]},
+      "then": {
+        "properties": {
+          "residual_risk": {"minItems": 1},
+          "broad_claim_allowed": {"const": false}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"status": {"const": "needs_repair"}}, "required": ["status"]},
+      "then": {
+        "properties": {
+          "residual_risk": {"minItems": 1},
+          "next_actions": {"minItems": 1},
+          "broad_claim_allowed": {"const": false}
         }
       }
     }

@@ -485,6 +485,7 @@ def complete_chain(
         "final_owner": owner,
         "producer_id": "producer:writer",
         "judge_id": "judge:independent",
+        "judge_kind": "independent_context",
         "evaluation_profile_fingerprint": fingerprint({"profile": owner, "v": 2}),
         "reader_intent_fingerprint": chain["intent"]["intent_fingerprint"],
         "reader_brief_fingerprint": chain["reader_brief"]["brief_fingerprint"],

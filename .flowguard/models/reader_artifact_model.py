@@ -1,16 +1,12 @@
-"""Executable model: closure passes only for the current actual text, read by someone else.
+"""Executable model: current-text quality determines closure; broad claims need an independent read.
 
-Each of the four final owners has written one artifact. A review builds the
-ArtifactMap, the deterministic audit, the route review and the ReaderJudgment
-for the current bytes. A material edit makes every earlier review stale.
-Closure is `passed` only when that current review passed and the judge is not
-the writer; a review that asks for repair gives `needs_repair`; a stale or
-self-judged chain is rejected. The four route models of earlier versions are
-the four owners here.
+Each final owner writes one artifact. Review builds current-byte evidence and
+an explicitly classified ReaderJudgment. Current passing self-review can close
+as passed but never allows a broad claim. Repair remains needs_repair, and a
+material edit stales every earlier review and rejects closure.
 
-Conformance replays model traces on the real Logic Writing scripts
-(build_reader_brief, build_artifact_map, build_reader_audit, the route review,
-the ReaderJudgment and derive_closure) in a temporary folder.
+Conformance replays model traces on the real reader-chain scripts in a temporary
+folder; declared judge_kind does not prove who actually wrote the judgment.
 """
 
 from __future__ import annotations
@@ -45,6 +41,7 @@ TESTED_BY = {
     ],
     "independent_reader_required": [
         "tests/unit/test_reader.py:test_judge_must_be_independent",
+        "tests/unit/test_freshness_closure.py:test_self_review_closes_without_a_broad_claim",
         "tests/adversarial/test_boundaries.py:test_same_agent_cannot_self_judge",
     ],
     "needs_repair_never_passes": [
@@ -72,9 +69,10 @@ class State:
     reviewed: bool = False          # a map, audit, route review and judgment exist
     current: bool = False           # that review was built from the current bytes
     quality: str = ""               # pass | repair, from the review
-    independent: bool = False       # the judge did not write the text
+    independent: bool = False       # judge_kind declares independent_context
     closure: str = ""               # "" | passed | needs_repair | rejected
     closure_owner: str = ""
+    broad_claim: bool = False
 
 
 class Step:
@@ -82,12 +80,15 @@ class Step:
 
     name = "Step"
     reads = ("owner", "reviewed", "current", "quality", "independent")
-    writes = ("reviewed", "current", "quality", "independent", "closure", "closure_owner")
+    writes = ("reviewed", "current", "quality", "independent", "closure", "closure_owner", "broad_claim")
 
     def closure_result(self, state: State) -> str:
-        if not (state.reviewed and state.current and state.independent):
+        if not (state.reviewed and state.current):
             return "rejected"
         return "passed" if state.quality == "pass" else "needs_repair"
+
+    def broad_claim_for(self, state: State, result: str) -> bool:
+        return result == "passed" and state.independent
 
     def closure_owner_for(self, state: State) -> str:
         return state.owner
@@ -95,13 +96,14 @@ class Step:
     def apply(self, event: Event, state: State):
         if event.kind in {"review", "self_review"}:
             reviewed = replace(state, reviewed=True, current=True, quality=event.quality,
-                               independent=event.kind == "review", closure="", closure_owner="")
+                               independent=event.kind == "review", closure="", closure_owner="", broad_claim=False)
             return (FunctionResult("reviewed", reviewed, label=f"{event.kind}_{event.quality}"),)
         if event.kind == "edit":
             # a material edit stales the map, audit, review, judgment and closure
-            return (FunctionResult("edited", replace(state, current=False, closure="", closure_owner=""), label="edit"),)
+            return (FunctionResult("edited", replace(state, current=False, closure="", closure_owner="", broad_claim=False), label="edit"),)
         result = self.closure_result(state)
-        return (FunctionResult(result, replace(state, closure=result, closure_owner=self.closure_owner_for(state)),
+        return (FunctionResult(result, replace(state, closure=result, closure_owner=self.closure_owner_for(state),
+                                              broad_claim=self.broad_claim_for(state, result)),
                                label=f"close_{result}"),)
 
 
@@ -109,25 +111,23 @@ class CloseIgnoresEdits(Step):
     """Known-bad: closure trusts a review made before the last edit."""
 
     def closure_result(self, state: State) -> str:
-        if not (state.reviewed and state.independent):
+        if not state.reviewed:
             return "rejected"
         return "passed" if state.quality == "pass" else "needs_repair"
 
 
 class CloseAcceptsSelfReview(Step):
-    """Known-bad: closure accepts a judgment written by the writer."""
+    """Known-bad: a passing self-review licenses an unjustified broad claim."""
 
-    def closure_result(self, state: State) -> str:
-        if not (state.reviewed and state.current):
-            return "rejected"
-        return "passed" if state.quality == "pass" else "needs_repair"
+    def broad_claim_for(self, state: State, result: str) -> bool:
+        return result == "passed"
 
 
 class RepairReportedAsPass(Step):
-    """Known-bad: a current independent repair judgment is reported as passed."""
+    """Known-bad: a current repair judgment is reported as passed."""
 
     def closure_result(self, state: State) -> str:
-        return "passed" if state.reviewed and state.current and state.independent else "rejected"
+        return "passed" if state.reviewed and state.current else "rejected"
 
 
 class CloseForSiblingOwner(Step):
@@ -144,8 +144,8 @@ def _closure_requires_current_artifact(state: State, trace) -> InvariantResult:
 
 
 def _independent_reader_required(state: State, trace) -> InvariantResult:
-    if state.closure == "passed" and not state.independent:
-        return InvariantResult.fail("closure passed on a judgment written by the writer")
+    if state.broad_claim and not state.independent:
+        return InvariantResult.fail("a self-review allowed a broad claim")
     return InvariantResult.pass_()
 
 
@@ -164,7 +164,7 @@ def _closure_belongs_to_the_final_owner(state: State, trace) -> InvariantResult:
 INVARIANTS = (
     Invariant("closure_requires_current_artifact", "closure passes only on a review of the current bytes",
               _closure_requires_current_artifact),
-    Invariant("independent_reader_required", "a passing closure needs a judge who did not write the text",
+    Invariant("independent_reader_required", "a broad claim requires an independent reader context",
               _independent_reader_required),
     Invariant("needs_repair_never_passes", "a review that asks for repair never closes as passed",
               _needs_repair_never_passes),
@@ -222,6 +222,7 @@ class _RealReaderChain:
             chain = self.complete_chain(self._workdir(), state.owner, pass_quality=event.quality == "pass")
             if event.kind == "self_review":
                 judgment = copy.deepcopy(chain["judgment"])
+                judgment["judge_kind"] = "self_review"
                 judgment["judge_id"] = judgment["producer_id"]
                 judgment.pop("judgment_fingerprint")
                 judgment["judgment_fingerprint"] = self.fingerprint(judgment)
@@ -230,24 +231,24 @@ class _RealReaderChain:
             judgment = chain["judgment"]
             state = replace(state, owner=chain["route_decision"]["final_owner"], reviewed=True, current=True,
                             quality="pass" if judgment["status"] == "passed" else "repair",
-                            independent=judgment["producer_id"] != judgment["judge_id"],
-                            closure="", closure_owner="")
+                            independent=judgment["judge_kind"] == "independent_context",
+                            closure="", closure_owner="", broad_claim=False)
             output = "reviewed"
         elif event.kind == "edit":
             if self.chain is not None:
                 path = Path(self.chain["artifact_path"])
                 path.write_text(path.read_text(encoding="utf-8") + "\n\nA materially new paragraph.", encoding="utf-8")
-            state = replace(state, current=False, closure="", closure_owner="")
+            state = replace(state, current=False, closure="", closure_owner="", broad_claim=False)
             output = "edited"
         else:
-            output, closure_owner = "rejected", state.owner
+            output, closure_owner, broad_claim = "rejected", state.owner, False
             if self.chain is not None:
                 try:
                     closure = self.derive_closure(self.closure_input(self.chain))["closure"]
-                    output, closure_owner = closure["status"], closure["final_owner"]
+                    output, closure_owner, broad_claim = closure["status"], closure["final_owner"], closure["broad_claim_allowed"]
                 except self.validation_error:
                     output = "rejected"
-            state = replace(state, closure=output, closure_owner=closure_owner)
+            state = replace(state, closure=output, closure_owner=closure_owner, broad_claim=broad_claim)
         self.state = state
         return ReplayObservation(function_name=step.function_name, observed_output=output, observed_state=state)
 

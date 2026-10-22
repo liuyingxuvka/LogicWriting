@@ -1884,7 +1884,7 @@ def _reader_judgment_from_current(value, *, amap, brief, contract, audit, route_
     review = require_mapping(route_review, "route artifact review")
     require_schema("route-artifact-review.schema.json", review, label="route artifact review")
     _require_exact_fingerprint(review, "review_fingerprint")
-    if judgment["producer_id"] == judgment["judge_id"]:
+    if judgment["judge_kind"] == "independent_context" and judgment["producer_id"] == judgment["judge_id"]:
         raise ValidationError("routine ReaderJudgment requires an independent judge context")
     if review_obligations is not None:
         from review_obligations import validate_review_obligation_manifest

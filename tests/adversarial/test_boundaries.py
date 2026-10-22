@@ -49,6 +49,7 @@ def test_route_review_cannot_omit_one_required_dimension(tmp_path):
 def test_same_agent_cannot_self_judge(tmp_path):
     chain = complete_chain(tmp_path)
     judgment = copy.deepcopy(chain["judgment"])
+    judgment["judge_kind"] = "independent_context"
     judgment["judge_id"] = judgment["producer_id"]
     judgment["judgment_fingerprint"] = fingerprint({k: v for k, v in judgment.items() if k != "judgment_fingerprint"})
     request = closure_input(chain)

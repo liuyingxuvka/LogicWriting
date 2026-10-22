@@ -254,14 +254,14 @@ After an initial complete draft and before audit, the selected route SHALL integ
 - **THEN** integration remains incomplete and the artifact cannot enter final judgment
 
 ### Requirement: Deterministic and qualitative review have separate authority
-Deterministic audit SHALL verify only current bytes, structure locks, exact-preservation duties, citation placement, list zones, placeholders, workflow leakage, fragmentation metrics, and binding presence. Independent ReaderJudgment SHALL evaluate clarity, structure fidelity, coherence, naturalness, reader fit, content fidelity, genre fit, and instruction fidelity from actual locators and excerpts.
+Deterministic audit SHALL verify only current bytes, structure locks, exact-preservation duties, citation placement, list zones, placeholders, workflow leakage, fragmentation metrics, and binding presence. ReaderJudgment SHALL declare `judge_kind` as `independent_context` or `self_review` and SHALL evaluate clarity, structure fidelity, coherence, naturalness, reader fit, content fidelity, genre fit, and instruction fidelity from actual locators and excerpts.
 
 #### Scenario: Deterministic checks pass but prose is awkward
 - **WHEN** all required tokens and headings are present but the artifact remains card-like or incoherent
 - **THEN** ReaderJudgment records required repairs and final closure remains blocked
 
 #### Scenario: Same actor writes and approves
-- **WHEN** the producer and judge identities are the same for a required routine independent review
+- **WHEN** `judge_kind` is `independent_context` and the producer and judge identities are the same
 - **THEN** the judgment cannot issue a final pass
 
 ### Requirement: Prose zones reject pointillist output without banning functional structure
@@ -276,7 +276,7 @@ When a planned unit requires prose, deterministic and qualitative review SHALL d
 - **THEN** its bullets do not count against the narrative-body prose ratio
 
 ### Requirement: A non-pass is repaired on the actual text
-When the deterministic audit or the independent read reports defects, closure SHALL be `needs_repair`; the writer SHALL revise the actual text, rebuild the ArtifactMap and rerun the audit and the read, and SHALL stop and return the artifact with the audit note when a revision round fixes none of the reported defects.
+When the deterministic audit or the reader judgment reports defects, closure SHALL be `needs_repair`; the writer SHALL revise the actual text, rebuild the ArtifactMap and rerun the audit and the read, and SHALL stop and return the artifact with the audit note when a revision round fixes none of the reported defects.
 
 #### Scenario: Repair adds only connector words
 - **WHEN** a revision changes only transition phrases while the reported defects remain

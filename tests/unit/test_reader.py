@@ -51,6 +51,7 @@ def test_deterministic_audit_catches_reader_facing_failures(tmp_path, text, expe
 def test_judge_must_be_independent(tmp_path):
     chain = complete_chain(tmp_path)
     judgment = copy.deepcopy(chain["judgment"])
+    judgment["judge_kind"] = "independent_context"
     judgment["judge_id"] = judgment["producer_id"]
     judgment["judgment_fingerprint"] = fingerprint({k: v for k, v in judgment.items() if k != "judgment_fingerprint"})
     with pytest.raises(ValidationError, match="independent"):

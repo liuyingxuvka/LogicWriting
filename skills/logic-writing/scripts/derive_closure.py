@@ -128,6 +128,8 @@ def derive_closure(
 
     all_passed = audit["status"] == route_review["status"] == judgment["status"] == "passed"
     status = "passed" if all_passed else "needs_repair"
+    judge_kind = judgment["judge_kind"]
+    self_review = judge_kind == "self_review"
 
     defect_ids = [
         *(row["finding_id"] for row in audit["findings"]),
@@ -144,6 +146,24 @@ def derive_closure(
         }
         for defect_id in dict.fromkeys(defect_ids)
     ]
+    if status == "passed":
+        residual = []
+    if self_review:
+        residual.append({
+            "defect_id": "reader.self-review",
+            "owner": owner,
+            "reason": "The reader judgment was a self-review by the writer, not an independent read.",
+        })
+    reader_basis = "a self-review by the writer" if self_review else "independent reader judgment"
+    if status == "passed":
+        safe_claim = (
+            "The exact current artifact passed composition coverage, deterministic checks, "
+            f"route-semantic review, and {reader_basis}."
+        )
+    else:
+        safe_claim = "The exact current artifact is preserved with explicit unresolved reader-facing defects."
+        if self_review:
+            safe_claim += " The reader judgment was a self-review by the writer."
     next_actions = [] if status == "passed" else [{"owner": owner, "action": "repair_and_rerun"}]
     # A same-call snapshot is useful only while the underlying bytes remain
     # current. Re-read once before emitting or committing any closure receipt.
@@ -157,6 +177,7 @@ def derive_closure(
         "schema_version": "2.0",
         "closure_id": request["closure_id"],
         "final_owner": owner,
+        "judge_kind": judge_kind,
         "artifact_fingerprint": amap["artifact_fingerprint"],
         "reader_intent_fingerprint": brief["reader_intent_fingerprint"],
         "composition_plan_fingerprint": brief["composition_plan"]["plan_fingerprint"],
@@ -168,18 +189,13 @@ def derive_closure(
         "judgment_fingerprint": judgment["judgment_fingerprint"],
         "revision_provenance_fingerprint": provenance["provenance_fingerprint"],
         "status": status,
-        "residual_risk": [] if status == "passed" else residual,
+        "residual_risk": residual,
         "next_actions": next_actions,
-        "safe_claim": (
-            "The exact current artifact passed composition coverage, deterministic checks, "
-            "route-semantic review, and independent reader judgment."
-            if status == "passed"
-            else "The exact current artifact is preserved with explicit unresolved reader-facing defects."
-        ),
+        "safe_claim": safe_claim,
         "unsafe_claim_boundary": (
             "Structural licensing and actual-artifact review do not establish universal factual or aesthetic truth."
         ),
-        "broad_claim_allowed": status == "passed",
+        "broad_claim_allowed": status == "passed" and not self_review,
     }
     closure["closure_fingerprint"] = fingerprint(closure)
     require_schema("closure.schema.json", closure, label="closure")

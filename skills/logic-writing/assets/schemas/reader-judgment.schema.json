@@ -5,7 +5,7 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "schema_version", "judgment_id", "final_owner", "producer_id", "judge_id",
+    "schema_version", "judgment_id", "final_owner", "producer_id", "judge_id", "judge_kind",
     "evaluation_profile_fingerprint", "reader_intent_fingerprint", "reader_brief_fingerprint",
     "composition_plan_fingerprint", "artifact_map_fingerprint",
     "shared_writing_contract_fingerprint", "deterministic_audit_fingerprint",
@@ -18,6 +18,7 @@
     "final_owner": { "enum": ["investigation", "academic-writing", "fiction-writing", "travel-guide"] },
     "producer_id": { "$ref": "#/$defs/id" },
     "judge_id": { "$ref": "#/$defs/id" },
+    "judge_kind": { "enum": ["independent_context", "self_review"] },
     "evaluation_profile_fingerprint": { "$ref": "#/$defs/fp" },
     "reader_intent_fingerprint": { "$ref": "#/$defs/fp" },
     "reader_brief_fingerprint": { "$ref": "#/$defs/fp" },

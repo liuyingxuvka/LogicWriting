@@ -260,17 +260,19 @@ Preserve three quality responsibilities:
    preservation, citations, list zones, fragmentation, placeholders, workflow
    leakage, and binding coverage;
 2. the selected route's semantic review against actual spans;
-3. an independent `ReaderJudgment`, with producer and judge identities
-   separated, for reverse outline, clarity, coherence, naturalness, reader fit,
+3. a `ReaderJudgment` with an explicit `judge_kind`, preferably from an
+   independent context, for reverse outline, clarity, coherence, naturalness, reader fit,
    genre fit, content fidelity, and instruction fidelity.
 
 After the deterministic audit, have a reader that did not write the text read
 the actual file, preferably a fresh sub-agent or a separate session. That one
 read may cover both the selected route's review dimensions and the eight reader
 dimensions; it quotes the actual spans it relies on. Record its result as the
-route review and the `ReaderJudgment`, with `producer_id` and `judge_id`
-different. If no separate context is available, self-review is allowed, but
-report it as self-review in the audit note. A plan review, a score, or a route
+route review and the `ReaderJudgment`. For `"judge_kind": "independent_context"`,
+keep `producer_id` and `judge_id` different. If no separate context is available,
+self-review is allowed: write `"judge_kind": "self_review"` in the judgment.
+Closure records that kind, preserves an explicit self-review risk, and never
+allows a broad claim from self-review, even when quality passes. A plan review, a score, or a route
 saying its own draft is good cannot replace reading the actual text. A material
 edit stales the ArtifactMap, bindings, audits, judgment, and closure.
 
@@ -295,7 +297,7 @@ Never strengthen these states into pass: `not_run`, `stale`,
 
 Only the selected final route may issue final closure. Child routes close only
 their bounded request. Closure status is `passed` or `needs_repair`. If the
-audit or the independent read reports defects, revise the actual text, rebuild
+audit or the reader judgment reports defects, revise the actual text, rebuild
 the ArtifactMap and rerun the audit and the read. If a revision round fixes
 none of the reported defects, stop and return the artifact with the audit note.
 Repeated closure calls never count as repair attempts.

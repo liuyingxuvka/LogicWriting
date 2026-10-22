@@ -114,3 +114,25 @@ def test_closure_command_fills_judgment_and_provenance_fingerprints(tmp_path):
     filled = fill_closure_fingerprints(json.loads(path.read_text(encoding="utf-8")))
     assert filled["judgment"]["judgment_fingerprint"] == fingerprint_without(filled["judgment"], "judgment_fingerprint")
     assert closure["judgment_fingerprint"] == filled["judgment"]["judgment_fingerprint"]
+
+
+@pytest.mark.parametrize("same_ids, pass_quality", [(True, True), (False, True), (True, False)])
+def test_self_review_closes_without_a_broad_claim(tmp_path, same_ids, pass_quality):
+    request = closure_input(complete_chain(tmp_path, pass_quality=pass_quality))
+    judgment = request["judgment"]
+    judgment["judge_kind"] = "self_review"
+    if same_ids:
+        judgment["judge_id"] = judgment["producer_id"]
+    judgment.pop("judgment_fingerprint")
+    judgment["judgment_fingerprint"] = fingerprint(judgment)
+    closed = derive_closure(request)["closure"]
+    assert closed["status"] == ("passed" if pass_quality else "needs_repair")
+    assert closed["judge_kind"] == "self_review"
+    assert closed["broad_claim_allowed"] is False
+    assert {"defect_id": "reader.self-review", "owner": "investigation",
+            "reason": "The reader judgment was a self-review by the writer, not an independent read."} in closed["residual_risk"]
+    assert "self-review by the writer" in closed["safe_claim"]
+    assert "independent" not in closed["safe_claim"]
+    if not pass_quality:
+        assert len(closed["residual_risk"]) > 1
+        assert closed["next_actions"] == [{"owner": "investigation", "action": "repair_and_rerun"}]

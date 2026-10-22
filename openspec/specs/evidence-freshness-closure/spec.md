@@ -4,15 +4,22 @@
 Define how Logic Writing derives closure from the current actual text, keeps failures visible, and makes earlier checks stale when the text or its inputs change.
 ## Requirements
 ### Requirement: Closure status is derived from the current actual-text checks
-The system SHALL derive closure from the deterministic audit, the route review and the independent ReaderJudgment of the current artifact bytes. Closure status SHALL be `passed` or `needs_repair`. Caller-authored status fields SHALL be treated as claims, not evidence.
+The system SHALL derive closure from the deterministic audit, the route review and the explicitly classified ReaderJudgment of the current artifact bytes. Closure status SHALL be `passed` or `needs_repair`. Caller-authored status fields SHALL be treated as claims, not evidence.
 
 #### Scenario: A record self-reports pass
 - **WHEN** a ledger or review reports every check as passed
-- **AND** the deterministic audit or the independent read of the current bytes does not pass
+- **AND** the deterministic audit or the reader judgment of the current bytes does not pass
 - **THEN** closure SHALL be `needs_repair`
 
+### Requirement: Judgment kind controls broad claims
+ReaderJudgment and closure SHALL record `judge_kind` as `independent_context` or `self_review`. Independent-context judgment SHALL require different producer and judge IDs. Self-review MAY use the same or different IDs, SHALL preserve an explicit self-review residual risk, and SHALL NOT allow a broad claim. Closure status SHALL still follow current quality checks; self-review alone SHALL NOT turn a passing quality result into `needs_repair`. The classification SHALL NOT claim to verify the writer's actual identity.
+
+#### Scenario: Current self-review passes quality checks
+- **WHEN** all current quality checks pass and `judge_kind` is `self_review`
+- **THEN** closure SHALL remain `passed` with `broad_claim_allowed: false`, a `reader.self-review` risk, and a safe claim that names self-review
+
 ### Requirement: Every final closure has a minimum content baseline
-Every final route closure SHALL consume the current ReaderBrief, route composition, SharedWriting binding, route-native review, deterministic audit, independent ReaderJudgment and revision provenance, plus the selected route's native evidence, all bound to the same final owner, ReaderIntent, CompositionPlan, and current artifact fingerprint.
+Every final route closure SHALL consume the current ReaderBrief, route composition, SharedWriting binding, route-native review, deterministic audit, ReaderJudgment and revision provenance, plus the selected route's native evidence, all bound to the same final owner, ReaderIntent, CompositionPlan, and current artifact fingerprint.
 
 #### Scenario: Process is green but content work did not run
 - **WHEN** process and release checks pass but any required reader-chain record is missing, stale, skipped, partial, or failed
@@ -123,7 +130,7 @@ Every `needs_repair` closure SHALL keep the residual defects, the current safe c
 - **THEN** closure is `needs_repair`, its next action is `repair_and_rerun` for the final owner, and `broad_claim_allowed` is false
 
 ### Requirement: Repair rounds stop when nothing is fixed
-When the audit or the independent read reports defects, the writer SHALL revise the actual text, rebuild the ArtifactMap and rerun the audit and the read. If a revision round fixes none of the reported defects, the writer SHALL stop and return the artifact with the audit note. Repeated closure derivation SHALL NOT count as repair.
+When the audit or the reader judgment reports defects, the writer SHALL revise the actual text, rebuild the ArtifactMap and rerun the audit and the read. If a revision round fixes none of the reported defects, the writer SHALL stop and return the artifact with the audit note. Repeated closure derivation SHALL NOT count as repair.
 
 #### Scenario: Closure is derived twice on unchanged bytes
 - **WHEN** closure is derived again without any change to the artifact
