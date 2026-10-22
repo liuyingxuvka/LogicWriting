@@ -1278,7 +1278,7 @@ def build_artifact_map(
 ) -> dict[str, Any]:
     path = Path(artifact_path).expanduser().resolve()
     if not path.is_file():
-        raise ValidationError("artifact_path does not identify a current file")
+        raise ValidationError(f"artifact_path does not identify a current file: {path}")
     data = path.read_bytes()
     try:
         text = data.decode("utf-8")

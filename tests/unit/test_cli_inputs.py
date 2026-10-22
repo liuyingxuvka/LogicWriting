@@ -72,3 +72,65 @@ def test_json_named_artifact_path_and_scalar_id_are_not_expanded(tmp_path):
     amap = json.loads(built.stdout)["artifact_map"]
     assert amap["map_id"] == "not-a-file.json"
     assert amap["artifact_fingerprint"] == "sha256:" + hashlib.sha256(artifact.read_bytes()).hexdigest()
+
+
+def test_relative_artifact_path_is_read_from_the_request_folder(tmp_path):
+    artifact = tmp_path / "piece.md"
+    artifact.write_text("A current paragraph.\n", encoding="utf-8")
+    request = tmp_path / "map-req.json"
+    request.write_text(json.dumps({"artifact_path": "piece.md", "map_id": "map:relative", "language": "en"}), encoding="utf-8")
+    argv = [sys.executable, str(SCRIPTS / "build_artifact_map.py"), "--input", str(request)]
+
+    built = subprocess.run(argv, cwd=ROOT, capture_output=True, text=True)
+    assert built.returncode == 0, built.stdout + built.stderr
+    assert json.loads(built.stdout)["artifact_map"]["artifact_path"] == str(artifact)
+
+    artifact.rename(tmp_path / "renamed.md")
+    missing = subprocess.run(argv, cwd=ROOT, capture_output=True, text=True)
+    assert missing.returncode == 1
+    assert f"artifact_path does not identify a current file: {artifact}" in missing.stdout
+
+
+def test_artifact_path_in_referenced_objects_uses_the_containing_file(tmp_path):
+    from _common import load_request
+
+    request_folder = tmp_path / "request"
+    reference_folder = tmp_path / "records"
+    request_folder.mkdir()
+    reference_folder.mkdir()
+    contract = {"artifact_path": "contract.md"}
+    shared = {"artifact_path": "shared.md"}
+    (reference_folder / "contract.json").write_text(json.dumps(contract), encoding="utf-8")
+    (reference_folder / "shared.json").write_text(json.dumps({
+        "status": "current_pass", "errors": [], "warnings": [], "shared_writing": shared,
+    }), encoding="utf-8")
+    request = request_folder / "input.json"
+    request.write_text(json.dumps({
+        "contract": "../records/contract.json", "shared_writing": "../records/shared.json",
+        "artifact_map": {"artifact_path": "do-not-rebase.md"},
+        "native_result_locator": "opaque-result.json", "map_id": "scalar.json",
+    }), encoding="utf-8")
+
+    loaded = load_request(request)
+
+    assert loaded["contract"]["artifact_path"] == str(reference_folder / "contract.md")
+    assert loaded["shared_writing"]["artifact_path"] == str(reference_folder / "shared.md")
+    assert loaded["artifact_map"]["artifact_path"] == "do-not-rebase.md"
+    assert loaded["native_result_locator"] == "opaque-result.json"
+    assert loaded["map_id"] == "scalar.json"
+
+
+def test_inline_artifact_paths_use_request_folder_and_stdin_stays_relative(tmp_path, monkeypatch):
+    import io
+    from _common import load_request
+
+    payload = {"artifact_path": "piece.md", "contract": {"artifact_path": "contract.md"},
+               "shared_writing": {"artifact_path": "shared.md"}}
+    request = tmp_path / "input.json"
+    request.write_text(json.dumps(payload), encoding="utf-8")
+    loaded = load_request(request)
+    assert loaded["artifact_path"] == str(tmp_path / "piece.md")
+    assert loaded["contract"]["artifact_path"] == str(tmp_path / "contract.md")
+    assert loaded["shared_writing"]["artifact_path"] == str(tmp_path / "shared.md")
+    monkeypatch.setattr(sys, "stdin", io.StringIO(json.dumps(payload)))
+    assert load_request("-") == payload

@@ -295,21 +295,36 @@ _REQUEST_CONTAINER_FIELDS = frozenset({
 })
 
 
+def _absolute_artifact_path(record: dict[str, Any], base: Path) -> None:
+    value = record.get("artifact_path")
+    if isinstance(value, str) and value:
+        artifact_path = Path(value).expanduser()
+        if not artifact_path.is_absolute():
+            record["artifact_path"] = str((base / artifact_path).resolve())
+
+
 def load_request(path: str | Path | None) -> Any:
     """Load a request whose top-level object fields may name JSON files instead.
 
     Only known container fields accept file references; scalar IDs, artifact
     paths and opaque native locators remain strings. A reference is relative to
     the request file. A file that holds another script's result contributes the
-    object stored under the same field name, or its only object.
+    object stored under the same field name, or its only object. Relative
+    artifact paths use the containing file; stdin retains current-directory behavior.
     """
     value = load_json(path)
     if not isinstance(value, dict):
         return value
-    base = Path.cwd() if path in {None, "-"} else Path(path).resolve().parent
+    file_request = path not in {None, "-"}
+    base = Path(path).resolve().parent if file_request else Path.cwd()
+    if file_request:
+        _absolute_artifact_path(value, base)
     for key, item in list(value.items()):
+        record_base = base
         if key in _REQUEST_CONTAINER_FIELDS and isinstance(item, str) and item.endswith(".json"):
-            loaded = load_json(base / Path(item).expanduser())
+            reference_path = base / Path(item).expanduser()
+            loaded = load_json(reference_path)
+            record_base = reference_path.resolve().parent
             if isinstance(loaded, dict) and {"status", "errors", "warnings"} <= set(loaded):
                 objects = [entry for entry in loaded.values() if isinstance(entry, dict)]
                 if isinstance(loaded.get(key), dict):
@@ -317,6 +332,8 @@ def load_request(path: str | Path | None) -> Any:
                 elif len(objects) == 1:
                     loaded = objects[0]
             value[key] = loaded
+        if file_request and key in {"contract", "shared_writing"} and isinstance(value[key], dict):
+            _absolute_artifact_path(value[key], record_base)
     return value
 
 

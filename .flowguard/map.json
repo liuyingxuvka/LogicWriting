@@ -102,7 +102,8 @@
         "Preserve requested intent, composition order, editorial dispositions and writer projection.",
         "Bind actual artifact bytes and spans to shared contracts, deterministic audit and route review.",
         "Derive closure (passed or needs_repair) from the current reader/route chain and an independent reader judgment whose judge differs from the producer; an edit after review makes closure fail; automatic v2 closure covers text/markdown only.",
-        "Reader-chain commands take upstream records as file paths and compute the fingerprints and references a caller leaves out (fill_brief_fingerprints, fill_check_fingerprints, fill_closure_fingerprints); values the caller gives are still checked."
+        "Reader-chain commands take upstream records as file paths and compute the fingerprints and references a caller leaves out (fill_brief_fingerprints, fill_check_fingerprints, fill_closure_fingerprints); values the caller gives are still checked.",
+        "Name the resolved absolute path when an artifact file cannot be read."
       ],
       "files": [
         "skills/logic-writing/SKILL.md",
@@ -186,7 +187,7 @@
         ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:dca8d4ea4a4f04486f1c4e563a31b881eecbd0fcd990a6a9831768a22ca01bae"
+      "fingerprint": "sha256:821cbd4f2c0293372f99357e42836f7f0d4c817307f84e32b989e6dfa2b8ffe3"
     },
     {
       "id": "fiction",
@@ -559,7 +560,7 @@
       "summary": "Shared canonical identity, request loading and JSON schema validation used by existing domain owners.",
       "responsibilities": [
         "Preserve canonical content fingerprints and strict JSON schema validation shared by existing domain owners.",
-        "Load command requests whose reviewed object and list fields name JSON files; preserve scalar identifiers, artifact paths and opaque native result locators, and fill fingerprints a caller leaves out (load_request, fill_fingerprint, fill_missing)."
+        "Load command requests whose reviewed object and list fields name JSON files; resolve relative artifact paths against the file that contains them while preserving scalar identifiers and opaque native result locators, and fill fingerprints a caller leaves out (load_request, fill_fingerprint, fill_missing)."
       ],
       "files": [
         "skills/logic-writing/scripts/_common.py",
@@ -578,7 +579,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:4922c0dee799f5859205ae2a577c9b40030846feb82fe8346e8d102cbfe420a2"
+      "fingerprint": "sha256:8cdbe338a362cc16ec967e9ac4e5c6873e87c39a3ffbe60510d45a3bc7c2b83f"
     }
   ],
   "flows": [],
