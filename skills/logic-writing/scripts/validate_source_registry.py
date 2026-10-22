@@ -59,8 +59,6 @@ SOURCE_FIELDS = {
 }
 
 
-
-
 def _validate_source(source):
     source = require_mapping(source, "source")
     reject_unknown_keys(source, SOURCE_FIELDS, "source")
@@ -130,7 +128,7 @@ def _validate_source(source):
         or not anchors
     ):
         raise ValidationError(
-            f"source {source_id}: claim_usable requires available observed content, and anchors"
+            f"source {source_id}: claim_usable requires available observed content and anchors"
         )
     if observation != "claim_usable" and can_support:
         raise ValidationError(f"source {source_id}: only a claim_usable record can support claims")

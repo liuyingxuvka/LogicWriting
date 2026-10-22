@@ -46,8 +46,6 @@ def test_route_review_cannot_omit_one_required_dimension(tmp_path):
         derive_closure(request)
 
 
-
-
 def test_same_agent_cannot_self_judge(tmp_path):
     chain = complete_chain(tmp_path)
     judgment = copy.deepcopy(chain["judgment"])

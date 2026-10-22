@@ -56,8 +56,6 @@ def test_native_fiction_binding_rejects_unbound_prose(monkeypatch):
     }
 
 
-
-
 def test_fiction_regression_timeout_kills_the_case(monkeypatch, tmp_path: Path):
     module = _fiction_regression_module()
 

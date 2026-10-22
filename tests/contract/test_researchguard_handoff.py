@@ -306,12 +306,6 @@ def test_native_predecessor_graph_rejects_cycles_outside_body_order():
         )
 
 
-
-
-
-
-
-
 def test_reader_brief_requires_an_exhaustive_native_unit_mapping(tmp_path):
     from reader_pipeline import build_reader_brief
     from tests.v2_support import make_reader_chain

@@ -86,10 +86,6 @@ def test_runtime_inventory_is_exactly_the_current_contracts():
     assert {path.name for path in schema_root.glob("*.schema.json")} == EXPECTED
 
 
-
-
-
-
 def test_all_schema_ids_are_canonical_and_offline():
     schema_root = (
         Path(__file__).resolve().parents[2]

@@ -13,8 +13,6 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 
-
-
 @pytest.fixture
 def current_packet():
     from tests.support import make_current_packet

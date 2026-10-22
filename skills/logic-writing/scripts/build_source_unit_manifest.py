@@ -216,8 +216,6 @@ def validate_source_unit_manifest(
     return manifest
 
 
-
-
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source", required=True)

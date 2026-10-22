@@ -20,16 +20,12 @@ CASE_TIMEOUT_SECONDS = {
 }
 
 
-
-
 def _text(value: str | bytes | None) -> str:
     if value is None:
         return ""
     if isinstance(value, bytes):
         return value.decode("utf-8", errors="replace")
     return value
-
-
 
 
 def _run_case(command: list[str], cwd: Path, timeout_seconds: int) -> dict[str, object]:

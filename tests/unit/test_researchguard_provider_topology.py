@@ -7,7 +7,6 @@ from types import SimpleNamespace
 import provider_preflight
 
 
-
 class _Distribution:
     def __init__(self, executable: Path, version: str = "0.5.7") -> None:
         self.version = version
@@ -198,8 +197,6 @@ def test_member_provider_root_is_rejected_before_console_execution(monkeypatch, 
 
     assert result["status"] == "blocked"
     assert "provider-root overrides" in result["evidence"]["reason"]
-
-
 
 
 def test_newer_researchguard_release_meets_the_minimum(monkeypatch, tmp_path):

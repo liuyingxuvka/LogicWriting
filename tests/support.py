@@ -13,10 +13,6 @@ LIMITATION = (
 UNSAFE_FINDING = "The intervention alone caused the improvement."
 
 
-
-
-
-
 def make_current_packet(
     *,
     final_owner: str = "investigation",

@@ -17,7 +17,6 @@ def test_current_source_registry_reports_usable_sources(current_packet):
     assert report["usable_source_ids"] == ["source:clinic-evaluation"]
 
 
-
 def test_candidate_is_never_promoted_to_claim_usable(current_packet):
     registry = copy.deepcopy(current_packet["registry"])
     source = registry["sources"][0]
@@ -49,7 +48,6 @@ def test_strong_claim_requires_independent_lineages(current_packet):
     claim = ledger["claims"][0]
     claim["strength"] = "strong"
 
-
     report = validate_claim_support(
         ledger, current_packet["registry"]
     )
@@ -68,16 +66,12 @@ def test_every_declared_source_needs_an_observed_anchor(current_packet):
         )
 
 
-
-
 def test_research_packet_is_derived_from_exact_members(current_packet):
     packet = current_packet["packet"]
 
     assert packet["status"] == "current_pass"
     assert packet["unresolved_gaps"] == []
     assert validate_research_packet(packet) == packet
-
-
 
 
 def test_academic_handoff_without_gap_identity_remains_partial(current_packet):

@@ -31,71 +31,12 @@ def _load(name: str):
     return module
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 def test_skill_static_validator_accepts_placeholder_detector_source():
     validator = _load("validate_skill")
     report = validator.validate_skill(ROOT / "skills" / "logic-writing")
 
     assert report["status"] == "passed"
     assert report["errors"] == []
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 def test_public_docs_frozen_fallback_uses_contract_admission(tmp_path, monkeypatch):

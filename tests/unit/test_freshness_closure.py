@@ -74,8 +74,6 @@ def test_repeating_closure_does_not_count_as_repair(tmp_path):
     assert first["closure"]["status"] == second["closure"]["status"] == "needs_repair"
 
 
-
-
 def test_foreign_reader_intent_is_rejected(tmp_path):
     request = closure_input(complete_chain(tmp_path))
     request["reader_brief"] = copy.deepcopy(request["reader_brief"])

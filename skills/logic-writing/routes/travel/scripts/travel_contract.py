@@ -49,7 +49,6 @@ GUIDE_STATUSES = {"pass", "partial", "revise", "downgraded", "blocked", "human_r
 PROMISE_STATUSES = {"paid", "inverted", "deferred_with_boundary", "downgraded", "human_review"}
 
 
-
 def issue(code: str, message: str) -> dict[str, str]:
     return {"code": code, "message": message}
 
@@ -116,10 +115,6 @@ def _parse_iso_datetime(value: Any) -> datetime | None:
         return datetime.fromisoformat(value.replace("Z", "+00:00"))
     except ValueError:
         return None
-
-
-
-
 
 
 def _claim_rank(level: str) -> int:
@@ -818,8 +813,6 @@ def validate_weather_evidence(
     return weather
 
 
-
-
 def validate_guide(
     data: dict[str, Any],
     context: dict[str, Any],
@@ -962,8 +955,6 @@ def derive_allowed_claim_level(
     if relation in {"past", "far_future", "undated"}:
         return "initial_plan", f"{relation}_planning_boundary"
     return "initial_plan", "current_fact_or_weather_gap"
-
-
 
 
 def validate_plan(

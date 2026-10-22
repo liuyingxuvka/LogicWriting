@@ -92,7 +92,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:e6f281fa63cd9b30e134ca572789008c9752f2e6f44050b9747c39e81d14c105"
+      "fingerprint": "sha256:5b1d406bc91730501ad9c613d42cf25464abb75987950b452ed70ffe972b5108"
     },
     {
       "id": "reader-artifact",
@@ -187,7 +187,7 @@
         ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:1aa21b5fd97a0402c104968eb129a2b467fc46524d94e072e549f08e4fff56b4"
+      "fingerprint": "sha256:9bb5434c4b1f0de1635f7d83b432fabd50dcbcfb44aeac0b3a1a77f20cc5e3c3"
     },
     {
       "id": "fiction",
@@ -397,7 +397,7 @@
         ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:7ba622d71ffac1f804842f1af97749ff230b1e0874220ea62bab036f11490dd2"
+      "fingerprint": "sha256:6217ddded1687ec777db2593d2e95cbf857d8e44005fe36874d2fa3e299295f1"
     },
     {
       "id": "investigation",
@@ -518,7 +518,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:ff7eeadbb4fa1cff4b340ee02bbc0be2de62b169b023e0046a63bdb5b83b7328"
+      "fingerprint": "sha256:aeffea60bff98aedcdf816d0ca7018e10dc9f137956a86b9c98cfa37511a251c"
     },
     {
       "id": "providers",

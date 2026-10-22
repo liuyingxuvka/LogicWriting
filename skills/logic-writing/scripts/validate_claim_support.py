@@ -79,8 +79,6 @@ CLAIM_FIELDS = {
 }
 
 
-
-
 def _reader_text(text: str, label: str) -> str:
     if contains_internal_language(text):
         raise ValidationError(f"{label} contains internal workflow language")

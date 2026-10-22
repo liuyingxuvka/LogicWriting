@@ -162,8 +162,6 @@ package, invoke `python -m`, locate a sibling checkout, try another member, or
 accept a provider-root override. If the console is missing, older than the
 minimum version, or times out, report that status and stop that handoff.
 
-
-
 For LogicGuard artifact synthesis, map the current
 `researchguard.logic.synthesis-plan.v1` through
 `scripts/researchguard_handoff.py` and its

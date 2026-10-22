@@ -236,10 +236,6 @@ def _dedupe_gaps(gaps: Iterable[Mapping[str, Any]]) -> list[dict[str, Any]]:
     return [by_id[key] for key in sorted(by_id)]
 
 
-
-
-
-
 def _additional_gaps(
     raw_gaps: Any,
     *,
@@ -273,8 +269,6 @@ def _additional_gaps(
             )
         )
     return _dedupe_gaps(gaps)
-
-
 
 
 def _mandatory_gaps(
@@ -328,8 +322,6 @@ def _derived_wording(
     if not unsafe:
         unsafe = ["Do not present the available material as complete or conclusive."]
     return safe, unsafe
-
-
 
 
 def fill_assembly_fingerprints(request: Any) -> Any:

@@ -46,8 +46,6 @@ def test_protocol_fixture_has_twelve_balanced_cases():
     assert {row["language"] for row in cases} == {"zh-CN", "en"}
 
 
-
-
 @pytest.mark.parametrize(
     "owner",
     ["investigation", "academic-writing", "fiction-writing", "travel-guide"],

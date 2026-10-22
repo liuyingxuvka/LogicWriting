@@ -41,8 +41,6 @@ PROHIBITED_PUBLIC_DOCS = {
 }
 
 
-
-
 def _public_inventory(root: Path) -> set[str]:
     admitted = git_lines(root, "ls-files", "--cached", "--others", "--exclude-standard")
     if admitted:
