@@ -18,7 +18,7 @@
 
 ## Validation
 
-- Run the affected tests while developing. CI (`.github/workflows/publish-release.yml`) runs `python -m pytest -q`, `python scripts/run_fiction_regression.py --repository-root . --json`, `python scripts/run_travel_regression.py --repository-root . --json`, `python -m flowguard map models` and `python -m flowguard map check` on the release commit; a second job installs ResearchGuard at `RESEARCHGUARD_MIN_VERSION` (`skills/logic-writing/scripts/_common.py`) and runs `python -m pytest -q` and the three member preflights.
+- Run the affected tests while developing. CI (`.github/workflows/ci.yml`) runs the full pytest suite, fiction and travel regressions, `python -m flowguard map check`, `python -m flowguard release`, and an installed skill byte check on every push and pull request. Its second job runs tests and the three member preflights with ResearchGuard at `RESEARCHGUARD_MIN_VERSION` (`skills/logic-writing/scripts/_common.py`). Publishing waits for successful CI on the same source commit.
 
 <!-- BEGIN FLOWGUARD PROJECT RULES -->
 
@@ -31,7 +31,7 @@
 5. Re-read each REVIEW component, update its description if behavior changed, then `python -m flowguard map confirm ID`.
 6. At final release, freeze the source and run the full suite and `python -m flowguard release` once on that revision (same-SHA CI may provide this); report failures and unrun checks honestly.
 
-Maintenance needs FlowGuard from the owner's repository at the version written once, in `.github/workflows/publish-release.yml`; older versions do not see same-directory script imports and report `dep_unused` errors (the PyPI package named `flowguard` is a different project).
+Maintenance needs FlowGuard from the owner's repository at the version written once, in `.github/workflows/ci.yml`; older versions do not see same-directory script imports and report `dep_unused` errors (the PyPI package named `flowguard` is a different project).
 Raise that version, or `RESEARCHGUARD_MIN_VERSION` in `skills/logic-writing/scripts/_common.py`, only when Logic Writing starts using a newer feature of that tool; a FlowGuard or ResearchGuard release alone is no reason to change them or to release Logic Writing.
 
 <!-- END FLOWGUARD PROJECT RULES -->

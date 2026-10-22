@@ -135,12 +135,13 @@ not compatibility aliases. Their supported intents now route through
 
 ## Validation
 
-Before publishing, the release workflow runs the full pytest suite, the fiction
-and travel regressions, the models in `.flowguard/models/` (which replay their
-traces on the real scripts) and the FlowGuard map check on the exact source
-commit. These checks cover the scripts and contracts,
-not the quality of a particular piece of writing: a reader-facing final closure
-still needs an independent read of the actual artifact.
+CI runs on every push and pull request: the full pytest suite, fiction and travel
+regressions, `python -m flowguard map check`, `python -m flowguard release`, and
+installation byte checks. A second job checks the declared minimum ResearchGuard
+version with the tests and member preflights. The release workflow publishes only
+after CI succeeds on the same source commit. These checks cover scripts and
+contracts, not the quality of a particular piece of writing; final closure still
+requires a read of the actual artifact.
 
 Focused examples:
 

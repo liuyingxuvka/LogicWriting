@@ -465,11 +465,11 @@
     {
       "id": "release",
       "layer": "domain",
-      "summary": "Repository checks, skill installer and the release workflow.",
+      "summary": "Repository checks, skill installer, ordinary CI and publishing after same-source CI.",
       "responsibilities": [
         "Check skill structure, public docs and privacy, and run the fiction and travel regressions.",
         "Install the runtime skill files without repository fixtures and check an installed copy by file set and bytes.",
-        "Publish a release only after the workflow's tests, regressions, models and map check pass on the exact source commit, and the tests and member preflights also pass with ResearchGuard at RESEARCHGUARD_MIN_VERSION.",
+        "CI on every push runs tests, regressions, map check and release; publishing waits for that CI on the same commit. The minimum ResearchGuard job also runs tests and member preflights.",
         "Keep the OpenSpec specs in line with current behavior.",
         "Executor journals such as SLIM_LOG.md never become public files."
       ],
@@ -500,7 +500,8 @@
         "scripts/install_skill.py",
         "scripts/run_fiction_regression.py",
         "scripts/run_travel_regression.py",
-        "scripts/validate_skill.py"
+        "scripts/validate_skill.py",
+        ".github/workflows/ci.yml"
       ],
       "entrypoints": [],
       "state": [
@@ -516,7 +517,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:aeb2374df7175dabad3840551c2ecb7cd2f2dd8bd9f6cae923391a616221c2ba"
+      "fingerprint": "sha256:ab69818ecd7969e161f99c37847cb38789f4bb2123768cb0bdca03204736461d"
     },
     {
       "id": "providers",

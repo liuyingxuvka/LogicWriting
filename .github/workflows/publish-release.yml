@@ -24,90 +24,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  release-validation:
-    if: github.event_name == 'workflow_dispatch' || startsWith(github.event.head_commit.message, 'Release LogicWriting v')
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    permissions:
-      contents: read
-    outputs:
-      source_sha: ${{ steps.validation.outputs.source_sha }}
-      ci_url: ${{ steps.validation.outputs.ci_url }}
-    env:
-      SOURCE_SHA: ${{ inputs.source_sha || github.sha }}
-      PYTHONDONTWRITEBYTECODE: "1"
-    steps:
-      - name: Check out the selected source
-        uses: actions/checkout@v5
-        with:
-          ref: ${{ inputs.source_sha || github.sha }}
-          persist-credentials: false
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.11"
-
-      - name: Install test dependencies
-        env:
-          RESEARCHGUARD_SOURCE_ROOT: ${{ runner.temp }}/ResearchGuard
-        run: |
-          git clone --depth 1 https://github.com/liuyingxuvka/ResearchGuard.git "$RESEARCHGUARD_SOURCE_ROOT"
-          python -m pip install pytest PyYAML "$RESEARCHGUARD_SOURCE_ROOT" "flowguard @ git+https://github.com/liuyingxuvka/FlowGuard.git@v0.70.7"
-
-      - name: Run tests
-        timeout-minutes: 20
-        env:
-          RESEARCHGUARD_SOURCE_ROOT: ${{ runner.temp }}/ResearchGuard
-        run: python -m pytest -q
-
-      - name: Run route regressions, models and map check
-        timeout-minutes: 20
-        run: |
-          python scripts/run_fiction_regression.py --repository-root . --json
-          python scripts/run_travel_regression.py --repository-root . --json
-          python -m flowguard map models
-          python -m flowguard map check
-
-      - name: Record the validated source
-        id: validation
-        run: |
-          test "$(git rev-parse HEAD)" = "$(echo "$SOURCE_SHA" | tr 'A-F' 'a-f')"
-          echo "source_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-          echo "ci_url=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >> "$GITHUB_OUTPUT"
-
-  researchguard-minimum:
-    if: github.event_name == 'workflow_dispatch' || startsWith(github.event.head_commit.message, 'Release LogicWriting v')
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    permissions:
-      contents: read
-    env:
-      PYTHONDONTWRITEBYTECODE: "1"
-    steps:
-      - name: Check out the selected source
-        uses: actions/checkout@v5
-        with:
-          ref: ${{ inputs.source_sha || github.sha }}
-          persist-credentials: false
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.11"
-
-      - name: Install ResearchGuard at the declared minimum
-        run: |
-          minimum="$(cd skills/logic-writing/scripts && python -c 'from _common import RESEARCHGUARD_MIN_VERSION as v; print(".".join(map(str, v)))')"
-          python -m pip install pytest PyYAML "git+https://github.com/liuyingxuvka/ResearchGuard.git@v$minimum"
-
-      - name: Run tests and member preflights on the minimum
-        run: |
-          python -m pytest -q
-          for member in logicguard sourceguard traceguard; do python skills/logic-writing/scripts/provider_preflight.py "$member"; done
-
   publish:
-    needs: [release-validation, researchguard-minimum]
     if: github.event_name == 'workflow_dispatch' || startsWith(github.event.head_commit.message, 'Release LogicWriting v')
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -115,9 +32,6 @@ jobs:
       SOURCE_SHA: ${{ inputs.source_sha || github.sha }}
       EVENT_NAME: ${{ github.event_name }}
       GH_TOKEN: ${{ github.token }}
-      VALIDATION_RESULT: ${{ needs.release-validation.result }}
-      VALIDATION_SOURCE_SHA: ${{ needs.release-validation.outputs.source_sha }}
-      VALIDATION_URL: ${{ needs.release-validation.outputs.ci_url }}
     steps:
       - name: Check out the selected source
         uses: actions/checkout@v5
@@ -175,10 +89,6 @@ jobs:
               raise RuntimeError("release tag has excessive annotation nesting")
 
           assert output("git", "rev-parse", "HEAD") == source_sha, "checkout does not match source_sha"
-          assert os.environ.get("VALIDATION_RESULT") == "success", "ordinary release validation is missing or failed"
-          assert os.environ.get("VALIDATION_SOURCE_SHA", "").lower() == source_sha, "ordinary release validation belongs to a different source SHA"
-          ci_url = os.environ.get("VALIDATION_URL", "")
-          assert ci_url, "ordinary release validation URL is missing"
           project = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))["project"]
           assert project["name"] == "logic-writing-skill", "source project identity mismatch"
           version = project["version"]
@@ -195,6 +105,23 @@ jobs:
           assert len(selected) == 1, "CHANGELOG must contain one section for the current version"
           index = selected[0]
           notes = changes[headings[index].start():headings[index + 1].start() if index + 1 < len(headings) else None].strip()
+
+          ci_url = None
+          deadline = time.monotonic() + 1200
+          while time.monotonic() < deadline:
+              runs = api(f"actions/workflows/ci.yml/runs?head_sha={source_sha}&per_page=30")["workflow_runs"]
+              candidates = [run for run in runs if run["head_sha"].lower() == source_sha and run["head_branch"] == "main"
+                            and run["event"] in {"push", "workflow_dispatch"} and run["path"].split("@")[0] == ".github/workflows/ci.yml"]
+              if candidates:
+                  current = max(candidates, key=lambda run: (run["run_number"], run.get("run_attempt", 1)))
+                  if current["status"] == "completed":
+                      assert current["conclusion"] == "success", f"exact-source CI did not succeed: {current['html_url']}"
+                      ci_url = current["html_url"]
+                      break
+              print(f"Waiting for complete ci.yml success at {source_sha}", flush=True)
+              time.sleep(15)
+          else:
+              raise RuntimeError("exact-source ci.yml did not complete successfully within 20 minutes")
 
           # Recheck main and dereference annotated tags; target_commitish alone is insufficient.
           assert api("git/ref/heads/main")["object"]["sha"].lower() == source_sha, "main advanced; publish its final frozen source instead"
