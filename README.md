@@ -114,6 +114,8 @@ and [migration guide](MIGRATION.md) for the full boundaries.
 
 ## Install
 
+Install the skill only with `scripts/install_skill.py`; `pip install .` records project metadata and does not install the skill.
+
 ```text
 python scripts/install_skill.py --target ~/.claude/skills      # or "$CODEX_HOME/skills"
 python scripts/install_skill.py --target ~/.claude/skills --check

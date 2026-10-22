@@ -100,6 +100,8 @@ flowchart TD
 
 ## 安装和使用
 
+技能只用 `scripts/install_skill.py` 安装；`pip install .` 只登记项目元数据，不安装技能。
+
 ```text
 python scripts/install_skill.py --target ~/.claude/skills      # 或 "$CODEX_HOME/skills"
 python scripts/install_skill.py --target ~/.claude/skills --check

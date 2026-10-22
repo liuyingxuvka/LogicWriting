@@ -20,6 +20,8 @@
 
 - Run the affected tests while developing. CI (`.github/workflows/ci.yml`) runs the full pytest suite, fiction and travel regressions, `python -m flowguard map check`, `python -m flowguard release`, and an installed skill byte check on every push and pull request. Its second job runs tests and the three member preflights with ResearchGuard at `RESEARCHGUARD_MIN_VERSION` (`skills/logic-writing/scripts/_common.py`). Publishing waits for successful CI on the same source commit.
 
+A release has exactly one commit titled "Release LogicWriting v<version>", made after the last change of that release; it changes only the version files and CHANGELOG.md.
+
 <!-- BEGIN FLOWGUARD PROJECT RULES -->
 
 ## FlowGuard map and model maintenance

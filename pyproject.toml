@@ -21,3 +21,10 @@ Issues = "https://github.com/liuyingxuvka/LogicWriting/issues"
 addopts = "-ra"
 testpaths = ["tests"]
 python_files = ["test_*.py"]
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = []

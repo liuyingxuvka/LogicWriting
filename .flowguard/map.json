@@ -472,7 +472,8 @@
         "Install the runtime skill files without repository fixtures and check an installed copy by file set and bytes.",
         "CI on every push runs tests, regressions, map check and release; publishing waits for that CI on the same commit. The minimum ResearchGuard job also runs tests and member preflights.",
         "Keep the OpenSpec specs in line with current behavior.",
-        "Executor journals such as SLIM_LOG.md never become public files."
+        "Executor journals such as SLIM_LOG.md never become public files.",
+        "Keep one final release commit per version; pip installation records metadata only, while install_skill.py installs the skill."
       ],
       "files": [
         ".codex/skills/openspec-apply-change/SKILL.md",
@@ -518,7 +519,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:aeffea60bff98aedcdf816d0ca7018e10dc9f137956a86b9c98cfa37511a251c"
+      "fingerprint": "sha256:fa09e74ba06dd8dac44682d4816809c8981f439c9e9c47174123035bdc31e15d"
     },
     {
       "id": "providers",
