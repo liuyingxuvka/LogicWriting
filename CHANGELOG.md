@@ -6,6 +6,28 @@ releases, tags, package publications, installations, or predecessor deletions.
 The format follows the main ideas of Keep a Changelog, and the source version
 line follows semantic versioning.
 
+## [4.0.10] - 2026-10-22
+
+### Changed
+
+- Run CI on every push and pull request, and publish only after successful CI on the same commit.
+- Record whether a reader judgment comes from an independent context or a self-review. Self-review can pass the text checks, but keeps an explicit risk and never permits a broad claim.
+- Ask the user to resolve a material open choice before routing or planning a brief.
+- Let fiction requests provide a structured voice contract for point of view, tense and narrative distance.
+- Keep JSON schemas compact and remove unused preflight fingerprints and hash helpers.
+- Strengthen model checks for ownership, bounded research and repair outcomes, and keep the model tree aligned with the code.
+- Make `pip install .` register project metadata only; install the skill with `scripts/install_skill.py`.
+
+### Fixed
+
+- Resolve relative artifact paths from the request or referenced record that contains them.
+- Report failed upstream inputs and vanished artifact units directly, before filling fingerprints or continuing the reader chain.
+- Find an editable ResearchGuard source outside the sibling directory while preserving explicit source priority and compatibility with a stale imported module.
+
+### Removed
+
+- Tracked execution journals from public repository files.
+
 ## [4.0.9]
 
 Slim release from the slim/2026-10 audit.
