@@ -5,28 +5,12 @@
   "description": "A claim-to-source semantic ledger bound to one exact SourceRegistry. Reader order, support links, alternatives, safe wording, and semantic-fit authority are explicit.",
   "type": "object",
   "additionalProperties": false,
-  "required": [
-    "schema_version",
-    "ledger_id",
-    "source_registry_fingerprint",
-    "claims"
-  ],
+  "required": ["schema_version", "ledger_id", "source_registry_fingerprint", "claims"],
   "properties": {
-    "schema_version": {
-      "const": "1.0"
-    },
-    "ledger_id": {
-      "$ref": "#/$defs/identifier"
-    },
-    "source_registry_fingerprint": {
-      "$ref": "#/$defs/fingerprint"
-    },
-    "claims": {
-      "type": "array",
-      "items": {
-        "$ref": "#/$defs/claim"
-      }
-    }
+    "schema_version": { "const": "1.0" },
+    "ledger_id": { "$ref": "#/$defs/identifier" },
+    "source_registry_fingerprint": { "$ref": "#/$defs/fingerprint" },
+    "claims": { "type": "array", "items": { "$ref": "#/$defs/claim" } }
   },
   "$defs": {
     "identifier": {
@@ -35,120 +19,46 @@
       "maxLength": 128,
       "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
     },
-    "fingerprint": {
-      "type": "string",
-      "pattern": "^sha256:[a-f0-9]{64}$"
-    },
+    "fingerprint": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
     "sourceRole": {
       "enum": [
-        "primary",
-        "official",
-        "implementation",
-        "outcome",
-        "method",
-        "context",
-        "counterevidence",
-        "critique",
-        "data",
-        "secondary"
+        "primary", "official", "implementation", "outcome", "method", "context", "counterevidence",
+        "critique", "data", "secondary"
       ]
     },
     "supportLink": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "source_id",
-        "anchor_ids",
-        "relation"
-      ],
+      "required": ["source_id", "anchor_ids", "relation"],
       "properties": {
-        "source_id": {
-          "$ref": "#/$defs/identifier"
-        },
+        "source_id": { "$ref": "#/$defs/identifier" },
         "anchor_ids": {
           "type": "array",
           "minItems": 1,
-          "items": {
-            "$ref": "#/$defs/identifier"
-          },
+          "items": { "$ref": "#/$defs/identifier" },
           "uniqueItems": true
         },
-        "relation": {
-          "enum": [
-            "support",
-            "limit",
-            "counter",
-            "context"
-          ]
-        }
+        "relation": { "enum": ["support", "limit", "counter", "context"] }
       }
     },
     "alternative": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "alternative_id",
-        "text",
-        "treatment",
-        "source_ids",
-        "anchor_ids"
-      ],
+      "required": ["alternative_id", "text", "treatment", "source_ids", "anchor_ids"],
       "properties": {
-        "alternative_id": {
-          "$ref": "#/$defs/identifier"
-        },
-        "text": {
-          "type": "string",
-          "minLength": 1
-        },
-        "treatment": {
-          "enum": [
-            "live",
-            "qualified",
-            "rejected",
-            "unsupported"
-          ]
-        },
-        "source_ids": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/identifier"
-          },
-          "uniqueItems": true
-        },
-        "anchor_ids": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/identifier"
-          },
-          "uniqueItems": true
-        }
+        "alternative_id": { "$ref": "#/$defs/identifier" },
+        "text": { "type": "string", "minLength": 1 },
+        "treatment": { "enum": ["live", "qualified", "rejected", "unsupported"] },
+        "source_ids": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true },
+        "anchor_ids": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true }
       },
       "allOf": [
         {
           "if": {
-            "required": [
-              "treatment"
-            ],
-            "properties": {
-              "treatment": {
-                "enum": [
-                  "qualified",
-                  "rejected"
-                ]
-              }
-            }
+            "required": ["treatment"],
+            "properties": { "treatment": { "enum": ["qualified", "rejected"] } }
           },
-          "then": {
-            "properties": {
-              "source_ids": {
-                "minItems": 1
-              },
-              "anchor_ids": {
-                "minItems": 1
-              }
-            }
-          }
+          "then": { "properties": { "source_ids": { "minItems": 1 }, "anchor_ids": { "minItems": 1 } } }
         }
       ]
     },
@@ -156,252 +66,72 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "claim_id",
-        "text",
-        "claim_type",
-        "critical",
-        "strength",
-        "reader_order",
-        "reader_job",
-        "reader_disposition",
-        "depends_on_claim_ids",
-        "source_ids",
-        "source_roles",
-        "support_links",
-        "can_support",
-        "cannot_support",
-        "alternatives",
-        "safe_wording",
-        "unsafe_wording",
-        "requires_independent_support",
-        "mechanism_source_ids",
+        "claim_id", "text", "claim_type", "critical", "strength", "reader_order", "reader_job",
+        "reader_disposition", "depends_on_claim_ids", "source_ids", "source_roles",
+        "support_links", "can_support", "cannot_support", "alternatives", "safe_wording",
+        "unsafe_wording", "requires_independent_support", "mechanism_source_ids",
         "forecast_validation_source_ids"
       ],
       "properties": {
-        "claim_id": {
-          "$ref": "#/$defs/identifier"
-        },
-        "text": {
-          "type": "string",
-          "minLength": 1
-        },
+        "claim_id": { "$ref": "#/$defs/identifier" },
+        "text": { "type": "string", "minLength": 1 },
         "claim_type": {
-          "enum": [
-            "fact",
-            "number",
-            "interpretation",
-            "causal",
-            "execution",
-            "outcome",
-            "forecast"
-          ]
+          "enum": ["fact", "number", "interpretation", "causal", "execution", "outcome", "forecast"]
         },
-        "critical": {
-          "type": "boolean"
-        },
-        "strength": {
-          "enum": [
-            "tentative",
-            "qualified",
-            "supported",
-            "strong"
-          ]
-        },
-        "reader_order": {
-          "type": "integer",
-          "minimum": 1
-        },
+        "critical": { "type": "boolean" },
+        "strength": { "enum": ["tentative", "qualified", "supported", "strong"] },
+        "reader_order": { "type": "integer", "minimum": 1 },
         "reader_job": {
-          "enum": [
-            "background",
-            "evidence",
-            "interpretation",
-            "comparison",
-            "conclusion",
-            "forecast"
-          ]
+          "enum": ["background", "evidence", "interpretation", "comparison", "conclusion", "forecast"]
         },
-        "reader_disposition": {
-          "enum": [
-            "principal",
-            "alternative",
-            "limitation",
-            "excluded"
-          ]
-        },
-        "depends_on_claim_ids": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/identifier"
-          },
-          "uniqueItems": true
-        },
-        "source_ids": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/identifier"
-          },
-          "uniqueItems": true
-        },
-        "source_roles": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/sourceRole"
-          },
-          "uniqueItems": true
-        },
-        "support_links": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/supportLink"
-          },
-          "uniqueItems": true
-        },
-        "can_support": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 1
-          },
-          "uniqueItems": true
-        },
+        "reader_disposition": { "enum": ["principal", "alternative", "limitation", "excluded"] },
+        "depends_on_claim_ids": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true },
+        "source_ids": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true },
+        "source_roles": { "type": "array", "items": { "$ref": "#/$defs/sourceRole" }, "uniqueItems": true },
+        "support_links": { "type": "array", "items": { "$ref": "#/$defs/supportLink" }, "uniqueItems": true },
+        "can_support": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
         "cannot_support": {
           "type": "array",
           "minItems": 1,
-          "items": {
-            "type": "string",
-            "minLength": 1
-          },
+          "items": { "type": "string", "minLength": 1 },
           "uniqueItems": true
         },
-        "alternatives": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/alternative"
-          },
-          "uniqueItems": true
-        },
-        "safe_wording": {
-          "type": "string",
-          "minLength": 1
-        },
-        "unsafe_wording": {
-          "type": "string",
-          "minLength": 1
-        },
-        "requires_independent_support": {
-          "type": "boolean"
-        },
-        "mechanism_source_ids": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/identifier"
-          },
-          "uniqueItems": true
-        },
-        "forecast_validation_source_ids": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/identifier"
-          },
-          "uniqueItems": true
-        }
+        "alternatives": { "type": "array", "items": { "$ref": "#/$defs/alternative" }, "uniqueItems": true },
+        "safe_wording": { "type": "string", "minLength": 1 },
+        "unsafe_wording": { "type": "string", "minLength": 1 },
+        "requires_independent_support": { "type": "boolean" },
+        "mechanism_source_ids": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true },
+        "forecast_validation_source_ids": { "type": "array", "items": { "$ref": "#/$defs/identifier" }, "uniqueItems": true }
       },
       "allOf": [
         {
           "if": {
-            "required": [
-              "reader_disposition"
-            ],
-            "properties": {
-              "reader_disposition": {
-                "const": "principal"
-              }
-            }
+            "required": ["reader_disposition"],
+            "properties": { "reader_disposition": { "const": "principal" } }
           },
           "then": {
             "properties": {
-              "source_ids": {
-                "minItems": 1
-              },
-              "source_roles": {
-                "minItems": 1
-              },
-              "support_links": {
-                "minItems": 1
-              },
-              "can_support": {
-                "minItems": 1
-              }
+              "source_ids": { "minItems": 1 },
+              "source_roles": { "minItems": 1 },
+              "support_links": { "minItems": 1 },
+              "can_support": { "minItems": 1 }
             }
           }
         },
         {
-          "if": {
-            "required": [
-              "source_ids"
-            ],
-            "properties": {
-              "source_ids": {
-                "minItems": 1
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "source_roles": {
-                "minItems": 1
-              }
-            }
-          },
+          "if": { "required": ["source_ids"], "properties": { "source_ids": { "minItems": 1 } } },
+          "then": { "properties": { "source_roles": { "minItems": 1 } } },
           "else": {
-            "properties": {
-              "source_roles": {
-                "maxItems": 0
-              },
-              "support_links": {
-                "maxItems": 0
-              }
-            }
+            "properties": { "source_roles": { "maxItems": 0 }, "support_links": { "maxItems": 0 } }
           }
         },
         {
-          "if": {
-            "required": [
-              "claim_type"
-            ],
-            "properties": {
-              "claim_type": {
-                "const": "causal"
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "mechanism_source_ids": {
-                "minItems": 1
-              }
-            }
-          }
+          "if": { "required": ["claim_type"], "properties": { "claim_type": { "const": "causal" } } },
+          "then": { "properties": { "mechanism_source_ids": { "minItems": 1 } } }
         },
         {
-          "if": {
-            "required": [
-              "claim_type"
-            ],
-            "properties": {
-              "claim_type": {
-                "const": "forecast"
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "forecast_validation_source_ids": {
-                "minItems": 1
-              }
-            }
-          }
+          "if": { "required": ["claim_type"], "properties": { "claim_type": { "const": "forecast" } } },
+          "then": { "properties": { "forecast_validation_source_ids": { "minItems": 1 } } }
         }
       ]
     }

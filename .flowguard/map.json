@@ -92,7 +92,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:cfdca8a1af0c01f4ac80b05448b0a88bf02a03a0d3c0fbb5f00f6e8ed23433bc"
+      "fingerprint": "sha256:e6f281fa63cd9b30e134ca572789008c9752f2e6f44050b9747c39e81d14c105"
     },
     {
       "id": "reader-artifact",
@@ -187,7 +187,7 @@
         ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:821cbd4f2c0293372f99357e42836f7f0d4c817307f84e32b989e6dfa2b8ffe3"
+      "fingerprint": "sha256:1aa21b5fd97a0402c104968eb129a2b467fc46524d94e072e549f08e4fff56b4"
     },
     {
       "id": "fiction",
