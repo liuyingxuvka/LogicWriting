@@ -518,7 +518,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:ab69818ecd7969e161f99c37847cb38789f4bb2123768cb0bdca03204736461d"
+      "fingerprint": "sha256:ff7eeadbb4fa1cff4b340ee02bbc0be2de62b169b023e0046a63bdb5b83b7328"
     },
     {
       "id": "providers",
@@ -527,7 +527,8 @@
       "responsibilities": [
         "Preflight only the selected native ResearchGuard member or explicit portable/document provider.",
         "Require ResearchGuard >= 0.5.0 (minimum declared once in skills/logic-writing/scripts/_common.py), found in the running Python or else as the researchguard command on PATH; keep WorldGuard portable launcher availability separate from domain judgment.",
-        "Find the WorldGuard package in the skill's runtime/ copy, or two levels above the skill inside the WorldGuard repository."
+        "Find the WorldGuard package in the skill's runtime/ copy, or two levels above the skill inside the WorldGuard repository.",
+        "Return provider availability and selected native evidence without a report-wide fingerprint."
       ],
       "files": [
         "skills/logic-writing/scripts/provider_preflight.py"
@@ -536,7 +537,7 @@
         "skills/logic-writing/scripts/provider_preflight.py:preflight"
       ],
       "state": [
-        "Provider identity/version, explicit resource fingerprints and typed available/unavailable/blocked result."
+        "Provider identity/version and typed available/unavailable/blocked result."
       ],
       "side_effects": [
         "Run one selected help/version availability path; no fallback, self-test or automatic domain execution."
@@ -552,7 +553,7 @@
         ".flowguard/models/route_and_guard_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:948eca2ed8af6291b558ee3d8a4e916e18a531abc712e45107faa9f6fbd9d530"
+      "fingerprint": "sha256:4128762873b2ee43b1b372edc7867742a515acd2c9baea76e706cf6efe805b9a"
     },
     {
       "id": "shared-contracts",
@@ -579,7 +580,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:8cdbe338a362cc16ec967e9ac4e5c6873e87c39a3ffbe60510d45a3bc7c2b83f"
+      "fingerprint": "sha256:a52e56989946dc3c14dcdceb6d895a907a4701241de91e9c752a70d2892c9734"
     }
   ],
   "flows": [],

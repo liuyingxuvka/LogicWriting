@@ -13,7 +13,7 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from _common import dump_json, fingerprint, researchguard_version_problem, validation_result
+from _common import dump_json, researchguard_version_problem, validation_result
 
 
 RESEARCHGUARD_MEMBERS = {
@@ -303,7 +303,6 @@ def preflight(provider: str, *, provider_root: str | None = None, require_render
         status=status,
         provider=provider,
         evidence=public_evidence,
-        preflight_fingerprint=fingerprint(public_evidence),
         claim_boundary=(
             "provider availability only; native domain work is not run"
             if status == "current_pass"
