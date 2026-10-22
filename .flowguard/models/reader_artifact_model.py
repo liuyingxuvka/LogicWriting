@@ -88,6 +88,9 @@ class Step:
             return "rejected"
         return "passed" if state.quality == "pass" else "needs_repair"
 
+    def closure_owner_for(self, state: State) -> str:
+        return state.owner
+
     def apply(self, event: Event, state: State):
         if event.kind in {"review", "self_review"}:
             reviewed = replace(state, reviewed=True, current=True, quality=event.quality,
@@ -97,7 +100,7 @@ class Step:
             # a material edit stales the map, audit, review, judgment and closure
             return (FunctionResult("edited", replace(state, current=False, closure="", closure_owner=""), label="edit"),)
         result = self.closure_result(state)
-        return (FunctionResult(result, replace(state, closure=result, closure_owner=state.owner),
+        return (FunctionResult(result, replace(state, closure=result, closure_owner=self.closure_owner_for(state)),
                                label=f"close_{result}"),)
 
 
@@ -117,6 +120,20 @@ class CloseAcceptsSelfReview(Step):
         if not (state.reviewed and state.current):
             return "rejected"
         return "passed" if state.quality == "pass" else "needs_repair"
+
+
+class RepairReportedAsPass(Step):
+    """Known-bad: a current independent repair judgment is reported as passed."""
+
+    def closure_result(self, state: State) -> str:
+        return "passed" if state.reviewed and state.current and state.independent else "rejected"
+
+
+class CloseForSiblingOwner(Step):
+    """Known-bad: a sibling route closes the artifact owned by another route."""
+
+    def closure_owner_for(self, state: State) -> str:
+        return OWNERS[(OWNERS.index(state.owner) + 1) % len(OWNERS)]
 
 
 def _closure_requires_current_artifact(state: State, trace) -> InvariantResult:
@@ -167,7 +184,9 @@ def build_explorer() -> Explorer:
 
 def broken_variants() -> dict:
     return {"close_ignores_edits": _explorer(CloseIgnoresEdits()),
-            "close_accepts_self_review": _explorer(CloseAcceptsSelfReview())}
+            "close_accepts_self_review": _explorer(CloseAcceptsSelfReview()),
+            "repair_reported_as_pass": _explorer(RepairReportedAsPass()),
+            "closure_for_sibling_owner": _explorer(CloseForSiblingOwner())}
 
 
 class _RealReaderChain:

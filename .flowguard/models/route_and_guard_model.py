@@ -137,6 +137,9 @@ class Step:
             return "blocked", "path", True
         return "provider_unavailable", "", True
 
+    def child_routes(self, event: Event, status: str, owner: str) -> tuple[str, ...]:
+        return ("investigation",) if status == "current" and event.research and owner != "investigation" else ()
+
     def apply(self, event: Event, state: State):
         if event.kind == "request":
             if state.status:
@@ -150,7 +153,7 @@ class Step:
                 status = "current"
             else:
                 status = "ambiguous"
-            children = ("investigation",) if status == "current" and event.research and owner != "investigation" else ()
+            children = self.child_routes(event, status, owner)
             new = replace(state, deliverable=event.deliverable, conflict=event.conflict, status=status,
                           owner=owner, children=children)
             return (FunctionResult(f"{status}:{owner}", new, label=f"route_{status}"),)
@@ -168,6 +171,22 @@ class ResearchChildTakesOwnership(Step):
 
     def owner_for(self, event: Event) -> str:
         return "investigation" if event.research and event.deliverable in OWNER_OF else OWNER_OF.get(event.deliverable, "")
+
+
+class OwnerAlsoAChild(Step):
+    """Known-bad: a research request lists its final owner as its own child."""
+
+    def child_routes(self, event: Event, status: str, owner: str) -> tuple[str, ...]:
+        if status == "current" and event.research:
+            return (*super().child_routes(event, status, owner), owner)
+        return ()
+
+
+class ResearchChildNotBounded(Step):
+    """Known-bad: a specialist replaces the bounded investigation child."""
+
+    def child_routes(self, event: Event, status: str, owner: str) -> tuple[str, ...]:
+        return ("logicguard",) if status == "current" and event.research and owner != "investigation" else ()
 
 
 class ProviderRootAccepted(Step):
@@ -276,7 +295,9 @@ def broken_variants() -> dict:
     return {"research_child_takes_ownership": _explorer(ResearchChildTakesOwnership()),
             "provider_root_accepted": _explorer(ProviderRootAccepted()),
             "path_console_ignored": _explorer(PathConsoleIgnored()),
-            "old_path_console_accepted": _explorer(OldPathConsoleAccepted())}
+            "old_path_console_accepted": _explorer(OldPathConsoleAccepted()),
+            "owner_also_a_child": _explorer(OwnerAlsoAChild()),
+            "research_child_not_bounded": _explorer(ResearchChildNotBounded())}
 
 
 FAKE_CONSOLE = """import sys
