@@ -6,6 +6,21 @@ releases, tags, package publications, installations, or predecessor deletions.
 The format follows the main ideas of Keep a Changelog, and the source version
 line follows semantic versioning.
 
+## [4.0.12] - 2026-10-23
+
+### Changed
+
+- New work can omit revision provenance. Revisions derive source fingerprints and unit identities from the real old file and check treatments against the current target.
+- Treat travel texture counts and generic risk keyword hints as warnings. Reuse reader block classification so Chinese prose is recognized without English keywords.
+- Import missing evidence anchors directly from a saved SourceGuard model, preserving handwritten relations and boundaries.
+- Plan short stories in the fiction composition and reader chain; reserve separate story ledgers for longer planning or explicit requests. Read ledger WorldGuard status from native report files.
+- Give closure command output a consistent status, errors and warnings envelope while preserving exit codes.
+- Describe the current WorldGuard summary fields and accepted homogeneous time formats.
+
+### Removed
+
+- Leave repository fixture mutation helpers and unused placeholder files out of installed skills.
+
 ## [4.0.11] - 2026-10-23
 
 ### Changed
