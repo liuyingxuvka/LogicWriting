@@ -6,6 +6,14 @@ releases, tags, package publications, installations, or predecessor deletions.
 The format follows the main ideas of Keep a Changelog, and the source version
 line follows semantic versioning.
 
+## [4.0.13] - 2026-10-23
+
+### Fixed
+
+- Validate all quote bindings and existing artifact-unit references before filling any request bindings or fingerprints; rejected requests retain their original input.
+- Determine limitation adjacency from actual body offsets, preserving the same result when a valid ArtifactMap reorders its rows.
+- Clarify that new writing may omit revision provenance while revisions still require real source provenance and treatments.
+
 ## [4.0.12] - 2026-10-23
 
 ### Changed
