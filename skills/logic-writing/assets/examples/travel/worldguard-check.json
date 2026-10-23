@@ -1,0 +1,18 @@
+{
+  "checked": {
+    "claim_rows": 3,
+    "guards": [
+      "EventGuard"
+    ],
+    "variants": 0
+  },
+  "contract_id": "old-market-day",
+  "gaps": [],
+  "output": "summary only; add --json for the full report",
+  "scope_limits": [
+    "illustrative places only",
+    "declared order and access conditions only",
+    "does not verify real opening hours or travel times"
+  ],
+  "status": "PASS"
+}

@@ -291,6 +291,9 @@ def load_request(path: str | Path | None) -> Any:
     base = Path(path).resolve().parent if file_request else Path.cwd()
     if file_request:
         _absolute_artifact_path(value, base)
+    for report in value.get("provider_reports", []) if isinstance(value.get("provider_reports", []), list) else []:
+        if isinstance(report, dict) and isinstance(report.get("path"), str):
+            report["path"] = str((base / Path(report["path"]).expanduser()).resolve())
     for key, item in list(value.items()):
         record_base = base
         if key in _REQUEST_CONTAINER_FIELDS and isinstance(item, str) and item.endswith(".json"):

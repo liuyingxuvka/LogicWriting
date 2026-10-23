@@ -535,7 +535,15 @@ def complete_chain(
         "recorded_at": NOW,
     }
     provenance["provenance_fingerprint"] = fingerprint(provenance)
+    provider_reports = []
+    if owner in {"investigation", "travel-guide"}:
+        import json
+        provider = "sourceguard" if owner == "investigation" else "worldguard"
+        report = workdir / "protocol-provider.json"
+        report.write_text(json.dumps({"status": "stop_sufficient" if provider == "sourceguard" else "PASS"}))
+        provider_reports.append({"provider": provider, "path": str(report.resolve())})
     chain.update({
+        "provider_reports": provider_reports,
         "route_review": route_review,
         "judgment": judgment,
         "revision_provenance": provenance,
@@ -549,7 +557,7 @@ def closure_input(chain: dict) -> dict:
         key: chain[key] for key in (
             "closure_id", "route_decision", "reader_brief", "route_composition",
             "artifact_map", "shared_writing", "deterministic_audit", "route_review",
-            "judgment", "revision_provenance",
+            "judgment", "revision_provenance", "provider_reports",
         )
     }
 

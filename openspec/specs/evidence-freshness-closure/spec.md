@@ -175,3 +175,8 @@ A published tag or GitHub Release SHALL NOT be moved, replaced, or deleted to co
 - **WHEN** a published release later fails a required check
 - **THEN** its tag and release SHALL remain unchanged
 - **AND** the corrected source SHALL be published under a higher version only after its checks pass
+
+### Requirement: saved native provider statuses
+Closure SHALL copy each listed provider report's native status without executing
+a provider. Missing or failing required reports SHALL forbid broad claims and
+be named in residual risk while textual closure status remains unchanged.

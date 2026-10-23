@@ -11,6 +11,7 @@
     "promise_and_reveal_bindings", "realization_boundaries", "extension_fingerprint"
   ],
   "properties": {
+    "world_check_required": {"type": "boolean", "default": false},
     "schema_version": { "const": "2.0" },
     "composition_id": { "$ref": "#/$defs/id" },
     "final_owner": { "const": "fiction-writing" },

@@ -38,3 +38,5 @@ The parent hierarchy is closed before this bridge is emitted: parent links and
 predecessor links must resolve to known units and contain no cycles. The
 consumer binding must also cover every current planned unit, so a mapping that
 mentions every native unit but leaves a reader unit unreachable is rejected.
+
+Save the native report: `researchguard logic minimal-sets <model> --claim <id> --output logicguard-license.json`. List `{"provider":"logicguard","path":"logicguard-license.json"}` in the closure input's `provider_reports`.

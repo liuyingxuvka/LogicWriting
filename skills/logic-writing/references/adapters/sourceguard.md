@@ -13,3 +13,5 @@ member path. Preserve `candidate`, `observed`, `access_gap`, `bounded`,
 Only observed source content with resolvable lineage may enter factual support.
 Preserve the member's native result as it is; never write one on the
 member's behalf.
+
+Save the native report: `researchguard source stop-decision <project> > sourceguard-stop.json`. List `{"provider":"sourceguard","path":"sourceguard-stop.json"}` in the closure input's `provider_reports`.

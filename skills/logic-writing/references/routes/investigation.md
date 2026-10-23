@@ -37,8 +37,11 @@ is one-sided.
 
 ## 2. Discover and preserve evidence
 
-Use SourceGuard for discovery planning and source-depth decisions. Preserve
-concrete sources through LogicGuard's source library before modeling them.
+Use SourceGuard for discovery planning, source-depth decisions, and ownership
+of sources and anchors. Use LogicGuard when live competing conclusions remain,
+many critical assertions need modeling, or the user requests an argument graph.
+Otherwise SourceGuard observations and brief content boundaries suffice. Use
+LogicGuard's source library only when building those deeper models.
 Every source record keeps locator, source date, coverage period, access state,
 lineage, independence, role, and what it can and cannot support.
 

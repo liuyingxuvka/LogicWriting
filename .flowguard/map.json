@@ -59,7 +59,7 @@
       "layer": "evidence",
       "summary": "Validate investigation evidence records and the ResearchGuard synthesis-plan handoff.",
       "responsibilities": [
-        "Validate source registry, claim support and the optional ResearchPacket evidence record (source roles, dates, lineage, what each source can and cannot support) without requiring native receipts.",
+        "Validate source registry, claim support and the optional ResearchPacket evidence record (source roles, dates, lineage, what each source can and cannot support) without requiring native receipts. SourceGuard owns sources and anchors; LogicGuard source-library use is limited to deeper argument models.",
         "Map ResearchGuard synthesis plans into the reader handoff without receipt fields and without replacing native member authority; the native-to-reader unit mapping is checked when the ReaderBrief is built.",
         "Packet and claim-support commands fill a missing request fingerprint and SourceRegistry reference.",
         "The native bridge test finds the formal ResearchGuard source through an explicit environment path, an editable src checkout, or the sibling repository."
@@ -98,7 +98,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:43de485b4befa312c4be1f0b329efcd59d919aec91c09efde151adc55c900b5c"
+      "fingerprint": "sha256:578ee56d9d80149278cb8e12bc682ac138a60f03f0c29bc41b76c12e5f9e5e3e"
     },
     {
       "id": "reader-artifact",
@@ -111,7 +111,7 @@
         "Reader-chain commands take upstream records as file paths and compute the fingerprints and references a caller leaves out (fill_brief_fingerprints, fill_check_fingerprints, fill_closure_fingerprints); values the caller gives are still checked. Derive only absent visible content/limitation placements and shared fiction-unit fields once at the brief-request boundary before fingerprints; retain explicit values and name unplaced ids requiring an explicit disposition.",
         "Name the resolved absolute path when an artifact file cannot be read.",
         "Project the optional fiction voice_contract into writer input, leaving a missing payload as a gap and binding changes in the route and brief fingerprints.",
-        "Before filling any fingerprint, name vanished units across every contract binding and route-review evidence reference without guessing replacement bindings. Document and smoke-check installable route examples and their finite bad-text catalog."
+        "Before filling any fingerprint, name vanished units across every contract binding and route-review evidence reference without guessing replacement bindings. Document and smoke-check installable route examples and their finite bad-text catalog. Closure copies saved provider statuses; missing or failing required reports forbid broad claims and are named in residual risk."
       ],
       "files": [
         "skills/logic-writing/SKILL.md",
@@ -156,7 +156,10 @@
         "tests/unit/test_editorial_dispositions.py",
         "tests/unit/test_review_obligations.py",
         "tests/unit/test_writer_projection.py",
-        "skills/logic-writing/assets/examples/README.md"
+        "skills/logic-writing/assets/examples/README.md",
+        "tests/fixtures/trials/worldguard-fail.json",
+        "tests/fixtures/trials/sourceguard-stop.json",
+        "tests/fixtures/trials/worldguard-pass.json"
       ],
       "entrypoints": [
         "skills/logic-writing/scripts/reader_pipeline.py:build_writer_input",
@@ -197,10 +200,11 @@
         "tests/e2e/test_worked_examples.py"
       ],
       "models": [
-        ".flowguard/models/reader_artifact_model.py"
+        ".flowguard/models/reader_artifact_model.py",
+        ".flowguard/models/closure_claim_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:b62ff51542e2c477064cec4bb01ebcddf69e74c0475c1051b0f32d2786d4e4df"
+      "fingerprint": "sha256:bc687e2c1398681ecb593473a5a1c18dfe60a73116eca827836bf5c741fcb3a1"
     },
     {
       "id": "fiction",
@@ -299,7 +303,19 @@
         "skills/logic-writing/routes/fiction/scripts/turning_point_check.py",
         "skills/logic-writing/routes/fiction/scripts/validate_fiction_artifact.py",
         "skills/logic-writing/routes/fiction/scripts/voice_style_continuity_check.py",
-        "skills/logic-writing/assets/examples/fiction/**"
+        "skills/logic-writing/assets/examples/fiction/audit-request.json",
+        "skills/logic-writing/assets/examples/fiction/brief-request.json",
+        "skills/logic-writing/assets/examples/fiction/closure-input.json",
+        "skills/logic-writing/assets/examples/fiction/known-bad/empty.md",
+        "skills/logic-writing/assets/examples/fiction/known-bad/expected.json",
+        "skills/logic-writing/assets/examples/fiction/known-bad/leak.md",
+        "skills/logic-writing/assets/examples/fiction/map-request.json",
+        "skills/logic-writing/assets/examples/fiction/piece.md",
+        "skills/logic-writing/assets/examples/fiction/route-request.json",
+        "skills/logic-writing/assets/examples/fiction/route-review.json",
+        "skills/logic-writing/assets/examples/fiction/shared-writing.json",
+        "skills/logic-writing/assets/examples/fiction/world.yaml",
+        "skills/logic-writing/assets/examples/fiction/worldguard-check.json"
       ],
       "entrypoints": [
         "skills/logic-writing/routes/fiction/scripts/storyline_route_check.py:compile_route_decision",
@@ -323,7 +339,7 @@
         ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:f80834b3310338364b824cd64e431891f81a10240a36cd2d67f83a25039667d8"
+      "fingerprint": "sha256:0af62cb8e5e114f9b70bbb8737261866c655152d563a6f2f556f69c5046ee207"
     },
     {
       "id": "travel",
@@ -390,7 +406,19 @@
         "skills/logic-writing/routes/travel/scripts/validate_travel_artifact.py",
         "skills/logic-writing/routes/travel/scripts/validate_travel_plan.py",
         "skills/logic-writing/routes/travel/scripts/validate_travel_text_outputs.py",
-        "skills/logic-writing/assets/examples/travel/**"
+        "skills/logic-writing/assets/examples/travel/audit-request.json",
+        "skills/logic-writing/assets/examples/travel/brief-request.json",
+        "skills/logic-writing/assets/examples/travel/closure-input.json",
+        "skills/logic-writing/assets/examples/travel/known-bad/empty.md",
+        "skills/logic-writing/assets/examples/travel/known-bad/expected.json",
+        "skills/logic-writing/assets/examples/travel/known-bad/leak.md",
+        "skills/logic-writing/assets/examples/travel/map-request.json",
+        "skills/logic-writing/assets/examples/travel/piece.md",
+        "skills/logic-writing/assets/examples/travel/route-request.json",
+        "skills/logic-writing/assets/examples/travel/route-review.json",
+        "skills/logic-writing/assets/examples/travel/shared-writing.json",
+        "skills/logic-writing/assets/examples/travel/world.yaml",
+        "skills/logic-writing/assets/examples/travel/worldguard-check.json"
       ],
       "entrypoints": [
         "skills/logic-writing/routes/travel/scripts/travel_contract.py:validate_plan_file",
@@ -413,7 +441,7 @@
         ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:6217ddded1687ec777db2593d2e95cbf857d8e44005fe36874d2fa3e299295f1"
+      "fingerprint": "sha256:2c9e2e3abd45a0e5d473e43b5e7f99ab5ac337ff6d41b1a682315fb661766819"
     },
     {
       "id": "investigation",
@@ -426,7 +454,19 @@
       "files": [
         "skills/logic-writing/references/routes/investigation.md",
         "skills/logic-writing/routes/investigation/scripts/validate_investigation_artifact.py",
-        "skills/logic-writing/assets/examples/investigation/**"
+        "skills/logic-writing/assets/examples/investigation/audit-request.json",
+        "skills/logic-writing/assets/examples/investigation/brief-request.json",
+        "skills/logic-writing/assets/examples/investigation/closure-input.json",
+        "skills/logic-writing/assets/examples/investigation/known-bad/expected.json",
+        "skills/logic-writing/assets/examples/investigation/known-bad/leak.md",
+        "skills/logic-writing/assets/examples/investigation/known-bad/nocite.md",
+        "skills/logic-writing/assets/examples/investigation/known-bad/token.md",
+        "skills/logic-writing/assets/examples/investigation/map-request.json",
+        "skills/logic-writing/assets/examples/investigation/piece.md",
+        "skills/logic-writing/assets/examples/investigation/route-request.json",
+        "skills/logic-writing/assets/examples/investigation/route-review.json",
+        "skills/logic-writing/assets/examples/investigation/shared-writing.json",
+        "skills/logic-writing/assets/examples/investigation/sourceguard-stop.json"
       ],
       "entrypoints": [
         "skills/logic-writing/routes/investigation/scripts/validate_investigation_artifact.py:validate_investigation_artifact"
@@ -446,7 +486,7 @@
         ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:f7d623060f8f5010bd5a88c561dce75509db7a53a8e472261102509d5780790d"
+      "fingerprint": "sha256:292d1197d29938285334e3ca5cf512ea827e4c3e709e4922d4ca05726e4aabf8"
     },
     {
       "id": "academic",
@@ -459,7 +499,17 @@
       "files": [
         "skills/logic-writing/references/routes/academic-writing.md",
         "skills/logic-writing/routes/academic/scripts/validate_academic_artifact.py",
-        "skills/logic-writing/assets/examples/academic/**"
+        "skills/logic-writing/assets/examples/academic/audit-request.json",
+        "skills/logic-writing/assets/examples/academic/brief-request.json",
+        "skills/logic-writing/assets/examples/academic/closure-input.json",
+        "skills/logic-writing/assets/examples/academic/known-bad/empty.md",
+        "skills/logic-writing/assets/examples/academic/known-bad/expected.json",
+        "skills/logic-writing/assets/examples/academic/known-bad/leak.md",
+        "skills/logic-writing/assets/examples/academic/map-request.json",
+        "skills/logic-writing/assets/examples/academic/piece.md",
+        "skills/logic-writing/assets/examples/academic/route-request.json",
+        "skills/logic-writing/assets/examples/academic/route-review.json",
+        "skills/logic-writing/assets/examples/academic/shared-writing.json"
       ],
       "entrypoints": [
         "skills/logic-writing/routes/academic/scripts/validate_academic_artifact.py:validate_academic_artifact"
@@ -479,7 +529,7 @@
         ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:5bb9c77fc9fff13fac6089b025a2c1804c0fb46b186f28ea8de14858ea80f75e"
+      "fingerprint": "sha256:33fc2a30e01553b788410bd181f7fd2a6a9912096e12ac0588bd34d96fba7db4"
     },
     {
       "id": "release",
@@ -537,7 +587,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:274ce46be6345880b9cc212f28e0eea5030aa9cb7da165eedf3e1a30418c8b52"
+      "fingerprint": "sha256:c378a47dae446383054ba13a4753cb3ca05ec051ddc635fb743dc83a5e994dda"
     },
     {
       "id": "providers",
@@ -580,7 +630,7 @@
       "summary": "Shared canonical identity, request loading and JSON schema validation used by existing domain owners.",
       "responsibilities": [
         "Preserve canonical content fingerprints and strict JSON schema validation shared by existing domain owners.",
-        "Load command requests whose reviewed object and list fields name JSON files; resolve relative artifact paths against the file that contains them while preserving scalar identifiers and opaque native result locators, and fill fingerprints a caller leaves out (load_request, fill_fingerprint, fill_missing).",
+        "Load command requests whose reviewed object and list fields name JSON files; resolve relative artifact paths against the file that contains them while preserving scalar identifiers and opaque native result locators, and fill fingerprints a caller leaves out (load_request, fill_fingerprint, fill_missing). Resolve saved provider report paths relative to the closure request without loading or executing providers.",
         "Keep same-key records available from partial result envelopes; reject failed envelopes without the requested record with their first error before sole-object fallback."
       ],
       "files": [
@@ -600,7 +650,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:456023213147ae463d40b42329072c3cf9ac132da9d7180e824dd4cc355ca75c"
+      "fingerprint": "sha256:bb655d5084751a6d8139b935593560b88e90e27c4e9b44e05164133e5059bc69"
     }
   ],
   "flows": [],

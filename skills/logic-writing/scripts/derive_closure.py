@@ -61,6 +61,61 @@ def _exact(value: Mapping[str, Any], field: str, label: str) -> str:
     return actual
 
 
+PROVIDER_STATUS_FIELDS = {
+    "sourceguard": ("status", "stop_sufficient"),
+    "logicguard": ("wording_license", "assert"),
+    "worldguard": ("status", "PASS"),
+}
+
+
+def required_providers(owner, brief, route_composition):
+    live = any(row.get("status") == "live" for row in
+               brief.get("content_boundaries", {}).get("alternatives", []))
+    required = {"sourceguard"} if owner == "investigation" else set()
+    if live and owner in {"investigation", "academic-writing"}:
+        required.add("logicguard")
+    if owner == "travel-guide" or (
+        owner == "fiction-writing" and route_composition.get("world_check_required", False)
+    ):
+        required.add("worldguard")
+    return required
+
+
+def provider_checks(owner, brief, route_composition, reports):
+    """Copy saved native statuses; never execute a provider or certify its evidence."""
+    required = required_providers(owner, brief, route_composition)
+    if not isinstance(reports, list):
+        raise ValidationError("provider_reports must be a list")
+    checks, risks = [], []
+    for report in reports:
+        report = require_mapping(report, "provider report")
+        provider, path = report.get("provider"), report.get("path")
+        if not isinstance(provider, str) or provider not in PROVIDER_STATUS_FIELDS or not isinstance(path, str) or not path:
+            raise ValidationError("provider report needs a known provider and a nonempty path")
+        field, passing = PROVIDER_STATUS_FIELDS[provider]
+        document, status = {}, "unreadable"
+        try:
+            document = load_json(path)
+            if isinstance(document, dict) and field in document:
+                status = document[field]
+        except (OSError, ValueError, UnicodeError):
+            pass
+        passed = status == passing
+        checks.append(dict(provider=provider, path=path, status=status,
+                           passed=passed, required=provider in required))
+        if not passed:
+            reason = f"{provider} report {path}: {status}"
+            if provider == "logicguard" and isinstance(document, dict) and "reason" in document:
+                reason += f"; {document['reason']}"
+            risks.append(dict(defect_id=f"provider:{provider}", owner=owner, reason=reason))
+    supplied = {row["provider"] for row in checks}
+    for provider in sorted(required - supplied):
+        checks.append(dict(provider=provider, path=None, status="not_run", passed=False, required=True))
+        risks.append(dict(defect_id=f"provider:{provider}", owner=owner,
+                          reason=f"{provider} report is missing: not_run"))
+    return checks, risks, all(row["passed"] for row in checks)
+
+
 def derive_closure(
     value: Any,
 ) -> dict[str, Any]:
@@ -154,6 +209,9 @@ def derive_closure(
             "owner": owner,
             "reason": "The reader judgment was a self-review by the writer, not an independent read.",
         })
+    checks, provider_risks, providers_passed = provider_checks(
+        owner, brief, route, request.get("provider_reports", []))
+    residual.extend(provider_risks)
     reader_basis = "a self-review by the writer" if self_review else "independent reader judgment"
     if status == "passed":
         safe_claim = (
@@ -165,6 +223,9 @@ def derive_closure(
         if self_review:
             safe_claim += " The reader judgment was a self-review by the writer."
     next_actions = [] if status == "passed" else [{"owner": owner, "action": "repair_and_rerun"}]
+    if checks:
+        safe_claim += "; provider reports: " + ", ".join(
+            f"{row['provider']} {row['status']}" for row in checks)
     # A same-call snapshot is useful only while the underlying bytes remain
     # current. Re-read once before emitting or committing any closure receipt.
     try:
@@ -195,7 +256,8 @@ def derive_closure(
         "unsafe_claim_boundary": (
             "Structural licensing and actual-artifact review do not establish universal factual or aesthetic truth."
         ),
-        "broad_claim_allowed": status == "passed" and not self_review,
+        "provider_checks": checks,
+        "broad_claim_allowed": status == "passed" and not self_review and providers_passed,
     }
     closure["closure_fingerprint"] = fingerprint(closure)
     require_schema("closure.schema.json", closure, label="closure")

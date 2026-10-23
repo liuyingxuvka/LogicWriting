@@ -26,3 +26,5 @@ case: `PASS` -> `pass`, `FAIL` -> `fail`, `GAP` -> `gap`,
 not run.
 
 Exit code 0 means PASS, 1 means a non-pass verdict (read status and gaps), 2 means the input could not be read; a non-zero exit is a result, not a crash.
+
+Save the native report: `python <skills>/worldguard/scripts/run_worldguard.py check --contract <contract> > worldguard-check.json`. List `{"provider":"worldguard","path":"worldguard-check.json"}` in the closure input's `provider_reports`.

@@ -39,3 +39,19 @@ If the audit or the reader judgment reports defects, revise the actual text,
 rebuild the ArtifactMap and rerun the audit and the read. If a revision round
 fixes none of the reported defects, stop and return the artifact with the audit
 note. Repeated closure calls do not demonstrate work.
+
+## Saved provider reports
+
+List `{ "provider": "sourceguard", "path": "sourceguard-stop.json" }` in
+`provider_reports` (also `logicguard` and `worldguard`). Paths are relative to
+the closure request. Closure reads files only; it copies SourceGuard `status`,
+LogicGuard `wording_license`, or WorldGuard `status` unchanged. Only
+`stop_sufficient`, `assert`, and `PASS`, respectively, pass. Missing/invalid JSON
+or absent fields are `unreadable`; missing required providers are `not_run`.
+Investigation requires SourceGuard and, while alternatives are live, LogicGuard.
+Academic work requires LogicGuard while alternatives are live; travel requires
+WorldGuard, as does fiction with `world_check_required: true`. Every supplied
+report must also pass before an independent passing textual closure can allow
+a broad claim. Failures leave textual closure status unchanged, appear in
+`residual_risk`, and retain LogicGuard's reason. `safe_claim` lists read statuses.
+These copied statuses do not authenticate a report or prove its input freshness.

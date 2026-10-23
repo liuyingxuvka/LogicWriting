@@ -136,3 +136,58 @@ def test_self_review_closes_without_a_broad_claim(tmp_path, same_ids, pass_quali
     if not pass_quality:
         assert len(closed["residual_risk"]) > 1
         assert closed["next_actions"] == [{"owner": "investigation", "action": "repair_and_rerun"}]
+
+
+def test_missing_required_provider_report_blocks_the_broad_claim(tmp_path):
+    request = closure_input(complete_chain(tmp_path))
+    request.pop('provider_reports')
+    result = derive_closure(request)['closure']
+    assert result['status'] == 'passed'
+    assert not result['broad_claim_allowed']
+    assert result['provider_checks'] == [dict(provider='sourceguard', path=None, status='not_run', passed=False, required=True)]
+    assert result['residual_risk'][0]['defect_id'] == 'provider:sourceguard'
+
+
+@pytest.mark.parametrize('provider,document,status', [
+    ('sourceguard', {'status': 'stop_sufficient'}, 'stop_sufficient'),
+    ('worldguard', {'status': 'FAIL'}, 'FAIL'),
+    ('logicguard', {'wording_license': 'qualify', 'reason': 'counterevidence remains'}, 'qualify'),
+    ('sourceguard', {}, 'unreadable'),
+])
+def test_provider_status_is_copied_from_the_report_file(tmp_path, provider, document, status):
+    import json
+    request = closure_input(complete_chain(tmp_path))
+    path = tmp_path / 'report.json'
+    path.write_text(json.dumps(document))
+    request['provider_reports'].append(dict(provider=provider, path=str(path)))
+    result = derive_closure(request)['closure']
+    row = result['provider_checks'][-1]
+    assert row['status'] == status
+    assert result['broad_claim_allowed'] == (status == 'stop_sufficient')
+    assert f'{provider} {status}' in result['safe_claim']
+    if status != 'stop_sufficient':
+        risk = next(r for r in result['residual_risk'] if r['defect_id'] == f'provider:{provider}')
+        assert status in risk['reason']
+        if 'reason' in document:
+            assert document['reason'] in risk['reason']
+
+
+@pytest.mark.parametrize('contents', [None, 'not json', '[]'])
+def test_unreadable_report_is_not_a_pass(tmp_path, contents):
+    from derive_closure import provider_checks
+    path = tmp_path / 'missing.json'
+    if contents is not None:
+        path.write_text(contents)
+    rows, risks, passed = provider_checks('investigation', {}, {}, [{'provider': 'sourceguard', 'path': str(path)}])
+    assert not passed and rows[0]['status'] == 'unreadable' and risks
+
+
+def test_required_providers_follow_live_alternatives_and_fiction_opt_in():
+    from derive_closure import required_providers
+    live = {'content_boundaries': {'alternatives': [{'status': 'live'}]}}
+    assert required_providers('investigation', live, {}) == {'sourceguard', 'logicguard'}
+    assert required_providers('academic-writing', live, {}) == {'logicguard'}
+    assert not required_providers('academic-writing', {}, {})
+    assert required_providers('fiction-writing', {}, {'world_check_required': True}) == {'worldguard'}
+    assert not required_providers('fiction-writing', {}, {})
+    assert required_providers('travel-guide', {}, {}) == {'worldguard'}

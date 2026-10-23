@@ -10,7 +10,7 @@
     "artifact_map_fingerprint", "shared_writing_contract_fingerprint",
     "deterministic_audit_fingerprint", "route_audit_fingerprint", "judgment_fingerprint",
     "revision_provenance_fingerprint", "status", "residual_risk", "next_actions", "safe_claim",
-    "unsafe_claim_boundary", "broad_claim_allowed", "closure_fingerprint"
+    "unsafe_claim_boundary", "provider_checks", "broad_claim_allowed", "closure_fingerprint"
   ],
   "properties": {
     "schema_version": { "const": "2.0" },
@@ -32,6 +32,7 @@
     "next_actions": { "type": "array", "items": { "$ref": "#/$defs/nextAction" } },
     "safe_claim": { "type": "string", "minLength": 1 },
     "unsafe_claim_boundary": { "type": "string", "minLength": 1 },
+    "provider_checks": { "type": "array", "items": { "$ref": "#/$defs/providerCheck" } },
     "broad_claim_allowed": { "type": "boolean" },
     "closure_fingerprint": { "$ref": "#/$defs/fp" }
   },
@@ -41,15 +42,6 @@
       "then": {
         "properties": {
           "next_actions": {"maxItems": 0}
-        }
-      }
-    },
-    {
-      "if": {"properties": {"status": {"const": "passed"}, "judge_kind": {"const": "independent_context"}}, "required": ["status", "judge_kind"]},
-      "then": {
-        "properties": {
-          "residual_risk": {"maxItems": 0},
-          "broad_claim_allowed": {"const": true}
         }
       }
     },
@@ -72,8 +64,10 @@
         }
       }
     }
+    ,{"if":{"properties":{"status":{"const":"passed"},"judge_kind":{"const":"independent_context"},"provider_checks":{"items":{"properties":{"passed":{"const":true}},"required":["passed"]}}},"required":["status","judge_kind","provider_checks"]},"then":{"properties":{"broad_claim_allowed":{"const":true}}},"else":{"properties":{"broad_claim_allowed":{"const":false}}}}
   ],
   "$defs": {
+    "providerCheck": {"type":"object","additionalProperties":false,"required":["provider","path","status","passed","required"],"properties":{"provider":{"enum":["sourceguard","logicguard","worldguard"]},"path":{"type":["string","null"]},"status":{},"passed":{"type":"boolean"},"required":{"type":"boolean"}}},
     "id": {
       "type": "string",
       "minLength": 2,

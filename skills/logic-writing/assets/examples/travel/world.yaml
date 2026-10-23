@@ -1,0 +1,20 @@
+contract_id: old-market-day
+claim:
+  claim_id: day-order
+  text: The market visit precedes lunch; the covered reading room is available for the rainy afternoon before the return through the north gate.
+  requested_semantics: [event]
+  asserts:
+    - {event: market, before: lunch}
+    - {event: lunch, before: reading_room}
+    - {event: reading_room, before: return_gate}
+world_model:
+  model_id: illustrative-rainy-day
+  model_version: v1
+  scope_limits: [illustrative places only, declared order and access conditions only, does not verify real opening hours or travel times]
+inputs:
+  event_model: {initial_states: [arcade_open, room_open, gate_open]}
+  events:
+    - {event_id: market, at: '09:00', requires: [gate_open], initiates: at_market}
+    - {event_id: lunch, at: '12:00', requires: [at_market, arcade_open], initiates: at_arcade}
+    - {event_id: reading_room, at: '13:00', requires: [at_arcade, room_open], initiates: at_room}
+    - {event_id: return_gate, at: '15:00', requires: [at_room, gate_open], initiates: finished}

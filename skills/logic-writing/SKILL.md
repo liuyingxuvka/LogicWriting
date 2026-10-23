@@ -189,8 +189,11 @@ reference under `references/adapters/`.
 
 Read [references/routes/investigation.md](references/routes/investigation.md).
 Begin with the claim, decision, scope, source roles, and stopping rule. Preserve
-concrete sources through LogicGuard's source library before deeper synthesis.
-Use SourceGuard to plan discovery, and invoke TraceGuard only when the claim
+sources and anchors through SourceGuard. Use LogicGuard when live competing
+conclusions remain, many critical assertions need modeling, or the user asks
+for an argument graph; otherwise SourceGuard observations and brief boundaries
+are enough. Its source library is only for deeper LogicGuard models. Invoke
+TraceGuard only when the claim
 actually depends on a trace. Build the claim-and-evidence ledger before prose;
 its rows become the content boundaries.
 
@@ -310,16 +313,11 @@ Repeated closure calls never count as repair attempts.
 
 - Do not write a confident final answer while a critical claim has no usable
   support; bound it or report it.
-- Do not close an investigation without current SourceGuard source-observation
-  evidence, a current LogicGuard argument model, and actual-artifact reader
-  review.
-- Do not close academic work without a current LogicGuard argument model,
-  revision provenance, and actual-artifact reader review.
-- Do not close fiction without current story-model, continuity,
-  shared-writing, actual-artifact semantic review, and model-prose binding
-  evidence appropriate to the selected depth.
-- Do not close travel without current source-time, feasibility, traveler-fit,
-  fallback, shared-writing, final-artifact identity, and reverse-guide evidence.
+- Closure copies statuses from saved `provider_reports`. Broad claims require an
+  independent read, SourceGuard for investigations, and LogicGuard while live
+  alternatives remain in investigations or academic work; travel and fiction
+  with `world_check_required` need WorldGuard. Missing or failing providers
+  are named in `residual_risk`.
 - Do not let one sibling route call another or issue its closure.
 - Do not route LogicGuard, SourceGuard, or TraceGuard through any executable
   other than the single `researchguard` console.
