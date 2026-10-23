@@ -111,7 +111,8 @@
         "Reader-chain commands take upstream records as file paths and compute the fingerprints and references a caller leaves out (fill_brief_fingerprints, fill_check_fingerprints, fill_closure_fingerprints); values the caller gives are still checked. Derive only absent visible content/limitation placements and shared fiction-unit fields once at the brief-request boundary before fingerprints; retain explicit values and name unplaced ids requiring an explicit disposition.",
         "Name the resolved absolute path when an artifact file cannot be read.",
         "Project the optional fiction voice_contract into writer input, leaving a missing payload as a gap and binding changes in the route and brief fingerprints.",
-        "Before filling any fingerprint, name vanished units across every contract binding and route-review evidence reference without guessing replacement bindings. Document and smoke-check installable route examples and their finite bad-text catalog. Closure copies saved provider statuses; missing or failing required reports forbid broad claims and are named in residual risk."
+        "Before filling any fingerprint, name vanished units across every contract binding and route-review evidence reference without guessing replacement bindings. Document and smoke-check installable route examples and their finite bad-text catalog. Closure copies saved provider statuses; missing or failing required reports forbid broad claims and are named in residual risk.",
+        "Own mode-aware revision provenance: derive real source bytes/units from the source manifest helper, check current target ids and canonical fingerprints, and supply a deterministic not-applicable record for new writing."
       ],
       "files": [
         "skills/logic-writing/SKILL.md",
@@ -205,7 +206,7 @@
         ".flowguard/models/closure_claim_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:746d58e5a1839d19c0740185fd0509b6e1d2d0d1b0f17f68b2ba2a19a34ee953"
+      "fingerprint": "sha256:dc5c9d047aaaace3a89e5c2e410307b86888ffd4b17a3455e5602f78c4298e58"
     },
     {
       "id": "fiction",
@@ -497,7 +498,7 @@
       "layer": "routes",
       "summary": "Academic final-owner semantics and revision.",
       "responsibilities": [
-        "Preserve academic argument, section jobs, citation and revision-provenance boundaries.",
+        "Preserve academic argument, section jobs, citation and revision-provenance boundaries. Explain omitted provenance for new work and real-file source/target unit treatments for revisions.",
         "Review current academic artifact spans against route-specific dimensions. Ship a small runnable reader-chain example with known-bad texts."
       ],
       "files": [
@@ -533,7 +534,7 @@
         ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:7f385faee110df2833c2f7a881f92098afa584fbade1af688d424030d7eabebe"
+      "fingerprint": "sha256:c32a060279078ea5023322ad95cb8590282241f782c5d72bb0aec1cd27ae51f8"
     },
     {
       "id": "release",
@@ -635,7 +636,8 @@
       "responsibilities": [
         "Preserve canonical content fingerprints and strict JSON schema validation shared by existing domain owners.",
         "Load command requests whose reviewed object and list fields name JSON files; resolve relative artifact paths against the file that contains them while preserving scalar identifiers and opaque native result locators, and fill fingerprints a caller leaves out (load_request, fill_fingerprint, fill_missing). Resolve saved provider report paths relative to the closure request without loading or executing providers.",
-        "Keep same-key records available from partial result envelopes; reject failed envelopes without the requested record with their first error before sole-object fallback."
+        "Keep same-key records available from partial result envelopes; reject failed envelopes without the requested record with their first error before sole-object fallback.",
+        "Resolve revision source paths against their containing request/record files and describe source-file provenance in the current schema."
       ],
       "files": [
         "skills/logic-writing/scripts/_common.py",
@@ -654,7 +656,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:bb655d5084751a6d8139b935593560b88e90e27c4e9b44e05164133e5059bc69"
+      "fingerprint": "sha256:ed869d1cd1303c1b24b4566f9189b6072f3da91773052c1bdcd797f7d48cbae1"
     }
   ],
   "flows": [],

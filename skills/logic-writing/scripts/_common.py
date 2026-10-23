@@ -317,6 +317,12 @@ def load_request(path: str | Path | None) -> Any:
             value[key] = loaded
         if file_request and key in {"contract", "shared_writing"} and isinstance(value[key], dict):
             _absolute_artifact_path(value[key], record_base)
+        if file_request and key in {"revision_provenance", "provenance"} and isinstance(value[key], dict):
+            source = value[key].get("source_artifact_path")
+            if isinstance(source, str) and source:
+                value[key]["source_artifact_path"] = str((record_base / Path(source).expanduser()).resolve())
+    if file_request and isinstance(value.get("source_artifact_path"), str):
+        value["source_artifact_path"] = str((base / Path(value["source_artifact_path"]).expanduser()).resolve())
     return value
 
 

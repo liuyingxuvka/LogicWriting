@@ -123,7 +123,7 @@ def derive_closure(
     required = (
         "closure_id", "route_decision", "reader_brief", "route_composition",
         "artifact_map", "shared_writing", "deterministic_audit", "route_review",
-        "judgment", "revision_provenance",
+        "judgment",
     )
     missing = [field for field in required if field not in request]
     if missing:
@@ -173,8 +173,11 @@ def derive_closure(
         route_review=route_review,
     )
     provenance = validate_revision_provenance(
-        request["revision_provenance"],
+        request.get("revision_provenance"),
         target_artifact_fingerprint=amap["artifact_fingerprint"],
+        artifact_mode=brief["reader_intent"]["artifact_mode"], artifact_map=amap,
+        reader_intent_fingerprint=brief["reader_intent_fingerprint"], final_owner=owner,
+        recorded_at=judgment.get("judged_at"),
     )
     if provenance["reader_intent_fingerprint"] != brief["reader_intent_fingerprint"]:
         raise ValidationError("revision provenance is stale for ReaderIntent")

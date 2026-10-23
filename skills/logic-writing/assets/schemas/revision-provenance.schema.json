@@ -16,6 +16,7 @@
     "final_owner": { "enum": ["investigation", "academic-writing", "fiction-writing", "travel-guide"] },
     "artifact_mode": { "enum": ["create_new", "revise_existing"] },
     "reader_intent_fingerprint": { "$ref": "#/$defs/fp" },
+    "source_artifact_path": { "type": ["string", "null"], "minLength": 1 },
     "source_artifact_fingerprint": { "type": ["string", "null"], "pattern": "^sha256:[a-f0-9]{64}$" },
     "target_artifact_fingerprint": { "$ref": "#/$defs/fp" },
     "applicability": { "enum": ["required", "not_applicable"] },
@@ -28,13 +29,16 @@
       "if": { "properties": { "artifact_mode": { "const": "create_new" } }, "required": ["artifact_mode"] },
       "then": {
         "properties": {
+          "source_artifact_path": { "type": "null" },
           "source_artifact_fingerprint": { "type": "null" },
           "applicability": { "const": "not_applicable" },
           "unit_treatments": { "maxItems": 0 }
         }
       },
       "else": {
+        "required": ["source_artifact_path"],
         "properties": {
+          "source_artifact_path": { "type": "string", "minLength": 1 },
           "source_artifact_fingerprint": { "$ref": "#/$defs/fp" },
           "applicability": { "const": "required" },
           "unit_treatments": { "minItems": 1 }

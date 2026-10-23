@@ -2061,15 +2061,66 @@ def _reader_judgment_from_current(value, *, amap, brief, contract, audit, route_
     return judgment
 
 
-def validate_revision_provenance(value: Any, *, target_artifact_fingerprint: str) -> dict[str, Any]:
-    provenance = require_mapping(value, "revision provenance")
-    require_schema("revision-provenance.schema.json", provenance, label="revision provenance")
-    _require_exact_fingerprint(provenance, "provenance_fingerprint")
+def validate_revision_provenance(
+    value: Any, *, target_artifact_fingerprint: str, artifact_mode: str | None = None,
+    artifact_map: Mapping[str, Any] | None = None, reader_intent_fingerprint: str | None = None,
+    final_owner: str | None = None, recorded_at: str | None = None,
+) -> dict[str, Any]:
+    """Own revision mode, real source-byte identity and source/target unit checks."""
+    if value is None:
+        if artifact_mode == "revise_existing":
+            raise ValidationError("revise_existing requires revision_provenance with source_artifact_path")
+        provenance = {
+            "schema_version": "2.0", "provenance_id": "provenance:not-applicable",
+            "final_owner": final_owner, "artifact_mode": "create_new",
+            "reader_intent_fingerprint": reader_intent_fingerprint,
+            "source_artifact_fingerprint": None, "target_artifact_fingerprint": target_artifact_fingerprint,
+            "applicability": "not_applicable", "unit_treatments": [],
+            "recorded_at": recorded_at or utc_now(),
+        }
+    else:
+        provenance = deepcopy(require_mapping(value, "revision provenance"))
+    mode = provenance.get("artifact_mode")
+    if artifact_mode is not None and mode != artifact_mode:
+        raise ValidationError(f"revision provenance says {mode} but ReaderIntent says {artifact_mode}")
+    fill_missing(provenance, "reader_intent_fingerprint", reader_intent_fingerprint)
+    fill_missing(provenance, "final_owner", final_owner)
+    fill_missing(provenance, "target_artifact_fingerprint", target_artifact_fingerprint)
     if provenance["target_artifact_fingerprint"] != target_artifact_fingerprint:
         raise ValidationError("revision provenance is stale for the current artifact")
-    source_ids = _ids(provenance["unit_treatments"], "source_unit_id", "source unit treatment")
-    if provenance["artifact_mode"] == "revise_existing" and not source_ids:
-        raise ValidationError("revise_existing requires source-unit treatments")
+    if mode == "revise_existing":
+        from build_source_unit_manifest import build_source_unit_manifest
+        source_path = provenance.get("source_artifact_path")
+        if not isinstance(source_path, str) or not source_path:
+            raise ValidationError("revise_existing requires source_artifact_path")
+        if artifact_map is None:
+            raise ValidationError("revise_existing requires the current artifact_map")
+        amap = validate_artifact_map(artifact_map)
+        manifest = build_source_unit_manifest(manifest_id="manifest:revision",
+            source_path=source_path, target_path=amap["artifact_path"])
+        actual_source = manifest["source"]["artifact_fingerprint"]
+        provided_source = provenance.get("source_artifact_fingerprint")
+        if provided_source is not None and provided_source != actual_source:
+            raise ValidationError("source_artifact_fingerprint does not match the real source_artifact_path bytes")
+        provenance["source_artifact_fingerprint"] = actual_source
+        if manifest["target"]["artifact_fingerprint"] != target_artifact_fingerprint:
+            raise ValidationError("revision provenance is stale for the current artifact")
+        source_ids = {row["unit_id"] for row in manifest["source"]["units"]}
+        target_ids = {row["artifact_unit_id"] for row in amap["units"]}
+        treatments = provenance.get("unit_treatments", [])
+        if not isinstance(treatments, list) or not treatments:
+            raise ValidationError("revise_existing requires source-unit treatments")
+        treatments = [require_mapping(row, "source unit treatment") for row in treatments]
+        _ids(treatments, "source_unit_id", "source unit treatment")
+        for row in treatments:
+            if row["source_unit_id"] not in source_ids:
+                raise ValidationError(f"unknown source_unit_id: {row['source_unit_id']}")
+            for target in row.get("target_unit_ids", []):
+                if target not in target_ids:
+                    raise ValidationError(f"unknown target_unit_id: {target}")
+    fill_fingerprint(provenance, "provenance_fingerprint")
+    require_schema("revision-provenance.schema.json", provenance, label="revision provenance")
+    _require_exact_fingerprint(provenance, "provenance_fingerprint")
     return provenance
 
 
@@ -2311,13 +2362,14 @@ def fill_closure_fingerprints(request: dict[str, Any]) -> dict[str, Any]:
         for row in [*(judgment.get("defects") or []), *(judgment.get("strengths") or [])]:
             _fill_evidence(_mapping(row).get("evidence"), units)
         fill_fingerprint(judgment, "judgment_fingerprint")
+    intent = _mapping(brief.get("reader_intent"))
     for key in ("revision_provenance", "provenance"):
-        provenance = request.get(key)
-        if isinstance(provenance, dict):
-            fill_missing(provenance, "target_artifact_fingerprint",
-                         request.get("target_artifact_fingerprint") or amap.get("artifact_fingerprint"))
-            fill_missing(provenance, "reader_intent_fingerprint", brief.get("reader_intent_fingerprint"))
-            fill_fingerprint(provenance, "provenance_fingerprint")
+        if key in request or (key == "revision_provenance" and intent):
+            request[key] = validate_revision_provenance(
+                request.get(key), target_artifact_fingerprint=request.get("target_artifact_fingerprint") or amap.get("artifact_fingerprint"),
+                artifact_mode=intent.get("artifact_mode"), artifact_map=amap or request.get("artifact_map"),
+                reader_intent_fingerprint=brief.get("reader_intent_fingerprint"), final_owner=brief.get("final_owner"),
+                recorded_at=_mapping(request.get("judgment")).get("judged_at"))
     return request
 
 

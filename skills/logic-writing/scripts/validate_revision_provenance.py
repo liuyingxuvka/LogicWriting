@@ -8,11 +8,13 @@ from reader_pipeline import fill_closure_fingerprints, validate_revision_provena
 
 def validate_revision_provenance(value, *, target_artifact_fingerprint=None, **_ignored):
     envelope = fill_closure_fingerprints(require_mapping(value, "revision provenance validation request"))
-    provenance = envelope.get("provenance", envelope)
+    provenance = envelope.get("revision_provenance", envelope.get("provenance", envelope))
     target = target_artifact_fingerprint or envelope.get("target_artifact_fingerprint") or provenance.get("target_artifact_fingerprint")
     validated = _validate_revision(
         provenance,
         target_artifact_fingerprint=target,
+        artifact_map=envelope.get("artifact_map"),
+        artifact_mode=envelope.get("reader_brief", {}).get("reader_intent", envelope.get("reader_intent", {})).get("artifact_mode"),
     )
     return validation_result(
         status="current_pass",

@@ -153,7 +153,7 @@ def make_route_composition(owner: str, intent: dict, plan: dict) -> dict:
         })
     elif owner == "academic-writing":
         common.update({
-            "artifact_mode": "create_new",
+            "artifact_mode": intent["artifact_mode"],
             "profile": "conceptual_argument",
             "research_question": "完整结构如何改善读者理解？",
             "central_contribution": "用整篇组合约束取代小点拼接。",
@@ -173,7 +173,7 @@ def make_route_composition(owner: str, intent: dict, plan: dict) -> dict:
                 "downstream_consumer_ids": [],
             }],
             "figure_table_jobs": [],
-            "revision_provenance_applicability": "not_applicable",
+            "revision_provenance_applicability": "not_applicable" if intent["artifact_mode"] == "create_new" else "required",
             "actual_artifact_review_required": True,
         })
     elif owner == "fiction-writing":
@@ -223,7 +223,7 @@ def make_route_composition(owner: str, intent: dict, plan: dict) -> dict:
         })
     else:
         common.update({
-            "artifact_mode": "create_new",
+            "artifact_mode": intent["artifact_mode"],
             "guide_kind": "destination_guide",
             "structure_authority": "user_partial",
             "body_sections": [{
@@ -270,9 +270,9 @@ def make_route_composition(owner: str, intent: dict, plan: dict) -> dict:
     return _with_fp(common, "extension_fingerprint")
 
 
-def make_reader_chain(workdir: Path, owner: str = "investigation", *, language: str = "zh-CN") -> dict:
+def make_reader_chain(workdir: Path, owner: str = "investigation", *, language: str = "zh-CN", mode: str = "create_new") -> dict:
     workdir.mkdir(parents=True, exist_ok=True)
-    intent = make_intent(language=language)
+    intent = make_intent(language=language, mode=mode)
     plan = make_plan(intent, owner)
     route = make_route_composition(owner, intent, plan)
     deliverable = {
@@ -416,11 +416,12 @@ def complete_chain(
     *,
     pass_quality: bool = True,
     language: str = "zh-CN",
+    mode: str = "create_new",
 ) -> dict:
     """Build a synthetic protocol chain with registered native fixture evidence."""
     from derive_closure import REQUIRED_DIMENSIONS
 
-    chain = make_reader_chain(workdir, owner, language=language)
+    chain = make_reader_chain(workdir, owner, language=language, mode=mode)
     evidence = span_evidence(chain)
     body_units = [
         row for row in chain["artifact_map"]["units"]
@@ -528,7 +529,7 @@ def complete_chain(
         "schema_version": "2.0",
         "provenance_id": f"provenance:{owner}",
         "final_owner": owner,
-        "artifact_mode": "create_new",
+        "artifact_mode": chain["intent"]["artifact_mode"],
         "reader_intent_fingerprint": chain["intent"]["intent_fingerprint"],
         "source_artifact_fingerprint": None,
         "target_artifact_fingerprint": chain["artifact_map"]["artifact_fingerprint"],

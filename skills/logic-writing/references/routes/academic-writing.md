@@ -165,3 +165,16 @@ obligations and the eight reader dimensions together. Preserve both existing
 required dimensions, scores and their current fingerprint bindings. If a
 revision round fixes none of the reported defects, stop and return the artifact
 with the audit note.
+
+
+For new writing, omit `revision_provenance` from the closure input. For revisions,
+set ReaderIntent `artifact_mode: revise_existing`, give the old file as
+`revision_provenance.source_artifact_path` and declare each source unit's treatment
+with current target unit ids. The closure reads real source bytes, derives their
+identity and rejects invented units; relative paths use the request file's directory.
+Inspect source ids, then derive closure:
+
+```text
+python <skill-root>/scripts/build_source_unit_manifest.py --manifest-id revision --source old.md --target new.md --output units.json
+python <skill-root>/scripts/derive_closure.py --input closure-input.json
+```
