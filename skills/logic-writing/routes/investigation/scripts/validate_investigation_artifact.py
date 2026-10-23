@@ -24,6 +24,8 @@ def validate_investigation_artifact(value):
         route_composition=request["route_composition"],
         artifact_map=request["artifact_map"],
         required_dimensions=REQUIRED_DIMENSIONS[OWNER],
+        reader_brief=request.get("reader_brief"),
+        shared_writing=request.get("shared_writing"),
     )
     return validation_result(
         status="current_pass" if review["status"] == "passed" else "partial",

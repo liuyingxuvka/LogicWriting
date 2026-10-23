@@ -470,6 +470,8 @@ def complete_chain(
             "repair_target_unit_ids": [chain["paragraph"]["artifact_unit_id"]],
             "preserve_refs": ["content:answer"],
         }],
+        "limitation_checks": [],
+        "overclaim_checks": [],
         "required_repairs": [] if pass_quality else ["route:defect"],
         "status": "passed" if pass_quality else "repair",
         "reviewed_at": NOW,

@@ -167,6 +167,7 @@
       "additionalProperties": false,
       "required": ["overclaim_id", "affected_content_unit_ids", "forbidden_meaning", "reason", "authority_refs"],
       "properties": {
+        "forbidden_patterns": {"type":"array","items":{"type":"string","minLength":1}},
         "overclaim_id": { "$ref": "#/$defs/identifier" },
         "affected_content_unit_ids": {
           "type": "array",

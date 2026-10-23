@@ -295,3 +295,11 @@ The current runtime SHALL reject ReaderBrief v1, SharedWriting v1, ReaderAudit v
 
 ### Requirement: Derive repeated visible placements before identity
 The brief-request boundary SHALL fill only absent body-content and body-limitation dispositions that can be derived from planned-unit references, and absent shared fiction-unit reader fields from the matching planned unit. It SHALL preserve all explicit values, never infer hidden dispositions, name unplaced ids needing explicit disposition, and fill defaults exactly once before plan and route fingerprints. Stored brief and extension records SHALL remain complete and conform to their unchanged required fields.
+
+### Requirement: quoted boundaries in route review
+Every body/note limitation SHALL have a present/missing review row, and every
+prohibited overclaim an absent/present row. Present rows SHALL quote current
+body text; limitation quotes SHALL occur in bound destination units or explicitly
+allowed adjacent units. Missing limitations or present overclaims SHALL require
+repair. Optional forbidden regexes SHALL produce deterministic audit findings.
+Declared bindings SHALL not claim independent semantic coverage.

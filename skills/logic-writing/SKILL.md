@@ -99,7 +99,8 @@ ArtifactMap; the scripts never guess a replacement unit.
 6. `python scripts/audit_reader_output.py --input audit-request.json` with
    `audit_id`, `artifact_map`, `reader_brief`, `shared_writing`, `audited_at`.
 7. `python routes/<route>/scripts/validate_<route>_artifact.py --input review.json`
-   with `review`, `route_composition`, `artifact_map`; `<route>` is
+   with `review`, `route_composition`, `artifact_map`, `reader_brief`,
+   `shared_writing`; `<route>` is
    `investigation`, `academic`, `fiction`, or `travel`.
 8. `python scripts/derive_closure.py --input closure-input.json` with
    `closure_id`, `route_decision`, `reader_brief`, `route_composition`,
@@ -265,8 +266,10 @@ Preserve three quality responsibilities:
 
 1. deterministic `ReaderAudit` for current bytes, locked structure, exact
    preservation, citations, list zones, fragmentation, placeholders, workflow
-   leakage, and binding coverage;
-2. the selected route's semantic review against actual spans;
+   leakage, claim patterns, and declared bindings;
+2. the selected route's semantic review against actual spans; each limitation
+   and prohibited overclaim needs a conclusion with actual quotations. Bindings
+   are the author's declarations; review quotations check their correctness;
 3. a `ReaderJudgment` with an explicit `judge_kind`, preferably from an
    independent context, for reverse outline, clarity, coherence, naturalness, reader fit,
    genre fit, content fidelity, and instruction fidelity.

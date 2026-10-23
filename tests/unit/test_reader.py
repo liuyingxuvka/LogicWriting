@@ -103,3 +103,16 @@ def test_brief_request_fills_plan_and_route_fingerprints(tmp_path):
     assert result["status"] == "current_pass"
     assert result["reader_brief"]["brief_fingerprint"] == chain["reader_brief"]["brief_fingerprint"]
     assert result["route_composition"] == chain["route_composition"]
+
+
+def test_forbidden_pattern_is_an_audit_finding(tmp_path):
+    from tests.v2_support import complete_chain
+    from reader_pipeline import _build_reader_audit_from_current
+    chain = complete_chain(tmp_path, language='en')
+    brief = chain['reader_brief']
+    brief['content_boundaries']['prohibited_overclaims'] = [dict(overclaim_id='oc:problem', forbidden_patterns=[r'REAL\s+PROBLEM'])]
+    result = _build_reader_audit_from_current(audit_id='audit:patterns', amap=chain['artifact_map'], brief=brief,
+                                             contract=chain['shared_writing'])
+    finding = next(f for f in result['findings'] if f['code'] == 'overclaim_pattern')
+    assert 'oc:problem' in finding['message']
+    assert result['quality_dimensions']['claim_boundaries'] == 'repair'

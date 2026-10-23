@@ -162,6 +162,7 @@ def derive_closure(
         route=route,
         amap=amap,
         required_dimensions=REQUIRED_DIMENSIONS[owner],
+        brief=brief, shared=shared,
     )
     judgment = _reader_judgment_from_current(
         request["judgment"],

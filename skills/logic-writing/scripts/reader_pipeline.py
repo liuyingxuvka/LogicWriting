@@ -1635,6 +1635,16 @@ def _build_reader_audit_from_current(*, audit_id, amap, brief, contract, audited
         if row["unit_kind"] == "list" and plan and plan["presentation_mode"] == "prose":
             add("disallowed_list_zone", row["artifact_unit_id"], "a prose-required planned unit is realized as a list or labeled card block")
 
+    for overclaim in brief['content_boundaries']['prohibited_overclaims']:
+        for pattern in overclaim.get('forbidden_patterns', []):
+            try:
+                matcher = re.compile(pattern, re.IGNORECASE)
+            except re.error as exc:
+                raise ValidationError(f"overclaim {overclaim['overclaim_id']}: invalid forbidden pattern: {exc}") from exc
+            for row in visible_units:
+                if row['unit_kind'] in _BODY_UNIT_KINDS and matcher.search(row['text']):
+                    add('overclaim_pattern', row['artifact_unit_id'], f"forbidden pattern matched overclaim {overclaim['overclaim_id']}")
+
     headings = {re.sub(r"^#{1,6}\s+", "", row["text"]).strip() for row in units if row["unit_kind"] == "heading"}
     for outline in brief["reader_intent"]["structure"]["requested_outline"]:
         if outline["required"] and outline["title_locked"] and outline["label"] not in headings:
@@ -1748,7 +1758,8 @@ def _build_reader_audit_from_current(*, audit_id, amap, brief, contract, audited
         "list_zones": {"disallowed_list_zone"},
         "fragmentation": {"microparagraph_sequence", "fragmentation_ratio"},
         "language_fit": {"wrong_language"},
-        "binding_coverage": {"stale_binding"},
+        "binding_declared": {"unbound_body_unit"},
+        "claim_boundaries": {"overclaim_pattern"},
     }
     dimensions = {
         name: ("repair" if any(f["code"] in codes for f in findings) else "passed")
@@ -1829,6 +1840,8 @@ def validate_route_artifact_review(
     artifact_map: Mapping[str, Any],
     required_dimensions: Iterable[str] = (),
     review_obligations: Mapping[str, Any] | None = None,
+    reader_brief=None,
+    shared_writing=None,
 ) -> dict[str, Any]:
     amap = validate_artifact_map(artifact_map)
     route = validate_route_composition(
@@ -1837,11 +1850,60 @@ def validate_route_artifact_review(
         reader_intent_fingerprint=route_composition["reader_intent_fingerprint"],
         composition_plan_fingerprint=route_composition["composition_plan_fingerprint"],
     )
+    shared = None
+    if reader_brief is not None:
+        require_schema('reader-brief.schema.json', reader_brief, label='ReaderBrief')
+        if (reader_brief['final_owner'] != owner or
+            reader_brief['route_extension']['extension_fingerprint'] != route['extension_fingerprint']):
+            raise ValidationError('boundary review ReaderBrief belongs to a sibling or stale route')
+        shared = _shared_writing_from_current(shared_writing, amap=amap, reader_brief=reader_brief)
     return _route_review_from_current(value, owner=owner, route=route, amap=amap,
-                                      required_dimensions=required_dimensions, review_obligations=review_obligations)
+                                      required_dimensions=required_dimensions, review_obligations=review_obligations,
+                                      brief=reader_brief, shared=shared)
 
 
-def _route_review_from_current(value, *, owner, route, amap, required_dimensions=(), review_obligations=None):
+def _review_boundary_checks(review, *, brief, shared, amap):
+    """Validate the reviewer's quoted boundary declarations against current bindings."""
+    units = {row['artifact_unit_id']: row for row in amap['units']}
+    body = [row['artifact_unit_id'] for row in amap['units'] if row['unit_kind'] in _BODY_UNIT_KINDS]
+    dispositions = {row['limitation_id']: row for row in brief['composition_plan'].get('limitation_dispositions', [])
+                    if row['disposition'] in {'body', 'note'}}
+    limitations = {row['limitation_id']: row for row in brief['content_boundaries']['limitations']}
+    overclaims = {row['overclaim_id']: row for row in brief['content_boundaries']['prohibited_overclaims']}
+    missing = []
+    for kind, key, expected in [('limitation_checks', 'limitation_id', dispositions),
+                                ('overclaim_checks', 'overclaim_id', overclaims)]:
+        rows = review.get(kind, [])
+        ids = [row[key] for row in rows]
+        if len(ids) != len(set(ids)):
+            raise ValidationError(f'{kind} contains duplicate ids')
+        unknown = set(ids) - set(expected)
+        if unknown:
+            raise ValidationError(f'{kind} names unknown or inapplicable ids: {sorted(unknown)}')
+        missing.extend(sorted(set(expected) - set(ids)))
+        for row in rows:
+            row_id = row[key]
+            if row['status'] == 'present' and not row['evidence']:
+                raise ValidationError(f'{row_id}: present requires quoted evidence')
+            if kind == 'overclaim_checks' and row['status'] == 'absent' and row['evidence']:
+                raise ValidationError(f'{row_id}: absent must not carry evidence')
+            allowed = set(body)
+            if kind == 'limitation_checks':
+                targets = set(dispositions[row_id]['destination_unit_ids'])
+                allowed = {unit for binding in shared['unit_bindings'] if binding['planned_unit_id'] in targets
+                           for unit in binding['artifact_unit_ids']} & set(body)
+                if limitations[row_id]['required_placement'] == 'adjacent_unit':
+                    allowed |= {body[j] for i, unit in enumerate(body) if unit in allowed
+                                for j in (i-1, i+1) if 0 <= j < len(body)}
+            for evidence in row['evidence']:
+                _verify_span_evidence(evidence, units)
+                if evidence['artifact_unit_id'] not in allowed:
+                    raise ValidationError(f'{row_id}: excerpt must be in its bound planned unit or permitted adjacent body unit')
+    if missing:
+        raise ValidationError(f'route review omits required boundary checks: {missing}')
+
+
+def _route_review_from_current(value, *, owner, route, amap, required_dimensions=(), review_obligations=None, brief=None, shared=None):
     review = require_mapping(value, "route artifact review")
     require_schema("route-artifact-review.schema.json", review, label="route artifact review")
     _require_exact_fingerprint(review, "review_fingerprint")
@@ -1869,7 +1931,13 @@ def _route_review_from_current(value, *, owner, route, amap, required_dimensions
             _verify_span_evidence(evidence, units)
     for finding in review["findings"]:
         _verify_span_evidence(finding["evidence"], units)
-    derived = "repair" if review["findings"] or any(row["status"] != "passed" for row in review["dimensions"]) else "passed"
+    if brief is not None:
+        if shared is None:
+            raise ValidationError('boundary review requires SharedWriting with ReaderBrief')
+        _review_boundary_checks(review, brief=brief, shared=shared, amap=amap)
+    boundary_repair = (any(row['status'] == 'missing' for row in review.get('limitation_checks', [])) or
+                       any(row['status'] == 'present' for row in review.get('overclaim_checks', [])))
+    derived = "repair" if boundary_repair or review["findings"] or any(row["status"] != "passed" for row in review["dimensions"]) else "passed"
     if review["status"] != derived:
         raise ValidationError("route review status is not derived from current dimensions and findings")
     if bool(review["required_repairs"]) != (derived != "passed"):
@@ -2099,7 +2167,7 @@ def _check_artifact_unit_membership(request, units):
         review = request.get(key)
         if not isinstance(review, dict):
             continue
-        for row in rows(review.get("dimensions")):
+        for row in [*rows(review.get("dimensions")), *rows(review.get("limitation_checks")), *rows(review.get("overclaim_checks"))]:
             for evidence in rows(_mapping(row).get("evidence")):
                 check(_mapping(evidence).get("artifact_unit_id"), "review evidence")
         for finding in rows(review.get("findings")):
@@ -2148,7 +2216,7 @@ def fill_check_fingerprints(request: dict[str, Any]) -> dict[str, Any]:
         fill_missing(review, "route_extension_fingerprint", extension_fp)
         fill_missing(review, "artifact_map_fingerprint", amap.get("map_fingerprint"))
         fill_missing(review, "artifact_fingerprint", amap.get("artifact_fingerprint"))
-        for row in review.get("dimensions") or []:
+        for row in [*(review.get("dimensions") or []), *(review.get("limitation_checks") or []), *(review.get("overclaim_checks") or [])]:
             for evidence in _mapping(row).get("evidence") or []:
                 _fill_evidence(evidence, units)
         for finding in review.get("findings") or []:

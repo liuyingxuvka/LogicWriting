@@ -56,3 +56,58 @@ def test_same_agent_cannot_self_judge(tmp_path):
     request["judgment"] = judgment
     with pytest.raises(ValidationError, match="independent"):
         derive_closure(request)
+
+
+def _boundary_review(chain):
+    from tests.v2_support import span_evidence
+    brief = copy.deepcopy(chain['reader_brief'])
+    brief['content_boundaries']['limitations'] = [dict(limitation_id='lim:scope', safe_meaning='Limited scope',
+        affected_content_unit_ids=['content:answer'], required_placement='same_unit')]
+    brief['composition_plan']['limitation_dispositions'] = [dict(limitation_id='lim:scope', disposition='body',
+        destination_unit_ids=['unit:answer'])]
+    brief['content_boundaries']['prohibited_overclaims'] = [dict(overclaim_id='oc:universal')]
+    review = copy.deepcopy(chain['route_review'])
+    review['limitation_checks'] = [dict(limitation_id='lim:scope', status='present', evidence=[span_evidence(chain)])]
+    review['overclaim_checks'] = [dict(overclaim_id='oc:universal', status='absent', evidence=[])]
+    return brief, review
+
+
+def test_review_must_answer_every_limitation_and_overclaim(tmp_path):
+    from reader_pipeline import _review_boundary_checks
+    chain = complete_chain(tmp_path)
+    brief, review = _boundary_review(chain)
+    review['limitation_checks'] = []
+    review['overclaim_checks'] = []
+    with pytest.raises(ValidationError, match='lim:scope.*oc:universal'):
+        _review_boundary_checks(review, brief=brief, shared=chain['shared_writing'], amap=chain['artifact_map'])
+
+
+def test_limitation_excerpt_must_be_in_its_planned_unit(tmp_path):
+    from reader_pipeline import _review_boundary_checks
+    chain = complete_chain(tmp_path)
+    brief, review = _boundary_review(chain)
+    shared = copy.deepcopy(chain['shared_writing'])
+    units = [u for u in chain['artifact_map']['units'] if u['unit_kind'] == 'paragraph']
+    shared['unit_bindings'][0]['artifact_unit_ids'] = [units[1]['artifact_unit_id']]
+    with pytest.raises(ValidationError, match='lim:scope.*bound planned unit'):
+        _review_boundary_checks(review, brief=brief, shared=shared, amap=chain['artifact_map'])
+    brief['content_boundaries']['limitations'][0]['required_placement'] = 'adjacent_unit'
+    _review_boundary_checks(review, brief=brief, shared=shared, amap=chain['artifact_map'])
+
+
+def test_present_overclaim_forces_repair(tmp_path):
+    from reader_pipeline import _route_review_from_current
+    from tests.v2_support import span_evidence
+    chain = complete_chain(tmp_path)
+    brief, review = _boundary_review(chain)
+    review['overclaim_checks'][0].update(status='present', evidence=[span_evidence(chain)])
+    review.pop('review_fingerprint')
+    review['review_fingerprint'] = fingerprint(review)
+    with pytest.raises(ValidationError, match='status is not derived'):
+        _route_review_from_current(review, owner='investigation', route=chain['route_composition'], amap=chain['artifact_map'],
+                                   brief=brief, shared=chain['shared_writing'])
+    review.update(status='repair', required_repairs=['oc:universal'])
+    review.pop('review_fingerprint')
+    review['review_fingerprint'] = fingerprint(review)
+    assert _route_review_from_current(review, owner='investigation', route=chain['route_composition'], amap=chain['artifact_map'],
+                                     brief=brief, shared=chain['shared_writing'])['status'] == 'repair'

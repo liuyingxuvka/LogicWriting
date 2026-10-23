@@ -43,7 +43,7 @@
     "findings": { "type": "array", "items": { "$ref": "#/$defs/finding" }, "uniqueItems": true },
     "quality_dimensions": {
       "type": "object", "additionalProperties": false,
-      "required": ["current_bytes", "structure_lock", "exact_preservation", "citation_placement", "list_zones", "fragmentation", "binding_coverage"],
+      "required": ["current_bytes", "structure_lock", "exact_preservation", "citation_placement", "list_zones", "fragmentation", "binding_declared", "claim_boundaries"],
       "properties": {
         "current_bytes": { "$ref": "#/$defs/status" },
         "structure_lock": { "$ref": "#/$defs/status" },
@@ -52,7 +52,8 @@
         "list_zones": { "$ref": "#/$defs/status" },
         "fragmentation": { "$ref": "#/$defs/status" },
         "language_fit": { "$ref": "#/$defs/status" },
-        "binding_coverage": { "$ref": "#/$defs/status" }
+        "claim_boundaries": { "$ref": "#/$defs/status" },
+        "binding_declared": { "$ref": "#/$defs/status" }
       }
     },
     "status": { "enum": ["passed", "repair", "blocked", "stale"] },

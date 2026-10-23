@@ -19,6 +19,8 @@
     "artifact_fingerprint": { "$ref": "#/$defs/fp" },
     "review_obligation_manifest_fingerprint": { "$ref": "#/$defs/fp" },
     "dimensions": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/dimension" }, "uniqueItems": true },
+    "limitation_checks": {"type":"array","items":{"type":"object","additionalProperties":false,"required":["limitation_id","status","evidence"],"properties":{"limitation_id":{"$ref":"#/$defs/id"},"status":{"enum":["present","missing"]},"evidence":{"type":"array","items":{"$ref":"#/$defs/span"}}}}},
+    "overclaim_checks": {"type":"array","items":{"type":"object","additionalProperties":false,"required":["overclaim_id","status","evidence"],"properties":{"overclaim_id":{"$ref":"#/$defs/id"},"status":{"enum":["absent","present"]},"evidence":{"type":"array","items":{"$ref":"#/$defs/span"}}}}},
     "findings": { "type": "array", "items": { "$ref": "#/$defs/finding" }, "uniqueItems": true },
     "required_repairs": { "type": "array", "items": { "$ref": "#/$defs/id" }, "uniqueItems": true },
     "status": { "enum": ["passed", "repair", "blocked", "stale"] },

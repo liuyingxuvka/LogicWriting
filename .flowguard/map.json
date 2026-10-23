@@ -106,7 +106,7 @@
       "summary": "Reader intent, composition, writer projection, actual-byte map/audit, review and closure.",
       "responsibilities": [
         "Preserve requested intent, composition order, editorial dispositions and writer projection; surface an open material choice before route identity or planning checks.",
-        "Bind actual artifact bytes and spans to shared contracts, deterministic audit and route review.",
+        "Bind actual artifact bytes and spans to shared contracts, deterministic audit and route review. Review every body/note limitation and prohibited overclaim with current quoted evidence; audit optional forbidden regexes and report declared bindings.",
         "Derive passed or needs_repair from current reader/route quality and record judge_kind; only independent_context with distinct IDs allows a broad claim. Self-review keeps explicit risk. Edits stale closure; automatic v2 closure covers text/markdown only.",
         "Reader-chain commands take upstream records as file paths and compute the fingerprints and references a caller leaves out (fill_brief_fingerprints, fill_check_fingerprints, fill_closure_fingerprints); values the caller gives are still checked. Derive only absent visible content/limitation placements and shared fiction-unit fields once at the brief-request boundary before fingerprints; retain explicit values and name unplaced ids requiring an explicit disposition.",
         "Name the resolved absolute path when an artifact file cannot be read.",
@@ -204,7 +204,7 @@
         ".flowguard/models/closure_claim_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:bc687e2c1398681ecb593473a5a1c18dfe60a73116eca827836bf5c741fcb3a1"
+      "fingerprint": "sha256:a046494d9233eaa17fc2e6d6270a6fb2a478581c65b2743555b5e9ae72681395"
     },
     {
       "id": "fiction",
@@ -339,7 +339,7 @@
         ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:0af62cb8e5e114f9b70bbb8737261866c655152d563a6f2f556f69c5046ee207"
+      "fingerprint": "sha256:dfa2ed99d2d270f482833be3cfc21b625a37775138148f06e6f5c68f206fa57a"
     },
     {
       "id": "travel",
@@ -441,7 +441,7 @@
         ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:2c9e2e3abd45a0e5d473e43b5e7f99ab5ac337ff6d41b1a682315fb661766819"
+      "fingerprint": "sha256:8e83647966e280e4dfa9ebbc902742796553fea00f2e3db27c419e7d25c87688"
     },
     {
       "id": "investigation",
@@ -466,7 +466,9 @@
         "skills/logic-writing/assets/examples/investigation/route-request.json",
         "skills/logic-writing/assets/examples/investigation/route-review.json",
         "skills/logic-writing/assets/examples/investigation/shared-writing.json",
-        "skills/logic-writing/assets/examples/investigation/sourceguard-stop.json"
+        "skills/logic-writing/assets/examples/investigation/sourceguard-stop.json",
+        "skills/logic-writing/assets/examples/investigation/known-bad/nolim.md",
+        "skills/logic-writing/assets/examples/investigation/known-bad/overclaim.md"
       ],
       "entrypoints": [
         "skills/logic-writing/routes/investigation/scripts/validate_investigation_artifact.py:validate_investigation_artifact"
@@ -486,7 +488,7 @@
         ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:292d1197d29938285334e3ca5cf512ea827e4c3e709e4922d4ca05726e4aabf8"
+      "fingerprint": "sha256:15577f24b0339819a2dee44f16d58e78c67335cac4f907eb322a264dbe8f6426"
     },
     {
       "id": "academic",
@@ -529,7 +531,7 @@
         ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:33fc2a30e01553b788410bd181f7fd2a6a9912096e12ac0588bd34d96fba7db4"
+      "fingerprint": "sha256:c776b427652de0e0d371212411f15af799d015aa4e6746471f952db3a56418b8"
     },
     {
       "id": "release",
@@ -587,7 +589,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:c378a47dae446383054ba13a4753cb3ca05ec051ddc635fb743dc83a5e994dda"
+      "fingerprint": "sha256:e348351910d59934e74eda737cbceb44110b712eb29fa1fa717fad4e47aa3469"
     },
     {
       "id": "providers",
