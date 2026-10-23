@@ -1,13 +1,18 @@
 {
+  "checked": {
+    "claim_rows": 5,
+    "guards": [
+      "EventGuard",
+      "ResourceGuard"
+    ],
+    "variants": 0
+  },
   "contract_id": "scene-last-tide-001",
   "gaps": [],
-  "non_pass_guards": [],
   "output": "summary only; add --json for the full report",
   "scope_limits": [
     "one evening",
     "harbor office and quay only"
   ],
-  "semantic_status": "PASS",
-  "status": "PASS",
-  "structural_status": "PASS"
+  "status": "PASS"
 }

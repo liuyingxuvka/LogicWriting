@@ -1,91 +1,46 @@
 {
+  "checked": {
+    "claim_rows": 5,
+    "guards": [
+      "EventGuard",
+      "ResourceGuard"
+    ],
+    "variants": 0
+  },
   "contract_id": "scene-last-tide-001",
   "gaps": [
+    {
+      "code": "EVENT_PRECONDITION_UNMET",
+      "counterexample": {
+        "at": "t8",
+        "event_id": "e_deliver",
+        "holding_fluents": [
+          "brandt_has_ring_key",
+          "brandt_on_island",
+          "office_open",
+          "papers_stamped",
+          "tova_has_spare"
+        ],
+        "missing_fluents": [
+          "tide_high"
+        ]
+      },
+      "guard": "EventGuard",
+      "message": "An event happens while a fluent it requires does not hold.",
+      "status": "FAIL"
+    },
     {
       "assertion": {
         "before": "e_tide_turns",
         "event": "e_deliver"
       },
+      "claim_row": 3,
       "code": "CLAIM_ASSERTION_FALSE",
-      "gap_id": "qualification:claim:assertion:3",
       "guard": "EventGuard",
-      "index": 3,
       "observed": {
         "e_deliver": "t8",
         "e_tide_turns": "t7"
       },
-      "status": "FAIL"
-    },
-    {
-      "code": "QUALIFICATION_STRUCTURAL_NON_PASS",
-      "gap_id": "qualification:structural:EventGuard",
-      "guard": "EventGuard",
-      "result_id": "worldguard-run:c_papers_cleared:EventGuard",
-      "status": "FAIL"
-    },
-    {
-      "code": "QUALIFICATION_SEMANTIC_NON_PASS",
-      "findings": [
-        {
-          "code": "SEM_EVENT_PRECONDITION_UNMET",
-          "evidence": {
-            "events": [
-              {
-                "at": "t8",
-                "event_id": "e_deliver",
-                "holding_fluents": [
-                  "brandt_has_ring_key",
-                  "brandt_on_island",
-                  "office_open",
-                  "papers_stamped",
-                  "tova_has_spare"
-                ],
-                "missing_fluents": [
-                  "tide_high"
-                ]
-              }
-            ]
-          },
-          "message": "An event happens while a fluent it requires does not hold."
-        }
-      ],
-      "gap_id": "qualification:semantic:EventGuard",
-      "guard": "EventGuard",
-      "provider_status": "AVAILABLE",
-      "status": "FAIL"
-    }
-  ],
-  "non_pass_guards": [
-    {
-      "counterexamples": [
-        {
-          "kind": "trace",
-          "steps": [
-            {
-              "at": "t8",
-              "event_id": "e_deliver",
-              "holding_fluents": [
-                "brandt_has_ring_key",
-                "brandt_on_island",
-                "office_open",
-                "papers_stamped",
-                "tova_has_spare"
-              ],
-              "missing_fluents": [
-                "tide_high"
-              ]
-            }
-          ]
-        }
-      ],
-      "errors": [
-        {
-          "code": "EVENT_PRECONDITION_UNMET",
-          "message": "An event happens while a fluent it requires does not hold."
-        }
-      ],
-      "guard": "EventGuard",
-      "missing_slots": [],
       "status": "FAIL"
     }
   ],
@@ -94,7 +49,5 @@
     "one evening",
     "harbor office and quay only"
   ],
-  "semantic_status": "FAIL",
-  "status": "FAIL",
-  "structural_status": "FAIL"
+  "status": "FAIL"
 }
