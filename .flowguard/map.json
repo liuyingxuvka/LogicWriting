@@ -111,7 +111,7 @@
         "Reader-chain commands take upstream records as file paths and compute the fingerprints and references a caller leaves out (fill_brief_fingerprints, fill_check_fingerprints, fill_closure_fingerprints); values the caller gives are still checked. Derive only absent visible content/limitation placements and shared fiction-unit fields once at the brief-request boundary before fingerprints; retain explicit values and name unplaced ids requiring an explicit disposition.",
         "Name the resolved absolute path when an artifact file cannot be read.",
         "Project the optional fiction voice_contract into writer input, leaving a missing payload as a gap and binding changes in the route and brief fingerprints.",
-        "Before filling any fingerprint, name vanished units across every contract binding and route-review evidence reference without guessing replacement bindings."
+        "Before filling any fingerprint, name vanished units across every contract binding and route-review evidence reference without guessing replacement bindings. Document and smoke-check installable route examples and their finite bad-text catalog."
       ],
       "files": [
         "skills/logic-writing/SKILL.md",
@@ -155,7 +155,8 @@
         "tests/unit/test_composition_graph.py",
         "tests/unit/test_editorial_dispositions.py",
         "tests/unit/test_review_obligations.py",
-        "tests/unit/test_writer_projection.py"
+        "tests/unit/test_writer_projection.py",
+        "skills/logic-writing/assets/examples/README.md"
       ],
       "entrypoints": [
         "skills/logic-writing/scripts/reader_pipeline.py:build_writer_input",
@@ -192,13 +193,14 @@
         "tests/unit/test_writer_projection.py",
         "tests/v2_support.py",
         "tests/e2e/test_routes.py",
-        "tests/adversarial/test_boundaries.py"
+        "tests/adversarial/test_boundaries.py",
+        "tests/e2e/test_worked_examples.py"
       ],
       "models": [
         ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:84d856f1adf87e4bdf81588142c874b63e8a894e59ac69b46914f735a96f2999"
+      "fingerprint": "sha256:b62ff51542e2c477064cec4bb01ebcddf69e74c0475c1051b0f32d2786d4e4df"
     },
     {
       "id": "fiction",
@@ -209,7 +211,7 @@
         "Preserve native world/state, promise, scene, chapter, voice and model/prose bindings.",
         "Check long-form closure bundles for the reverse outline and, for final prose, the manuscript identity and source requirements; the other story models run with their own scripts.",
         "Exercise representative valid and unbound-prose native binding cases in daily pytest; the fiction regression runs the route, native, longform and model-mesh suites.",
-        "Accept one structured voice_contract with POV and tense; voice_contract_ref is an identifier, not inferred prose."
+        "Accept one structured voice_contract with POV and tense; voice_contract_ref is an identifier, not inferred prose. Ship a small runnable reader-chain example with known-bad texts."
       ],
       "files": [
         "skills/logic-writing/routes/fiction/examples/longform_failure_cases/duplicate-binding-without-delta.json",
@@ -296,7 +298,8 @@
         "skills/logic-writing/routes/fiction/scripts/storyline_route_check.py",
         "skills/logic-writing/routes/fiction/scripts/turning_point_check.py",
         "skills/logic-writing/routes/fiction/scripts/validate_fiction_artifact.py",
-        "skills/logic-writing/routes/fiction/scripts/voice_style_continuity_check.py"
+        "skills/logic-writing/routes/fiction/scripts/voice_style_continuity_check.py",
+        "skills/logic-writing/assets/examples/fiction/**"
       ],
       "entrypoints": [
         "skills/logic-writing/routes/fiction/scripts/storyline_route_check.py:compile_route_decision",
@@ -329,7 +332,7 @@
       "responsibilities": [
         "Validate traveler fit, feasible schedule/resources/access, source/time/weather boundaries and fallback plans.",
         "Check the actual guide text and that a travel composition names ids in the optional trip plan; the allowed claim level follows the evidence.",
-        "Exercise valid native plans and exact unreachable-fallback rejection codes in daily pytest."
+        "Exercise valid native plans and exact unreachable-fallback rejection codes in daily pytest. Ship a small runnable reader-chain example with known-bad texts."
       ],
       "files": [
         "skills/logic-writing/routes/travel/examples/failure_cases/accessibility_review_missing.json",
@@ -386,7 +389,8 @@
         "skills/logic-writing/routes/travel/scripts/validate_positive_cases.py",
         "skills/logic-writing/routes/travel/scripts/validate_travel_artifact.py",
         "skills/logic-writing/routes/travel/scripts/validate_travel_plan.py",
-        "skills/logic-writing/routes/travel/scripts/validate_travel_text_outputs.py"
+        "skills/logic-writing/routes/travel/scripts/validate_travel_text_outputs.py",
+        "skills/logic-writing/assets/examples/travel/**"
       ],
       "entrypoints": [
         "skills/logic-writing/routes/travel/scripts/travel_contract.py:validate_plan_file",
@@ -417,11 +421,12 @@
       "summary": "Investigation final-owner semantics.",
       "responsibilities": [
         "Keep investigation as final owner or a bounded child with visible evidence/argument/trace limits.",
-        "Review current investigation artifact spans against route-specific dimensions."
+        "Review current investigation artifact spans against route-specific dimensions. Ship a small runnable reader-chain example with known-bad texts."
       ],
       "files": [
         "skills/logic-writing/references/routes/investigation.md",
-        "skills/logic-writing/routes/investigation/scripts/validate_investigation_artifact.py"
+        "skills/logic-writing/routes/investigation/scripts/validate_investigation_artifact.py",
+        "skills/logic-writing/assets/examples/investigation/**"
       ],
       "entrypoints": [
         "skills/logic-writing/routes/investigation/scripts/validate_investigation_artifact.py:validate_investigation_artifact"
@@ -449,11 +454,12 @@
       "summary": "Academic final-owner semantics and revision.",
       "responsibilities": [
         "Preserve academic argument, section jobs, citation and revision-provenance boundaries.",
-        "Review current academic artifact spans against route-specific dimensions."
+        "Review current academic artifact spans against route-specific dimensions. Ship a small runnable reader-chain example with known-bad texts."
       ],
       "files": [
         "skills/logic-writing/references/routes/academic-writing.md",
-        "skills/logic-writing/routes/academic/scripts/validate_academic_artifact.py"
+        "skills/logic-writing/routes/academic/scripts/validate_academic_artifact.py",
+        "skills/logic-writing/assets/examples/academic/**"
       ],
       "entrypoints": [
         "skills/logic-writing/routes/academic/scripts/validate_academic_artifact.py:validate_academic_artifact"

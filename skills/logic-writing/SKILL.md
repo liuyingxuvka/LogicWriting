@@ -63,6 +63,8 @@ providers and ResearchGuard members retain their own domain work.
 
 ## Commands
 
+Start from the worked example of your route in assets/examples/<route>/ (see its README).
+
 Run each script from the skill root with Python 3.10 or newer. Every script
 reads one JSON file given as `--input <file>`, prints its JSON result (or
 writes it to `--output <file>`), and exits 0 only when the result passes.
