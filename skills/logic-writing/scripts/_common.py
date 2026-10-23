@@ -323,6 +323,8 @@ def load_request(path: str | Path | None) -> Any:
                 value[key]["source_artifact_path"] = str((record_base / Path(source).expanduser()).resolve())
     if file_request and isinstance(value.get("source_artifact_path"), str):
         value["source_artifact_path"] = str((base / Path(value["source_artifact_path"]).expanduser()).resolve())
+    if file_request and isinstance(value.get("sourceguard_model"), str):
+        value["sourceguard_model"] = str((base / Path(value["sourceguard_model"]).expanduser()).resolve())
     return value
 
 

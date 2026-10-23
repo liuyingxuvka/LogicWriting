@@ -59,7 +59,7 @@
       "layer": "evidence",
       "summary": "Validate investigation evidence records and the ResearchGuard synthesis-plan handoff.",
       "responsibilities": [
-        "Validate source registry, claim support and the optional ResearchPacket evidence record (source roles, dates, lineage, what each source can and cannot support) without requiring native receipts. SourceGuard owns sources and anchors; LogicGuard source-library use is limited to deeper argument models.",
+        "Validate source registry, claim support and the optional ResearchPacket evidence record (source roles, dates, lineage, what each source can and cannot support) without requiring native receipts. SourceGuard owns sources and anchors; LogicGuard source-library use is limited to deeper argument models. Document direct native SourceGuard anchor imports without conversion or member invocation.",
         "Map ResearchGuard synthesis plans into the reader handoff without receipt fields and without replacing native member authority; the native-to-reader unit mapping is checked when the ReaderBrief is built.",
         "Packet and claim-support commands fill a missing request fingerprint and SourceRegistry reference.",
         "The native bridge test finds the formal ResearchGuard source through an explicit environment path, an editable src checkout, or the sibling repository."
@@ -98,7 +98,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:578ee56d9d80149278cb8e12bc682ac138a60f03f0c29bc41b76c12e5f9e5e3e"
+      "fingerprint": "sha256:7d97ae925f1c91b8d4ae1f3d2bcb28ac58c43df053d983a1b67cc7424c482f76"
     },
     {
       "id": "reader-artifact",
@@ -113,7 +113,7 @@
         "Project the optional fiction voice_contract into writer input, leaving a missing payload as a gap and binding changes in the route and brief fingerprints.",
         "Before filling any fingerprint, name vanished units across every contract binding and route-review evidence reference without guessing replacement bindings. Document and smoke-check installable route examples and their finite bad-text catalog. Closure copies saved provider statuses; missing or failing required reports forbid broad claims and are named in residual risk.",
         "Own mode-aware revision provenance: derive real source bytes/units from the source manifest helper, check current target ids and canonical fingerprints, and supply a deterministic not-applicable record for new writing.",
-        "Expose the same text block classification to route validators, including Chinese prose and list markers."
+        "Expose the same text block classification to route validators, including Chinese prose and list markers. Briefs optionally import missing native SourceGuard YAML anchors; handwritten rows take priority."
       ],
       "files": [
         "skills/logic-writing/SKILL.md",
@@ -207,7 +207,7 @@
         ".flowguard/models/closure_claim_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:f2b57426c41ade4ede5a4ea2163b5e5ad7ba31f47ce71798b880ae501fd786e5"
+      "fingerprint": "sha256:1d42af454187484e01e8ac6ff217fd07093e5b69e76a716a1eeab70d7096cb95"
     },
     {
       "id": "fiction",
@@ -639,7 +639,8 @@
         "Preserve canonical content fingerprints and strict JSON schema validation shared by existing domain owners.",
         "Load command requests whose reviewed object and list fields name JSON files; resolve relative artifact paths against the file that contains them while preserving scalar identifiers and opaque native result locators, and fill fingerprints a caller leaves out (load_request, fill_fingerprint, fill_missing). Resolve saved provider report paths relative to the closure request without loading or executing providers.",
         "Keep same-key records available from partial result envelopes; reject failed envelopes without the requested record with their first error before sole-object fallback.",
-        "Resolve revision source paths against their containing request/record files and describe source-file provenance in the current schema."
+        "Resolve revision source paths against their containing request/record files and describe source-file provenance in the current schema.",
+        "Resolve sourceguard_model relative to its brief request file."
       ],
       "files": [
         "skills/logic-writing/scripts/_common.py",
@@ -658,7 +659,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:ed869d1cd1303c1b24b4566f9189b6072f3da91773052c1bdcd797f7d48cbae1"
+      "fingerprint": "sha256:6c2dee8b2d2240b83b8ea17259cfb67ae91d575626b2e7d3404cd3af9b0f88f2"
     }
   ],
   "flows": [],

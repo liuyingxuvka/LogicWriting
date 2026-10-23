@@ -2195,6 +2195,39 @@ def fill_plan_defaults(request: dict[str, Any]) -> dict[str, Any]:
     return request
 
 
+def fill_anchors_from_sourceguard(request: dict[str, Any]) -> dict[str, Any]:
+    """Import only native source anchors, preserving every handwritten row."""
+    path = request.get("sourceguard_model")
+    if not path:
+        return request
+    try:
+        import yaml
+    except ImportError as exc:
+        raise ValidationError("reading a SourceGuard model needs PyYAML (it comes with ResearchGuard)") from exc
+    try:
+        model = require_mapping(yaml.safe_load(Path(path).read_text(encoding="utf-8")), "SourceGuard model")
+    except (OSError, yaml.YAMLError) as exc:
+        raise ValidationError(f"cannot read SourceGuard model {path}: {exc}") from exc
+    sources = {row["source_id"]: row.get("cannot_support_structural_use")
+               for row in model.get("sources", []) if isinstance(row, Mapping) and row.get("source_id")}
+    boundaries = request.setdefault("content_boundaries", {})
+    anchors = boundaries.setdefault("evidence_anchors", [])
+    seen = {row.get("anchor_id") for row in anchors if isinstance(row, Mapping)}
+    for row in model.get("anchors", []):
+        row = require_mapping(row, "SourceGuard anchor")
+        anchor_id = row.get("anchor_id")
+        if not anchor_id:
+            raise ValidationError("SourceGuard anchor needs anchor_id")
+        if anchor_id in seen:
+            continue
+        anchors.append({"anchor_id": anchor_id, "source_id": row.get("source_id"),
+                        "locator": row.get("locator"), "relation": "support",
+                        "observed_summary": row.get("normalized_summary") or str(row.get("text") or "")[:200],
+                        "boundary": sources.get(row.get("source_id")) or "Use only what the quoted passage says."})
+        seen.add(anchor_id)
+    return request
+
+
 def fill_brief_fingerprints(request: dict[str, Any]) -> dict[str, Any]:
     """Fill the fingerprints a caller left out of a ReaderBrief build request.
 
@@ -2203,6 +2236,7 @@ def fill_brief_fingerprints(request: dict[str, Any]) -> dict[str, Any]:
     given without a handoff is turned into the handoff.  Values the caller gives
     are kept and checked by build_reader_brief as before.
     """
+    fill_anchors_from_sourceguard(request)
     fill_plan_defaults(request)
     decision = request.get("route_decision")
     intent_fp = decision.get("reader_intent_fingerprint") if isinstance(decision, Mapping) else None
@@ -2395,6 +2429,7 @@ __all__ = [
     "build_reader_brief",
     "build_writer_input",
     "fill_brief_fingerprints",
+    "fill_anchors_from_sourceguard",
     "fill_check_fingerprints",
     "fill_closure_fingerprints",
     "validate_artifact_map",

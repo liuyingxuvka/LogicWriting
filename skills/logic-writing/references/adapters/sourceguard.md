@@ -15,3 +15,9 @@ Preserve the member's native result as it is; never write one on the
 member's behalf.
 
 Save the native report: `researchguard source stop-decision <project> > sourceguard-stop.json`. List `{"provider":"sourceguard","path":"sourceguard-stop.json"}` in the closure input's `provider_reports`.
+
+In a brief request, optionally set `sourceguard_model` to the native model YAML
+(path relative to the request file). Missing anchor IDs are imported with source,
+locator, summary and source boundary as `support`; handwritten rows always win.
+Write `limit`, `counter` or `context` rows yourself. This reads the saved YAML;
+it neither invokes ResearchGuard nor consumes a converted export.

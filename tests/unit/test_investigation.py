@@ -155,3 +155,32 @@ def test_packet_assembly_fills_request_and_registry_fingerprints(current_packet,
     checked = subprocess.run([sys.executable, str(scripts / "validate_claim_support.py"), "--input", str(tmp_path / "ledger.json"),
                               "--source-registry", str(tmp_path / "registry.json")], capture_output=True, text=True)
     assert checked.returncode == 0, checked.stdout + checked.stderr
+
+
+def test_brief_imports_sourceguard_anchors_and_preserves_handwritten_rows(tmp_path):
+    from pathlib import Path
+    import json
+    from _common import load_request
+    from reader_pipeline import fill_anchors_from_sourceguard
+    import yaml
+
+    model_path = Path(__file__).resolve().parents[1] / "fixtures/trials/trialA/sg-model-2.yaml"
+    model = yaml.safe_load(model_path.read_text())
+    request_path = tmp_path / "brief.json"
+    request_path.write_text(json.dumps({"sourceguard_model": str(model_path), "content_boundaries": {"evidence_anchors": []}}))
+    request = load_request(request_path)
+    fill_anchors_from_sourceguard(request)
+    anchors = request["content_boundaries"]["evidence_anchors"]
+    assert len(anchors) == 5
+    assert [(a["anchor_id"], a["source_id"], a["locator"]) for a in anchors] == [
+        (a["anchor_id"], a["source_id"], a["locator"]) for a in model["anchors"]]
+    anchors[0].update(relation="counter", observed_summary="Handwritten", boundary="Limited")
+    original = dict(anchors[0])
+    fill_anchors_from_sourceguard(request)
+    assert len(anchors) == 5 and anchors[0] == original
+    relative = tmp_path / "model.yaml"
+    relative.write_text("sources: [{source_id: s, cannot_support_structural_use: No extrapolation}]\nanchors: [{anchor_id: a, source_id: s, locator: line=1, text: quote}]\n")
+    request_path.write_text(json.dumps({"sourceguard_model": "model.yaml"}))
+    request = load_request(request_path)
+    fill_anchors_from_sourceguard(request)
+    assert request["content_boundaries"]["evidence_anchors"][0]["boundary"] == "No extrapolation"

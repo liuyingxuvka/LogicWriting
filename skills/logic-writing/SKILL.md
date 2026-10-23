@@ -97,7 +97,7 @@ ArtifactMap; the scripts never guess a replacement unit.
    `route_composition`, `brief_id` (add `native_plan`, `native_result_locator`
    and `native_handoff_mapping` only when a ResearchGuard synthesis plan is
    used). Later steps can name this result file for `reader_brief` and
-   `route_composition`.
+   `route_composition`. Optionally set `sourceguard_model` to a native YAML file to import missing anchors as `support`; handwritten `limit`, `counter` and `context` rows take priority.
 3. Write the artifact as UTF-8 text or Markdown.
 4. `python scripts/build_artifact_map.py --input map-request.json` with
    `artifact_path`, `map_id`, `language`, `artifact_format`.

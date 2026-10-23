@@ -1,0 +1,648 @@
+metadata:
+  purpose: Status of free-threaded CPython as of 3.14
+  repository: https://github.com/liuyingxuvka/ResearchGuard
+  skill: SourceGuard
+  math_boundary: POMDP-inspired approximate planner; utility ranks source discovery
+    value, not truth.
+  cli: researchguard source plan starter_researchguard.source.yaml
+  boundary: Candidate sources are not evidence; anchors are not events; handoff is
+    not downstream validation.
+  version: 0.5.10
+  source_policy: public_only
+  domain_hints:
+  - CPython free-threading
+  qualification_thresholds:
+    source_reliability: 0.5
+    extraction_confidence: 0.5
+    specificity: 0.5
+  warnings: []
+  updated_at: '2026-10-21T18:52:20+00:00'
+  frontier_boundary: Updated frontier preserves candidates and anchors; it does not
+    validate final claims.
+leads:
+- lead_id: lead-ft
+  question: Is free-threaded CPython officially supported and is it the default in
+    3.14?
+  hypothesis: Supported but optional in 3.14; default undecided
+  importance: 0.9
+  status: open
+  related_entities:
+  - CPython
+  related_sources: []
+  related_anchors: []
+  gaps:
+  - gap-status-314
+  - gap-default
+  - gap-perf
+  notes: ''
+sources:
+- source_id: src-whatsnew-314
+  title: What's New In Python 3.14 (CPython Doc/whatsnew/3.14.rst)
+  source_type: web_page
+  url: ''
+  source_status: saved
+  source_reliability: 0.95
+  source_role: primary_source
+  lineage_id: origin-cpython-docs
+  source_date: ''
+  coverage_period: ''
+  language: ''
+  country: ''
+  access_status: public
+  can_support_structural_use: ''
+  cannot_support_structural_use: ''
+  notes: raw.githubusercontent.com/python/cpython/main/Doc/whatsnew/3.14.rst
+  content_fingerprint: ''
+  retrieval_request_fingerprint: ''
+  provider_id: ''
+  provider_revision: ''
+  retrieved_at: ''
+  unconsumed_output_disposition: ''
+- source_id: src-pep-779
+  title: PEP 779 - Criteria for supported status for free-threaded Python
+  source_type: web_page
+  url: ''
+  source_status: saved
+  source_reliability: 0.95
+  source_role: primary_source
+  lineage_id: origin-python-steering-council
+  source_date: ''
+  coverage_period: ''
+  language: ''
+  country: ''
+  access_status: public
+  can_support_structural_use: ''
+  cannot_support_structural_use: ''
+  notes: raw.githubusercontent.com/python/peps/main/peps/pep-0779.rst
+  content_fingerprint: ''
+  retrieval_request_fingerprint: ''
+  provider_id: ''
+  provider_revision: ''
+  retrieved_at: ''
+  unconsumed_output_disposition: ''
+- source_id: src-whatsnew-313
+  title: What's New In Python 3.13
+  source_type: web_page
+  url: ''
+  source_status: saved
+  source_reliability: 0.95
+  source_role: primary_source
+  lineage_id: origin-cpython-docs
+  source_date: ''
+  coverage_period: ''
+  language: ''
+  country: ''
+  access_status: public
+  can_support_structural_use: ''
+  cannot_support_structural_use: ''
+  notes: raw.githubusercontent.com/python/cpython/main/Doc/whatsnew/3.13.rst
+  content_fingerprint: ''
+  retrieval_request_fingerprint: ''
+  provider_id: ''
+  provider_revision: ''
+  retrieved_at: ''
+  unconsumed_output_disposition: ''
+anchors:
+- anchor_id: anc-314-supported
+  source_id: src-whatsnew-314
+  anchor_type: section
+  locator: section=whatsnew314-free-threaded-now-supported;line=3226
+  text: The free-threaded build of Python is now supported and no longer experimental.
+    This is the start of phase II where free-threaded Python is officially supported
+    but still optional.
+  normalized_summary: 3.14 free-threaded build is officially supported but optional.
+  modality: text
+  observed_at: ''
+  extraction_confidence: 0.95
+  specificity: 0.95
+  supports:
+  - gap-status-314
+  limits: []
+  claim_use_ids: []
+  handoff_ids: []
+  warnings: []
+  usable_for_trace: false
+  usable_for_claim: true
+  notes: ''
+  anchor_content_fingerprint: ''
+  source_content_fingerprint: ''
+  extractor_id: ''
+  extractor_revision: ''
+  observation_fingerprint: ''
+  unconsumed_output_disposition: ''
+- anchor_id: anc-314-phase3-undecided
+  source_id: src-whatsnew-314
+  anchor_type: section
+  locator: section=whatsnew14-free-threaded-now-supported;line=3240
+  text: Any decision to transition to phase III, with free-threading as the default
+    or sole build of Python is still undecided, and dependent on many factors both
+    within CPython itself and the community.
+  normalized_summary: Making it the default is undecided.
+  modality: text
+  observed_at: ''
+  extraction_confidence: 0.95
+  specificity: 0.9
+  supports:
+  - gap-default
+  limits: []
+  claim_use_ids: []
+  handoff_ids: []
+  warnings: []
+  usable_for_trace: false
+  usable_for_claim: true
+  notes: ''
+  anchor_content_fingerprint: ''
+  source_content_fingerprint: ''
+  extractor_id: ''
+  extractor_revision: ''
+  observation_fingerprint: ''
+  unconsumed_output_disposition: ''
+- anchor_id: anc-314-perf
+  source_id: src-whatsnew-314
+  anchor_type: section
+  locator: section=whatsnew314-free-threaded-cpython;line=489
+  text: The performance penalty on single-threaded code in free-threaded mode is now
+    roughly 5-10%, depending on the platform and C compiler used.
+  normalized_summary: single-thread penalty about 5-10 percent in 3.14.
+  modality: text
+  observed_at: ''
+  extraction_confidence: 0.95
+  specificity: 0.9
+  supports:
+  - gap-perf
+  limits: []
+  claim_use_ids: []
+  handoff_ids: []
+  warnings: []
+  usable_for_trace: false
+  usable_for_claim: true
+  notes: ''
+  anchor_content_fingerprint: ''
+  source_content_fingerprint: ''
+  extractor_id: ''
+  extractor_revision: ''
+  observation_fingerprint: ''
+  unconsumed_output_disposition: ''
+- anchor_id: anc-313-experimental
+  source_id: src-whatsnew-313
+  anchor_type: section
+  locator: line=309
+  text: This is an experimental feature and therefore is not enabled by default.
+  normalized_summary: 3.13 free-threaded mode experimental and not default.
+  modality: text
+  observed_at: ''
+  extraction_confidence: 0.95
+  specificity: 0.9
+  supports:
+  - gap-status-314
+  limits: []
+  claim_use_ids: []
+  handoff_ids: []
+  warnings: []
+  usable_for_trace: false
+  usable_for_claim: true
+  notes: ''
+  anchor_content_fingerprint: ''
+  source_content_fingerprint: ''
+  extractor_id: ''
+  extractor_revision: ''
+  observation_fingerprint: ''
+  unconsumed_output_disposition: ''
+- anchor_id: anc-779-phase3-different
+  source_id: src-pep-779
+  anchor_type: paragraph
+  locator: line=163
+  text: Note that these are requirements for entering phase II only. The decision
+    to make free-threaded Python the default (phase III) is very different
+  normalized_summary: Phase II criteria do not decide phase III.
+  modality: text
+  observed_at: ''
+  extraction_confidence: 0.9
+  specificity: 0.85
+  supports:
+  - gap-default
+  limits: []
+  claim_use_ids: []
+  handoff_ids: []
+  warnings: []
+  usable_for_trace: false
+  usable_for_claim: true
+  notes: ''
+  anchor_content_fingerprint: ''
+  source_content_fingerprint: ''
+  extractor_id: ''
+  extractor_revision: ''
+  observation_fingerprint: ''
+  unconsumed_output_disposition: ''
+gaps:
+- gap_id: gap-status-314
+  lead_id: lead-ft
+  gap_type: missing_primary_source
+  description: Official status of the free-threaded build in 3.13 and 3.14
+  importance: 0.8
+  blocking: true
+  suggested_source_roles:
+  - primary_source
+  suggested_modalities:
+  - text
+  structure_unit_id: ''
+  parent_goal: ''
+  unit_job: ''
+  contribution_type: ''
+  downstream_consumer: ''
+  structural_role_needed: ''
+  can_support_structural_use: ''
+  cannot_support_structural_use: ''
+  allowed_wording: ''
+  unsafe_wording: ''
+  semantic_state: closed
+  qualification:
+    anchor_id: anc-313-experimental
+    source_id: src-whatsnew-313
+    observation_id: obs-whatsnew-314
+    locator_present: true
+    source_accessible: true
+    source_reliability: 0.95
+    extraction_confidence: 0.95
+    specificity: 0.9
+    supports_gap: true
+    role_match: true
+    modality_match: true
+    target_match: true
+    usable_for_claim: true
+    decision: claim_usable
+    reasons: []
+  closure_basis:
+    anchor_ids:
+    - anc-313-experimental
+    source_ids:
+    - src-whatsnew-313
+    observation_ids:
+    - obs-whatsnew-314
+    thresholds:
+      source_reliability: 0.5
+      extraction_confidence: 0.5
+      specificity: 0.5
+    target_match: source role, anchor modality, and explicit gap support matched
+    claim_use_decision: claim_usable
+    qualified: true
+  review_required: false
+  requires_claim_usability: true
+  notes: Semantically qualified and closed. Semantically qualified and closed.
+- gap_id: gap-default
+  lead_id: lead-ft
+  gap_type: missing_primary_source
+  description: Whether free-threading is or will be the default build and what decides
+    it
+  importance: 0.8
+  blocking: true
+  suggested_source_roles:
+  - primary_source
+  suggested_modalities:
+  - text
+  structure_unit_id: ''
+  parent_goal: ''
+  unit_job: ''
+  contribution_type: ''
+  downstream_consumer: ''
+  structural_role_needed: ''
+  can_support_structural_use: ''
+  cannot_support_structural_use: ''
+  allowed_wording: ''
+  unsafe_wording: ''
+  semantic_state: closed
+  qualification:
+    anchor_id: anc-779-phase3-different
+    source_id: src-pep-779
+    observation_id: obs-whatsnew-314
+    locator_present: true
+    source_accessible: true
+    source_reliability: 0.95
+    extraction_confidence: 0.9
+    specificity: 0.85
+    supports_gap: true
+    role_match: true
+    modality_match: true
+    target_match: true
+    usable_for_claim: true
+    decision: claim_usable
+    reasons: []
+  closure_basis:
+    anchor_ids:
+    - anc-779-phase3-different
+    source_ids:
+    - src-pep-779
+    observation_ids:
+    - obs-whatsnew-314
+    thresholds:
+      source_reliability: 0.5
+      extraction_confidence: 0.5
+      specificity: 0.5
+    target_match: source role, anchor modality, and explicit gap support matched
+    claim_use_decision: claim_usable
+    qualified: true
+  review_required: false
+  requires_claim_usability: true
+  notes: Semantically qualified and closed. Semantically qualified and closed.
+- gap_id: gap-perf
+  lead_id: lead-ft
+  gap_type: missing_numeric_provenance
+  description: Single-thread performance penalty in 3.14 free-threaded mode
+  importance: 0.8
+  blocking: true
+  suggested_source_roles:
+  - primary_source
+  suggested_modalities:
+  - text
+  structure_unit_id: ''
+  parent_goal: ''
+  unit_job: ''
+  contribution_type: ''
+  downstream_consumer: ''
+  structural_role_needed: ''
+  can_support_structural_use: ''
+  cannot_support_structural_use: ''
+  allowed_wording: ''
+  unsafe_wording: ''
+  semantic_state: closed
+  qualification:
+    anchor_id: anc-314-perf
+    source_id: src-whatsnew-314
+    observation_id: obs-whatsnew-314
+    locator_present: true
+    source_accessible: true
+    source_reliability: 0.95
+    extraction_confidence: 0.95
+    specificity: 0.9
+    supports_gap: true
+    role_match: true
+    modality_match: true
+    target_match: true
+    usable_for_claim: true
+    decision: claim_usable
+    reasons: []
+  closure_basis:
+    anchor_ids:
+    - anc-314-perf
+    source_ids:
+    - src-whatsnew-314
+    observation_ids:
+    - obs-whatsnew-314
+    thresholds:
+      source_reliability: 0.5
+      extraction_confidence: 0.5
+      specificity: 0.5
+    target_match: source role, anchor modality, and explicit gap support matched
+    claim_use_decision: claim_usable
+    qualified: true
+  review_required: false
+  requires_claim_usability: true
+  notes: Semantically qualified and closed.
+actions:
+- action_id: action-independent-search-1
+  action_type: text_search
+  query: example entity independent report
+  target_lead_id: lead-1
+  target_gap_id: gap-independent-1
+  expected_source_role: independent_report
+  expected_modality: text
+  source_policy: public_only
+  cost: 0.3
+  permission_risk: 0.0
+  status: proposed
+  parameters: {}
+  notes: ''
+  unconsumed_output_disposition: ''
+observations:
+- observation_id: obs-whatsnew-314
+  action_id: generated-gap-status-314-primary-source-search
+  observed_sources:
+  - source_id: src-whatsnew-314
+    title: What's New In Python 3.14 (CPython Doc/whatsnew/3.14.rst)
+    source_type: web_page
+    url: ''
+    source_status: saved
+    source_reliability: 0.95
+    source_role: primary_source
+    lineage_id: origin-cpython-docs
+    source_date: ''
+    coverage_period: ''
+    language: ''
+    country: ''
+    access_status: public
+    can_support_structural_use: ''
+    cannot_support_structural_use: ''
+    notes: raw.githubusercontent.com/python/cpython/main/Doc/whatsnew/3.14.rst
+    content_fingerprint: ''
+    retrieval_request_fingerprint: ''
+    provider_id: ''
+    provider_revision: ''
+    retrieved_at: ''
+    unconsumed_output_disposition: ''
+  - source_id: src-pep-779
+    title: PEP 779 - Criteria for supported status for free-threaded Python
+    source_type: web_page
+    url: ''
+    source_status: saved
+    source_reliability: 0.95
+    source_role: primary_source
+    lineage_id: origin-python-steering-council
+    source_date: ''
+    coverage_period: ''
+    language: ''
+    country: ''
+    access_status: public
+    can_support_structural_use: ''
+    cannot_support_structural_use: ''
+    notes: raw.githubusercontent.com/python/peps/main/peps/pep-0779.rst
+    content_fingerprint: ''
+    retrieval_request_fingerprint: ''
+    provider_id: ''
+    provider_revision: ''
+    retrieved_at: ''
+    unconsumed_output_disposition: ''
+  - source_id: src-whatsnew-313
+    title: What's New In Python 3.13
+    source_type: web_page
+    url: ''
+    source_status: saved
+    source_reliability: 0.95
+    source_role: primary_source
+    lineage_id: origin-cpython-docs
+    source_date: ''
+    coverage_period: ''
+    language: ''
+    country: ''
+    access_status: public
+    can_support_structural_use: ''
+    cannot_support_structural_use: ''
+    notes: raw.githubusercontent.com/python/cpython/main/Doc/whatsnew/3.13.rst
+    content_fingerprint: ''
+    retrieval_request_fingerprint: ''
+    provider_id: ''
+    provider_revision: ''
+    retrieved_at: ''
+    unconsumed_output_disposition: ''
+  observed_anchors:
+  - anchor_id: anc-314-supported
+    source_id: src-whatsnew-314
+    anchor_type: section
+    locator: section=whatsnew314-free-threaded-now-supported;line=3226
+    text: The free-threaded build of Python is now supported and no longer experimental.
+      This is the start of phase II where free-threaded Python is officially supported
+      but still optional.
+    normalized_summary: 3.14 free-threaded build is officially supported but optional.
+    modality: text
+    observed_at: ''
+    extraction_confidence: 0.95
+    specificity: 0.95
+    supports:
+    - gap-status-314
+    limits: []
+    claim_use_ids: []
+    handoff_ids: []
+    warnings: []
+    usable_for_trace: false
+    usable_for_claim: true
+    notes: ''
+    anchor_content_fingerprint: ''
+    source_content_fingerprint: ''
+    extractor_id: ''
+    extractor_revision: ''
+    observation_fingerprint: ''
+    unconsumed_output_disposition: ''
+  - anchor_id: anc-314-phase3-undecided
+    source_id: src-whatsnew-314
+    anchor_type: section
+    locator: section=whatsnew14-free-threaded-now-supported;line=3240
+    text: Any decision to transition to phase III, with free-threading as the default
+      or sole build of Python is still undecided, and dependent on many factors both
+      within CPython itself and the community.
+    normalized_summary: Making it the default is undecided.
+    modality: text
+    observed_at: ''
+    extraction_confidence: 0.95
+    specificity: 0.9
+    supports:
+    - gap-default
+    limits: []
+    claim_use_ids: []
+    handoff_ids: []
+    warnings: []
+    usable_for_trace: false
+    usable_for_claim: true
+    notes: ''
+    anchor_content_fingerprint: ''
+    source_content_fingerprint: ''
+    extractor_id: ''
+    extractor_revision: ''
+    observation_fingerprint: ''
+    unconsumed_output_disposition: ''
+  - anchor_id: anc-314-perf
+    source_id: src-whatsnew-314
+    anchor_type: section
+    locator: section=whatsnew314-free-threaded-cpython;line=489
+    text: The performance penalty on single-threaded code in free-threaded mode is
+      now roughly 5-10%, depending on the platform and C compiler used.
+    normalized_summary: single-thread penalty about 5-10 percent in 3.14.
+    modality: text
+    observed_at: ''
+    extraction_confidence: 0.95
+    specificity: 0.9
+    supports:
+    - gap-perf
+    limits: []
+    claim_use_ids: []
+    handoff_ids: []
+    warnings: []
+    usable_for_trace: false
+    usable_for_claim: true
+    notes: ''
+    anchor_content_fingerprint: ''
+    source_content_fingerprint: ''
+    extractor_id: ''
+    extractor_revision: ''
+    observation_fingerprint: ''
+    unconsumed_output_disposition: ''
+  - anchor_id: anc-313-experimental
+    source_id: src-whatsnew-313
+    anchor_type: section
+    locator: line=309
+    text: This is an experimental feature and therefore is not enabled by default.
+    normalized_summary: 3.13 free-threaded mode experimental and not default.
+    modality: text
+    observed_at: ''
+    extraction_confidence: 0.95
+    specificity: 0.9
+    supports:
+    - gap-status-314
+    limits: []
+    claim_use_ids: []
+    handoff_ids: []
+    warnings: []
+    usable_for_trace: false
+    usable_for_claim: true
+    notes: ''
+    anchor_content_fingerprint: ''
+    source_content_fingerprint: ''
+    extractor_id: ''
+    extractor_revision: ''
+    observation_fingerprint: ''
+    unconsumed_output_disposition: ''
+  - anchor_id: anc-779-phase3-different
+    source_id: src-pep-779
+    anchor_type: paragraph
+    locator: line=163
+    text: Note that these are requirements for entering phase II only. The decision
+      to make free-threaded Python the default (phase III) is very different
+    normalized_summary: Phase II criteria do not decide phase III.
+    modality: text
+    observed_at: ''
+    extraction_confidence: 0.9
+    specificity: 0.85
+    supports:
+    - gap-default
+    limits: []
+    claim_use_ids: []
+    handoff_ids: []
+    warnings: []
+    usable_for_trace: false
+    usable_for_claim: true
+    notes: ''
+    anchor_content_fingerprint: ''
+    source_content_fingerprint: ''
+    extractor_id: ''
+    extractor_revision: ''
+    observation_fingerprint: ''
+    unconsumed_output_disposition: ''
+  new_entities: []
+  new_leads: []
+  new_gaps: []
+  contradictions: []
+  notes: Read from local copies fetched from raw.githubusercontent.com on 2026-10-21.
+  observation_fingerprint: ''
+  unconsumed_output_disposition: ''
+graph_edges: []
+weights: {}
+depth_policy:
+  requested_claim_scope: bounded
+  important_threshold: 0.6
+  required_portfolio_classes: []
+  required_source_roles: []
+  minimum_independent_lineages: 2
+  target_unit_inventory_ids: []
+  required_target_unit_ids: []
+  excluded_target_unit_ids: []
+  target_unit_exclusion_reasons: {}
+  require_explicit_lineage: true
+  require_anchor_content: true
+  per_gap_portfolio_required: true
+  required_gap_ids: []
+  required_lineage_slot_ids: []
+  required_anchor_requirement_ids: []
+  required_handoff_ids: []
+  known_good_case_ids: []
+  known_bad_case_ids: []
+  coverage_floors: {}
+  policy_origin: sourceguard-native-depth-v2
+generated_at: '2026-10-21T18:51:15+00:00'
