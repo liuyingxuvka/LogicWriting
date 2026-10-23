@@ -112,7 +112,8 @@
         "Name the resolved absolute path when an artifact file cannot be read.",
         "Project the optional fiction voice_contract into writer input, leaving a missing payload as a gap and binding changes in the route and brief fingerprints.",
         "Before filling any fingerprint, name vanished units across every contract binding and route-review evidence reference without guessing replacement bindings. Document and smoke-check installable route examples and their finite bad-text catalog. Closure copies saved provider statuses; missing or failing required reports forbid broad claims and are named in residual risk.",
-        "Own mode-aware revision provenance: derive real source bytes/units from the source manifest helper, check current target ids and canonical fingerprints, and supply a deterministic not-applicable record for new writing."
+        "Own mode-aware revision provenance: derive real source bytes/units from the source manifest helper, check current target ids and canonical fingerprints, and supply a deterministic not-applicable record for new writing.",
+        "Expose the same text block classification to route validators, including Chinese prose and list markers."
       ],
       "files": [
         "skills/logic-writing/SKILL.md",
@@ -206,7 +207,7 @@
         ".flowguard/models/closure_claim_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:dc5c9d047aaaace3a89e5c2e410307b86888ffd4b17a3455e5602f78c4298e58"
+      "fingerprint": "sha256:f2b57426c41ade4ede5a4ea2163b5e5ad7ba31f47ce71798b880ae501fd786e5"
     },
     {
       "id": "fiction",
@@ -350,7 +351,8 @@
       "responsibilities": [
         "Validate traveler fit, feasible schedule/resources/access, source/time/weather boundaries and fallback plans.",
         "Check the actual guide text and that a travel composition names ids in the optional trip plan; the allowed claim level follows the evidence.",
-        "Exercise valid native plans and exact unreachable-fallback rejection codes in daily pytest. Ship a small runnable reader-chain example with known-bad texts."
+        "Exercise valid native plans and exact unreachable-fallback rejection codes in daily pytest. Ship a small runnable reader-chain example with known-bad texts.",
+        "Use reader-owned block classification for prose/list checks; texture and unreviewed generic risk hints are advisory, while observed review and weather requirements remain gates."
       ],
       "files": [
         "skills/logic-writing/routes/travel/examples/failure_cases/accessibility_review_missing.json",
@@ -443,7 +445,7 @@
         ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:e36a9574d18eb22de566109c98fbba966aca815e392222e5985f1d862ba79166"
+      "fingerprint": "sha256:de07e69d55723855f90d7e4ad5af67fd51e744626ac3047ab8db49ceb6e34980"
     },
     {
       "id": "investigation",

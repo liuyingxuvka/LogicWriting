@@ -118,3 +118,5 @@ Traveler-facing guide output fails when:
 - multi-day traveler-facing guides lack reader-visible day or date headings;
 - dated weather-sensitive guides mention weather without checked, partial, downgraded, or missing-with-boundary weather evidence;
 - no reverse guide review is bound to the final text.
+
+Texture word counts and generic risk hints without a reverse review are advisory warnings. List detection uses the reader artifact block classifier: fewer than two paragraph blocks, or list items exceeding 55% of list items plus paragraph blocks, fails. Named risks and fallbacks in a reverse review remain required.

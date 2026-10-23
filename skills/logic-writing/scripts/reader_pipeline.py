@@ -1260,11 +1260,26 @@ def _classify_block(text: str) -> tuple[str, str, int]:
     if all(line.lstrip().startswith(">") for line in stripped.splitlines() if line.strip()):
         return "quote", "prose", 0
     lines = [line for line in stripped.splitlines() if line.strip()]
-    if lines and all(LIST_LINE.match(line) for line in lines):
+    if lines and (all(LIST_LINE.match(line) for line in lines)
+                  or len(lines) > 1 and all(LIST_LINE.match(line) for line in lines[1:])):
         return "list", "functional_list", 0
     if len(lines) >= 2 and all("|" in line for line in lines):
         return "table", "table", 0
     return "paragraph", "prose", 0
+
+
+def classify_text_blocks(text: str) -> list[dict[str, Any]]:
+    """Expose the artifact map's block classification to route validators."""
+    blocks = []
+    for text_block in re.split(r"\n\s*\n", text.strip()):
+        if not text_block.strip():
+            continue
+        kind, zone, level = _classify_block(text_block)
+        blocks.append({"text": text_block, "kind": kind, "zone": zone,
+                       "heading_level": level,
+                       "list_items": sum(bool(LIST_LINE.match(line)) for line in text_block.splitlines())
+                       if kind == "list" else 0})
+    return blocks
 
 
 def _unmapped_ranges_for_units(text: str, units: Iterable[Mapping[str, Any]]) -> list[dict[str, int]]:
@@ -2375,6 +2390,7 @@ def fill_closure_fingerprints(request: dict[str, Any]) -> dict[str, Any]:
 
 __all__ = [
     "build_artifact_map",
+    "classify_text_blocks",
     "build_reader_audit",
     "build_reader_brief",
     "build_writer_input",

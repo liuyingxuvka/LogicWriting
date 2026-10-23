@@ -105,3 +105,22 @@ def test_text_check_runs_on_one_actual_guide(tmp_path):
     run = subprocess.run([sys.executable, str(script), "--guide", str(bullets), "--json"], capture_output=True, text=True)
     assert run.returncode == 1
     assert "text.bullet_list_only" in {row["code"] for row in json.loads(run.stdout)["issues"]}
+
+
+def test_chinese_prose_guide_and_advisory_hints(monkeypatch):
+    monkeypatch.syspath_prepend(str(ROUTE / "scripts"))
+    from validate_travel_text_outputs import validate_text
+
+    weather_codes = {"text.weather_evidence_missing", "text.weather_source_mode_missing",
+                     "text.weather_hazards_missing", "text.weather_hazard_boundary_missing"}
+    for name in ("guide.md", "guide-zh.md"):
+        warnings = []
+        text = (ROOT / "tests/fixtures/trials/trialC" / name).read_text(encoding="utf-8")
+        issues = validate_text(text, warnings=warnings)
+        assert {row["code"] for row in issues} == weather_codes
+        assert "text.local_texture.too_thin" in {row["code"] for row in warnings}
+    warnings = []
+    assert validate_text("第一段说明。\n\n第二段说明。", warnings=warnings) == []
+    assert {row["code"] for row in warnings} == {"text.local_texture.too_thin", "text.generic_risk"}
+    assert "text.generic_risk" in {row["code"] for row in validate_text(
+        "第一段说明。\n\n第二段说明。", {"observed_risks": ["absent"], "observed_fallbacks": ["missing"]})}

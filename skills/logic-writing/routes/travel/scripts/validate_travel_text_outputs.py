@@ -4,8 +4,12 @@ import argparse
 import hashlib
 import json
 import re
+import sys
 from pathlib import Path
 from typing import Any
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts"))
+from reader_pipeline import classify_text_blocks
 
 from fixture_mutation import MutationError, apply_mutations
 
@@ -128,27 +132,24 @@ def count_day_headings(text: str) -> int:
     return count
 
 
-def validate_text(text: str, review: dict[str, Any] | None = None) -> list[dict[str, str]]:
+def validate_text(text: str, review: dict[str, Any] | None = None, *, warnings: list[dict[str, str]] | None = None) -> list[dict[str, str]]:
     issues: list[dict[str, str]] = []
+    advisory = warnings if warnings is not None else []
     lowered = text.lower()
 
     leaked = [term for term in FORBIDDEN_TERMS if term.lower() in lowered]
     if leaked:
         issues.append(issue("text.internal_jargon", "Traveler-facing text leaks internal terms: " + ", ".join(leaked)))
 
-    lines = [line.strip() for line in text.splitlines() if line.strip()]
-    bullet_lines = [line for line in lines if re.match(r"^(-|\*|\d+\.|[A-Z]\d{2}\b|P\d{2}\b)", line)]
-    prose_paragraphs = [
-        line
-        for line in lines
-        if len(line) >= 100 and not line.startswith("#") and not re.match(r"^(-|\*|\d+\.)", line)
-    ]
-    if len(prose_paragraphs) < 2 or (lines and len(bullet_lines) / len(lines) > 0.55):
+    blocks = classify_text_blocks(text)
+    prose_paragraphs = [block for block in blocks if block["kind"] == "paragraph"]
+    list_items = sum(block["list_items"] for block in blocks)
+    if len(prose_paragraphs) < 2 or list_items / max(1, list_items + len(prose_paragraphs)) > 0.55:
         issues.append(issue("text.bullet_list_only", "Traveler-facing text reads like a bullet list rather than guide prose."))
 
     local_texture_count = count_patterns(text, LOCAL_TEXTURE_PATTERNS)
     if local_texture_count < 7:
-        issues.append(issue("text.local_texture.too_thin", f"Local food, shop, hotel, rest, and souvenir texture is too thin: {local_texture_count}."))
+        advisory.append(issue("text.local_texture.too_thin", f"Local food, shop, hotel, rest, and souvenir texture is too thin: {local_texture_count}."))
 
     if review:
         named_risks = review.get("observed_risks")
@@ -161,7 +162,7 @@ def validate_text(text: str, review: dict[str, Any] | None = None) -> list[dict[
         risk_count = lowered.count("risk") + lowered.count("pitfall") + lowered.count("avoid")
         specificity_count = count_patterns(text, RISK_SPECIFICITY_PATTERNS)
         if risk_count < 1 or specificity_count < 4:
-            issues.append(issue("text.generic_risk", "Risk notes need concrete triggers, mitigations, and named fallback behavior."))
+            advisory.append(issue("text.generic_risk", "Risk notes need concrete triggers, mitigations, and named fallback behavior."))
 
     weather_mentions = count_patterns(text, WEATHER_PATTERNS)
     if weather_mentions:
@@ -349,12 +350,15 @@ def main() -> int:
 
     if args.guide:
         review = json.loads(Path(args.review).read_text(encoding="utf-8")) if args.review else None
-        issues = validate_text(Path(args.guide).read_text(encoding="utf-8"), review)
-        payload = {"ok": not issues, "guide": args.guide, "issues": issues}
+        warnings: list[dict[str, str]] = []
+        issues = validate_text(Path(args.guide).read_text(encoding="utf-8"), review, warnings=warnings)
+        payload = {"ok": not issues, "guide": args.guide, "issues": issues, "warnings": warnings}
         if args.json:
             print(json.dumps(payload, indent=2))
         else:
             print("PASS" if not issues else "FAIL")
+            for row in warnings:
+                print(f"WARNING {row['code']}: {row['message']}")
             for row in issues:
                 print(f"- {row['code']}: {row['message']}")
         return 0 if not issues else 1
