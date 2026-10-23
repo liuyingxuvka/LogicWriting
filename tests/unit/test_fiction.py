@@ -146,3 +146,22 @@ def test_voice_reference_must_be_an_identifier(tmp_path):
     route.pop("extension_fingerprint")
     with pytest.raises(ValidationError, match=r"\$\.voice_contract_ref"):
         build_brief_request(_fiction_brief_request(chain, route))
+
+
+def test_unit_plans_take_shared_fields_from_the_planned_units(tmp_path):
+    chain = make_reader_chain(tmp_path, "fiction-writing")
+    request = _fiction_brief_request(chain, copy.deepcopy(chain["route_composition"]))
+    route = request["route_composition"]
+    fields = ("contribution", "reader_state_before", "reader_state_after", "downstream_unit_ids", "open_questions_in", "open_questions_out", "prohibited_reveals")
+    for row in route["unit_plans"]:
+        for field in fields:
+            row.pop(field, None)
+    route.pop("extension_fingerprint")
+    result = build_brief_request(request)
+    unit = result["composition_plan"]["planned_units"][0]
+    row = result["route_composition"]["unit_plans"][0]
+    assert row["contribution"] == unit["reader_job"]
+    assert row["reader_state_before"] == unit["incoming_reader_state"]
+    assert row["reader_state_after"] == unit["outgoing_reader_state"]
+    assert row["downstream_unit_ids"] == unit["downstream_unit_ids"]
+    assert row["open_questions_in"] == row["open_questions_out"] == row["prohibited_reveals"] == []

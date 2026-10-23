@@ -292,3 +292,6 @@ The current runtime SHALL reject ReaderBrief v1, SharedWriting v1, ReaderAudit v
 #### Scenario: Old ReaderBrief is supplied
 - **WHEN** a v1 brief containing `information_sequence` or `allowed_wording` reaches a current validator
 - **THEN** it fails as an unsupported contract rather than being converted or partially accepted
+
+### Requirement: Derive repeated visible placements before identity
+The brief-request boundary SHALL fill only absent body-content and body-limitation dispositions that can be derived from planned-unit references, and absent shared fiction-unit reader fields from the matching planned unit. It SHALL preserve all explicit values, never infer hidden dispositions, name unplaced ids needing explicit disposition, and fill defaults exactly once before plan and route fingerprints. Stored brief and extension records SHALL remain complete and conform to their unchanged required fields.

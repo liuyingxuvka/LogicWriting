@@ -171,3 +171,5 @@ lists. Human judgment remains explicit where deterministic checks stop.
 ## License
 
 [MIT](LICENSE)
+
+Brief requests derive repeated body-content and limitation placements from planned units, and fiction unit plans inherit their shared reader fields. Explicit dispositions remain checked; deliberate omissions are never inferred.

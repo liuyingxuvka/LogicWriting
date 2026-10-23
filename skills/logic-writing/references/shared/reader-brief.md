@@ -23,3 +23,7 @@ unit must be planned or explicitly dispositioned.
 
 The brief excludes Guard names, raw ledgers, agent instructions, and status
 prose from the reader artifact. Keep those in the audit output.
+
+### Repeated placement fields
+
+A brief request may omit content dispositions for content already named by planned units; the builder fills `body` rows in plan order. It likewise fills body limitation dispositions from `limitation_ids` and the native limitation's affected content and placement. Explicit rows remain authoritative and are checked. Unplaced content requires an explicit disposition; hidden dispositions are never inferred. Defaults are filled once, before fingerprints.

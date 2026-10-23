@@ -73,19 +73,19 @@
       "properties": {
         "unit_id": { "$ref": "#/$defs/id" },
         "unit_kind": { "enum": ["scene", "scene_group", "chapter", "story"] },
-        "contribution": { "type": "string", "minLength": 1 },
+        "contribution": { "description": "may be left out of a brief request; build_reader_brief.py fills it from the planned units", "type": "string", "minLength": 1 },
         "entry_state": { "type": "string", "minLength": 1 },
         "exit_state": { "type": "string", "minLength": 1 },
         "focal_desire": { "type": "string", "minLength": 1 },
         "resistance_or_cost": { "type": "string", "minLength": 1 },
-        "reader_state_before": { "type": "string", "minLength": 1 },
-        "reader_state_after": { "type": "string", "minLength": 1 },
-        "open_questions_in": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
-        "open_questions_out": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+        "reader_state_before": { "description": "may be left out of a brief request; build_reader_brief.py fills it from the planned units", "type": "string", "minLength": 1 },
+        "reader_state_after": { "description": "may be left out of a brief request; build_reader_brief.py fills it from the planned units", "type": "string", "minLength": 1 },
+        "open_questions_in": { "description": "may be left out of a brief request; build_reader_brief.py fills it from the planned units", "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+        "open_questions_out": { "description": "may be left out of a brief request; build_reader_brief.py fills it from the planned units", "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
         "voice_owner": { "type": "string", "minLength": 1 },
         "rhythm_role": { "type": "string", "minLength": 1 },
-        "prohibited_reveals": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
-        "downstream_unit_ids": { "type": "array", "items": { "$ref": "#/$defs/id" }, "uniqueItems": true }
+        "prohibited_reveals": { "description": "may be left out of a brief request; build_reader_brief.py fills it from the planned units", "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+        "downstream_unit_ids": { "description": "may be left out of a brief request; build_reader_brief.py fills it from the planned units", "type": "array", "items": { "$ref": "#/$defs/id" }, "uniqueItems": true }
       }
     },
     "promiseReveal": {

@@ -108,7 +108,7 @@
         "Preserve requested intent, composition order, editorial dispositions and writer projection; surface an open material choice before route identity or planning checks.",
         "Bind actual artifact bytes and spans to shared contracts, deterministic audit and route review.",
         "Derive passed or needs_repair from current reader/route quality and record judge_kind; only independent_context with distinct IDs allows a broad claim. Self-review keeps explicit risk. Edits stale closure; automatic v2 closure covers text/markdown only.",
-        "Reader-chain commands take upstream records as file paths and compute the fingerprints and references a caller leaves out (fill_brief_fingerprints, fill_check_fingerprints, fill_closure_fingerprints); values the caller gives are still checked.",
+        "Reader-chain commands take upstream records as file paths and compute the fingerprints and references a caller leaves out (fill_brief_fingerprints, fill_check_fingerprints, fill_closure_fingerprints); values the caller gives are still checked. Derive only absent visible content/limitation placements and shared fiction-unit fields once at the brief-request boundary before fingerprints; retain explicit values and name unplaced ids requiring an explicit disposition.",
         "Name the resolved absolute path when an artifact file cannot be read.",
         "Project the optional fiction voice_contract into writer input, leaving a missing payload as a gap and binding changes in the route and brief fingerprints.",
         "Before filling any fingerprint, name vanished units across every contract binding and route-review evidence reference without guessing replacement bindings."
@@ -198,7 +198,7 @@
         ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:8210459e4a204adc9649c60ed385634c7a57e88eb1838aa81828facef4de22b7"
+      "fingerprint": "sha256:84d856f1adf87e4bdf81588142c874b63e8a894e59ac69b46914f735a96f2999"
     },
     {
       "id": "fiction",
@@ -531,7 +531,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:140d70ef0bea0e7ab31b3c5d2e77851058eca49c3e1a256d0b562d4a558b0c6f"
+      "fingerprint": "sha256:274ce46be6345880b9cc212f28e0eea5030aa9cb7da165eedf3e1a30418c8b52"
     },
     {
       "id": "providers",

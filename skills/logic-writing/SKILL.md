@@ -339,3 +339,5 @@ closed, add a short, plain-language audit note containing these exact fields:
 Keep those fields out of normal prose when every required gate passes and the
 user did not request an audit record. Never describe an output as complete when
 one of the five fields contains a material unresolved item.
+
+Brief requests may omit repeated body dispositions and shared fiction unit fields already present in planned units. The builder fills them before fingerprints; explicit values and deliberate omissions still require validation.

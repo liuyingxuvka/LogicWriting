@@ -8,6 +8,7 @@ semantics remain in the four selected route validators.
 from __future__ import annotations
 
 import re
+from copy import deepcopy
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Mapping
@@ -294,7 +295,10 @@ def validate_composition_plan(
     _ids(plan["content_dispositions"], "content_unit_id", "content disposition")
     disposition_by_id = {row["content_unit_id"]: row for row in plan["content_dispositions"]}
     if set(disposition_by_id) != required_content:
-        raise ValidationError("CompositionPlan content dispositions must exactly cover current content units")
+        missing = sorted(required_content - set(disposition_by_id))
+        if missing:
+            raise ValidationError("; ".join(f"content unit {identity} is in no planned unit; add a content_dispositions row (omitted, deferred, appendix, merged or blocked)" for identity in missing))
+        raise ValidationError(f"CompositionPlan content dispositions name unknown content units: {sorted(set(disposition_by_id) - required_content)}")
     consumed_content = {
         content_id
         for unit in planned
@@ -339,7 +343,7 @@ def validate_composition_plan(
         )
     limitation_rows = plan.get("limitation_dispositions", [])
     if set(limitation_ids) and not limitation_rows:
-        raise ValidationError("CompositionPlan must provide one limitation disposition per native limitation")
+        raise ValidationError(f"CompositionPlan needs explicit limitation_dispositions rows for {sorted(known_limitations)}")
     if limitation_rows:
         known_limitations = set(limitation_ids)
         seen_limitations: set[str] = set()
@@ -361,7 +365,7 @@ def validate_composition_plan(
             if row["disposition"] in {"omitted", "internal"} and row["materiality"] in {"changes_answer", "changes_action", "changes_scope", "changes_strength"}:
                 raise ValidationError(f"material limitation {lid} cannot be hidden")
         if seen_limitations != known_limitations:
-            raise ValidationError("limitation dispositions must exactly cover current limitations")
+            raise ValidationError(f"limitation dispositions must cover current limitations; missing {sorted(known_limitations - seen_limitations)}")
         # A merge target must not eventually merge back into its source.
         rows_by_id = {row["limitation_id"]: row for row in limitation_rows}
         for lid in rows_by_id:
@@ -1968,6 +1972,62 @@ def validate_revision_provenance(value: Any, *, target_artifact_fingerprint: str
     return provenance
 
 
+def fill_plan_defaults(request: dict[str, Any]) -> dict[str, Any]:
+    """Fill only repeated visible placements and fiction fields, before identity."""
+    plan = request.get("composition_plan")
+    boundaries = request.get("content_boundaries")
+    if not isinstance(plan, dict) or not isinstance(boundaries, Mapping):
+        return request
+    planned = plan.get("planned_units", [])
+    if not isinstance(planned, list):
+        return request
+    units = [unit for unit in planned if isinstance(unit, Mapping) and isinstance(unit.get("planned_unit_id"), str)]
+    for collection, identity_field, references in (
+        ("content_dispositions", "content_unit_id", "content_unit_ids"),
+        ("limitation_dispositions", "limitation_id", "limitation_ids"),
+    ):
+        rows = plan.get(collection, [])
+        if collection == "content_dispositions":
+            plan.setdefault(collection, rows)
+        if not isinstance(rows, list):
+            continue
+        existing = {row[identity_field] for row in rows if isinstance(row, Mapping) and isinstance(row.get(identity_field), str)}
+        native = boundaries.get("content_units" if collection == "content_dispositions" else "limitations", [])
+        for item in native if isinstance(native, list) else []:
+            if not isinstance(item, Mapping):
+                continue
+            identity = item.get(identity_field)
+            if not isinstance(identity, str):
+                continue
+            owners = [unit["planned_unit_id"] for unit in units if isinstance(unit.get(references), list) and identity in unit[references]]
+            if identity in existing or not owners:
+                continue
+            if collection == "content_dispositions":
+                rows.append({"content_unit_id": identity, "disposition": "body", "planned_unit_ids": owners,
+                             "reason": "placed in planned unit(s) " + ", ".join(owners)})
+            else:
+                rows.append({"limitation_id": identity, "affected_claim_ids": deepcopy(item.get("affected_content_unit_ids", [])),
+                    "materiality": "changes_strength", "materiality_reason": "default for a limitation placed in the body",
+                    "disposition": "body", "destination_unit_ids": owners, "merged_into_id": None,
+                    "realization_requirement": item.get("required_placement", ""), "native_boundary_refs": []})
+            plan[collection] = rows
+            existing.add(identity)
+    route = request.get("route_composition")
+    if isinstance(route, dict) and route.get("final_owner") == "fiction-writing":
+        by_id = {unit.get("planned_unit_id"): unit for unit in units}
+        for row in route.get("unit_plans", []) if isinstance(route.get("unit_plans"), list) else []:
+            if not isinstance(row, dict) or not isinstance(row.get("unit_id"), str) or row["unit_id"] not in by_id:
+                continue
+            unit = by_id[row["unit_id"]]
+            for target, source in (("contribution", "reader_job"), ("reader_state_before", "incoming_reader_state"),
+                                   ("reader_state_after", "outgoing_reader_state"), ("downstream_unit_ids", "downstream_unit_ids")):
+                if target not in row:
+                    row[target] = deepcopy(unit.get(source))
+            for key in ("open_questions_in", "open_questions_out", "prohibited_reveals"):
+                row.setdefault(key, [])
+    return request
+
+
 def fill_brief_fingerprints(request: dict[str, Any]) -> dict[str, Any]:
     """Fill the fingerprints a caller left out of a ReaderBrief build request.
 
@@ -1976,6 +2036,7 @@ def fill_brief_fingerprints(request: dict[str, Any]) -> dict[str, Any]:
     given without a handoff is turned into the handoff.  Values the caller gives
     are kept and checked by build_reader_brief as before.
     """
+    fill_plan_defaults(request)
     decision = request.get("route_decision")
     intent_fp = decision.get("reader_intent_fingerprint") if isinstance(decision, Mapping) else None
     plan = request.get("composition_plan")
