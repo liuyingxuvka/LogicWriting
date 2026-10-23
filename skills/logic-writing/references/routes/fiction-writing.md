@@ -58,6 +58,9 @@ skipped or missing Guard is never reported as a pass.
 When world consistency matters, run WorldGuard and attach the path of its
 `run_worldguard.py check` report and its overall status (`PASS`, `FAIL`,
 `GAP` or `BOUNDARY_EXCEEDED`); a non-pass status stays visible.
+Use one time format throughout a world contract: all numbers, all `HH:MM`,
+all canonical numeric labels (`t1`, `t2`), or all ISO datetimes. Mixed formats
+and labels such as `t4b` are WorldGuard input errors (exit 2).
 TraceGuard owns temporal and revelation
 traces, WorldGuard owns material world consistency, LogicGuard owns support and
 structure, and SourceGuard owns source/canon discovery depth.

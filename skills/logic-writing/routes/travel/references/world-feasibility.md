@@ -36,6 +36,8 @@ Weather feasibility that is based only on generic seasonal language is `partial`
 world_check_id -> target_type(candidate|route|edge|hotel_strategy) -> target_id -> guards_checked -> status -> missing_slots -> counterexamples -> boundary -> next_action
 ```
 
+`missing_slots` and `counterexamples` come from each WorldGuard summary `gaps` row's `missing_slots` and `counterexample`.
+
 ## Weather Check Card
 
 ```text

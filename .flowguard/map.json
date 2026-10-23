@@ -207,7 +207,7 @@
         ".flowguard/models/closure_claim_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:587e6a68d79fd74692b7605d395a8ce94716aa25a2979ed89d39ddee4c276171"
+      "fingerprint": "sha256:d40dc8ce45a832ff0fe34134945b655f899e1b3e03e1d11347af27ea1a4b4cc1"
     },
     {
       "id": "fiction",
@@ -446,7 +446,7 @@
         ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:311f973a73ee2b24966fda2d483b183f099bfb5c53c3c955bc76699aa5a36c78"
+      "fingerprint": "sha256:db6defe8141aa33b35e85831727160a255270fbefc57895980db01be40830835"
     },
     {
       "id": "investigation",
