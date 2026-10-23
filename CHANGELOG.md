@@ -6,6 +6,18 @@ releases, tags, package publications, installations, or predecessor deletions.
 The format follows the main ideas of Keep a Changelog, and the source version
 line follows semantic versioning.
 
+## [4.0.11] - 2026-10-23
+
+### Changed
+
+- Derive omitted body dispositions and shared fiction unit fields from the composition plan before computing fingerprints; preserve explicit choices.
+- Ship a compact, runnable example for each route, including known-bad texts and honest author self-reviews.
+- Read saved SourceGuard, LogicGuard and WorldGuard report statuses at closure. Missing or failing required reports forbid broad claims and are named in residual risk; textual closure status remains based on the current reader chain.
+- Require quoted review rows for every body or note limitation and every prohibited overclaim. Optional forbidden regular expressions also produce deterministic audit findings.
+- Rename the audit dimension `binding_coverage` to `binding_declared`; declared bindings do not establish semantic correctness.
+- Bind planned units by exact, unique quotations that are resolved against the current text on every run. Missing or ambiguous quotes and contradictory explicit IDs fail clearly; ID-only requests remain supported.
+- Add the read-only `show_plan.py` command to display the composition plan beside its bound text, as plain text or JSON.
+
 ## [4.0.10] - 2026-10-22
 
 ### Changed
