@@ -113,7 +113,7 @@
         "Project the optional fiction voice_contract into writer input, leaving a missing payload as a gap and binding changes in the route and brief fingerprints.",
         "Before filling any fingerprint, name vanished units across every contract binding and route-review evidence reference without guessing replacement bindings. Document and smoke-check installable route examples and their finite bad-text catalog. Closure copies saved provider statuses; missing or failing required reports forbid broad claims and are named in residual risk.",
         "Own mode-aware revision provenance: derive real source bytes/units from the source manifest helper, check current target ids and canonical fingerprints, and supply a deterministic not-applicable record for new writing.",
-        "Expose the same text block classification to route validators, including Chinese prose and list markers. Briefs optionally import missing native SourceGuard YAML anchors; handwritten rows take priority. Short story guidance keeps movement, promises and unit plans in the fiction composition."
+        "Expose the same text block classification to route validators, including Chinese prose and list markers. Briefs optionally import missing native SourceGuard YAML anchors; handwritten rows take priority. Short story guidance keeps movement, promises and unit plans in the fiction composition. Closure CLI adds the standard status/errors/warnings envelope and blocked input errors; the library return stays unchanged."
       ],
       "files": [
         "skills/logic-writing/SKILL.md",
@@ -207,7 +207,7 @@
         ".flowguard/models/closure_claim_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:45c2bc5193e16d6bd463e6acce0ce77e159cddc7d94b7bb6622380516b5d1864"
+      "fingerprint": "sha256:587e6a68d79fd74692b7605d395a8ce94716aa25a2979ed89d39ddee4c276171"
     },
     {
       "id": "fiction",
@@ -353,7 +353,7 @@
         "Validate traveler fit, feasible schedule/resources/access, source/time/weather boundaries and fallback plans.",
         "Check the actual guide text and that a travel composition names ids in the optional trip plan; the allowed claim level follows the evidence.",
         "Exercise valid native plans and exact unreachable-fallback rejection codes in daily pytest. Ship a small runnable reader-chain example with known-bad texts.",
-        "Use reader-owned block classification for prose/list checks; texture and unreviewed generic risk hints are advisory, while observed review and weather requirements remain gates."
+        "Use reader-owned block classification for prose/list checks; texture and unreviewed generic risk hints are advisory, while observed review and weather requirements remain gates. Fixture mutation imports are lazy and used only by repository failure fixtures."
       ],
       "files": [
         "skills/logic-writing/routes/travel/examples/failure_cases/accessibility_review_missing.json",
@@ -446,7 +446,7 @@
         ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:de07e69d55723855f90d7e4ad5af67fd51e744626ac3047ab8db49ceb6e34980"
+      "fingerprint": "sha256:311f973a73ee2b24966fda2d483b183f099bfb5c53c3c955bc76699aa5a36c78"
     },
     {
       "id": "investigation",
@@ -544,7 +544,7 @@
       "layer": "release",
       "summary": "Repository checks, skill installer, ordinary CI and publishing after same-source CI.",
       "responsibilities": [
-        "Check skill structure, public docs and privacy, and run the fiction and travel regressions.",
+        "Check skill structure, public docs and privacy, and run the fiction and travel regressions. Exclude fixture mutation helpers and unused placeholder files from the installed runtime.",
         "Install the runtime skill files without repository fixtures and check an installed copy by file set and bytes.",
         "CI on every push runs tests, regressions, map check and release; publishing waits for that CI on the same commit. The minimum ResearchGuard job also runs tests and member preflights.",
         "Keep the OpenSpec specs in line with current behavior.",
@@ -595,7 +595,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:57680a3afc86f5869ce9905504915e9a2fd6464a67b1bbd298324f352a36a8dd"
+      "fingerprint": "sha256:12d6e3d62e339f4868628f789022290fd57a9c48caa7b8dab648edf530946e2d"
     },
     {
       "id": "providers",

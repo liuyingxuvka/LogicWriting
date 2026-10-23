@@ -352,3 +352,10 @@ user did not request an audit record. Never describe an output as complete when
 one of the five fields contains a material unresolved item.
 
 Brief requests may omit repeated body dispositions and shared fiction unit fields already present in planned units. The builder fills them before fingerprints; explicit values and deliberate omissions still require validation.
+
+For optional evidence checks, `scripts/validate_source_registry.py` checks source
+lineage before investigation; `scripts/validate_claim_support.py` checks claim
+support against that registry. For revisions,
+`scripts/build_source_unit_manifest.py` lists real source units before treatments;
+`scripts/validate_revision_provenance.py` checks those treatments against the
+current target (closure also performs this validation).

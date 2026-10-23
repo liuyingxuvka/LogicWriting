@@ -17,6 +17,7 @@ from _common import (
     load_request,
     require_mapping,
     require_schema,
+    validation_result,
 )
 from reader_pipeline import (
     validate_artifact_map,
@@ -277,9 +278,9 @@ def main() -> int:
     try:
         result = derive_closure(fill_closure_fingerprints(load_request(args.input)))
     except (OSError, ValueError, ValidationError) as exc:
-        print(f"ERROR: {exc}")
+        dump_json(validation_result(status="blocked", errors=[str(exc)]), args.output)
         return 2
-    dump_json(result, args.output)
+    dump_json(validation_result(status=result["closure"]["status"], **result), args.output)
     return 0 if result["closure"]["status"] == "passed" else 1
 
 

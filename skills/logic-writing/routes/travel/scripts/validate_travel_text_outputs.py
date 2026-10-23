@@ -11,8 +11,6 @@ from typing import Any
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts"))
 from reader_pipeline import classify_text_blocks
 
-from fixture_mutation import MutationError, apply_mutations
-
 
 FORBIDDEN_TERMS = (
     "候选池",
@@ -273,6 +271,8 @@ def validate_good_dir(good_dir: Path) -> list[dict[str, Any]]:
 
 
 def validate_failure_dir(failure_dir: Path, repository_root: Path) -> list[dict[str, Any]]:
+    from fixture_mutation import MutationError, apply_mutations
+
     results: list[dict[str, Any]] = []
     for path in sorted(failure_dir.glob("*.json")):
         data = json.loads(path.read_text(encoding="utf-8"))

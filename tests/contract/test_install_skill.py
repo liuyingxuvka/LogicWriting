@@ -17,15 +17,20 @@ def test_install_copies_runtime_skill_without_repository_fixtures(tmp_path):
     installed = tmp_path / "logic-writing"
     assert (installed / "SKILL.md").is_file()
     assert (installed / "scripts" / "derive_closure.py").is_file()
-    assert (installed / "routes" / "travel" / "scripts" / "fixture_mutation.py").is_file()
+    assert not (installed / "routes" / "travel" / "scripts" / "fixture_mutation.py").exists()
+    assert not list(installed.rglob(".gitkeep"))
     assert not (installed / "routes" / "fiction" / "examples").exists()
     assert not (installed / "routes" / "travel" / "examples").exists()
     assert not list(installed.rglob("run_*_regression.py"))
     assert not list(installed.rglob("__pycache__"))
+    guide = ROOT / "tests/fixtures/trials/trialC/guide.md"
+    checked_guide = run(installed / "routes/travel/scripts/validate_travel_text_outputs.py", "--guide", guide, "--json")
+    assert checked_guide.returncode == 1, checked_guide.stdout + checked_guide.stderr
+    assert '"warnings"' in checked_guide.stdout
     assert run(INSTALL, "--target", tmp_path, "--check").returncode == 0
     validated = run(ROOT / "scripts" / "validate_skill.py", "--skill-root", installed)
     assert validated.returncode == 0, validated.stdout + validated.stderr
-    for script in ("scripts/select_route.py", "routes/travel/scripts/validate_travel_plan.py"):
+    for script in ("scripts/select_route.py", "routes/travel/scripts/validate_travel_plan.py", "routes/travel/scripts/validate_travel_text_outputs.py"):
         assert run(installed / script, "--help").returncode == 0, script
 
 

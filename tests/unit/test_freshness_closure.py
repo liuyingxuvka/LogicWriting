@@ -65,6 +65,15 @@ def test_cli_exits_nonzero_unless_closure_passed(tmp_path):
         request.write_text(json.dumps(closure_input(complete_chain(workdir, pass_quality=pass_quality))), encoding="utf-8")
         run = subprocess.run([sys.executable, str(script), "--input", str(request)], capture_output=True, text=True)
         assert run.returncode == expected, run.stdout + run.stderr
+        payload = json.loads(run.stdout)
+        assert payload["status"] == payload["closure"]["status"]
+        assert payload["errors"] == payload["warnings"] == []
+    output = tmp_path / "blocked.json"
+    request.write_text(json.dumps({"artifact_map": "missing-map.json"}))
+    run = subprocess.run([sys.executable, str(script), "--input", str(request), "--output", str(output)], capture_output=True, text=True)
+    assert run.returncode == 2
+    payload = json.loads(output.read_text())
+    assert payload["status"] == "blocked" and len(payload["errors"]) == 1 and payload["warnings"] == []
 
 
 def test_repeating_closure_does_not_count_as_repair(tmp_path):

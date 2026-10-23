@@ -19,6 +19,7 @@ from pathlib import Path
 
 SOURCE = Path(__file__).resolve().parents[1] / "skills" / "logic-writing"
 REPOSITORY_ONLY = (
+    "routes/travel/scripts/fixture_mutation.py",
     "routes/fiction/examples",
     "routes/travel/examples",
     "routes/fiction/scripts/run_longform_regression.py",
