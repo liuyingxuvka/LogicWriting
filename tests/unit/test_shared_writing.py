@@ -134,3 +134,68 @@ def test_binding_to_a_vanished_unit_names_the_unit_before_any_fill(tmp_path, rec
     unit_ids = [row["artifact_unit_id"] for row in chain["artifact_map"]["units"]]
     assert f"{unit_ids[0]} … {unit_ids[-1]}" in message
     assert request == original
+
+
+def _quote_request(chain):
+    contract = copy.deepcopy(chain['shared_writing'])
+    for key in list(contract):
+        if key.endswith('_fingerprint'):
+            del contract[key]
+    binding = contract['unit_bindings'][0]
+    units = {u['artifact_unit_id']: u for u in chain['artifact_map']['units']}
+    binding['anchor_excerpts'] = [units[i]['text'][:40] for i in binding.pop('artifact_unit_ids')]
+    binding.pop('artifact_spans')
+    return dict(contract=contract, artifact_map=chain['artifact_map'], reader_brief=chain['reader_brief'])
+
+
+def test_quote_binding_follows_renumbered_paragraphs(tmp_path):
+    from reader_pipeline import build_artifact_map, fill_check_fingerprints
+    chain = make_reader_chain(tmp_path, language='en')
+    request = _quote_request(chain)
+    original = fill_check_fingerprints(copy.deepcopy(request))['contract']['unit_bindings'][0]['artifact_unit_ids']
+    path = chain['artifact_path']
+    path.write_text('# A new opening\n\nAn additional introductory paragraph before the original text.\n\n' + path.read_text())
+    request['artifact_map'] = build_artifact_map(path, map_id='map:renumbered', language='en')
+    filled = fill_check_fingerprints(copy.deepcopy(request))
+    current = validate_shared_writing(filled['contract'], artifact_map=request['artifact_map'], reader_brief=request['reader_brief'])
+    assert current['unit_bindings'][0]['artifact_unit_ids'] != original
+    assert current['unit_bindings'][0]['anchor_excerpts'] == request['contract']['unit_bindings'][0]['anchor_excerpts']
+
+
+def test_missing_quote_fails_the_binding(tmp_path):
+    from reader_pipeline import fill_check_fingerprints
+    request = _quote_request(make_reader_chain(tmp_path))
+    request['contract']['unit_bindings'][0]['anchor_excerpts'] = ['This passage is absent from the text.']
+    with pytest.raises(ValidationError, match='binding binding:answer:.*is not in the current text'):
+        fill_check_fingerprints(request)
+
+
+def test_ambiguous_quote_asks_for_a_longer_one(tmp_path):
+    from reader_pipeline import build_artifact_map, fill_check_fingerprints
+    chain = make_reader_chain(tmp_path)
+    request = _quote_request(chain)
+    path = chain['artifact_path']
+    quote = request['contract']['unit_bindings'][0]['anchor_excerpts'][0]
+    path.write_text(path.read_text() + '\n\n' + quote + '\n')
+    request['artifact_map'] = build_artifact_map(path, map_id='map:duplicate', language='zh-CN')
+    with pytest.raises(ValidationError, match='in several units.*use a longer quote'):
+        fill_check_fingerprints(request)
+
+
+def test_quote_and_unit_id_must_agree(tmp_path):
+    from reader_pipeline import fill_check_fingerprints
+    request = _quote_request(make_reader_chain(tmp_path))
+    request['contract']['unit_bindings'][0]['artifact_unit_ids'] = ['artifact:document']
+    with pytest.raises(ValidationError, match='anchor_excerpts and artifact_unit_ids disagree'):
+        fill_check_fingerprints(request)
+
+
+def test_library_rechecks_the_quote_on_a_completed_contract(tmp_path):
+    from reader_pipeline import fill_check_fingerprints
+    chain = make_reader_chain(tmp_path)
+    request = fill_check_fingerprints(_quote_request(chain))
+    contract = request['contract']
+    contract['unit_bindings'][0]['anchor_excerpts'] = ['A now missing quote in an otherwise current contract.']
+    contract['contract_fingerprint'] = fingerprint_without(contract, 'contract_fingerprint')
+    with pytest.raises(ValidationError, match='is not in the current text'):
+        validate_shared_writing(contract, artifact_map=chain['artifact_map'], reader_brief=chain['reader_brief'])

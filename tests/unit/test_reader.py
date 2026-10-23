@@ -116,3 +116,16 @@ def test_forbidden_pattern_is_an_audit_finding(tmp_path):
     finding = next(f for f in result['findings'] if f['code'] == 'overclaim_pattern')
     assert 'oc:problem' in finding['message']
     assert result['quality_dimensions']['claim_boundaries'] == 'repair'
+
+
+def test_show_plan_prints_every_planned_unit(tmp_path):
+    from tests.v2_support import make_reader_chain
+    from show_plan import plan_view, render_plan
+    chain = make_reader_chain(tmp_path)
+    view = plan_view({k:chain[k] for k in ('reader_brief', 'artifact_map', 'shared_writing')})
+    assert len(view['planned_units']) == len(chain['plan']['planned_units'])
+    text = render_plan(view)
+    assert chain['plan']['central_question'] in text
+    assert chain['paragraph']['text'][:40] in text
+    chain['shared_writing']['unit_bindings'] = []
+    assert 'UNBOUND' in render_plan(plan_view({k:chain[k] for k in ('reader_brief', 'artifact_map', 'shared_writing')}))

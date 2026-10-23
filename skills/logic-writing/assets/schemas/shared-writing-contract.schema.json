@@ -45,6 +45,7 @@
       "required": ["binding_id", "planned_unit_id", "artifact_unit_ids", "content_unit_ids", "model_row_ids", "route_surface_ids", "artifact_spans"],
       "properties": {
         "binding_id": { "$ref": "#/$defs/id" },
+        "anchor_excerpts": {"type":"array","minItems":1,"items":{"type":"string","minLength":12},"description":"Exact unique quotes; requests may omit artifact_unit_ids and artifact_spans, which are resolved on each run."},
         "planned_unit_id": { "$ref": "#/$defs/id" },
         "artifact_unit_ids": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/id" }, "uniqueItems": true },
         "content_unit_ids": { "type": "array", "items": { "$ref": "#/$defs/id" }, "uniqueItems": true },

@@ -61,6 +61,13 @@ the selected work. Do not load both route playbooks by default. Local scripts
 validate the reader records and calculate closure; installed
 providers and ResearchGuard members retain their own domain work.
 
+### The plan is the model of the piece
+
+The five abilities are: structure in CompositionPlan (question and throughline → units → content and limits);
+binding by exact quotations to the current text; tests through audit and route review with quoted boundary rows;
+counterexamples as quoted findings; and known-bad variants in each example's `known-bad/`.
+`scripts/show_plan.py` prints the plan tree beside its bound text.
+
 ## Commands
 
 Start from the worked example of your route in assets/examples/<route>/ (see its README).
@@ -95,7 +102,8 @@ ArtifactMap; the scripts never guess a replacement unit.
 4. `python scripts/build_artifact_map.py --input map-request.json` with
    `artifact_path`, `map_id`, `language`, `artifact_format`.
 5. `python scripts/validate_shared_writing.py --input shared-writing.json`
-   with `contract`, `artifact_map`, `reader_brief`.
+   with `contract`, `artifact_map`, `reader_brief`. Prefer `anchor_excerpts`
+   (exact unique quotes, each at least 12 characters) over hand-written unit IDs.
 6. `python scripts/audit_reader_output.py --input audit-request.json` with
    `audit_id`, `artifact_map`, `reader_brief`, `shared_writing`, `audited_at`.
 7. `python routes/<route>/scripts/validate_<route>_artifact.py --input review.json`

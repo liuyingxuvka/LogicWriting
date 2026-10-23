@@ -1,6 +1,6 @@
 # Free-threaded Python: supported, not the default
 
-Short answer (per the SourceGuard evidence ledger, current_pass): as of Python 3.14, the free-threaded build (CPython without the global interpreter l
+Short answer: as of Python 3.14, the free-threaded build (CPython without the global interpreter l
 
 ## From experimental to supported
 

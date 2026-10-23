@@ -1505,6 +1505,38 @@ def validate_shared_writing(
     return _shared_writing_from_current(value, amap=amap, reader_brief=reader_brief)
 
 
+def _resolve_quote(units, quote):
+    matches = [row for row in units.values() if row['unit_kind'] != 'document' and quote in row['text']]
+    preview = quote[:60]
+    if not matches:
+        raise ValidationError(f'quote "{preview}" is not in the current text')
+    if len(matches) > 1:
+        ids = ', '.join(row['artifact_unit_id'] for row in matches)
+        raise ValidationError(f'quote "{preview}" is in several units ({ids}); use a longer quote')
+    return matches[0]
+
+
+def _quote_binding_units(binding, units):
+    quotes = binding.get('anchor_excerpts')
+    if quotes is None:
+        return None
+    prefix = f"binding {binding.get('binding_id', '?')}: "
+    if not isinstance(quotes, list) or not quotes or any(not isinstance(q, str) or len(q) < 12 for q in quotes):
+        raise ValidationError(prefix + 'anchor_excerpts requires quotes of at least 12 characters')
+    try:
+        resolved = {}
+        for quote in quotes:
+            unit = _resolve_quote(units, quote)
+            resolved[unit['artifact_unit_id']] = unit
+    except ValidationError as exc:
+        raise ValidationError(prefix + str(exc)) from exc
+    if 'artifact_unit_ids' in binding:
+        ids = binding['artifact_unit_ids']
+        if not isinstance(ids, list) or any(not isinstance(i, str) for i in ids) or set(ids) != set(resolved):
+            raise ValidationError(prefix + 'anchor_excerpts and artifact_unit_ids disagree')
+    return list(resolved.values())
+
+
 def _shared_writing_from_current(value, *, amap, reader_brief):
     contract = require_mapping(value, "SharedWriting")
     require_schema("shared-writing-contract.schema.json", contract, label="SharedWriting")
@@ -1537,6 +1569,7 @@ def _shared_writing_from_current(value, *, amap, reader_brief):
     bound_plans: set[str] = set()
     bound_content: set[str] = set()
     for binding in contract["unit_bindings"]:
+        _quote_binding_units(binding, units)
         planned_id = binding["planned_unit_id"]
         if planned_id not in plan_units:
             raise ValidationError(f"SharedWriting references unknown planned unit {planned_id}")
@@ -2185,6 +2218,23 @@ def fill_check_fingerprints(request: dict[str, Any]) -> dict[str, Any]:
     amap = _mapping(request.get("artifact_map"))
     brief = _mapping(request.get("reader_brief"))
     units = {row.get("artifact_unit_id"): row for row in amap.get("units", []) if isinstance(row, Mapping)}
+    quote_errors = []
+    for key in ('contract', 'shared_writing'):
+        contract = _mapping(request.get(key))
+        for binding in contract.get('unit_bindings') or []:
+            if not isinstance(binding, dict):
+                continue
+            try:
+                resolved = _quote_binding_units(binding, units)
+                if resolved is not None:
+                    binding['artifact_unit_ids'] = [row['artifact_unit_id'] for row in resolved]
+                    if 'artifact_spans' not in binding:
+                        binding['artifact_spans'] = [{key: row[key] for key in
+                            ('artifact_unit_id', 'locator', 'content_fingerprint')} for row in resolved]
+            except ValidationError as exc:
+                quote_errors.append(str(exc))
+    if quote_errors:
+        raise ValidationError('; '.join(quote_errors))
     _check_artifact_unit_membership(request, units)
     for key in ("contract", "shared_writing"):
         contract = request.get(key)

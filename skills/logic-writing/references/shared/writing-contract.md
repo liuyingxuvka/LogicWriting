@@ -42,3 +42,18 @@ status and required repairs accordingly. Optional `forbidden_patterns` are
 case-insensitive regular expressions checked by audit as `overclaim_pattern`.
 `binding_declared` checks declared bindings, while quoted review checks their
 meaning. Audit does not decide whether a fact is true.
+
+## Bind with quotations
+
+Prefer `anchor_excerpts: ["a unique passage of at least twelve characters"]`
+in each binding instead of `artifact_unit_ids` and `artifact_spans`. On every
+request, exact quotes resolve against visible current units. No match fails;
+several matching units require a longer quote. A quote can follow a moved or
+renumbered paragraph. If IDs are also supplied they must agree; supplied spans
+still undergo normal freshness checks. Old ID-only requests remain supported.
+
+`python scripts/show_plan.py --input show-request.json` displays the question,
+throughline, every planned unit's job and reader states, content and limitations,
+and the first sentence of its bound text. The request names `reader_brief`,
+`artifact_map` and `shared_writing` result files. `--json` prints the same view
+as JSON. This view reads supplied records without validating or writing them.

@@ -303,3 +303,10 @@ body text; limitation quotes SHALL occur in bound destination units or explicitl
 allowed adjacent units. Missing limitations or present overclaims SHALL require
 repair. Optional forbidden regexes SHALL produce deterministic audit findings.
 Declared bindings SHALL not claim independent semantic coverage.
+
+### Requirement: stable quote bindings and a read-only plan view
+Requests MAY bind planned units using exact unique quotes of at least twelve
+characters. Each run SHALL resolve them against current visible units and reject
+missing, ambiguous or contradictory explicit IDs. ID-only bindings remain valid.
+The plan view SHALL print the supplied plan and declared text bindings without
+validating them or writing files.

@@ -105,7 +105,7 @@
       "layer": "reader",
       "summary": "Reader intent, composition, writer projection, actual-byte map/audit, review and closure.",
       "responsibilities": [
-        "Preserve requested intent, composition order, editorial dispositions and writer projection; surface an open material choice before route identity or planning checks.",
+        "Preserve requested intent, composition order, editorial dispositions and writer projection; surface an open material choice before route identity or planning checks. Resolve exact unique quote bindings on every run and expose a read-only plan/text view.",
         "Bind actual artifact bytes and spans to shared contracts, deterministic audit and route review. Review every body/note limitation and prohibited overclaim with current quoted evidence; audit optional forbidden regexes and report declared bindings.",
         "Derive passed or needs_repair from current reader/route quality and record judge_kind; only independent_context with distinct IDs allows a broad claim. Self-review keeps explicit risk. Edits stale closure; automatic v2 closure covers text/markdown only.",
         "Reader-chain commands take upstream records as file paths and compute the fingerprints and references a caller leaves out (fill_brief_fingerprints, fill_check_fingerprints, fill_closure_fingerprints); values the caller gives are still checked. Derive only absent visible content/limitation placements and shared fiction-unit fields once at the brief-request boundary before fingerprints; retain explicit values and name unplaced ids requiring an explicit disposition.",
@@ -159,7 +159,8 @@
         "skills/logic-writing/assets/examples/README.md",
         "tests/fixtures/trials/worldguard-fail.json",
         "tests/fixtures/trials/sourceguard-stop.json",
-        "tests/fixtures/trials/worldguard-pass.json"
+        "tests/fixtures/trials/worldguard-pass.json",
+        "skills/logic-writing/scripts/show_plan.py"
       ],
       "entrypoints": [
         "skills/logic-writing/scripts/reader_pipeline.py:build_writer_input",
@@ -204,7 +205,7 @@
         ".flowguard/models/closure_claim_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:a046494d9233eaa17fc2e6d6270a6fb2a478581c65b2743555b5e9ae72681395"
+      "fingerprint": "sha256:746d58e5a1839d19c0740185fd0509b6e1d2d0d1b0f17f68b2ba2a19a34ee953"
     },
     {
       "id": "fiction",
@@ -339,7 +340,7 @@
         ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:dfa2ed99d2d270f482833be3cfc21b625a37775138148f06e6f5c68f206fa57a"
+      "fingerprint": "sha256:728360635dec763a222d61580c2181bcd7897ac324876903490532de54d72cbb"
     },
     {
       "id": "travel",
@@ -441,7 +442,7 @@
         ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:8e83647966e280e4dfa9ebbc902742796553fea00f2e3db27c419e7d25c87688"
+      "fingerprint": "sha256:e36a9574d18eb22de566109c98fbba966aca815e392222e5985f1d862ba79166"
     },
     {
       "id": "investigation",
@@ -468,7 +469,8 @@
         "skills/logic-writing/assets/examples/investigation/shared-writing.json",
         "skills/logic-writing/assets/examples/investigation/sourceguard-stop.json",
         "skills/logic-writing/assets/examples/investigation/known-bad/nolim.md",
-        "skills/logic-writing/assets/examples/investigation/known-bad/overclaim.md"
+        "skills/logic-writing/assets/examples/investigation/known-bad/overclaim.md",
+        "skills/logic-writing/assets/examples/investigation/known-bad/short.md"
       ],
       "entrypoints": [
         "skills/logic-writing/routes/investigation/scripts/validate_investigation_artifact.py:validate_investigation_artifact"
@@ -488,7 +490,7 @@
         ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:15577f24b0339819a2dee44f16d58e78c67335cac4f907eb322a264dbe8f6426"
+      "fingerprint": "sha256:aec3d360bef85e186e45c200fba8813e6806d077c0ccc9bc35417db565666f24"
     },
     {
       "id": "academic",
@@ -531,7 +533,7 @@
         ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:c776b427652de0e0d371212411f15af799d015aa4e6746471f952db3a56418b8"
+      "fingerprint": "sha256:7f385faee110df2833c2f7a881f92098afa584fbade1af688d424030d7eabebe"
     },
     {
       "id": "release",
@@ -589,7 +591,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:e348351910d59934e74eda737cbceb44110b712eb29fa1fa717fad4e47aa3469"
+      "fingerprint": "sha256:5d059393f9e61e00031d0f03ec7cf1ab8905c665ed45ca3b06724e2ed5e91290"
     },
     {
       "id": "providers",
