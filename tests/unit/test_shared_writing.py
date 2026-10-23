@@ -148,6 +148,32 @@ def _quote_request(chain):
     return dict(contract=contract, artifact_map=chain['artifact_map'], reader_brief=chain['reader_brief'])
 
 
+@pytest.mark.parametrize('invalid_later', ['quote', 'explicit_id', 'review'])
+def test_quote_resolution_waits_for_whole_request_validation(tmp_path, invalid_later):
+    from reader_pipeline import fill_check_fingerprints
+
+    request = _quote_request(make_reader_chain(tmp_path))
+    if invalid_later == 'review':
+        request['review'] = {'dimensions': [{'evidence': [{'artifact_unit_id': 'artifact:paragraph:9999'}]}]}
+        expected = 'review evidence names artifact unit artifact:paragraph:9999'
+    else:
+        later = copy.deepcopy(request['contract']['unit_bindings'][0])
+        later['binding_id'] = 'binding:late'
+        if invalid_later == 'quote':
+            later['anchor_excerpts'] = ['This quote is absent from the current artifact.']
+            expected = 'binding binding:late:.*is not in the current text'
+        else:
+            later.pop('anchor_excerpts')
+            later['artifact_unit_ids'] = ['artifact:paragraph:9999']
+            later['artifact_spans'] = [{'artifact_unit_id': 'artifact:paragraph:9999'}]
+            expected = 'binding binding:late names artifact unit artifact:paragraph:9999'
+        request['contract']['unit_bindings'].append(later)
+    original = copy.deepcopy(request)
+    with pytest.raises(ValidationError, match=expected):
+        fill_check_fingerprints(request)
+    assert request == original
+
+
 def test_quote_binding_follows_renumbered_paragraphs(tmp_path):
     from reader_pipeline import build_artifact_map, fill_check_fingerprints
     chain = make_reader_chain(tmp_path, language='en')

@@ -113,7 +113,8 @@ ArtifactMap; the scripts never guess a replacement unit.
 8. `python scripts/derive_closure.py --input closure-input.json` with
    `closure_id`, `route_decision`, `reader_brief`, `route_composition`,
    `artifact_map`, `shared_writing`, `deterministic_audit`, `route_review`,
-   `judgment`, `revision_provenance`.
+   `judgment`, and `revision_provenance` for `revise_existing` with real source
+   and treatments; `create_new` may omit provenance and use the default not-applicable record.
 
 Before a specialist
 handoff, `python scripts/provider_preflight.py <provider>` checks that the

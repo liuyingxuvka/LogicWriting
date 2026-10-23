@@ -95,6 +95,38 @@ def test_limitation_excerpt_must_be_in_its_planned_unit(tmp_path):
     _review_boundary_checks(review, brief=brief, shared=shared, amap=chain['artifact_map'])
 
 
+def test_limitation_adjacency_uses_offsets_not_map_array_order(tmp_path):
+    from _common import fingerprint_without
+    from reader_pipeline import _review_boundary_checks, build_artifact_map, validate_artifact_map
+
+    chain = complete_chain(tmp_path)
+    piece = tmp_path / 'three-paragraphs.md'
+    piece.write_text('First paragraph establishes the target claim with a bounded meaning.\n\n'
+                     'Middle paragraph contains the genuinely adjacent limitation on the claim.\n\n'
+                     'Final paragraph is deliberately not adjacent to the first target claim.\n', encoding='utf-8')
+    amap = build_artifact_map(piece, map_id='map:adjacency', language='en')
+    body = [u for u in amap['units'] if u['unit_kind'] == 'paragraph']
+    assert len(body) == 3
+    brief, review = _boundary_review(chain)
+    brief['content_boundaries']['limitations'][0]['required_placement'] = 'adjacent_unit'
+    shared = copy.deepcopy(chain['shared_writing'])
+    shared['unit_bindings'][0]['artifact_unit_ids'] = [body[0]['artifact_unit_id']]
+    # The map remains valid when callers reorder its rows without changing offsets or bytes.
+    positions = [amap['units'].index(u) for u in body]
+    amap['units'][positions[1]], amap['units'][positions[2]] = body[2], body[1]
+    amap['map_fingerprint'] = fingerprint_without(amap, 'map_fingerprint')
+    validate_artifact_map(amap)
+    for unit, adjacent in [(body[2], False), (body[1], True)]:
+        review['limitation_checks'][0]['evidence'] = [dict(
+            artifact_unit_id=unit['artifact_unit_id'], locator=unit['locator'],
+            excerpt=unit['text'], excerpt_fingerprint=unit['content_fingerprint'])]
+        if adjacent:
+            _review_boundary_checks(review, brief=brief, shared=shared, amap=amap)
+        else:
+            with pytest.raises(ValidationError, match='lim:scope.*bound planned unit'):
+                _review_boundary_checks(review, brief=brief, shared=shared, amap=amap)
+
+
 def test_present_overclaim_forces_repair(tmp_path):
     from reader_pipeline import _route_review_from_current
     from tests.v2_support import span_evidence

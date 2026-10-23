@@ -1913,7 +1913,8 @@ def validate_route_artifact_review(
 def _review_boundary_checks(review, *, brief, shared, amap):
     """Validate the reviewer's quoted boundary declarations against current bindings."""
     units = {row['artifact_unit_id']: row for row in amap['units']}
-    body = [row['artifact_unit_id'] for row in amap['units'] if row['unit_kind'] in _BODY_UNIT_KINDS]
+    body = [row['artifact_unit_id'] for row in sorted(amap['units'], key=lambda row: (row['start'], row['end']))
+            if row['unit_kind'] in _BODY_UNIT_KINDS]
     dispositions = {row['limitation_id']: row for row in brief['composition_plan'].get('limitation_dispositions', [])
                     if row['disposition'] in {'body', 'note'}}
     limitations = {row['limitation_id']: row for row in brief['content_boundaries']['limitations']}
@@ -2319,6 +2320,7 @@ def fill_check_fingerprints(request: dict[str, Any]) -> dict[str, Any]:
     brief = _mapping(request.get("reader_brief"))
     units = {row.get("artifact_unit_id"): row for row in amap.get("units", []) if isinstance(row, Mapping)}
     quote_errors = []
+    resolved_bindings = []
     for key in ('contract', 'shared_writing'):
         contract = _mapping(request.get(key))
         for binding in contract.get('unit_bindings') or []:
@@ -2327,15 +2329,17 @@ def fill_check_fingerprints(request: dict[str, Any]) -> dict[str, Any]:
             try:
                 resolved = _quote_binding_units(binding, units)
                 if resolved is not None:
-                    binding['artifact_unit_ids'] = [row['artifact_unit_id'] for row in resolved]
-                    if 'artifact_spans' not in binding:
-                        binding['artifact_spans'] = [{key: row[key] for key in
-                            ('artifact_unit_id', 'locator', 'content_fingerprint')} for row in resolved]
+                    resolved_bindings.append((binding, resolved))
             except ValidationError as exc:
                 quote_errors.append(str(exc))
     if quote_errors:
         raise ValidationError('; '.join(quote_errors))
     _check_artifact_unit_membership(request, units)
+    for binding, resolved in resolved_bindings:
+        binding['artifact_unit_ids'] = [row['artifact_unit_id'] for row in resolved]
+        if 'artifact_spans' not in binding:
+            binding['artifact_spans'] = [{key: row[key] for key in
+                ('artifact_unit_id', 'locator', 'content_fingerprint')} for row in resolved]
     for key in ("contract", "shared_writing"):
         contract = request.get(key)
         if not isinstance(contract, dict):

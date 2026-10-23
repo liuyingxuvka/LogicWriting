@@ -111,7 +111,7 @@
         "Reader-chain commands take upstream records as file paths and compute the fingerprints and references a caller leaves out (fill_brief_fingerprints, fill_check_fingerprints, fill_closure_fingerprints); values the caller gives are still checked. Derive only absent visible content/limitation placements and shared fiction-unit fields once at the brief-request boundary before fingerprints; retain explicit values and name unplaced ids requiring an explicit disposition.",
         "Name the resolved absolute path when an artifact file cannot be read.",
         "Project the optional fiction voice_contract into writer input, leaving a missing payload as a gap and binding changes in the route and brief fingerprints.",
-        "Before filling any fingerprint, name vanished units across every contract binding and route-review evidence reference without guessing replacement bindings. Document and smoke-check installable route examples and their finite bad-text catalog. Closure copies saved provider statuses; missing or failing required reports forbid broad claims and are named in residual risk.",
+        "Resolve quote-only bindings without changing the request, then validate every existing quote and artifact-unit reference before filling bindings or fingerprints. Derive limitation adjacency from body offsets rather than ArtifactMap array order. Document and smoke-check installable route examples and their finite bad-text catalog. Closure copies saved provider statuses; missing or failing required reports forbid broad claims and are named in residual risk.",
         "Own mode-aware revision provenance: derive real source bytes/units from the source manifest helper, check current target ids and canonical fingerprints, and supply a deterministic not-applicable record for new writing.",
         "Expose the same text block classification to route validators, including Chinese prose and list markers. Briefs optionally import missing native SourceGuard YAML anchors; handwritten rows take priority. Short story guidance keeps movement, promises and unit plans in the fiction composition. Closure CLI adds the standard status/errors/warnings envelope and blocked input errors; the library return stays unchanged."
       ],
@@ -207,7 +207,7 @@
         ".flowguard/models/closure_claim_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:56ff4ab4110f85f7aa313a7d74b7a916be16e39a27a8b8bc7356ece415cb228e"
+      "fingerprint": "sha256:9369f9a41eb4952be88c9a240c204ffaab049e70cad4475bf2b6daca2fd1dd82"
     },
     {
       "id": "fiction",
