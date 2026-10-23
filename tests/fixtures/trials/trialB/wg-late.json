@@ -1,0 +1,53 @@
+{
+  "checked": {
+    "claim_rows": 5,
+    "guards": [
+      "EventGuard",
+      "ResourceGuard"
+    ],
+    "variants": 0
+  },
+  "contract_id": "scene-last-tide-001",
+  "gaps": [
+    {
+      "code": "EVENT_PRECONDITION_UNMET",
+      "counterexample": {
+        "at": "t8",
+        "event_id": "e_deliver",
+        "holding_fluents": [
+          "brandt_has_ring_key",
+          "brandt_on_island",
+          "office_open",
+          "papers_stamped",
+          "tova_has_spare"
+        ],
+        "missing_fluents": [
+          "tide_high"
+        ]
+      },
+      "guard": "EventGuard",
+      "message": "An event happens while a fluent it requires does not hold.",
+      "status": "FAIL"
+    },
+    {
+      "assertion": {
+        "before": "e_tide_turns",
+        "event": "e_deliver"
+      },
+      "claim_row": 3,
+      "code": "CLAIM_ASSERTION_FALSE",
+      "guard": "EventGuard",
+      "observed": {
+        "e_deliver": "t8",
+        "e_tide_turns": "t7"
+      },
+      "status": "FAIL"
+    }
+  ],
+  "output": "summary only; add --json for the full report",
+  "scope_limits": [
+    "one evening",
+    "harbor office and quay only"
+  ],
+  "status": "FAIL"
+}

@@ -13,6 +13,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from story_ledger_check import read_worldguard_status
+
 
 ALLOWED_PROSE_STATUSES = {
     "not_started",
@@ -84,9 +86,6 @@ ALLOWED_PROMISE_ROLES = {
     "book_payoff",
     "series_deferral",
 }
-PASSABLE_WORLDGUARD_STATUSES = {"pass"}
-PASSABLE_WORLDGUARD_ADAPTER_STATUSES = {"pass", "skipped"}
-PASSABLE_WORLDGUARD_CLOSURE_EFFECTS = {"continue", "scoped_out"}
 PLACEHOLDER_VALUES = {
     "tbd",
     "todo",
@@ -643,15 +642,11 @@ def check_story_function_links(row: dict[str, Any], path: str, reporter: Reporte
         )
 
 
-def worldguard_claim_passable(claim: dict[str, Any]) -> bool:
-    status = claim.get("worldguard_status")
-    adapter_status = claim.get("adapter_status")
-    closure_effect = claim.get("closure_effect")
-    return (
-        status in PASSABLE_WORLDGUARD_STATUSES
-        or adapter_status in PASSABLE_WORLDGUARD_ADAPTER_STATUSES
-        or closure_effect in PASSABLE_WORLDGUARD_CLOSURE_EFFECTS
-    )
+def worldguard_claim_passable(claim: dict[str, Any], source_path: str = "") -> bool:
+    try:
+        return read_worldguard_status(claim, source_path) == "pass"
+    except ValueError:
+        return False
 
 
 def check_worldguard_links(
@@ -659,6 +654,7 @@ def check_worldguard_links(
     path: str,
     reporter: Reporter,
     worldguard_map: dict[str, tuple[str, dict[str, Any]]],
+    source_path: str = "",
 ) -> None:
     scene_id = row.get("id", path)
     refs = check_reference_list(
@@ -675,14 +671,14 @@ def check_worldguard_links(
         if not worldguard_map or ref_id not in worldguard_map:
             continue
         claim_path, claim = worldguard_map[ref_id]
-        if not worldguard_claim_passable(claim):
+        if not worldguard_claim_passable(claim, source_path):
             outcome = row.get("contract_outcome")
             closure_effect = row.get("closure_effect")
             if outcome == "keep" or closure_effect == "continue" or row.get("prose_status") == "final_candidate":
                 reporter.error(
                     "worldguard_claim_not_passable",
                     path_join(path, "worldguard_claim_links"),
-                    f"WorldGuard claim {ref_id!r} at {claim_path} is not pass, scoped out, or safely narrowed for a keep/continue scene.",
+                    f"WorldGuard claim {ref_id!r} at {claim_path} needs a native PASS report for a keep/continue scene.",
                     scene_id,
                     "worldguard_claim_links",
                 )
@@ -704,6 +700,7 @@ def check_cross_references(
     turning_point_map: dict[str, tuple[str, dict[str, Any]]],
     promise_map: dict[str, tuple[str, dict[str, Any]]],
     worldguard_map: dict[str, tuple[str, dict[str, Any]]],
+    source_path: str = "",
 ) -> None:
     scene_id = row.get("id", path)
     parent_structure_id = row.get("parent_structure_id")
@@ -736,7 +733,7 @@ def check_cross_references(
         required=True,
     )
     check_promise_links(row, path, reporter, promise_map)
-    check_worldguard_links(row, path, reporter, worldguard_map)
+    check_worldguard_links(row, path, reporter, worldguard_map, source_path)
     check_story_function_links(row, path, reporter)
 
 
@@ -832,6 +829,12 @@ def validate_scene_contracts(payload: Any, source_path: str) -> dict[str, Any]:
         turning_point_map = extract_id_map(payload, "structure")
     promise_map = extract_id_map(payload, "promises")
     worldguard_map = extract_id_map(payload, "worldguard_claims")
+    for claim_path, claim in worldguard_map.values():
+        try:
+            read_worldguard_status(claim, source_path)
+        except ValueError as exc:
+            code, _, message = str(exc).partition(":")
+            reporter.error(code, claim_path, message.strip())
 
     if not rows:
         reporter.error("missing_scene_collection", collection_path or "$", "No scene contract rows were found.")
@@ -843,7 +846,7 @@ def validate_scene_contracts(payload: Any, source_path: str) -> dict[str, Any]:
         check_identity_and_enums(row, path, reporter)
         check_mission_conflict_and_state(row, path, reporter)
         check_turning_point(row, path, reporter)
-        check_cross_references(row, path, reporter, structure_map, turning_point_map, promise_map, worldguard_map)
+        check_cross_references(row, path, reporter, structure_map, turning_point_map, promise_map, worldguard_map, source_path)
         check_outcome_gates(row, path, reporter)
 
     return {

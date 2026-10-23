@@ -113,7 +113,7 @@
         "Project the optional fiction voice_contract into writer input, leaving a missing payload as a gap and binding changes in the route and brief fingerprints.",
         "Before filling any fingerprint, name vanished units across every contract binding and route-review evidence reference without guessing replacement bindings. Document and smoke-check installable route examples and their finite bad-text catalog. Closure copies saved provider statuses; missing or failing required reports forbid broad claims and are named in residual risk.",
         "Own mode-aware revision provenance: derive real source bytes/units from the source manifest helper, check current target ids and canonical fingerprints, and supply a deterministic not-applicable record for new writing.",
-        "Expose the same text block classification to route validators, including Chinese prose and list markers. Briefs optionally import missing native SourceGuard YAML anchors; handwritten rows take priority."
+        "Expose the same text block classification to route validators, including Chinese prose and list markers. Briefs optionally import missing native SourceGuard YAML anchors; handwritten rows take priority. Short story guidance keeps movement, promises and unit plans in the fiction composition."
       ],
       "files": [
         "skills/logic-writing/SKILL.md",
@@ -207,7 +207,7 @@
         ".flowguard/models/closure_claim_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:1d42af454187484e01e8ac6ff217fd07093e5b69e76a716a1eeab70d7096cb95"
+      "fingerprint": "sha256:45c2bc5193e16d6bd463e6acce0ce77e159cddc7d94b7bb6622380516b5d1864"
     },
     {
       "id": "fiction",
@@ -218,7 +218,8 @@
         "Preserve native world/state, promise, scene, chapter, voice and model/prose bindings.",
         "Check long-form closure bundles for the reverse outline and, for final prose, the manuscript identity and source requirements; the other story models run with their own scripts.",
         "Exercise representative valid and unbound-prose native binding cases in daily pytest; the fiction regression runs the route, native, longform and model-mesh suites.",
-        "Accept one structured voice_contract with POV and tense; voice_contract_ref is an identifier, not inferred prose. Ship a small runnable reader-chain example with known-bad texts."
+        "Accept one structured voice_contract with POV and tense; voice_contract_ref is an identifier, not inferred prose. Ship a small runnable reader-chain example with known-bad texts.",
+        "Short stories use compact composition and reader-chain depth. Explicit or long story ledgers read WorldGuard status from native reports relative to the ledger; handwritten pass and adapter bypasses do not qualify."
       ],
       "files": [
         "skills/logic-writing/routes/fiction/examples/longform_failure_cases/duplicate-binding-without-delta.json",
@@ -342,7 +343,7 @@
         ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:728360635dec763a222d61580c2181bcd7897ac324876903490532de54d72cbb"
+      "fingerprint": "sha256:10d654c05fc5e734317d7e99b66a5ad1cf39422e096985a063d93d56be0d5e8d"
     },
     {
       "id": "travel",

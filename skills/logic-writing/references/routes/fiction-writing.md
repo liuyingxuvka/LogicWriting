@@ -40,8 +40,10 @@ changes evidence depth.
 
 - Compact work needs a clear story movement, a promise boundary and a re-read
   of the actual text after writing.
-- Short stories add a story ledger, turning points, scene contracts, promises,
-  and story closure.
+- Short stories use the fiction composition (`story_movements`,
+  `promise_and_reveal_bindings`, `unit_plans`) and the reader chain; use
+  `scripts/show_plan.py` to read back the plan. Attach a native WorldGuard report
+  when `world_check_required` calls for one.
 - Long form adds `novel_ledger`, chapter interfaces, continuity layers,
   story-contribution rows, voice/style state, semantic review, project mesh,
   and model-prose binding.
@@ -84,8 +86,9 @@ Run the ones that match the chosen depth after every material change to the
 model or the prose, and put each failing check with its issue codes in the
 audit note.
 
-- Short story: `story_ledger_check.py`, `turning_point_check.py`,
-  `scene_contract_check.py` and `promise_payoff_check.py` on the story ledger.
+- Long story planning, or an explicitly requested story ledger:
+  `story_ledger_check.py`, `turning_point_check.py`, `scene_contract_check.py`
+  and `promise_payoff_check.py` on the story ledger.
 - Long form: `novel_ledger_check.py` and `story_contribution_check.py` on the
   novel ledger, `chapter_interface_check.py` on the chapter interfaces,
   `promise_payoff_check.py` on the promise ledger,

@@ -223,7 +223,7 @@ Each claim row should include:
 - `claim_type`: event, agent, space, resource, causal, conflict, norm, timeline, or authority.
 - `claim_text`: generic world claim in non-literary terms.
 - `authority_scope`: user_canon, draft_current, generated_assumption, external_source, or unknown.
-- `worldguard_status`: pass, fail, gap, boundary_exceeded, stale, forbidden_use, not_run, or human-review.
+- `worldguard_report`: native WorldGuard check summary path, relative to the ledger. Read its top-level status (PASS, FAIL, GAP or BOUNDARY_EXCEEDED) in lower case. No report means not_run and never passes. Legacy worldguard_status: not_run is accepted; other handwritten statuses require a report and must match it.
 - `worldguard_evidence_refs`: downstream evidence ids or paths.
 - `adapter_note`: why this mapping belongs in the adapter layer.
 

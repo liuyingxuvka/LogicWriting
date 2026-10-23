@@ -8,19 +8,21 @@
     "status": "compiled",
     "canonical_artifact": "short_story",
     "alias_used": true,
-    "route_id": "route:full-guarded",
+    "route_id": "route:compact",
     "depth_tier": "short_story",
     "closure_level": "story",
     "prose_phase": "pre_draft",
     "required_surfaces_include": [
-      "story_ledger",
-      "turning_point",
-      "scene_contract",
-      "promise_payoff"
+      "compact_story_movement",
+      "main_promise_boundary",
+      "compact_closure"
     ],
     "required_surfaces_exclude": [
       "novel_ledger",
-      "reverse_outline"
+      "reverse_outline",
+      "story_ledger",
+      "turning_point",
+      "scene_contract"
     ]
   }
 }

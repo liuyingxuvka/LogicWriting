@@ -65,14 +65,12 @@ Required fields:
 - `claim_text`: generic world claim in non-literary terms.
 - `worldguard_input`: normalized claim payload or notes for the WorldGuard-facing check.
 - `authority_scope`: user_canon, draft_current, generated_assumption, external_source, inferred, or unknown.
-- `worldguard_status`: pass, fail, gap, boundary_exceeded, stale_source, forbidden_use, authority_cycle, missing_handoff, not_run, or human_review.
+- `worldguard_report`: native WorldGuard check summary path, relative to the ledger. Read its top-level status (PASS, FAIL, GAP or BOUNDARY_EXCEEDED) in lower case. No report means not_run and never passes. Legacy worldguard_status: not_run is accepted; other handwritten statuses require a report and must match it.
 - `adapter_status`: planned, mapped, pass, partial, blocked, gap, skipped, stale, or human_review.
 - `closure_effect`: continue, return_to_ledger, return_to_scene, return_to_structure, user_decision, or scoped_out.
 
 When WorldGuard runs, put the path of its `run_worldguard.py check` report in
-`worldguard_evidence_refs` and its overall status in lower case in
-`worldguard_status` (`PASS` -> `pass`, `FAIL` -> `fail`, `GAP` -> `gap`,
-`BOUNDARY_EXCEEDED` -> `boundary_exceeded`). Attach the report itself; no
+`worldguard_report`; validators read its overall native status themselves. Attach the report itself; no
 extra wrapper record is needed.
 
 ## Mapping Targets

@@ -134,7 +134,6 @@ WORLDGUARD_FIELDS = {
     "claim_type": str,
     "claim_text": str,
     "authority_scope": str,
-    "worldguard_status": str,
     "worldguard_evidence_refs": list,
     "adapter_note": str,
 }
@@ -533,6 +532,30 @@ def check_cross_links(ledger: dict[str, Any], reporter: Reporter) -> None:
                 )
 
 
+def read_worldguard_status(claim: dict[str, Any], source_path: str = "") -> str:
+    """Read native status; a handwritten pass never substitutes for a report."""
+    path = claim.get("worldguard_report")
+    legacy = claim.get("worldguard_status")
+    if not path:
+        if legacy not in (None, "not_run"):
+            raise ValueError("worldguard_status_without_report: a non-not_run status needs worldguard_report")
+        return "not_run"
+    if not isinstance(path, str):
+        raise ValueError("worldguard_report_invalid: report path must be a string")
+    resolved = Path(source_path).resolve().parent / Path(path).expanduser()
+    try:
+        report = json.loads(resolved.read_text(encoding="utf-8"))
+        status = report.get("status") if isinstance(report, dict) else None
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"worldguard_report_invalid: {resolved}: {exc}") from exc
+    if status not in {"PASS", "FAIL", "GAP", "BOUNDARY_EXCEEDED"}:
+        raise ValueError(f"worldguard_report_invalid: {resolved}: invalid native status {status!r}")
+    status = status.lower()
+    if legacy is not None and legacy != status:
+        raise ValueError(f"worldguard_status_mismatch: declared {legacy!r}, report says {status!r}")
+    return status
+
+
 def validate_ledger(ledger: Any, source_path: str) -> dict[str, Any]:
     reporter = Reporter()
     if not isinstance(ledger, dict):
@@ -629,6 +652,11 @@ def validate_ledger(ledger: Any, source_path: str) -> dict[str, Any]:
     for index, row in enumerate(ledger.get("worldguard_claims", [])):
         if not isinstance(row, dict):
             continue
+        try:
+            read_worldguard_status(row, source_path)
+        except ValueError as exc:
+            code, _, message = str(exc).partition(":")
+            reporter.error(code, f"worldguard_claims[{index}].worldguard_report", message.strip())
         for field in ("claim_type", "authority_scope", "worldguard_status"):
             if field in row:
                 check_enum(row[field], ENUMS[f"worldguard_claims.{field}"], f"worldguard_claims[{index}].{field}", reporter)

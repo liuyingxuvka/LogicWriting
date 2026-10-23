@@ -165,3 +165,26 @@ def test_unit_plans_take_shared_fields_from_the_planned_units(tmp_path):
     assert row["reader_state_after"] == unit["outgoing_reader_state"]
     assert row["downstream_unit_ids"] == unit["downstream_unit_ids"]
     assert row["open_questions_in"] == row["open_questions_out"] == row["prohibited_reveals"] == []
+
+
+def test_worldguard_status_comes_from_native_reports(tmp_path, monkeypatch):
+    import shutil
+    monkeypatch.syspath_prepend(str(ROUTE / "scripts"))
+    from story_ledger_check import read_worldguard_status, validate_ledger
+    from scene_contract_check import worldguard_claim_passable
+
+    fixtures = ROOT / "tests/fixtures/trials/trialB"
+    ledger = tmp_path / "ledger.json"
+    for filename, expected in (("wg-v2.json", "pass"), ("wg-late.json", "fail")):
+        shutil.copyfile(fixtures / filename, tmp_path / filename)
+        claim = {"worldguard_report": filename}
+        assert read_worldguard_status(claim, str(ledger)) == expected
+        assert worldguard_claim_passable(claim, str(ledger)) is (expected == "pass")
+    with pytest.raises(ValueError, match="worldguard_status_without_report"):
+        read_worldguard_status({"worldguard_status": "pass"}, str(ledger))
+    with pytest.raises(ValueError, match="worldguard_status_mismatch"):
+        read_worldguard_status({"worldguard_status": "pass", "worldguard_report": "wg-late.json"}, str(ledger))
+    assert read_worldguard_status({}, str(ledger)) == "not_run"
+    assert not worldguard_claim_passable({"adapter_status": "pass", "closure_effect": "continue"})
+    report = validate_ledger({"worldguard_claims": [{"worldguard_status": "pass"}]}, str(ledger))
+    assert "worldguard_status_without_report" in {row["code"] for row in report["issues"]}

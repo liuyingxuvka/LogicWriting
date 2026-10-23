@@ -35,6 +35,13 @@
         "pre_draft": [],
         "post_draft": [
           "postwrite_observation"
+        ],
+        "final_prose": [
+          "postwrite_observation",
+          "source_requirements",
+          "final_artifact",
+          "artifact_bound_review",
+          "model_prose_binding"
         ]
       }
     },
@@ -144,7 +151,7 @@
       ]
     },
     "short_story": {
-      "route_profile": "full_guarded",
+      "route_profile": "compact",
       "base_depth_tier": "short_story",
       "closure_level": "story",
       "allowed_prose_phases": [
