@@ -196,7 +196,9 @@ def test_ledger_unit_must_be_a_planned_unit(tmp_path, monkeypatch):
     assert "unit_not_in_plan:chapter_interfaces:chapter-01" in {row["code"] for row in interfaces["issues"]}
 
 
-def test_unit_fields_live_only_in_the_plan():
+def test_unit_fields_live_only_in_the_plan(monkeypatch):
+    monkeypatch.syspath_prepend(str(ROUTE / "scripts"))
+    from novel_ledger_check import validate_ledger
     project = ROUTE / "examples/longform_novel_project"
     ledger = json.loads((project/"novel-ledger.json").read_text())
     assert "hierarchy" not in ledger
@@ -207,6 +209,10 @@ def test_unit_fields_live_only_in_the_plan():
     for row in surfaces["chapter_interfaces"]:
         assert "planned_unit_id" in row
         assert not {"chapter_id", "previous_chapter_id", "next_chapter_id", "reader_state_before", "reader_state_after"} & row.keys()
+    path = project / "novel-ledger.json"
+    assert not {row["code"] for row in validate_ledger(copy.deepcopy(ledger), str(path))["issues"]} & {"retired_unit_field"}
+    ledger["story_units"][0]["contribution"] = "Restated from the plan."
+    assert "retired_unit_field" in {row["code"] for row in validate_ledger(ledger, str(path))["issues"]}
 
 
 def test_emptied_ledger_fails_longform_closure(tmp_path, monkeypatch):

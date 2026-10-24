@@ -275,9 +275,25 @@ def conformance():
 
 
 NOT_MODELED = {
+    "skills/logic-writing/scripts/reader_checks.py:validate_route_artifact_review": "Public review entry of the four route commands: it validates the map, route and binding, then returns _route_review_from_current, which this model replays as RouteReview.",
+    "skills/logic-writing/routes/academic/scripts/validate_academic_artifact.py:validate_academic_artifact": "40-line command wrapper that fills fingerprints and delegates to reader_checks.validate_route_artifact_review.",
+    "skills/logic-writing/routes/fiction/scripts/validate_fiction_artifact.py:validate_fiction_artifact": "40-line command wrapper that fills fingerprints and delegates to reader_checks.validate_route_artifact_review.",
+    "skills/logic-writing/routes/investigation/scripts/validate_investigation_artifact.py:validate_investigation_artifact": "40-line command wrapper that fills fingerprints and delegates to reader_checks.validate_route_artifact_review.",
+    "skills/logic-writing/routes/travel/scripts/validate_travel_artifact.py:validate_travel_artifact": "40-line command wrapper that fills fingerprints and delegates to reader_checks.validate_route_artifact_review.",
+    "skills/logic-writing/routes/fiction/scripts/run_native_regression.py:main": "Fiction regression driver that runs the native fiction validators on their example cases; covered by scripts/run_fiction_regression.py in CI.",
+    "skills/logic-writing/routes/fiction/scripts/run_route_regression.py:main": "Fiction regression driver that runs the route cases and compares their expected codes; covered by scripts/run_fiction_regression.py in CI.",
+    "skills/logic-writing/routes/travel/scripts/validate_failure_cases.py:main": "Travel regression command that applies each failure case to the base trip and compares its expected issue codes.",
+    "skills/logic-writing/routes/travel/scripts/validate_positive_cases.py:main": "Travel regression command that applies each positive case to the base trip and expects no issue.",
+    "skills/logic-writing/routes/travel/scripts/validate_travel_plan.py:main": "Command wrapper that prints the issues of travel_contract.review_plan for one plan file.",
+    "skills/logic-writing/routes/travel/scripts/validate_travel_text_outputs.py:main": "Travel text regression command for saved guide texts; tests/unit/test_travel.py runs it on a good and a bullet-only guide.",
+    "scripts/check_privacy.py:main": "Release maintenance command covered by tests/contract/test_privacy_scan.py.",
+    "scripts/check_public_docs.py:main": "Release maintenance command covered by tests/contract/test_release_wrappers.py.",
+    "scripts/run_fiction_regression.py:main": "Release maintenance command that runs the fiction regressions in CI; covered by tests/unit/test_fiction.py.",
+    "scripts/run_travel_regression.py:main": "Release maintenance command that runs the travel regressions in CI.",
+    "scripts/validate_skill.py:main": "Release maintenance command covered by tests/contract/test_install_skill.py.",
+    "skills/logic-writing/scripts/build_source_unit_manifest.py:main": "Command that writes the source-unit manifest of an existing text for a revision; validate_revision_provenance checks its result.",
+    "skills/logic-writing/scripts/show_plan.py:main": "Read-only command that prints the plan view of the given chain file; tests/e2e/test_worked_examples.py runs it on every chain file.",
     "scripts/install_skill.py:main": "Transactional skill copying and predecessor retirement are tested by installer/byte-contract tests; this is a release maintenance command rather than a writing-quality transition.",
     "skills/logic-writing/routes/fiction/scripts/run_longform_regression.py:main": "The finite regression driver executes native domain validators; its subprocess/output wrapper is tested by the fiction regression contract, while the domain validators own writing semantics.",
     "skills/logic-writing/routes/fiction/scripts/run_story_model_mesh_regression.py:main": "Finite developer regression orchestration writes only requested report files and is covered by native fiction regression checks, not a separate writing-state machine.",
-    "skills/logic-writing/scripts/known_bad.py:check_known_bad": "Deterministic in-memory mutations are verified by the generated-catalog e2e contract; uncaught mutations add non-gating residual risk and do not change the writing-quality result.",
-    "skills/logic-writing/scripts/known_bad.py:main": "The catalog output CLI delegates to the same deterministic mutation checker; its file bytes are covered by the generated-catalog e2e contract.",
 }

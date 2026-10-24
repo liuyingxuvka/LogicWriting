@@ -593,6 +593,7 @@
         "world-references"
       ],
       "tests": [
+        "tests/unit/test_academic.py",
         "tests/unit/test_cli_inputs.py",
         "tests/unit/test_composition_graph.py",
         "tests/unit/test_editorial_dispositions.py",
@@ -661,7 +662,8 @@
       "entrypoints": [
         "skills/logic-writing/scripts/reader_checks.py:_reader_judgment_from_current",
         "skills/logic-writing/scripts/reader_checks.py:_route_review_from_current",
-        "skills/logic-writing/scripts/reader_checks.py:build_reader_audit"
+        "skills/logic-writing/scripts/reader_checks.py:build_reader_audit",
+        "skills/logic-writing/scripts/reader_checks.py:validate_route_artifact_review"
       ],
       "state": [
         "Current audit findings, quoted review dimensions and reader judgment."
@@ -717,7 +719,8 @@
       "layer": "reader",
       "summary": "Derive quality closure from the real reader chain, saved native verdicts and in-process domain checks.",
       "responsibilities": [
-        "Derive quality closure from the real reader chain, saved native verdicts and in-process domain checks."
+        "Derive quality closure from the real reader chain, saved native verdicts and in-process domain checks.",
+        "Known-bad edits are caught or listed as toothless closure risks."
       ],
       "files": [
         "skills/logic-writing/assets/schemas/closure.schema.json",
@@ -753,10 +756,12 @@
         "tests/e2e/test_reader_v2_benchmark.py",
         "tests/e2e/test_routes.py",
         "tests/e2e/test_worked_examples.py",
-        "tests/unit/test_freshness_closure.py"
+        "tests/unit/test_freshness_closure.py",
+        "tests/unit/test_known_bad.py"
       ],
       "models": [
-        ".flowguard/models/closure_claim_model.py"
+        ".flowguard/models/closure_claim_model.py",
+        ".flowguard/models/known_bad_generator_model.py"
       ],
       "parent": "reader-artifact",
       "status": "confirmed",
@@ -804,7 +809,8 @@
       "layer": "evidence",
       "summary": "Check declared native world ids and same-unit quotations without running WorldGuard.",
       "responsibilities": [
-        "Check declared native world ids and same-unit quotations without running WorldGuard."
+        "Check declared native world ids and same-unit quotations without running WorldGuard.",
+        "World references name contract ids and unquoted ones become risks."
       ],
       "files": [
         "skills/logic-writing/references/adapters/worldguard.md",
@@ -821,7 +827,9 @@
       "tests": [
         "tests/unit/test_world_refs.py"
       ],
-      "models": [],
+      "models": [
+        ".flowguard/models/world_references_model.py"
+      ],
       "status": "confirmed",
       "fingerprint": "sha256:7646075fc9085287e4e9629629b0fdf1d4124c5eee7255ea5bf2b59b593ea3b1"
     },
@@ -830,7 +838,8 @@
       "layer": "reader",
       "summary": "Validate the canonical fiction tree and actual domain surfaces in process.",
       "responsibilities": [
-        "Validate the canonical fiction tree and actual domain surfaces in process."
+        "Validate the canonical fiction tree and actual domain surfaces in process.",
+        "Ledger units and world statuses come from the plan and native reports."
       ],
       "files": [
         "skills/logic-writing/routes/fiction/scripts/_fiction_common.py",
@@ -875,7 +884,9 @@
       "tests": [
         "tests/unit/test_fiction.py"
       ],
-      "models": [],
+      "models": [
+        ".flowguard/models/fiction_tree_model.py"
+      ],
       "status": "confirmed",
       "fingerprint": "sha256:52e29394471b7b4e57ed72d01339cdbe1bea3e8a1c7f64e926df8c404bd22874"
     },
@@ -884,7 +895,8 @@
       "layer": "reader",
       "summary": "Derive trip feasibility and claim level from saved world reports and check dates.",
       "responsibilities": [
-        "Derive trip feasibility and claim level from saved world reports and check dates."
+        "Derive trip feasibility and claim level from saved world reports and check dates.",
+        "Trip claims never exceed the saved world reports and check dates."
       ],
       "files": [
         "skills/logic-writing/routes/travel/scripts/fixture_mutation.py",
@@ -902,7 +914,9 @@
       "tests": [
         "tests/unit/test_travel.py"
       ],
-      "models": [],
+      "models": [
+        ".flowguard/models/trip_feasibility_model.py"
+      ],
       "status": "confirmed",
       "fingerprint": "sha256:749be5de312ba18b60932ee1961c7104087b1c661f53347692070e01f8d4827a"
     }
@@ -910,26 +924,17 @@
   "flows": [
     {
       "id": "reader-chain",
-      "summary": "Plan, bind, review and close the exact current writing.",
+      "summary": "Plan, bind, review and close the exact current writing; each command reads the file the step before it wrote.",
       "steps": [
         "routing:select_route",
-        "reader-plan:build_reader_brief",
-        "reader-binding:build_artifact_map",
-        "reader-binding:validate_shared_writing",
-        "reader-checks:build_reader_audit",
-        "reader-checks:_route_review_from_current",
-        "reader-closure:derive_closure"
+        "reader-plan:build_reader_brief reads route-decision.json",
+        "reader-binding:build_artifact_map reads piece.md",
+        "reader-binding:validate_shared_writing reads artifact-map.json",
+        "reader-checks:build_reader_audit reads shared-writing-result.json",
+        "reader-checks:validate_route_artifact_review reads shared-writing-result.json",
+        "reader-closure:derive_closure reads route-review-result.json"
       ],
       "model": ".flowguard/models/reader_artifact_model.py"
-    },
-    {
-      "id": "route-and-preflight",
-      "summary": "Choose one final owner and inspect the required native console.",
-      "steps": [
-        "routing:select_route",
-        "providers:preflight"
-      ],
-      "model": ".flowguard/models/route_and_guard_model.py"
     },
     {
       "id": "closure-providers",
@@ -942,6 +947,22 @@
         "reader-closure:check_known_bad"
       ],
       "model": ".flowguard/models/closure_claim_model.py"
+    },
+    {
+      "id": "route-selection",
+      "summary": "Choose one final owner and a bounded investigation child.",
+      "steps": [
+        "routing:select_route"
+      ],
+      "model": ".flowguard/models/route_and_guard_model.py"
+    },
+    {
+      "id": "provider-preflight",
+      "summary": "Inspect the one native provider a caller names.",
+      "steps": [
+        "providers:preflight"
+      ],
+      "model": ".flowguard/models/route_and_guard_model.py"
     }
   ],
   "accepted_debts": [

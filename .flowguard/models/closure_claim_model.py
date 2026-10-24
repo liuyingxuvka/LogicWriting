@@ -12,17 +12,15 @@ from flowguard.conformance import projected_output_matches, projected_state_matc
 from flowguard.explorer import Explorer
 
 MODEL_ID = 'closure_claim_model'
-PARENT = 'reader_artifact_model'
+PARENT = 'reader-closure'
 COMPONENTS = ['reader-closure', 'travel-model', 'researchguard-handoff']
 IMPLEMENTED_BY = {
     'Close': 'skills/logic-writing/scripts/derive_closure.py:derive_closure',
     'Reports': 'skills/logic-writing/scripts/derive_closure.py:provider_checks',
-    'ResearchVerdict': 'skills/logic-writing/scripts/researchguard_status.py:assess_research_verdict',
-    'TravelClaims': 'skills/logic-writing/routes/travel/scripts/travel_contract.py:review_plan',
 }
 TESTED_BY = {
-    'research_verdict_risks_are_preserved': ['tests/unit/test_freshness_closure.py:test_provider_status_is_copied_from_the_report_file', 'tests/unit/test_researchguard_status.py:test_researchguard_verdict_decides_the_provider_check'],
-    "travel_world_failure_limits_claim": ["tests/unit/test_travel.py:test_failing_world_report_limits_the_claim_level"],
+    'research_verdict_risks_are_preserved': ['tests/unit/test_freshness_closure.py:test_provider_status_is_copied_from_the_report_file'],
+    "travel_world_failure_limits_claim": ["tests/unit/test_freshness_closure.py:test_failing_world_report_limits_the_travel_closure"],
     'broad_claim_needs_every_required_provider': ['tests/unit/test_freshness_closure.py:test_missing_required_provider_report_blocks_the_broad_claim'],
     'provider_status_is_copied_unchanged': ['tests/unit/test_freshness_closure.py:test_provider_status_is_copied_from_the_report_file'],
     'missing_or_failed_provider_is_named': ['tests/unit/test_freshness_closure.py:test_unreadable_report_is_not_a_pass'],

@@ -218,3 +218,27 @@ def test_required_providers_follow_live_alternatives_and_fiction_opt_in():
     assert required_providers('fiction-writing', {}, {'world_check_required': True}) == {'worldguard'}
     assert not required_providers('fiction-writing', {}, {})
     assert required_providers('travel-guide', {}, {}) == {'worldguard'}
+
+
+def test_failing_world_report_limits_the_travel_closure(tmp_path):
+    import json
+    import sys
+    from pathlib import Path
+    route = Path(__file__).resolve().parents[2] / 'skills/logic-writing/routes/travel'
+    if str(route / 'scripts') not in sys.path:
+        sys.path.insert(0, str(route / 'scripts'))
+    from fixture_mutation import apply_mutations
+    from travel_contract import review_plan
+    failed = tmp_path / 'world-fail.json'
+    failed.write_text(json.dumps({'status': 'FAIL'}))
+    request = closure_input(complete_chain(tmp_path / 'chain', 'travel-guide'))
+    request['provider_reports'] = [dict(provider='worldguard', path=str(failed))]
+    closure = derive_closure(request)['closure']
+    assert closure['provider_checks'][0]['status'] == 'FAIL'
+    assert closure['broad_claim_allowed'] is False
+    assert any(row['defect_id'] == 'provider:worldguard' for row in closure['residual_risk'])
+    plan_path = route / 'examples/good_city_couple_trip/plan.json'
+    current = json.loads((route / 'examples/positive_cases/near_future_bookable.json').read_text(encoding='utf-8'))
+    plan = apply_mutations(json.loads(plan_path.read_text(encoding='utf-8')), current['mutations'])
+    plan['world_feasibility']['checks'][0]['worldguard_report'] = str(failed)
+    assert review_plan(plan, plan_path=plan_path)['allowed_claim_level'] == 'initial_plan'

@@ -33,12 +33,10 @@ IMPLEMENTED_BY = {
 TESTED_BY = {
     "ledger_units_are_planned_units": ["tests/unit/test_fiction.py:test_ledger_unit_must_be_a_planned_unit"],
     "unit_fields_live_only_in_the_plan": [
-        "tests/unit/test_fiction.py:test_unit_fields_live_only_in_the_plan",
-        "tests/unit/test_fiction.py:test_unit_plans_take_shared_fields_from_the_planned_units"],
+        "tests/unit/test_fiction.py:test_unit_fields_live_only_in_the_plan"],
     "world_status_comes_from_native_reports": ["tests/unit/test_fiction.py:test_worldguard_status_comes_from_native_reports"],
     "emptied_ledger_fails_longform_closure": [
-        "tests/unit/test_fiction.py:test_emptied_ledger_fails_longform_closure",
-        "tests/unit/test_fiction.py:test_longform_binding_negative_cannot_pass_from_input_failure"],
+        "tests/unit/test_fiction.py:test_emptied_ledger_fails_longform_closure"],
 }
 NOT_MODELED = {
     "skills/logic-writing/routes/fiction/scripts/chapter_interface_check.py:Reporter.error": "Collects findings in memory for the report this check prints; the pass or fail decision is made in its validate function.",
