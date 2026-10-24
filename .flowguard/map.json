@@ -12,8 +12,7 @@
   "ignore": [
     "docs/**",
     "assets/**",
-    "openspec/changes/archive/**",
-    ".flowguard/structure/reverse-surfaces/**"
+    "openspec/changes/archive/**"
   ],
   "test_command": "python -m pytest -q",
   "components": [
@@ -449,7 +448,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:69269aff8622d14747052ea31ba52a3bbf45514e1e27049285e1c2f83ce70d82"
+      "fingerprint": "sha256:924319c5d2acc65850d009d946bbb6b57c44a2dc987b5a7b097460cc42c5d4de"
     },
     {
       "id": "providers",

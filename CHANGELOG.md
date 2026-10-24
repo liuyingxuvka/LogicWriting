@@ -6,6 +6,12 @@ releases, tags, package publications, installations, or predecessor deletions.
 The format follows the main ideas of Keep a Changelog, and the source version
 line follows semantic versioning.
 
+## [Unreleased]
+
+### Changed
+
+- Maintenance checks of the skill's own model tree run on FlowGuard 0.70.12.
+
 ## [4.0.14] - 2026-10-24
 
 ### Changed

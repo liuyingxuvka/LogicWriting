@@ -9,25 +9,12 @@ dist/
 build/
 *.egg-info/
 
-# Runtime evidence is reproducible and is not source authority.
-.flowguard/evidence/
-.flowguard/history/
-.flowguard/structure/reverse-surfaces/
-.flowguard/adoption_log.jsonl
-docs/flowguard_adoption_log.md
-.logicguard/evidence/
+# Run outputs are reproducible and are not source.
 .flowguard/**/__pycache__/
 run-artifacts/
 run_artifacts/
-validation-receipts/
-implementation-round2-evidence/
-openspec/**/verification-report.json
-openspec/**/verification-receipts/
 
 # Local tool and editor state.
-SLIM_LOG.md
-XR_LOG.md
-worklog_*.md
 .DS_Store
 Thumbs.db
 .idea/
@@ -38,7 +25,6 @@ tmp-*/
 .storyline-*/
 .probe-*/
 kb/history/
-docs/coordination.md
 
 # Private or recovery material must remain outside the public repository.
 backups/
