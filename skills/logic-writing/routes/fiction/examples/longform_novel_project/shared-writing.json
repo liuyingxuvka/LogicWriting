@@ -14,6 +14,11 @@
         "route_surface_ids": [],
         "artifact_unit_ids": [
           "artifact:paragraph:0001"
+        ],
+        "artifact_spans": [
+          {
+            "artifact_unit_id": "artifact:paragraph:0001"
+          }
         ]
       },
       {
@@ -24,6 +29,11 @@
         "route_surface_ids": [],
         "artifact_unit_ids": [
           "artifact:paragraph:0003"
+        ],
+        "artifact_spans": [
+          {
+            "artifact_unit_id": "artifact:paragraph:0003"
+          }
         ]
       },
       {
@@ -34,6 +44,11 @@
         "route_surface_ids": [],
         "artifact_unit_ids": [
           "artifact:paragraph:0005"
+        ],
+        "artifact_spans": [
+          {
+            "artifact_unit_id": "artifact:paragraph:0005"
+          }
         ]
       },
       {
@@ -44,6 +59,11 @@
         "route_surface_ids": [],
         "artifact_unit_ids": [
           "artifact:paragraph:0007"
+        ],
+        "artifact_spans": [
+          {
+            "artifact_unit_id": "artifact:paragraph:0007"
+          }
         ]
       },
       {
@@ -54,6 +74,11 @@
         "route_surface_ids": [],
         "artifact_unit_ids": [
           "artifact:paragraph:0009"
+        ],
+        "artifact_spans": [
+          {
+            "artifact_unit_id": "artifact:paragraph:0009"
+          }
         ]
       },
       {
