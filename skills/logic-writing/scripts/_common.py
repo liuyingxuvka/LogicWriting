@@ -365,7 +365,7 @@ def cli_validate(validate_fn, description: str) -> int:
         return 1
 
 
-RESEARCHGUARD_MIN_VERSION = (0, 5, 14)
+RESEARCHGUARD_MIN_VERSION = (0, 5, 15)
 RESEARCHGUARD_INSTALL_HINT = 'python -m pip install "git+https://github.com/liuyingxuvka/ResearchGuard.git"'
 
 
@@ -401,3 +401,34 @@ def read_worldguard_report(path: str | Path) -> str:
         return "unreadable"
     status = document.get("status") if isinstance(document, dict) else None
     return status if isinstance(status, str) and status in {"PASS", "FAIL", "GAP", "BOUNDARY_EXCEEDED"} else "unreadable"
+
+
+def worldguard_report_identity_problems(report_path: str | Path, world_contract: str | Path | None) -> list[str]:
+    """Problem codes when a saved WorldGuard report does not name the brief's world contract.
+
+    The expected id follows WorldGuard: the contract's ``contract_id``, else ``claim.claim_id``.
+    """
+    if not isinstance(world_contract, (str, Path)) or not str(world_contract):
+        return ["world_report_unbound:world_contract"]
+    try:
+        import yaml
+    except ImportError:
+        return ["world_report_unbound:world_contract"]
+    try:
+        contract = yaml.safe_load(Path(world_contract).expanduser().read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, ValueError, yaml.YAMLError):
+        return ["world_report_unbound:world_contract"]
+    if not isinstance(contract, Mapping):
+        return ["world_report_unbound:world_contract"]
+    expected = contract.get("contract_id")
+    if not isinstance(expected, str) or not expected:
+        claim = contract.get("claim")
+        expected = claim.get("claim_id") if isinstance(claim, Mapping) else None
+    if not isinstance(expected, str) or not expected:
+        return ["world_report_unbound:world_contract"]
+    try:
+        report = json.loads(Path(report_path).read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, ValueError, TypeError):
+        report = None
+    actual = report.get("contract_id") if isinstance(report, Mapping) else None
+    return [] if actual == expected else ["world_report_mismatch:contract_id"]

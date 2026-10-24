@@ -19,8 +19,8 @@ from _common import (
     require_schema,
     validation_result,
 )
-from researchguard_status import assess_research_verdict
-from _common import read_worldguard_report
+from researchguard_status import assess_research_verdict, research_report_identity_problems
+from _common import read_worldguard_report, worldguard_report_identity_problems
 from route_inputs import route_extension_fingerprint
 from world_refs import world_ref_unquoted
 from known_bad import check_known_bad
@@ -78,6 +78,10 @@ def required_providers(owner, brief, route_composition):
     return required
 
 
+IDENTITY_PROBLEMS = ("research_report_mismatch:", "research_report_unbound:",
+                     "world_report_mismatch:", "world_report_unbound:")
+
+
 def provider_checks(owner, brief, route_composition, reports):
     """Read saved native results only; never invoke a provider from closure."""
     required = required_providers(owner, brief, route_composition)
@@ -97,10 +101,15 @@ def provider_checks(owner, brief, route_composition, reports):
             assessment = assess_research_verdict(document, brief.get("content_boundaries", {}).get("alternatives", []))
             status, passed, reason = assessment["status"], assessment["passed"], assessment["reason"]
             risks.extend(dict(row, owner=owner) for row in assessment["residual_risk"])
+            # The report counts only for the research folder the brief names.
+            problems = research_report_identity_problems(document, brief.get("research_folder"))
         else:
             status = read_worldguard_report(path)
             passed = status == "PASS"
             reason = f"{provider} report {path}: {status}"
+            problems = worldguard_report_identity_problems(path, route_composition.get("world_contract"))
+        if problems and status != "unreadable":  # an unreadable report already fails
+            status, passed, reason = "failed", False, "; ".join([*problems, reason])
         checks.append(dict(provider=provider, path=path, status=status, passed=passed,
                            reason=reason, required=provider in required))
         if not passed:
@@ -247,6 +256,9 @@ def derive_closure(
     checks, provider_risks, providers_passed = provider_checks(
         owner, brief, route, request.get("provider_reports", []))
     residual.extend(provider_risks)
+    if any(row["reason"].startswith(IDENTITY_PROBLEMS) for row in checks):
+        # A report of another research folder or world is a defect of this closure's inputs.
+        status = "needs_repair"
     reader_basis = "a self-review by the writer" if self_review else "independent reader judgment"
     if status == "passed":
         safe_claim = (

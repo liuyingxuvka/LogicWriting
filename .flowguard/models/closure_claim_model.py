@@ -1,4 +1,9 @@
-"""Saved provider reports constrain broad claims without changing textual closure."""
+"""Saved provider reports constrain broad claims without changing textual closure.
+
+A saved report counts only when it belongs to the brief: a ResearchGuard report must
+match the research folder's question, hypotheses, models and source anchors, and a
+WorldGuard report must name the world contract's id.
+"""
 from dataclasses import dataclass, replace
 from pathlib import Path
 import json
@@ -24,11 +29,16 @@ TESTED_BY = {
     'broad_claim_needs_every_required_provider': ['tests/unit/test_freshness_closure.py:test_missing_required_provider_report_blocks_the_broad_claim'],
     'provider_status_is_copied_unchanged': ['tests/unit/test_freshness_closure.py:test_provider_status_is_copied_from_the_report_file'],
     'missing_or_failed_provider_is_named': ['tests/unit/test_freshness_closure.py:test_unreadable_report_is_not_a_pass'],
+    'research_report_belongs_to_the_folder': ['tests/unit/test_researchguard_status.py:test_report_from_another_folder_fails_the_provider_check'],
+    'world_report_belongs_to_the_contract': ['tests/unit/test_freshness_closure.py:test_world_report_for_another_contract_fails_closure'],
 }
 ROOT = Path(__file__).resolve().parents[2]
+EXAMPLES = ROOT / 'skills/logic-writing/assets/examples'
+WORLD_ID = 'old-market-day'  # contract_id of the travel example's world.yaml
 PASSING = {'researchguard': 'passed', 'worldguard': 'PASS'}
 RESEARCH_PASS = {'research_ready', 'research_contested', 'research_source_only'}
 RESEARCH_FAIL = {'research_search_open', 'research_errors', 'research_live_withhold', 'research_alternative_conflict'}
+FOREIGN = {'research_foreign', 'world_foreign'}
 
 
 @dataclass(frozen=True)
@@ -58,8 +68,13 @@ def expected_status(state):
     if state.report == 'not_run':
         return 'not_run'
     if provider(state) == 'worldguard':
-        return state.report if state.report in {'PASS', 'FAIL'} else 'unreadable'
-    return 'passed' if state.report in RESEARCH_PASS else 'failed' if state.report in RESEARCH_FAIL else 'unreadable'
+        return state.report if state.report in {'PASS', 'FAIL'} else 'failed' if state.report == 'world_foreign' else 'unreadable'
+    return 'passed' if state.report in RESEARCH_PASS else 'failed' if state.report in RESEARCH_FAIL | {'research_foreign'} else 'unreadable'
+
+
+def foreign_identity(state):
+    """A readable report of another research question or world: closure needs repair."""
+    return state.report == {'researchguard': 'research_foreign', 'worldguard': 'world_foreign'}[provider(state)]
 
 
 def expected_research_risks(state):
@@ -67,16 +82,26 @@ def expected_research_risks(state):
         return ()
     return {'research_contested': ('research:contested',),
             'research_source_only': ('research:root_claim_not_run',),
+            'research_foreign': ('research:root_claim_not_run',),
             'research_live_withhold': ('research:wording_boundary',)}.get(state.report, ())
 
 
 def report_input(owner, case):
     """Finite native input cases, including the source-only shipped verdict shape."""
     if case in {'PASS', 'FAIL'}:
-        return {'status': case}, []
-    if case not in RESEARCH_PASS | RESEARCH_FAIL:
+        return {'status': case, 'contract_id': WORLD_ID}, []
+    if case == 'world_foreign':
+        return {'status': 'PASS', 'contract_id': 'another-world'}, []
+    if case not in RESEARCH_PASS | RESEARCH_FAIL | {'research_foreign'}:
         return {}, []
-    document = json.loads((ROOT / 'tests/fixtures/trials/research-status.json').read_text(encoding="utf-8"))
+    document = json.loads((EXAMPLES / 'investigation/research-status.json').read_text(encoding="utf-8"))
+    verdict = document['verdict']
+    if case == 'research_foreign':
+        # Another question's report (the Ever Given probe): same verdict shape, other identity.
+        document['question'] = 'Why did container freight rates surge in 2021?'
+        document['hypotheses'] = [{'id': 'h_suez', 'text': 'The Suez blockage caused the surge.'}]
+        verdict['live_hypotheses'] = ['h_suez']
+        return document, []
     verdict = document['verdict']
     if case != 'research_source_only':
         verdict['root_claim'] = {'id': 'h-main-answer', 'wording_license': 'assert',
@@ -90,11 +115,10 @@ def report_input(owner, case):
     elif case == 'research_live_withhold':
         verdict['root_claim'].update(wording_license='withhold', reason='Native counterevidence remains.')
         verdict['live_hypotheses'].append('h-other')
-        document['hypotheses'].append({'id': 'h-other'})
     elif case == 'research_alternative_conflict':
-        document['hypotheses'].append({'id': 'h-other', 'experiment': {'status': 'eliminated'}})
-        return document, ([{'alternative_id': 'h-other', 'safe_meaning': 'An eliminated alternative is still called live.',
-                            'status': 'live', 'content_unit_ids': ['content:answer']}] if owner == 'investigation' else [])
+        # The report keeps the folder's identity; the brief calls a live hypothesis rejected.
+        return document, ([{'alternative_id': 'h-main-answer', 'safe_meaning': 'A live hypothesis is called rejected.',
+                            'status': 'rejected', 'content_unit_ids': ['content:answer']}] if owner == 'investigation' else [])
     return document, []
 
 
@@ -115,8 +139,9 @@ class Step:
                          named=not passing and not self.omit,
                          travel_claim_level='bookable' if state.owner == 'travel-guide' and passing else 'initial_plan',
                          research_risks=expected_research_risks(state))
-        case_label = 'foreign_report' if (state.owner == 'travel-guide' and state.report in RESEARCH_PASS | RESEARCH_FAIL) or (state.owner == 'investigation' and state.report in {'PASS', 'FAIL'}) else state.report
-        return (FunctionResult('passed', result, label=f'closed:{state.owner}:{case_label}'),)
+        case_label = 'foreign_report' if (state.owner == 'travel-guide' and state.report in RESEARCH_PASS | RESEARCH_FAIL | {'research_foreign'}) or (state.owner == 'investigation' and state.report in {'PASS', 'FAIL', 'world_foreign'}) else state.report
+        output = 'needs_repair' if foreign_identity(state) else 'passed'
+        return (FunctionResult(output, result, label=f'closed:{state.owner}:{case_label}'),)
 
 
 class IgnoreReports(Step):
@@ -195,14 +220,48 @@ def research_verdict_risks_are_preserved(state, trace):
     return InvariantResult.pass_()
 
 
+class ForeignResearchReportPasses(Step):
+    """Known bad: a passing report of another research question passes closure."""
+    def apply(self, event, state):
+        results = super().apply(event, state)
+        if event.kind == 'close' and provider(state) == 'researchguard' and state.report == 'research_foreign':
+            return tuple(replace(result, new_state=replace(result.new_state, copied='passed',
+                broad=state.independent, named=False)) for result in results)
+        return results
+
+
+class ForeignWorldReportPasses(Step):
+    """Known bad: a passing report of another world passes closure."""
+    def apply(self, event, state):
+        results = super().apply(event, state)
+        if event.kind == 'close' and provider(state) == 'worldguard' and state.report == 'world_foreign':
+            return tuple(replace(result, new_state=replace(result.new_state, copied='PASS',
+                broad=state.independent, named=False, travel_claim_level='bookable')) for result in results)
+        return results
+
+
+def research_report_belongs_to_the_folder(state, trace):
+    if state.closed and provider(state) == 'researchguard' and state.report == 'research_foreign' and (state.copied != 'failed' or not state.named):
+        return InvariantResult.fail('a research report of another question was counted for this folder')
+    return InvariantResult.pass_()
+
+
+def world_report_belongs_to_the_contract(state, trace):
+    if state.closed and provider(state) == 'worldguard' and state.report == 'world_foreign' and (state.copied != 'failed' or not state.named):
+        return InvariantResult.fail('a world report of another contract was counted for this world')
+    return InvariantResult.pass_()
+
+
 INVARIANTS = (
+    Invariant('research_report_belongs_to_the_folder', 'a research report counts only for its own research folder', research_report_belongs_to_the_folder),
+    Invariant('world_report_belongs_to_the_contract', 'a world report counts only for its own world contract', world_report_belongs_to_the_contract),
     Invariant('research_verdict_risks_are_preserved', 'disagreement and wording boundaries remain honest', research_verdict_risks_are_preserved),
     Invariant("travel_world_failure_limits_claim", "travel reads saved world status", travel_world_failure_limits_claim),
     Invariant('broad_claim_needs_every_required_provider', 'every required report passes', broad_needs_reports),
     Invariant('provider_status_is_copied_unchanged', 'native status remains unchanged', status_copied),
     Invariant('missing_or_failed_provider_is_named', 'all missing or failing providers are named', failure_named),
 )
-EVENTS = tuple(Event('report', status) for status in (*sorted(RESEARCH_PASS | RESEARCH_FAIL), 'PASS', 'FAIL', 'unreadable')) + (Event('close'),)
+EVENTS = tuple(Event('report', status) for status in (*sorted(RESEARCH_PASS | RESEARCH_FAIL), 'research_foreign', 'PASS', 'FAIL', 'world_foreign', 'unreadable')) + (Event('close'),)
 
 
 def explorer(step):
@@ -222,7 +281,9 @@ def broken_variants():
             'travel_reads_handwritten_world_status': explorer(TravelReadsHandwrittenWorldStatus()),
             'closure_ignores_provider_reports': explorer(IgnoreReports()),
             'failed_report_read_as_pass': explorer(RewriteFailure()),
-            'missing_provider_not_named': explorer(OmitRisk())}
+            'missing_provider_not_named': explorer(OmitRisk()),
+            'foreign_research_report_passes': explorer(ForeignResearchReportPasses()),
+            'foreign_world_report_passes': explorer(ForeignWorldReportPasses())}
 
 
 class Native:
@@ -285,7 +346,8 @@ class Native:
             path = self.root / 'native.json'
             path.write_text('{}' if event.status == 'unreadable' else json.dumps(document), encoding='utf-8')
             self.request['provider_reports'] = [{'provider': provider(state), 'path': str(path)}]
-            if state.owner == 'travel-guide':
+            if state.owner == 'travel-guide' and event.status != 'world_foreign':
+                # A trip plan citing another world's report is rejected when the brief is built.
                 self.trip['world_feasibility']['checks'][0]['worldguard_report'] = str(path)
             state = replace(state, report=event.status, closed=False, copied='', broad=False,
                             named=False, travel_claim_level='initial_plan', research_risks=())

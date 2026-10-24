@@ -130,3 +130,15 @@ def test_show_plan_reads_every_chain_file(tmp_path, route):
             assert run.returncode == 2 and 'stale' in run.stdout
         finally:
             piece.write_bytes(original)
+
+
+def test_saved_research_status_matches_researchguard():
+    """The shipped research-status.json is exactly what the installed ResearchGuard writes for its folder."""
+    import shutil as _shutil
+    console = _shutil.which('researchguard')
+    assert console, 'the researchguard console must be installed (both CI jobs install ResearchGuard)'
+    folder = EXAMPLES / 'investigation'
+    run = subprocess.run([console, 'status', str(folder / 'research'), '--json'],
+                         capture_output=True, text=True, timeout=60)
+    assert run.returncode == 0, run.stdout + run.stderr
+    assert json.loads(run.stdout) == json.loads((folder / 'research-status.json').read_text(encoding='utf-8'))

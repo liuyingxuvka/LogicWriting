@@ -103,3 +103,42 @@ def test_request_resolves_research_folder_and_retires_the_old_field(tmp_path):
         load_request(path)
     with pytest.raises(ValidationError, match="sourceguard_model.*retired.*research_folder"):
         fill_anchors_from_research({"sourceguard_model": ""})
+
+
+def test_report_from_another_folder_fails_the_provider_check(tmp_path):
+    import shutil
+    from pathlib import Path
+    from derive_closure import provider_checks
+    from researchguard_status import research_report_identity_problems
+
+    example = Path(__file__).resolve().parents[2] / "skills/logic-writing/assets/examples/investigation"
+    folder = tmp_path / "research"
+    shutil.copytree(example / "research", folder)
+    saved = json.loads((example / "research-status.json").read_text(encoding="utf-8"))
+    assert research_report_identity_problems(saved, str(folder)) == []
+
+    # The probe: another question's report (Ever Given), same passing verdict shape.
+    foreign = copy.deepcopy(saved)
+    foreign["question"] = "Why did container freight rates surge in 2021?"
+    foreign["hypotheses"] = [{"id": "h_suez", "text": "The Suez blockage caused the surge."}]
+    foreign["verdict"]["live_hypotheses"] = ["h_suez"]
+    report = tmp_path / "research-status.json"
+    report.write_text(json.dumps(foreign), encoding="utf-8")
+    rows, risks, passed = provider_checks("investigation", {"research_folder": str(folder)}, {},
+                                          [{"provider": "researchguard", "path": str(report)}])
+    assert not passed and rows[0]["status"] == "failed"
+    assert rows[0]["reason"].startswith("research_report_mismatch:question; research_report_mismatch:hypotheses")
+    assert any(row["defect_id"] == "provider:researchguard" for row in risks)
+
+    source = folder / "source.yaml"
+    model = yaml.safe_load(source.read_text(encoding="utf-8"))
+    model["anchors"] = model["anchors"][1:]
+    source.write_text(yaml.safe_dump(model, sort_keys=False), encoding="utf-8")
+    assert research_report_identity_problems(saved, str(folder)) == ["research_report_mismatch:anchors"]
+
+    report.write_text(json.dumps(saved), encoding="utf-8")
+    rows, _risks, passed = provider_checks("investigation", {}, {}, [{"provider": "researchguard", "path": str(report)}])
+    assert not passed and rows[0]["reason"].startswith("research_report_unbound:research_folder")
+    rows, _risks, passed = provider_checks("investigation", {"research_folder": str(example / "research")}, {},
+                                           [{"provider": "researchguard", "path": str(report)}])
+    assert passed and rows[0]["status"] == "passed"

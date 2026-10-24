@@ -337,7 +337,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:324d05414427104d0885cd784338fc01c12430e853d298fd34f5caccd538e890"
+      "fingerprint": "sha256:b248d146fcd0afe087172218d166a5b9c46f67a221f5db820284b8daadad1747"
     },
     {
       "id": "academic",
@@ -495,7 +495,8 @@
         "Load command requests whose reviewed object and list fields name JSON files; resolve relative artifact paths against the file that contains them while preserving scalar identifiers and opaque native result locators, and fill fingerprints a caller leaves out (load_request, fill_fingerprint, fill_missing). Resolve saved provider report paths relative to the closure request without loading or executing providers.",
         "Keep same-key records available from partial result envelopes; reject failed envelopes without the requested record with their first error before sole-object fallback.",
         "Resolve revision source paths against their containing request/record files and describe source-file provenance in the current schema.",
-        "Resolve research_folder and composition-owned input paths without executing native providers; preserve optional new-writing provenance and opaque native locators."
+        "Resolve research_folder and composition-owned input paths without executing native providers; preserve optional new-writing provenance and opaque native locators.",
+        "A saved world report must name the world contract's id."
       ],
       "files": [
         "skills/logic-writing/scripts/_common.py",
@@ -518,14 +519,15 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:6a993d3ec43dc4b44d4a22914ddfe2739f4ac9792387925f1ffc76fd0378564f"
+      "fingerprint": "sha256:1b449e85f001adbe5eecfebb4278a35fe7e5950dbb5b0c20484348ecadb097c7"
     },
     {
       "id": "researchguard-handoff",
       "layer": "evidence",
       "summary": "Read one native ResearchGuard verdict and preserve atomic native source anchors.",
       "responsibilities": [
-        "Read one native ResearchGuard verdict and preserve atomic native source anchors."
+        "Read one native ResearchGuard verdict and preserve atomic native source anchors.",
+        "A saved research report must match its folder's question, hypotheses, models and anchors."
       ],
       "files": [
         "skills/logic-writing/assets/schemas/researchguard-logic-handoff.schema.json",
@@ -550,7 +552,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:919f0b216ae48b239d04222546f36d117b96f0bfbe41d3350f7a42f6c2c3de67"
+      "fingerprint": "sha256:63dce85f5eff70da6bc3bfc83375b560cccedef8af81d39acf8dd8347c97889c"
     },
     {
       "id": "reader-plan",
@@ -602,7 +604,7 @@
       "models": [],
       "parent": "reader-artifact",
       "status": "confirmed",
-      "fingerprint": "sha256:f6a390b3ebed30c4ebe44a50116e74301adf79e9a9dd5a9bd054999fa593f956"
+      "fingerprint": "sha256:e1de01c813c4c60833f16169975e07f6702b0aa7f54890406753bf8976bcab37"
     },
     {
       "id": "reader-binding",
@@ -720,7 +722,8 @@
       "summary": "Derive quality closure from the real reader chain, saved native verdicts and in-process domain checks.",
       "responsibilities": [
         "Derive quality closure from the real reader chain, saved native verdicts and in-process domain checks.",
-        "Known-bad edits are caught or listed as toothless closure risks."
+        "Known-bad edits are caught or listed as toothless closure risks.",
+        "Saved provider reports count only when they belong to the brief."
       ],
       "files": [
         "skills/logic-writing/assets/schemas/closure.schema.json",
@@ -765,7 +768,7 @@
       ],
       "parent": "reader-artifact",
       "status": "confirmed",
-      "fingerprint": "sha256:e61f002e1bad0f405c8e5a89eddb48f500518da70b033e6802341ac0bb550506"
+      "fingerprint": "sha256:fa7990e2d1d449e05b84f2a4cb457d9d636f541cfc7bcc396c244ea76de241b0"
     },
     {
       "id": "reader-commands",
@@ -831,7 +834,7 @@
         ".flowguard/models/world_references_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:7646075fc9085287e4e9629629b0fdf1d4124c5eee7255ea5bf2b59b593ea3b1"
+      "fingerprint": "sha256:7ae2bbc0a38b47523b4c6092e7fb725cceca51b8ad6e4b0b689823a3b1425075"
     },
     {
       "id": "fiction-model",

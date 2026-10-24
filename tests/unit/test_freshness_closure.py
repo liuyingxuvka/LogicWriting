@@ -163,7 +163,7 @@ def test_missing_required_provider_report_blocks_the_broad_claim(tmp_path):
 def _research_document(*, withhold=False):
     from pathlib import Path
     import json
-    document = json.loads((Path(__file__).resolve().parents[1] / "fixtures/trials/research-status.json").read_text())
+    document = json.loads((Path(__file__).resolve().parents[2] / "skills/logic-writing/assets/examples/investigation/research-status.json").read_text())
     if withhold:
         document["verdict"]["root_claim"] = {"id": "h-main-answer", "wording_license": "withhold", "reason": "Native counterevidence remains."}
         document["verdict"]["live_hypotheses"].append("h-other")
@@ -173,13 +173,13 @@ def _research_document(*, withhold=False):
 
 @pytest.mark.parametrize('provider,document,status', [
     ('researchguard', _research_document(), 'passed'),
-    ('worldguard', {'status': 'FAIL'}, 'FAIL'),
+    ('worldguard', {'status': 'FAIL', 'contract_id': 'old-market-day'}, 'FAIL'),
     ('researchguard', _research_document(withhold=True), 'failed'),
     ('researchguard', {}, 'unreadable'),
 ])
 def test_provider_status_is_copied_from_the_report_file(tmp_path, provider, document, status):
     import json
-    request = closure_input(complete_chain(tmp_path))
+    request = closure_input(complete_chain(tmp_path, 'travel-guide' if provider == 'worldguard' else 'investigation'))
     path = tmp_path / 'report.json'
     path.write_text(json.dumps(document))
     request['provider_reports'] = [row for row in request['provider_reports'] if row['provider'] != provider]
@@ -230,7 +230,7 @@ def test_failing_world_report_limits_the_travel_closure(tmp_path):
     from fixture_mutation import apply_mutations
     from travel_contract import review_plan
     failed = tmp_path / 'world-fail.json'
-    failed.write_text(json.dumps({'status': 'FAIL'}))
+    failed.write_text(json.dumps({'status': 'FAIL', 'contract_id': 'old-market-day'}))
     request = closure_input(complete_chain(tmp_path / 'chain', 'travel-guide'))
     request['provider_reports'] = [dict(provider='worldguard', path=str(failed))]
     closure = derive_closure(request)['closure']
@@ -242,3 +242,27 @@ def test_failing_world_report_limits_the_travel_closure(tmp_path):
     plan = apply_mutations(json.loads(plan_path.read_text(encoding='utf-8')), current['mutations'])
     plan['world_feasibility']['checks'][0]['worldguard_report'] = str(failed)
     assert review_plan(plan, plan_path=plan_path)['allowed_claim_level'] == 'initial_plan'
+
+
+def test_world_report_for_another_contract_fails_closure(tmp_path):
+    import json
+    from derive_closure import provider_checks
+    request = closure_input(complete_chain(tmp_path / 'chain', 'travel-guide'))
+    report = tmp_path / 'worldguard-check.json'
+    report.write_text(json.dumps({'status': 'PASS', 'contract_id': 'another-world'}))
+    request['provider_reports'] = [dict(provider='worldguard', path=str(report))]
+    closure = derive_closure(request)['closure']
+    assert closure['status'] == 'needs_repair'
+    row = closure['provider_checks'][0]
+    assert row['status'] == 'failed' and row['reason'].startswith('world_report_mismatch:contract_id')
+    risk = next(r for r in closure['residual_risk'] if r['defect_id'] == 'provider:worldguard')
+    assert risk['reason'].startswith('world_report_mismatch:contract_id')
+    # Without contract_id the contract is named by claim.claim_id, as in WorldGuard.
+    world = tmp_path / 'world.yaml'
+    world.write_text('claim: {claim_id: c_only}\ninputs: {events: []}\n')
+    report.write_text(json.dumps({'status': 'PASS', 'contract_id': 'c_only'}))
+    rows, _risks, passed = provider_checks('travel-guide', {}, {'world_contract': str(world)},
+                                           [dict(provider='worldguard', path=str(report))])
+    assert passed and rows[0]['status'] == 'PASS'
+    rows, _risks, passed = provider_checks('travel-guide', {}, {}, [dict(provider='worldguard', path=str(report))])
+    assert not passed and rows[0]['reason'].startswith('world_report_unbound:world_contract')

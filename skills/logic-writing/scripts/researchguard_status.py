@@ -75,13 +75,8 @@ def assess_research_verdict(document: Any, alternatives=()) -> dict[str, Any]:
     return {"status": "passed", "passed": True, "reason": reason, "residual_risk": risks}
 
 
-def fill_anchors_from_research(request: dict[str, Any]) -> dict[str, Any]:
-    """Import missing anchors atomically; handwritten ownership conflicts fail."""
-    if "sourceguard_model" in request:
-        raise ValidationError("`sourceguard_model` is retired; use research_folder (a ResearchGuard research folder)")
-    if "research_folder" not in request:
-        return request
-    location = request["research_folder"]
+def read_research_folder(location: Any) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Read the research index and its SourceGuard model; never runs ResearchGuard."""
     if not isinstance(location, (str, Path)) or not str(location).strip():
         raise ValidationError("research_folder must name a ResearchGuard research folder or research.yaml")
     try:
@@ -102,6 +97,55 @@ def fill_anchors_from_research(request: dict[str, Any]) -> dict[str, Any]:
         model = require_mapping(yaml.safe_load((index_path.parent / source_path).read_text(encoding="utf-8")), "SourceGuard model")
     except (OSError, yaml.YAMLError) as exc:
         raise ValidationError(f"cannot read research_folder {location}: {exc}") from exc
+    return index, model
+
+
+def research_report_identity_problems(document: Any, research_folder: Any) -> list[str]:
+    """Problem codes when a saved status report is not the report of this research folder.
+
+    Compares only identity fields the native report writes: question, hypothesis ids and
+    texts in index order, model routes and paths, and the source model's anchor ids.
+    """
+    if research_folder is None:
+        return ["research_report_unbound:research_folder"]
+    try:
+        index, model = read_research_folder(research_folder)
+    except ValidationError:
+        return ["research_report_unbound:research_folder"]
+    if not isinstance(document, Mapping):
+        document = {}
+    problems = []
+    if document.get("question") != index.get("question"):
+        problems.append("research_report_mismatch:question")
+
+    def hypothesis_rows(rows):
+        if not isinstance(rows, list):
+            return None
+        return [(row.get("id"), row.get("text")) if isinstance(row, Mapping) else None for row in rows]
+    if hypothesis_rows(document.get("hypotheses")) != hypothesis_rows(index.get("hypotheses", [])):
+        problems.append("research_report_mismatch:hypotheses")
+    reported = document.get("models")
+    reported_paths = ({route: row.get("path") if isinstance(row, Mapping) else None for route, row in reported.items()}
+                      if isinstance(reported, Mapping) else None)
+    declared = {route: path for route, path in index.get("models", {}).items() if route != "experiment_observations"}
+    if reported_paths != declared:
+        problems.append("research_report_mismatch:models")
+    evidence = document.get("evidence")
+    reported_anchors = ({row.get("anchor") for row in evidence if isinstance(row, Mapping)}
+                        if isinstance(evidence, list) else None)
+    source_anchors = {row.get("anchor_id") for row in model.get("anchors", []) if isinstance(row, Mapping)}
+    if reported_anchors != source_anchors:
+        problems.append("research_report_mismatch:anchors")
+    return problems
+
+
+def fill_anchors_from_research(request: dict[str, Any]) -> dict[str, Any]:
+    """Import missing anchors atomically; handwritten ownership conflicts fail."""
+    if "sourceguard_model" in request:
+        raise ValidationError("`sourceguard_model` is retired; use research_folder (a ResearchGuard research folder)")
+    if "research_folder" not in request:
+        return request
+    _index, model = read_research_folder(request["research_folder"])
     source_rows, native_anchors = model.get("sources", []), model.get("anchors", [])
     if not isinstance(source_rows, list) or not isinstance(native_anchors, list):
         raise ValidationError("SourceGuard sources and anchors must be lists")

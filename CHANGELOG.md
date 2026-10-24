@@ -10,6 +10,7 @@ line follows semantic versioning.
 
 ### Changed
 
+- Closure checks that each saved provider report belongs to the brief: a ResearchGuard report must match the research folder's question, hypotheses, models and source anchors, and a WorldGuard report must name the world contract's id; a report from another question or world now fails with research_report_mismatch or world_report_mismatch. ResearchGuard 0.5.15 is the minimum supported release.
 - Maintenance checks of the skill's own model tree run on FlowGuard 0.70.12.
 
 ## [4.0.14] - 2026-10-24

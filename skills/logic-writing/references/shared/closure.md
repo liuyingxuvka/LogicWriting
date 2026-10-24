@@ -60,6 +60,31 @@ alternatives or an explicit `research_folder`. `contested` adds
 `qualify`/`withhold` limits remain visible. Missing required reports are `not_run`;
 unreadable JSON or an invalid/missing verdict is `unreadable`.
 
+## Each saved report belongs to the brief
+
+Closure counts a saved report only when it is the report of the research folder
+or world the brief names. It compares only identity fields the native tool wrote
+with the current files; it never runs a provider.
+
+- ResearchGuard: the report's `question`, the `id`/`text` of `hypotheses` (in
+  index order), `models` (route and path, without `experiment_observations`) and
+  the set of `evidence[].anchor` must equal the brief's `research_folder`:
+  `research.yaml` and its source model's anchor ids. A difference is
+  `research_report_mismatch:<question|hypotheses|models|anchors>`; a report with
+  no readable `research_folder` is `research_report_unbound:research_folder`.
+- WorldGuard: the report's `contract_id` (default summary or `--json` report)
+  must equal the composition's `world_contract` id: its `contract_id`, else
+  `claim.claim_id`, as WorldGuard defines it. A difference is
+  `world_report_mismatch:contract_id`; no readable `world_contract` is
+  `world_report_unbound:world_contract`. A travel trip plan's
+  `world_feasibility` reports are checked the same way when the brief is built
+  (`travel_composition.world_report.mismatch`).
+
+Such a provider check is `failed`, its reason starts with the codes, the
+provider is named in `residual_risk`, and closure is `needs_repair`. The repair is
+to save the report again from the right folder or contract. An unreadable report
+stays `unreadable`.
+
 ## Other current model boundaries
 
 Travel needs a saved WorldGuard report; fiction needs it when

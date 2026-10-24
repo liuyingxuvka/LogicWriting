@@ -34,31 +34,36 @@
       "anchor": "anc-314-supported",
       "source": "src-whatsnew-314",
       "lineage": "",
-      "used_by": []
+      "used_by": [],
+      "directions": []
     },
     {
       "anchor": "anc-314-phase3-undecided",
       "source": "src-whatsnew-314",
       "lineage": "",
-      "used_by": []
+      "used_by": [],
+      "directions": []
     },
     {
       "anchor": "anc-314-perf",
       "source": "src-whatsnew-314",
       "lineage": "",
-      "used_by": []
+      "used_by": [],
+      "directions": []
     },
     {
       "anchor": "anc-313-experimental",
       "source": "src-whatsnew-313",
       "lineage": "",
-      "used_by": []
+      "used_by": [],
+      "directions": []
     },
     {
       "anchor": "anc-779-phase3-different",
       "source": "src-pep-779",
       "lineage": "",
-      "used_by": []
+      "used_by": [],
+      "directions": []
     }
   ],
   "open_gaps": [],

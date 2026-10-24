@@ -60,7 +60,18 @@ def build_reader_brief(
         if not isinstance(trip_path, str) or not trip_path:
             raise ValidationError("travel composition requires trip_plan")
         issues = validate_plan_file(trip_path, repository_root=Path(__file__).resolve().parents[3])
-        issues.extend(validate_composition_refs(load_json(trip_path), route_composition))
+        trip = load_json(trip_path)
+        issues.extend(validate_composition_refs(trip, route_composition))
+        from _common import worldguard_report_identity_problems
+        checks = trip.get("world_feasibility", {}).get("checks", []) if isinstance(trip, dict) else []
+        for check in checks if isinstance(checks, list) else []:
+            report = check.get("worldguard_report") if isinstance(check, dict) else None
+            if isinstance(report, str) and report:
+                problems = worldguard_report_identity_problems(Path(trip_path).parent / report,
+                                                               route_composition.get("world_contract"))
+                if problems:
+                    issues.append({"code": "travel_composition.world_report.mismatch",
+                                   "message": f"{report} does not belong to the composition's world_contract: {'; '.join(problems)}"})
         if issues:
             raise ValidationError("travel composition input is invalid: " + "; ".join(row["code"] + ": " + row["message"] for row in issues))
     if native_handoff is not None:

@@ -16,6 +16,7 @@ from route_inputs import route_extension_fingerprint
 
 
 NOW = "2026-07-29T12:00:00Z"
+EXAMPLES = Path(__file__).resolve().parents[1] / "skills/logic-writing/assets/examples"
 
 
 def _with_fp(value: dict, field: str) -> dict:
@@ -227,6 +228,7 @@ def make_route_composition(owner: str, intent: dict, plan: dict) -> dict:
     else:
         common.update({
             "trip_plan": str(Path(__file__).resolve().parents[1] / "skills/logic-writing/assets/examples/travel/trip-plan.json"),
+            "world_contract": str(Path(__file__).resolve().parents[1] / "skills/logic-writing/assets/examples/travel/world.yaml"),
             "artifact_mode": intent["artifact_mode"],
             "guide_kind": "destination_guide",
             "structure_authority": "user_partial",
@@ -274,7 +276,8 @@ def make_route_composition(owner: str, intent: dict, plan: dict) -> dict:
     return _with_fp(common, "extension_fingerprint")
 
 
-def make_reader_chain(workdir: Path, owner: str = "investigation", *, language: str = "zh-CN", mode: str = "create_new") -> dict:
+def make_reader_chain(workdir: Path, owner: str = "investigation", *, language: str = "zh-CN", mode: str = "create_new",
+                      research_folder: str | None = None) -> dict:
     workdir.mkdir(parents=True, exist_ok=True)
     intent = make_intent(language=language, mode=mode)
     plan = make_plan(intent, owner)
@@ -337,6 +340,7 @@ def make_reader_chain(workdir: Path, owner: str = "investigation", *, language: 
         composition_plan=plan,
         route_composition=route,
         brief_id=f"brief:{owner}",
+        research_folder=research_folder,
     )
     artifact_path = workdir / f"{owner}.md"
     if language.casefold().startswith("en"):
@@ -425,7 +429,9 @@ def complete_chain(
     """Build a synthetic protocol chain with registered native fixture evidence."""
     from derive_closure import REQUIRED_DIMENSIONS
 
-    chain = make_reader_chain(workdir, owner, language=language, mode=mode)
+    # The saved protocol research report is the shipped example's; it belongs to that research folder.
+    chain = make_reader_chain(workdir, owner, language=language, mode=mode,
+                              research_folder=str(EXAMPLES / "investigation/research") if owner == "investigation" else None)
     evidence = span_evidence(chain)
     body_units = [
         row for row in chain["artifact_map"]["units"]
@@ -547,7 +553,8 @@ def complete_chain(
         import json
         provider = "researchguard" if owner == "investigation" else "worldguard"
         report = workdir / "protocol-provider.json"
-        document = json.loads((Path(__file__).resolve().parent / "fixtures/trials/research-status.json").read_text()) if provider == "researchguard" else {"status": "PASS"}
+        saved = EXAMPLES / ("investigation/research-status.json" if provider == "researchguard" else "travel/worldguard-check.json")
+        document = json.loads(saved.read_text())
         report.write_text(json.dumps(document))
         provider_reports.append({"provider": provider, "path": str(report.resolve())})
     chain.update({
