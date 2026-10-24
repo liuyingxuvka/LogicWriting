@@ -56,7 +56,7 @@ def test_worked_example(tmp_path, route):
             assert result['reader_audit']['status'] != 'passed'
         else:
             assert code != 0, (filename, result)
-            assert expectation['error'] in json.dumps(result), (filename, result)
+            assert expectation['error'] in result['errors'], (filename, result)
 
 
 @pytest.mark.parametrize('route', ['investigation', 'academic', 'fiction', 'travel'])
