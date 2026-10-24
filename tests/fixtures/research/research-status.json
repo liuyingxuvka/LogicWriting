@@ -1,0 +1,15 @@
+{
+  "question": "Did the port closure raise freight rates?",
+  "hypotheses": [{"id": "h-closure", "text": "The port closure raised freight rates."}],
+  "models": {"source": {"path": "source.yaml", "status": "ok"}},
+  "verdict": {"search": "stop_sufficient", "root_claim": {"id": "h-closure", "wording_license": "qualify", "reason": "Counterevidence remains."},
+              "live_hypotheses": ["h-closure"], "contested": true, "errors": 0},
+  "evidence": [
+    {"anchor": "a-oppose", "directions": [{"route": "trace", "hypothesis": "h-closure", "direction": "oppose", "node": null}]},
+    {"anchor": "a-mixed", "directions": [{"route": "logic", "hypothesis": "h-closure", "direction": "support", "node": "E_mixed"},
+                                         {"route": "trace", "hypothesis": "h-closure", "direction": "oppose", "node": null}]},
+    {"anchor": "a-limit", "directions": [{"route": "logic", "hypothesis": "h-closure", "direction": "limit", "node": "E_limit"}]},
+    {"anchor": "a-support", "directions": [{"route": "trace", "hypothesis": "h-closure", "direction": "support", "node": null}]},
+    {"anchor": "a-none", "directions": []}
+  ]
+}

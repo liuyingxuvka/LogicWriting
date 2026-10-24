@@ -28,6 +28,17 @@ imported; a handwritten id with a different source id or locator fails
 stay unchanged. Source dates, roles, uncertainty and wording authority remain
 with ResearchGuard; a saved `verdict` is the single research closure report.
 
+With `research_status` (the saved `researchguard status <folder> --json` report,
+relative to the request; it needs `research_folder` and must belong to it, see
+the identity codes in `closure.md`), an imported anchor takes its `relation` from
+the report's `evidence[].directions` for the root claim (`verdict.root_claim.id`):
+any `oppose` -> `counter`, else `limit` -> `limit`, else `support` -> `support`.
+No direction, no root claim or no `research_status` gives `context`: an unknown
+direction is never written as support. A handwritten `relation` may be weaker
+than the research; `support` against a research `counter`, or `counter` against
+a research `support`, fails `anchor_relation_conflict:<id>` and nothing is
+imported. The brief records `research_status`.
+
 The work-room brief retains the research-folder binding when supplied, so
 academic closure can require that report. A content boundary is the piece's one
 evidence model; it does not duplicate the research engine's source library or

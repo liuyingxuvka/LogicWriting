@@ -331,6 +331,11 @@ def load_request(path: str | Path | None) -> Any:
         if not isinstance(folder, str) or not folder.strip():
             raise ValidationError("research_folder must be a nonempty ResearchGuard research folder path")
         value["research_folder"] = str((base / Path(folder).expanduser()).resolve())
+    if "research_status" in value:
+        status = value["research_status"]
+        if not isinstance(status, str) or not status.strip():
+            raise ValidationError("research_status must be a nonempty path to a saved researchguard status --json report")
+        value["research_status"] = str((base / Path(status).expanduser()).resolve())
     return value
 
 

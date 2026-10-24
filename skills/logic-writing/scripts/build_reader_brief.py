@@ -18,6 +18,7 @@ def build_reader_brief(
     native_plan=None,
     native_handoff_mapping=None,
     research_folder=None,
+    research_status=None,
 ):
     return _build_reader_brief(
         route_decision=route_decision,
@@ -29,6 +30,7 @@ def build_reader_brief(
         native_plan=native_plan,
         native_handoff_mapping=native_handoff_mapping,
         research_folder=research_folder,
+        research_status=research_status,
     )
 
 
@@ -44,6 +46,7 @@ def validate_request(value):
         native_plan=request.get("native_plan"),
         native_handoff_mapping=request.get("native_handoff_mapping"),
         research_folder=request.get("research_folder"),
+        research_status=request.get("research_status"),
     )
     return validation_result(
         status="current_pass",

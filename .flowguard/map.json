@@ -337,7 +337,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:b248d146fcd0afe087172218d166a5b9c46f67a221f5db820284b8daadad1747"
+      "fingerprint": "sha256:aedb51bed99d00309cbe2cbe8d57b950077ae9c81badb00d570ed55bea7a68a0"
     },
     {
       "id": "academic",
@@ -519,7 +519,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:1b449e85f001adbe5eecfebb4278a35fe7e5950dbb5b0c20484348ecadb097c7"
+      "fingerprint": "sha256:4caab8e8950a566a1fe92b8cb1be6abc582812882351b0504f1360843bdb6b3a"
     },
     {
       "id": "researchguard-handoff",
@@ -527,7 +527,8 @@
       "summary": "Read one native ResearchGuard verdict and preserve atomic native source anchors.",
       "responsibilities": [
         "Read one native ResearchGuard verdict and preserve atomic native source anchors.",
-        "A saved research report must match its folder's question, hypotheses, models and anchors."
+        "A saved research report must match its folder's question, hypotheses, models and anchors.",
+        "Imported anchors take their relation from the saved research direction."
       ],
       "files": [
         "skills/logic-writing/assets/schemas/researchguard-logic-handoff.schema.json",
@@ -552,14 +553,15 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:63dce85f5eff70da6bc3bfc83375b560cccedef8af81d39acf8dd8347c97889c"
+      "fingerprint": "sha256:6df371401bc6983bde2d77c5790e2f73fc499a96979c0adfefae0f39cdc79a3e"
     },
     {
       "id": "reader-plan",
       "layer": "reader",
       "summary": "Validate reader intent, canonical composition, writer projection and optional revision provenance.",
       "responsibilities": [
-        "Validate reader intent, canonical composition, writer projection and optional revision provenance."
+        "Validate reader intent, canonical composition, writer projection and optional revision provenance.",
+        "The brief records the saved research status report it was built from."
       ],
       "files": [
         "skills/logic-writing/assets/schemas/academic-composition.schema.json",
@@ -604,7 +606,7 @@
       "models": [],
       "parent": "reader-artifact",
       "status": "confirmed",
-      "fingerprint": "sha256:e1de01c813c4c60833f16169975e07f6702b0aa7f54890406753bf8976bcab37"
+      "fingerprint": "sha256:16723ff0e6bac9eac19b4c9adb395fb269dd2913f3818988ba2b893f73f68625"
     },
     {
       "id": "reader-binding",
@@ -805,7 +807,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:7ecc95b06d350d89386de5349b325d2b57853b0ebbdc997a5aaab886107cad03"
+      "fingerprint": "sha256:8c1c1a6f46bd73b211c68462012ac8b8045c87cc793f62745ac421106e3066c5"
     },
     {
       "id": "world-references",

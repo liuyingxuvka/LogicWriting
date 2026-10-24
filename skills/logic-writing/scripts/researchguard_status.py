@@ -139,13 +139,45 @@ def research_report_identity_problems(document: Any, research_folder: Any) -> li
     return problems
 
 
+def relation_for_root_claim(rows: Any, root_id: str | None) -> str:
+    """The anchor relation for the root claim: oppose > limit > support; unknown is context."""
+    found = {row.get("direction") for row in rows if isinstance(row, Mapping) and row.get("hypothesis") == root_id} if (
+        root_id and isinstance(rows, list)) else set()
+    for direction, relation in (("oppose", "counter"), ("limit", "limit"), ("support", "support")):
+        if direction in found:
+            return relation
+    return "context"
+
+
+def research_directions(report_path: Any, research_folder: Any) -> dict[str, str]:
+    """Relations of the saved report's anchors for its root claim; empty without a report."""
+    if report_path is None:
+        return {}
+    import json
+    try:
+        document = json.loads(Path(report_path).read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, ValueError, TypeError) as exc:
+        raise ValidationError(f"cannot read research_status {report_path}: {exc}") from exc
+    problems = research_report_identity_problems(document, research_folder)
+    if problems:
+        raise ValidationError("; ".join(problems))
+    verdict = document.get("verdict")
+    root = verdict.get("root_claim") if isinstance(verdict, Mapping) else None
+    root_id = root.get("id") if isinstance(root, Mapping) else None
+    return {row["anchor"]: relation_for_root_claim(row.get("directions"), root_id)
+            for row in document.get("evidence", []) if isinstance(row, Mapping) and isinstance(row.get("anchor"), str)}
+
+
 def fill_anchors_from_research(request: dict[str, Any]) -> dict[str, Any]:
     """Import missing anchors atomically; handwritten ownership conflicts fail."""
     if "sourceguard_model" in request:
         raise ValidationError("`sourceguard_model` is retired; use research_folder (a ResearchGuard research folder)")
     if "research_folder" not in request:
+        if "research_status" in request:
+            raise ValidationError("research_status needs research_folder")
         return request
     _index, model = read_research_folder(request["research_folder"])
+    directions = research_directions(request.get("research_status"), request["research_folder"])
     source_rows, native_anchors = model.get("sources", []), model.get("anchors", [])
     if not isinstance(source_rows, list) or not isinstance(native_anchors, list):
         raise ValidationError("SourceGuard sources and anchors must be lists")
@@ -170,13 +202,16 @@ def fill_anchors_from_research(request: dict[str, Any]) -> dict[str, Any]:
         if anchor_id in seen:
             raise ValidationError(f"duplicate source anchor_id:{anchor_id}")
         seen.add(anchor_id)
+        relation = directions.get(anchor_id, "context")
         if anchor_id in existing:
             written = existing[anchor_id]
             if written.get("source_id") != row.get("source_id") or written.get("locator") != row.get("locator"):
                 raise ValidationError(f"anchor_conflict:{anchor_id}")
+            if {written.get("relation"), relation} == {"support", "counter"}:
+                raise ValidationError(f"anchor_relation_conflict:{anchor_id}")
             continue
         additions.append({"anchor_id": anchor_id, "source_id": row.get("source_id"),
-                          "locator": row.get("locator"), "relation": "support",
+                          "locator": row.get("locator"), "relation": relation,
                           "observed_summary": row.get("normalized_summary") or str(row.get("text") or "")[:200],
                           "boundary": sources.get(row.get("source_id")) or "Use only what the quoted passage says."})
     # Commit only after every source row and ownership conflict has been checked.

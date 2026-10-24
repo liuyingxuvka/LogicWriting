@@ -33,6 +33,7 @@ IMPLEMENTED_BY = {
     "RouteReview": "skills/logic-writing/scripts/reader_checks.py:_route_review_from_current",
     "ReaderJudgment": "skills/logic-writing/scripts/reader_checks.py:_reader_judgment_from_current",
     "DeriveClosure": "skills/logic-writing/scripts/derive_closure.py:derive_closure",
+    "ImportAnchors": "skills/logic-writing/scripts/reader_fill.py:fill_brief_fingerprints",
 }
 TESTED_BY = {
     "closure_requires_current_artifact": [
@@ -51,16 +52,22 @@ TESTED_BY = {
     "closure_belongs_to_the_final_owner": [
         "tests/e2e/test_routes.py:test_each_final_owner_delivers_one_complete_current_artifact",
     ],
+    "imported_anchor_keeps_research_direction": [
+        "tests/unit/test_researchguard_status.py:test_imported_anchor_takes_the_research_direction",
+    ],
 }
 
 ROOT = Path(__file__).resolve().parents[2]
 OWNERS = ("investigation", "academic-writing", "fiction-writing", "travel-guide")
+# Import cases: the research direction of one anchor for the root claim, and the relation it gets.
+IMPORT_RELATIONS = {"oppose": "counter", "limit": "limit", "support": "support", "none": "context",
+                    "no_status": "context", "hand_conflict": "anchor_relation_conflict"}
 
 
 @dataclass(frozen=True)
 class Event:
-    kind: str                       # review | self_review | edit | close
-    quality: str = ""               # review: pass | repair
+    kind: str                       # review | self_review | edit | close | import
+    quality: str = ""               # review: pass | repair; import: a key of IMPORT_RELATIONS
 
 
 @dataclass(frozen=True)
@@ -73,6 +80,8 @@ class State:
     closure: str = ""               # "" | passed | needs_repair | rejected
     closure_owner: str = ""
     broad_claim: bool = False
+    import_case: str = ""           # the last imported anchor's research direction case
+    relation: str = ""              # the relation that anchor got, or the build error code
 
 
 class Step:
@@ -93,7 +102,14 @@ class Step:
     def closure_owner_for(self, state: State) -> str:
         return state.owner
 
+    def relation_for(self, case: str) -> str:
+        return IMPORT_RELATIONS[case]
+
     def apply(self, event: Event, state: State):
+        if event.kind == "import":
+            relation = self.relation_for(event.quality)
+            return (FunctionResult("imported", replace(state, import_case=event.quality, relation=relation),
+                                   label=f"import_{event.quality}"),)
         if event.kind in {"review", "self_review"}:
             reviewed = replace(state, reviewed=True, current=True, quality=event.quality,
                                independent=event.kind == "review", closure="", closure_owner="", broad_claim=False)
@@ -137,6 +153,19 @@ class CloseForSiblingOwner(Step):
         return OWNERS[(OWNERS.index(state.owner) + 1) % len(OWNERS)]
 
 
+class ImportedCounterMarkedSupport(Step):
+    """Known-bad: every imported anchor is written as support, whatever the research says."""
+
+    def relation_for(self, case: str) -> str:
+        return "support"
+
+
+def _imported_anchor_keeps_research_direction(state: State, trace) -> InvariantResult:
+    if state.import_case and state.relation != IMPORT_RELATIONS[state.import_case]:
+        return InvariantResult.fail("an imported anchor lost its research direction")
+    return InvariantResult.pass_()
+
+
 def _closure_requires_current_artifact(state: State, trace) -> InvariantResult:
     if state.closure == "passed" and not (state.reviewed and state.current):
         return InvariantResult.fail("closure passed without a review of the current bytes")
@@ -162,6 +191,8 @@ def _closure_belongs_to_the_final_owner(state: State, trace) -> InvariantResult:
 
 
 INVARIANTS = (
+    Invariant("imported_anchor_keeps_research_direction", "an imported anchor takes its relation from the research direction",
+              _imported_anchor_keeps_research_direction),
     Invariant("closure_requires_current_artifact", "closure passes only on a review of the current bytes",
               _closure_requires_current_artifact),
     Invariant("independent_reader_required", "a broad claim requires an independent reader context",
@@ -171,7 +202,8 @@ INVARIANTS = (
     Invariant("closure_belongs_to_the_final_owner", "only the final owner that wrote the artifact closes it",
               _closure_belongs_to_the_final_owner),
 )
-EVENTS = (Event("review", "pass"), Event("review", "repair"), Event("self_review", "pass"), Event("edit"), Event("close"))
+EVENTS = (Event("review", "pass"), Event("review", "repair"), Event("self_review", "pass"), Event("edit"), Event("close"),
+          *(Event("import", case) for case in IMPORT_RELATIONS))
 
 
 def _explorer(step: Step) -> Explorer:
@@ -187,7 +219,8 @@ def broken_variants() -> dict:
     return {"close_ignores_edits": _explorer(CloseIgnoresEdits()),
             "close_accepts_self_review": _explorer(CloseAcceptsSelfReview()),
             "repair_reported_as_pass": _explorer(RepairReportedAsPass()),
-            "closure_for_sibling_owner": _explorer(CloseForSiblingOwner())}
+            "closure_for_sibling_owner": _explorer(CloseForSiblingOwner()),
+            "imported_counter_anchor_marked_support": _explorer(ImportedCounterMarkedSupport())}
 
 
 class _RealReaderChain:
@@ -214,9 +247,49 @@ class _RealReaderChain:
         self.count += 1
         return self.root / f"step-{self.count}"
 
+    def _import(self, case: str) -> str:
+        """Import one anchor from a small research folder whose saved report gives its direction."""
+        import json
+        from reader_fill import fill_brief_fingerprints
+        folder = self.root / f"research-{self._workdir().name}"
+        folder.mkdir()
+        directions = {"oppose": [("trace", "oppose"), ("logic", "support")], "limit": [("logic", "limit")],
+                      "support": [("trace", "support")], "none": []}
+        anchors = list(directions)
+        (folder / "research.yaml").write_text(
+            "schema: researchguard.research.v1\nquestion: Does the root claim hold?\n"
+            "hypotheses:\n- {id: h-root, text: The root claim holds.}\nmodels: {source: source.yaml}\n", encoding="utf-8")
+        (folder / "source.yaml").write_text("sources:\n- {source_id: s1}\nanchors:\n" + "".join(
+            f"- {{anchor_id: a-{name}, source_id: s1, locator: 'p. {index}', text: 'Passage {index}.'}}\n"
+            for index, name in enumerate(anchors, 1)), encoding="utf-8")
+        report = {"question": "Does the root claim hold?", "hypotheses": [{"id": "h-root", "text": "The root claim holds."}],
+                  "models": {"source": {"path": "source.yaml", "status": "ok"}},
+                  "verdict": {"search": "stop_sufficient", "root_claim": {"id": "h-root", "wording_license": "qualify", "reason": "r"},
+                              "live_hypotheses": ["h-root"], "contested": False, "errors": 0},
+                  "evidence": [{"anchor": f"a-{name}", "directions": [
+                      {"route": route, "hypothesis": "h-root", "direction": direction, "node": None}
+                      for route, direction in directions[name]]} for name in anchors]}
+        (folder / "research-status.json").write_text(json.dumps(report), encoding="utf-8")
+        name = {"no_status": "oppose", "hand_conflict": "oppose"}.get(case, case)
+        handwritten = ([{"anchor_id": "a-oppose", "source_id": "s1", "locator": "p. 1", "relation": "support",
+                         "observed_summary": "Passage 1.", "boundary": "Only this passage."}] if case == "hand_conflict" else [])
+        request = {"research_folder": str(folder), "content_boundaries": {"evidence_anchors": handwritten}}
+        if case != "no_status":
+            request["research_status"] = str(folder / "research-status.json")
+        try:
+            fill_brief_fingerprints(request)
+        except self.validation_error as exc:
+            return str(exc).split(":", 1)[0]
+        row = next(row for row in request["content_boundaries"]["evidence_anchors"] if row["anchor_id"] == f"a-{name}")
+        return row["relation"]
+
     def apply_step(self, step) -> ReplayObservation:
         event = step.function_input
         state = self.state
+        if event.kind == "import":
+            state = replace(state, import_case=event.quality, relation=self._import(event.quality))
+            self.state = state
+            return ReplayObservation(function_name=step.function_name, observed_output="imported", observed_state=state)
         if event.kind in {"review", "self_review"}:
             # the actual text with a fresh ReaderBrief, ArtifactMap, audit, route review and ReaderJudgment
             chain = self.complete_chain(self._workdir(), state.owner, pass_quality=event.quality == "pass")

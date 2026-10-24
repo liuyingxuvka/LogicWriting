@@ -67,6 +67,10 @@
     "research_folder": {
       "type": "string",
       "minLength": 1
+    },
+    "research_status": {
+      "type": "string",
+      "minLength": 1
     }
   },
   "$defs": {

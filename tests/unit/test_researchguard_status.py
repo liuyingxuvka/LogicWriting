@@ -90,7 +90,7 @@ def test_handwritten_anchor_conflict_is_atomic_and_missing_anchors_import(tmp_pa
     assert fill_anchors_from_research(request) is request
     assert request["content_boundaries"]["evidence_anchors"][0] == preserved
     assert request["content_boundaries"]["evidence_anchors"][1] == {
-        "anchor_id": "new", "source_id": "s", "locator": "p2", "relation": "support",
+        "anchor_id": "new", "source_id": "s", "locator": "p2", "relation": "context",
         "observed_summary": "New observed content.", "boundary": "Only the quoted scope."}
 
 
@@ -142,3 +142,48 @@ def test_report_from_another_folder_fails_the_provider_check(tmp_path):
     rows, _risks, passed = provider_checks("investigation", {"research_folder": str(example / "research")}, {},
                                            [{"provider": "researchguard", "path": str(report)}])
     assert passed and rows[0]["status"] == "passed"
+
+
+def test_imported_anchor_takes_the_research_direction(tmp_path):
+    import shutil
+    from pathlib import Path
+    from reader_fill import fill_brief_fingerprints
+
+    fixture = Path(__file__).resolve().parents[1] / "fixtures/research"
+    folder = tmp_path / "research"
+    shutil.copytree(fixture, folder)
+
+    def imported(**extra):
+        request = {"research_folder": str(folder), "content_boundaries": {"evidence_anchors": []}, **extra}
+        fill_brief_fingerprints(request)
+        return {row["anchor_id"]: row["relation"] for row in request["content_boundaries"]["evidence_anchors"]}
+
+    status = str(folder / "research-status.json")
+    assert imported(research_status=status) == {"a-oppose": "counter", "a-mixed": "counter", "a-limit": "limit",
+                                                 "a-support": "support", "a-none": "context"}
+    assert set(imported().values()) == {"context"}
+
+    # A handwritten relation may be weaker than the research, never the opposite.
+    def handwritten(anchor_id, locator, relation):
+        return {"anchor_id": anchor_id, "source_id": "s-report", "locator": locator, "relation": relation,
+                "observed_summary": "Author summary.", "boundary": "Author scope."}
+    request = {"research_folder": str(folder), "research_status": status,
+               "content_boundaries": {"evidence_anchors": [handwritten("a-oppose", "p. 1", "support")]}}
+    before = copy.deepcopy(request)
+    with pytest.raises(ValidationError, match="anchor_relation_conflict:a-oppose"):
+        fill_brief_fingerprints(request)
+    assert request == before
+    request["content_boundaries"]["evidence_anchors"] = [handwritten("a-support", "p. 4", "counter")]
+    with pytest.raises(ValidationError, match="anchor_relation_conflict:a-support"):
+        fill_brief_fingerprints(request)
+    request["content_boundaries"]["evidence_anchors"] = [handwritten("a-oppose", "p. 1", "limit")]
+    fill_brief_fingerprints(request)
+    assert request["content_boundaries"]["evidence_anchors"][0]["relation"] == "limit"
+
+    with pytest.raises(ValidationError, match="research_status needs research_folder"):
+        fill_brief_fingerprints({"research_status": status, "content_boundaries": {"evidence_anchors": []}})
+    other = json.loads((folder / "research-status.json").read_text(encoding="utf-8"))
+    other["question"] = "Another question?"
+    (folder / "research-status.json").write_text(json.dumps(other), encoding="utf-8")
+    with pytest.raises(ValidationError, match="research_report_mismatch:question"):
+        imported(research_status=status)

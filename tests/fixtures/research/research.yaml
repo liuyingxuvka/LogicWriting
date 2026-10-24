@@ -1,0 +1,10 @@
+schema: researchguard.research.v1
+question: Did the port closure raise freight rates?
+hypotheses:
+- id: h-closure
+  text: The port closure raised freight rates.
+models:
+  source: source.yaml
+search:
+  budget: 1
+  scope_sufficient: true

@@ -1,0 +1,9 @@
+sources:
+- source_id: s-report
+  cannot_support_structural_use: Use only what the quoted passage says.
+anchors:
+- {anchor_id: a-oppose, source_id: s-report, locator: p. 1, text: Rates rose before the closure.}
+- {anchor_id: a-mixed, source_id: s-report, locator: p. 2, text: One route supports it and one opposes it.}
+- {anchor_id: a-limit, source_id: s-report, locator: p. 3, text: Only one lane was measured.}
+- {anchor_id: a-support, source_id: s-report, locator: p. 4, text: Rates rose the week of the closure.}
+- {anchor_id: a-none, source_id: s-report, locator: p. 5, text: The port has three terminals.}

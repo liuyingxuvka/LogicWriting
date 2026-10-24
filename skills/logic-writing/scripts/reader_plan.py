@@ -21,6 +21,7 @@ def build_reader_brief(
     native_plan: Mapping[str, Any] | None = None,
     native_handoff_mapping: Iterable[Mapping[str, Any]] | None = None,
     research_folder: str | None = None,
+    research_status: str | None = None,
 ) -> dict[str, Any]:
     decision = require_mapping(route_decision, "RouteDecision")
     raw_intent = require_mapping(decision.get("reader_intent"), "ReaderIntent")
@@ -172,6 +173,10 @@ def build_reader_brief(
         if not isinstance(research_folder, str) or not research_folder.strip():
             raise ValidationError("research_folder must be a nonempty path")
         brief["research_folder"] = research_folder
+    if research_status is not None:
+        if not isinstance(research_status, str) or not research_status.strip() or research_folder is None:
+            raise ValidationError("research_status needs research_folder")
+        brief["research_status"] = research_status
     brief["brief_fingerprint"] = fingerprint(brief)
     validate_writer_input(writer_input, composition_plan=plan)
     require_schema("reader-brief.schema.json", brief, label="ReaderBrief")

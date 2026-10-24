@@ -62,8 +62,18 @@ The reader imports missing anchors using native source ids, locators, summaries,
 text and source boundaries. A handwritten anchor with the same id but a different
 source id or locator fails `anchor_conflict:<id>`; it cannot override its owner.
 For matching identities, author-written `relation`, `boundary` and
-`observed_summary` remain unchanged. Write counter, limit and context dispositions
-explicitly. Import only reads YAML; it performs no retrieval or provider call.
+`observed_summary` remain unchanged. Import only reads files; it performs no
+retrieval or provider call.
+
+Steps: first save `researchguard status <folder> --json --output research-status.json`;
+the brief request names `research_folder` and `research_status`
+(`research-status.json`); the closure input's `provider_reports` lists the same
+file. With `research_status`, imported anchors take their `relation` from the
+report's direct directions for the root claim (`counter`, `limit`, `support`,
+else `context`); without it they are `context`. A handwritten `relation` that
+contradicts the research direction fails `anchor_relation_conflict:<id>`.
+ResearchGuard's `references/research-tree.md` defines which evidence is direct;
+LogicWriting does not recompute directions.
 
 ## Native member responsibilities
 
