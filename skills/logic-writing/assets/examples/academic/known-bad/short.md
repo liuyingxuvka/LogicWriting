@@ -1,0 +1,3 @@
+# Reading a map before choosing a route
+
+A pedestrian map compresses a city into a set of choices, but the shortest line on the page is not always the easiest journey. A street crossing can demand more attention than a longer stretch of pavement, and a familiar landmark can make a detour easier to remember. Lynch's account of paths, edges and landmarks offers a useful vocabulary for describing these differences [Lynch, 1960]. We ask whether a route description organized around decisions, rather than distances alone, can help a newcomer explain why a particular walk suits them. The proposed contribution is a small comparison framework: identify the decision, describe its visible cue, and state the cost of taking the alternative.

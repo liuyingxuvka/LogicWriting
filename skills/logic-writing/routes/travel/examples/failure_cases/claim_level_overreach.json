@@ -1,1 +1,18 @@
-{"schema_version":"travel-story-planner.failure-case.v2","case_id":"claim-level-overreach","base_plan":"skills/logic-writing/routes/travel/examples/good_city_couple_trip/plan.json","mutations":[{"op":"set","path":["trip_context","allowed_claim_level"],"value":"bookable"}],"expected_issue_codes":["trip_context.allowed_claim_level.derived_mismatch"]}
+{
+  "schema_version": "travel-story-planner.failure-case.v2",
+  "case_id": "claim-level-overreach",
+  "base_plan": "skills/logic-writing/routes/travel/examples/good_city_couple_trip/plan.json",
+  "mutations": [
+    {
+      "op": "set",
+      "path": [
+        "trip_context",
+        "requested_claim_level"
+      ],
+      "value": "bookable"
+    }
+  ],
+  "expected_issue_codes": [
+    "trip_context.requested_claim_level.overreach"
+  ]
+}

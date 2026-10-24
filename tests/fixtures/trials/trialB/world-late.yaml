@@ -23,4 +23,4 @@ inputs:
   resources:
     places: {ilse_box: [{color: spare_key, qty: 1}], tova_hand: [], brandt_ring: [{color: ring_key, qty: 1}]}
     transitions:
-      - {id: give_spare, consumes: [{place: ilse_box, color: spare_key, qty: 1}], produces: [{place: tova_hand, color: spare_key, qty: 1}]}
+      - {id: give_spare, event: e_give_spare, consumes: [{place: ilse_box, color: spare_key, qty: 1}], produces: [{place: tova_hand, color: spare_key, qty: 1}]}

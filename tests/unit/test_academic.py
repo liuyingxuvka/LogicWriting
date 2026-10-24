@@ -6,7 +6,8 @@ import pytest
 
 from _common import ValidationError, fingerprint
 from tests.v2_support import derive_protocol_closure as derive_closure
-from reader_pipeline import validate_revision_provenance, validate_route_composition
+from reader_plan import validate_revision_provenance
+from reader_plan_core import validate_route_composition
 from select_route import select_route
 from tests.v2_support import closure_input, complete_chain, route_request
 
@@ -95,7 +96,7 @@ def test_create_new_needs_no_provenance_input(tmp_path):
 
 
 def test_revision_units_come_from_the_real_source_file(tmp_path):
-    from reader_pipeline import fill_closure_fingerprints
+    from reader_fill import fill_closure_fingerprints
     chain, manifest = _revision_chain(tmp_path)
     request = fill_closure_fingerprints(closure_input(chain))
     assert request['revision_provenance']['source_artifact_fingerprint'] == manifest['source']['artifact_fingerprint']
@@ -124,7 +125,7 @@ def test_mode_must_match_reader_intent(tmp_path):
 
 
 def test_revision_source_digest_is_derived_and_checked_against_real_bytes(tmp_path):
-    from reader_pipeline import fill_closure_fingerprints
+    from reader_fill import fill_closure_fingerprints
     chain, _ = _revision_chain(tmp_path)
     request = fill_closure_fingerprints(closure_input(chain))
     source = tmp_path / 'old.md'

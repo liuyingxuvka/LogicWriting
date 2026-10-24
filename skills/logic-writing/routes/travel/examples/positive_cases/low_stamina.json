@@ -3,12 +3,77 @@
   "case_id": "low-stamina-comfort-route",
   "base_plan": "skills/logic-writing/routes/travel/examples/good_city_couple_trip/plan.json",
   "mutations": [
-    {"op": "set", "path": ["trip_context", "trip_id"], "value": "fixture-city-low-stamina"},
-    {"op": "set", "path": ["traveler_profile", "stamina"], "value": "low"},
-    {"op": "set", "path": ["traveler_profile", "walking_tolerance_km"], "value": 3.3},
-    {"op": "set_where", "path": ["route_mesh", "routes"], "match_field": "trace_id", "match_value": "trace-primary", "set_field": "walking_km", "value": 3.2},
-    {"op": "set_where", "path": ["route_mesh", "routes"], "match_field": "trace_id", "match_value": "trace-comfort", "set_field": "walking_km", "value": 2.2},
-    {"op": "set_where", "path": ["trip_fit_review", "dimension_rows"], "match_field": "dimension", "match_value": "stamina", "set_field": "input_values", "value": ["low"]},
-    {"op": "set_where", "path": ["trip_fit_review", "dimension_rows"], "match_field": "dimension", "match_value": "rest", "set_field": "input_values", "value": ["low"]}
+    {
+      "op": "set",
+      "path": [
+        "trip_context",
+        "trip_id"
+      ],
+      "value": "fixture-city-low-stamina"
+    },
+    {
+      "op": "set",
+      "path": [
+        "traveler_profile",
+        "stamina"
+      ],
+      "value": "low"
+    },
+    {
+      "op": "set",
+      "path": [
+        "traveler_profile",
+        "walking_tolerance_km"
+      ],
+      "value": 3.3
+    },
+    {
+      "op": "set_where",
+      "path": [
+        "route_mesh",
+        "routes"
+      ],
+      "match_field": "trace_id",
+      "match_value": "trace-primary",
+      "set_field": "walking_km",
+      "value": 3.2
+    },
+    {
+      "op": "set_where",
+      "path": [
+        "route_mesh",
+        "routes"
+      ],
+      "match_field": "trace_id",
+      "match_value": "trace-comfort",
+      "set_field": "walking_km",
+      "value": 2.2
+    },
+    {
+      "op": "set_where",
+      "path": [
+        "trip_fit_review",
+        "dimension_rows"
+      ],
+      "match_field": "dimension",
+      "match_value": "stamina",
+      "set_field": "input_values",
+      "value": [
+        "low"
+      ]
+    },
+    {
+      "op": "set_where",
+      "path": [
+        "trip_fit_review",
+        "dimension_rows"
+      ],
+      "match_field": "dimension",
+      "match_value": "rest",
+      "set_field": "input_values",
+      "value": [
+        "low"
+      ]
+    }
   ]
 }

@@ -1,54 +1,12 @@
-# Runtime Workflow
+# Travel runtime workflow
 
-Use this reference for every Travel Story Planner run after the skill is triggered. Use the steps that the requested claim level needs; a Guard runs only when its question is material. Missing evidence causes downgrade or block.
+1. Record the traveler profile, planning timestamp, dates, requested claim level and source boundaries in one trip plan.
+2. Preserve source roles and `checked_on` dates. A check on the planning date can support currency; an earlier check cannot authorize booking/day-of claims, and a future check date is invalid. No automatic expiry window is invented.
+3. Build the candidate pool, route nodes, exact movement chain, risks, reachable fallbacks and lodging where needed. Route options belong to this trip model.
+4. Reference saved WorldGuard reports with `worldguard_report`. The validator reads their canonical status; it does not call WorldGuard or TraceGuard. A failed, missing or unreadable report limits the derived level to `initial_plan`.
+5. Bind fit dimensions to exact current traveler/profile values. Overall route, fit and recommendation results are derived rather than written into the plan.
+6. Put `weather_evidence_summary` in `trip_context`, with the chronology-appropriate source mode, hazards, boundaries and recheck action.
+7. Create one travel composition with `trip_plan`, relative to the composition file. Its route, fit, texture and fallback references must exist in that plan. The brief validates both the plan and those references.
+8. Follow the normal reader/writer/artifact/review chain. Guide structure lives in the composition; evaluate the actual guide against current spans and the route-review dimensions.
 
-## Claim Levels
-
-- `initial_plan`: enough structure to compare route options, but live facts need current recheck.
-- `bookable`: current source checks support reservations, timing, transport, and key risks.
-- `day_of`: current checks support same-day execution, including weather, closures, transport, queues, and nearby fallbacks.
-
-If evidence is missing for the requested level, downgrade the output instead of writing confident prose. The plan validator derives the allowed level from the evidence: far-future, past, or undated evidence cannot exceed `initial_plan`; a near-future `bookable` claim needs inspected current sources and forecast-compatible weather evidence; `day_of` also needs day-of chronology and current forecast plus alert evidence. `trip_context.allowed_claim_level` must equal that derived level.
-
-## Flow
-
-1. Create exactly one `trip_context` with trip id, destination, planning timestamp, timezone, dates, day ids, overnight/nights, requested claim level, allowed claim level, and evaluation mode. The validator derives `past`, `day_of`, `near_future`, or `far_future` from the timestamp and dates.
-2. Capture traveler profile, budget, interests, constraints, lodging needs, and desired claim level.
-3. Read `guard-role-map.md` and keep simulation ownership explicit.
-4. Use SourceGuard to build the experience candidate pool for attractions, food, hotels or lodging areas, shops, neighborhoods, activities, transport nodes, rest nodes, and fallbacks.
-5. Preserve source roles and support boundaries before using any candidate in a route.
-6. For dated trips, classify the weather evidence need before route finalization: forecast-first daily and hourly evidence for near-future trips, current forecast plus alert/advisory evidence for day-of readiness, observed or historical/archive weather for past trips, climate or seasonal evidence only for far-future route shape, and alert/advisory sources when rain, heat, wind, storm, thunderstorm, typhoon, air quality, safety, visibility, or transport disruption may matter.
-7. Create a negative evidence ledger and fallback ledger before route finalization.
-8. Use WorldGuard to check candidate feasibility: time, space, access, resources, norms, weather, safety, and conflict.
-9. Use TraceGuard to build route traces: primary, comfort, depth, weather or closure, lodging-sensitive, and mid-trip replanning branches when material.
-10. Use WorldGuard again to stress-test assembled day routes and movement edges.
-11. Run trip-fit review for the actual traveler profile.
-12. Review recommendation support: what evidence justifies this route over alternatives, and where wording must be downgraded.
-13. Build traveler-native guide compiler surfaces: guide projection, travel scene contracts, experience promises, day interfaces when multi-day, local texture index, weather evidence summary, day-heading plan, and reverse-guide review plan.
-14. Project routes into story-shaped traveler-facing prose and an operational appendix without exposing model-room labels. Multi-day guides need visible day or date headings with prose under each day.
-15. Run reverse-guide review against the actual traveler-facing text and return to the earliest failed surface when it finds internal leakage, weak local texture, missing promise payoff, generic risks, missing weather evidence, missing day headings, or broken day handoff.
-16. Report passed, partial, downgraded, blocked, and skipped checks in the audit note; closure of the actual guide comes from the shared reader chain (`scripts/derive_closure.py`).
-
-The current executable schema has no former-schema reader. A non-current plan is an explicit repair item.
-
-## Date-Aware Weather And Hazard Handling
-
-- Near-future dates: use forecast sources before historical averages. Seek daily outlook plus hourly precipitation or rain-window evidence when available; check high temperature or heat-index risk, humidity, wind, storm or thunderstorm risk, typhoon risk where regionally relevant, air quality where material, and official alerts/advisories when safety or transport could be affected.
-- Day-of or near-day execution: use same-day forecast and alert/advisory sources before claiming bookable or executable timing for weather-sensitive days.
-- Past dates: use historical, observed, or archive weather evidence when the guide discusses rain, heat, wind, visibility, storm, typhoon influence, alerts, or outdoor comfort. If no source can be inspected, downgrade the weather claim and say what remains unchecked.
-- Far-future dates: use climate or seasonal sources for planning shape only, and require a pre-departure forecast plus alert/advisory recheck before confident execution.
-- No fixed dates: use climate or seasonal evidence only as a planning boundary, not as a checked daily condition.
-
-Weather fallback branches must be named and tied to triggers. Examples: "rain window after 15:00 moves the viewpoint to the indoor gallery", "heat index makes the park a morning-only node", "typhoon or storm advisory blocks the waterfront and shifts to hotel-nearby indoor food", or "poor air quality moves a long walk to a transit-linked museum".
-
-## Replanning Trigger
-
-Restart from the earliest affected stage when the user changes:
-
-- destination, dates, budget, traveler profile, lodging area, or interests;
-- claim level;
-- a must-see or must-avoid location;
-- current position during a trip;
-- weather, closure, transport, booking, queue, luggage, or safety status.
-
-Do not patch a story route without refreshing the affected candidates, evidence, feasibility, route traces, traveler-native guide compiler surfaces, and fit review.
+`validate_travel_plan.py` reports the derived `allowed_claim_level`. Past, far-future and undated trips remain `initial_plan`; near-future booking and day-of claims also require passing domain checks, same-planning-date source checks and compatible weather evidence. A stronger requested level is an error. Do not supply a manual allowed level, world status, route feasibility result, fit result or recommendation result.

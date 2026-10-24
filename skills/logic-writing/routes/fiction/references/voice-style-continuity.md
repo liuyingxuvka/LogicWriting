@@ -17,15 +17,18 @@ Record a voice/style contract:
   "dialogue_policy": "subtext over exposition",
   "exposition_policy": "embed through action and consequence",
   "pacing_policy": "chapter endings carry unresolved pressure",
-  "allowed_variation": ["dream fragments may become more lyrical"],
-  "blocked_variation": ["no sudden omniscient explanation"],
-  "status": "pass"
+  "allowed_variation": [
+    "dream fragments may become more lyrical"
+  ],
+  "blocked_variation": [
+    "no sudden omniscient explanation"
+  ]
 }
 ```
 
 Required fields:
 
-- `id`, `pov_policy`, `tense_policy`, `narration_distance`, `diction`, `sentence_rhythm`, `dialogue_policy`, `exposition_policy`, `pacing_policy`, `allowed_variation`, `blocked_variation`, and `status`.
+- `id`, `pov_policy`, `tense_policy`, `narration_distance`, `diction`, `sentence_rhythm`, `dialogue_policy`, `exposition_policy`, `pacing_policy`, `allowed_variation`, `blocked_variation`.
 
 ## Continuity Report
 
@@ -34,26 +37,31 @@ Record per-chapter or per-section checks:
 ```json
 {
   "id": "voice-report-ch03",
-  "chapter_id": "chapter-03",
   "contract_ref": "voice-contract",
   "checks": [
-    {"field": "pov", "status": "pass", "finding": "No head-hop."},
-    {"field": "tense", "status": "pass", "finding": "Past tense stable."}
+    {
+      "field": "pov",
+      "finding": "No head-hop."
+    },
+    {
+      "field": "tense",
+      "finding": "Past tense stable."
+    }
   ],
   "drift": [],
   "repair_actions": [],
-  "overall_status": "pass"
+  "planned_unit_id": "chapter-03"
 }
 ```
 
 Required fields:
 
-- `id`, `contract_ref`, `checks`, `drift`, `repair_actions`, and `overall_status`.
+- `id`, `contract_ref`, `checks`, `drift`, `repair_actions`.
 
 Each check uses:
 
 - `field`: pov, tense, narration_distance, diction, rhythm, dialogue, exposition, pacing, cadence, emotional_temperature, or register.
-- `status`: pass, partial, drift, blocked, stale, scoped_out, or human_review.
+- Report concrete findings and unresolved drift; do not author pass/status fields.
 - `finding`: concise evidence-backed note.
 
 ## Drift Handling
@@ -70,7 +78,7 @@ Required repair action fields:
 - `field`;
 - `affected_chapters`;
 - `repair_type`: revise_prose, update_contract, narrow_claim, or human_review;
-- `status`.
+- current evidence references.
 
 ## Character Voice Distinction
 

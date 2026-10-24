@@ -33,7 +33,7 @@ Use SourceGuard for source discovery planning and source-role boundaries. A broa
 Use one typed row per source. Class-keyed string arrays are former authority and are rejected.
 
 ```text
-source_id -> source_class -> source_date -> coverage_period -> locator -> access_status -> content_sha256 -> can_support -> cannot_support -> freshness_status -> next_action
+source_id -> source_class -> source_date -> coverage_period -> locator -> content_sha256 -> can_support -> cannot_support -> checked_on -> next_action
 ```
 
 Candidates separately cite exact `source_ids` and the exact set of cited source classes in `source_roles`. Unknown ids or a mismatched role set block closure.
@@ -63,3 +63,5 @@ If weather evidence is unavailable or cannot be inspected, record the source cla
 For substantive guides, SourceGuard should search beyond official facts. Official sources support rules, hours, tickets, and access. Traveler-experience sources support fit, friction, queue patterns, practical enjoyment, and local texture. Negative-experience sources support risk triggers and fallback design.
 
 High-value experience nodes such as attractions, restaurants, hotels or lodging areas, shops, and neighborhoods should have both a positive fit signal and a limiting or negative signal before they are used as confident guide material.
+
+Each source records `checked_on` as an ISO date. The derived currency rule compares it with `planning_as_of`: it must not be later, and only the same planning date can support booking/day-of currency. Older checks remain usable for bounded initial planning, without an invented expiry interval.

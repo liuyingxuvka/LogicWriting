@@ -1,57 +1,109 @@
-# ResearchGuard provider boundary
+# ResearchGuard research and writing boundary
 
-Logic Writing uses ResearchGuard (minimum version checked by
-`scripts/provider_preflight.py`) and three
-direct semantic member owners. ResearchGuard also has other native members,
-but they are not active Logic Writing routes in this patch.
-Preflight the selected owner with `scripts/provider_preflight.py`:
+Use ResearchGuard for evidence discovery, argument licensing and temporal or
+causal research. Preflight the selected semantic owner through the single
+installed console:
 
-| Semantic owner | Console command | Primary path | `researchguard` skill route |
-| --- | --- | --- | --- |
-| LogicGuard | `researchguard logic` | `primary:researchguard:logic` | `logic` |
-| SourceGuard | `researchguard source` | `primary:researchguard:source` | `source` |
-| TraceGuard | `researchguard trace` | `primary:researchguard:trace` | `trace` |
+| Owner | Command | Primary path |
+|---|---|---|
+| Research question | `researchguard status` | `primary:researchguard:status` |
+| SourceGuard | `researchguard source` | `primary:researchguard:source` |
+| LogicGuard | `researchguard logic` | `primary:researchguard:logic` |
+| TraceGuard | `researchguard trace` | `primary:researchguard:trace` |
 
-Resolve the console from the ResearchGuard distribution installed in the
-running Python; when ResearchGuard is installed in another environment (pipx or
-a separate venv), use the `researchguard` command on PATH. The console version
-probe and selected member help probe establish provider availability only. The
-console version must meet the minimum and, when the running Python has the
-distribution, match it. They do not prove that native domain work ran.
+`scripts/provider_preflight.py researchguard` probes `researchguard status --help`.
+The three member preflights remain available. Resolve the console from the
+ResearchGuard distribution in the running Python, or the version-matching console
+on PATH when installed elsewhere. Availability and help probes do not establish
+that any native domain work ran. Missing, ambiguous, failed or timed-out consoles
+stay `provider_unavailable`; do not use former packages, module commands,
+checkout locators, alternate members or a non-pass retry.
 
-Use exactly one row per handoff. A missing or ambiguous installed console,
-failed command, or timeout is `provider_unavailable`. Do not import a former
-member package, run a module command, supply a checkout path, retry through
-another member, or reinterpret a non-pass native result.
+## One question and one saved answer
 
-Keep the selected member's own route and status unchanged; Logic Writing never
-rewrites a member result.
+Keep one question in a ResearchGuard research folder. `research.yaml` joins native
+source, logic, trace and experiment models by shared ids. Configure the native
+stop decision there, for example:
 
-For the LogicGuard artifact-synthesis route, the current native result is
-`researchguard.logic.synthesis-plan.v1`, produced from the required
-`researchguard.logic.synthesis-request.v1`. Give that result to
-`scripts/build_reader_brief.py` as `native_plan`, with `native_result_locator`
-naming where the result is kept; the script builds the handoff with
-`scripts/researchguard_handoff.py`. The handoff
-copies only the ordered argument units, their closure/role bindings, source
-branch ids, and complete candidate dispositions into
-`assets/schemas/researchguard-logic-handoff.schema.json`; it binds the ReaderIntent,
-CompositionPlan, and writer projection fingerprints. The native result remains
-an opaque reference. A blocked native status or support
-gap produces a blocked handoff and cannot enter the writer projection.
+```yaml
+search: {budget: 3, scope_sufficient: false}
+```
 
-ResearchGuard's native `model_fingerprint` and
-`selection_request_fingerprint` are currently emitted as lowercase 64-character
-digests without a `sha256:` label. The handoff adapter adds that label only in
-the typed Logic Writing fields, while `native_result_fingerprint` continues to
-hash the exact native payload. This is a format normalization, not a new
-identity or a second provider hash; raw or already-labelled native values must
-still be valid lowercase SHA-256 digests.
+After the native research work, save exactly one closure report:
 
-`experimentguard` and the `researchguard run` umbrella are explicit scope-outs
-for Logic Writing; they execute no provider command.
+```sh
+researchguard status <folder> --json --output research-status.json
+```
 
-`scripts/build_reader_brief.py` needs a `native_handoff_mapping` that maps
-every native unit of that handoff to planned units
-and covers every planned unit; an empty, partial, blocked, or unknown-unit
-mapping cannot enter the writing workspace.
+List `{"provider":"researchguard","path":"research-status.json"}` under the
+closure input's `provider_reports`. Closure reads its saved `verdict`; it never
+executes ResearchGuard. The five keys are `search`, `root_claim`,
+`live_hypotheses`, `contested`, `errors`. Errors or a search decision other than
+`stop_sufficient` prevent passing. Other live hypotheses require a real root
+claim with an `assert` license; brief alternatives must agree with native live
+hypotheses. `alternative_status_conflict:<id>` is a failure. `contested` contributes
+`research:contested` residual risk and does not itself block the result.
+A source-only question may have no root-claim license; stopping search never
+turns that absence into assert wording. Keep the missing license visible.
+
+Investigation always needs this report. Academic work needs it when there are
+live alternatives or the request names a research folder. Preserve native
+`withhold` and `qualify` boundaries even when the reader-facing artifact passes.
+
+## Import source-owned anchors
+
+A brief request names `research_folder`, relative to the request JSON, pointing
+to the folder or `research.yaml`. The source YAML is the index's `models.source`.
+The reader imports missing anchors using native source ids, locators, summaries,
+text and source boundaries. A handwritten anchor with the same id but a different
+source id or locator fails `anchor_conflict:<id>`; it cannot override its owner.
+For matching identities, author-written `relation`, `boundary` and
+`observed_summary` remain unchanged. Write counter, limit and context dispositions
+explicitly. Import only reads YAML; it performs no retrieval or provider call.
+
+## Native member responsibilities
+
+SourceGuard owns source discovery, next searches, source roles, lineage, access
+constraints, anchor extraction and evidence depth. Only observed source content
+with resolvable lineage can support factual statements. Preserve candidate,
+planning-only, bounded, inaccessible and provider-unavailable states; never invent
+retrieval work or a native result.
+
+LogicGuard owns argument support, source-library preservation, structured-artifact
+and citation semantics, model depth and an argument-ordered unit plan
+(`synthesize`). Its internal library, structured-artifact, deepening and synthesis
+routes remain part of the one ResearchGuard skill. It checks structural support,
+not factual truth. A model or argument plan is not final prose and cannot replace
+an audit of the delivered artifact. Writing tools own finished outlines,
+paragraph plans and delivery.
+
+TraceGuard owns timelines, execution/effect chains, competing causal storylines,
+counterfactuals and prediction boundaries. Supply stable claims, events, actors,
+sources, time clues and the bounded question. Preserve native uncertainty,
+unresolved links and future/holdout limits: earlier-than is not caused-by and a
+plausible mechanism is not execution evidence.
+
+ExperimentGuard remains outside LogicWriting's provider routes; it only recommends
+finite experiments in its own native domain. The retired umbrella run command is
+not an execution path.
+
+## Preserve the synthesis bridge
+
+The stable bridge remains `researchguard.logic.synthesis-request.v1` → native
+`researchguard.logic.synthesis-plan.v1` →
+`assets/schemas/researchguard-logic-handoff.schema.json` → `ReaderBrief.writer_input`.
+Give `scripts/build_reader_brief.py` the native plan, its opaque
+`native_result_locator` and an exhaustive `native_handoff_mapping`.
+`scripts/researchguard_handoff.py` checks native model/request identity, complete
+body-unit order, acyclic parent/predecessor links, argument closure, source-branch
+bindings and candidate dispositions. The mapping covers every native unit and
+every current planned reader unit; empty, partial, unknown-unit or blocked mappings
+cannot enter the writer workspace. A blocked support/budget/request result stays
+blocked and never becomes a quality or final-closure pass.
+
+Native `model_fingerprint` and `selection_request_fingerprint` are lowercase
+64-character digests. Only the typed LogicWriting fields add a `sha256:` label;
+`native_result_fingerprint` still hashes the exact native payload. Raw and labelled
+values must be valid lowercase SHA-256 digests. Preserve ReaderIntent,
+CompositionPlan and writer-projection bindings together, native payload bytes and
+opaque result locators. Do not change this bridge to manufacture a pass.

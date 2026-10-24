@@ -6,6 +6,20 @@ releases, tags, package publications, installations, or predecessor deletions.
 The format follows the main ideas of Keep a Changelog, and the source version
 line follows semantic versioning.
 
+## [4.0.14] - 2026-10-24
+
+### Changed
+
+- Use one composition plan for fiction unit identity and state, with native domain models supplying promises, arcs, continuity and voice. Long-form writing follows the same reader chain and computes its surface checks in process.
+- Closure reads one saved ResearchGuard verdict. `research_folder` imports native source anchors atomically; conflicting handwritten ownership is rejected. ResearchGuard 0.5.14 is the minimum supported release.
+- Travel requires a trip plan that the brief validates. World, route, fit and recommendation results and source currency are derived from WorldGuard reports and check dates; guide structure lives only in the travel composition.
+- Optional `world_refs` bind planned units to real world ids and current quotations. Missing quotations remain explicit residual risks.
+- `show_plan.py` displays the real unit tree, reader-state handoffs and current text bindings. `known_bad.py` generates deterministic mutations of the user's piece and reports the first actual check that catches each; closure lists uncaught mutations as residual risks.
+
+### Removed
+
+- Retire the second ResearchPacket source/claim system and the separate fiction model-prose and semantic-review machines. The existing native providers, domain checks and current-text review own those responsibilities.
+
 ## [4.0.13] - 2026-10-23
 
 ### Fixed

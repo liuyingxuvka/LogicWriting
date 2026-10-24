@@ -1,0 +1,911 @@
+{
+  "brief_id": "plan-lantern-map-brief",
+  "route_decision": "route-decision.json",
+  "content_boundaries": {
+    "content_units": [
+      {
+        "content_unit_id": "content-scene-001",
+        "safe_meaning": "Establish Mara's ferry work, the flood-night pressure, and the missing lower-dock route.",
+        "required": true,
+        "evidence_anchor_ids": [],
+        "alternative_ids": [],
+        "limitation_ids": [],
+        "model_row_ids": []
+      },
+      {
+        "content_unit_id": "content-scene-002",
+        "safe_meaning": "Force Mara to possess the coded map and brass lens instead of safely reporting them.",
+        "required": true,
+        "evidence_anchor_ids": [],
+        "alternative_ids": [],
+        "limitation_ids": [],
+        "model_row_ids": []
+      },
+      {
+        "content_unit_id": "content-scene-003",
+        "safe_meaning": "Show Mara using unofficial help after Venn shuts the public route.",
+        "required": true,
+        "evidence_anchor_ids": [],
+        "alternative_ids": [],
+        "limitation_ids": [],
+        "model_row_ids": []
+      },
+      {
+        "content_unit_id": "content-scene-004",
+        "safe_meaning": "Reveal that the lower-dock route was deliberately hidden and redirect Mara toward broadcast.",
+        "required": true,
+        "evidence_anchor_ids": [],
+        "alternative_ids": [],
+        "limitation_ids": [],
+        "model_row_ids": []
+      },
+      {
+        "content_unit_id": "content-scene-005",
+        "safe_meaning": "Make Mara pay a personal cost for keeping the route public.",
+        "required": true,
+        "evidence_anchor_ids": [],
+        "alternative_ids": [],
+        "limitation_ids": [],
+        "model_row_ids": []
+      },
+      {
+        "content_unit_id": "content-scene-006",
+        "safe_meaning": "Force the final private-versus-public choice through Niko's injury.",
+        "required": true,
+        "evidence_anchor_ids": [],
+        "alternative_ids": [],
+        "limitation_ids": [],
+        "model_row_ids": []
+      },
+      {
+        "content_unit_id": "content-scene-007",
+        "safe_meaning": "Pay off the lantern clue and Mara's public-trust choice in the tower.",
+        "required": true,
+        "evidence_anchor_ids": [],
+        "alternative_ids": [],
+        "limitation_ids": [],
+        "model_row_ids": []
+      },
+      {
+        "content_unit_id": "content-scene-008",
+        "safe_meaning": "Show evacuation success, Mara's loss, and the new trust she earns.",
+        "required": true,
+        "evidence_anchor_ids": [],
+        "alternative_ids": [],
+        "limitation_ids": [],
+        "model_row_ids": []
+      }
+    ],
+    "evidence_anchors": [],
+    "alternatives": [],
+    "limitations": [],
+    "citation_duties": [],
+    "must_preserve_tokens": [],
+    "verbatim_obligations": [],
+    "prohibited_overclaims": []
+  },
+  "composition_plan": {
+    "schema_version": "2.0",
+    "plan_id": "plan-lantern-map",
+    "final_owner": "fiction-writing",
+    "central_question": "Will Mara risk her ferry license and safety to broadcast the true evacuation routes before the river wall fails?",
+    "central_throughline": "A night ferry pilot finds a hidden evacuation map and must choose between preserving her license and warning the flood district before the warning tower is sealed.",
+    "artifact_form": "short_story",
+    "structure_authority": "route_selected",
+    "opening_job": "A night ferry pilot finds a hidden evacuation map and must choose between preserving her license and warning the flood district before the warning tower is sealed.",
+    "conclusion_job": "Mara gets the lens into the warning tower and signals the lower-dock route in time.",
+    "planned_units": [
+      {
+        "planned_unit_id": "lantern-map-short-story",
+        "parent_unit_id": null,
+        "unit_kind": "story",
+        "order": 1,
+        "required": true,
+        "title": "lantern-map-short-story",
+        "source_outline_ids": [],
+        "reader_job": "A night ferry pilot finds a hidden evacuation map and must choose between preserving her license and warning the flood district before the warning tower is sealed.",
+        "content_unit_ids": [],
+        "limitation_ids": [],
+        "relation_to_previous": "Mara earns a fragile living by keeping the lower-dock ferry running and staying invisible to the council.",
+        "incoming_reader_state": "Mara earns a fragile living by keeping the lower-dock ferry running and staying invisible to the council.",
+        "outgoing_reader_state": "Mara gets the lens into the warning tower and signals the lower-dock route in time.",
+        "downstream_unit_ids": [],
+        "presentation_mode": "prose",
+        "target_extent": 50
+      },
+      {
+        "planned_unit_id": "tp-setup",
+        "parent_unit_id": "lantern-map-short-story",
+        "unit_kind": "turning_point",
+        "order": 1,
+        "required": true,
+        "title": "setup",
+        "source_outline_ids": [],
+        "reader_job": "The flood bell is announced for midnight as the lower docks keep working.",
+        "content_unit_ids": [],
+        "limitation_ids": [],
+        "relation_to_previous": "Mara works a dangerous ferry shift while avoiding council notice.",
+        "incoming_reader_state": "Mara works a dangerous ferry shift while avoiding council notice.",
+        "outgoing_reader_state": "Mara suspects the official warning plan is incomplete.",
+        "downstream_unit_ids": [],
+        "presentation_mode": "prose",
+        "target_extent": 50
+      },
+      {
+        "planned_unit_id": "tp-first-plot-point",
+        "parent_unit_id": "lantern-map-short-story",
+        "unit_kind": "turning_point",
+        "order": 2,
+        "required": true,
+        "title": "first_plot_point",
+        "source_outline_ids": [],
+        "reader_job": "An apprentice named Jin leaves Mara a coded map and brass lens.",
+        "content_unit_ids": [],
+        "limitation_ids": [],
+        "relation_to_previous": "Mara could hand the strange lens to the council and remain uninvolved.",
+        "incoming_reader_state": "Mara could hand the strange lens to the council and remain uninvolved.",
+        "outgoing_reader_state": "Mara becomes the only person outside the council with the route map and lens.",
+        "downstream_unit_ids": [],
+        "presentation_mode": "prose",
+        "target_extent": 50
+      },
+      {
+        "planned_unit_id": "tp-reaction",
+        "parent_unit_id": "lantern-map-short-story",
+        "unit_kind": "turning_point",
+        "order": 3,
+        "required": true,
+        "title": "reaction",
+        "source_outline_ids": [],
+        "reader_job": "Venn closes the public archive route and orders ferry locks inspected.",
+        "content_unit_ids": [],
+        "limitation_ids": [],
+        "relation_to_previous": "Mara searches for proof while trying to keep the ferry route legal.",
+        "incoming_reader_state": "Mara searches for proof while trying to keep the ferry route legal.",
+        "outgoing_reader_state": "Mara has an unofficial path toward the tower but is now being watched.",
+        "downstream_unit_ids": [],
+        "presentation_mode": "prose",
+        "target_extent": 50
+      },
+      {
+        "planned_unit_id": "tp-midpoint",
+        "parent_unit_id": "lantern-map-short-story",
+        "unit_kind": "turning_point",
+        "order": 4,
+        "required": true,
+        "title": "midpoint",
+        "source_outline_ids": [],
+        "reader_job": "The map shows the lower-dock route was deliberately removed from public boards.",
+        "content_unit_ids": [],
+        "limitation_ids": [],
+        "relation_to_previous": "Mara believes the map is only evidence of council incompetence.",
+        "incoming_reader_state": "Mara believes the map is only evidence of council incompetence.",
+        "outgoing_reader_state": "Mara has a public mission and can no longer frame the problem as self-protection.",
+        "downstream_unit_ids": [],
+        "presentation_mode": "prose",
+        "target_extent": 50
+      },
+      {
+        "planned_unit_id": "tp-attack",
+        "parent_unit_id": "lantern-map-short-story",
+        "unit_kind": "turning_point",
+        "order": 5,
+        "required": true,
+        "title": "attack",
+        "source_outline_ids": [],
+        "reader_job": "Venn issues an arrest notice and cuts the service lamps along the flood wall.",
+        "content_unit_ids": [],
+        "limitation_ids": [],
+        "relation_to_previous": "Mara moves toward the tower with the map and lens.",
+        "incoming_reader_state": "Mara moves toward the tower with the map and lens.",
+        "outgoing_reader_state": "Mara can reach the tower but loses the easy way to defend her license afterward.",
+        "downstream_unit_ids": [],
+        "presentation_mode": "prose",
+        "target_extent": 50
+      },
+      {
+        "planned_unit_id": "tp-second-plot-point",
+        "parent_unit_id": "lantern-map-short-story",
+        "unit_kind": "turning_point",
+        "order": 6,
+        "required": true,
+        "title": "second_plot_point",
+        "source_outline_ids": [],
+        "reader_job": "Niko is hurt while holding the tunnel gate open.",
+        "content_unit_ids": [],
+        "limitation_ids": [],
+        "relation_to_previous": "Mara has tower access but still hopes to save both Niko and her license.",
+        "incoming_reader_state": "Mara has tower access but still hopes to save both Niko and her license.",
+        "outgoing_reader_state": "Mara chooses the public warning over the private rescue she can personally finish.",
+        "downstream_unit_ids": [],
+        "presentation_mode": "prose",
+        "target_extent": 50
+      },
+      {
+        "planned_unit_id": "tp-climax",
+        "parent_unit_id": "lantern-map-short-story",
+        "unit_kind": "turning_point",
+        "order": 7,
+        "required": true,
+        "title": "climax",
+        "source_outline_ids": [],
+        "reader_job": "Mara mounts the lens and turns the lantern toward the lower docks.",
+        "content_unit_ids": [],
+        "limitation_ids": [],
+        "relation_to_previous": "Mara reaches the tower while Venn orders the lens surrendered.",
+        "incoming_reader_state": "Mara reaches the tower while Venn orders the lens surrendered.",
+        "outgoing_reader_state": "The true route is public, and Mara's violation is undeniable.",
+        "downstream_unit_ids": [],
+        "presentation_mode": "prose",
+        "target_extent": 50
+      },
+      {
+        "planned_unit_id": "tp-resolution",
+        "parent_unit_id": "lantern-map-short-story",
+        "unit_kind": "turning_point",
+        "order": 8,
+        "required": true,
+        "title": "resolution",
+        "source_outline_ids": [],
+        "reader_job": "Residents return the ferry bell to Mara after the water drops.",
+        "content_unit_ids": [],
+        "limitation_ids": [],
+        "relation_to_previous": "The district follows the lantern route while Mara waits for punishment.",
+        "incoming_reader_state": "The district follows the lantern route while Mara waits for punishment.",
+        "outgoing_reader_state": "Mara begins rebuilding as a public witness rather than a hidden ferry pilot.",
+        "downstream_unit_ids": [],
+        "presentation_mode": "prose",
+        "target_extent": 50
+      },
+      {
+        "planned_unit_id": "scene-001",
+        "parent_unit_id": "tp-setup",
+        "unit_kind": "scene",
+        "order": 1,
+        "required": true,
+        "title": "scene-001",
+        "source_outline_ids": [],
+        "reader_job": "Establish Mara's ferry work, the flood-night pressure, and the missing lower-dock route.",
+        "content_unit_ids": [
+          "content-scene-001"
+        ],
+        "limitation_ids": [],
+        "relation_to_previous": "Mara is a cautious ferry pilot trying to finish the shift unnoticed.",
+        "incoming_reader_state": "Mara is a cautious ferry pilot trying to finish the shift unnoticed.",
+        "outgoing_reader_state": "Mara suspects official route boards exclude the people she serves.",
+        "downstream_unit_ids": [],
+        "presentation_mode": "prose",
+        "target_extent": 50
+      },
+      {
+        "planned_unit_id": "scene-002",
+        "parent_unit_id": "tp-first-plot-point",
+        "unit_kind": "scene",
+        "order": 1,
+        "required": true,
+        "title": "scene-002",
+        "source_outline_ids": [],
+        "reader_job": "Force Mara to possess the coded map and brass lens instead of safely reporting them.",
+        "content_unit_ids": [
+          "content-scene-002"
+        ],
+        "limitation_ids": [],
+        "relation_to_previous": "Mara can still treat the route omission as someone else's mistake.",
+        "incoming_reader_state": "Mara can still treat the route omission as someone else's mistake.",
+        "outgoing_reader_state": "Mara holds the only usable evidence and lens outside council control.",
+        "downstream_unit_ids": [],
+        "presentation_mode": "prose",
+        "target_extent": 50
+      },
+      {
+        "planned_unit_id": "scene-003",
+        "parent_unit_id": "tp-reaction",
+        "unit_kind": "scene",
+        "order": 1,
+        "required": true,
+        "title": "scene-003",
+        "source_outline_ids": [],
+        "reader_job": "Show Mara using unofficial help after Venn shuts the public route.",
+        "content_unit_ids": [
+          "content-scene-003"
+        ],
+        "limitation_ids": [],
+        "relation_to_previous": "Mara tries to verify the map without breaking more rules.",
+        "incoming_reader_state": "Mara tries to verify the map without breaking more rules.",
+        "outgoing_reader_state": "Mara chooses the maintenance tunnel and accepts being watched.",
+        "downstream_unit_ids": [],
+        "presentation_mode": "prose",
+        "target_extent": 50
+      },
+      {
+        "planned_unit_id": "scene-004",
+        "parent_unit_id": "tp-midpoint",
+        "unit_kind": "scene",
+        "order": 1,
+        "required": true,
+        "title": "scene-004",
+        "source_outline_ids": [],
+        "reader_job": "Reveal that the lower-dock route was deliberately hidden and redirect Mara toward broadcast.",
+        "content_unit_ids": [
+          "content-scene-004"
+        ],
+        "limitation_ids": [],
+        "relation_to_previous": "Mara thinks she is collecting evidence for later appeal.",
+        "incoming_reader_state": "Mara thinks she is collecting evidence for later appeal.",
+        "outgoing_reader_state": "Mara decides she must broadcast before the flood wall fails.",
+        "downstream_unit_ids": [],
+        "presentation_mode": "prose",
+        "target_extent": 50
+      },
+      {
+        "planned_unit_id": "scene-005",
+        "parent_unit_id": "tp-attack",
+        "unit_kind": "scene",
+        "order": 1,
+        "required": true,
+        "title": "scene-005",
+        "source_outline_ids": [],
+        "reader_job": "Make Mara pay a personal cost for keeping the route public.",
+        "content_unit_ids": [
+          "content-scene-005"
+        ],
+        "limitation_ids": [],
+        "relation_to_previous": "Mara heads toward the tower with a plan and still owns her license papers.",
+        "incoming_reader_state": "Mara heads toward the tower with a plan and still owns her license papers.",
+        "outgoing_reader_state": "Mara has the tower key but has traded away her clean defense.",
+        "downstream_unit_ids": [],
+        "presentation_mode": "prose",
+        "target_extent": 50
+      },
+      {
+        "planned_unit_id": "scene-006",
+        "parent_unit_id": "tp-second-plot-point",
+        "unit_kind": "scene",
+        "order": 1,
+        "required": true,
+        "title": "scene-006",
+        "source_outline_ids": [],
+        "reader_job": "Force the final private-versus-public choice through Niko's injury.",
+        "content_unit_ids": [
+          "content-scene-006"
+        ],
+        "limitation_ids": [],
+        "relation_to_previous": "Mara believes she can still protect Niko while reaching the signal tower.",
+        "incoming_reader_state": "Mara believes she can still protect Niko while reaching the signal tower.",
+        "outgoing_reader_state": "Mara leaves Niko with the keeper and carries the lens alone.",
+        "downstream_unit_ids": [],
+        "presentation_mode": "prose",
+        "target_extent": 50
+      },
+      {
+        "planned_unit_id": "scene-007",
+        "parent_unit_id": "tp-climax",
+        "unit_kind": "scene",
+        "order": 1,
+        "required": true,
+        "title": "scene-007",
+        "source_outline_ids": [],
+        "reader_job": "Pay off the lantern clue and Mara's public-trust choice in the tower.",
+        "content_unit_ids": [
+          "content-scene-007"
+        ],
+        "limitation_ids": [],
+        "relation_to_previous": "Mara reaches the tower with the lens while Venn can still stop the official siren.",
+        "incoming_reader_state": "Mara reaches the tower with the lens while Venn can still stop the official siren.",
+        "outgoing_reader_state": "The lower-dock route is visible across the flood haze and signed with Mara's call number.",
+        "downstream_unit_ids": [],
+        "presentation_mode": "prose",
+        "target_extent": 50
+      },
+      {
+        "planned_unit_id": "scene-008",
+        "parent_unit_id": "tp-resolution",
+        "unit_kind": "scene",
+        "order": 1,
+        "required": true,
+        "title": "scene-008",
+        "source_outline_ids": [],
+        "reader_job": "Show evacuation success, Mara's loss, and the new trust she earns.",
+        "content_unit_ids": [
+          "content-scene-008"
+        ],
+        "limitation_ids": [],
+        "relation_to_previous": "Mara waits for punishment after the district follows the lantern route.",
+        "incoming_reader_state": "Mara waits for punishment after the district follows the lantern route.",
+        "outgoing_reader_state": "Mara accepts public witness as a truer role than hidden compliance.",
+        "downstream_unit_ids": [],
+        "presentation_mode": "prose",
+        "target_extent": 50
+      }
+    ],
+    "allowed_list_zones": [],
+    "content_dispositions": [
+      {
+        "content_unit_id": "content-scene-001",
+        "disposition": "body",
+        "planned_unit_ids": [
+          "scene-001"
+        ],
+        "reason": "Original scene contribution."
+      },
+      {
+        "content_unit_id": "content-scene-002",
+        "disposition": "body",
+        "planned_unit_ids": [
+          "scene-002"
+        ],
+        "reason": "Original scene contribution."
+      },
+      {
+        "content_unit_id": "content-scene-003",
+        "disposition": "body",
+        "planned_unit_ids": [
+          "scene-003"
+        ],
+        "reason": "Original scene contribution."
+      },
+      {
+        "content_unit_id": "content-scene-004",
+        "disposition": "body",
+        "planned_unit_ids": [
+          "scene-004"
+        ],
+        "reason": "Original scene contribution."
+      },
+      {
+        "content_unit_id": "content-scene-005",
+        "disposition": "body",
+        "planned_unit_ids": [
+          "scene-005"
+        ],
+        "reason": "Original scene contribution."
+      },
+      {
+        "content_unit_id": "content-scene-006",
+        "disposition": "body",
+        "planned_unit_ids": [
+          "scene-006"
+        ],
+        "reason": "Original scene contribution."
+      },
+      {
+        "content_unit_id": "content-scene-007",
+        "disposition": "body",
+        "planned_unit_ids": [
+          "scene-007"
+        ],
+        "reason": "Original scene contribution."
+      },
+      {
+        "content_unit_id": "content-scene-008",
+        "disposition": "body",
+        "planned_unit_ids": [
+          "scene-008"
+        ],
+        "reason": "Original scene contribution."
+      }
+    ],
+    "limitation_dispositions": [],
+    "unresolved_conflicts": []
+  },
+  "route_composition": {
+    "schema_version": "2.0",
+    "composition_id": "plan-lantern-map-fiction",
+    "final_owner": "fiction-writing",
+    "output_room": "reader_native",
+    "artifact_kind": "short_story",
+    "prose_phase": "integrated_draft",
+    "structure_authority": "route_selected",
+    "voice_contract_ref": "voice-contract",
+    "unit_plans": [
+      {
+        "unit_id": "lantern-map-short-story",
+        "unit_kind": "story",
+        "contribution": "A night ferry pilot finds a hidden evacuation map and must choose between preserving her license and warning the flood district before the warning tower is sealed.",
+        "entry_state": "Mara earns a fragile living by keeping the lower-dock ferry running and staying invisible to the council.",
+        "exit_state": "Mara gets the lens into the warning tower and signals the lower-dock route in time.",
+        "focal_desire": "A night ferry pilot finds a hidden evacuation map and must choose between preserving her license and warning the flood district before the warning tower is sealed.",
+        "resistance_or_cost": "Mara earns a fragile living by keeping the lower-dock ferry running and staying invisible to the council.",
+        "reader_state_before": "Mara earns a fragile living by keeping the lower-dock ferry running and staying invisible to the council.",
+        "reader_state_after": "Mara gets the lens into the warning tower and signals the lower-dock route in time.",
+        "open_questions_in": [],
+        "open_questions_out": [],
+        "voice_owner": "Mara",
+        "rhythm_role": "lantern-map-short-story",
+        "prohibited_reveals": [],
+        "downstream_unit_ids": []
+      },
+      {
+        "unit_id": "tp-setup",
+        "unit_kind": "turning_point",
+        "contribution": "The flood bell is announced for midnight as the lower docks keep working.",
+        "entry_state": "Mara works a dangerous ferry shift while avoiding council notice.",
+        "exit_state": "Mara suspects the official warning plan is incomplete.",
+        "focal_desire": "The flood bell is announced for midnight as the lower docks keep working.",
+        "resistance_or_cost": "Mara works a dangerous ferry shift while avoiding council notice.",
+        "reader_state_before": "Mara works a dangerous ferry shift while avoiding council notice.",
+        "reader_state_after": "Mara suspects the official warning plan is incomplete.",
+        "open_questions_in": [],
+        "open_questions_out": [],
+        "voice_owner": "Mara",
+        "rhythm_role": "setup",
+        "prohibited_reveals": [],
+        "downstream_unit_ids": []
+      },
+      {
+        "unit_id": "tp-first-plot-point",
+        "unit_kind": "turning_point",
+        "contribution": "An apprentice named Jin leaves Mara a coded map and brass lens.",
+        "entry_state": "Mara could hand the strange lens to the council and remain uninvolved.",
+        "exit_state": "Mara becomes the only person outside the council with the route map and lens.",
+        "focal_desire": "An apprentice named Jin leaves Mara a coded map and brass lens.",
+        "resistance_or_cost": "Mara could hand the strange lens to the council and remain uninvolved.",
+        "reader_state_before": "Mara could hand the strange lens to the council and remain uninvolved.",
+        "reader_state_after": "Mara becomes the only person outside the council with the route map and lens.",
+        "open_questions_in": [],
+        "open_questions_out": [],
+        "voice_owner": "Mara",
+        "rhythm_role": "first_plot_point",
+        "prohibited_reveals": [],
+        "downstream_unit_ids": []
+      },
+      {
+        "unit_id": "tp-reaction",
+        "unit_kind": "turning_point",
+        "contribution": "Venn closes the public archive route and orders ferry locks inspected.",
+        "entry_state": "Mara searches for proof while trying to keep the ferry route legal.",
+        "exit_state": "Mara has an unofficial path toward the tower but is now being watched.",
+        "focal_desire": "Venn closes the public archive route and orders ferry locks inspected.",
+        "resistance_or_cost": "Mara searches for proof while trying to keep the ferry route legal.",
+        "reader_state_before": "Mara searches for proof while trying to keep the ferry route legal.",
+        "reader_state_after": "Mara has an unofficial path toward the tower but is now being watched.",
+        "open_questions_in": [],
+        "open_questions_out": [],
+        "voice_owner": "Mara",
+        "rhythm_role": "reaction",
+        "prohibited_reveals": [],
+        "downstream_unit_ids": []
+      },
+      {
+        "unit_id": "tp-midpoint",
+        "unit_kind": "turning_point",
+        "contribution": "The map shows the lower-dock route was deliberately removed from public boards.",
+        "entry_state": "Mara believes the map is only evidence of council incompetence.",
+        "exit_state": "Mara has a public mission and can no longer frame the problem as self-protection.",
+        "focal_desire": "The map shows the lower-dock route was deliberately removed from public boards.",
+        "resistance_or_cost": "Mara believes the map is only evidence of council incompetence.",
+        "reader_state_before": "Mara believes the map is only evidence of council incompetence.",
+        "reader_state_after": "Mara has a public mission and can no longer frame the problem as self-protection.",
+        "open_questions_in": [],
+        "open_questions_out": [],
+        "voice_owner": "Mara",
+        "rhythm_role": "midpoint",
+        "prohibited_reveals": [],
+        "downstream_unit_ids": []
+      },
+      {
+        "unit_id": "tp-attack",
+        "unit_kind": "turning_point",
+        "contribution": "Venn issues an arrest notice and cuts the service lamps along the flood wall.",
+        "entry_state": "Mara moves toward the tower with the map and lens.",
+        "exit_state": "Mara can reach the tower but loses the easy way to defend her license afterward.",
+        "focal_desire": "Venn issues an arrest notice and cuts the service lamps along the flood wall.",
+        "resistance_or_cost": "Mara moves toward the tower with the map and lens.",
+        "reader_state_before": "Mara moves toward the tower with the map and lens.",
+        "reader_state_after": "Mara can reach the tower but loses the easy way to defend her license afterward.",
+        "open_questions_in": [],
+        "open_questions_out": [],
+        "voice_owner": "Mara",
+        "rhythm_role": "attack",
+        "prohibited_reveals": [],
+        "downstream_unit_ids": []
+      },
+      {
+        "unit_id": "tp-second-plot-point",
+        "unit_kind": "turning_point",
+        "contribution": "Niko is hurt while holding the tunnel gate open.",
+        "entry_state": "Mara has tower access but still hopes to save both Niko and her license.",
+        "exit_state": "Mara chooses the public warning over the private rescue she can personally finish.",
+        "focal_desire": "Niko is hurt while holding the tunnel gate open.",
+        "resistance_or_cost": "Mara has tower access but still hopes to save both Niko and her license.",
+        "reader_state_before": "Mara has tower access but still hopes to save both Niko and her license.",
+        "reader_state_after": "Mara chooses the public warning over the private rescue she can personally finish.",
+        "open_questions_in": [],
+        "open_questions_out": [],
+        "voice_owner": "Mara",
+        "rhythm_role": "second_plot_point",
+        "prohibited_reveals": [],
+        "downstream_unit_ids": []
+      },
+      {
+        "unit_id": "tp-climax",
+        "unit_kind": "turning_point",
+        "contribution": "Mara mounts the lens and turns the lantern toward the lower docks.",
+        "entry_state": "Mara reaches the tower while Venn orders the lens surrendered.",
+        "exit_state": "The true route is public, and Mara's violation is undeniable.",
+        "focal_desire": "Mara mounts the lens and turns the lantern toward the lower docks.",
+        "resistance_or_cost": "Mara reaches the tower while Venn orders the lens surrendered.",
+        "reader_state_before": "Mara reaches the tower while Venn orders the lens surrendered.",
+        "reader_state_after": "The true route is public, and Mara's violation is undeniable.",
+        "open_questions_in": [],
+        "open_questions_out": [],
+        "voice_owner": "Mara",
+        "rhythm_role": "climax",
+        "prohibited_reveals": [],
+        "downstream_unit_ids": []
+      },
+      {
+        "unit_id": "tp-resolution",
+        "unit_kind": "turning_point",
+        "contribution": "Residents return the ferry bell to Mara after the water drops.",
+        "entry_state": "The district follows the lantern route while Mara waits for punishment.",
+        "exit_state": "Mara begins rebuilding as a public witness rather than a hidden ferry pilot.",
+        "focal_desire": "Residents return the ferry bell to Mara after the water drops.",
+        "resistance_or_cost": "The district follows the lantern route while Mara waits for punishment.",
+        "reader_state_before": "The district follows the lantern route while Mara waits for punishment.",
+        "reader_state_after": "Mara begins rebuilding as a public witness rather than a hidden ferry pilot.",
+        "open_questions_in": [],
+        "open_questions_out": [],
+        "voice_owner": "Mara",
+        "rhythm_role": "resolution",
+        "prohibited_reveals": [],
+        "downstream_unit_ids": []
+      },
+      {
+        "unit_id": "scene-001",
+        "unit_kind": "scene",
+        "contribution": "Establish Mara's ferry work, the flood-night pressure, and the missing lower-dock route.",
+        "entry_state": "Mara is a cautious ferry pilot trying to finish the shift unnoticed.",
+        "exit_state": "Mara suspects official route boards exclude the people she serves.",
+        "focal_desire": "Establish Mara's ferry work, the flood-night pressure, and the missing lower-dock route.",
+        "resistance_or_cost": "Mara is a cautious ferry pilot trying to finish the shift unnoticed.",
+        "reader_state_before": "Mara is a cautious ferry pilot trying to finish the shift unnoticed.",
+        "reader_state_after": "Mara suspects official route boards exclude the people she serves.",
+        "open_questions_in": [],
+        "open_questions_out": [],
+        "voice_owner": "Mara",
+        "rhythm_role": "scene-001",
+        "prohibited_reveals": [],
+        "downstream_unit_ids": []
+      },
+      {
+        "unit_id": "scene-002",
+        "unit_kind": "scene",
+        "contribution": "Force Mara to possess the coded map and brass lens instead of safely reporting them.",
+        "entry_state": "Mara can still treat the route omission as someone else's mistake.",
+        "exit_state": "Mara holds the only usable evidence and lens outside council control.",
+        "focal_desire": "Force Mara to possess the coded map and brass lens instead of safely reporting them.",
+        "resistance_or_cost": "Mara can still treat the route omission as someone else's mistake.",
+        "reader_state_before": "Mara can still treat the route omission as someone else's mistake.",
+        "reader_state_after": "Mara holds the only usable evidence and lens outside council control.",
+        "open_questions_in": [],
+        "open_questions_out": [],
+        "voice_owner": "Mara",
+        "rhythm_role": "scene-002",
+        "prohibited_reveals": [],
+        "downstream_unit_ids": []
+      },
+      {
+        "unit_id": "scene-003",
+        "unit_kind": "scene",
+        "contribution": "Show Mara using unofficial help after Venn shuts the public route.",
+        "entry_state": "Mara tries to verify the map without breaking more rules.",
+        "exit_state": "Mara chooses the maintenance tunnel and accepts being watched.",
+        "focal_desire": "Show Mara using unofficial help after Venn shuts the public route.",
+        "resistance_or_cost": "Mara tries to verify the map without breaking more rules.",
+        "reader_state_before": "Mara tries to verify the map without breaking more rules.",
+        "reader_state_after": "Mara chooses the maintenance tunnel and accepts being watched.",
+        "open_questions_in": [],
+        "open_questions_out": [],
+        "voice_owner": "Mara",
+        "rhythm_role": "scene-003",
+        "prohibited_reveals": [],
+        "downstream_unit_ids": []
+      },
+      {
+        "unit_id": "scene-004",
+        "unit_kind": "scene",
+        "contribution": "Reveal that the lower-dock route was deliberately hidden and redirect Mara toward broadcast.",
+        "entry_state": "Mara thinks she is collecting evidence for later appeal.",
+        "exit_state": "Mara decides she must broadcast before the flood wall fails.",
+        "focal_desire": "Reveal that the lower-dock route was deliberately hidden and redirect Mara toward broadcast.",
+        "resistance_or_cost": "Mara thinks she is collecting evidence for later appeal.",
+        "reader_state_before": "Mara thinks she is collecting evidence for later appeal.",
+        "reader_state_after": "Mara decides she must broadcast before the flood wall fails.",
+        "open_questions_in": [],
+        "open_questions_out": [],
+        "voice_owner": "Mara",
+        "rhythm_role": "scene-004",
+        "prohibited_reveals": [],
+        "downstream_unit_ids": []
+      },
+      {
+        "unit_id": "scene-005",
+        "unit_kind": "scene",
+        "contribution": "Make Mara pay a personal cost for keeping the route public.",
+        "entry_state": "Mara heads toward the tower with a plan and still owns her license papers.",
+        "exit_state": "Mara has the tower key but has traded away her clean defense.",
+        "focal_desire": "Make Mara pay a personal cost for keeping the route public.",
+        "resistance_or_cost": "Mara heads toward the tower with a plan and still owns her license papers.",
+        "reader_state_before": "Mara heads toward the tower with a plan and still owns her license papers.",
+        "reader_state_after": "Mara has the tower key but has traded away her clean defense.",
+        "open_questions_in": [],
+        "open_questions_out": [],
+        "voice_owner": "Mara",
+        "rhythm_role": "scene-005",
+        "prohibited_reveals": [],
+        "downstream_unit_ids": []
+      },
+      {
+        "unit_id": "scene-006",
+        "unit_kind": "scene",
+        "contribution": "Force the final private-versus-public choice through Niko's injury.",
+        "entry_state": "Mara believes she can still protect Niko while reaching the signal tower.",
+        "exit_state": "Mara leaves Niko with the keeper and carries the lens alone.",
+        "focal_desire": "Force the final private-versus-public choice through Niko's injury.",
+        "resistance_or_cost": "Mara believes she can still protect Niko while reaching the signal tower.",
+        "reader_state_before": "Mara believes she can still protect Niko while reaching the signal tower.",
+        "reader_state_after": "Mara leaves Niko with the keeper and carries the lens alone.",
+        "open_questions_in": [],
+        "open_questions_out": [],
+        "voice_owner": "Mara",
+        "rhythm_role": "scene-006",
+        "prohibited_reveals": [],
+        "downstream_unit_ids": []
+      },
+      {
+        "unit_id": "scene-007",
+        "unit_kind": "scene",
+        "contribution": "Pay off the lantern clue and Mara's public-trust choice in the tower.",
+        "entry_state": "Mara reaches the tower with the lens while Venn can still stop the official siren.",
+        "exit_state": "The lower-dock route is visible across the flood haze and signed with Mara's call number.",
+        "focal_desire": "Pay off the lantern clue and Mara's public-trust choice in the tower.",
+        "resistance_or_cost": "Mara reaches the tower with the lens while Venn can still stop the official siren.",
+        "reader_state_before": "Mara reaches the tower with the lens while Venn can still stop the official siren.",
+        "reader_state_after": "The lower-dock route is visible across the flood haze and signed with Mara's call number.",
+        "open_questions_in": [],
+        "open_questions_out": [],
+        "voice_owner": "Mara",
+        "rhythm_role": "scene-007",
+        "prohibited_reveals": [],
+        "downstream_unit_ids": []
+      },
+      {
+        "unit_id": "scene-008",
+        "unit_kind": "scene",
+        "contribution": "Show evacuation success, Mara's loss, and the new trust she earns.",
+        "entry_state": "Mara waits for punishment after the district follows the lantern route.",
+        "exit_state": "Mara accepts public witness as a truer role than hidden compliance.",
+        "focal_desire": "Show evacuation success, Mara's loss, and the new trust she earns.",
+        "resistance_or_cost": "Mara waits for punishment after the district follows the lantern route.",
+        "reader_state_before": "Mara waits for punishment after the district follows the lantern route.",
+        "reader_state_after": "Mara accepts public witness as a truer role than hidden compliance.",
+        "open_questions_in": [],
+        "open_questions_out": [],
+        "voice_owner": "Mara",
+        "rhythm_role": "scene-008",
+        "prohibited_reveals": [],
+        "downstream_unit_ids": []
+      }
+    ],
+    "story_movements": [
+      {
+        "movement_id": "movement-scene-001",
+        "unit_ids": [
+          "scene-001"
+        ],
+        "entry_story_state": "Mara is a cautious ferry pilot trying to finish the shift unnoticed.",
+        "primary_pressure": "Mara is a cautious ferry pilot trying to finish the shift unnoticed.",
+        "reader_state_change": "Mara suspects official route boards exclude the people she serves.",
+        "irreversible_change": "Establish Mara's ferry work, the flood-night pressure, and the missing lower-dock route.",
+        "exit_story_state": "Mara suspects official route boards exclude the people she serves.",
+        "downstream_unit_ids": [],
+        "promise_ids": []
+      },
+      {
+        "movement_id": "movement-scene-002",
+        "unit_ids": [
+          "scene-002"
+        ],
+        "entry_story_state": "Mara can still treat the route omission as someone else's mistake.",
+        "primary_pressure": "Mara can still treat the route omission as someone else's mistake.",
+        "reader_state_change": "Mara holds the only usable evidence and lens outside council control.",
+        "irreversible_change": "Force Mara to possess the coded map and brass lens instead of safely reporting them.",
+        "exit_story_state": "Mara holds the only usable evidence and lens outside council control.",
+        "downstream_unit_ids": [],
+        "promise_ids": []
+      },
+      {
+        "movement_id": "movement-scene-003",
+        "unit_ids": [
+          "scene-003"
+        ],
+        "entry_story_state": "Mara tries to verify the map without breaking more rules.",
+        "primary_pressure": "Mara tries to verify the map without breaking more rules.",
+        "reader_state_change": "Mara chooses the maintenance tunnel and accepts being watched.",
+        "irreversible_change": "Show Mara using unofficial help after Venn shuts the public route.",
+        "exit_story_state": "Mara chooses the maintenance tunnel and accepts being watched.",
+        "downstream_unit_ids": [],
+        "promise_ids": []
+      },
+      {
+        "movement_id": "movement-scene-004",
+        "unit_ids": [
+          "scene-004"
+        ],
+        "entry_story_state": "Mara thinks she is collecting evidence for later appeal.",
+        "primary_pressure": "Mara thinks she is collecting evidence for later appeal.",
+        "reader_state_change": "Mara decides she must broadcast before the flood wall fails.",
+        "irreversible_change": "Reveal that the lower-dock route was deliberately hidden and redirect Mara toward broadcast.",
+        "exit_story_state": "Mara decides she must broadcast before the flood wall fails.",
+        "downstream_unit_ids": [],
+        "promise_ids": []
+      },
+      {
+        "movement_id": "movement-scene-005",
+        "unit_ids": [
+          "scene-005"
+        ],
+        "entry_story_state": "Mara heads toward the tower with a plan and still owns her license papers.",
+        "primary_pressure": "Mara heads toward the tower with a plan and still owns her license papers.",
+        "reader_state_change": "Mara has the tower key but has traded away her clean defense.",
+        "irreversible_change": "Make Mara pay a personal cost for keeping the route public.",
+        "exit_story_state": "Mara has the tower key but has traded away her clean defense.",
+        "downstream_unit_ids": [],
+        "promise_ids": []
+      },
+      {
+        "movement_id": "movement-scene-006",
+        "unit_ids": [
+          "scene-006"
+        ],
+        "entry_story_state": "Mara believes she can still protect Niko while reaching the signal tower.",
+        "primary_pressure": "Mara believes she can still protect Niko while reaching the signal tower.",
+        "reader_state_change": "Mara leaves Niko with the keeper and carries the lens alone.",
+        "irreversible_change": "Force the final private-versus-public choice through Niko's injury.",
+        "exit_story_state": "Mara leaves Niko with the keeper and carries the lens alone.",
+        "downstream_unit_ids": [],
+        "promise_ids": []
+      },
+      {
+        "movement_id": "movement-scene-007",
+        "unit_ids": [
+          "scene-007"
+        ],
+        "entry_story_state": "Mara reaches the tower with the lens while Venn can still stop the official siren.",
+        "primary_pressure": "Mara reaches the tower with the lens while Venn can still stop the official siren.",
+        "reader_state_change": "The lower-dock route is visible across the flood haze and signed with Mara's call number.",
+        "irreversible_change": "Pay off the lantern clue and Mara's public-trust choice in the tower.",
+        "exit_story_state": "The lower-dock route is visible across the flood haze and signed with Mara's call number.",
+        "downstream_unit_ids": [],
+        "promise_ids": []
+      },
+      {
+        "movement_id": "movement-scene-008",
+        "unit_ids": [
+          "scene-008"
+        ],
+        "entry_story_state": "Mara waits for punishment after the district follows the lantern route.",
+        "primary_pressure": "Mara waits for punishment after the district follows the lantern route.",
+        "reader_state_change": "Mara accepts public witness as a truer role than hidden compliance.",
+        "irreversible_change": "Show evacuation success, Mara's loss, and the new trust she earns.",
+        "exit_story_state": "Mara accepts public witness as a truer role than hidden compliance.",
+        "downstream_unit_ids": [],
+        "promise_ids": []
+      }
+    ],
+    "promise_and_reveal_bindings": [],
+    "realization_boundaries": [
+      "The original story model and manuscript, without additional story content."
+    ],
+    "voice_contract": {
+      "pov": "limited third person",
+      "tense": "past",
+      "narration_distance": "close",
+      "register": "The original ferry-pilot story voice; no new prose is generated.",
+      "allowed_variation": [
+        "ledger quotations may become more formal"
+      ]
+    }
+  }
+}

@@ -6,7 +6,7 @@ import pytest
 
 from _common import ValidationError, fingerprint
 from select_route import complete_request, select_route, validate_request
-from reader_pipeline import build_reader_brief
+from reader_plan import build_reader_brief
 from tests.v2_support import route_request
 
 

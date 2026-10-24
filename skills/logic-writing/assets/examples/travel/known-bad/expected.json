@@ -1,1 +1,18 @@
-{"leak.md":{"step":"audit","code":"workflow_leak"},"empty.md":{"step":"shared_writing","error":"is not in the current text"}}
+{
+  "empty.md": {
+    "error": "binding binding:travel:morning: quote \"Start at Old Market at nine, before the delivery carts fill \" is not in the current text; binding binding:travel:rain-return: quote \"Return to the arcade for lunch. If steady rain has made the \" is not in the current text",
+    "step": "shared_writing"
+  },
+  "leak.md": {
+    "code": "workflow_leak",
+    "step": "audit"
+  },
+  "nolim-lim-illustrative.md": {
+    "error": "review evidence excerpt is absent from the current unit",
+    "step": "review"
+  },
+  "short.md": {
+    "error": "binding binding:travel:rain-return: quote \"Return to the arcade for lunch. If steady rain has made the \" is not in the current text",
+    "step": "shared_writing"
+  }
+}

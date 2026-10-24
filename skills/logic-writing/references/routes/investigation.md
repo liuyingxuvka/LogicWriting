@@ -1,7 +1,7 @@
 # Investigation route
 
 The investigation route turns a difficult question into a source-grounded
-report or a bounded ResearchPacket.
+report or a bounded return to the parent’s content boundaries.
 
 ## Reader composition v2
 
@@ -13,8 +13,8 @@ report outline, and one finding is never automatically one paragraph.
 
 After drafting, review actual report spans for the recoverable question,
 bounded answer, evidence strength, negative evidence, alternatives, conditions,
-limitations, fallback/recheck instruction, and conclusion scope. A source
-packet or argument model cannot pass this postwrite gate for the report.
+limitations, fallback/recheck instruction, and conclusion scope. A research
+result or argument model cannot pass this postwrite gate for the report.
 
 ## 1. Contract
 
@@ -49,7 +49,7 @@ Candidates and snippets are leads, not factual evidence. Several pages that
 repeat one origin count as one lineage. Announcements support announced intent;
 they do not by themselves prove execution or effect.
 
-Build a source portfolio by evidence role rather than accumulating links. A
+Use SourceGuard to build a source portfolio by evidence role rather than accumulating links. A
 material conclusion may need, for example, an official or primary record for
 the act, implementation evidence for what happened, outcome data for effects,
 a method source for measurement, and critique or counterevidence for the main
@@ -88,23 +88,33 @@ For causal, execution, or outcome claims, distinguish at least:
 - competing explanation and boundary conditions;
 - forecast validation or holdout evidence when making predictions.
 
-Run a conclusion competition before synthesis. Compare the leading conclusion
-with live alternatives using the same evidence and scope. Prefer the conclusion
-that explains the observations with the fewest unsupported assumptions, and
-retain a rival when the available evidence cannot discriminate between them.
+Use native LogicGuard conclusion competition before strong synthesis. Compare
+the leading conclusion with live alternatives under the same evidence and scope;
+preserve the returned wording license. Retain a rival when the available
+evidence cannot discriminate, rather than choosing the smoother story.
 
-## 4. Assemble the ResearchPacket
+## 4. Return a bounded investigation
 
-The packet is optional; its claim-and-evidence rows become the ReaderBrief
-`content_boundaries` either way. When you keep one, include exact source and claim-support manifests, critical numbers, alternatives,
-lineages, unresolved gaps, safe and unsafe wording, and a packet fingerprint. The verifier derives packet status; a caller's
-`complete` field has no authority.
+The piece has one evidence model: its ReaderBrief `content_boundaries`. Return
+content units, evidence anchors, alternatives and limitations with their stable
+ids, plus the ResearchGuard research folder for native sources and conclusions.
+A parent route incorporates these rows unchanged and retains final ownership.
+Name the requested gap and the remaining uncertainty; do not create a second
+registry or a separate writing plan.
 
-Every citation anchor in the packet must resolve to observed content and stay
-within the source's declared support boundary. The same source cannot support a
-stronger sentence than its record permits. A packet is a bounded evidence
-handoff, not a dump of search notes or a substitute for the requested final
-report.
+Set `research_folder` in the brief request. The source model owns anchor ids,
+source ids and locators; matching handwritten relation, summary and boundary
+remain author-owned. Conflicting ownership fails `anchor_conflict:<id>` instead
+of silently replacing the native source. Candidates, access gaps and bounded
+results stay visible and cannot become factual support through smooth prose.
+
+Save `researchguard status <folder> --json --output research-status.json` and list
+that one `researchguard` provider report for closure. Its `verdict` must preserve
+errors, the search stop decision, root wording license and live hypotheses.
+Opposite native/brief alternative dispositions fail
+`alternative_status_conflict:<id>`. `contested` remains `research:contested` risk;
+it is not a new blocking rule. A sufficient search decision alone does not
+license assert wording, including a source-only result with no root license.
 
 ## 5. Write for the reader
 

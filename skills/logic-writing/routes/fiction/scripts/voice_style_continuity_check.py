@@ -47,14 +47,12 @@ def validate_contract(contract: Any, reporter: Reporter) -> None:
     if not isinstance(contract, dict):
         reporter.error("missing_voice_contract", "voice_contract", "Voice/style contract is required.")
         return
-    for field in ("id", "pov_policy", "tense_policy", "narration_distance", "diction", "sentence_rhythm", "dialogue_policy", "exposition_policy", "pacing_policy", "status"):
+    for field in ("id", "pov_policy", "tense_policy", "narration_distance", "diction", "sentence_rhythm", "dialogue_policy", "exposition_policy", "pacing_policy"):
         if not nonempty_str(contract.get(field)):
             reporter.error("missing_required_field", f"voice_contract.{field}", "Required voice contract field is missing.")
     for field in ("allowed_variation", "blocked_variation"):
         if not isinstance(contract.get(field), list):
             reporter.error("invalid_type", f"voice_contract.{field}", "Expected list.")
-    if contract.get("status") not in PASS_STATUSES:
-        reporter.error("voice_contract_not_passed", "voice_contract.status", "Voice contract must pass before continuity closure.")
 
 
 def validate_report(report: Any, index: int, reporter: Reporter) -> None:
@@ -62,7 +60,7 @@ def validate_report(report: Any, index: int, reporter: Reporter) -> None:
     if not isinstance(report, dict):
         reporter.error("invalid_row_type", path, "Voice/style report must be an object.")
         return
-    for field in ("id", "contract_ref", "overall_status"):
+    for field in ("id", "contract_ref"):
         if not nonempty_str(report.get(field)):
             reporter.error("missing_required_field", f"{path}.{field}", "Required report field is missing.")
     checks = report.get("checks")
@@ -76,10 +74,6 @@ def validate_report(report: Any, index: int, reporter: Reporter) -> None:
                 continue
             if check.get("field") not in CHECK_FIELDS:
                 reporter.error("invalid_check_field", f"{check_path}.field", "Unknown voice/style check field.")
-            if check.get("status") in BLOCKING_STATUSES:
-                reporter.error("blocking_voice_style_check", f"{check_path}.status", "Unresolved voice/style drift blocks closure.")
-            elif check.get("status") not in PASS_STATUSES and check.get("status") not in {"partial", "scoped_out"}:
-                reporter.error("invalid_check_status", f"{check_path}.status", "Unknown voice/style check status.")
             if not nonempty_str(check.get("finding")):
                 reporter.error("missing_finding", f"{check_path}.finding", "Check finding is required.")
     drift = report.get("drift")
@@ -94,8 +88,6 @@ def validate_report(report: Any, index: int, reporter: Reporter) -> None:
                 reporter.error("unresolved_voice_style_drift", item_path, "Drift list must be empty for positive closure.")
     if not isinstance(report.get("repair_actions"), list):
         reporter.error("invalid_type", f"{path}.repair_actions", "repair_actions must be a list.")
-    if report.get("overall_status") not in PASS_STATUSES:
-        reporter.error("voice_style_report_not_passed", f"{path}.overall_status", "Overall voice/style status must pass.")
 
 
 def validate(payload: Any, source_path: str) -> dict[str, Any]:

@@ -54,6 +54,19 @@ still undergo normal freshness checks. Old ID-only requests remain supported.
 
 `python scripts/show_plan.py --input show-request.json` displays the question,
 throughline, every planned unit's job and reader states, content and limitations,
-and the first sentence of its bound text. The request names `reader_brief`,
-`artifact_map` and `shared_writing` result files. `--json` prints the same view
-as JSON. This view reads supplied records without validating or writing them.
+and the first sentence of its bound text. Read a brief request or
+`reader-brief.json` directly before drafting; units without current text bindings
+appear as `UNBOUND`. Later chain JSON files can use the `reader-brief.json` beside
+them, or a request can name `reader_brief`, `artifact_map` and `shared_writing`
+explicitly. `--json` prints the same tree as JSON. Where a complete map and
+binding are supplied, unknown planned-unit ids fail `unit_not_in_plan`; stale or
+missing references are not silently omitted. The view does not repair or rewrite
+supplied records.
+
+## Native world references
+
+When the route requires a world check, provide `world_contract`. Bind relevant
+planned units or current text using `world_refs` that resolve to its objects,
+events and conditions. Unknown ids fail `unknown_world_ref`; an unquoted reference
+stays a visible `world_ref_unquoted:...` risk. Resolving a reference is not a
+WorldGuard pass and never replaces its saved native report.

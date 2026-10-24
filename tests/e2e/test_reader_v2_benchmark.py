@@ -9,7 +9,7 @@ import pytest
 
 from _common import ValidationError
 from tests.v2_support import derive_protocol_closure as derive_closure
-from reader_pipeline import validate_artifact_map
+from artifact_map import validate_artifact_map
 from tests.v2_support import closure_input, complete_chain
 
 

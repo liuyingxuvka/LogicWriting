@@ -12,7 +12,7 @@ Exactly one route owns every substantive terminal artifact:
 | Route | Owns | May request |
 | --- | --- | --- |
 | `investigation` | Reports, briefings, evidence packages, decision notes, investigated answers | Specialist source, logic, trace, world, document, and PDF work |
-| `academic-writing` | Papers, thesis/dissertation units, literature reviews, proposals, substantive revisions | A bounded investigation packet plus specialist work |
+| `academic-writing` | Papers, thesis/dissertation units, literature reviews, proposals, substantive revisions | A bounded investigation plus specialist work |
 | `fiction-writing` | Story plans, short stories, chapters, novels, series structures, story audits and revisions | Bounded factual/canon research plus specialist work |
 | `travel-guide` | Deep itineraries, destination guides, routes, lodging strategies, traveler-fit recommendations | Bounded investigation plus specialist work |
 
@@ -48,17 +48,17 @@ The shared layer owns only behavior that means the same thing in every genre:
 - internal-language and explanation-pressure review;
 - actual-artifact identity, freshness, and closure composition.
 
-It deliberately does not define a universal packet. Investigation retains
-ResearchPacket and claim/source semantics. Fiction retains story models,
-promises, continuity, voice, and semantic review. Travel retains trip context,
-source-time modes, feasibility, fit, fallback, and reverse-guide semantics.
+One canonical composition plan supplies writing-unit identity, order and reader state.
+Native ResearchGuard research folders supply source anchors and verdicts. Fiction
+retains domain promises, arcs, continuity and voice. Travel retains its single
+trip model, check dates, fit and reachable fallbacks.
 
 ## Route-native layers
 
 ### Investigation
 
 Investigation moves from question and claim contract to source portfolio,
-belief updates, competing conclusions, key-number discipline, ResearchPacket,
+belief updates, competing conclusions, key-number discipline, native source anchors,
 reader prose, actual-artifact audit, and bounded closure. Source candidates and
 snippets never become observed evidence by wording alone.
 
@@ -74,13 +74,14 @@ provenance, uses Documents/PDF for real files, and audits the final artifact.
 Fiction selects compact, short-story, long-form, or final-manuscript depth.
 It preserves contribution, turning points, scenes, promises, arcs, chapter
 interfaces, continuity, voice/style, Guard handoffs, project model mesh,
-real-manuscript identity, structured semantic review, and model-prose binding.
+real-manuscript identity and current quoted route review. Longform closure runs the
+actual domain validators in process and names each failed surface.
 WorldGuard owns material world consistency even when the setting is fictional.
 
 ### Travel guide
 
 Travel starts from the traveler profile and time boundary; builds a role-based
-source portfolio; checks candidates and routes with WorldGuard and TraceGuard;
+source portfolio; reads saved WorldGuard checks for candidates and routes;
 validates transport, access, weather, cost, pace, stamina, companions, lodging,
 fit, safety and accessibility; preserves negative evidence and reachable
 fallbacks; then projects checked route cards through the shared reader kernel.
@@ -98,7 +99,8 @@ typed non-pass states.
 ## FlowGuard models
 
 This repository is maintained with FlowGuard; user writing tasks do not use it.
-`.flowguard/models/` holds two models. `route_and_guard_model` checks that one
+`.flowguard/models/` holds executable route, current-artifact, closure-provider and
+unique-quote binding models. `route_and_guard_model` checks that one
 current request gets exactly one final owner, material open choices stop
 routing before planning, and ResearchGuard members run only through the
 `researchguard` console. `reader_artifact_model` checks, for each of
@@ -120,3 +122,20 @@ workflow (`.github/workflows/publish-release.yml`) runs pytest, the fiction and
 travel regressions, the models and the map check on the exact source commit
 before it publishes. `python scripts/install_skill.py --target <dir> --check`
 compares an installed copy with the source by file set and bytes.
+
+## Reader-chain components
+
+`reader-plan` validates intent and the canonical plan, projects writer inputs and
+checks optional revision provenance. `reader-binding` partitions the current
+bytes and resolves unique quotations. `reader-checks` computes the deterministic
+audit and checks route/reader evidence. `reader-inputs` fills only absent derived
+references after membership validation; `reader-closure` combines these results
+with saved native verdicts and real domain checks. Command wrappers remain in
+`reader-commands`, so pure plan and check owners do not depend on their entrypoints.
+
+Travel's existing extension fingerprint also binds the actual trip-plan and
+saved report bytes. Replacing either input stales the chain. Pure domain owners
+`fiction-model` and `travel-model` keep in-process domain validation below their
+route command wrappers. World reference checks read declared ids and quotations;
+they never invoke WorldGuard. Known-bad checks mutate text in memory and retain
+the author's real quotations, so a stale locator alone cannot manufacture success.

@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 from _common import cli_validate, require_mapping, validation_result
-from reader_pipeline import build_reader_brief as _build_reader_brief
-from reader_pipeline import fill_brief_fingerprints
+from reader_plan import build_reader_brief as _build_reader_brief
+from reader_fill import fill_brief_fingerprints
 
 
 def build_reader_brief(
@@ -17,6 +17,7 @@ def build_reader_brief(
     native_handoff=None,
     native_plan=None,
     native_handoff_mapping=None,
+    research_folder=None,
 ):
     return _build_reader_brief(
         route_decision=route_decision,
@@ -27,6 +28,7 @@ def build_reader_brief(
         native_handoff=native_handoff,
         native_plan=native_plan,
         native_handoff_mapping=native_handoff_mapping,
+        research_folder=research_folder,
     )
 
 
@@ -41,6 +43,7 @@ def validate_request(value):
         native_handoff=request.get("native_handoff"),
         native_plan=request.get("native_plan"),
         native_handoff_mapping=request.get("native_handoff_mapping"),
+        research_folder=request.get("research_folder"),
     )
     return validation_result(
         status="current_pass",

@@ -12,6 +12,7 @@ import json
 import sys
 from pathlib import Path
 from typing import Any
+from _fiction_common import (PLACEHOLDER_VALUES, type_name, normalize_text, is_blank_or_placeholder, check_type as _check_type, check_enum as _check_enum)
 
 
 ALLOWED_PROMISE_TYPES = {
@@ -142,18 +143,6 @@ PENDING_STATUSES = {
 }
 LONGFORM_DEFERRED_STATUSES = {"volume_deferred", "book_deferred", "series_deferred"}
 RESOLVED_STATUSES = {"paid", "inverted", "abandoned_with_reason", "deferred"} | LONGFORM_DEFERRED_STATUSES
-PLACEHOLDER_VALUES = {
-    "tbd",
-    "todo",
-    "n/a",
-    "na",
-    "none",
-    "unknown",
-    "placeholder",
-    "fill later",
-    "fix later",
-    "...",
-}
 
 REQUIRED_PROMISE_FIELDS = {
     "id": str,
@@ -224,76 +213,20 @@ class Reporter:
         return sum(1 for issue in self.issues if issue["severity"] == "warning")
 
 
-def type_name(expected: type | tuple[type, ...]) -> str:
-    if isinstance(expected, tuple):
-        return " or ".join(t.__name__ for t in expected)
-    return expected.__name__
-
-
 def path_join(path: str, field: str) -> str:
     return f"{path}.{field}" if path else field
-
-
-def normalize_text(value: Any) -> str:
-    if not isinstance(value, str):
-        return ""
-    return " ".join(value.strip().lower().split())
 
 
 def normalize_code(value: Any) -> str:
     return normalize_text(value).replace("-", "_").replace(" ", "_")
 
 
-def is_blank_or_placeholder(value: Any) -> bool:
-    normalized = normalize_text(value)
-    if not normalized:
-        return True
-    if normalized in PLACEHOLDER_VALUES:
-        return True
-    if normalized.startswith("todo") or normalized.startswith("tbd"):
-        return True
-    if normalized.startswith("[") and normalized.endswith("]"):
-        return True
-    return False
+def check_type(value, expected, path, reporter, promise_id="", field=""):
+    return _check_type(value, expected, path, reporter, promise_id, field)
 
 
-def check_type(
-    value: Any,
-    expected: type | tuple[type, ...],
-    path: str,
-    reporter: Reporter,
-    promise_id: Any = "",
-    field: str = "",
-) -> bool:
-    if isinstance(value, expected):
-        return True
-    reporter.error(
-        "invalid_type",
-        path,
-        f"Expected {type_name(expected)}, got {type(value).__name__}.",
-        promise_id,
-        field,
-    )
-    return False
-
-
-def check_enum(
-    value: Any,
-    allowed: set[str],
-    path: str,
-    reporter: Reporter,
-    promise_id: Any = "",
-    field: str = "",
-) -> None:
-    if isinstance(value, str) and value in allowed:
-        return
-    reporter.error(
-        "invalid_enum",
-        path,
-        f"Value {value!r} is not one of: {', '.join(sorted(allowed))}.",
-        promise_id,
-        field,
-    )
+def check_enum(value, allowed, path, reporter, promise_id="", field=""):
+    _check_enum(value, allowed, path, reporter, promise_id, field)
 
 
 def has_nonempty_list(row: dict[str, Any], field: str) -> bool:

@@ -16,24 +16,30 @@ Record structure checks in the ledger `structure` section or a linked `validatio
 
 ```json
 {
-  "id": "turn-midpoint-001",
-  "kind": "turning_point",
   "part": "part_2_reaction",
   "moment": "midpoint",
   "owner_stage": "structure",
-  "source_rows": ["premise-main", "scene-006", "promise-central-question"],
-  "entry_state": "The protagonist reacts to pressure without controlling the investigation.",
+  "source_rows": [
+    "premise-main",
+    "scene-006",
+    "promise-central-question"
+  ],
   "structural_event": "The protagonist learns the rival is using the missing map as bait.",
   "choice_or_reveal": "The protagonist chooses to pursue the rival directly.",
-  "exit_state": "The protagonist has a new strategy and higher personal risk.",
   "irreversible_change": "The rival now knows the protagonist is involved.",
   "pressure_change": "redirects",
-  "arc_links": ["arc-protagonist-agency"],
-  "promise_links": ["promise-map-race"],
-  "worldguard_claim_links": ["wg-claim-archive-access"],
-  "status": "planned",
+  "arc_links": [
+    "arc-protagonist-agency"
+  ],
+  "promise_links": [
+    "promise-map-race"
+  ],
+  "worldguard_claim_links": [
+    "wg-claim-archive-access"
+  ],
   "evidence_refs": [],
-  "closure_effect": "blocks_full_closure_until_checked"
+  "closure_effect": "blocks_full_closure_until_checked",
+  "planned_unit_id": "turn-midpoint-001"
 }
 ```
 

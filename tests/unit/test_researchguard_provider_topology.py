@@ -8,7 +8,7 @@ import provider_preflight
 
 
 class _Distribution:
-    def __init__(self, executable: Path, version: str = "0.5.7") -> None:
+    def __init__(self, executable: Path, version: str = "0.5.14") -> None:
         self.version = version
         self.entry_points = [
             SimpleNamespace(
@@ -28,7 +28,7 @@ def _install_distribution_probe(
     monkeypatch,
     tmp_path: Path,
     *,
-    version: str = "0.5.7",
+    version: str = "0.5.14",
 ) -> Path:
     executable = tmp_path / "researchguard.exe"
     executable.write_bytes(b"current console")
@@ -42,8 +42,8 @@ def _install_distribution_probe(
 
 def _completed(argv, **_kwargs):
     if argv[1:] == ["--version"]:
-        return SimpleNamespace(returncode=0, stdout="researchguard 0.5.7\n", stderr="")
-    if argv[1:] in (["logic", "--help"], ["source", "--help"], ["trace", "--help"]):
+        return SimpleNamespace(returncode=0, stdout="researchguard 0.5.14\n", stderr="")
+    if argv[1:] in (["logic", "--help"], ["source", "--help"], ["trace", "--help"], ["status", "--help"]):
         return SimpleNamespace(returncode=0, stdout="member help\n", stderr="")
     raise AssertionError(f"unexpected command: {argv}")
 
@@ -70,8 +70,8 @@ def test_each_member_uses_one_researchguard_console(monkeypatch, tmp_path):
         assert result["evidence"]["provider_console_id"] == "researchguard"
         assert result["evidence"]["member_command"] == member_command
         assert result["evidence"]["primary_path_id"] == primary_path
-        assert result["evidence"]["suite_version"] == "0.5.7"
-        assert result["evidence"]["distribution_version"] == "0.5.7"
+        assert result["evidence"]["suite_version"] == "0.5.14"
+        assert result["evidence"]["distribution_version"] == "0.5.14"
         assert result["evidence"]["version_identity_matches"] is True
 
     assert calls == [
@@ -103,7 +103,7 @@ def test_missing_console_blocks_without_old_module_import(monkeypatch):
 
     assert result["status"] == "provider_unavailable"
     assert result["evidence"]["console_resolved"] is False
-    assert result["evidence"]["message"].startswith("ResearchGuard >= 0.5.0 is required, found not installed")
+    assert result["evidence"]["message"].startswith("ResearchGuard >= 0.5.14 is required, found not installed")
 
 
 def test_member_timeout_is_visible_and_has_no_retry(monkeypatch, tmp_path):
@@ -113,7 +113,7 @@ def test_member_timeout_is_visible_and_has_no_retry(monkeypatch, tmp_path):
     def timed_out(argv, **_kwargs):
         calls.append(list(argv))
         if argv[1:] == ["--version"]:
-            return SimpleNamespace(returncode=0, stdout="researchguard 0.5.7\n", stderr="")
+            return SimpleNamespace(returncode=0, stdout="researchguard 0.5.14\n", stderr="")
         raise subprocess.TimeoutExpired(argv, provider_preflight.PROBE_TIMEOUT_SECONDS)
 
     monkeypatch.setattr(provider_preflight.subprocess, "run", timed_out)
@@ -150,7 +150,7 @@ def test_console_version_mismatch_blocks_before_member(monkeypatch, tmp_path):
 
     def wrong_version(argv, **_kwargs):
         calls.append(list(argv))
-        return SimpleNamespace(returncode=0, stdout="researchguard 0.4.4\n", stderr="")
+        return SimpleNamespace(returncode=0, stdout="researchguard 0.5.15\n", stderr="")
 
     monkeypatch.setattr(provider_preflight.subprocess, "run", wrong_version)
     result = provider_preflight.preflight("logicguard")
@@ -173,17 +173,20 @@ def test_scope_out_provider_runs_no_console(monkeypatch):
     assert result["evidence"]["provider_execution"] == "none"
 
 
-def test_umbrella_scope_out_provider_runs_no_console(monkeypatch):
-    monkeypatch.setattr(
-        provider_preflight.subprocess,
-        "run",
-        lambda *_args, **_kwargs: (_ for _ in ()).throw(AssertionError("scope-out must not execute")),
-    )
+def test_researchguard_status_uses_one_console(monkeypatch, tmp_path):
+    calls: list[list[str]] = []
+    executable = _install_distribution_probe(monkeypatch, tmp_path)
 
+    def recording_run(argv, **kwargs):
+        calls.append(list(argv))
+        return _completed(argv, **kwargs)
+
+    monkeypatch.setattr(provider_preflight.subprocess, "run", recording_run)
     result = provider_preflight.preflight("researchguard")
-
-    assert result["status"] == "blocked"
-    assert result["evidence"]["provider_execution"] == "none"
+    assert result["status"] == "current_pass"
+    assert result["evidence"]["member_command"] == "status"
+    assert result["evidence"]["primary_path_id"] == "primary:researchguard:status"
+    assert calls == [[str(executable.resolve()), "--version"], [str(executable.resolve()), "status", "--help"]]
 
 
 def test_member_provider_root_is_rejected_before_console_execution(monkeypatch, tmp_path):
@@ -200,17 +203,17 @@ def test_member_provider_root_is_rejected_before_console_execution(monkeypatch, 
 
 
 def test_newer_researchguard_release_meets_the_minimum(monkeypatch, tmp_path):
-    _install_distribution_probe(monkeypatch, tmp_path, version="0.5.9")
+    _install_distribution_probe(monkeypatch, tmp_path, version="0.5.15")
 
     def completed(argv, **_kwargs):
         if argv[1:] == ["--version"]:
-            return SimpleNamespace(returncode=0, stdout="researchguard 0.5.9\n", stderr="")
+            return SimpleNamespace(returncode=0, stdout="researchguard 0.5.15\n", stderr="")
         return SimpleNamespace(returncode=0, stdout="member help\n", stderr="")
 
     monkeypatch.setattr(provider_preflight.subprocess, "run", completed)
     result = provider_preflight.preflight("logicguard")
     assert result["status"] == "current_pass"
-    assert result["evidence"]["suite_version"] == "0.5.9"
+    assert result["evidence"]["suite_version"] == "0.5.15"
 
 
 def test_console_on_path_is_used_when_researchguard_is_in_another_python(monkeypatch, tmp_path):
@@ -222,7 +225,7 @@ def test_console_on_path_is_used_when_researchguard_is_in_another_python(monkeyp
     def path_console(argv, **_kwargs):
         calls.append(list(argv))
         if argv[1:] == ["--version"]:
-            return SimpleNamespace(returncode=0, stdout="researchguard 0.5.9\n", stderr="")
+            return SimpleNamespace(returncode=0, stdout="researchguard 0.5.15\n", stderr="")
         return SimpleNamespace(returncode=0, stdout="member help\n", stderr="")
 
     monkeypatch.setattr(provider_preflight.subprocess, "run", path_console)
@@ -232,7 +235,7 @@ def test_console_on_path_is_used_when_researchguard_is_in_another_python(monkeyp
     assert result["status"] == "current_pass"
     assert result["evidence"]["provider_console_id"] == "researchguard"
     assert result["evidence"]["console_source"] == "path"
-    assert result["evidence"]["suite_version"] == "0.5.9"
+    assert result["evidence"]["suite_version"] == "0.5.15"
     assert calls == [[str(console), "--version"], [str(console), "source", "--help"]]
 
 
@@ -252,5 +255,5 @@ def test_too_old_console_on_path_blocks_with_the_install_message(monkeypatch, tm
 
     assert result["status"] == "blocked"
     assert result["evidence"]["reason"] == "unsupported_researchguard_version"
-    assert result["evidence"]["message"].startswith("ResearchGuard >= 0.5.0 is required, found 0.4.11")
+    assert result["evidence"]["message"].startswith("ResearchGuard >= 0.5.14 is required, found 0.4.11")
     assert calls == [[str(console), "--version"]]

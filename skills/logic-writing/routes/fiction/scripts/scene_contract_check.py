@@ -11,7 +11,10 @@ import argparse
 import json
 import sys
 from pathlib import Path
+from fiction_plan import project_surface
+
 from typing import Any
+from _fiction_common import (PLACEHOLDER_VALUES, type_name, normalize_text, is_blank_or_placeholder, check_type as _check_type, check_enum as _check_enum)
 
 from story_ledger_check import read_worldguard_status
 
@@ -85,18 +88,6 @@ ALLOWED_PROMISE_ROLES = {
     "book_setup",
     "book_payoff",
     "series_deferral",
-}
-PLACEHOLDER_VALUES = {
-    "tbd",
-    "todo",
-    "n/a",
-    "na",
-    "none",
-    "unknown",
-    "placeholder",
-    "fill later",
-    "fix later",
-    "...",
 }
 
 REQUIRED_SCENE_FIELDS = {
@@ -173,68 +164,12 @@ class Reporter:
         return sum(1 for issue in self.issues if issue["severity"] == "warning")
 
 
-def type_name(expected: type | tuple[type, ...]) -> str:
-    if isinstance(expected, tuple):
-        return " or ".join(t.__name__ for t in expected)
-    return expected.__name__
+def check_type(value, expected, path, reporter, scene_id="", field=""):
+    return _check_type(value, expected, path, reporter, scene_id, field)
 
 
-def normalize_text(value: Any) -> str:
-    if not isinstance(value, str):
-        return ""
-    return " ".join(value.strip().lower().split())
-
-
-def is_blank_or_placeholder(value: Any) -> bool:
-    normalized = normalize_text(value)
-    if not normalized:
-        return True
-    if normalized in PLACEHOLDER_VALUES:
-        return True
-    if normalized.startswith("todo") or normalized.startswith("tbd"):
-        return True
-    if normalized.startswith("[") and normalized.endswith("]"):
-        return True
-    return False
-
-
-def check_type(
-    value: Any,
-    expected: type | tuple[type, ...],
-    path: str,
-    reporter: Reporter,
-    scene_id: Any = "",
-    field: str = "",
-) -> bool:
-    if isinstance(value, expected):
-        return True
-    reporter.error(
-        "invalid_type",
-        path,
-        f"Expected {type_name(expected)}, got {type(value).__name__}.",
-        scene_id,
-        field,
-    )
-    return False
-
-
-def check_enum(
-    value: Any,
-    allowed: set[str],
-    path: str,
-    reporter: Reporter,
-    scene_id: Any = "",
-    field: str = "",
-) -> None:
-    if isinstance(value, str) and value in allowed:
-        return
-    reporter.error(
-        "invalid_enum",
-        path,
-        f"Value {value!r} is not one of: {', '.join(sorted(allowed))}.",
-        scene_id,
-        field,
-    )
+def check_enum(value, allowed, path, reporter, scene_id="", field=""):
+    _check_enum(value, allowed, path, reporter, scene_id, field)
 
 
 def has_nonempty_list(row: dict[str, Any], field: str) -> bool:
@@ -822,6 +757,7 @@ def check_duplicate_scene_ids(rows: list[tuple[str, dict[str, Any]]], reporter: 
 
 def validate_scene_contracts(payload: Any, source_path: str) -> dict[str, Any]:
     reporter = Reporter()
+    payload, plan_context = project_surface(payload, source_path, "scene_cards", reporter)
     rows, collection_path = extract_scene_rows(payload, reporter)
     structure_map = extract_id_map(payload, "structure")
     turning_point_map = extract_id_map(payload, "turning_points")

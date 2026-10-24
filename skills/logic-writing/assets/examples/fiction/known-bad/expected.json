@@ -1,1 +1,14 @@
-{"leak.md":{"step":"audit","code":"workflow_leak"},"empty.md":{"step":"shared_writing","error":"is not in the current text"}}
+{
+  "empty.md": {
+    "error": "binding b-u-loss: quote \"The ferry's horn had gone at six, and with it Brandt, the ha\" is not in the current text; binding b-u-wait: quote \"She tried the cabinet anyway, because there was nothing else\" is not in the current text; binding b-u-unlock: quote \"When it rang, Ilse turned the little dial, lifted the lid an\" is not in the current text; binding b-u-quay: quote \"The quay lamps were lit. The *Merel*'s gangway was already h\" is not in the current text",
+    "step": "shared_writing"
+  },
+  "leak.md": {
+    "code": "workflow_leak",
+    "step": "audit"
+  },
+  "short.md": {
+    "error": "binding b-u-wait: quote \"She tried the cabinet anyway, because there was nothing else\" is not in the current text; binding b-u-unlock: quote \"When it rang, Ilse turned the little dial, lifted the lid an\" is not in the current text; binding b-u-quay: quote \"The quay lamps were lit. The *Merel*'s gangway was already h\" is not in the current text",
+    "step": "shared_writing"
+  }
+}

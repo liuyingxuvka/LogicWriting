@@ -18,9 +18,9 @@ focused question identifies the terminal deliverable.
 | Component | Owns | Does not prove |
 | --- | --- | --- |
 | Logic Writing shell | Activation, routing, bounded handoffs, shared writing contract, artifact identity, freshness composition, final-owner closure | Native specialist judgments or factual truth |
-| Investigation | Source/claim packet, alternatives, numbers, negative evidence, bounded investigation prose | Academic, fiction, or travel closure |
+| Investigation | Native research anchors and verdict, alternatives, numbers, negative evidence, bounded investigation prose | Academic, fiction, or travel closure |
 | Academic writing | Scholarly structure, evidence integration, citations, revision provenance, academic artifact | Native source search or file-provider behavior |
-| Fiction writing | Story contribution, promises, continuity, voice, story semantic review, model–manuscript binding | World consistency or factual research owned by specialists |
+| Fiction writing | Canonical story units, domain promises, continuity, voice and current quoted manuscript review | World consistency or factual research owned by specialists |
 | Travel guide | Source-time mode, candidates, route feasibility, lodging, fit, negative evidence, reachable fallbacks, reverse guide | World/trace truth or live source freshness by prose alone |
 | SourceGuard | Search action and evidence-depth decision | That a candidate/snippet is observed fact |
 | LogicGuard | Source preservation, argument/structure/citation/model judgment | Factual truth or quality of final prose |
@@ -36,10 +36,10 @@ artifact form, unit contribution, reader-state change, specific handoff,
 register owner, changed effect, artifact identity, and model-span bindings. Each
 route attaches only its own extension.
 
-`ResearchPacket` remains an investigation/academic evidence handoff. Fiction
-and travel do not have to pretend their story or trip models are research
-packets. Travel uses shared reader projection directly and never invokes
-fiction as a child route.
+A ResearchGuard research folder preserves native source ownership and a saved
+native verdict supplies research closure authority. Fiction and travel keep their
+domain models and share the canonical composition/reader chain. Travel never
+invokes fiction as a child route.
 
 ## Failure ownership
 

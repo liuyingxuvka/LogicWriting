@@ -1,7 +1,7 @@
 # Logic Writing
 
 <p align="center">
-  <img src="https://img.shields.io/badge/source-4.0.13-6f42c1" alt="Source version 4.0.13" />
+  <img src="https://img.shields.io/badge/source-4.0.14-6f42c1" alt="Source version 4.0.14" />
   <img src="https://img.shields.io/badge/skill-logic--writing-334155" alt="Skill logic-writing" />
   <img src="https://img.shields.io/badge/routes-4-0a7f5a" alt="Four final-owner routes" />
   <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT license" />
@@ -33,8 +33,10 @@ Fiction can carry an optional structured `voice_contract` (POV and tense) into t
 
 A failed input result without the requested record reports its first error directly. Bindings and review evidence that name vanished artifact units stop before any fingerprints are filled; correct them against the current ArtifactMap.
 
-Investigation and academic evidence handoffs use a current `ResearchPacket`;
-the writer receives a sanitized `ReaderBrief` rather than internal ledgers.
+Each piece keeps evidence in its content boundaries. ResearchGuard owns the
+research folder's sources and wording limits; closure reads its one saved
+`verdict`. The writing context receives `ReaderBrief.writer_input`, not internal
+ledgers or provider paths.
 
 ## Four final-owner routes
 
@@ -42,22 +44,23 @@ the writer receives a sanitized `ReaderBrief` rather than internal ledgers.
 | --- | --- | --- |
 | Research report, briefing, evidence package, decision note, investigated answer | `investigation` | Source depth, claim competition, numbers, negative evidence, traces, bounded conclusions |
 | Paper, thesis/dissertation unit, literature review, proposal, substantive academic revision | `academic-writing` | Structure, citations, revision provenance, figures/tables, document and PDF workflows |
-| Story plan, short story, fiction chapter, novel, series bible, story audit or revision | `fiction-writing` | Turning points, scenes, promises, continuity, voice, world consistency, model–manuscript binding |
+| Story plan, short story, fiction chapter, novel, series bible, story audit or revision | `fiction-writing` | Turning points, scenes, promises, continuity, voice, world consistency, the shared plan-to-text binding |
 | Itinerary, destination guide, route plan, lodging strategy, traveler-fit recommendation | `travel-guide` | Dated evidence, weather/alerts, feasibility, fit, lodging, negative evidence, reachable fallbacks |
 
 Routing follows the terminal deliverable, not the first activity or the subject.
 A paper about tourism is academic. A researched historical novel is fiction. A
 story-shaped itinerary is travel. A child investigation may return a bounded
-evidence packet, but it cannot close its parent artifact. A material unresolved
+set of content units, anchors, alternatives and limitations, plus its research
+folder; it cannot close its parent artifact. A material unresolved
 reader choice returns `needs_user_choice` without assigning an owner. Ask the
 first question, record the user's answer in ReaderIntent, and route again;
 non-material choices do not block.
 
 ## “Say it like a person” is an executable boundary
 
-Version 3 replaces the old finding-order reader contracts directly. It keeps
+ReaderIntent preserves
 the user's structure, language, audience, format, style, extent, list/table
-policy, citations, and content duties in one immutable ReaderIntent. The
+policy, citations, and content duties without reducing them to a topic summary. The
 selected route then builds a whole-artifact CompositionPlan. Findings, claims,
 scene cards, and attractions provide content; they do not automatically become
 paragraphs.
@@ -78,12 +81,24 @@ changed effect, unbound prose, unrealized model rows, and reviews tied to an
 older artifact hash. Deterministic checks, route-semantic review, and a reader judgment all inspect
 the actual artifact. Record `judge_kind` as `independent_context` or `self_review`;
 a passing self-review keeps an explicit risk and never allows a broad claim. A repair must
-produce real new bytes and rerun the dependent checks.
+produce real new bytes and rerun the dependent checks. The current quality
+chain must close before any broader quality claim: an independent read,
+relevant native research/world checks and disposition of live competition are
+additional requirements. `contested` remains an explicit research risk; a search
+stop decision is not an assert license.
+
+One CompositionPlan is the unit tree. Long-form projects point to it and use its
+unit ids; travel combines one `trip_plan` itinerary with the guide plan. Bind
+world references through `world_contract`/`world_refs`, keep uncaught known-bad
+edits visible, and read the plan beside current text with `show_plan.py`. These
+checks derive scope and remaining work; they do not accept handwritten verdicts.
 
 ## Specialist ownership stays intact
 
 Logic Writing is an orchestration shell, not a replacement for its providers:
 
+- ResearchGuard `status` supplies one question-level `verdict`; `research_folder`
+  imports source-owned anchors, and conflicting hand-authored ownership is an error.
 - SourceGuard owns discovery planning and evidence-depth decisions.
 - LogicGuard owns source preservation, argument support, structure, citation
   semantics, model depth, and synthesis plans.
@@ -148,7 +163,7 @@ not compatibility aliases. Their supported intents now route through
 CI runs on every push and pull request: the full pytest suite, fiction and travel
 regressions, `python -m flowguard map check`, `python -m flowguard release`, and
 installation byte checks. A second job checks the declared minimum ResearchGuard
-version with the tests and member preflights. The release workflow publishes only
+version with tests and the question-status plus three member preflights. The release workflow publishes only
 after CI succeeds on the same source commit. These checks cover scripts and
 contracts, not the quality of a particular piece of writing; final closure still
 requires a read of the actual artifact.

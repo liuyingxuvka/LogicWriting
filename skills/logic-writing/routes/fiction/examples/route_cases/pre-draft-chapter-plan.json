@@ -19,8 +19,7 @@
     "required_surfaces_exclude": [
       "reverse_outline",
       "final_artifact",
-      "artifact_bound_review",
-      "model_prose_binding"
+      "reader_chain"
     ]
   }
 }

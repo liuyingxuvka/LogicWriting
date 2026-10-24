@@ -63,18 +63,23 @@ providers and ResearchGuard members retain their own domain work.
 
 ### The plan is the model of the piece
 
-The five abilities are: structure in CompositionPlan (question and throughline → units → content and limits);
-binding by exact quotations to the current text; tests through audit and route review with quoted boundary rows;
-counterexamples as quoted findings; and known-bad variants in each example's `known-bad/`.
-`scripts/show_plan.py` prints the plan tree beside its bound text.
+- Node: a planned unit of the CompositionPlan; a failing unit shows its counterexample: the quoted span with the audit or review finding.
+- Parent: `parent_unit_id` (book > volume > chapter > scene; guide > day > section).
+- Known-bad: `scripts/known_bad.py` edits of the current text (no citation, dropped token, leak, overclaim, removed limitation, truncation); each one must be caught, and closure lists uncaught ones.
+- Real binding: exact unique quotes in the current text (SharedWriting `anchor_excerpts`), `world_refs` into the WorldGuard contract, and anchors from one ResearchGuard research folder.
+- Test binding: the deterministic audit, the route review with quoted spans, and an independent reader for broad claims.
+- Readback: `scripts/show_plan.py` (the plan tree beside its bound text).
+- Current vs target: the text, and for a revision its source-unit manifest, is the current model; the plan is the target, and the revised text replaces the current one when closure passes.
 
 ## Commands
 
 Start from the worked example of your route in assets/examples/<route>/ (see its README).
 
-Run each script from the skill root with Python 3.10 or newer. Every script
-reads one JSON file given as `--input <file>`, prints its JSON result (or
-writes it to `--output <file>`), and exits 0 only when the result passes.
+Run reader-chain request wrappers from the skill root with Python 3.10 or newer.
+Each reads a JSON file through `--input <file>`, prints its JSON result (or saves
+it with `--output <file>`), and exits 0 when that result passes. Readback and
+known-bad commands below default to readable text and offer `--json`; provider
+preflight takes the provider name instead of a request.
 A top-level field that holds an object may instead name a `.json` file
 (relative to the request file), including a file an earlier step wrote with
 `--output`. Scalar IDs, artifact paths and opaque native result locators stay
@@ -82,8 +87,8 @@ strings even when they end in `.json`. A relative `artifact_path` is read relati
 to the file that contains it. Leave every script-derived `*_fingerprint` field out of the records you write:
 the scripts compute each record's own fingerprint and copy the ones it must
 share with other records in the same request; a value you do give is still
-checked. Keep external byte identities such as `observed_content_fingerprint`
-and revision `source_artifact_fingerprint` as required by each entrypoint schema;
+checked. Keep real source-byte identities such as revision
+`source_artifact_fingerprint` where the entrypoint schema requires them;
 these identify actual source bytes. Field shapes are in `assets/schemas/`.
 A failed result file without the requested record reports its first error; fix
 that step before continuing. A vanished artifact unit is named before any
@@ -97,8 +102,8 @@ ArtifactMap; the scripts never guess a replacement unit.
    `route_composition`, `brief_id` (add `native_plan`, `native_result_locator`
    and `native_handoff_mapping` only when a ResearchGuard synthesis plan is
    used). Later steps can name this result file for `reader_brief` and
-   `route_composition`. Optionally set `sourceguard_model` to a native YAML file to import missing anchors as `support`; handwritten `limit`, `counter` and `context` rows take priority.
-3. Write the artifact as UTF-8 text or Markdown.
+   `route_composition`. Optionally set `research_folder` to the ResearchGuard folder or `research.yaml`; missing anchors are imported from its `models.source`. Matching handwritten dispositions stay unchanged; a different source id or locator fails `anchor_conflict:<id>`.
+3. Write the artifact as UTF-8 text or Markdown from `ReaderBrief.writer_input`. For travel, attach one `trip_plan`; for long-form fiction, name its `longform_project`. Supply `world_contract` and `world_refs` when the route requires a WorldGuard check.
 4. `python scripts/build_artifact_map.py --input map-request.json` with
    `artifact_path`, `map_id`, `language`, `artifact_format`.
 5. `python scripts/validate_shared_writing.py --input shared-writing.json`
@@ -116,9 +121,17 @@ ArtifactMap; the scripts never guess a replacement unit.
    `judgment`, and `revision_provenance` for `revise_existing` with real source
    and treatments; `create_new` may omit provenance and use the default not-applicable record.
 
+For a readback, `python scripts/show_plan.py --input reader-brief.json [--json]`
+shows the plan tree even before drafting, with `UNBOUND` units. It also reads
+the later chain JSON files beside `reader-brief.json`; available text bindings
+must still resolve against the current artifact. For known-bad checks,
+`python scripts/known_bad.py --input closure-input.json [--json] [--write-catalog <directory>]`
+checks deterministic edits of a copy of the current text. It reports the first
+check that catches each applicable defect without changing the original text.
+
 Before a specialist
 handoff, `python scripts/provider_preflight.py <provider>` checks that the
-provider is installed; for the three ResearchGuard members it uses the
+provider is installed; for ResearchGuard status and its three semantic members it uses the
 ResearchGuard installed in the running Python, or else the `researchguard`
 command on PATH. Specialists run through
 their own commands, not through these scripts.
@@ -138,7 +151,7 @@ in ReaderIntent, and route again before planning.
 
 The selected final route owns one whole-artifact `CompositionPlan`. Plan the
 opening, central throughline, conclusion, hierarchy, reader-state progression,
-content and limitation placement, handoffs, list/table zones, and target
+content and limitation placement, handoffs, list/table zones, and planned
 extent before drafting. A source finding is content authority, not a paragraph
 plan. Never make one finding, claim, scene card, place, or checklist row equal
 one paragraph by default.
@@ -149,14 +162,13 @@ This skill is an orchestration shell. It consumes provider-owned results as
 they are; it does not recreate their domain decisions or write a result on a
 provider's behalf. ResearchGuard is one suite
 with one executable console; `scripts/provider_preflight.py` checks its
-minimum version. Logic Writing activates exactly
-three direct semantic owners:
+minimum version. `researchguard status` / `primary:researchguard:status` reads one research question and supplies the saved five-key `verdict`; the three direct semantic owners remain:
 
 - `researchguard source` / `primary:researchguard:source`: SourceGuard owns
   evidence-discovery planning and source-depth status.
 - `researchguard logic` / `primary:researchguard:logic`: LogicGuard owns source
   preservation, argument support, structure, citation semantics, model depth,
-  and synthesis plans. Its source-library, structured-artifact,
+  and argument-ordered unit plans (`synthesize`). Its source-library, structured-artifact,
   model-deepening, artifact-synthesis, and project-library-viewer capabilities
   are internal routes, not separate installed skills.
 - How to run each member is in the one `researchguard` skill: its `source`,
@@ -174,7 +186,7 @@ three direct semantic owners:
 - PDF owns PDF extraction, creation, rendering, and visual inspection.
 
 Before every required adapter call, verify that its real provider is available.
-For the three ResearchGuard owners, preflight the installed `researchguard`
+For ResearchGuard status or a semantic member, preflight the installed `researchguard`
 console and the selected member command only. Never import an old member
 package, invoke `python -m`, locate a sibling checkout, try another member, or
 accept a provider-root override. If the console is missing, older than the
@@ -190,8 +202,7 @@ locator as an opaque reference. A blocked or stale native plan remains
 blocked; the bridge never licenses prose quality or final closure.
 
 Read [references/adapters/researchguard.md](references/adapters/researchguard.md)
-before a ResearchGuard handoff, then load only the selected member adapter
-reference under `references/adapters/`.
+before a ResearchGuard handoff. It is the single adapter for the question and all three semantic members; save `researchguard status <folder> --json --output research-status.json` as the one research provider report for closure.
 
 ### Run the selected route
 
@@ -204,8 +215,7 @@ conclusions remain, many critical assertions need modeling, or the user asks
 for an argument graph; otherwise SourceGuard observations and brief boundaries
 are enough. Its source library is only for deeper LogicGuard models. Invoke
 TraceGuard only when the claim
-actually depends on a trace. Build the claim-and-evidence ledger before prose;
-its rows become the content boundaries.
+actually depends on a trace. Keep evidence in `content_boundaries` and a ResearchGuard research folder. Use `research_folder` for source-owned anchors and save its native `verdict`; never maintain a second evidence registry. A bounded investigation child returns content units, anchors, alternatives and limitations to its parent, which keeps final ownership.
 
 ### Academic writing
 
@@ -213,7 +223,7 @@ Read [references/routes/academic-writing.md](references/routes/academic-writing.
 Model the real artifact units before broad drafting or revision. Deepen
 important shallow units, keep a revision-provenance record, and use bounded
 investigation requests for missing evidence. The academic route integrates the
-evidence and owns the final artifact.
+evidence and owns the final artifact. Live alternatives or an explicit `research_folder` require a saved ResearchGuard verdict at closure.
 
 ### Fiction writing
 
@@ -221,7 +231,7 @@ Read [references/routes/fiction-writing.md](references/routes/fiction-writing.md
 Choose compact, short-story, long-form, or final-manuscript depth from the
 terminal artifact. Preserve story contribution, turning points, scene/chapter
 interfaces, promises, continuity, voice, reader-state movement,
-actual-manuscript identity, semantic review, and model-prose binding.
+actual-manuscript identity and quoted review of the delivered text. For long-form work, the project points to the same CompositionPlan and its ledger uses planned-unit ids; closure derives remaining work from actual project files, rather than accepting a handwritten conclusion.
 Provide POV and tense in the optional `voice_contract`; the writer receives that
 object, while an unfilled voice reference remains a gap.
 
@@ -229,22 +239,21 @@ object, while an unfilled voice reference remains a gap.
 
 Read [references/routes/travel-guide.md](references/routes/travel-guide.md).
 Bind the traveler profile, time/weather mode, source roles, candidates,
-WorldGuard feasibility, TraceGuard route mesh, lodging, fit, negative evidence,
-reachable fallbacks, traveler-native projection, and reverse review of the
-actual guide. Use the shared reader projection; never invoke the fiction route.
+WorldGuard feasibility in one itinerary `trip_plan`, lodging, fit, negative evidence,
+reachable fallbacks, the same trip plan and guide units, and review of the
+actual guide. Use the shared reader chain for the guide's text bindings.
 
 ### Use the two-room writing boundary
 
 Internal ledgers, Guard names, route ids, model ids, status fields, and agent
-instructions belong in the work room. The prose writer receives a sanitized
-ReaderBrief containing the exact ReaderIntent, content boundaries, the whole
+instructions belong in the work room. The prose writer receives only the sanitized
+`ReaderBrief.writer_input` projection containing the exact ReaderIntent, content boundaries, the whole
 CompositionPlan, and only the selected route extension. Safe meanings,
 evidence anchors, alternatives, limitations, and citations constrain content;
 they are not sentence templates or permitted-wording scripts.
 
 Read:
 
-- [references/shared/research-packet.md](references/shared/research-packet.md)
 - [references/shared/reader-brief.md](references/shared/reader-brief.md)
 - [references/shared/human-writing.md](references/shared/human-writing.md)
 - [references/shared/writing-contract.md](references/shared/writing-contract.md)
@@ -325,11 +334,18 @@ Repeated closure calls never count as repair attempts.
 
 - Do not write a confident final answer while a critical claim has no usable
   support; bound it or report it.
-- Closure copies statuses from saved `provider_reports`. Broad claims require an
-  independent read, SourceGuard for investigations, and LogicGuard while live
-  alternatives remain in investigations or academic work; travel and fiction
-  with `world_check_required` need WorldGuard. Missing or failing providers
-  are named in `residual_risk`.
+- A broad quality claim needs the complete current artifact-quality chain, an
+  independent read, a passing ResearchGuard `verdict` for investigation and for
+  academic work with live alternatives or `research_folder`, and WorldGuard for
+  travel or fiction with `world_check_required`. Material live competition
+  must be adjudicated or explicitly bounded before a
+  broad claim. Preserve native wording limits; no stop decision is an assert license.
+- `contested` adds `research:contested` risk rather than a new blocking rule.
+  A passing self-review stays explicit (`SELF`, `broad_claim_allowed: false`);
+  it cannot be presented as independent confirmation.
+- Long-form and itinerary findings are derived from their actual files. Keep
+  unknown/unquoted world references, remaining project gaps and `toothless:`
+  known-bad findings in the current closure; never fill their verdicts by hand.
 - Do not let one sibling route call another or issue its closure.
 - Do not route LogicGuard, SourceGuard, or TraceGuard through any executable
   other than the single `researchguard` console.
@@ -354,9 +370,8 @@ one of the five fields contains a material unresolved item.
 
 Brief requests may omit repeated body dispositions and shared fiction unit fields already present in planned units. The builder fills them before fingerprints; explicit values and deliberate omissions still require validation.
 
-For optional evidence checks, `scripts/validate_source_registry.py` checks source
-lineage before investigation; `scripts/validate_claim_support.py` checks claim
-support against that registry. For revisions,
-`scripts/build_source_unit_manifest.py` lists real source units before treatments;
-`scripts/validate_revision_provenance.py` checks those treatments against the
-current target (closure also performs this validation).
+For revisions, `scripts/build_source_unit_manifest.py` lists real source units
+before treatments; `scripts/validate_revision_provenance.py` checks them against
+the revised current text. Closure performs the same required revision check.
+`create_new` may omit provenance and receives the explicit not-applicable default;
+this does not relax revision source-byte or treatment requirements.

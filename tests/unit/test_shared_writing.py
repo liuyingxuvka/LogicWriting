@@ -5,7 +5,7 @@ import copy
 import pytest
 
 from _common import ValidationError, fingerprint_without
-from reader_pipeline import validate_shared_writing
+from reader_binding import validate_shared_writing
 from tests.v2_support import make_reader_chain
 
 
@@ -97,7 +97,7 @@ def test_contract_and_route_review_fingerprints_are_filled(monkeypatch, tmp_path
     ("route_review", "dimensions"), ("route_review", "findings"),
 ])
 def test_binding_to_a_vanished_unit_names_the_unit_before_any_fill(tmp_path, record_key, location):
-    from reader_pipeline import fill_check_fingerprints
+    from reader_fill import fill_check_fingerprints
     from tests.v2_support import complete_chain
 
     chain = complete_chain(tmp_path, pass_quality=False)
@@ -150,7 +150,7 @@ def _quote_request(chain):
 
 @pytest.mark.parametrize('invalid_later', ['quote', 'explicit_id', 'review'])
 def test_quote_resolution_waits_for_whole_request_validation(tmp_path, invalid_later):
-    from reader_pipeline import fill_check_fingerprints
+    from reader_fill import fill_check_fingerprints
 
     request = _quote_request(make_reader_chain(tmp_path))
     if invalid_later == 'review':
@@ -175,7 +175,8 @@ def test_quote_resolution_waits_for_whole_request_validation(tmp_path, invalid_l
 
 
 def test_quote_binding_follows_renumbered_paragraphs(tmp_path):
-    from reader_pipeline import build_artifact_map, fill_check_fingerprints
+    from artifact_map import build_artifact_map
+    from reader_fill import fill_check_fingerprints
     chain = make_reader_chain(tmp_path, language='en')
     request = _quote_request(chain)
     original = fill_check_fingerprints(copy.deepcopy(request))['contract']['unit_bindings'][0]['artifact_unit_ids']
@@ -189,7 +190,7 @@ def test_quote_binding_follows_renumbered_paragraphs(tmp_path):
 
 
 def test_missing_quote_fails_the_binding(tmp_path):
-    from reader_pipeline import fill_check_fingerprints
+    from reader_fill import fill_check_fingerprints
     request = _quote_request(make_reader_chain(tmp_path))
     request['contract']['unit_bindings'][0]['anchor_excerpts'] = ['This passage is absent from the text.']
     with pytest.raises(ValidationError, match='binding binding:answer:.*is not in the current text'):
@@ -197,7 +198,8 @@ def test_missing_quote_fails_the_binding(tmp_path):
 
 
 def test_ambiguous_quote_asks_for_a_longer_one(tmp_path):
-    from reader_pipeline import build_artifact_map, fill_check_fingerprints
+    from artifact_map import build_artifact_map
+    from reader_fill import fill_check_fingerprints
     chain = make_reader_chain(tmp_path)
     request = _quote_request(chain)
     path = chain['artifact_path']
@@ -209,7 +211,7 @@ def test_ambiguous_quote_asks_for_a_longer_one(tmp_path):
 
 
 def test_quote_and_unit_id_must_agree(tmp_path):
-    from reader_pipeline import fill_check_fingerprints
+    from reader_fill import fill_check_fingerprints
     request = _quote_request(make_reader_chain(tmp_path))
     request['contract']['unit_bindings'][0]['artifact_unit_ids'] = ['artifact:document']
     with pytest.raises(ValidationError, match='anchor_excerpts and artifact_unit_ids disagree'):
@@ -217,7 +219,7 @@ def test_quote_and_unit_id_must_agree(tmp_path):
 
 
 def test_library_rechecks_the_quote_on_a_completed_contract(tmp_path):
-    from reader_pipeline import fill_check_fingerprints
+    from reader_fill import fill_check_fingerprints
     chain = make_reader_chain(tmp_path)
     request = fill_check_fingerprints(_quote_request(chain))
     contract = request['contract']

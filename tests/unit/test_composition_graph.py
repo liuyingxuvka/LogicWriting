@@ -5,7 +5,7 @@ import copy
 import pytest
 
 from _common import ValidationError, fingerprint
-from reader_pipeline import validate_composition_plan
+from reader_plan_core import validate_composition_plan
 from tests.v2_support import make_reader_chain
 
 

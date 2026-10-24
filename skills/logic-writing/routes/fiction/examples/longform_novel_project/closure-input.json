@@ -1,0 +1,243 @@
+{
+  "closure_id": "closure-aurora",
+  "route_decision": "route-decision.json",
+  "reader_brief": "reader-brief.json",
+  "route_composition": "reader-brief.json",
+  "artifact_map": "artifact-map.json",
+  "shared_writing": "shared-writing-result.json",
+  "deterministic_audit": "audit.json",
+  "route_review": "route-review-result.json",
+  "judgment": {
+    "schema_version": "2.0",
+    "judgment_id": "judgment-aurora",
+    "final_owner": "fiction-writing",
+    "producer_id": "writer",
+    "judge_id": "self-review",
+    "reverse_outline": [
+      {
+        "artifact_unit_id": "artifact:paragraph:0001",
+        "parent_unit_id": null,
+        "observed_job": "chapter label",
+        "main_point": "Chapter 1",
+        "support_or_action": "Chapter 1",
+        "content_unit_ids": [],
+        "carries_from_unit_ids": [],
+        "relation_to_previous": "opens",
+        "downstream_effect": "identifies the next chapter",
+        "orphaned": false,
+        "overloaded": false,
+        "evidence": {
+          "artifact_unit_id": "artifact:paragraph:0002",
+          "excerpt": "Mira found the archive key in the wrong drawer. The numbered seal was intact, but the"
+        }
+      },
+      {
+        "artifact_unit_id": "artifact:paragraph:0002",
+        "parent_unit_id": null,
+        "observed_job": "story movement",
+        "main_point": "Introduces the archive breach and Mira's suspicion.",
+        "support_or_action": "Mira found the archive key in the wrong drawer. The numbered seal was intact, but the brass teeth carried fresh graphite. She closed her hand around it and said nothing while the morning clerk signed the ordinary ledger.",
+        "content_unit_ids": [
+          "content-chapter-01"
+        ],
+        "carries_from_unit_ids": [
+          "artifact:paragraph:0001"
+        ],
+        "relation_to_previous": "follows",
+        "downstream_effect": "changes the archive conflict",
+        "orphaned": false,
+        "overloaded": false,
+        "evidence": {
+          "artifact_unit_id": "artifact:paragraph:0002",
+          "excerpt": "Mira found the archive key in the wrong drawer. The numbered seal was intact, but the"
+        }
+      },
+      {
+        "artifact_unit_id": "artifact:paragraph:0003",
+        "parent_unit_id": null,
+        "observed_job": "chapter label",
+        "main_point": "Chapter 2",
+        "support_or_action": "Chapter 2",
+        "content_unit_ids": [],
+        "carries_from_unit_ids": [
+          "artifact:paragraph:0002"
+        ],
+        "relation_to_previous": "follows",
+        "downstream_effect": "identifies the next chapter",
+        "orphaned": false,
+        "overloaded": false,
+        "evidence": {
+          "artifact_unit_id": "artifact:paragraph:0004",
+          "excerpt": "Three access records contradicted one another. Mira copied each time into the margin "
+        }
+      },
+      {
+        "artifact_unit_id": "artifact:paragraph:0004",
+        "parent_unit_id": null,
+        "observed_job": "story movement",
+        "main_point": "Turns suspicion into a baited trail.",
+        "support_or_action": "Three access records contradicted one another. Mira copied each time into the margin of her own notebook, then left the official page untouched. The contradiction was more useful while nobody knew she had seen it.",
+        "content_unit_ids": [
+          "content-chapter-02"
+        ],
+        "carries_from_unit_ids": [
+          "artifact:paragraph:0003"
+        ],
+        "relation_to_previous": "follows",
+        "downstream_effect": "changes the archive conflict",
+        "orphaned": false,
+        "overloaded": false,
+        "evidence": {
+          "artifact_unit_id": "artifact:paragraph:0004",
+          "excerpt": "Three access records contradicted one another. Mira copied each time into the margin "
+        }
+      },
+      {
+        "artifact_unit_id": "artifact:paragraph:0005",
+        "parent_unit_id": null,
+        "observed_job": "chapter label",
+        "main_point": "Chapter 3",
+        "support_or_action": "Chapter 3",
+        "content_unit_ids": [],
+        "carries_from_unit_ids": [
+          "artifact:paragraph:0004"
+        ],
+        "relation_to_previous": "follows",
+        "downstream_effect": "identifies the next chapter",
+        "orphaned": false,
+        "overloaded": false,
+        "evidence": {
+          "artifact_unit_id": "artifact:paragraph:0006",
+          "excerpt": "At the public desk, Mira asked for the map register in front of six witnesses. The re"
+        }
+      },
+      {
+        "artifact_unit_id": "artifact:paragraph:0006",
+        "parent_unit_id": null,
+        "observed_job": "story movement",
+        "main_point": "Forces Mira to choose public risk over private caution.",
+        "support_or_action": "At the public desk, Mira asked for the map register in front of six witnesses. The request protected the record and exposed her purpose. When the clerk refused, everyone in the room learned which question mattered.",
+        "content_unit_ids": [
+          "content-chapter-03"
+        ],
+        "carries_from_unit_ids": [
+          "artifact:paragraph:0005"
+        ],
+        "relation_to_previous": "follows",
+        "downstream_effect": "changes the archive conflict",
+        "orphaned": false,
+        "overloaded": false,
+        "evidence": {
+          "artifact_unit_id": "artifact:paragraph:0006",
+          "excerpt": "At the public desk, Mira asked for the map register in front of six witnesses. The re"
+        }
+      },
+      {
+        "artifact_unit_id": "artifact:paragraph:0007",
+        "parent_unit_id": null,
+        "observed_job": "chapter label",
+        "main_point": "Chapter 4",
+        "support_or_action": "Chapter 4",
+        "content_unit_ids": [],
+        "carries_from_unit_ids": [
+          "artifact:paragraph:0006"
+        ],
+        "relation_to_previous": "follows",
+        "downstream_effect": "identifies the next chapter",
+        "orphaned": false,
+        "overloaded": false,
+        "evidence": {
+          "artifact_unit_id": "artifact:paragraph:0008",
+          "excerpt": "The rival's ledger named the map room twice, too neatly. Mira followed the second ent"
+        }
+      },
+      {
+        "artifact_unit_id": "artifact:paragraph:0008",
+        "parent_unit_id": null,
+        "observed_job": "story movement",
+        "main_point": "Reframes the map as decoy and prepares the final choice.",
+        "support_or_action": "The rival's ledger named the map room twice, too neatly. Mira followed the second entry to a glass case in the west gallery and understood that the obvious destination had been bait.",
+        "content_unit_ids": [
+          "content-chapter-04"
+        ],
+        "carries_from_unit_ids": [
+          "artifact:paragraph:0007"
+        ],
+        "relation_to_previous": "follows",
+        "downstream_effect": "changes the archive conflict",
+        "orphaned": false,
+        "overloaded": false,
+        "evidence": {
+          "artifact_unit_id": "artifact:paragraph:0008",
+          "excerpt": "The rival's ledger named the map room twice, too neatly. Mira followed the second ent"
+        }
+      },
+      {
+        "artifact_unit_id": "artifact:paragraph:0009",
+        "parent_unit_id": null,
+        "observed_job": "chapter label",
+        "main_point": "Chapter 5",
+        "support_or_action": "Chapter 5",
+        "content_unit_ids": [],
+        "carries_from_unit_ids": [
+          "artifact:paragraph:0008"
+        ],
+        "relation_to_previous": "follows",
+        "downstream_effect": "identifies the next chapter",
+        "orphaned": false,
+        "overloaded": false,
+        "evidence": {
+          "artifact_unit_id": "artifact:paragraph:0010",
+          "excerpt": "Mira secured the map before the council arrived. She accepted the inquiry that would "
+        }
+      },
+      {
+        "artifact_unit_id": "artifact:paragraph:0010",
+        "parent_unit_id": null,
+        "observed_job": "story movement",
+        "main_point": "Pays the book conflict while deferring the series origin mystery.",
+        "support_or_action": "Mira secured the map before the council arrived. She accepted the inquiry that would follow and left the question of the map's origin open. Control had changed hands; the cost was now public.",
+        "content_unit_ids": [
+          "content-chapter-05"
+        ],
+        "carries_from_unit_ids": [
+          "artifact:paragraph:0009"
+        ],
+        "relation_to_previous": "follows",
+        "downstream_effect": "changes the archive conflict",
+        "orphaned": false,
+        "overloaded": false,
+        "evidence": {
+          "artifact_unit_id": "artifact:paragraph:0010",
+          "excerpt": "Mira secured the map before the council arrived. She accepted the inquiry that would "
+        }
+      }
+    ],
+    "scores": {
+      "clarity": 4,
+      "structure_fidelity": 4,
+      "coherence": 4,
+      "naturalness": 4,
+      "reader_fit": 4,
+      "content_fidelity": 4,
+      "genre_fit": 4,
+      "instruction_fidelity": 4
+    },
+    "defects": [],
+    "strengths": [],
+    "required_repairs": [],
+    "status": "passed",
+    "judged_at": "2026-10-24T10:00:00Z",
+    "judge_kind": "self_review"
+  },
+  "revision_provenance": {
+    "schema_version": "2.0",
+    "provenance_id": "provenance-aurora",
+    "final_owner": "fiction-writing",
+    "artifact_mode": "create_new",
+    "source_artifact_fingerprint": null,
+    "applicability": "not_applicable",
+    "unit_treatments": [],
+    "recorded_at": "2026-10-21T13:00:00Z"
+  }
+}

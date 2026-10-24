@@ -11,6 +11,8 @@ import sys
 from pathlib import Path
 from typing import Any, Iterable
 
+from fiction_plan import PlanContext, member
+
 
 SCHEMA = "storyline-design.project_mesh.v1"
 REPORT_SCHEMA = "storyline-design.project_mesh_check.report.v1"
@@ -18,15 +20,10 @@ NATIVE_OWNERS = {
     "novel_ledger": "novel_ledger_check.py",
     "chapter_interfaces": "chapter_interface_check.py",
     "promise_payoff": "promise_payoff_check.py",
-    "model_prose_binding": "model_prose_binding_check.py",
     "voice_style": "voice_style_continuity_check.py",
-    "semantic_review": "semantic_review_check.py",
-    "longform_closure": "longform_closure_check.py",
 }
 REPOSITORY_AWARE_NATIVE_OWNERS = {
     "longform_closure_check.py",
-    "model_prose_binding_check.py",
-    "semantic_review_check.py",
 }
 
 
@@ -150,75 +147,60 @@ def require_refs(refs: Iterable[str], index: dict[str, str], external: set[str],
 
 
 def validate_graph(payloads: dict[str, Any], manifest: dict[str, Any], reporter: Reporter) -> None:
-    ledger = payloads.get("novel_ledger")
-    if isinstance(ledger, dict) and isinstance(ledger.get("novel_ledger"), dict):
-        ledger = ledger["novel_ledger"]
-    if not isinstance(ledger, dict):
+    request = payloads.get("composition_plan")
+    if not isinstance(request, dict) or not isinstance(request.get("composition_plan"), dict):
+        reporter.error("composition_plan_missing", "surfaces.composition_plan", "The project must name its canonical brief request.")
         return
-    interfaces = payloads.get("chapter_interfaces") if isinstance(payloads.get("chapter_interfaces"), dict) else {}
-    promises = payloads.get("promise_payoff") if isinstance(payloads.get("promise_payoff"), dict) else {}
-    binding = payloads.get("model_prose_binding") if isinstance(payloads.get("model_prose_binding"), dict) else {}
-    closure = payloads.get("longform_closure") if isinstance(payloads.get("longform_closure"), dict) else {}
-
-    index: dict[str, str] = {}
-    hierarchy_rows: list[dict[str, Any]] = []
-    hierarchy = ledger.get("hierarchy") if isinstance(ledger.get("hierarchy"), dict) else {}
-    for kind in ("books", "volumes", "chapters", "scenes"):
-        group = rows(hierarchy, kind)
-        hierarchy_rows.extend(group)
-        add_ids(index, group, f"hierarchy.{kind}", reporter)
-    collections = {
-        "story_units": rows(ledger, "story_units"),
-        "arcs": rows(ledger, "arcs"),
-        "threads": rows(ledger, "threads"),
-        "promises": rows(ledger, "promises"),
-        "continuity": rows(ledger, "continuity"),
-        "chapter_interfaces": rows(interfaces, "chapter_interfaces"),
-        "prose_blueprints": rows(interfaces, "prose_blueprints"),
-        "reverse_outlines": rows(interfaces, "reverse_outlines"),
-        "binding_rows": rows(binding, "binding_rows"),
-    }
+    planned = request["composition_plan"].get("planned_units")
+    if not isinstance(planned, list) or not planned or any(not isinstance(row, dict) or not isinstance(row.get("planned_unit_id"), str) for row in planned):
+        reporter.error("composition_plan_invalid", "surfaces.composition_plan", "Expected canonical planned units.")
+        return
+    context = PlanContext(request)
+    for row in planned:
+        for ref in [row.get("parent_unit_id"), *row.get("downstream_unit_ids", [])]:
+            if ref is not None and ref not in context.units:
+                reporter.error("dangling_mesh_edge", "composition_plan", f"Unknown planned unit {ref!r}.")
+    ledger = payloads.get("novel_ledger", {})
+    ledger = ledger.get("novel_ledger", ledger) if isinstance(ledger, dict) else {}
+    interfaces = payloads.get("chapter_interfaces", {})
+    promises = payloads.get("promise_payoff", {})
+    if not isinstance(ledger, dict) or not isinstance(interfaces, dict):
+        return
+    index = {identifier: "composition_plan" for identifier in context.units}
+    collections = {"arcs": rows(ledger, "arcs"), "threads": rows(ledger, "threads"),
+                   "promises": rows(ledger, "promises"), "continuity": rows(ledger, "continuity"),
+                   "chapter_interfaces": rows(interfaces, "chapter_interfaces"),
+                   "prose_blueprints": rows(interfaces, "prose_blueprints"),
+                   "reverse_outlines": rows(interfaces, "reverse_outlines")}
     for name, group in collections.items():
         add_ids(index, group, name, reporter)
-    payoff_rows = rows(promises, "promises")
-    ledger_promise_ids = {row.get("id") for row in collections["promises"] if isinstance(row.get("id"), str)}
-    payoff_ids = {row.get("id") for row in payoff_rows if isinstance(row.get("id"), str)}
-    if payoff_ids != ledger_promise_ids:
-        reporter.error("promise_identity_mismatch", "surfaces.promise_payoff", "Promise payoff ids must exactly match the novel-ledger promise ids.")
-    closure_id = closure.get("closure_id")
-    if isinstance(closure_id, str) and closure_id:
-        index[closure_id] = "longform_closure"
-    external = set(string_refs(manifest.get("external_nodes")))
-    scope = ledger.get("longform_scope") if isinstance(ledger.get("longform_scope"), dict) else {}
-    for field in ("series_id", "book_id"):
-        if isinstance(scope.get(field), str):
-            external.add(scope[field])
-    for row in hierarchy_rows:
-        require_refs([row.get("parent_id")] if isinstance(row.get("parent_id"), str) else [], index, external, reporter, f"hierarchy.{row.get('id')}.parent_id")
-        require_refs(string_refs(row.get("depends_on")), index, external, reporter, f"hierarchy.{row.get('id')}.depends_on")
-    for row in collections["story_units"]:
-        require_refs(string_refs(row.get("parent_id")), index, external, reporter, f"story_units.{row.get('id')}.parent_id")
-        require_refs(string_refs(row.get("downstream_use")), index, external, reporter, f"story_units.{row.get('id')}.downstream_use")
-    for row in collections["arcs"]:
-        require_refs(string_refs(row.get("scope")) + string_refs(row.get("turning_points")) + string_refs(row.get("linked_chapters")), index, external, reporter, f"arcs.{row.get('id')}")
-    for row in collections["threads"]:
-        require_refs(string_refs(row.get("introduced_by")) + string_refs(row.get("active_in")) + string_refs(row.get("resolved_by")) + string_refs(row.get("deferred_to")), index, external | {"not_applicable"}, reporter, f"threads.{row.get('id')}")
-    for row in collections["promises"]:
-        require_refs(string_refs(row.get("introduced_by")) + string_refs(row.get("payoff_rows")), index, external, reporter, f"promises.{row.get('id')}")
-    for row in collections["continuity"]:
-        require_refs(string_refs(row.get("scope")) + string_refs(row.get("first_seen")) + string_refs(row.get("last_checked")) + string_refs(row.get("affected_units")), index, external, reporter, f"continuity.{row.get('id')}")
-    for row in collections["chapter_interfaces"]:
-        movement_refs = [item.get("promise_id") for item in row.get("promise_movements", []) if isinstance(item, dict) and isinstance(item.get("promise_id"), str)]
-        movement_refs += [item.get("arc_id") for item in row.get("arc_movements", []) if isinstance(item, dict) and isinstance(item.get("arc_id"), str)]
-        require_refs(string_refs(row.get("chapter_id")) + string_refs(row.get("previous_chapter_id")) + string_refs(row.get("next_chapter_id")) + movement_refs, index, external, reporter, f"chapter_interfaces.{row.get('id')}")
-    for row in collections["prose_blueprints"]:
-        require_refs(string_refs(row.get("chapter_id")) + string_refs(row.get("source_interface_id")) + string_refs(row.get("scene_order")), index, external, reporter, f"prose_blueprints.{row.get('id')}")
-    for row in collections["reverse_outlines"]:
-        require_refs(string_refs(row.get("chapter_id")), index, external, reporter, f"reverse_outlines.{row.get('id')}")
-    for row in collections["binding_rows"]:
-        prose_ref = row.get("prose_ref")
-        chapter_ref = prose_ref.split("#", 1)[0] if isinstance(prose_ref, str) else ""
-        require_refs(string_refs(chapter_ref) + string_refs(row.get("model_refs")) + string_refs(row.get("downstream_use")), index, external, reporter, f"binding_rows.{row.get('id')}")
+    for kind, group in (("novel_ledger", rows(ledger, "story_units")),
+                        ("chapter_interfaces", collections["chapter_interfaces"]),
+                        ("prose_blueprints", collections["prose_blueprints"]),
+                        ("reverse_outlines", collections["reverse_outlines"])):
+        for row in group:
+            member(context, row.get("planned_unit_id"), kind, kind, reporter)
+    ledger_ids = {row.get("id") for row in collections["promises"]}
+    if {row.get("id") for row in rows(promises, "promises")} != ledger_ids:
+        reporter.error("promise_identity_mismatch", "surfaces.promise_payoff", "Promise ids differ from the domain ledger.")
+    external = set(string_refs(manifest.get("external_nodes"))) | {"not_applicable"}
+    for name, group in collections.items():
+        for row in group:
+            refs = []
+            if name == "arcs":
+                refs = string_refs(row.get("scope")) + string_refs(row.get("turning_points")) + string_refs(row.get("linked_chapters"))
+            elif name == "threads":
+                refs = sum((string_refs(row.get(key)) for key in ("introduced_by", "active_in", "resolved_by", "deferred_to")), [])
+            elif name == "promises":
+                refs = string_refs(row.get("introduced_by")) + string_refs(row.get("payoff_rows"))
+            elif name == "continuity":
+                refs = sum((string_refs(row.get(key)) for key in ("scope", "first_seen", "last_checked", "affected_units")), [])
+            elif name == "chapter_interfaces":
+                refs = [move[key] for key, field in (("promise_id", "promise_movements"), ("arc_id", "arc_movements"))
+                        for move in row.get(field, []) if isinstance(move, dict) and isinstance(move.get(key), str)]
+            elif name == "prose_blueprints":
+                refs = string_refs(row.get("source_interface_id"))
+            require_refs(refs, index, external, reporter, f"{name}.{row.get('id')}")
 
 
 def validate_manifest(
@@ -252,9 +234,18 @@ def validate_manifest(
             continue
         surface_paths[kind] = path
         surface_payloads[kind] = load_json(path, reporter, f"surfaces.{kind}")
-        run_native_owner(kind, path, scripts, reporter, repository_root)
+        if kind == "source_requirements":
+            from longform_closure_check import validate_source_requirements_evidence
+            report = validate_source_requirements_evidence(surface_payloads[kind], str(path))
+            reporter.native_reports[kind] = report
+            if not report["passed"]:
+                reporter.error("native_owner_failed", f"surfaces.{kind}", "Source requirements contain unresolved evidence pointers.")
+        elif kind != "composition_plan":
+            run_native_owner(kind, path, scripts, reporter, repository_root)
     for kind, surface in surface_payloads.items():
         if not isinstance(surface, dict):
+            continue
+        if kind == "composition_plan":
             continue
         surface_project = surface.get("project_id")
         if surface_project is None and isinstance(surface.get("novel_ledger"), dict):
@@ -267,14 +258,6 @@ def validate_manifest(
         if surface_revision != model_revision:
             reporter.error("model_revision_mismatch", f"surfaces.{kind}.model_revision", f"Expected {model_revision!r}, got {surface_revision!r}.")
     artifact_hashes: dict[str, str] = {}
-    for kind, surface in surface_payloads.items():
-        if not isinstance(surface, dict):
-            continue
-        value = surface.get("artifact_sha256") or surface.get("manuscript_sha256")
-        if isinstance(value, str) and value:
-            artifact_hashes[kind] = value.removeprefix("sha256:")
-    if len(set(artifact_hashes.values())) > 1:
-        reporter.error("artifact_identity_mismatch", "surfaces", "Artifact-bound surfaces do not share one manuscript SHA-256.")
     validate_graph(surface_payloads, payload, reporter)
     return build_report(manifest_path, reporter, surface_paths, artifact_hashes)
 

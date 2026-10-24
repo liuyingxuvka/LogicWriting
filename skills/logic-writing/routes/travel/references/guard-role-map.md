@@ -1,36 +1,11 @@
-# Guard Role Map
+# Travel domain owners
 
-Use this map before planning routes. Travel Story Planner coordinates these surfaces; it does not collapse them into one prompt.
+| Work | Owner | Boundary |
+|---|---|---|
+| Source discovery and source-role coverage | SourceGuard | Keep source dates, inspected content and support boundaries visible. |
+| Route options, stops, movement edges, lodging and fallback links | The trip plan | These are itinerary inputs, not a TraceGuard result. |
+| Event order, time, access, space, resource and other feasibility | Saved WorldGuard reports | The travel validator reads the saved report; it does not execute WorldGuard. |
+| Traveler suitability | Fit dimension rows bound to current profile values | The overall result is derived from those rows. |
+| Guide structure and final prose | Travel composition and writer | Keep all body/appendix structure in the composition, with current-artifact review. |
 
-## Ownership
-
-| Surface | Owner | Owns | Does Not Own |
-| --- | --- | --- | --- |
-| Experience candidate discovery | SourceGuard | candidate discovery, source classes, source role, source gaps, negative signals, access gaps | final route assembly or final recommendation |
-| Candidate and route feasibility | WorldGuard | time, space, resource, access, weather, norm, conflict, boundary status | candidate discovery or story prose |
-| Route trace assembly | TraceGuard | temporal route trace, route branches, movement edges, weakest links, fallback links, gap handoff | live fact proof or final prose |
-| Recommendation support | LogicGuard | whether the final recommendation is supported by candidate, trace, feasibility, fit, and limitation evidence | source discovery, route building, or live fact checking |
-| Reader projection | Logic Writing shared reader kernel | traveler-native journey sequence from checked route cards | inventing facts, hiding gaps, or validating feasibility |
-| Travel runtime contract | Travel Story Planner | travel hard gates, validators, failure fixtures, and closure meaning | replacing Guard-family domain owners |
-
-## Required Handoffs
-
-```text
-traveler_profile
--> SourceGuard experience_candidate_pool
--> WorldGuard candidate_feasibility
--> TraceGuard route_trace_mesh
--> WorldGuard route_feasibility_stress
--> traveler_fit_review
--> LogicGuard recommendation_support
--> shared.reader_native_projection
-```
-
-## Handoff Rules
-
-- SourceGuard output stays candidate-level until consumed by TraceGuard and WorldGuard.
-- TraceGuard owns route order and competing route lines, but it cannot convert feasibility gaps into passes.
-- WorldGuard non-pass statuses remain visible; downstream story prose may not smooth them away.
-- LogicGuard support review happens before final recommendation wording, not after publishing the route.
-- Shared reader projection happens last and may only use checked or downgraded route artifacts. It does not invoke the fiction route.
-- Any missing or stale handoff becomes a closure blocker or downgrade.
+The trip plan references saved reports through `world_feasibility.checks[].worldguard_report`. It cannot supply a passing world status. Source currency comes from `checked_on` against the planning date, never a self-authored freshness label. Textual elegance cannot improve a domain result.

@@ -5,7 +5,7 @@ import copy
 import pytest
 
 from _common import ValidationError, fingerprint
-from reader_pipeline import build_writer_input, validate_writer_input
+from writer_projection import build_writer_input, validate_writer_input
 from tests.v2_support import complete_chain, make_reader_chain
 
 

@@ -18,8 +18,32 @@ python routes/$route/scripts/validate_${route}_artifact.py --input "$example/rou
 python scripts/derive_closure.py --input "$example/closure-input.json" --output "$example/closure.json"
 ```
 
-`known-bad/expected.json` names the step and code or error for each bad piece.
+Generate the same deterministic bad pieces for an edited work after the review:
+
+```sh
+python scripts/known_bad.py --input "$example/closure-input.json" --write-catalog "$example/known-bad"
+```
+
+It deletes or truncates existing text, or inserts a phrase already in the plan or
+internal-term glossary; it calls no language model. Each variant reruns mapping,
+SharedWriting, audit and the saved route review, reporting the first rejection.
+An uncaught variant exits 1; closure retains it as nonblocking `toothless` risk.
+The shipped `known-bad/` catalogs come from this generator, not hand-written edits.
+`known-bad/expected.json` names the first step and code or error for each bad piece.
 Replace `piece.md` in a copy with one bad piece and rerun through that step.
 Never copy a passing judgment to changed prose: reread it and update its quotations.
 The academic citation is Kevin Lynch, *The Image of the City* (MIT Press, 1960), chapter 3.
 The travel destination is illustrative; recheck real opening hours and access.
+
+Read the plan without writing text or issuing a new quality judgment. Existing
+text bindings are still checked against the current artifact:
+
+```sh
+python scripts/show_plan.py --input "$example/reader-brief.json"
+python scripts/show_plan.py --input "$example/audit-request.json"
+```
+
+The brief alone shows every planned unit as `UNBOUND`; chain requests/results with
+bindings show the unit tree and the first sentence of the bound current text.
+Academic and travel plans follow their existing paragraphs, with a parent unit
+for the whole piece. The prose itself is unchanged.

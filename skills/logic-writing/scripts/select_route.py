@@ -14,7 +14,7 @@ from _common import (
     require_string_list,
     validation_result,
 )
-from reader_pipeline import open_material_choices, validate_writing_request
+from reader_plan_core import open_material_choices, validate_writing_request
 
 
 INVESTIGATION_DELIVERABLES = {

@@ -1,0 +1,141 @@
+{
+  "review": {
+    "schema_version": "2.0",
+    "review_id": "review-aurora",
+    "final_owner": "fiction-writing",
+    "route_profile": "longform",
+    "dimensions": [
+      {
+        "dimension_id": "output_room",
+        "status": "passed",
+        "reason": "All five chapters stay in story-world prose without author-facing workflow commentary.",
+        "evidence": [
+          {
+            "artifact_unit_id": "artifact:paragraph:0002",
+            "excerpt": "Mira found the archive key in the wrong drawer. The numbered seal was intact, but the"
+          }
+        ]
+      },
+      {
+        "dimension_id": "story_movement",
+        "status": "passed",
+        "reason": "Each chapter changes evidence, risk, interpretation, or control.",
+        "evidence": [
+          {
+            "artifact_unit_id": "artifact:paragraph:0004",
+            "excerpt": "Three access records contradicted one another. Mira copied each time into the margin "
+          }
+        ]
+      },
+      {
+        "dimension_id": "resistance_cost",
+        "status": "passed",
+        "reason": "Public exposure and the coming inquiry make the successful action costly.",
+        "evidence": [
+          {
+            "artifact_unit_id": "artifact:paragraph:0006",
+            "excerpt": "At the public desk, Mira asked for the map register in front of six witnesses. The re"
+          }
+        ]
+      },
+      {
+        "dimension_id": "promise_reveal",
+        "status": "passed",
+        "reason": "Map control resolves while origin remains visibly deferred.",
+        "evidence": [
+          {
+            "artifact_unit_id": "artifact:paragraph:0008",
+            "excerpt": "The rival's ledger named the map room twice, too neatly. Mira followed the second ent"
+          }
+        ]
+      },
+      {
+        "dimension_id": "continuity",
+        "status": "passed",
+        "reason": "Each chapter changes evidence, risk, interpretation, or control.",
+        "evidence": [
+          {
+            "artifact_unit_id": "artifact:paragraph:0010",
+            "excerpt": "Mira secured the map before the council arrived. She accepted the inquiry that would "
+          }
+        ]
+      },
+      {
+        "dimension_id": "pov_voice",
+        "status": "passed",
+        "reason": "The restrained archive register remains consistent across the short fixture.",
+        "evidence": [
+          {
+            "artifact_unit_id": "artifact:paragraph:0002",
+            "excerpt": "Mira found the archive key in the wrong drawer. The numbered seal was intact, but the"
+          }
+        ]
+      },
+      {
+        "dimension_id": "reader_state",
+        "status": "passed",
+        "reason": "The likely reader interpretation moves from procedural breach to deliberate decoy and public consequence.",
+        "evidence": [
+          {
+            "artifact_unit_id": "artifact:paragraph:0004",
+            "excerpt": "Three access records contradicted one another. Mira copied each time into the margin "
+          }
+        ]
+      },
+      {
+        "dimension_id": "actual_spans",
+        "status": "passed",
+        "reason": "The current excerpt realizes the planned archive action; review remains bounded to this fixture.",
+        "evidence": [
+          {
+            "artifact_unit_id": "artifact:paragraph:0006",
+            "excerpt": "At the public desk, Mira asked for the map register in front of six witnesses. The re"
+          }
+        ]
+      },
+      {
+        "dimension_id": "explanation_pressure",
+        "status": "passed",
+        "reason": "The manuscript presents contradictions through action and records instead of explaining chapter purpose.",
+        "evidence": [
+          {
+            "artifact_unit_id": "artifact:paragraph:0008",
+            "excerpt": "The rival's ledger named the map room twice, too neatly. Mira followed the second ent"
+          }
+        ]
+      },
+      {
+        "dimension_id": "variation",
+        "status": "passed",
+        "reason": "The chapters move through discovery, comparison, public exposure, reinterpretation, and payoff.",
+        "evidence": [
+          {
+            "artifact_unit_id": "artifact:paragraph:0010",
+            "excerpt": "Mira secured the map before the council arrived. She accepted the inquiry that would "
+          }
+        ]
+      },
+      {
+        "dimension_id": "register_ownership",
+        "status": "passed",
+        "reason": "Archive and ledger terms belong to the institution, records, and viewpoint context.",
+        "evidence": [
+          {
+            "artifact_unit_id": "artifact:paragraph:0002",
+            "excerpt": "Mira found the archive key in the wrong drawer. The numbered seal was intact, but the"
+          }
+        ]
+      }
+    ],
+    "findings": [],
+    "required_repairs": [],
+    "status": "passed",
+    "reviewed_at": "2026-10-24T10:00:00Z",
+    "limitation_checks": [],
+    "overclaim_checks": []
+  },
+  "route_composition": "reader-brief.json",
+  "artifact_map": "artifact-map.json",
+  "reader_brief": "reader-brief.json",
+  "shared_writing": "shared-writing-result.json"
+}

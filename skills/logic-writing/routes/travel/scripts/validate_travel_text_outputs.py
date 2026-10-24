@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts"))
-from reader_pipeline import classify_text_blocks
+from artifact_map import classify_text_blocks
 
 
 FORBIDDEN_TERMS = (

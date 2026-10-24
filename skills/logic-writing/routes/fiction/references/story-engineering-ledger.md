@@ -29,8 +29,7 @@ Store the ledger as a machine-readable JSON object or equivalent structured tabl
   "promises": [],
   "worldguard_claims": [],
   "support": [],
-  "validation": [],
-  "closure": {}
+  "composition_plan": "brief-request.json"
 }
 ```
 
@@ -151,47 +150,20 @@ Closure semantics:
 
 ## Structure Rows
 
-Purpose: bind major story units to function and movement.
-
-Each structure row should include:
-
-- `id`: `act-1`, `sequence-2`, `chapter-04`, or similar.
-- `role`: opening, disruption, escalation, midpoint, reversal, crisis, climax, resolution, epilogue, or custom.
-- `entry_state` and `exit_state`.
-- `tension_movement`: increases, redirects, releases, complicates, or resolves.
-- `parent_id`: parent structure unit when nested.
-- `child_scene_ids`: scenes owned by the unit.
-- `arc_links`: protagonist, relationship, or theme arc rows affected.
-- `promise_links`: setup or payoff rows carried by the unit.
-
-Closure semantics:
-
-- A structure row is `gap` if it has no function, no state movement, or no link to scenes, arcs, stakes, or promises.
-- A local scene pass cannot close the parent structure row by itself.
+Use `planned_unit_id` into CompositionPlan.planned_units. Kind, parent, order,
+children, reader job and downstream consumers belong only to that plan;
+entry/exit story state lives in FictionComposition.unit_plans. Here retain the
+turning-point role, moment, pressure change, arc/promise links, evidence and
+repair facts. A unit without a real function, state movement or downstream
+consequence still needs repair; authoring a pass field cannot close it.
 
 ## Scene Rows
 
-Purpose: make each important scene inspectable before prose.
-
-Each scene row should include:
-
-- `id`: stable scene id.
-- `parent_structure_id`: owning act, chapter, sequence, or movement.
-- `scene_contract`: why the scene exists.
-- `entry_state` and `exit_state`.
-- `irreversible_change`: what cannot be unchanged after the scene.
-- `conflict_pressure`: visible pressure or obstacle.
-- `character_desire`: what the focal character wants.
-- `obstacle`: what blocks or complicates desire.
-- `turning_point`: decision, reveal, reversal, or consequence.
-- `promise_links`: setup, reminder, escalation, payoff, reversal, or deferral.
-- `worldguard_claim_links`: world consistency claims needed by the scene.
-- `prose_status`: not_started, sample_only, drafted, revised, or final_candidate.
-
-Closure semantics:
-
-- A scene can be locally coherent but still `gap` when it lacks parent structure role or downstream payoff.
-- Optional or background scenes must be classified as optional, background-only, deferred, or human-review instead of silently counted as closed.
+A scene annotation uses `planned_unit_id` and retains irreversible change,
+conflict pressure, character desire, obstacle, turning point, promise/world-claim
+links, actual draft progress and repairs. Its parent, kind, contribution and
+entry/exit state are read from the shared plan. Optional/background work keeps
+an explicit treatment rather than being silently counted as realized.
 
 ## Promise And Payoff Rows
 
@@ -251,46 +223,19 @@ Closure semantics:
 - Generated assumptions cannot silently become user constraints.
 - Stale or disputed support must be visible to review and closure.
 
-## Validation Rows
+## Computed checks
 
-Purpose: record executable or manual checks in a machine-readable way.
+Do not author validation status rows. Run current domain validators and the
+standard eight-step reader chain. Each computed result keeps the native owner,
+issue codes and real evidence boundary. Missing or not-run specialist work does
+not become a pass through prose or a copied report.
 
-Each validation row should include:
+## Closure
 
-- `id`: validation id.
-- `check_name`: ledger validation, structure coverage, scene contract, promise/payoff, WorldGuard mapping, aggregate closure, or manual review.
-- `checked_rows`: row ids covered.
-- `status`: pass, partial, blocked, skipped, stale, downgraded, or human-review.
-- `evidence_ref`: script output path, review id, or manual note.
-- `invalidates`: row ids or evidence ids made stale by this check.
-- `rerun_required_when`: conditions that make the check stale.
-
-Closure semantics:
-
-- Validation rows never replace the ledger. They read ledger fields and write current status.
-- Skipped, stale, blocked, or human-review checks narrow the final claim boundary.
-
-## Closure Object
-
-Purpose: summarize what the current ledger supports.
-
-Required fields:
-
-- `decision`: pass, partial, blocked, or human-review.
-- `claim_boundary`: what can be safely produced or claimed.
-- `blocking_rows`: row ids that prevent full closure.
-- `deferred_rows`: intentionally postponed rows.
-- `stale_rows`: rows needing refresh.
-- `latest_validation_refs`: validation row ids or paths.
-- `prose_allowed`: true only when the requested output is supported by current ledger and validation state.
-- `reader_native_projection_allowed`: true when the model can be translated into story-facing language without hiding gaps.
-
-Closure semantics:
-
-- `pass` requires current ledger completeness, structure binding, scene coverage, arc coverage, promise/payoff closure, support status, WorldGuard mapping status, and validation freshness for the requested artifact.
-- `partial` can support a premise, outline, audit, scene card, or sample prose only with a visible narrowed boundary.
-- `blocked` sends the workflow back to the earliest failed row.
-- `human-review` asks the user for the specific decision that changes story direction or claim scope.
+Do not author a closure object. `derive_closure.py` computes final closure from
+current reader-chain results; long form also directly validates the project
+mesh. Preserve unresolved domain facts, scoped deferrals, stale sources, repairs
+and human-review boundaries. Domain open/paid/active/resolved states remain.
 
 ## Planning, Drafting, Review, Revision, And Closure Use
 
@@ -336,11 +281,11 @@ Extend `target_artifact.artifact_type` to include:
 Recommended optional top-level fields:
 
 - `longform_scope`: target book, volume, chapter ids, genre promise, POV policy, deferred scope, and claim boundary.
-- `hierarchy`: book, volume, chapter, and scene rows.
+- `composition_plan`: the shared brief request owning the unit tree.
 - `story_units`: contribution rows consumed by story contribution checks.
 - `chapter_interfaces`: adjacent chapter handoffs and reader-state movement.
 - `voice_style`: voice contract and continuity report refs.
 - `reverse_outlines`: evidence extracted from actual prose.
-- `longform_closure`: chapter, volume, book, or series closure bundle.
+- project mesh: current source surfaces for computed long-form checks.
 
 Short-story validators must continue to accept ledgers that do not include these optional long-form blocks. Longform validators must not infer pass from missing optional blocks when the artifact type is long-form.

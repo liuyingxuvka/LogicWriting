@@ -40,7 +40,7 @@
       ],
       "side_effects": [],
       "depends_on": [
-        "reader-artifact",
+        "reader-plan",
         "shared-contracts"
       ],
       "tests": [
@@ -52,206 +52,76 @@
         ".flowguard/models/route_and_guard_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:300ff46742ad8f99696bc78019ac938b2495a806b8ee974d7d9a34910d66fd10"
-    },
-    {
-      "id": "research-packet",
-      "layer": "evidence",
-      "summary": "Validate investigation evidence records and the ResearchGuard synthesis-plan handoff.",
-      "responsibilities": [
-        "Validate source registry, claim support and the optional ResearchPacket evidence record (source roles, dates, lineage, what each source can and cannot support) without requiring native receipts. SourceGuard owns sources and anchors; LogicGuard source-library use is limited to deeper argument models. Document direct native SourceGuard anchor imports without conversion or member invocation.",
-        "Map ResearchGuard synthesis plans into the reader handoff without receipt fields and without replacing native member authority; the native-to-reader unit mapping is checked when the ReaderBrief is built.",
-        "Packet and claim-support commands fill a missing request fingerprint and SourceRegistry reference.",
-        "The native bridge test finds the formal ResearchGuard source through an explicit environment path, an editable src checkout, or the sibling repository."
-      ],
-      "files": [
-        "skills/logic-writing/assets/schemas/claim-support.schema.json",
-        "skills/logic-writing/assets/schemas/research-packet.schema.json",
-        "skills/logic-writing/assets/schemas/researchguard-logic-handoff.schema.json",
-        "skills/logic-writing/assets/schemas/source-registry.schema.json",
-        "skills/logic-writing/assets/schemas/source-unit-manifest.schema.json",
-        "skills/logic-writing/references/adapters/researchguard.md",
-        "skills/logic-writing/references/adapters/sourceguard.md",
-        "skills/logic-writing/references/shared/research-packet.md",
-        "skills/logic-writing/scripts/build_source_unit_manifest.py",
-        "skills/logic-writing/scripts/researchguard_handoff.py",
-        "skills/logic-writing/scripts/validate_claim_support.py",
-        "skills/logic-writing/scripts/validate_research_packet.py",
-        "skills/logic-writing/scripts/validate_source_registry.py",
-        "tests/contract/test_researchguard_handoff.py"
-      ],
-      "entrypoints": [
-        "skills/logic-writing/scripts/researchguard_handoff.py:build_researchguard_handoff",
-        "skills/logic-writing/scripts/validate_research_packet.py:validate_research_packet"
-      ],
-      "state": [
-        "Native plan and source fingerprints."
-      ],
-      "side_effects": [
-        "Read evidence files; write a result only to an explicit --output path."
-      ],
-      "depends_on": [
-        "shared-contracts"
-      ],
-      "tests": [
-        "tests/contract/test_researchguard_handoff.py"
-      ],
-      "models": [],
-      "status": "confirmed",
-      "fingerprint": "sha256:7d97ae925f1c91b8d4ae1f3d2bcb28ac58c43df053d983a1b67cc7424c482f76"
+      "fingerprint": "sha256:ee12114b33c236d1686484520422c348896ca9c4798e11db89e3ccda3aecd944"
     },
     {
       "id": "reader-artifact",
       "layer": "reader",
-      "summary": "Reader intent, composition, writer projection, actual-byte map/audit, review and closure.",
+      "summary": "The current reader chain binds one plan to actual bytes and computed closure.",
       "responsibilities": [
-        "Preserve requested intent, composition order, editorial dispositions and writer projection; surface an open material choice before route identity or planning checks. Resolve exact unique quote bindings on every run and expose a read-only plan/text view.",
-        "Bind actual artifact bytes and spans to shared contracts, deterministic audit and route review. Review every body/note limitation and prohibited overclaim with current quoted evidence; audit optional forbidden regexes and report declared bindings.",
-        "Derive passed or needs_repair from current reader/route quality and record judge_kind; only independent_context with distinct IDs allows a broad claim. Self-review keeps explicit risk. Edits stale closure; automatic v2 closure covers text/markdown only.",
-        "Reader-chain commands take upstream records as file paths and compute the fingerprints and references a caller leaves out (fill_brief_fingerprints, fill_check_fingerprints, fill_closure_fingerprints); values the caller gives are still checked. Derive only absent visible content/limitation placements and shared fiction-unit fields once at the brief-request boundary before fingerprints; retain explicit values and name unplaced ids requiring an explicit disposition.",
-        "Name the resolved absolute path when an artifact file cannot be read.",
-        "Project the optional fiction voice_contract into writer input, leaving a missing payload as a gap and binding changes in the route and brief fingerprints.",
-        "Resolve quote-only bindings without changing the request, then validate every existing quote and artifact-unit reference before filling bindings or fingerprints. Derive limitation adjacency from body offsets rather than ArtifactMap array order. Document and smoke-check installable route examples and their finite bad-text catalog. Closure copies saved provider statuses; missing or failing required reports forbid broad claims and are named in residual risk.",
-        "Own mode-aware revision provenance: derive real source bytes/units from the source manifest helper, check current target ids and canonical fingerprints, and supply a deterministic not-applicable record for new writing.",
-        "Expose the same text block classification to route validators, including Chinese prose and list markers. Briefs optionally import missing native SourceGuard YAML anchors; handwritten rows take priority. Short story guidance keeps movement, promises and unit plans in the fiction composition. Closure CLI adds the standard status/errors/warnings envelope and blocked input errors; the library return stays unchanged."
+        "The current reader chain binds one plan to actual bytes and computed closure."
       ],
       "files": [
         "skills/logic-writing/SKILL.md",
         "skills/logic-writing/agents/openai.yaml",
-        "skills/logic-writing/assets/schemas/academic-composition.schema.json",
-        "skills/logic-writing/assets/schemas/artifact-map.schema.json",
-        "skills/logic-writing/assets/schemas/closure.schema.json",
-        "skills/logic-writing/assets/schemas/composition-plan.schema.json",
-        "skills/logic-writing/assets/schemas/fiction-composition.schema.json",
-        "skills/logic-writing/assets/schemas/investigation-composition.schema.json",
-        "skills/logic-writing/assets/schemas/reader-audit.schema.json",
-        "skills/logic-writing/assets/schemas/reader-brief.schema.json",
-        "skills/logic-writing/assets/schemas/reader-intent.schema.json",
-        "skills/logic-writing/assets/schemas/reader-judgment.schema.json",
-        "skills/logic-writing/assets/schemas/revision-provenance.schema.json",
-        "skills/logic-writing/assets/schemas/route-artifact-review.schema.json",
-        "skills/logic-writing/assets/schemas/shared-writing-contract.schema.json",
-        "skills/logic-writing/assets/schemas/travel-composition.schema.json",
-        "skills/logic-writing/references/adapters/documents.md",
-        "skills/logic-writing/references/adapters/logicguard.md",
-        "skills/logic-writing/references/adapters/pdf.md",
-        "skills/logic-writing/references/adapters/traceguard.md",
-        "skills/logic-writing/references/adapters/worldguard.md",
-        "skills/logic-writing/references/routes/fiction-writing.md",
-        "skills/logic-writing/references/routes/travel-guide.md",
-        "skills/logic-writing/references/shared/closure.md",
-        "skills/logic-writing/references/shared/human-writing.md",
-        "skills/logic-writing/references/shared/reader-brief.md",
-        "skills/logic-writing/references/shared/writing-contract.md",
-        "skills/logic-writing/scripts/audit_reader_output.py",
-        "skills/logic-writing/scripts/build_artifact_map.py",
-        "skills/logic-writing/scripts/build_reader_brief.py",
-        "skills/logic-writing/scripts/derive_closure.py",
-        "skills/logic-writing/scripts/reader_pipeline.py",
-        "skills/logic-writing/scripts/review_obligations.py",
-        "skills/logic-writing/scripts/text_extent.py",
-        "skills/logic-writing/scripts/validate_revision_provenance.py",
-        "skills/logic-writing/scripts/validate_shared_writing.py",
-        "tests/fixtures/reader_v2/benchmark.json",
-        "tests/adversarial/test_reader_integrity_regressions.py",
-        "tests/unit/test_composition_graph.py",
-        "tests/unit/test_editorial_dispositions.py",
-        "tests/unit/test_review_obligations.py",
-        "tests/unit/test_writer_projection.py",
         "skills/logic-writing/assets/examples/README.md",
-        "tests/fixtures/trials/worldguard-fail.json",
-        "tests/fixtures/trials/sourceguard-stop.json",
-        "tests/fixtures/trials/worldguard-pass.json",
-        "skills/logic-writing/scripts/show_plan.py"
+        "skills/logic-writing/references/shared/human-writing.md",
+        "skills/logic-writing/references/shared/writing-contract.md"
       ],
-      "entrypoints": [
-        "skills/logic-writing/scripts/reader_pipeline.py:build_writer_input",
-        "skills/logic-writing/scripts/reader_pipeline.py:build_artifact_map",
-        "skills/logic-writing/scripts/derive_closure.py:derive_closure"
-      ],
-      "state": [
-        "Intent/plan/writer input and artifact fingerprints; audit/review/judgment status.",
-        "Current defects and the artifact fingerprint they belong to.",
-        "Declared judgment kind and broad-claim permission."
-      ],
-      "side_effects": [
-        "Read exact artifact bytes; write a result only to an explicit --output path."
-      ],
-      "depends_on": [
-        "research-packet",
-        "shared-contracts"
-      ],
+      "entrypoints": [],
+      "state": [],
+      "side_effects": [],
+      "depends_on": [],
       "tests": [
-        "tests/__init__.py",
-        "tests/adversarial/test_reader_integrity_regressions.py",
-        "tests/conftest.py",
-        "tests/contract/test_privacy_scan.py",
-        "tests/contract/test_schema_runtime_gate.py",
-        "tests/contract/test_schemas.py",
-        "tests/e2e/test_reader_v2_benchmark.py",
-        "tests/support.py",
-        "tests/unit/test_composition_graph.py",
-        "tests/unit/test_editorial_dispositions.py",
-        "tests/unit/test_freshness_closure.py",
-        "tests/unit/test_reader.py",
-        "tests/unit/test_review_obligations.py",
-        "tests/unit/test_shared_writing.py",
-        "tests/unit/test_writer_projection.py",
-        "tests/v2_support.py",
-        "tests/e2e/test_routes.py",
-        "tests/adversarial/test_boundaries.py",
-        "tests/e2e/test_worked_examples.py"
+        "tests/e2e/test_worked_examples.py",
+        "tests/e2e/test_reader_v2_benchmark.py"
       ],
       "models": [
-        ".flowguard/models/reader_artifact_model.py",
-        ".flowguard/models/closure_claim_model.py"
+        ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:9369f9a41eb4952be88c9a240c204ffaab049e70cad4475bf2b6daca2fd1dd82"
+      "fingerprint": "sha256:8fe55a41210d32ab03e577eb552c1b254c6ac28f8abdb2d55d36ab64e015af1c"
     },
     {
       "id": "fiction",
       "layer": "routes",
-      "summary": "Native fiction taxonomy, state, model/prose binding and long-form closure.",
+      "summary": "Expose fiction depth selection, story-native checks and existing manuscript regressions.",
       "responsibilities": [
-        "Route sixteen artifact types across supported prose phases.",
-        "Preserve native world/state, promise, scene, chapter, voice and model/prose bindings.",
-        "Check long-form closure bundles for the reverse outline and, for final prose, the manuscript identity and source requirements; the other story models run with their own scripts.",
-        "Exercise representative valid and unbound-prose native binding cases in daily pytest; the fiction regression runs the route, native, longform and model-mesh suites.",
-        "Accept one structured voice_contract with POV and tense; voice_contract_ref is an identifier, not inferred prose. Ship a small runnable reader-chain example with known-bad texts.",
-        "Short stories use compact composition and reader-chain depth. Explicit or long story ledgers read WorldGuard status from native reports relative to the ledger; handwritten pass and adapter bypasses do not qualify."
+        "Select compact, short-story or longform depth; delegate current manuscript review to the shared reader chain and preserve native promises, arcs and continuity checks."
       ],
       "files": [
-        "skills/logic-writing/routes/fiction/examples/longform_failure_cases/duplicate-binding-without-delta.json",
+        "skills/logic-writing/assets/examples/fiction/audit-request.json",
+        "skills/logic-writing/assets/examples/fiction/brief-request.json",
+        "skills/logic-writing/assets/examples/fiction/closure-input.json",
+        "skills/logic-writing/assets/examples/fiction/known-bad/empty.md",
+        "skills/logic-writing/assets/examples/fiction/known-bad/expected.json",
+        "skills/logic-writing/assets/examples/fiction/known-bad/leak.md",
+        "skills/logic-writing/assets/examples/fiction/known-bad/short.md",
+        "skills/logic-writing/assets/examples/fiction/map-request.json",
+        "skills/logic-writing/assets/examples/fiction/piece.md",
+        "skills/logic-writing/assets/examples/fiction/route-request.json",
+        "skills/logic-writing/assets/examples/fiction/route-review.json",
+        "skills/logic-writing/assets/examples/fiction/shared-writing.json",
+        "skills/logic-writing/assets/examples/fiction/world.yaml",
+        "skills/logic-writing/assets/examples/fiction/worldguard-check.json",
         "skills/logic-writing/routes/fiction/examples/longform_failure_cases/fake-chapter-interface.json",
-        "skills/logic-writing/routes/fiction/examples/longform_failure_cases/final-chapter-prose-bypass.json",
-        "skills/logic-writing/routes/fiction/examples/longform_failure_cases/final-prose-hash-mismatch.json",
-        "skills/logic-writing/routes/fiction/examples/longform_failure_cases/final-prose-missing-artifact.json",
-        "skills/logic-writing/routes/fiction/examples/longform_failure_cases/final-prose-missing-source-requirements.json",
-        "skills/logic-writing/routes/fiction/examples/longform_failure_cases/final-prose-nonexistent-manuscript.json",
-        "skills/logic-writing/routes/fiction/examples/longform_failure_cases/final-volume-prose-bypass.json",
-        "skills/logic-writing/routes/fiction/examples/longform_failure_cases/length-outlier-without-binding-review.json",
-        "skills/logic-writing/routes/fiction/examples/longform_failure_cases/markdown-model-surface-substitution.json",
+        "skills/logic-writing/routes/fiction/examples/longform_failure_cases/migration-index.json",
         "skills/logic-writing/routes/fiction/examples/longform_failure_cases/missing-material-continuity.json",
         "skills/logic-writing/routes/fiction/examples/longform_failure_cases/orphan-chapter.json",
         "skills/logic-writing/routes/fiction/examples/longform_failure_cases/pov-drift.json",
-        "skills/logic-writing/routes/fiction/examples/longform_failure_cases/premature-hypothesis-collapse.json",
-        "skills/logic-writing/routes/fiction/examples/longform_failure_cases/semantic-review-incomplete-contract.json",
-        "skills/logic-writing/routes/fiction/examples/longform_failure_cases/smooth-reveal-without-resistance.json",
-        "skills/logic-writing/routes/fiction/examples/longform_failure_cases/substitute-reverse-outline-as-ledger.json",
-        "skills/logic-writing/routes/fiction/examples/longform_failure_cases/term-register-owner-drift.json",
-        "skills/logic-writing/routes/fiction/examples/longform_failure_cases/unbound-prose-span.json",
-        "skills/logic-writing/routes/fiction/examples/longform_failure_cases/unrealized-model-ref.json",
         "skills/logic-writing/routes/fiction/examples/longform_failure_cases/unresolved-key-promise.json",
-        "skills/logic-writing/routes/fiction/examples/longform_failure_cases/weak-reverse-outline.json",
+        "skills/logic-writing/routes/fiction/examples/longform_novel_project/audit-request.json",
+        "skills/logic-writing/routes/fiction/examples/longform_novel_project/brief-request.json",
         "skills/logic-writing/routes/fiction/examples/longform_novel_project/chapter-interfaces.json",
-        "skills/logic-writing/routes/fiction/examples/longform_novel_project/longform-closure.json",
-        "skills/logic-writing/routes/fiction/examples/longform_novel_project/longform-final-prose-closure.json",
-        "skills/logic-writing/routes/fiction/examples/longform_novel_project/model-prose-binding.json",
+        "skills/logic-writing/routes/fiction/examples/longform_novel_project/closure-input.json",
+        "skills/logic-writing/routes/fiction/examples/longform_novel_project/drafts/book-01-final.txt",
+        "skills/logic-writing/routes/fiction/examples/longform_novel_project/map-request.json",
         "skills/logic-writing/routes/fiction/examples/longform_novel_project/novel-ledger.json",
         "skills/logic-writing/routes/fiction/examples/longform_novel_project/project-mesh.json",
         "skills/logic-writing/routes/fiction/examples/longform_novel_project/promise-payoff.json",
-        "skills/logic-writing/routes/fiction/examples/longform_novel_project/semantic-review.json",
+        "skills/logic-writing/routes/fiction/examples/longform_novel_project/route-request.json",
+        "skills/logic-writing/routes/fiction/examples/longform_novel_project/route-review.json",
+        "skills/logic-writing/routes/fiction/examples/longform_novel_project/shared-writing.json",
         "skills/logic-writing/routes/fiction/examples/longform_novel_project/source-requirements.json",
         "skills/logic-writing/routes/fiction/examples/longform_novel_project/voice-style-report.json",
         "skills/logic-writing/routes/fiction/examples/route_cases/compact-final-prose-blocked.json",
@@ -263,6 +133,7 @@
         "skills/logic-writing/routes/fiction/examples/route_cases/novella-post-draft.json",
         "skills/logic-writing/routes/fiction/examples/route_cases/pre-draft-chapter-plan.json",
         "skills/logic-writing/routes/fiction/examples/route_cases/unknown-artifact.json",
+        "skills/logic-writing/routes/fiction/examples/short_story_project/brief-request.json",
         "skills/logic-writing/routes/fiction/examples/short_story_project/scene-cards.yaml",
         "skills/logic-writing/routes/fiction/examples/short_story_project/story-ledger.yaml",
         "skills/logic-writing/routes/fiction/examples/short_story_project/worldguard-claims.yaml",
@@ -276,9 +147,7 @@
         "skills/logic-writing/routes/fiction/references/novel-ledger.md",
         "skills/logic-writing/routes/fiction/references/project-model-mesh.md",
         "skills/logic-writing/routes/fiction/references/promise-payoff-ledger.md",
-        "skills/logic-writing/routes/fiction/references/prose-native-contract.md",
         "skills/logic-writing/routes/fiction/references/scene-contract.md",
-        "skills/logic-writing/routes/fiction/references/semantic-review-contract.md",
         "skills/logic-writing/routes/fiction/references/sourceguard-canon-contract.md",
         "skills/logic-writing/routes/fiction/references/story-artifact-lifecycle.md",
         "skills/logic-writing/routes/fiction/references/story-contribution-contract.md",
@@ -288,74 +157,61 @@
         "skills/logic-writing/routes/fiction/references/voice-style-continuity.md",
         "skills/logic-writing/routes/fiction/references/workflow.md",
         "skills/logic-writing/routes/fiction/references/worldguard-adapter.md",
-        "skills/logic-writing/routes/fiction/scripts/chapter_interface_check.py",
-        "skills/logic-writing/routes/fiction/scripts/evidence_identity.py",
-        "skills/logic-writing/routes/fiction/scripts/longform_closure_check.py",
-        "skills/logic-writing/routes/fiction/scripts/model_prose_binding_check.py",
-        "skills/logic-writing/routes/fiction/scripts/novel_ledger_check.py",
-        "skills/logic-writing/routes/fiction/scripts/promise_payoff_check.py",
         "skills/logic-writing/routes/fiction/scripts/run_longform_regression.py",
         "skills/logic-writing/routes/fiction/scripts/run_native_regression.py",
         "skills/logic-writing/routes/fiction/scripts/run_route_regression.py",
         "skills/logic-writing/routes/fiction/scripts/run_story_model_mesh_regression.py",
-        "skills/logic-writing/routes/fiction/scripts/scene_contract_check.py",
-        "skills/logic-writing/routes/fiction/scripts/semantic_review_check.py",
-        "skills/logic-writing/routes/fiction/scripts/story_contribution_check.py",
-        "skills/logic-writing/routes/fiction/scripts/story_ledger_check.py",
-        "skills/logic-writing/routes/fiction/scripts/storyline_project_mesh_check.py",
-        "skills/logic-writing/routes/fiction/scripts/storyline_route_check.py",
-        "skills/logic-writing/routes/fiction/scripts/turning_point_check.py",
-        "skills/logic-writing/routes/fiction/scripts/validate_fiction_artifact.py",
-        "skills/logic-writing/routes/fiction/scripts/voice_style_continuity_check.py",
-        "skills/logic-writing/assets/examples/fiction/audit-request.json",
-        "skills/logic-writing/assets/examples/fiction/brief-request.json",
-        "skills/logic-writing/assets/examples/fiction/closure-input.json",
-        "skills/logic-writing/assets/examples/fiction/known-bad/empty.md",
-        "skills/logic-writing/assets/examples/fiction/known-bad/expected.json",
-        "skills/logic-writing/assets/examples/fiction/known-bad/leak.md",
-        "skills/logic-writing/assets/examples/fiction/map-request.json",
-        "skills/logic-writing/assets/examples/fiction/piece.md",
-        "skills/logic-writing/assets/examples/fiction/route-request.json",
-        "skills/logic-writing/assets/examples/fiction/route-review.json",
-        "skills/logic-writing/assets/examples/fiction/shared-writing.json",
-        "skills/logic-writing/assets/examples/fiction/world.yaml",
-        "skills/logic-writing/assets/examples/fiction/worldguard-check.json"
+        "skills/logic-writing/routes/fiction/scripts/validate_fiction_artifact.py"
       ],
       "entrypoints": [
-        "skills/logic-writing/routes/fiction/scripts/storyline_route_check.py:compile_route_decision",
-        "skills/logic-writing/routes/fiction/scripts/longform_closure_check.py:validate",
+        "skills/logic-writing/routes/fiction/scripts/run_longform_regression.py:main",
+        "skills/logic-writing/routes/fiction/scripts/run_native_regression.py:main",
+        "skills/logic-writing/routes/fiction/scripts/run_route_regression.py:main",
+        "skills/logic-writing/routes/fiction/scripts/run_story_model_mesh_regression.py:main",
         "skills/logic-writing/routes/fiction/scripts/validate_fiction_artifact.py:validate_fiction_artifact"
       ],
-      "state": [
-        "Project/revision identity, manuscript identity, prose phase and story model files."
-      ],
+      "state": [],
       "side_effects": [
-        "Read actual project/manuscript resources."
+        "Run declared native regression commands and create disposable temporary copies of example inputs."
       ],
       "depends_on": [
-        "reader-artifact",
+        "fiction-model",
+        "reader-checks",
+        "reader-closure",
+        "reader-inputs",
         "shared-contracts"
       ],
       "tests": [
         "tests/unit/test_fiction.py"
       ],
-      "models": [
-        ".flowguard/models/reader_artifact_model.py"
-      ],
+      "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:10d654c05fc5e734317d7e99b66a5ad1cf39422e096985a063d93d56be0d5e8d"
+      "fingerprint": "sha256:78e8f7b888859c4e41d1198491dce3f4f7557ee6226253fe33b85798d0d1ae35"
     },
     {
       "id": "travel",
       "layer": "routes",
-      "summary": "Native traveler feasibility, time/weather modes and guide/reverse review.",
+      "summary": "Expose trip validation, derived claim levels and traveler-facing review commands.",
       "responsibilities": [
-        "Validate traveler fit, feasible schedule/resources/access, source/time/weather boundaries and fallback plans.",
-        "Check the actual guide text and that a travel composition names ids in the optional trip plan; the allowed claim level follows the evidence.",
-        "Exercise valid native plans and exact unreachable-fallback rejection codes in daily pytest. Ship a small runnable reader-chain example with known-bad texts.",
-        "Use reader-owned block classification for prose/list checks; texture and unreviewed generic risk hints are advisory, while observed review and weather requirements remain gates. Fixture mutation imports are lazy and used only by repository failure fixtures."
+        "Validate trip candidates, fit, dates and reachable fallbacks through the trip model; check the actual guide with current route-semantic review and keep its dedicated finite regressions."
       ],
       "files": [
+        "skills/logic-writing/assets/examples/travel/audit-request.json",
+        "skills/logic-writing/assets/examples/travel/brief-request.json",
+        "skills/logic-writing/assets/examples/travel/closure-input.json",
+        "skills/logic-writing/assets/examples/travel/known-bad/empty.md",
+        "skills/logic-writing/assets/examples/travel/known-bad/expected.json",
+        "skills/logic-writing/assets/examples/travel/known-bad/leak.md",
+        "skills/logic-writing/assets/examples/travel/known-bad/nolim-lim-illustrative.md",
+        "skills/logic-writing/assets/examples/travel/known-bad/short.md",
+        "skills/logic-writing/assets/examples/travel/map-request.json",
+        "skills/logic-writing/assets/examples/travel/piece.md",
+        "skills/logic-writing/assets/examples/travel/route-request.json",
+        "skills/logic-writing/assets/examples/travel/route-review.json",
+        "skills/logic-writing/assets/examples/travel/shared-writing.json",
+        "skills/logic-writing/assets/examples/travel/trip-plan.json",
+        "skills/logic-writing/assets/examples/travel/world.yaml",
+        "skills/logic-writing/assets/examples/travel/worldguard-check.json",
         "skills/logic-writing/routes/travel/examples/failure_cases/accessibility_review_missing.json",
         "skills/logic-writing/routes/travel/examples/failure_cases/candidate_dangling_risk.json",
         "skills/logic-writing/routes/travel/examples/failure_cases/candidate_source_role_mismatch.json",
@@ -364,20 +220,18 @@
         "skills/logic-writing/routes/travel/examples/failure_cases/child_protection_missing.json",
         "skills/logic-writing/routes/travel/examples/failure_cases/claim_level_overreach.json",
         "skills/logic-writing/routes/travel/examples/failure_cases/date_relation_lie.json",
-        "skills/logic-writing/routes/travel/examples/failure_cases/day_interface_chain_mismatch.json",
         "skills/logic-writing/routes/travel/examples/failure_cases/fallback_unknown_replacement.json",
         "skills/logic-writing/routes/travel/examples/failure_cases/fallback_unreachable.json",
         "skills/logic-writing/routes/travel/examples/failure_cases/fit_input_drift.json",
         "skills/logic-writing/routes/travel/examples/failure_cases/lodging_nonhotel.json",
-        "skills/logic-writing/routes/travel/examples/failure_cases/promise_class_mismatch.json",
         "skills/logic-writing/routes/travel/examples/failure_cases/route_edge_chain_broken.json",
         "skills/logic-writing/routes/travel/examples/failure_cases/route_wrong_world_target.json",
-        "skills/logic-writing/routes/travel/examples/failure_cases/scene_unknown_day.json",
         "skills/logic-writing/routes/travel/examples/failure_cases/upstream_nonpass_overwritten.json",
         "skills/logic-writing/routes/travel/examples/failure_cases/walking_tolerance_exceeded.json",
         "skills/logic-writing/routes/travel/examples/failure_cases/weather_chronology_mismatch.json",
         "skills/logic-writing/routes/travel/examples/good_city_couple_trip/plan.json",
         "skills/logic-writing/routes/travel/examples/good_text_outputs/city_couple_native_guide.review.json",
+        "skills/logic-writing/routes/travel/examples/good_text_outputs/city_couple_native_guide.txt",
         "skills/logic-writing/routes/travel/examples/positive_cases/accessibility.json",
         "skills/logic-writing/routes/travel/examples/positive_cases/day_of.json",
         "skills/logic-writing/routes/travel/examples/positive_cases/family_child.json",
@@ -393,6 +247,7 @@
         "skills/logic-writing/routes/travel/examples/text_failure_cases/observation_drift.json",
         "skills/logic-writing/routes/travel/examples/text_failure_cases/weather_evidence_missing.json",
         "skills/logic-writing/routes/travel/examples/text_failure_cases/weather_mode_missing.json",
+        "skills/logic-writing/routes/travel/examples/world-report-fail.json",
         "skills/logic-writing/routes/travel/references/experience-candidate-pool.md",
         "skills/logic-writing/routes/travel/references/guard-role-map.md",
         "skills/logic-writing/routes/travel/references/negative-evidence-and-fallback.md",
@@ -404,77 +259,66 @@
         "skills/logic-writing/routes/travel/references/traveler-profile.md",
         "skills/logic-writing/routes/travel/references/trip-fit-review.md",
         "skills/logic-writing/routes/travel/references/world-feasibility.md",
-        "skills/logic-writing/routes/travel/scripts/fixture_mutation.py",
-        "skills/logic-writing/routes/travel/scripts/travel_contract.py",
         "skills/logic-writing/routes/travel/scripts/validate_failure_cases.py",
         "skills/logic-writing/routes/travel/scripts/validate_positive_cases.py",
         "skills/logic-writing/routes/travel/scripts/validate_travel_artifact.py",
         "skills/logic-writing/routes/travel/scripts/validate_travel_plan.py",
-        "skills/logic-writing/routes/travel/scripts/validate_travel_text_outputs.py",
-        "skills/logic-writing/assets/examples/travel/audit-request.json",
-        "skills/logic-writing/assets/examples/travel/brief-request.json",
-        "skills/logic-writing/assets/examples/travel/closure-input.json",
-        "skills/logic-writing/assets/examples/travel/known-bad/empty.md",
-        "skills/logic-writing/assets/examples/travel/known-bad/expected.json",
-        "skills/logic-writing/assets/examples/travel/known-bad/leak.md",
-        "skills/logic-writing/assets/examples/travel/map-request.json",
-        "skills/logic-writing/assets/examples/travel/piece.md",
-        "skills/logic-writing/assets/examples/travel/route-request.json",
-        "skills/logic-writing/assets/examples/travel/route-review.json",
-        "skills/logic-writing/assets/examples/travel/shared-writing.json",
-        "skills/logic-writing/assets/examples/travel/world.yaml",
-        "skills/logic-writing/assets/examples/travel/worldguard-check.json"
+        "skills/logic-writing/routes/travel/scripts/validate_travel_text_outputs.py"
       ],
       "entrypoints": [
-        "skills/logic-writing/routes/travel/scripts/travel_contract.py:validate_plan_file",
-        "skills/logic-writing/routes/travel/scripts/validate_travel_artifact.py:validate_travel_artifact"
+        "skills/logic-writing/routes/travel/scripts/validate_failure_cases.py:main",
+        "skills/logic-writing/routes/travel/scripts/validate_positive_cases.py:main",
+        "skills/logic-writing/routes/travel/scripts/validate_travel_artifact.py:validate_travel_artifact",
+        "skills/logic-writing/routes/travel/scripts/validate_travel_plan.py:main",
+        "skills/logic-writing/routes/travel/scripts/validate_travel_text_outputs.py:main"
       ],
-      "state": [
-        "Traveler/time mode, allowed claim level and material feasibility gaps."
-      ],
-      "side_effects": [
-        "Read selected plan/source/guide files."
-      ],
+      "state": [],
+      "side_effects": [],
       "depends_on": [
-        "reader-artifact",
-        "shared-contracts"
+        "reader-binding",
+        "reader-checks",
+        "reader-closure",
+        "reader-inputs",
+        "shared-contracts",
+        "travel-model"
       ],
       "tests": [
         "tests/unit/test_travel.py"
       ],
-      "models": [
-        ".flowguard/models/reader_artifact_model.py"
-      ],
+      "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:db6defe8141aa33b35e85831727160a255270fbefc57895980db01be40830835"
+      "fingerprint": "sha256:b6d9ae068a644f36c76208407c154a6207c4b4ad801918d12b976efff1bb00b5"
     },
     {
       "id": "investigation",
       "layer": "routes",
       "summary": "Investigation final-owner semantics.",
       "responsibilities": [
-        "Keep investigation as final owner or a bounded child with visible evidence/argument/trace limits.",
-        "Review current investigation artifact spans against route-specific dimensions. Ship a small runnable reader-chain example with known-bad texts."
+        "Check bounded answers against source anchors, alternatives, contrary evidence and recheck conditions; preserve independent reader review."
       ],
       "files": [
-        "skills/logic-writing/references/routes/investigation.md",
-        "skills/logic-writing/routes/investigation/scripts/validate_investigation_artifact.py",
         "skills/logic-writing/assets/examples/investigation/audit-request.json",
         "skills/logic-writing/assets/examples/investigation/brief-request.json",
         "skills/logic-writing/assets/examples/investigation/closure-input.json",
+        "skills/logic-writing/assets/examples/investigation/known-bad/empty.md",
         "skills/logic-writing/assets/examples/investigation/known-bad/expected.json",
         "skills/logic-writing/assets/examples/investigation/known-bad/leak.md",
         "skills/logic-writing/assets/examples/investigation/known-bad/nocite.md",
+        "skills/logic-writing/assets/examples/investigation/known-bad/nolim-lim-perf.md",
+        "skills/logic-writing/assets/examples/investigation/known-bad/nolim-lim-scope.md",
+        "skills/logic-writing/assets/examples/investigation/known-bad/overclaim.md",
+        "skills/logic-writing/assets/examples/investigation/known-bad/short.md",
         "skills/logic-writing/assets/examples/investigation/known-bad/token.md",
         "skills/logic-writing/assets/examples/investigation/map-request.json",
         "skills/logic-writing/assets/examples/investigation/piece.md",
+        "skills/logic-writing/assets/examples/investigation/research-status.json",
+        "skills/logic-writing/assets/examples/investigation/research/research.yaml",
+        "skills/logic-writing/assets/examples/investigation/research/source.yaml",
         "skills/logic-writing/assets/examples/investigation/route-request.json",
         "skills/logic-writing/assets/examples/investigation/route-review.json",
         "skills/logic-writing/assets/examples/investigation/shared-writing.json",
-        "skills/logic-writing/assets/examples/investigation/sourceguard-stop.json",
-        "skills/logic-writing/assets/examples/investigation/known-bad/nolim.md",
-        "skills/logic-writing/assets/examples/investigation/known-bad/overclaim.md",
-        "skills/logic-writing/assets/examples/investigation/known-bad/short.md"
+        "skills/logic-writing/references/routes/investigation.md",
+        "skills/logic-writing/routes/investigation/scripts/validate_investigation_artifact.py"
       ],
       "entrypoints": [
         "skills/logic-writing/routes/investigation/scripts/validate_investigation_artifact.py:validate_investigation_artifact"
@@ -484,40 +328,42 @@
       ],
       "side_effects": [],
       "depends_on": [
-        "reader-artifact",
+        "reader-checks",
+        "reader-closure",
+        "reader-inputs",
         "shared-contracts"
       ],
       "tests": [
         "tests/unit/test_investigation.py"
       ],
-      "models": [
-        ".flowguard/models/reader_artifact_model.py"
-      ],
+      "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:aec3d360bef85e186e45c200fba8813e6806d077c0ccc9bc35417db565666f24"
+      "fingerprint": "sha256:324d05414427104d0885cd784338fc01c12430e853d298fd34f5caccd538e890"
     },
     {
       "id": "academic",
       "layer": "routes",
       "summary": "Academic final-owner semantics and revision.",
       "responsibilities": [
-        "Preserve academic argument, section jobs, citation and revision-provenance boundaries. Explain omitted provenance for new work and real-file source/target unit treatments for revisions.",
-        "Review current academic artifact spans against route-specific dimensions. Ship a small runnable reader-chain example with known-bad texts."
+        "Check hierarchical academic contribution, citation duties, method depth, qualifications and figure/table jobs against the current manuscript."
       ],
       "files": [
-        "skills/logic-writing/references/routes/academic-writing.md",
-        "skills/logic-writing/routes/academic/scripts/validate_academic_artifact.py",
         "skills/logic-writing/assets/examples/academic/audit-request.json",
         "skills/logic-writing/assets/examples/academic/brief-request.json",
         "skills/logic-writing/assets/examples/academic/closure-input.json",
         "skills/logic-writing/assets/examples/academic/known-bad/empty.md",
         "skills/logic-writing/assets/examples/academic/known-bad/expected.json",
         "skills/logic-writing/assets/examples/academic/known-bad/leak.md",
+        "skills/logic-writing/assets/examples/academic/known-bad/nocite.md",
+        "skills/logic-writing/assets/examples/academic/known-bad/nolim-lim-conceptual.md",
+        "skills/logic-writing/assets/examples/academic/known-bad/short.md",
         "skills/logic-writing/assets/examples/academic/map-request.json",
         "skills/logic-writing/assets/examples/academic/piece.md",
         "skills/logic-writing/assets/examples/academic/route-request.json",
         "skills/logic-writing/assets/examples/academic/route-review.json",
-        "skills/logic-writing/assets/examples/academic/shared-writing.json"
+        "skills/logic-writing/assets/examples/academic/shared-writing.json",
+        "skills/logic-writing/references/routes/academic-writing.md",
+        "skills/logic-writing/routes/academic/scripts/validate_academic_artifact.py"
       ],
       "entrypoints": [
         "skills/logic-writing/routes/academic/scripts/validate_academic_artifact.py:validate_academic_artifact"
@@ -527,17 +373,17 @@
       ],
       "side_effects": [],
       "depends_on": [
-        "reader-artifact",
+        "reader-checks",
+        "reader-closure",
+        "reader-inputs",
         "shared-contracts"
       ],
       "tests": [
         "tests/unit/test_academic.py"
       ],
-      "models": [
-        ".flowguard/models/reader_artifact_model.py"
-      ],
+      "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:c32a060279078ea5023322ad95cb8590282241f782c5d72bb0aec1cd27ae51f8"
+      "fingerprint": "sha256:d41162be406712ece7dae49d68452a57f9e9ea4cf266788600925004a9e0a3a0"
     },
     {
       "id": "release",
@@ -558,6 +404,7 @@
         ".codex/skills/openspec-propose/SKILL.md",
         ".codex/skills/openspec-sync-specs/SKILL.md",
         ".gitattributes",
+        ".github/workflows/ci.yml",
         ".github/workflows/publish-release.yml",
         ".gitignore",
         "AGENTS.md",
@@ -578,10 +425,16 @@
         "scripts/install_skill.py",
         "scripts/run_fiction_regression.py",
         "scripts/run_travel_regression.py",
-        "scripts/validate_skill.py",
-        ".github/workflows/ci.yml"
+        "scripts/validate_skill.py"
       ],
-      "entrypoints": [],
+      "entrypoints": [
+        "scripts/check_privacy.py:main",
+        "scripts/check_public_docs.py:main",
+        "scripts/install_skill.py:main",
+        "scripts/run_fiction_regression.py:main",
+        "scripts/run_travel_regression.py:main",
+        "scripts/validate_skill.py:main"
+      ],
       "state": [
         "Source commit and VERSION/pyproject version identity."
       ],
@@ -591,11 +444,12 @@
       "depends_on": [],
       "tests": [
         "tests/contract/test_install_skill.py",
+        "tests/contract/test_privacy_scan.py",
         "tests/contract/test_release_wrappers.py"
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:9ff9b0e9f64bf93aa02c5e6a742c6f68c88f747f7b0ae8d635bfbd11cc303450"
+      "fingerprint": "sha256:69269aff8622d14747052ea31ba52a3bbf45514e1e27049285e1c2f83ce70d82"
     },
     {
       "id": "providers",
@@ -611,6 +465,7 @@
         "skills/logic-writing/scripts/provider_preflight.py"
       ],
       "entrypoints": [
+        "skills/logic-writing/scripts/provider_preflight.py:main",
         "skills/logic-writing/scripts/provider_preflight.py:preflight"
       ],
       "state": [
@@ -630,7 +485,7 @@
         ".flowguard/models/route_and_guard_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:4128762873b2ee43b1b372edc7867742a515acd2c9baea76e706cf6efe805b9a"
+      "fingerprint": "sha256:e2221b0f112812a4b241a6c1e50bf7fb103fc92053afb4d06942f5d1bcb9b84b"
     },
     {
       "id": "shared-contracts",
@@ -641,10 +496,11 @@
         "Load command requests whose reviewed object and list fields name JSON files; resolve relative artifact paths against the file that contains them while preserving scalar identifiers and opaque native result locators, and fill fingerprints a caller leaves out (load_request, fill_fingerprint, fill_missing). Resolve saved provider report paths relative to the closure request without loading or executing providers.",
         "Keep same-key records available from partial result envelopes; reject failed envelopes without the requested record with their first error before sole-object fallback.",
         "Resolve revision source paths against their containing request/record files and describe source-file provenance in the current schema.",
-        "Resolve sourceguard_model relative to its brief request file."
+        "Resolve research_folder and composition-owned input paths without executing native providers; preserve optional new-writing provenance and opaque native locators."
       ],
       "files": [
         "skills/logic-writing/scripts/_common.py",
+        "skills/logic-writing/scripts/reader_rules.py",
         "skills/logic-writing/scripts/schema_validation.py"
       ],
       "entrypoints": [
@@ -652,66 +508,569 @@
         "skills/logic-writing/scripts/schema_validation.py:assert_schema_valid"
       ],
       "state": [],
-      "side_effects": [],
+      "side_effects": [
+        "Write JSON only to an explicit output file requested by a command."
+      ],
       "depends_on": [],
       "tests": [
+        "tests/contract/test_schema_runtime_gate.py",
         "tests/contract/test_schemas.py",
         "tests/unit/test_cli_inputs.py"
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:6c2dee8b2d2240b83b8ea17259cfb67ae91d575626b2e7d3404cd3af9b0f88f2"
+      "fingerprint": "sha256:6a993d3ec43dc4b44d4a22914ddfe2739f4ac9792387925f1ffc76fd0378564f"
+    },
+    {
+      "id": "researchguard-handoff",
+      "layer": "evidence",
+      "summary": "Read one native ResearchGuard verdict and preserve atomic native source anchors.",
+      "responsibilities": [
+        "Read one native ResearchGuard verdict and preserve atomic native source anchors."
+      ],
+      "files": [
+        "skills/logic-writing/assets/schemas/researchguard-logic-handoff.schema.json",
+        "skills/logic-writing/references/adapters/researchguard.md",
+        "skills/logic-writing/scripts/researchguard_handoff.py",
+        "skills/logic-writing/scripts/researchguard_status.py"
+      ],
+      "entrypoints": [
+        "skills/logic-writing/scripts/researchguard_handoff.py:build_researchguard_handoff",
+        "skills/logic-writing/scripts/researchguard_status.py:assess_research_verdict",
+        "skills/logic-writing/scripts/researchguard_status.py:fill_anchors_from_research"
+      ],
+      "state": [],
+      "side_effects": [],
+      "depends_on": [
+        "shared-contracts"
+      ],
+      "tests": [
+        "tests/contract/test_researchguard_handoff.py",
+        "tests/unit/test_investigation.py",
+        "tests/unit/test_researchguard_status.py"
+      ],
+      "models": [],
+      "status": "confirmed",
+      "fingerprint": "sha256:919f0b216ae48b239d04222546f36d117b96f0bfbe41d3350f7a42f6c2c3de67"
+    },
+    {
+      "id": "reader-plan",
+      "layer": "reader",
+      "summary": "Validate reader intent, canonical composition, writer projection and optional revision provenance.",
+      "responsibilities": [
+        "Validate reader intent, canonical composition, writer projection and optional revision provenance."
+      ],
+      "files": [
+        "skills/logic-writing/assets/schemas/academic-composition.schema.json",
+        "skills/logic-writing/assets/schemas/composition-plan.schema.json",
+        "skills/logic-writing/assets/schemas/fiction-composition.schema.json",
+        "skills/logic-writing/assets/schemas/investigation-composition.schema.json",
+        "skills/logic-writing/assets/schemas/reader-brief.schema.json",
+        "skills/logic-writing/assets/schemas/reader-intent.schema.json",
+        "skills/logic-writing/assets/schemas/revision-provenance.schema.json",
+        "skills/logic-writing/assets/schemas/source-unit-manifest.schema.json",
+        "skills/logic-writing/assets/schemas/travel-composition.schema.json",
+        "skills/logic-writing/references/shared/reader-brief.md",
+        "skills/logic-writing/scripts/build_source_unit_manifest.py",
+        "skills/logic-writing/scripts/reader_plan.py",
+        "skills/logic-writing/scripts/reader_plan_core.py",
+        "skills/logic-writing/scripts/route_inputs.py",
+        "skills/logic-writing/scripts/writer_projection.py"
+      ],
+      "entrypoints": [
+        "skills/logic-writing/scripts/build_source_unit_manifest.py:main",
+        "skills/logic-writing/scripts/reader_plan.py:build_reader_brief",
+        "skills/logic-writing/scripts/reader_plan.py:validate_revision_provenance"
+      ],
+      "state": [
+        "Canonical intent, plan, writer projection and referenced domain-input fingerprints."
+      ],
+      "side_effects": [],
+      "depends_on": [
+        "reader-binding",
+        "researchguard-handoff",
+        "shared-contracts",
+        "travel-model",
+        "world-references"
+      ],
+      "tests": [
+        "tests/unit/test_cli_inputs.py",
+        "tests/unit/test_composition_graph.py",
+        "tests/unit/test_editorial_dispositions.py",
+        "tests/unit/test_writer_projection.py"
+      ],
+      "models": [],
+      "parent": "reader-artifact",
+      "status": "confirmed",
+      "fingerprint": "sha256:f6a390b3ebed30c4ebe44a50116e74301adf79e9a9dd5a9bd054999fa593f956"
+    },
+    {
+      "id": "reader-binding",
+      "layer": "reader",
+      "summary": "Partition current text and bind each planned unit to real unique quoted spans.",
+      "responsibilities": [
+        "Partition current text and bind each planned unit to real unique quoted spans."
+      ],
+      "files": [
+        "skills/logic-writing/assets/schemas/artifact-map.schema.json",
+        "skills/logic-writing/assets/schemas/shared-writing-contract.schema.json",
+        "skills/logic-writing/scripts/artifact_map.py",
+        "skills/logic-writing/scripts/reader_binding.py",
+        "skills/logic-writing/scripts/text_extent.py"
+      ],
+      "entrypoints": [
+        "skills/logic-writing/scripts/artifact_map.py:build_artifact_map",
+        "skills/logic-writing/scripts/reader_binding.py:_quote_binding_units",
+        "skills/logic-writing/scripts/reader_binding.py:_resolve_quote",
+        "skills/logic-writing/scripts/reader_binding.py:validate_shared_writing"
+      ],
+      "state": [
+        "Actual artifact bytes, partitions and exact quote-to-plan span bindings."
+      ],
+      "side_effects": [
+        "Read the explicitly named current artifact bytes."
+      ],
+      "depends_on": [
+        "shared-contracts"
+      ],
+      "tests": [
+        "tests/adversarial/test_reader_integrity_regressions.py",
+        "tests/unit/test_reader.py",
+        "tests/unit/test_shared_writing.py"
+      ],
+      "models": [
+        ".flowguard/models/shared_writing_binding_model.py"
+      ],
+      "parent": "reader-artifact",
+      "status": "confirmed",
+      "fingerprint": "sha256:d46ca91683c7a44e314aa555500bf7bf0938cbef7a620f95789ae6c987a4bc0e"
+    },
+    {
+      "id": "reader-checks",
+      "layer": "reader",
+      "summary": "Audit current text and validate evidence-bound route review and independent reader judgment.",
+      "responsibilities": [
+        "Audit current text and validate evidence-bound route review and independent reader judgment."
+      ],
+      "files": [
+        "skills/logic-writing/assets/schemas/reader-audit.schema.json",
+        "skills/logic-writing/assets/schemas/reader-judgment.schema.json",
+        "skills/logic-writing/assets/schemas/route-artifact-review.schema.json",
+        "skills/logic-writing/scripts/reader_checks.py",
+        "skills/logic-writing/scripts/review_obligations.py"
+      ],
+      "entrypoints": [
+        "skills/logic-writing/scripts/reader_checks.py:_reader_judgment_from_current",
+        "skills/logic-writing/scripts/reader_checks.py:_route_review_from_current",
+        "skills/logic-writing/scripts/reader_checks.py:build_reader_audit"
+      ],
+      "state": [
+        "Current audit findings, quoted review dimensions and reader judgment."
+      ],
+      "side_effects": [],
+      "depends_on": [
+        "reader-binding",
+        "reader-plan",
+        "shared-contracts",
+        "world-references"
+      ],
+      "tests": [
+        "tests/unit/test_reader.py",
+        "tests/unit/test_review_obligations.py"
+      ],
+      "models": [],
+      "parent": "reader-artifact",
+      "status": "confirmed",
+      "fingerprint": "sha256:54f0e39030c962d52d1b82bdb034f4ca21d3581a71cbadcbeed84cc30e5917cb"
+    },
+    {
+      "id": "reader-inputs",
+      "layer": "reader",
+      "summary": "Fill absent derived references after validating existing current-unit membership.",
+      "responsibilities": [
+        "Fill absent derived references after validating existing current-unit membership."
+      ],
+      "files": [
+        "skills/logic-writing/scripts/reader_fill.py"
+      ],
+      "entrypoints": [],
+      "state": [
+        "Absent derived locators and fingerprints filled in a copied request."
+      ],
+      "side_effects": [],
+      "depends_on": [
+        "reader-binding",
+        "reader-plan",
+        "researchguard-handoff",
+        "shared-contracts"
+      ],
+      "tests": [
+        "tests/unit/test_cli_inputs.py",
+        "tests/unit/test_shared_writing.py"
+      ],
+      "models": [],
+      "parent": "reader-artifact",
+      "status": "confirmed",
+      "fingerprint": "sha256:49f79a9a042f297d688ecfa6bcb76eca551f45caa8f8afefa794e0a340bfcb3f"
+    },
+    {
+      "id": "reader-closure",
+      "layer": "reader",
+      "summary": "Derive quality closure from the real reader chain, saved native verdicts and in-process domain checks.",
+      "responsibilities": [
+        "Derive quality closure from the real reader chain, saved native verdicts and in-process domain checks."
+      ],
+      "files": [
+        "skills/logic-writing/assets/schemas/closure.schema.json",
+        "skills/logic-writing/references/shared/closure.md",
+        "skills/logic-writing/scripts/derive_closure.py",
+        "skills/logic-writing/scripts/known_bad.py"
+      ],
+      "entrypoints": [
+        "skills/logic-writing/scripts/derive_closure.py:derive_closure",
+        "skills/logic-writing/scripts/derive_closure.py:main",
+        "skills/logic-writing/scripts/derive_closure.py:provider_checks",
+        "skills/logic-writing/scripts/known_bad.py:check_known_bad",
+        "skills/logic-writing/scripts/known_bad.py:main"
+      ],
+      "state": [
+        "Computed quality status, provider verdicts, residual risks and broad-claim permission."
+      ],
+      "side_effects": [
+        "Read current artifact, saved provider reports and declared longform project surfaces; write JSON only to an explicit --output."
+      ],
+      "depends_on": [
+        "fiction-model",
+        "reader-binding",
+        "reader-checks",
+        "reader-inputs",
+        "reader-plan",
+        "researchguard-handoff",
+        "shared-contracts",
+        "world-references"
+      ],
+      "tests": [
+        "tests/adversarial/test_boundaries.py",
+        "tests/e2e/test_reader_v2_benchmark.py",
+        "tests/e2e/test_routes.py",
+        "tests/e2e/test_worked_examples.py",
+        "tests/unit/test_freshness_closure.py"
+      ],
+      "models": [
+        ".flowguard/models/closure_claim_model.py"
+      ],
+      "parent": "reader-artifact",
+      "status": "confirmed",
+      "fingerprint": "sha256:e61f002e1bad0f405c8e5a89eddb48f500518da70b033e6802341ac0bb550506"
+    },
+    {
+      "id": "reader-commands",
+      "layer": "routes",
+      "summary": "Expose the reader-chain commands and readable plan view without generating prose.",
+      "responsibilities": [
+        "Expose the reader-chain commands and readable plan view without generating prose."
+      ],
+      "files": [
+        "skills/logic-writing/scripts/audit_reader_output.py",
+        "skills/logic-writing/scripts/build_artifact_map.py",
+        "skills/logic-writing/scripts/build_reader_brief.py",
+        "skills/logic-writing/scripts/show_plan.py",
+        "skills/logic-writing/scripts/validate_revision_provenance.py",
+        "skills/logic-writing/scripts/validate_shared_writing.py"
+      ],
+      "entrypoints": [
+        "skills/logic-writing/scripts/show_plan.py:main"
+      ],
+      "state": [],
+      "side_effects": [
+        "Read explicitly supplied input records and write only requested JSON output."
+      ],
+      "depends_on": [
+        "reader-binding",
+        "reader-checks",
+        "reader-inputs",
+        "reader-plan",
+        "shared-contracts"
+      ],
+      "tests": [
+        "tests/e2e/test_worked_examples.py",
+        "tests/unit/test_cli_inputs.py"
+      ],
+      "models": [],
+      "status": "confirmed",
+      "fingerprint": "sha256:7ecc95b06d350d89386de5349b325d2b57853b0ebbdc997a5aaab886107cad03"
+    },
+    {
+      "id": "world-references",
+      "layer": "evidence",
+      "summary": "Check declared native world ids and same-unit quotations without running WorldGuard.",
+      "responsibilities": [
+        "Check declared native world ids and same-unit quotations without running WorldGuard."
+      ],
+      "files": [
+        "skills/logic-writing/references/adapters/worldguard.md",
+        "skills/logic-writing/scripts/world_refs.py"
+      ],
+      "entrypoints": [
+        "skills/logic-writing/scripts/world_refs.py:world_ref_unquoted"
+      ],
+      "state": [],
+      "side_effects": [],
+      "depends_on": [
+        "shared-contracts"
+      ],
+      "tests": [
+        "tests/unit/test_world_refs.py"
+      ],
+      "models": [],
+      "status": "confirmed",
+      "fingerprint": "sha256:7646075fc9085287e4e9629629b0fdf1d4124c5eee7255ea5bf2b59b593ea3b1"
+    },
+    {
+      "id": "fiction-model",
+      "layer": "reader",
+      "summary": "Validate the canonical fiction tree and actual domain surfaces in process.",
+      "responsibilities": [
+        "Validate the canonical fiction tree and actual domain surfaces in process."
+      ],
+      "files": [
+        "skills/logic-writing/routes/fiction/scripts/_fiction_common.py",
+        "skills/logic-writing/routes/fiction/scripts/chapter_interface_check.py",
+        "skills/logic-writing/routes/fiction/scripts/fiction_plan.py",
+        "skills/logic-writing/routes/fiction/scripts/longform_closure_check.py",
+        "skills/logic-writing/routes/fiction/scripts/novel_ledger_check.py",
+        "skills/logic-writing/routes/fiction/scripts/promise_payoff_check.py",
+        "skills/logic-writing/routes/fiction/scripts/scene_contract_check.py",
+        "skills/logic-writing/routes/fiction/scripts/story_contribution_check.py",
+        "skills/logic-writing/routes/fiction/scripts/story_ledger_check.py",
+        "skills/logic-writing/routes/fiction/scripts/storyline_project_mesh_check.py",
+        "skills/logic-writing/routes/fiction/scripts/storyline_route_check.py",
+        "skills/logic-writing/routes/fiction/scripts/turning_point_check.py",
+        "skills/logic-writing/routes/fiction/scripts/voice_style_continuity_check.py"
+      ],
+      "entrypoints": [
+        "skills/logic-writing/routes/fiction/scripts/chapter_interface_check.py:main",
+        "skills/logic-writing/routes/fiction/scripts/chapter_interface_check.py:validate",
+        "skills/logic-writing/routes/fiction/scripts/longform_closure_check.py:main",
+        "skills/logic-writing/routes/fiction/scripts/longform_closure_check.py:validate",
+        "skills/logic-writing/routes/fiction/scripts/novel_ledger_check.py:main",
+        "skills/logic-writing/routes/fiction/scripts/promise_payoff_check.py:main",
+        "skills/logic-writing/routes/fiction/scripts/scene_contract_check.py:main",
+        "skills/logic-writing/routes/fiction/scripts/story_contribution_check.py:main",
+        "skills/logic-writing/routes/fiction/scripts/story_contribution_check.py:validate",
+        "skills/logic-writing/routes/fiction/scripts/story_ledger_check.py:main",
+        "skills/logic-writing/routes/fiction/scripts/storyline_project_mesh_check.py:main",
+        "skills/logic-writing/routes/fiction/scripts/storyline_route_check.py:compile_route_decision",
+        "skills/logic-writing/routes/fiction/scripts/storyline_route_check.py:main",
+        "skills/logic-writing/routes/fiction/scripts/turning_point_check.py:main",
+        "skills/logic-writing/routes/fiction/scripts/voice_style_continuity_check.py:main",
+        "skills/logic-writing/routes/fiction/scripts/voice_style_continuity_check.py:validate"
+      ],
+      "state": [],
+      "side_effects": [
+        "Read declared native project surface files. The standalone project-mesh CLI may run local native validators as subprocesses; longform closure calls only its pure graph helpers."
+      ],
+      "depends_on": [
+        "shared-contracts"
+      ],
+      "tests": [
+        "tests/unit/test_fiction.py"
+      ],
+      "models": [],
+      "status": "confirmed",
+      "fingerprint": "sha256:52e29394471b7b4e57ed72d01339cdbe1bea3e8a1c7f64e926df8c404bd22874"
+    },
+    {
+      "id": "travel-model",
+      "layer": "reader",
+      "summary": "Derive trip feasibility and claim level from saved world reports and check dates.",
+      "responsibilities": [
+        "Derive trip feasibility and claim level from saved world reports and check dates."
+      ],
+      "files": [
+        "skills/logic-writing/routes/travel/scripts/fixture_mutation.py",
+        "skills/logic-writing/routes/travel/scripts/travel_contract.py"
+      ],
+      "entrypoints": [
+        "skills/logic-writing/routes/travel/scripts/travel_contract.py:review_plan",
+        "skills/logic-writing/routes/travel/scripts/travel_contract.py:validate_plan_file"
+      ],
+      "state": [],
+      "side_effects": [],
+      "depends_on": [
+        "shared-contracts"
+      ],
+      "tests": [
+        "tests/unit/test_travel.py"
+      ],
+      "models": [],
+      "status": "confirmed",
+      "fingerprint": "sha256:749be5de312ba18b60932ee1961c7104087b1c661f53347692070e01f8d4827a"
     }
   ],
-  "flows": [],
+  "flows": [
+    {
+      "id": "reader-chain",
+      "summary": "Plan, bind, review and close the exact current writing.",
+      "steps": [
+        "routing:select_route",
+        "reader-plan:build_reader_brief",
+        "reader-binding:build_artifact_map",
+        "reader-binding:validate_shared_writing",
+        "reader-checks:build_reader_audit",
+        "reader-checks:_route_review_from_current",
+        "reader-closure:derive_closure"
+      ],
+      "model": ".flowguard/models/reader_artifact_model.py"
+    },
+    {
+      "id": "route-and-preflight",
+      "summary": "Choose one final owner and inspect the required native console.",
+      "steps": [
+        "routing:select_route",
+        "providers:preflight"
+      ],
+      "model": ".flowguard/models/route_and_guard_model.py"
+    },
+    {
+      "id": "closure-providers",
+      "summary": "Read saved native verdicts and run in-process declared domain checks and mutations.",
+      "steps": [
+        "reader-closure:derive_closure",
+        "researchguard-handoff:assess_research_verdict",
+        "shared-contracts:read_worldguard_report",
+        "fiction-model:validate",
+        "reader-closure:check_known_bad"
+      ],
+      "model": ".flowguard/models/closure_claim_model.py"
+    }
+  ],
   "accepted_debts": [
     {
       "code": "dep_unused",
-      "component": "academic",
-      "contains": "reader-artifact",
-      "reason": "Real script import: skills/logic-writing/routes/academic/scripts/validate_academic_artifact.py:13 imports derive_closure from skills/logic-writing/scripts through the sys.path entry the route script adds; FlowGuard resolves script imports only inside the importing script's own directory."
-    },
-    {
-      "code": "dep_unused",
-      "component": "academic",
-      "contains": "shared-contracts",
-      "reason": "Real script import: skills/logic-writing/routes/academic/scripts/validate_academic_artifact.py:12 imports _common from skills/logic-writing/scripts through the sys.path entry the route script adds; FlowGuard resolves script imports only inside the importing script's own directory."
+      "component": "fiction",
+      "contains": "reader-checks",
+      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/fiction/scripts/validate_fiction_artifact.py:15 imports reader_checks. The static map resolver searches only the importing script directory."
     },
     {
       "code": "dep_unused",
       "component": "fiction",
-      "contains": "reader-artifact",
-      "reason": "Real script import: skills/logic-writing/routes/fiction/scripts/validate_fiction_artifact.py:13 imports derive_closure from skills/logic-writing/scripts through the sys.path entry the route script adds; FlowGuard resolves script imports only inside the importing script's own directory."
+      "contains": "reader-closure",
+      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/fiction/scripts/validate_fiction_artifact.py:13 imports derive_closure. The static map resolver searches only the importing script directory."
+    },
+    {
+      "code": "dep_unused",
+      "component": "fiction",
+      "contains": "reader-inputs",
+      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/fiction/scripts/validate_fiction_artifact.py:14 imports reader_fill. The static map resolver searches only the importing script directory."
     },
     {
       "code": "dep_unused",
       "component": "fiction",
       "contains": "shared-contracts",
-      "reason": "Real script import: skills/logic-writing/routes/fiction/scripts/validate_fiction_artifact.py:12 imports _common from skills/logic-writing/scripts through the sys.path entry the route script adds; FlowGuard resolves script imports only inside the importing script's own directory."
+      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/fiction/scripts/validate_fiction_artifact.py:12 imports _common. The static map resolver searches only the importing script directory."
+    },
+    {
+      "code": "dep_unused",
+      "component": "travel",
+      "contains": "reader-binding",
+      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/travel/scripts/validate_travel_text_outputs.py:12 imports artifact_map. The static map resolver searches only the importing script directory."
+    },
+    {
+      "code": "dep_unused",
+      "component": "travel",
+      "contains": "reader-checks",
+      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/travel/scripts/validate_travel_artifact.py:15 imports reader_checks. The static map resolver searches only the importing script directory."
+    },
+    {
+      "code": "dep_unused",
+      "component": "travel",
+      "contains": "reader-closure",
+      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/travel/scripts/validate_travel_artifact.py:13 imports derive_closure. The static map resolver searches only the importing script directory."
+    },
+    {
+      "code": "dep_unused",
+      "component": "travel",
+      "contains": "reader-inputs",
+      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/travel/scripts/validate_travel_artifact.py:14 imports reader_fill. The static map resolver searches only the importing script directory."
+    },
+    {
+      "code": "dep_unused",
+      "component": "travel",
+      "contains": "shared-contracts",
+      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/travel/scripts/validate_travel_artifact.py:12 imports _common. The static map resolver searches only the importing script directory."
     },
     {
       "code": "dep_unused",
       "component": "investigation",
-      "contains": "reader-artifact",
-      "reason": "Real script import: skills/logic-writing/routes/investigation/scripts/validate_investigation_artifact.py:13 imports derive_closure from skills/logic-writing/scripts through the sys.path entry the route script adds; FlowGuard resolves script imports only inside the importing script's own directory."
+      "contains": "reader-checks",
+      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/investigation/scripts/validate_investigation_artifact.py:15 imports reader_checks. The static map resolver searches only the importing script directory."
+    },
+    {
+      "code": "dep_unused",
+      "component": "investigation",
+      "contains": "reader-closure",
+      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/investigation/scripts/validate_investigation_artifact.py:13 imports derive_closure. The static map resolver searches only the importing script directory."
+    },
+    {
+      "code": "dep_unused",
+      "component": "investigation",
+      "contains": "reader-inputs",
+      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/investigation/scripts/validate_investigation_artifact.py:14 imports reader_fill. The static map resolver searches only the importing script directory."
     },
     {
       "code": "dep_unused",
       "component": "investigation",
       "contains": "shared-contracts",
-      "reason": "Real script import: skills/logic-writing/routes/investigation/scripts/validate_investigation_artifact.py:12 imports _common from skills/logic-writing/scripts through the sys.path entry the route script adds; FlowGuard resolves script imports only inside the importing script's own directory."
+      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/investigation/scripts/validate_investigation_artifact.py:12 imports _common. The static map resolver searches only the importing script directory."
     },
     {
       "code": "dep_unused",
-      "component": "travel",
-      "contains": "reader-artifact",
-      "reason": "Real script import: skills/logic-writing/routes/travel/scripts/validate_travel_artifact.py:13 imports derive_closure from skills/logic-writing/scripts through the sys.path entry the route script adds; FlowGuard resolves script imports only inside the importing script's own directory."
+      "component": "academic",
+      "contains": "reader-checks",
+      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/academic/scripts/validate_academic_artifact.py:15 imports reader_checks. The static map resolver searches only the importing script directory."
     },
     {
       "code": "dep_unused",
-      "component": "travel",
+      "component": "academic",
+      "contains": "reader-closure",
+      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/academic/scripts/validate_academic_artifact.py:13 imports derive_closure. The static map resolver searches only the importing script directory."
+    },
+    {
+      "code": "dep_unused",
+      "component": "academic",
+      "contains": "reader-inputs",
+      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/academic/scripts/validate_academic_artifact.py:14 imports reader_fill. The static map resolver searches only the importing script directory."
+    },
+    {
+      "code": "dep_unused",
+      "component": "academic",
       "contains": "shared-contracts",
-      "reason": "Real script import: skills/logic-writing/routes/travel/scripts/validate_travel_artifact.py:12 imports _common from skills/logic-writing/scripts through the sys.path entry the route script adds; FlowGuard resolves script imports only inside the importing script's own directory."
+      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/academic/scripts/validate_academic_artifact.py:12 imports _common. The static map resolver searches only the importing script directory."
+    },
+    {
+      "code": "dep_unused",
+      "component": "reader-plan",
+      "contains": "travel-model",
+      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/scripts/reader_plan.py:57 imports travel_contract. The static map resolver searches only the importing script directory."
+    },
+    {
+      "code": "dep_unused",
+      "component": "reader-closure",
+      "contains": "fiction-model",
+      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/scripts/derive_closure.py:213 imports longform_closure_check. The static map resolver searches only the importing script directory."
+    },
+    {
+      "code": "dep_unused",
+      "component": "fiction-model",
+      "contains": "shared-contracts",
+      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/fiction/scripts/story_ledger_check.py:543 imports _common. The static map resolver searches only the importing script directory."
+    },
+    {
+      "code": "dep_unused",
+      "component": "travel-model",
+      "contains": "shared-contracts",
+      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/travel/scripts/travel_contract.py:12 imports _common. The static map resolver searches only the importing script directory."
     }
   ]
 }

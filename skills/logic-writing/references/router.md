@@ -45,8 +45,8 @@ actual-byte review.
 
 The parent route supplies a stable `gap_id`, the exact claim or artifact unit,
 needed source roles, required time/scope boundary, and return contract.
-Investigation returns only the requested ResearchPacket slice (its
-`final_owner` is the parent route) and may report partial, bounded,
+Investigation returns only the requested content units, evidence anchors,
+alternatives and limitations, plus its ResearchGuard research folder and may report partial, bounded,
 access-gap, or provider-unavailable states. It never closes the parent
 artifact. The parent copies the returned evidence anchors and limitations into
 its own `content_boundaries`.

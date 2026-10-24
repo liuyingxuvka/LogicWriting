@@ -1,0 +1,3 @@
+# A quiet day around Old Market
+
+Start at Old Market at nine, before the delivery carts fill its narrow lane. Walk from the north gate to the covered arcade and pause at the bakery window; the courtyard beyond it is a good place to sit before continuing to the riverside. Allow an hour for the market and another for the short walk beside the water. This is a gentle morning for someone who wants a few places to remember rather than a long checklist.

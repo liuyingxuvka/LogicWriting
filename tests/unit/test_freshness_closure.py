@@ -15,23 +15,26 @@ from tests.v2_support import closure_input, complete_chain
 )
 def test_complete_current_chain_closes(owner, tmp_path, monkeypatch):
     import derive_closure as closure_module
-    import reader_pipeline
+    import artifact_map
+    import reader_checks
     from pathlib import Path
     chain = complete_chain(tmp_path, owner)
     request = closure_input(chain)
-    original_map = reader_pipeline.validate_artifact_map
-    original_audit = reader_pipeline._build_reader_audit_from_current
+    original_map = artifact_map.validate_artifact_map
+    original_audit = reader_checks._build_reader_audit_from_current
     calls = {"map": 0, "audit": 0}
     def mapped(value):
         calls["map"] += 1
         return original_map(value)
     def audited(**kwargs):
-        calls["audit"] += 1
+        # Mutation audits intentionally use different bytes; the current artifact is rebuilt once.
+        if kwargs["amap"]["artifact_fingerprint"] == request["artifact_map"]["artifact_fingerprint"]:
+            calls["audit"] += 1
         return original_audit(**kwargs)
     monkeypatch.setattr(closure_module, "validate_artifact_map", mapped)
-    monkeypatch.setattr(reader_pipeline, "validate_artifact_map", mapped)
+    monkeypatch.setattr(artifact_map, "validate_artifact_map", mapped)
     monkeypatch.setattr(closure_module, "_build_reader_audit_from_current", audited)
-    monkeypatch.setattr(reader_pipeline, "_build_reader_audit_from_current", audited)
+    monkeypatch.setattr(reader_checks, "_build_reader_audit_from_current", audited)
     result = derive_closure(request)
     assert calls == {"map": 1, "audit": 1}
     def changed_during_audit(**kwargs):
@@ -118,7 +121,7 @@ def test_closure_command_fills_judgment_and_provenance_fingerprints(tmp_path):
     assert closure["status"] == "passed"
     assert closure["revision_provenance_fingerprint"].startswith("sha256:")
 
-    from reader_pipeline import fill_closure_fingerprints
+    from reader_fill import fill_closure_fingerprints
 
     filled = fill_closure_fingerprints(json.loads(path.read_text(encoding="utf-8")))
     assert filled["judgment"]["judgment_fingerprint"] == fingerprint_without(filled["judgment"], "judgment_fingerprint")
@@ -153,32 +156,46 @@ def test_missing_required_provider_report_blocks_the_broad_claim(tmp_path):
     result = derive_closure(request)['closure']
     assert result['status'] == 'passed'
     assert not result['broad_claim_allowed']
-    assert result['provider_checks'] == [dict(provider='sourceguard', path=None, status='not_run', passed=False, required=True)]
-    assert result['residual_risk'][0]['defect_id'] == 'provider:sourceguard'
+    assert result['provider_checks'] == [dict(provider='researchguard', path=None, status='not_run', passed=False, required=True, reason='researchguard report is missing: not_run')]
+    assert result['residual_risk'][0]['defect_id'] == 'provider:researchguard'
+
+
+def _research_document(*, withhold=False):
+    from pathlib import Path
+    import json
+    document = json.loads((Path(__file__).resolve().parents[1] / "fixtures/trials/research-status.json").read_text())
+    if withhold:
+        document["verdict"]["root_claim"] = {"id": "h-main-answer", "wording_license": "withhold", "reason": "Native counterevidence remains."}
+        document["verdict"]["live_hypotheses"].append("h-other")
+        document["hypotheses"].append({"id": "h-other"})
+    return document
 
 
 @pytest.mark.parametrize('provider,document,status', [
-    ('sourceguard', {'status': 'stop_sufficient'}, 'stop_sufficient'),
+    ('researchguard', _research_document(), 'passed'),
     ('worldguard', {'status': 'FAIL'}, 'FAIL'),
-    ('logicguard', {'wording_license': 'qualify', 'reason': 'counterevidence remains'}, 'qualify'),
-    ('sourceguard', {}, 'unreadable'),
+    ('researchguard', _research_document(withhold=True), 'failed'),
+    ('researchguard', {}, 'unreadable'),
 ])
 def test_provider_status_is_copied_from_the_report_file(tmp_path, provider, document, status):
     import json
     request = closure_input(complete_chain(tmp_path))
     path = tmp_path / 'report.json'
     path.write_text(json.dumps(document))
+    request['provider_reports'] = [row for row in request['provider_reports'] if row['provider'] != provider]
     request['provider_reports'].append(dict(provider=provider, path=str(path)))
     result = derive_closure(request)['closure']
     row = result['provider_checks'][-1]
     assert row['status'] == status
-    assert result['broad_claim_allowed'] == (status == 'stop_sufficient')
+    assert result['broad_claim_allowed'] == (status == 'passed')
     assert f'{provider} {status}' in result['safe_claim']
-    if status != 'stop_sufficient':
+    if status != 'passed':
         risk = next(r for r in result['residual_risk'] if r['defect_id'] == f'provider:{provider}')
-        assert status in risk['reason']
-        if 'reason' in document:
-            assert document['reason'] in risk['reason']
+        assert risk['reason']
+        if document.get('verdict', {}).get('root_claim'):
+            assert document['verdict']['root_claim']['reason'] in risk['reason']
+    elif provider == 'researchguard':
+        assert any(r['defect_id'] == 'research:root_claim_not_run' for r in result['residual_risk'])
 
 
 @pytest.mark.parametrize('contents', [None, 'not json', '[]'])
@@ -187,16 +204,17 @@ def test_unreadable_report_is_not_a_pass(tmp_path, contents):
     path = tmp_path / 'missing.json'
     if contents is not None:
         path.write_text(contents)
-    rows, risks, passed = provider_checks('investigation', {}, {}, [{'provider': 'sourceguard', 'path': str(path)}])
+    rows, risks, passed = provider_checks('investigation', {}, {}, [{'provider': 'researchguard', 'path': str(path)}])
     assert not passed and rows[0]['status'] == 'unreadable' and risks
 
 
 def test_required_providers_follow_live_alternatives_and_fiction_opt_in():
     from derive_closure import required_providers
     live = {'content_boundaries': {'alternatives': [{'status': 'live'}]}}
-    assert required_providers('investigation', live, {}) == {'sourceguard', 'logicguard'}
-    assert required_providers('academic-writing', live, {}) == {'logicguard'}
+    assert required_providers('investigation', live, {}) == {'researchguard'}
+    assert required_providers('academic-writing', live, {}) == {'researchguard'}
     assert not required_providers('academic-writing', {}, {})
+    assert required_providers('academic-writing', {'research_folder': 'native-question'}, {}) == {'researchguard'}
     assert required_providers('fiction-writing', {}, {'world_check_required': True}) == {'worldguard'}
     assert not required_providers('fiction-writing', {}, {})
     assert required_providers('travel-guide', {}, {}) == {'worldguard'}

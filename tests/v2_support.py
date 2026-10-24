@@ -9,14 +9,17 @@ from __future__ import annotations
 from pathlib import Path
 
 from _common import fingerprint, fingerprint_text, fingerprint_without
-from reader_pipeline import build_artifact_map, build_reader_audit, build_reader_brief
+from artifact_map import build_artifact_map
+from reader_checks import build_reader_audit
+from reader_plan import build_reader_brief
+from route_inputs import route_extension_fingerprint
 
 
 NOW = "2026-07-29T12:00:00Z"
 
 
 def _with_fp(value: dict, field: str) -> dict:
-    value[field] = fingerprint_without(value, field)
+    value[field] = route_extension_fingerprint(value) if field == "extension_fingerprint" else fingerprint_without(value, field)
     return value
 
 
@@ -223,6 +226,7 @@ def make_route_composition(owner: str, intent: dict, plan: dict) -> dict:
         })
     else:
         common.update({
+            "trip_plan": str(Path(__file__).resolve().parents[1] / "skills/logic-writing/assets/examples/travel/trip-plan.json"),
             "artifact_mode": intent["artifact_mode"],
             "guide_kind": "destination_guide",
             "structure_authority": "user_partial",
@@ -232,9 +236,9 @@ def make_route_composition(owner: str, intent: dict, plan: dict) -> dict:
                 "section_role": "帮助旅行者形成可执行选择。",
                 "incoming_traveler_state": "不了解目的地取舍。",
                 "outgoing_traveler_state": "知道适合自己的路线和边界。",
-                "route_refs": ["route:one"],
-                "traveler_fit_refs": ["fit:one"],
-                "local_texture_refs": ["local:one"],
+                "route_refs": ["route-old-market"],
+                "traveler_fit_refs": ["fit-old-market"],
+                "local_texture_refs": ["cand-market"],
                 "risk_fallback_binding_ids": ["risk-binding:one"],
                 "next_consumer_ids": [],
                 "prose_required": True,
@@ -248,7 +252,7 @@ def make_route_composition(owner: str, intent: dict, plan: dict) -> dict:
             "source_boundary_placement": "appendix:ops",
             "recheck_placement": "appendix:ops",
             "local_texture_candidates": [{
-                "candidate_id": "local:one",
+                "candidate_id": "cand-market",
                 "canonical_name": "Old Market",
                 "local_name": "老市场",
                 "accepted_aliases": [],
@@ -257,13 +261,13 @@ def make_route_composition(owner: str, intent: dict, plan: dict) -> dict:
             }],
             "risk_fallback_bindings": [{
                 "binding_id": "risk-binding:one",
-                "risk_id": "risk:rain",
+                "risk_id": "risk-rain",
                 "affected_section_ids": ["unit:answer"],
                 "trigger": "持续降雨",
                 "affected_travelers": ["步行耐受较低的旅行者"],
                 "mitigation": "缩短室外段",
-                "fallback_id": "fallback:covered",
-                "reachable_from_route_node_ids": ["route:one"],
+                "fallback_id": "fallback-reading-room",
+                "reachable_from_route_node_ids": ["node-market", "node-arcade"],
                 "evidence_mode": "recheck_required",
             }],
         })
@@ -541,9 +545,10 @@ def complete_chain(
     provider_reports = []
     if owner in {"investigation", "travel-guide"}:
         import json
-        provider = "sourceguard" if owner == "investigation" else "worldguard"
+        provider = "researchguard" if owner == "investigation" else "worldguard"
         report = workdir / "protocol-provider.json"
-        report.write_text(json.dumps({"status": "stop_sufficient" if provider == "sourceguard" else "PASS"}))
+        document = json.loads((Path(__file__).resolve().parent / "fixtures/trials/research-status.json").read_text()) if provider == "researchguard" else {"status": "PASS"}
+        report.write_text(json.dumps(document))
         provider_reports.append({"provider": provider, "path": str(report.resolve())})
     chain.update({
         "provider_reports": provider_reports,

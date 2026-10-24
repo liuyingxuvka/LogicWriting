@@ -17,6 +17,10 @@ from _common import dump_json, researchguard_version_problem, validation_result
 
 
 RESEARCHGUARD_MEMBERS = {
+    "researchguard": {
+        "member_command": "status",
+        "primary_path_id": "primary:researchguard:status",
+    },
     "sourceguard": {
         "member_command": "source",
         "primary_path_id": "primary:researchguard:source",
@@ -32,7 +36,6 @@ RESEARCHGUARD_MEMBERS = {
 }
 SCOPE_OUT_PROVIDERS = {
     "experimentguard": "ExperimentGuard is not an active Logic Writing provider.",
-    "researchguard": "The ResearchGuard umbrella route is not an active Logic Writing provider.",
 }
 
 SKILL_PROVIDERS = {

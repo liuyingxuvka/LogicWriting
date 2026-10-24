@@ -39,23 +39,16 @@ def test_fiction_route_keeps_final_ownership_over_bounded_research():
     assert decision["child_routes"] == ["investigation"]
 
 
-def test_native_fiction_binding_rejects_unbound_prose(monkeypatch):
-    monkeypatch.syspath_prepend(str(ROUTE / "scripts"))
-    from model_prose_binding_check import validate
-
-    source_path = ROUTE / "examples" / "longform_novel_project" / "model-prose-binding.json"
-    binding = json.loads(source_path.read_text(encoding="utf-8"))
-    report = validate(binding, str(source_path), repository_root=ROOT)
-    assert report["passed"] is True
-    assert report["issues"] == []
-
-    unbound = copy.deepcopy(binding)
-    unbound["unbound_prose_refs"] = ["final-prose.md#unbound-span"]
-    report = validate(unbound, str(source_path), repository_root=ROOT)
-    assert report["passed"] is False
-    assert {row["code"] for row in report["issues"]} == {
-        "unresolved_binding_gap", "passed_with_binding_errors",
-    }
+def test_native_fiction_binding_rejects_unbound_prose(tmp_path):
+    from validate_shared_writing import validate_shared_writing
+    chain = make_reader_chain(tmp_path, "fiction-writing")
+    source = copy.deepcopy(chain["shared_writing"])
+    source["unit_bindings"][0].pop("artifact_unit_ids")
+    source["unit_bindings"][0].pop("artifact_spans")
+    source["unit_bindings"][0]["anchor_excerpts"] = ["An invented sentence that is absent from the actual manuscript."]
+    source.pop("contract_fingerprint", None)
+    with pytest.raises(ValidationError, match="is not in the current text"):
+        validate_shared_writing({"contract": source, "artifact_map": chain["artifact_map"], "reader_brief": chain["reader_brief"]})
 
 
 def test_fiction_regression_timeout_kills_the_case(monkeypatch, tmp_path: Path):
@@ -88,23 +81,13 @@ def test_fiction_regression_timeout_kills_the_case(monkeypatch, tmp_path: Path):
     assert process.communicate_calls == [1, 30]
 
 
-@pytest.mark.parametrize("input_kind", ["missing", "invalid_json", "invalid_schema"])
-def test_longform_binding_negative_cannot_pass_from_input_failure(tmp_path, input_kind):
-    path = ROUTE / "scripts" / "run_longform_regression.py"
-    spec = importlib.util.spec_from_file_location("longform_fixture_oracle", path)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    case = next(row for row in module.command_matrix(ROOT) if row["id"] == "negative.unbound_prose_span")
-    external = tmp_path / "input.json"
-    if input_kind == "invalid_json":
-        external.write_text("{invalid JSON", encoding="utf-8")
-    elif input_kind == "invalid_schema":
-        external.write_text("{}", encoding="utf-8")
-    case["argv"][2] = str(external)
-    result = module.run_case(case, ROOT)
-    assert result["actual_exit_code"] == 1
-    assert result["passed"] is False
-    assert {"read_error", "json_decode_error", "invalid_schema_version"} & set(result["observed_issue_codes"])
+def test_longform_binding_negative_cannot_pass_from_input_failure(tmp_path):
+    from validate_shared_writing import validate_shared_writing
+    # A malformed envelope is an input failure, never the intended unbound-unit proof.
+    with pytest.raises(ValidationError) as caught:
+        validate_shared_writing({})
+    assert "required planned units are unbound" not in str(caught.value)
+
 
 
 def _fiction_brief_request(chain, route):
@@ -188,3 +171,54 @@ def test_worldguard_status_comes_from_native_reports(tmp_path, monkeypatch):
     assert not worldguard_claim_passable({"adapter_status": "pass", "closure_effect": "continue"})
     report = validate_ledger({"worldguard_claims": [{"worldguard_status": "pass"}]}, str(ledger))
     assert "worldguard_status_without_report" in {row["code"] for row in report["issues"]}
+
+
+def test_ledger_unit_must_be_a_planned_unit(tmp_path, monkeypatch):
+    import shutil
+    monkeypatch.syspath_prepend(str(ROUTE / "scripts"))
+    from novel_ledger_check import validate_ledger
+    from chapter_interface_check import validate as check_interfaces
+    project = tmp_path / "project"
+    shutil.copytree(ROUTE / "examples/longform_novel_project", project)
+    path = project / "novel-ledger.json"
+    payload = json.loads(path.read_text())
+    payload["story_units"][0]["planned_unit_id"] = "unknown-book"
+    report = validate_ledger(payload, str(path))
+    assert "unit_not_in_plan:novel_ledger:unknown-book" in {row["code"] for row in report["issues"]}
+    brief = project / "brief-request.json"
+    request = json.loads(brief.read_text())
+    for row in request["composition_plan"]["planned_units"]:
+        if row["planned_unit_id"] == "chapter-01": row["planned_unit_id"] = "new-chapter"
+    brief.write_text(json.dumps(request))
+    ledger = validate_ledger(json.loads(path.read_text()), str(path))
+    interfaces = check_interfaces(json.loads((project/"chapter-interfaces.json").read_text()), str(project/"chapter-interfaces.json"))
+    assert "unit_not_in_plan:novel_ledger:chapter-01" in {row["code"] for row in ledger["issues"]}
+    assert "unit_not_in_plan:chapter_interfaces:chapter-01" in {row["code"] for row in interfaces["issues"]}
+
+
+def test_unit_fields_live_only_in_the_plan():
+    project = ROUTE / "examples/longform_novel_project"
+    ledger = json.loads((project/"novel-ledger.json").read_text())
+    assert "hierarchy" not in ledger
+    for row in ledger["story_units"]:
+        assert "planned_unit_id" in row
+        assert not {"id", "kind", "parent_id", "contribution", "downstream_use"} & row.keys()
+    surfaces = json.loads((project/"chapter-interfaces.json").read_text())
+    for row in surfaces["chapter_interfaces"]:
+        assert "planned_unit_id" in row
+        assert not {"chapter_id", "previous_chapter_id", "next_chapter_id", "reader_state_before", "reader_state_after"} & row.keys()
+
+
+def test_emptied_ledger_fails_longform_closure(tmp_path, monkeypatch):
+    import shutil
+    monkeypatch.syspath_prepend(str(ROUTE / "scripts"))
+    from longform_closure_check import validate
+    project = tmp_path/"project"
+    shutil.copytree(ROUTE/"examples/longform_novel_project", project)
+    source = project/"project-mesh.json"
+    payload = json.loads(source.read_text())
+    assert validate(payload, str(source))["passed"]
+    (project/"novel-ledger.json").write_text("{}")
+    report = validate(payload, str(source))
+    assert report["decision"] == "needs_repair"
+    assert report["surface_checks"]["novel_ledger"]["passed"] is False

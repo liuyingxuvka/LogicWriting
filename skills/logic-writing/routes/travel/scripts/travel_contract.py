@@ -1,9 +1,15 @@
 from __future__ import annotations
 
 import json
+import copy
+import sys
 from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any, Iterable
+
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts"))
+from _common import read_worldguard_report
 
 
 SCHEMA_VERSION = "travel-story-planner.plan.v2"
@@ -39,14 +45,9 @@ REQUIRED_FIT_DIMENSIONS = {
     "fallback_fit",
     "food_fit",
 }
-SOURCE_STATUSES = {"inspected", "access_gap", "snippet_only", "unavailable"}
-FRESHNESS_STATUSES = {"current", "bounded", "stale", "unknown"}
 CANDIDATE_STATUSES = {"candidate", "usable", "partial", "gap", "rejected", "fallback_only"}
-WORLD_STATUSES = {"pass", "partial", "gap", "fail", "boundary_exceeded", "stale", "not_applicable", "not_run"}
 ROUTE_STATUSES = {"pass", "partial", "gap", "fail", "stale", "blocked"}
 FIT_STATUSES = {"pass", "downgraded", "revise", "human_review", "blocked"}
-GUIDE_STATUSES = {"pass", "partial", "revise", "downgraded", "blocked", "human_review", "scoped_out"}
-PROMISE_STATUSES = {"paid", "inverted", "deferred_with_boundary", "downgraded", "human_review"}
 
 
 def issue(code: str, message: str) -> dict[str, str]:
@@ -138,7 +139,6 @@ def validate_trip_context(data: dict[str, Any], issues: list[dict[str, str]]) ->
             "overnight",
             "nights",
             "requested_claim_level",
-            "allowed_claim_level",
             "evaluation_mode",
         ),
         "trip_context",
@@ -152,13 +152,8 @@ def validate_trip_context(data: dict[str, Any], issues: list[dict[str, str]]) ->
     if relation not in DATE_RELATIONS:
         issues.append(issue("trip_context.date_relation.invalid", "date_relation is invalid."))
     requested = context.get("requested_claim_level")
-    allowed = context.get("allowed_claim_level")
     if requested not in CLAIM_LEVELS:
         issues.append(issue("trip_context.requested_claim_level.invalid", "requested_claim_level is invalid."))
-    if allowed not in CLAIM_LEVELS:
-        issues.append(issue("trip_context.allowed_claim_level.invalid", "allowed_claim_level is invalid."))
-    if isinstance(requested, str) and isinstance(allowed, str) and _claim_rank(allowed) > _claim_rank(requested):
-        issues.append(issue("trip_context.allowed_claim_level.overreach", "allowed_claim_level cannot exceed requested_claim_level."))
     days = context.get("trip_days")
     nights = context.get("nights")
     if not isinstance(days, int) or days < 1:
@@ -263,11 +258,10 @@ def validate_source_portfolio(
                 "source_date",
                 "coverage_period",
                 "locator",
-                "access_status",
                 "content_sha256",
                 "can_support",
                 "cannot_support",
-                "freshness_status",
+                "checked_on",
                 "next_action",
             ),
             "source_portfolio.source",
@@ -277,10 +271,10 @@ def validate_source_portfolio(
         source_class = row.get("source_class")
         if isinstance(source_class, str):
             classes.setdefault(source_class, set()).add(source_id)
-        if row.get("access_status") not in SOURCE_STATUSES:
-            issues.append(issue("source_portfolio.access_status.invalid", f"Source {source_id} has invalid access_status."))
-        if row.get("freshness_status") not in FRESHNESS_STATUSES:
-            issues.append(issue("source_portfolio.freshness_status.invalid", f"Source {source_id} has invalid freshness_status."))
+        checked = _parse_iso_date(row.get("checked_on"))
+        planning = _parse_iso_datetime(context.get("planning_as_of"))
+        if checked is None or planning is not None and checked > planning.date():
+            issues.append(issue("source_portfolio.checked_on.invalid", f"Source {source_id} needs a valid check date no later than planning_as_of."))
         if not as_list(row.get("can_support")) or not as_list(row.get("cannot_support")):
             issues.append(issue("source_portfolio.support_boundary.missing", f"Source {source_id} needs positive and negative support boundaries."))
     required = set(REQUIRED_SOURCE_CLASSES)
@@ -328,7 +322,6 @@ def validate_candidates(
                 "negative_signal_ids",
                 "world_check_id",
                 "freshness",
-                "access_status",
                 "candidate_status",
                 "next_action",
             ),
@@ -349,6 +342,11 @@ def validate_candidates(
     return candidate_index
 
 
+def _world_check_covers(check, kind, identity, context):
+    return bool(check) and ((check.get("target_type") == kind and check.get("target_id") == identity)
+        or (check.get("target_type") == "trip" and check.get("target_id") == context.get("trip_id")))
+
+
 def validate_world_checks(
     data: dict[str, Any],
     candidate_index: dict[str, dict[str, Any]],
@@ -359,13 +357,11 @@ def validate_world_checks(
     for check_id, row in world_index.items():
         require_fields(
             row,
-            ("target_type", "target_id", "guards_checked", "status", "missing_slots", "counterexamples", "boundary", "next_action"),
+            ("target_type", "target_id", "guards_checked", "worldguard_report", "missing_slots", "counterexamples", "boundary", "next_action"),
             "world_feasibility.check",
             f"World check {check_id}",
             issues,
         )
-        if row.get("status") not in WORLD_STATUSES:
-            issues.append(issue("world_feasibility.status.invalid", f"World check {check_id} has invalid status."))
         if row.get("target_type") == "candidate" and row.get("target_id") not in candidate_index:
             issues.append(issue("world_feasibility.candidate_target.unknown", f"World check {check_id} targets an unknown candidate."))
     for candidate_id, candidate in candidate_index.items():
@@ -374,7 +370,7 @@ def validate_world_checks(
         if check is None:
             issues.append(issue("experience_candidate_pool.world_check.missing", f"Candidate {candidate_id} has no current World check."))
             continue
-        if check.get("target_type") != "candidate" or check.get("target_id") != candidate_id:
+        if not _world_check_covers(check, "candidate", candidate_id, as_dict(data.get("trip_context"))):
             issues.append(issue("experience_candidate_pool.world_check.target_mismatch", f"Candidate {candidate_id} cites a World check owned by another target."))
         if candidate.get("candidate_status") == "usable" and check.get("status") != "pass":
             issues.append(issue("experience_candidate_pool.status.overclaim", f"Candidate {candidate_id} is usable over a non-pass World check."))
@@ -420,8 +416,8 @@ def validate_routes(
 ) -> tuple[dict[str, dict[str, Any]], dict[str, dict[str, Any]], float]:
     routes = as_list(as_dict(data.get("route_mesh")).get("routes"))
     route_index = index_rows(routes, "trace_id", "route_mesh", issues)
-    if len(route_index) < 2:
-        issues.append(issue("route_mesh.too_few_routes", "At least two current route traces are required."))
+    if not route_index:
+        issues.append(issue("route_mesh.too_few_routes", "At least one current route is required."))
     route_types = {str(row.get("route_type")) for row in route_index.values()}
     if "primary" not in route_types:
         issues.append(issue("route_mesh.primary.missing", "A primary route is required."))
@@ -433,7 +429,7 @@ def validate_routes(
     for trace_id, route in route_index.items():
         require_fields(
             route,
-            ("route_type", "title", "day_ids", "story_arc", "route_nodes", "movement_edges", "operational_steps", "world_check_ids", "weakest_links", "fallback_ids", "feasibility_status", "evidence_boundary", "downgrade_reason"),
+            ("route_type", "title", "day_ids", "story_arc", "route_nodes", "movement_edges", "operational_steps", "world_check_ids", "weakest_links", "fallback_ids", "evidence_boundary", "downgrade_reason"),
             "route_mesh.route",
             f"Route {trace_id}",
             issues,
@@ -475,7 +471,7 @@ def validate_routes(
             world = world_index.get(str(node.get("world_check_id")))
             if world is None:
                 issues.append(issue("route_mesh.node.world_check_missing", f"Route node {node_id} lacks a current World check."))
-            elif world.get("target_type") != "candidate" or world.get("target_id") != candidate_id:
+            elif not _world_check_covers(world, "candidate", candidate_id, context):
                 issues.append(issue("route_mesh.node.world_check.target_mismatch", f"Route node {node_id} uses a World check for another target."))
             unknown_risks = sorted(set(map(str, as_list(node.get("risk_ids")))) - set(pit_index))
             if unknown_risks:
@@ -503,7 +499,7 @@ def validate_routes(
             world = world_index.get(world_id)
             if world is None:
                 issues.append(issue("route_mesh.world_check.missing", f"Route {trace_id} references missing World check {world_id}."))
-            elif world.get("target_type") != "route" or world.get("target_id") != trace_id:
+            elif not _world_check_covers(world, "route", trace_id, context):
                 issues.append(issue("route_mesh.world_check.target_mismatch", f"Route {trace_id} cites a World check for another target."))
             elif route.get("feasibility_status") == "pass" and world.get("status") != "pass":
                 issues.append(issue("route_mesh.feasibility_status.overclaim", f"Route {trace_id} passes over a non-pass World check."))
@@ -533,8 +529,8 @@ def validate_fallbacks(
 ) -> dict[str, dict[str, Any]]:
     rows = as_list(data.get("fallback_options"))
     fallback_index = index_rows(rows, "fallback_id", "fallback_options", issues)
-    if len(fallback_index) < 2:
-        issues.append(issue("fallback_options.too_few", "At least two named fallback options are required."))
+    if not fallback_index:
+        issues.append(issue("fallback_options.too_few", "At least one named fallback option is required."))
     node_owner = {
         str(node.get("route_node_id")): trace_id
         for trace_id, route in route_index.items()
@@ -587,7 +583,7 @@ def validate_fallbacks(
         if unknown_sources:
             issues.append(issue("fallback_options.source.unknown", f"Fallback {fallback_id} references unknown sources."))
         world = world_index.get(str(row.get("world_check_id")))
-        if world is None or world.get("target_type") != "candidate" or world.get("target_id") != row.get("candidate_id"):
+        if not _world_check_covers(world, "candidate", row.get("candidate_id"), as_dict(data.get("trip_context"))):
             issues.append(issue("fallback_options.world_check.target_mismatch", f"Fallback {fallback_id} lacks the exact candidate World check."))
     for pit_id, pit in pit_index.items():
         unknown = sorted(set(map(str, as_list(pit.get("fallback_ids")))) - set(fallback_index))
@@ -651,9 +647,7 @@ def validate_trip_fit(
     if not fit:
         issues.append(issue("trip_fit_review.missing", "trip_fit_review is required."))
         return {}
-    require_fields(fit, ("status", "dimension_rows", "boundary"), "trip_fit_review", "trip_fit_review", issues)
-    if fit.get("status") not in FIT_STATUSES:
-        issues.append(issue("trip_fit_review.status.invalid", "trip_fit_review status is invalid."))
+    require_fields(fit, ("dimension_rows", "boundary"), "trip_fit_review", "trip_fit_review", issues)
     rows = as_list(fit.get("dimension_rows"))
     dimensions = index_rows(rows, "dimension", "trip_fit_review.dimension", issues)
     required = set(REQUIRED_FIT_DIMENSIONS)
@@ -701,8 +695,7 @@ def validate_trip_fit(
         unknown = sorted(set(map(str, as_list(row.get("affected_trace_ids")))) - set(route_index))
         if unknown:
             issues.append(issue("trip_fit_review.dimension.trace_unknown", f"Fit dimension {dimension} references unknown routes."))
-    if fit.get("status") == "pass" and nonpass:
-        issues.append(issue("trip_fit_review.status.overclaim", "Trip fit passes over a non-pass dimension."))
+    fit["status"] = "pass" if not nonpass and not missing else "blocked"
     return fit
 
 
@@ -718,85 +711,57 @@ def validate_recommendation(
     if not recommendation:
         issues.append(issue("recommendation_support.missing", "recommendation_support is required."))
         return {}
-    require_fields(recommendation, ("status", "candidate_ids", "trace_ids", "world_check_ids", "fit_status", "boundary", "next_action"), "recommendation_support", "recommendation_support", issues)
-    status = recommendation.get("status")
-    if status not in {"pass", "downgraded", "revise", "blocked"}:
-        issues.append(issue("recommendation_support.status.invalid", "recommendation_support status is invalid."))
+    require_fields(recommendation, ("candidate_ids", "route_ids", "world_check_ids", "boundary", "next_action"), "recommendation_support", "recommendation_support", issues)
     candidate_ids = set(map(str, as_list(recommendation.get("candidate_ids"))))
-    trace_ids = set(map(str, as_list(recommendation.get("trace_ids"))))
+    route_ids = set(map(str, as_list(recommendation.get("route_ids"))))
     world_ids = set(map(str, as_list(recommendation.get("world_check_ids"))))
     if candidate_ids - set(candidate_index):
-        issues.append(issue("recommendation_support.candidate.unknown", "recommendation_support references unknown candidates."))
-    if trace_ids - set(route_index):
-        issues.append(issue("recommendation_support.trace.unknown", "recommendation_support references unknown routes."))
+        issues.append(issue("recommendation_support.candidate.unknown", "Recommendation references unknown candidates."))
+    if route_ids - set(route_index):
+        issues.append(issue("recommendation_support.route.unknown", "Recommendation references unknown routes."))
     if world_ids - set(world_index):
-        issues.append(issue("recommendation_support.world_check.unknown", "recommendation_support references unknown World checks."))
-    if recommendation.get("fit_status") != fit.get("status"):
-        issues.append(issue("recommendation_support.fit_status.mismatch", "recommendation_support fit_status does not match trip_fit_review."))
-    if status == "pass":
-        if any(candidate_index[candidate_id].get("candidate_status") != "usable" for candidate_id in candidate_ids if candidate_id in candidate_index):
-            issues.append(issue("recommendation_support.candidate_status.overclaim", "Recommendation passes over a non-usable candidate."))
-        if any(route_index[trace_id].get("feasibility_status") != "pass" for trace_id in trace_ids if trace_id in route_index):
-            issues.append(issue("recommendation_support.route_status.overclaim", "Recommendation passes over a non-pass route."))
-        if any(world_index[world_id].get("status") != "pass" for world_id in world_ids if world_id in world_index):
-            issues.append(issue("recommendation_support.world_status.overclaim", "Recommendation passes over a non-pass World check."))
-        if fit.get("status") != "pass":
-            issues.append(issue("recommendation_support.fit_status.overclaim", "Recommendation passes over a non-pass fit review."))
+        issues.append(issue("recommendation_support.world_check.unknown", "Recommendation references unknown World checks."))
+    passed = (bool(candidate_ids and route_ids and world_ids)
+        and candidate_ids <= set(candidate_index) and route_ids <= set(route_index) and world_ids <= set(world_index)
+        and all(candidate_index[item].get("candidate_status") == "usable" for item in candidate_ids if item in candidate_index)
+        and all(route_index[item].get("feasibility_status") == "pass" for item in route_ids if item in route_index)
+        and all(world_index[item].get("status") == "pass" for item in world_ids if item in world_index)
+        and fit.get("status") == "pass")
+    recommendation["status"] = "pass" if passed else "blocked"
     return recommendation
 
 
-def validate_reader_projection(
-    data: dict[str, Any],
-    candidate_index: dict[str, dict[str, Any]],
-    route_index: dict[str, dict[str, Any]],
-    world_index: dict[str, dict[str, Any]],
-    issues: list[dict[str, str]],
-) -> None:
-    projection = as_dict(data.get("reader_projection"))
-    if not projection:
-        issues.append(issue("reader_projection.missing", "reader_projection is required."))
-        return
-    require_fields(projection, ("route_options", "operational_summary", "risk_summary", "evidence_boundary", "pre_departure_recheck", "model_evidence"), "reader_projection", "reader_projection", issues)
-    model = as_dict(projection.get("model_evidence"))
-    require_fields(model, ("candidate_ids", "trace_ids", "world_check_ids", "trip_fit_status", "recommendation_status"), "reader_projection.model_evidence", "reader_projection.model_evidence", issues)
-    if set(map(str, as_list(model.get("candidate_ids")))) - set(candidate_index):
-        issues.append(issue("reader_projection.model_evidence.candidate_unknown", "reader_projection references unknown candidates."))
-    if set(map(str, as_list(model.get("trace_ids")))) - set(route_index):
-        issues.append(issue("reader_projection.model_evidence.trace_unknown", "reader_projection references unknown traces."))
-    if set(map(str, as_list(model.get("world_check_ids")))) - set(world_index):
-        issues.append(issue("reader_projection.model_evidence.world_unknown", "reader_projection references unknown World checks."))
 
 
 def validate_weather_evidence(
-    guide: dict[str, Any],
     context: dict[str, Any],
     source_index: dict[str, dict[str, Any]],
     fallback_index: dict[str, dict[str, Any]],
     issues: list[dict[str, str]],
 ) -> dict[str, Any]:
-    weather = as_dict(guide.get("weather_evidence_summary"))
+    weather = as_dict(context.get("weather_evidence_summary"))
     if not weather:
-        issues.append(issue("traveler_native_guide.weather_summary.missing", "weather_evidence_summary is required."))
+        issues.append(issue("trip_context.weather_summary.missing", "weather_evidence_summary is required."))
         return {}
     require_fields(
         weather,
         ("weather_summary_id", "date_relation", "source_type", "weather_source_mode", "source_ids", "covered_dates", "checked_hazards", "affected_day_ids", "route_adjustments", "fallback_ids", "claim_status", "recheck_note"),
-        "traveler_native_guide.weather_summary",
+        "trip_context.weather_summary",
         "weather_evidence_summary",
         issues,
     )
     if "missing_or_downgraded_hazards" not in weather or not isinstance(weather.get("missing_or_downgraded_hazards"), list):
-        issues.append(issue("traveler_native_guide.weather_summary.missing_or_downgraded_hazards.missing", "weather_evidence_summary needs an explicit missing_or_downgraded_hazards list."))
+        issues.append(issue("trip_context.weather_summary.missing_or_downgraded_hazards.missing", "weather_evidence_summary needs an explicit missing_or_downgraded_hazards list."))
     relation = context.get("date_relation")
     mode = weather.get("weather_source_mode")
     if weather.get("date_relation") != relation:
-        issues.append(issue("traveler_native_guide.weather_summary.date_relation.mismatch", "Weather summary date relation differs from trip_context."))
+        issues.append(issue("trip_context.weather_summary.date_relation.mismatch", "Weather summary date relation differs from trip_context."))
     if mode not in WEATHER_MODES_BY_DATE.get(str(relation), set()):
-        issues.append(issue("traveler_native_guide.weather_summary.chronology_mismatch", "Weather source mode does not support this trip chronology."))
+        issues.append(issue("trip_context.weather_summary.chronology_mismatch", "Weather source mode does not support this trip chronology."))
     source_ids = set(map(str, as_list(weather.get("source_ids"))))
     unknown = sorted(source_ids - set(source_index))
     if unknown:
-        issues.append(issue("traveler_native_guide.weather_summary.source_unknown", "Weather summary references unknown sources."))
+        issues.append(issue("trip_context.weather_summary.source_unknown", "Weather summary references unknown sources."))
     weather_classes = {source_index[source_id].get("source_class") for source_id in source_ids if source_id in source_index}
     required_classes = {
         "forecast": {"weather_forecast"},
@@ -807,124 +772,12 @@ def validate_weather_evidence(
         "climate": {"weather_climate"},
     }.get(str(mode), set())
     if not required_classes <= weather_classes:
-        issues.append(issue("traveler_native_guide.weather_summary.source_class.mismatch", "Weather summary lacks source classes required by its mode."))
+        issues.append(issue("trip_context.weather_summary.source_class.mismatch", "Weather summary lacks source classes required by its mode."))
     if set(map(str, as_list(weather.get("fallback_ids")))) - set(fallback_index):
-        issues.append(issue("traveler_native_guide.weather_summary.fallback_unknown", "Weather summary references unknown fallbacks."))
+        issues.append(issue("trip_context.weather_summary.fallback_unknown", "Weather summary references unknown fallbacks."))
     return weather
 
 
-def validate_guide(
-    data: dict[str, Any],
-    context: dict[str, Any],
-    source_index: dict[str, dict[str, Any]],
-    candidate_index: dict[str, dict[str, Any]],
-    pit_index: dict[str, dict[str, Any]],
-    fallback_index: dict[str, dict[str, Any]],
-    route_index: dict[str, dict[str, Any]],
-    node_index: dict[str, dict[str, Any]],
-    issues: list[dict[str, str]],
-) -> dict[str, Any]:
-    guide = as_dict(data.get("traveler_native_guide"))
-    if not guide:
-        issues.append(issue("traveler_native_guide.missing", "traveler_native_guide is required."))
-        return {}
-    projection = as_dict(guide.get("guide_projection"))
-    require_fields(projection, ("reader_visibility", "source_model_surfaces", "blocked_internal_terms", "traveler_facing_brief", "claim_boundary"), "traveler_native_guide.projection", "guide_projection", issues)
-    if projection.get("reader_visibility") != "traveler_native":
-        issues.append(issue("traveler_native_guide.projection.visibility", "reader_visibility must be traveler_native."))
-    scenes = as_list(guide.get("travel_scene_contracts"))
-    scene_index = index_rows(scenes, "scene_id", "traveler_native_guide.scene", issues)
-    day_ids = set(map(str, as_list(context.get("day_ids"))))
-    covered_days: set[str] = set()
-    day_scene_by_day: dict[str, dict[str, Any]] = {}
-    for scene_id, row in scene_index.items():
-        require_fields(row, ("kind", "owner_id", "entry_state", "intended_traveler_experience", "obstacle", "turn", "exit_state", "contribution", "local_texture_candidate_ids", "risk_trigger_ids", "fallback_ids", "contract_status"), "traveler_native_guide.scene", f"Scene {scene_id}", issues)
-        kind = row.get("kind")
-        owner_id = row.get("owner_id")
-        if kind == "day":
-            if owner_id not in day_ids:
-                issues.append(issue("traveler_native_guide.scene.day_unknown", f"Scene {scene_id} references unknown day."))
-            else:
-                covered_days.add(str(owner_id))
-                day_scene_by_day[str(owner_id)] = row
-        elif kind == "node":
-            if owner_id not in node_index:
-                issues.append(issue("traveler_native_guide.scene.node_unknown", f"Scene {scene_id} references unknown route node."))
-        else:
-            issues.append(issue("traveler_native_guide.scene.kind.invalid", f"Scene {scene_id} has invalid kind."))
-        if set(map(str, as_list(row.get("local_texture_candidate_ids")))) - set(candidate_index):
-            issues.append(issue("traveler_native_guide.scene.texture_candidate_unknown", f"Scene {scene_id} references unknown candidates."))
-        if set(map(str, as_list(row.get("risk_trigger_ids")))) - set(pit_index):
-            issues.append(issue("traveler_native_guide.scene.risk_unknown", f"Scene {scene_id} references unknown risks."))
-        if set(map(str, as_list(row.get("fallback_ids")))) - set(fallback_index):
-            issues.append(issue("traveler_native_guide.scene.fallback_unknown", f"Scene {scene_id} references unknown fallbacks."))
-        if row.get("contract_status") not in GUIDE_STATUSES:
-            issues.append(issue("traveler_native_guide.scene.status.invalid", f"Scene {scene_id} has invalid status."))
-    if day_ids - covered_days:
-        issues.append(issue("traveler_native_guide.scene.day_coverage.missing", "Every trip day needs a day-owned scene."))
-    promises = as_list(guide.get("experience_promises"))
-    promise_index = index_rows(promises, "promise_id", "traveler_native_guide.promise", issues)
-    compatible = {
-        "food": {"restaurant"},
-        "shopping": {"shop"},
-        "rest": {"rest", "hotel"},
-        "lodging": {"hotel"},
-        "experience": {"attraction", "activity", "neighborhood"},
-        "mobility": {"transport", "rest"},
-    }
-    for promise_id, row in promise_index.items():
-        require_fields(row, ("promise_kind", "promise_text", "importance", "expected_payoff", "payoff_status", "concrete_payoff", "candidate_ids", "fallback_ids", "evidence_source_ids"), "traveler_native_guide.promise", f"Promise {promise_id}", issues)
-        if row.get("payoff_status") not in PROMISE_STATUSES:
-            issues.append(issue("traveler_native_guide.promise.status.invalid", f"Promise {promise_id} has invalid payoff status."))
-        candidate_ids = set(map(str, as_list(row.get("candidate_ids"))))
-        if candidate_ids - set(candidate_index):
-            issues.append(issue("traveler_native_guide.promise.candidate_unknown", f"Promise {promise_id} references unknown candidates."))
-        allowed_classes = compatible.get(str(row.get("promise_kind")), set())
-        actual_classes = {str(candidate_index[candidate_id].get("class")) for candidate_id in candidate_ids if candidate_id in candidate_index}
-        if allowed_classes and not (allowed_classes & actual_classes):
-            issues.append(issue("traveler_native_guide.promise.candidate_class_mismatch", f"Promise {promise_id} lacks compatible candidate evidence."))
-        if set(map(str, as_list(row.get("fallback_ids")))) - set(fallback_index):
-            issues.append(issue("traveler_native_guide.promise.fallback_unknown", f"Promise {promise_id} references unknown fallbacks."))
-        if set(map(str, as_list(row.get("evidence_source_ids")))) - set(source_index):
-            issues.append(issue("traveler_native_guide.promise.source_unknown", f"Promise {promise_id} references unknown sources."))
-    interfaces = as_list(guide.get("day_interfaces"))
-    if len(day_ids) > 1:
-        if len(interfaces) != len(day_ids) - 1:
-            issues.append(issue("traveler_native_guide.day_interface.count", "Multi-day guide needs one interface per adjacent day pair."))
-        expected_pairs = list(zip(as_list(context.get("day_ids"))[:-1], as_list(context.get("day_ids"))[1:]))
-        actual_pairs = [(row.get("previous_day_id"), row.get("next_day_id")) for row in interfaces if isinstance(row, dict)]
-        if actual_pairs != expected_pairs:
-            issues.append(issue("traveler_native_guide.day_interface.chain", "Day interfaces must form the exact adjacent day chain."))
-        for row in interfaces:
-            if isinstance(row, dict):
-                require_fields(row, ("interface_id", "previous_day_id", "next_day_id", "previous_output", "current_input", "traveler_state_before", "traveler_state_after", "unresolved_choices", "promise_movements", "status"), "traveler_native_guide.day_interface", "day_interface", issues)
-                previous_scene = day_scene_by_day.get(str(row.get("previous_day_id")))
-                next_scene = day_scene_by_day.get(str(row.get("next_day_id")))
-                if previous_scene and row.get("previous_output") != previous_scene.get("exit_state"):
-                    issues.append(issue("traveler_native_guide.day_interface.previous_output_mismatch", "Day interface previous_output must equal the previous day scene exit_state."))
-                if next_scene and row.get("current_input") != next_scene.get("entry_state"):
-                    issues.append(issue("traveler_native_guide.day_interface.current_input_mismatch", "Day interface current_input must equal the next day scene entry_state."))
-    texture = as_dict(guide.get("local_texture_index"))
-    require_fields(texture, ("food_candidate_ids", "shopping_candidate_ids", "rest_candidate_ids", "negative_signal_ids", "named_fallback_ids"), "traveler_native_guide.local_texture", "local_texture_index", issues)
-    texture_classes = {
-        "food_candidate_ids": {"restaurant"},
-        "shopping_candidate_ids": {"shop"},
-        "rest_candidate_ids": {"rest", "hotel"},
-    }
-    for field, allowed in texture_classes.items():
-        values = set(map(str, as_list(texture.get(field))))
-        if not values:
-            issues.append(issue("traveler_native_guide.local_texture.too_thin", f"{field} is empty."))
-        if values - set(candidate_index):
-            issues.append(issue("traveler_native_guide.local_texture.candidate_unknown", f"{field} references unknown candidates."))
-        if any(candidate_index[value].get("class") not in allowed for value in values if value in candidate_index):
-            issues.append(issue("traveler_native_guide.local_texture.candidate_class_mismatch", f"{field} contains incompatible candidate classes."))
-    if set(map(str, as_list(texture.get("negative_signal_ids")))) - set(pit_index):
-        issues.append(issue("traveler_native_guide.local_texture.risk_unknown", "local texture references unknown risks."))
-    if set(map(str, as_list(texture.get("named_fallback_ids")))) - set(fallback_index):
-        issues.append(issue("traveler_native_guide.local_texture.fallback_unknown", "local texture references unknown fallbacks."))
-    validate_weather_evidence(guide, context, source_index, fallback_index, issues)
-    return guide
 
 
 def derive_allowed_claim_level(
@@ -934,15 +787,15 @@ def derive_allowed_claim_level(
     route_index: dict[str, dict[str, Any]],
     fit: dict[str, Any],
     recommendation: dict[str, Any],
-    guide: dict[str, Any],
 ) -> tuple[str, str]:
     relation = str(context.get("date_relation"))
-    weather = as_dict(guide.get("weather_evidence_summary"))
+    weather = as_dict(context.get("weather_evidence_summary"))
     mode = str(weather.get("weather_source_mode"))
-    all_sources_current = all(
-        row.get("access_status") == "inspected" and row.get("freshness_status") == "current"
-        for row in source_index.values()
-    )
+    # Currency means checked on the planning date, never a caller-authored freshness label.
+    # No invented expiry window: later dates are invalid; earlier checks cannot authorize booking/day-of claims.
+    planning = _parse_iso_datetime(context.get("planning_as_of"))
+    all_sources_current = bool(source_index) and planning is not None and all(
+        _parse_iso_date(row.get("checked_on")) == planning.date() for row in source_index.values())
     all_world_pass = bool(world_index) and all(row.get("status") == "pass" for row in world_index.values())
     all_routes_pass = bool(route_index) and all(row.get("feasibility_status") == "pass" for row in route_index.values())
     all_domain_pass = all_world_pass and all_routes_pass and fit.get("status") == "pass" and recommendation.get("status") == "pass"
@@ -957,15 +810,16 @@ def derive_allowed_claim_level(
     return "initial_plan", "current_fact_or_weather_gap"
 
 
-def validate_plan(
+def review_plan(
     data: dict[str, Any],
     *,
     plan_path: Path | None = None,
     repository_root: Path | None = None,
-) -> list[dict[str, str]]:
+) -> dict[str, Any]:
     issues: list[dict[str, str]] = []
     if data.get("schema_version") != SCHEMA_VERSION:
-        return [issue("schema_version.invalid", f"Only {SCHEMA_VERSION} is current; no former plan reader exists.")]
+        return {"allowed_claim_level": "initial_plan", "allowed_claim_reason": "invalid_plan", "issues": [issue("schema_version.invalid", f"Only {SCHEMA_VERSION} is current; no former plan reader exists.")]}
+    data = _derive_inputs(data, plan_path, issues)
     context = validate_trip_context(data, issues)
     profile = validate_traveler_profile(data, issues)
     source_index, _source_classes = validate_source_portfolio(data, context, issues)
@@ -977,13 +831,70 @@ def validate_plan(
     validate_lodging(data, context, candidate_index, world_index, route_index, issues)
     fit = validate_trip_fit(data, context, profile, route_index, issues)
     recommendation = validate_recommendation(data, candidate_index, route_index, world_index, fit, issues)
-    validate_reader_projection(data, candidate_index, route_index, world_index, issues)
-    guide = validate_guide(data, context, source_index, candidate_index, pit_index, fallback_index, route_index, node_index, issues)
-    derived_level, derived_reason = derive_allowed_claim_level(context, source_index, world_index, route_index, fit, recommendation, guide)
-    allowed = context.get("allowed_claim_level")
-    if allowed in CLAIM_LEVELS and allowed != derived_level:
-        issues.append(issue("trip_context.allowed_claim_level.derived_mismatch", f"trip_context declares {allowed}, but the current evidence supports {derived_level} ({derived_reason})."))
-    return issues
+    validate_weather_evidence(context, source_index, fallback_index, issues)
+    derived_level, derived_reason = derive_allowed_claim_level(context, source_index, world_index, route_index, fit, recommendation)
+    if issues and derived_level != "initial_plan":
+        derived_level, derived_reason = "initial_plan", "invalid_trip_inputs"
+    requested = context.get("requested_claim_level")
+    if requested in CLAIM_LEVELS and _claim_rank(requested) > _claim_rank(derived_level):
+        issues.append(issue("trip_context.requested_claim_level.overreach", f"Requested {requested}, but saved reports and check dates support only {derived_level} ({derived_reason})."))
+    return {"allowed_claim_level": derived_level, "allowed_claim_reason": derived_reason, "issues": issues,
+            "derived": {"world_checks": {key: row.get("status") for key, row in world_index.items()},
+                        "routes": {key: row.get("feasibility_status") for key, row in route_index.items()},
+                        "trip_fit": fit.get("status", "blocked"),
+                        "recommendation": recommendation.get("status", "blocked")}}
+
+
+def validate_plan(data: dict[str, Any], *, plan_path: Path | None = None,
+                  repository_root: Path | None = None) -> list[dict[str, str]]:
+    return review_plan(data, plan_path=plan_path, repository_root=repository_root)["issues"]
+
+
+def _derive_inputs(original: dict[str, Any], plan_path: Path | None, issues: list[dict[str, str]]) -> dict[str, Any]:
+    data = copy.deepcopy(original)
+    def retired(row, key, label):
+        if key in row:
+            issues.append(issue(f"{label}.{key}.retired", f"{label}.{key} is retired; use the trip model inputs and saved WorldGuard reports."))
+            row.pop(key)
+    for key in ("reader_projection", "traveler_native_guide"):
+        retired(data, key, "trip_plan")
+    context = as_dict(data.get("trip_context"))
+    retired(context, "allowed_claim_level", "trip_context")
+    for row in as_list(as_dict(data.get("source_portfolio")).get("sources")):
+        if isinstance(row, dict):
+            for key in ("freshness_status", "access_status"):
+                retired(row, key, "source_portfolio")
+    for row in as_list(as_dict(data.get("experience_candidate_pool")).get("candidates")):
+        if isinstance(row, dict):
+            for key in ("access_status", "freshness_status"):
+                retired(row, key, "experience_candidate_pool")
+    report_statuses = {}
+    for row in as_list(as_dict(data.get("world_feasibility")).get("checks")):
+        if not isinstance(row, dict):
+            continue
+        retired(row, "status", "world_feasibility")
+        reference = row.get("worldguard_report")
+        status = "unreadable"
+        if isinstance(reference, str) and reference:
+            report_path = ((plan_path.parent if plan_path else Path.cwd()) / reference).resolve()
+            if report_path not in report_statuses:
+                report_statuses[report_path] = read_worldguard_report(report_path)
+            status = report_statuses[report_path]
+        row["status"] = status.lower()
+        if status == "unreadable":
+            issues.append(issue("world_feasibility.report.unreadable", f"WorldGuard report could not be read: {reference}"))
+    world_index = {row.get("world_check_id"): row for row in as_list(as_dict(data.get("world_feasibility")).get("checks")) if isinstance(row, dict)}
+    for row in as_list(as_dict(data.get("route_mesh")).get("routes")):
+        if not isinstance(row, dict):
+            continue
+        retired(row, "feasibility_status", "route_mesh")
+        refs = as_list(row.get("world_check_ids"))
+        row["feasibility_status"] = "pass" if refs and all(world_index.get(ref, {}).get("status") == "pass" for ref in refs) else "blocked"
+    retired(as_dict(data.get("trip_fit_review")), "status", "trip_fit_review")
+    recommendation = as_dict(data.get("recommendation_support"))
+    for key in ("status", "fit_status", "trace_ids"):
+        retired(recommendation, key, "recommendation_support")
+    return data
 
 
 def validate_composition_refs(plan: dict[str, Any], composition: dict[str, Any]) -> list[dict[str, str]]:
@@ -994,11 +905,22 @@ def validate_composition_refs(plan: dict[str, Any], composition: dict[str, Any])
     node_ids = {node.get("route_node_id") for row in routes for node in as_list(row.get("route_nodes")) if isinstance(node, dict)}
     fallback_ids = {row.get("fallback_id") for row in as_list(plan.get("fallback_options")) if isinstance(row, dict)}
     risk_ids = {row.get("pit_id") for row in as_list(plan.get("negative_evidence")) if isinstance(row, dict)}
+    candidate_ids = {row.get("candidate_id") for row in as_list(as_dict(plan.get("experience_candidate_pool")).get("candidates")) if isinstance(row, dict)}
+    fit_ids = {as_dict(plan.get("trip_fit_review")).get("fit_id")} - {None}
     for section in as_list(composition.get("body_sections")):
         section = as_dict(section)
         for ref in as_list(section.get("route_refs")):
             if ref not in trace_ids | node_ids:
                 issues.append(issue("travel_composition.route_ref.unknown", f"Section {section.get('section_id')} names route {ref}, which is not in the trip plan."))
+        for ref in as_list(section.get("traveler_fit_refs")):
+            if ref not in fit_ids:
+                issues.append(issue("travel_composition.traveler_fit_ref.unknown", f"Unknown trip fit review: {ref}"))
+        for ref in as_list(section.get("local_texture_refs")):
+            if ref not in candidate_ids:
+                issues.append(issue("travel_composition.local_texture_ref.unknown", f"Unknown local candidate: {ref}"))
+    for local in as_list(composition.get("local_texture_candidates")):
+        if as_dict(local).get("candidate_id") not in candidate_ids:
+            issues.append(issue("travel_composition.local_texture_ref.unknown", "Composition local texture must identify a candidate in the trip plan."))
     for binding in as_list(composition.get("risk_fallback_bindings")):
         binding = as_dict(binding)
         if binding.get("fallback_id") not in fallback_ids:
@@ -1010,16 +932,23 @@ def validate_composition_refs(plan: dict[str, Any], composition: dict[str, Any])
     return issues
 
 
-def validate_plan_file(plan_path: Path, *, repository_root: Path | None = None) -> list[dict[str, str]]:
+def review_plan_file(plan_path: Path, *, repository_root: Path | None = None) -> dict[str, Any]:
+    plan_path = Path(plan_path)
     try:
         payload = json.loads(plan_path.read_text(encoding="utf-8"))
     except FileNotFoundError:
-        return [issue("plan.file.missing", f"Plan file does not exist: {plan_path}")]
+        issues = [issue("plan.file.missing", f"Plan file does not exist: {plan_path}")]
     except (OSError, UnicodeError, json.JSONDecodeError) as exc:
-        return [issue("plan.file.invalid", f"Plan file is not valid UTF-8 JSON: {exc}")]
-    if not isinstance(payload, dict):
-        return [issue("plan.root.invalid", "Plan root must be a JSON object.")]
-    return validate_plan(payload, plan_path=plan_path, repository_root=repository_root)
+        issues = [issue("plan.file.invalid", f"Plan file is not valid UTF-8 JSON: {exc}")]
+    else:
+        if isinstance(payload, dict):
+            return review_plan(payload, plan_path=plan_path, repository_root=repository_root)
+        issues = [issue("plan.root.invalid", "Plan root must be a JSON object.")]
+    return {"allowed_claim_level": "initial_plan", "allowed_claim_reason": "unavailable_plan", "issues": issues}
 
 
-__all__ = ["SCHEMA_VERSION", "issue", "validate_composition_refs", "validate_plan", "validate_plan_file"]
+def validate_plan_file(plan_path: Path, *, repository_root: Path | None = None) -> list[dict[str, str]]:
+    return review_plan_file(plan_path, repository_root=repository_root)["issues"]
+
+
+__all__ = ["review_plan_file", "review_plan", "derive_allowed_claim_level", "SCHEMA_VERSION", "issue", "validate_composition_refs", "validate_plan", "validate_plan_file"]

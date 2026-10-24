@@ -11,6 +11,8 @@ import json
 import sys
 from pathlib import Path
 from typing import Any
+from _fiction_common import (PLACEHOLDER_VALUES, type_name, normalize_text, is_blank_or_placeholder, check_type, check_enum)
+from fiction_plan import project_surface
 
 
 DEFAULT_REQUIRED_MOMENTS = [
@@ -69,18 +71,6 @@ ALLOWED_CLOSURE_EFFECTS = {
     "user_decision",
     "scoped_out",
     "blocks_full_closure_until_checked",
-}
-PLACEHOLDER_VALUES = {
-    "tbd",
-    "todo",
-    "n/a",
-    "na",
-    "none",
-    "unknown",
-    "placeholder",
-    "fill later",
-    "fix later",
-    "...",
 }
 
 REQUIRED_ROW_FIELDS = {
@@ -147,31 +137,6 @@ class Reporter:
         return sum(1 for issue in self.issues if issue["severity"] == "warning")
 
 
-def type_name(expected: type | tuple[type, ...]) -> str:
-    if isinstance(expected, tuple):
-        return " or ".join(t.__name__ for t in expected)
-    return expected.__name__
-
-
-def normalize_text(value: Any) -> str:
-    if not isinstance(value, str):
-        return ""
-    return " ".join(value.strip().lower().split())
-
-
-def is_blank_or_placeholder(value: Any) -> bool:
-    normalized = normalize_text(value)
-    if not normalized:
-        return True
-    if normalized in PLACEHOLDER_VALUES:
-        return True
-    if normalized.startswith("todo") or normalized.startswith("tbd"):
-        return True
-    if normalized.startswith("[") and normalized.endswith("]"):
-        return True
-    return False
-
-
 def has_nonempty_list(row: dict[str, Any], field: str) -> bool:
     value = row.get(field)
     return isinstance(value, list) and len(value) > 0
@@ -221,13 +186,6 @@ def extract_rows_from_list(items: list[Any], path: str, reporter: Reporter) -> l
     return rows
 
 
-def check_type(value: Any, expected: type | tuple[type, ...], path: str, reporter: Reporter) -> bool:
-    if isinstance(value, expected):
-        return True
-    reporter.error("invalid_type", path, f"Expected {type_name(expected)}, got {type(value).__name__}.")
-    return False
-
-
 def check_required_fields(row: dict[str, Any], path: str, reporter: Reporter) -> None:
     for field, expected_type in REQUIRED_ROW_FIELDS.items():
         field_path = f"{path}.{field}"
@@ -238,12 +196,6 @@ def check_required_fields(row: dict[str, Any], path: str, reporter: Reporter) ->
             continue
         if expected_type is str and is_blank_or_placeholder(row[field]):
             reporter.error("empty_or_placeholder_field", field_path, "Required functional field is empty or placeholder text.")
-
-
-def check_enum(value: Any, allowed: set[str], path: str, reporter: Reporter) -> None:
-    if isinstance(value, str) and value in allowed:
-        return
-    reporter.error("invalid_enum", path, f"Value {value!r} is not one of: {', '.join(sorted(allowed))}.")
 
 
 def check_function_description(row: dict[str, Any], path: str, reporter: Reporter) -> None:
@@ -351,6 +303,8 @@ def check_required_moments(
 
 def validate_turning_points(payload: Any, source_path: str, required_moments: list[str]) -> dict[str, Any]:
     reporter = Reporter()
+    if isinstance(payload, dict) and "composition_plan" in payload:
+        payload, _ = project_surface(payload, source_path, "turning_points", reporter)
     rows, collection_path = extract_turning_point_rows(payload, reporter)
 
     for path, row in rows:

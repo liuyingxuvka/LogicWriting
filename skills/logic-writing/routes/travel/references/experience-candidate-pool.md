@@ -32,7 +32,6 @@ source_roles
 negative_signal_ids
 world_check_id
 freshness
-access_status
 candidate_status: candidate | usable | partial | gap | rejected | fallback_only
 next_action
 ```
@@ -40,7 +39,7 @@ next_action
 ## SourceGuard Rules
 
 - A candidate is not a recommendation.
-- A search hit is not a candidate until source role, locator, access status, and support boundary are recorded.
+- A search hit is not a candidate until source role, locator, inspected content, check date and support boundary are recorded.
 - A high rating or popularity signal is not enough; record who it is good for and who it is bad for.
 - Every final route node must reference a candidate id.
 - Fallback nodes must also be candidates, not ad hoc prose.

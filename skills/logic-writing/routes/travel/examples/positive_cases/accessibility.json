@@ -3,8 +3,50 @@
   "case_id": "step-free-accessibility-binding",
   "base_plan": "skills/logic-writing/routes/travel/examples/good_city_couple_trip/plan.json",
   "mutations": [
-    {"op": "set", "path": ["trip_context", "trip_id"], "value": "fixture-city-step-free"},
-    {"op": "set", "path": ["traveler_profile", "accessibility_needs"], "value": ["step-free transfers"]},
-    {"op": "append", "path": ["trip_fit_review", "dimension_rows"], "value": {"dimension": "accessibility", "status": "pass", "affected_trace_ids": ["trace-primary", "trace-comfort"], "evidence_ids": ["step-free-route", "lift-check"], "mitigation_ids": ["fb-gallery", "fb-rest"], "input_field": "traveler_profile.accessibility_needs", "input_values": ["step-free transfers"]}}
+    {
+      "op": "set",
+      "path": [
+        "trip_context",
+        "trip_id"
+      ],
+      "value": "fixture-city-step-free"
+    },
+    {
+      "op": "set",
+      "path": [
+        "traveler_profile",
+        "accessibility_needs"
+      ],
+      "value": [
+        "step-free transfers"
+      ]
+    },
+    {
+      "op": "append",
+      "path": [
+        "trip_fit_review",
+        "dimension_rows"
+      ],
+      "value": {
+        "dimension": "accessibility",
+        "status": "pass",
+        "affected_trace_ids": [
+          "trace-primary",
+          "trace-comfort"
+        ],
+        "evidence_ids": [
+          "step-free-route",
+          "lift-check"
+        ],
+        "mitigation_ids": [
+          "fb-gallery",
+          "fb-rest"
+        ],
+        "input_field": "traveler_profile.accessibility_needs",
+        "input_values": [
+          "step-free transfers"
+        ]
+      }
+    }
   ]
 }

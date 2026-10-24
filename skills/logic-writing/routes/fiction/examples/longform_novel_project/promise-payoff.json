@@ -25,7 +25,7 @@
       },
       "status": "paid",
       "closure_effect": "continue",
-      "evidence_refs": ["chapter-interfaces.json#iface-ch05", "longform-final-prose-closure.json#closure-book-01-final-prose"]
+      "evidence_refs": ["chapter-interfaces.json#iface-ch05", "drafts/book-01-final.txt"]
     },
     {
       "id": "promise-rival-trap",
@@ -71,7 +71,7 @@
         "status": "series_deferred",
         "payoff_rows": [],
         "payoff_text": "Book 1 fairly defers the origin to the series while closing the immediate control conflict.",
-        "payoff_evidence_refs": ["longform-final-prose-closure.json#deferred-series-origin"]
+        "payoff_evidence_refs": ["novel-ledger.json#promise-series-map-origin"]
       },
       "status": "series_deferred",
       "closure_effect": "continue",
@@ -79,7 +79,7 @@
       "claim_boundary": "Book 1 may defer the map origin to the series while closing map control.",
       "next_expected_surface": "book-02",
       "reader_fairness_note": "The origin question appears as a series hook only after the book-level control promise is paid.",
-      "evidence_refs": ["longform-final-prose-closure.json#deferred-series-origin"]
+      "evidence_refs": ["novel-ledger.json#promise-series-map-origin"]
     }
   ]
 }

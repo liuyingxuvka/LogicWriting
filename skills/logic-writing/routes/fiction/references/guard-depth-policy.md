@@ -84,7 +84,7 @@ Additional evidence:
 - original user requirements or accepted requirement matrix;
 - final artifact path or durable id;
 - final artifact hash;
-- artifact-bound semantic review that read the same artifact hash;
+- actual-span RouteReview that read the same artifact hash;
 - current postwrite reverse outline.
 
 ## Depth Escalators

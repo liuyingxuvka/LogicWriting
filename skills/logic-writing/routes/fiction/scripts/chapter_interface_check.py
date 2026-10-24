@@ -7,6 +7,8 @@ import argparse
 import json
 import sys
 from pathlib import Path
+from fiction_plan import project_surface
+
 from typing import Any
 
 import storyline_route_check
@@ -56,7 +58,7 @@ def check_interface(item: Any, path: str, reporter: Reporter) -> str:
     if not isinstance(item, dict):
         reporter.error("invalid_row_type", path, "Chapter interface must be an object.")
         return ""
-    required_str = ["id", "chapter_id", "previous_chapter_id", "next_chapter_id", "previous_output", "current_input", "hook_role", "status"]
+    required_str = ["id", "chapter_id", "previous_chapter_id", "next_chapter_id", "previous_output", "current_input", "hook_role"]
     required_lists = ["reader_state_before", "reader_state_after", "unresolved_tension_in", "unresolved_tension_out", "promise_movements", "arc_movements", "evidence_refs"]
     for field in required_str:
         value = item.get(field)
@@ -70,8 +72,6 @@ def check_interface(item: Any, path: str, reporter: Reporter) -> str:
         check_list(item.get(field), f"{path}.{field}", reporter)
     if isinstance(item.get("hook_role"), str) and item["hook_role"] not in HOOK_ROLES:
         reporter.error("invalid_hook_role", f"{path}.hook_role", f"Unknown hook role {item['hook_role']!r}.")
-    if item.get("status") not in PASS_STATUSES:
-        reporter.error("interface_not_passed", f"{path}.status", "Chapter interface must pass for positive validation.")
     return item.get("chapter_id", "") if isinstance(item.get("chapter_id"), str) else ""
 
 
@@ -84,15 +84,13 @@ def check_blueprints(items: list[Any], chapter_ids: set[str], reporter: Reporter
         if not isinstance(item, dict):
             reporter.error("invalid_row_type", path, "Blueprint must be an object.")
             continue
-        for field in ("id", "chapter_id", "source_interface_id", "prose_scope", "pov", "tense", "status"):
+        for field in ("id", "chapter_id", "source_interface_id", "prose_scope", "pov", "tense"):
             if not isinstance(item.get(field), str) or not item[field].strip():
                 reporter.error("missing_required_field", f"{path}.{field}", "Required blueprint field is missing.")
         for field in ("scene_order", "required_reader_experience", "must_include", "must_not_include", "voice_style_refs"):
             check_list(item.get(field), f"{path}.{field}", reporter)
         if item.get("chapter_id") not in chapter_ids:
             reporter.error("blueprint_without_interface", f"{path}.chapter_id", "Blueprint chapter_id has no matching chapter interface.")
-        if item.get("status") not in PASS_STATUSES:
-            reporter.error("blueprint_not_passed", f"{path}.status", "Blueprint must pass for positive validation.")
 
 
 def check_reverse_outlines(items: list[Any], chapter_ids: set[str], reporter: Reporter) -> None:
@@ -104,14 +102,14 @@ def check_reverse_outlines(items: list[Any], chapter_ids: set[str], reporter: Re
         if not isinstance(item, dict):
             reporter.error("invalid_row_type", path, "Reverse outline must be an object.")
             continue
-        for field in ("id", "chapter_id", "source_draft_ref", "model_alignment", "status"):
+        for field in ("id", "chapter_id", "source_draft_ref"):
             if not isinstance(item.get(field), str) or not item[field].strip():
                 reporter.error("missing_required_field", f"{path}.{field}", "Required reverse-outline field is missing.")
         for field in ("observed_events", "observed_reader_state_after", "observed_promise_movements", "observed_arc_movements", "drift"):
             if not isinstance(item.get(field), list):
                 reporter.error("invalid_type", f"{path}.{field}", "Expected list.")
-        if "model_prose_binding_refs" in item and not isinstance(item.get("model_prose_binding_refs"), list):
-            reporter.error("invalid_type", f"{path}.model_prose_binding_refs", "Expected list.")
+        if "shared_writing_refs" in item and not isinstance(item.get("shared_writing_refs"), list):
+            reporter.error("invalid_type", f"{path}.shared_writing_refs", "Expected list.")
         if "binding_drift" in item:
             if not isinstance(item.get("binding_drift"), list):
                 reporter.error("invalid_type", f"{path}.binding_drift", "Expected list.")
@@ -119,12 +117,11 @@ def check_reverse_outlines(items: list[Any], chapter_ids: set[str], reporter: Re
                 reporter.error("unresolved_binding_drift", f"{path}.binding_drift", "Reverse outline binding drift must be resolved before positive validation.")
         if item.get("chapter_id") not in chapter_ids:
             reporter.error("reverse_outline_without_interface", f"{path}.chapter_id", "Reverse outline chapter_id has no matching chapter interface.")
-        if item.get("model_alignment") not in PASS_STATUSES or item.get("status") not in PASS_STATUSES:
-            reporter.error("reverse_outline_not_passed", f"{path}.status", "Reverse outline must align with the model.")
 
 
 def validate(payload: Any, source_path: str) -> dict[str, Any]:
     reporter = Reporter()
+    payload, plan_context = project_surface(payload, source_path, "chapter_interfaces", reporter)
     route_decision: dict[str, Any] | None = None
     if not isinstance(payload, dict):
         reporter.error("invalid_root_type", "$", "Current chapter-interface evidence must be one object.")

@@ -5,7 +5,9 @@ import copy
 import pytest
 
 from _common import ValidationError, fingerprint
-from reader_pipeline import _measure_extent, build_artifact_map, build_reader_audit, validate_artifact_map, validate_reader_audit_current, validate_reader_intent
+from reader_checks import _measure_extent, build_reader_audit, validate_reader_audit_current
+from artifact_map import build_artifact_map, validate_artifact_map
+from reader_plan_core import validate_reader_intent
 from text_extent import measure_text
 from tests.v2_support import complete_chain, make_reader_chain, make_intent
 

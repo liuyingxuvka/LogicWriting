@@ -16,8 +16,7 @@
       "reverse_outline",
       "source_requirements",
       "final_artifact",
-      "artifact_bound_review",
-      "model_prose_binding"
+      "reader_chain"
     ],
     "required_surfaces_exclude": []
   }

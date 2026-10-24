@@ -25,13 +25,13 @@ from flowguard.explorer import Explorer
 
 MODEL_ID = "reader_artifact_model"
 PARENT = "reader-artifact"
-COMPONENTS = ["reader-artifact", "investigation", "academic", "fiction", "travel"]
+COMPONENTS = ['reader-plan', 'reader-binding', 'reader-checks', 'reader-closure', 'reader-inputs', 'fiction-model', 'travel-model', 'researchguard-handoff', 'world-references']
 IMPLEMENTED_BY = {
-    "BuildReaderBrief": "skills/logic-writing/scripts/reader_pipeline.py:build_reader_brief",
-    "BuildArtifactMap": "skills/logic-writing/scripts/reader_pipeline.py:build_artifact_map",
-    "ReaderAudit": "skills/logic-writing/scripts/reader_pipeline.py:build_reader_audit",
-    "RouteReview": "skills/logic-writing/scripts/reader_pipeline.py:_route_review_from_current",
-    "ReaderJudgment": "skills/logic-writing/scripts/reader_pipeline.py:_reader_judgment_from_current",
+    "BuildReaderBrief": "skills/logic-writing/scripts/reader_plan.py:build_reader_brief",
+    "BuildArtifactMap": "skills/logic-writing/scripts/artifact_map.py:build_artifact_map",
+    "ReaderAudit": "skills/logic-writing/scripts/reader_checks.py:build_reader_audit",
+    "RouteReview": "skills/logic-writing/scripts/reader_checks.py:_route_review_from_current",
+    "ReaderJudgment": "skills/logic-writing/scripts/reader_checks.py:_reader_judgment_from_current",
     "DeriveClosure": "skills/logic-writing/scripts/derive_closure.py:derive_closure",
 }
 TESTED_BY = {
@@ -272,3 +272,12 @@ def conformance():
         if not last.ok:
             return last
     return last
+
+
+NOT_MODELED = {
+    "scripts/install_skill.py:main": "Transactional skill copying and predecessor retirement are tested by installer/byte-contract tests; this is a release maintenance command rather than a writing-quality transition.",
+    "skills/logic-writing/routes/fiction/scripts/run_longform_regression.py:main": "The finite regression driver executes native domain validators; its subprocess/output wrapper is tested by the fiction regression contract, while the domain validators own writing semantics.",
+    "skills/logic-writing/routes/fiction/scripts/run_story_model_mesh_regression.py:main": "Finite developer regression orchestration writes only requested report files and is covered by native fiction regression checks, not a separate writing-state machine.",
+    "skills/logic-writing/scripts/known_bad.py:check_known_bad": "Deterministic in-memory mutations are verified by the generated-catalog e2e contract; uncaught mutations add non-gating residual risk and do not change the writing-quality result.",
+    "skills/logic-writing/scripts/known_bad.py:main": "The catalog output CLI delegates to the same deterministic mutation checker; its file bytes are covered by the generated-catalog e2e contract.",
+}

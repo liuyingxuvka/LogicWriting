@@ -1,0 +1,57 @@
+{
+  "decision_id": "route-aurora",
+  "decided_at": "2026-10-21T12:00:00Z",
+  "writing_request": {
+    "schema_version": "2.0",
+    "request_id": "request-aurora",
+    "terminal_deliverable": {
+      "kind": "novel",
+      "description": "The existing five-chapter Aurora Book 1 manuscript.",
+      "acceptance_criteria": [
+        "Preserve the existing story hierarchy and manuscript bytes.",
+        "Book conflict closes; the origin remains deferred."
+      ]
+    },
+    "reader_intent": {
+      "schema_version": "2.0",
+      "artifact_mode": "create_new",
+      "language": "en",
+      "audience": "adult mystery readers",
+      "purpose": "an archive mystery in five short chapters",
+      "structure": {
+        "mode": "route_selected",
+        "requested_outline": []
+      },
+      "heading_policy": "minimal",
+      "list_policy": "prose_default",
+      "style": {
+        "voice": "limited third person, past tense, Mira",
+        "formality": "neutral",
+        "required_traits": [
+          "concrete objects",
+          "understatement"
+        ],
+        "forbidden_traits": [
+          "stated emotions"
+        ]
+      },
+      "extent": {
+        "unit": "words",
+        "minimum": 150,
+        "target": 200,
+        "maximum": 1500
+      },
+      "artifact_format": "text",
+      "citation_policy": "none",
+      "table_policy": "forbidden",
+      "required_content": [
+        "archive key breach",
+        "public control of the map",
+        "deferred map origin"
+      ],
+      "forbidden_content": [],
+      "reference_examples": [],
+      "unresolved_choices": []
+    }
+  }
+}

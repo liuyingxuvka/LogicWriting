@@ -1,45 +1,17 @@
 # Novel Ledger
 
-Use this reference when Longform Mode needs a durable model for a novel, book, volume, chapter batch, or series. The novel ledger is the source of truth for hierarchy, arcs, threads, promises, continuity, draft state, validation, and closure levels.
+Use this reference when Longform Mode needs a durable model for a novel, book, volume, chapter batch, or series. The composition plan owns the unit tree; the novel ledger owns arcs, threads, promises, continuity and draft progress.
 
-## Ledger Shape
+## Unit ownership
 
-Store the ledger as JSON or an equivalent structured table:
-
-```json
-{
-  "schema_version": "storyline-design.novel_ledger.v1",
-  "project_id": "novel-short-id",
-  "target_artifact": {},
-  "longform_scope": {},
-  "hierarchy": {
-    "books": [],
-    "volumes": [],
-    "chapters": [],
-    "scenes": []
-  },
-  "story_units": [],
-  "arcs": [],
-  "threads": [],
-  "promises": [],
-  "continuity": [],
-  "chapter_interfaces": [],
-  "draft_state": {},
-  "validation": [],
-  "closure": {}
-}
-```
-
-## Layer Ownership Map
-
-The novel ledger is the root index for the layered model mesh. It should point to child evidence instead of replacing it.
-
-- Hierarchy rows own book, volume, chapter, and scene containment.
-- Story unit rows own parent contribution and downstream use.
-- Promise rows own setup, payoff, inversion, abandonment, or deferral.
-- `continuity` rows own character_state, relationship_state, timeline, place, object, resource, world_rule, clue_state, POV, voice, style, and canon facts.
-- Chapter interface rows own adjacent handoff and reader-state movement.
-- Reverse outline rows own actual drafted events and reader-state evidence.
+Set `composition_plan` to the canonical brief request relative to this file.
+CompositionPlan.planned_units owns book/volume/chapter/scene identity, hierarchy,
+order and reader job; FictionComposition.unit_plans owns story-state transitions.
+`story_units` contain `planned_unit_id`, importance, terminal treatment,
+repair action and evidence references. They never copy hierarchy, contribution,
+reader state, downstream use, or a validation/pass/closure declaration.
+Promises, arcs, threads and continuity keep their own domain identities and
+lifecycle states. Chapter interface annotations point to planned units.
 
 ## Target Artifact
 
@@ -62,30 +34,12 @@ Required fields:
 - `continuity_policy`;
 - `deferred_scope`: items intentionally outside current closure.
 
-## Hierarchy Rows
+## Story units
 
-Every row uses `id`, `kind`, `title`, `parent_id`, `order`, `status`, `summary`, `entry_state`, `exit_state`, `depends_on`, and `evidence_refs`.
-
-Additional requirements:
-
-- books list owned volume or chapter ids;
-- volumes list chapter ids;
-- chapters list scene ids and chapter interface ids;
-- scenes link to scene contracts when scene-level checks are needed.
-
-Allowed statuses: `planned`, `draft`, `pass`, `partial`, `blocked`, `gap`, `skipped`, `stale`, `deferred`, `scoped_out`, or `human_review`.
-
-## Story Units
-
-Story units are the inspectable contribution rows used by `story_contribution_check.py`.
-
-Required fields:
-
-- `id`, `kind`, `parent_id`, `importance`, `status`;
-- `contribution`: what the unit changes in the parent;
-- `downstream_use`: later units, promises, arcs, or continuity rows that depend on it;
-- `terminal_treatment`: keep, revise, cut, merge, defer, scoped_out, or human_review;
-- `repair_action`: required when status is orphan, duplicate, weak, unsupported, stale, blocked, or human_review.
+`story_contribution_check.py` reads parent, contribution and downstream consumers
+from the canonical plan. Annotate importance, terminal treatment (keep, revise,
+cut, merge, defer, scoped_out or human_review), repairs and domain evidence here.
+Unknown units fail with `unit_not_in_plan:novel_ledger:<id>`.
 
 ## Arcs And Threads
 
@@ -137,20 +91,16 @@ Required fields:
 
 Draft state does not close a chapter by itself. It tells closure which prose evidence exists and whether reverse outline checks are current.
 
-When a final manuscript is claimed, draft state or validation rows must also
+When a final manuscript is claimed, the reader chain must also
 name the current final artifact reference and content hash in their evidence
 path. A manuscript edit after source-requirement review, reverse outlining,
-promise/payoff review, voice/style review, or final semantic review stales the
+promise/payoff review, voice/style review, or final reader review stales the
 affected evidence until it is rerun or explicitly scoped out.
 
-## Validation And Closure
+## Computed validation and closure
 
-Validation rows record deterministic or manual checks:
-
-- `id`, `check_name`, `surface`, `checked_ids`, `status`, `evidence_ref`, `rerun_required_when`.
-
-Closure object required fields:
-
-- `closure_level`, `decision`, `claim_boundary`, `blocking_rows`, `deferred_rows`, `stale_rows`, `latest_validation_refs`, `prose_allowed`.
-
-Book or series closure cannot pass while key hierarchy, story contribution, chapter interface, source requirements, final artifact binding, artifact-bound semantic review, promise/payoff, continuity, voice/style, reverse-outline, or aggregate closure checks are missing, blocked, stale, unsupported, or hidden. Model-only book closure may pass only when the claim boundary explicitly states that final prose is not claimed.
+Do not author validation or closure fields. `longform_closure_check.py` reads
+the current project mesh and computes domain surface results. The standard
+reader chain checks actual manuscript bytes and derives final closure. Keep
+promise/thread lifecycle, continuity facts, draft progress, scope and deferrals;
+none is a substitute for the current checks or actual-span review.

@@ -150,7 +150,7 @@ For any reader-native prose claim, drafting is not complete when model-supported
 6. Check variation pressure: whether adjacent or clustered prose repeats the same voice, event function, scene pressure, reveal method, emotional temperature, or ending rhythm without purposeful effect.
 7. Mark unresolved drift and return to the earliest failed stage.
 
-For long-form final prose, major revision, or any prose readiness claim that depends on actual drafted text, run a model-prose binding pass after the reader-room clean pass:
+For long-form final prose, major revision, or any prose readiness claim that depends on actual drafted text, run a SharedWriting binding validation after the reader-room clean pass:
 
 1. Map important prose spans to model rows such as story units, scenes, promises, continuity, arcs, chapter interfaces, and voice/style rows.
 2. Map key and major model rows back to prose evidence.
@@ -176,7 +176,7 @@ Review for:
 - arc and promise/payoff continuity;
 - WorldGuard adapter status;
 - model match: whether prose matches the current model, promises, continuity, chapter interface, and voice/style contract;
-- model-prose binding: whether important prose spans bind to model rows and key or major model rows have prose evidence;
+- SharedWriting quote binding: whether important prose spans bind to model rows and key or major model rows have prose evidence;
 - reader-state simulation: whether the actual text changes what the reader knows, expects, doubts, fears, or reinterprets;
 - resistance/friction: whether important advances carry pressure, cost, counter-interpretation, obstacle, or consequence when the model requires it;
 - register ownership: whether important terms belong to the narrator, a character, a document, an institution, a profession, a local usage, or another story-world source;
@@ -239,7 +239,7 @@ Closure must aggregate:
 - support and premise status;
 - WorldGuard adapter status;
 - reader-native manuscript review when final prose is claimed;
-- model-prose binding review when final long-form prose is claimed;
+- SharedWriting quote binding review when final long-form prose is claimed;
 - variation pressure review when long-form prose is claimed;
 - validation freshness;
 - skipped, stale, blocked, or human-review rows.

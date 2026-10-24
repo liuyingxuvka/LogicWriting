@@ -1,1 +1,22 @@
-{"leak.md":{"step":"audit","code":"workflow_leak"},"empty.md":{"step":"shared_writing","error":"is not in the current text"}}
+{
+  "empty.md": {
+    "error": "binding binding:academic:framework: quote \"A pedestrian map compresses a city into a set of choices, bu\" is not in the current text; binding binding:academic:scope: quote \"This introduction proposes a conceptual framework, not a dem\" is not in the current text",
+    "step": "shared_writing"
+  },
+  "leak.md": {
+    "code": "workflow_leak",
+    "step": "audit"
+  },
+  "nocite.md": {
+    "code": "citation_missing",
+    "step": "audit"
+  },
+  "nolim-lim-conceptual.md": {
+    "error": "binding binding:academic:scope: quote \"This introduction proposes a conceptual framework, not a dem\" is not in the current text",
+    "step": "shared_writing"
+  },
+  "short.md": {
+    "error": "binding binding:academic:scope: quote \"This introduction proposes a conceptual framework, not a dem\" is not in the current text",
+    "step": "shared_writing"
+  }
+}

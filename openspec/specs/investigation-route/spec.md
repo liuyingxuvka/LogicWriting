@@ -1,10 +1,10 @@
 # investigation-route Specification
 
 ## Purpose
-Define the investigation route that turns a bounded claim into a source-backed evidence packet with explicit provenance, uncertainty, and handoff limits.
+Define the investigation route that turns a bounded claim into a source-backed report or bounded content-boundary handoff with explicit provenance, uncertainty, and handoff limits.
 ## Requirements
 ### Requirement: Investigation begins with a claim and evidence contract
-Before broad search, the investigation route SHALL record the question, scope, target audience, requested conclusion strength, time and geographic boundaries, source-access policy, critical claims, and required evidence roles.
+Before broad search, the investigation route SHALL record the question, scope, intended audience, requested conclusion strength, time and geographic boundaries, source-access policy, critical claims, and required evidence roles.
 
 #### Scenario: Strong causal conclusion requested
 - **WHEN** the user requests a strong causal conclusion
@@ -25,7 +25,7 @@ A search result, SourceGuard candidate, title, snippet, bibliography entry, or u
 
 #### Scenario: Candidate is cited as fact
 - **WHEN** final prose uses a candidate-only source as factual support
-- **THEN** claim validation SHALL fail
+- **THEN** content-boundary validation SHALL fail
 - **AND** closure SHALL be no stronger than `partial` or `downgraded`
 
 #### Scenario: Source is inaccessible
@@ -84,36 +84,63 @@ The route SHALL use LogicGuard to compare support, warrants, assumptions, scope,
 - **THEN** the report SHALL match that bounded scope
 - **AND** SHALL NOT claim comprehensive or robust reasoning
 
-### Requirement: Investigation evidence may be kept in an optional ResearchPacket
-A completed investigation SHALL turn its claim-and-evidence ledger into the ReaderBrief content boundaries. When the evidence is large or another route sent a bounded evidence-gap request, the route MAY keep it as a ResearchPacket containing the source registry, evidence anchors, critical-claim and key-number ledger, support and limiting evidence, alternatives and confounders, source lineage and independence status, unresolved gaps, safe wording, unsafe boundaries, and a packet fingerprint.
+### Requirement: Investigation returns the one content-boundary evidence model
+A completed investigation SHALL return content units, evidence anchors,
+alternatives and limitations, plus its ResearchGuard research folder. A bounded
+child SHALL name the requested gap, preserve remaining uncertainty and return
+those rows unchanged to its parent. It SHALL NOT create a second evidence
+registry or issue the parent's final closure.
 
-#### Scenario: Academic parent consumes the packet
-- **WHEN** investigation was invoked by an academic parent
-- **THEN** the packet SHALL contain the requested `gap_id`
-- **AND** SHALL contain no academic final-closure claim
+#### Scenario: Academic parent consumes bounded evidence
+- **WHEN** investigation answers an academic parent's evidence-gap request
+- **THEN** the parent SHALL incorporate its bounded content rows with stable ids
+- **AND** only the academic owner SHALL close the final paper
 
-#### Scenario: Packet omits a critical counterevidence gap
-- **WHEN** a critical claim required counter or limiting evidence but the packet omits its status
-- **THEN** packet validation SHALL return `partial` or `blocked`
+#### Scenario: A critical counterevidence gap remains
+- **WHEN** a conclusion still lacks required counter or limiting evidence
+- **THEN** native research SHALL retain that gap and its wording limit
+- **AND** the content boundary SHALL NOT conceal it as a completed investigation
 
-#### Scenario: Causal claim lacks a mechanism source
-- **WHEN** a causal claim has no usable source for its declared mechanism
-- **THEN** claim support reports `causal_mechanism_missing` and the claim SHALL remain ineligible for principal-finding wording
+#### Scenario: A causal mechanism has no usable source
+- **WHEN** a causal claim lacks usable mechanism evidence
+- **THEN** native ResearchGuard findings and the content boundary SHALL preserve
+  the missing support and SHALL qualify or withhold the affected wording
 
-#### Scenario: Forecast lacks validation evidence
-- **WHEN** a forecast has no usable validation source for its scope
-- **THEN** claim support reports `forecast_validation_missing` and the forecast SHALL remain ineligible for principal-finding wording
+#### Scenario: Forecast validation is absent
+- **WHEN** forecast wording has no current native validation for its scope
+- **THEN** that wording SHALL remain unlicensed or explicitly bounded
+
+### Requirement: Research-owned anchors cannot be overwritten
+A brief request MAY name `research_folder` as the research folder or its index.
+Missing anchors SHALL be imported from its native `models.source` YAML without
+executing ResearchGuard. A handwritten anchor with the same id and a different
+source id or locator SHALL fail `anchor_conflict:<id>` atomically. Matching
+handwritten relation, summary and boundary SHALL remain unchanged.
+
+#### Scenario: A handwritten source identity disagrees
+- **WHEN** a handwritten anchor id names a different source than the native model
+- **THEN** the brief builder SHALL report that anchor conflict
+- **AND** SHALL NOT append a partial import before the error
+
+### Requirement: One saved native verdict governs research closure
+Investigation SHALL read one saved `researchguard status --json` report. Nonzero
+native errors or an insufficient search stop SHALL prevent a passing provider
+check. Material live alternatives SHALL retain the native root-claim wording
+license; conflicting brief/native live dispositions SHALL fail
+`alternative_status_conflict:<id>`. A null root in a source-only result SHALL
+NOT become an assert license. Native disagreement SHALL be retained as
+`research:contested` risk without becoming a separate blocking condition.
 
 ### Requirement: Claim-to-source links identify observed anchors
 Every supported claim SHALL map each cited source to one or more observed anchor ids and classify that link as support, limit, counterevidence, or context. A claim-level source list without anchor-level links SHALL NOT license reader-facing wording.
 
 #### Scenario: Source belongs to claim but anchor belongs elsewhere
 - **WHEN** a support link names an anchor that is absent or belongs to another source
-- **THEN** claim validation SHALL fail
+- **THEN** content-boundary validation SHALL fail
 
 #### Scenario: Strong claim repeats one lineage
-- **WHEN** a strong claim has several support links but fewer than two current independent lineages
-- **THEN** the claim SHALL remain under-supported
+- **WHEN** a strong claim has several support links but no genuinely independent support
+- **THEN** the claim SHALL remain under-supported within the native research boundary
 
 ### Requirement: Provider and execution failures remain visible
 The route SHALL preserve `provider_unavailable`, `not_run`, `planning_only`, `access_gap`, `bounded`, `partial`, `downgraded`, `stale`, and `blocked` states.
@@ -165,9 +192,9 @@ Before final drafting, the investigation route SHALL select `explanatory_report`
 - **THEN** the plan places both explanations, the discriminating evidence, and the current decision boundary near the affected conclusion
 
 ### Requirement: Investigation final review opens the actual report
-Investigation closure SHALL require a route-native review of the current artifact spans for recoverable question, bounded answer, evidence strength, negative evidence, alternatives, conditions, fallback or recheck action, and conclusion scope. A complete ResearchPacket or argument model SHALL NOT substitute for this review.
+Investigation closure SHALL require a route-native review of the current artifact spans for recoverable question, bounded answer, evidence strength, negative evidence, alternatives, conditions, fallback or recheck action, and conclusion scope. A native research result or argument model SHALL NOT substitute for this review.
 
-#### Scenario: Research packet is complete but report is a finding dump
+#### Scenario: Native research is complete but the report is a finding dump
 - **WHEN** the final report copies evidence rows without a reader-facing throughline
 - **THEN** route-native review fails and returns the affected report units for repair
 

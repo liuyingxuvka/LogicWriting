@@ -8,16 +8,13 @@ Record story contribution rows in `story_units` or an equivalent structured surf
 
 ```json
 {
-  "id": "chapter-03",
-  "kind": "chapter",
-  "parent_id": "volume-01",
   "importance": "major",
-  "status": "pass",
-  "contribution": "Forces the protagonist to trade secrecy for access to the archive.",
-  "downstream_use": ["chapter-04", "promise-archive-cost", "arc-agency"],
   "terminal_treatment": "keep",
   "repair_action": "",
-  "evidence_refs": ["chapter-interfaces.json#iface-ch03"]
+  "evidence_refs": [
+    "chapter-interfaces.json#iface-ch03"
+  ],
+  "planned_unit_id": "chapter-03"
 }
 ```
 
@@ -64,7 +61,7 @@ Fail as weak or orphan when:
 
 Mark `duplicate` when two units perform the same parent contribution and downstream use without deliberate contrast, escalation, inversion, or rhythm.
 
-When prose exists, treat duplicate function as a model-prose binding failure, not a wording similarity test. Two passages are duplicate when they bind to the same model function and create the same reader-state movement without escalation, contrast, inversion, cost, resistance, deliberate rhythm, changed interpretation, or downstream use.
+When prose exists, treat duplicate function as a SharedWriting quote binding failure, not a wording similarity test. Two passages are duplicate when they bind to the same model function and create the same reader-state movement without escalation, contrast, inversion, cost, resistance, deliberate rhythm, changed interpretation, or downstream use.
 
 Required repair actions:
 
@@ -102,7 +99,7 @@ For each chapter or scene, ask:
 
 If the actual prose does not change plot state, reader state, character or relationship state, promise/payoff state, continuity, stakes, theme pressure, or pacing function, return to revise, merge, cut, or narrow the claim.
 
-For long-form final prose, run the post-draft contribution review against model-prose binding rows:
+For long-form final prose, run the post-draft contribution review against SharedWriting bindings:
 
 1. Which prose span realizes this contribution?
 2. Which model refs does that span bind to?

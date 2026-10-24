@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import copy
 
-from reader_pipeline import build_writer_input, fill_plan_defaults, fill_brief_fingerprints
+from writer_projection import build_writer_input
+from reader_fill import fill_plan_defaults, fill_brief_fingerprints
 from build_reader_brief import validate_request
 from _common import ValidationError, fingerprint_without
 import pytest

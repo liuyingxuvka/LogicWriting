@@ -5,7 +5,8 @@ import copy
 import pytest
 
 from _common import ValidationError, fingerprint, fingerprint_text
-from reader_pipeline import build_artifact_map, build_reader_audit, validate_reader_judgment
+from artifact_map import build_artifact_map
+from reader_checks import build_reader_audit, validate_reader_judgment
 from tests.v2_support import complete_chain, make_reader_chain
 
 
@@ -107,7 +108,7 @@ def test_brief_request_fills_plan_and_route_fingerprints(tmp_path):
 
 def test_forbidden_pattern_is_an_audit_finding(tmp_path):
     from tests.v2_support import complete_chain
-    from reader_pipeline import _build_reader_audit_from_current
+    from reader_checks import _build_reader_audit_from_current
     chain = complete_chain(tmp_path, language='en')
     brief = chain['reader_brief']
     brief['content_boundaries']['prohibited_overclaims'] = [dict(overclaim_id='oc:problem', forbidden_patterns=[r'REAL\s+PROBLEM'])]

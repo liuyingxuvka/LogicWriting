@@ -1,0 +1,16 @@
+{
+  "verdict": {
+    "search": "stop_sufficient",
+    "root_claim": null,
+    "live_hypotheses": [
+      "h-main-answer"
+    ],
+    "contested": false,
+    "errors": 0
+  },
+  "hypotheses": [
+    {
+      "id": "h-main-answer"
+    }
+  ]
+}

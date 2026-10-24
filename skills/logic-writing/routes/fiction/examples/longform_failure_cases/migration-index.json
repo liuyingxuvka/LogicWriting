@@ -1,0 +1,73 @@
+{
+  "schema_version": "fiction.reader-chain-migration.v1",
+  "retired_cases": [
+    {
+      "case_id": "unbound-prose-span",
+      "owner_or_reason": "SharedWriting: required planned units are unbound"
+    },
+    {
+      "case_id": "unrealized-model-ref",
+      "owner_or_reason": "SharedWriting: unknown planned unit"
+    },
+    {
+      "case_id": "duplicate-binding-without-delta",
+      "owner_or_reason": "RouteReview story_movement/variation: inspect redundant function and concrete delta; duplicate-function prose is a review finding, not a second binding machine"
+    },
+    {
+      "case_id": "smooth-reveal-without-resistance",
+      "owner_or_reason": "RouteReview resistance_cost: quoted evidence and a blocking finding"
+    },
+    {
+      "case_id": "premature-hypothesis-collapse",
+      "owner_or_reason": "RouteReview reader_state/promise_reveal: quoted evidence and a blocking finding"
+    },
+    {
+      "case_id": "term-register-owner-drift",
+      "owner_or_reason": "RouteReview register_ownership: quoted evidence and a blocking finding"
+    },
+    {
+      "case_id": "length-outlier-without-binding-review",
+      "owner_or_reason": "Retired: paragraph length alone is not a binding failure; extent is checked by the standard ReaderAudit"
+    },
+    {
+      "case_id": "semantic-review-incomplete-contract",
+      "owner_or_reason": "RouteReview: required long-form dimensions must be present"
+    },
+    {
+      "case_id": "final-prose-hash-mismatch",
+      "owner_or_reason": "ArtifactMap/SharedWriting: current bytes and fingerprints must match; authored copies of hashes are retired"
+    },
+    {
+      "case_id": "final-prose-missing-artifact",
+      "owner_or_reason": "ArtifactMap: missing current manuscript is an input error, never a successful negative prose test"
+    },
+    {
+      "case_id": "final-prose-nonexistent-manuscript",
+      "owner_or_reason": "ArtifactMap: current manuscript must be readable"
+    },
+    {
+      "case_id": "final-prose-missing-source-requirements",
+      "owner_or_reason": "Longform native closure: source_requirements surface must exist"
+    },
+    {
+      "case_id": "final-chapter-prose-bypass",
+      "owner_or_reason": "Standard eight-step chain applies to chapters too; no independent chapter closure file"
+    },
+    {
+      "case_id": "final-volume-prose-bypass",
+      "owner_or_reason": "Standard eight-step chain applies to volumes too; no independent volume closure file"
+    },
+    {
+      "case_id": "markdown-model-surface-substitution",
+      "owner_or_reason": "Longform native closure: declared surfaces must load as actual structured models"
+    },
+    {
+      "case_id": "substitute-reverse-outline-as-ledger",
+      "owner_or_reason": "Longform native closure: empty or substituted novel ledger fails native checks"
+    },
+    {
+      "case_id": "weak-reverse-outline",
+      "owner_or_reason": "Native chapter/reverse-outline check: actual observed events, reader state, promise and arc movements required"
+    }
+  ]
+}

@@ -1,51 +1,336 @@
 {
+  "schema_version": "storyline-design.chapter_interfaces.v2",
+  "project_id": "aurora-key",
+  "model_revision": "aurora-key-model-r1",
+  "artifact_type": "novel",
+  "prose_phase": "final_prose",
   "chapter_interfaces": [
     {
-      "id": "iface-fake",
-      "chapter_id": "chapter-02",
-      "previous_chapter_id": "chapter-01",
-      "next_chapter_id": "chapter-03",
-      "previous_output": "continues the story",
-      "current_input": "sets up the next chapter",
-      "reader_state_before": ["The reader has a vague feeling."],
-      "reader_state_after": ["The reader keeps reading."],
-      "unresolved_tension_in": ["Something may happen."],
-      "unresolved_tension_out": ["Something may happen later."],
-      "promise_movements": [{"promise_id": "promise-vague", "role": "setup"}],
-      "arc_movements": [{"arc_id": "arc-vague", "movement": "vague movement"}],
+      "id": "iface-ch01",
+      "previous_output": "The book opens with the archive rules accepted as stable.",
+      "current_input": "continues the story",
+      "promise_movements": [
+        {
+          "promise_id": "promise-map-control",
+          "role": "setup"
+        }
+      ],
+      "arc_movements": [
+        {
+          "arc_id": "arc-mira-agency",
+          "movement": "trust begins to crack"
+        }
+      ],
+      "hook_role": "setup",
+      "evidence_refs": [
+        "reverse-ch01"
+      ],
+      "planned_unit_id": "chapter-01"
+    },
+    {
+      "id": "iface-ch02",
+      "previous_output": "Mira suspects someone can enter the archive after hours.",
+      "current_input": "Mira follows a false note because the moved key makes the note plausible.",
+      "promise_movements": [
+        {
+          "promise_id": "promise-rival-trap",
+          "role": "setup"
+        }
+      ],
+      "arc_movements": [
+        {
+          "arc_id": "arc-mira-agency",
+          "movement": "private caution becomes active pursuit"
+        }
+      ],
       "hook_role": "pressure_forward",
-      "status": "pass",
-      "evidence_refs": ["reverse-fake"]
+      "evidence_refs": [
+        "reverse-ch02"
+      ],
+      "planned_unit_id": "chapter-02"
+    },
+    {
+      "id": "iface-ch03",
+      "previous_output": "Mira knows the note is bait but lacks a safe witness.",
+      "current_input": "Mira chooses to open the confrontation in public so the rival cannot erase it.",
+      "promise_movements": [
+        {
+          "promise_id": "promise-map-control",
+          "role": "escalation"
+        }
+      ],
+      "arc_movements": [
+        {
+          "arc_id": "arc-mira-agency",
+          "movement": "Mira accepts public risk"
+        }
+      ],
+      "hook_role": "pressure_forward",
+      "evidence_refs": [
+        "reverse-ch03"
+      ],
+      "planned_unit_id": "chapter-03"
+    },
+    {
+      "id": "iface-ch04",
+      "previous_output": "The rival knows Mira has seen the bait.",
+      "current_input": "Mira searches the rival's ledger because public exposure has made retreat impossible.",
+      "promise_movements": [
+        {
+          "promise_id": "promise-rival-trap",
+          "role": "payoff"
+        }
+      ],
+      "arc_movements": [
+        {
+          "arc_id": "arc-rival-exposure",
+          "movement": "hidden access becomes documentary evidence"
+        }
+      ],
+      "hook_role": "payoff_delay",
+      "evidence_refs": [
+        "reverse-ch04"
+      ],
+      "planned_unit_id": "chapter-04"
+    },
+    {
+      "id": "iface-ch05",
+      "previous_output": "Mira understands the map room is a decoy and the rival's ledger names the glass case.",
+      "current_input": "Mira must secure the true map before the rival can use her public exposure against her.",
+      "promise_movements": [
+        {
+          "promise_id": "promise-map-control",
+          "role": "payoff"
+        },
+        {
+          "promise_id": "promise-series-map-origin",
+          "role": "series_deferral"
+        }
+      ],
+      "arc_movements": [
+        {
+          "arc_id": "arc-mira-agency",
+          "movement": "Mira chooses public consequence"
+        }
+      ],
+      "hook_role": "volume_hook",
+      "evidence_refs": [
+        "reverse-ch05"
+      ],
+      "planned_unit_id": "chapter-05"
     }
   ],
   "prose_blueprints": [
     {
-      "id": "blueprint-fake",
-      "chapter_id": "chapter-02",
-      "source_interface_id": "iface-fake",
+      "id": "blueprint-ch01",
+      "source_interface_id": "iface-ch01",
       "prose_scope": "chapter",
       "pov": "limited_third",
       "tense": "past",
-      "scene_order": ["scene-fake"],
-      "required_reader_experience": ["vague pressure"],
-      "must_include": ["vague clue"],
-      "must_not_include": ["answer"],
-      "voice_style_refs": ["voice-contract"],
-      "status": "pass"
+      "required_reader_experience": [
+        "order",
+        "breach",
+        "suspicion"
+      ],
+      "must_include": [
+        "archive key",
+        "after-hours rule"
+      ],
+      "must_not_include": [
+        "rival confession"
+      ],
+      "voice_style_refs": [
+        "voice-contract"
+      ],
+      "planned_unit_id": "chapter-01"
+    },
+    {
+      "id": "blueprint-ch02",
+      "source_interface_id": "iface-ch02",
+      "prose_scope": "chapter",
+      "pov": "limited_third",
+      "tense": "past",
+      "required_reader_experience": [
+        "bait",
+        "misdirection",
+        "pressure"
+      ],
+      "must_include": [
+        "false note",
+        "map room"
+      ],
+      "must_not_include": [
+        "true map location"
+      ],
+      "voice_style_refs": [
+        "voice-contract"
+      ],
+      "planned_unit_id": "chapter-02"
+    },
+    {
+      "id": "blueprint-ch03",
+      "source_interface_id": "iface-ch03",
+      "prose_scope": "chapter",
+      "pov": "limited_third",
+      "tense": "past",
+      "required_reader_experience": [
+        "risk",
+        "witness",
+        "cost"
+      ],
+      "must_include": [
+        "public desk",
+        "witness",
+        "rival's warning"
+      ],
+      "must_not_include": [
+        "map origin"
+      ],
+      "voice_style_refs": [
+        "voice-contract"
+      ],
+      "planned_unit_id": "chapter-03"
+    },
+    {
+      "id": "blueprint-ch04",
+      "source_interface_id": "iface-ch04",
+      "prose_scope": "chapter",
+      "pov": "limited_third",
+      "tense": "past",
+      "required_reader_experience": [
+        "discovery",
+        "reframe",
+        "urgency"
+      ],
+      "must_include": [
+        "rival ledger",
+        "decoy map"
+      ],
+      "must_not_include": [
+        "public victory"
+      ],
+      "voice_style_refs": [
+        "voice-contract"
+      ],
+      "planned_unit_id": "chapter-04"
+    },
+    {
+      "id": "blueprint-ch05",
+      "source_interface_id": "iface-ch05",
+      "prose_scope": "chapter",
+      "pov": "limited_third",
+      "tense": "past",
+      "required_reader_experience": [
+        "choice",
+        "protection",
+        "series question"
+      ],
+      "must_include": [
+        "glass case",
+        "true map",
+        "public consequence"
+      ],
+      "must_not_include": [
+        "map origin answer"
+      ],
+      "voice_style_refs": [
+        "voice-contract"
+      ],
+      "planned_unit_id": "chapter-05"
     }
   ],
   "reverse_outlines": [
     {
-      "id": "reverse-fake",
-      "chapter_id": "chapter-02",
-      "source_draft_ref": "drafts/chapter-02.md",
-      "observed_events": ["Generic bridge"],
-      "observed_reader_state_after": ["Generic continuation"],
-      "observed_promise_movements": ["vague setup"],
-      "observed_arc_movements": ["vague movement"],
-      "model_alignment": "pass",
+      "id": "reverse-ch01",
+      "source_draft_ref": "drafts/chapter-01.md",
+      "observed_events": [
+        "Mira finds the moved key"
+      ],
+      "observed_reader_state_after": [
+        "Archive order is breached"
+      ],
+      "observed_promise_movements": [
+        "promise-map-control setup"
+      ],
+      "observed_arc_movements": [
+        "Mira's trust cracks"
+      ],
       "drift": [],
-      "status": "pass"
+      "planned_unit_id": "chapter-01"
+    },
+    {
+      "id": "reverse-ch02",
+      "source_draft_ref": "drafts/chapter-02.md",
+      "observed_events": [
+        "Mira follows the false note"
+      ],
+      "observed_reader_state_after": [
+        "Mira is being baited"
+      ],
+      "observed_promise_movements": [
+        "promise-rival-trap setup"
+      ],
+      "observed_arc_movements": [
+        "Mira begins pursuit"
+      ],
+      "drift": [],
+      "planned_unit_id": "chapter-02"
+    },
+    {
+      "id": "reverse-ch03",
+      "source_draft_ref": "drafts/chapter-03.md",
+      "observed_events": [
+        "Mira creates a public witness"
+      ],
+      "observed_reader_state_after": [
+        "Mira is exposed"
+      ],
+      "observed_promise_movements": [
+        "promise-map-control escalation"
+      ],
+      "observed_arc_movements": [
+        "Mira accepts public risk"
+      ],
+      "drift": [],
+      "planned_unit_id": "chapter-03"
+    },
+    {
+      "id": "reverse-ch04",
+      "source_draft_ref": "drafts/chapter-04.md",
+      "observed_events": [
+        "Mira reads the rival ledger"
+      ],
+      "observed_reader_state_after": [
+        "The map room is a decoy"
+      ],
+      "observed_promise_movements": [
+        "promise-rival-trap payoff"
+      ],
+      "observed_arc_movements": [
+        "Rival exposure begins"
+      ],
+      "drift": [],
+      "planned_unit_id": "chapter-04"
+    },
+    {
+      "id": "reverse-ch05",
+      "source_draft_ref": "drafts/chapter-05.md",
+      "observed_events": [
+        "Mira secures the true map"
+      ],
+      "observed_reader_state_after": [
+        "Map control is paid and origin is deferred"
+      ],
+      "observed_promise_movements": [
+        "promise-map-control payoff",
+        "promise-series-map-origin deferral"
+      ],
+      "observed_arc_movements": [
+        "Mira accepts consequence"
+      ],
+      "drift": [],
+      "planned_unit_id": "chapter-05"
     }
-  ]
+  ],
+  "composition_plan": "../longform_novel_project/brief-request.json"
 }

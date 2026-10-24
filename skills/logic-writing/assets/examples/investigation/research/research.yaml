@@ -1,0 +1,12 @@
+schema: researchguard.research.v1
+question: Should we plan for free-threaded Python now, and is it about to become the
+  default?
+hypotheses:
+- id: h-main-answer
+  text: Free-threading moved from experimental to supported-but-optional in 3.14;
+    the default switch is undecided, so test now but do not plan on a default date.
+models:
+  source: source.yaml
+search:
+  budget: 3
+  scope_sufficient: true

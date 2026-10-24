@@ -1,22 +1,17 @@
-# Story Project Model Mesh
+# Story project mesh
 
-The project manifest is the aggregate identity owner for a StorylineDesign
-project. It names one project id, model revision, compiled route decision,
-explicit external nodes, and every in-scope native surface.
+The manifest names one project id and model revision, a `composition_plan` brief
+request, the current novel ledger, chapter interfaces, promises, voice/style
+facts and source requirements. Every domain unit points into the canonical plan.
+The mesh checks membership, parent/downstream references, domain cross-links,
+project identity and revision. External nodes are explicit boundaries.
 
-The mesh checker opens each surface and invokes that surface’s existing native
-validator. It does not copy field semantics into a broad report checker.
+`longform_closure_check.py project-mesh.json --json` directly invokes current
+surface validators in process. It returns `surface_checks` and computes
+`decision`; the manifest never points back to a closure report. Source
+requirements carry concrete requirements, planned-unit ids and local
+`evidence_ref` paths, with no authored satisfied/pass flags.
 
-After native validation, the mesh reconciles:
-
-- project id, model revision, route/phase, and final artifact identity;
-- book, volume, chapter, and scene parents and dependencies;
-- story-unit parent contribution and downstream use;
-- arc, thread, promise, payoff, and continuity references;
-- chapter interfaces, prose blueprints, and reverse outlines;
-- model-prose bindings and closure scope.
-
-Every edge resolves to a declared object or an explicit typed external node.
-Cross-project mixing, dangling parents, stale revisions, and different
-manuscript hashes block aggregate closure even when every individual JSON file
-is shape-valid.
+Current manuscript identity and realization belong to ArtifactMap,
+SharedWriting and the standard reader-chain review. The project mesh does not
+replace those checks with copied hashes or a second binding ledger.

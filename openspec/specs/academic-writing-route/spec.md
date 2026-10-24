@@ -55,7 +55,7 @@ High-importance academic units SHALL NOT remain shallow leaves when they carry m
 - **AND** SHALL NOT invent the missing support
 
 ### Requirement: Existing document work uses the Documents adapter
-When the target is DOCX, Word, Google Docs, tracked changes, comments, or document-layout output, the academic route SHALL delegate file mutation and visual QA to Documents.
+When the requested output is DOCX, Word, Google Docs, tracked changes, comments, or document-layout output, the academic route SHALL delegate file mutation and visual QA to Documents.
 
 #### Scenario: DOCX revision with tracked changes
 - **WHEN** the user requests real tracked changes
@@ -120,9 +120,9 @@ Structure, citation, reader-facing, document, and postwrite checks SHALL bind to
 - **THEN** affected checks SHALL become `stale`
 - **AND** required audits SHALL rerun before final closure
 
-#### Scenario: ResearchPacket changes
-- **WHEN** the artifact consumes a revised investigation packet
-- **THEN** every dependent claim, citation, paragraph, and closure check SHALL be reevaluated against the new packet
+#### Scenario: Research evidence changes
+- **WHEN** the artifact consumes revised content-boundary rows or a new native ResearchGuard verdict
+- **THEN** every dependent claim, citation, paragraph, and closure check SHALL be reevaluated against that evidence and its declared scope
 
 ### Requirement: Only academic writing issues academic final closure
 No child investigation, LogicGuard synthesis result, Documents render, or PDF render SHALL independently close an academic artifact.

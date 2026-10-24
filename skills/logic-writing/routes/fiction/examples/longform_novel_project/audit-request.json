@@ -1,0 +1,7 @@
+{
+  "audit_id": "audit-aurora",
+  "artifact_map": "artifact-map.json",
+  "reader_brief": "reader-brief.json",
+  "shared_writing": "shared-writing-result.json",
+  "audited_at": "2026-10-24T10:00:00Z"
+}

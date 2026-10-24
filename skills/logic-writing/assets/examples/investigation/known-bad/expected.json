@@ -1,1 +1,34 @@
-{"nocite.md":{"step":"audit","code":"citation_missing"},"token.md":{"step":"audit","code":"must_preserve_missing"},"leak.md":{"step":"audit","code":"workflow_leak"},"overclaim.md":{"step":"audit","code":"overclaim_pattern"},"nolim.md":{"step":"review","error":"excerpt is absent"},"short.md":{"step":"shared_writing","error":"is not in the current text"}}
+{
+  "empty.md": {
+    "error": "binding b-u-answer: quote \"Short answer: as of Python 3.14\" is not in the current text; binding b-u-history: quote \"In Python 3.13 the free-threaded mode shipped\" is not in the current text; binding b-u-cost: quote \"Support does not mean it is free.\" is not in the current text; binding b-u-next: quote \"Not on any announced schedule.\" is not in the current text; binding b-u-recommend: quote \"It is reasonable to start testing your service\" is not in the current text",
+    "step": "shared_writing"
+  },
+  "leak.md": {
+    "code": "workflow_leak",
+    "step": "audit"
+  },
+  "nocite.md": {
+    "code": "citation_missing",
+    "step": "audit"
+  },
+  "nolim-lim-perf.md": {
+    "error": "review evidence names artifact unit artifact:paragraph:0008, which is not in the current ArtifactMap (it has artifact:document … artifact:paragraph:0009)",
+    "step": "review"
+  },
+  "nolim-lim-scope.md": {
+    "error": "review evidence excerpt is absent from the current unit",
+    "step": "review"
+  },
+  "overclaim.md": {
+    "code": "overclaim_pattern",
+    "step": "audit"
+  },
+  "short.md": {
+    "error": "binding b-u-history: quote \"In Python 3.13 the free-threaded mode shipped\" is not in the current text; binding b-u-cost: quote \"Support does not mean it is free.\" is not in the current text; binding b-u-next: quote \"Not on any announced schedule.\" is not in the current text; binding b-u-recommend: quote \"It is reasonable to start testing your service\" is not in the current text",
+    "step": "shared_writing"
+  },
+  "token.md": {
+    "code": "must_preserve_missing",
+    "step": "audit"
+  }
+}

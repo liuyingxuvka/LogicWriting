@@ -24,5 +24,6 @@ defects. The selected route checks its own semantics in real spans. A reviewer
 in a context independent of the writer may assess those route obligations and
 all eight reader dimensions together, recording the existing route review and
 ReaderJudgment separately. Keep their fingerprints, reverse outline, actual
-spans and verified execution binding. Plans and self-assessment are not
-postwrite evidence.
+spans and current fingerprint bindings. Record `judge_kind` honestly; a passing
+self-review remains limited and never allows a broad claim. Plans and scores
+are not evidence of an independent actual-text read.

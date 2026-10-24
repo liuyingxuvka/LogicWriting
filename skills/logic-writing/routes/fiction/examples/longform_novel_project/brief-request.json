@@ -1,0 +1,737 @@
+{
+  "brief_id": "plan-aurora-brief",
+  "route_decision": "route-decision.json",
+  "content_boundaries": {
+    "content_units": [
+      {
+        "content_unit_id": "content-chapter-01",
+        "safe_meaning": "Introduces the archive breach and Mira's suspicion.",
+        "required": true,
+        "evidence_anchor_ids": [],
+        "alternative_ids": [],
+        "limitation_ids": [],
+        "model_row_ids": [
+          "promise-map-control",
+          "arc-mira-agency",
+          "cont-archive-key",
+          "cont-pov"
+        ]
+      },
+      {
+        "content_unit_id": "content-chapter-02",
+        "safe_meaning": "Turns suspicion into a baited trail.",
+        "required": true,
+        "evidence_anchor_ids": [],
+        "alternative_ids": [],
+        "limitation_ids": [],
+        "model_row_ids": [
+          "promise-rival-trap",
+          "arc-rival-exposure",
+          "cont-pov"
+        ]
+      },
+      {
+        "content_unit_id": "content-chapter-03",
+        "safe_meaning": "Forces Mira to choose public risk over private caution.",
+        "required": true,
+        "evidence_anchor_ids": [],
+        "alternative_ids": [],
+        "limitation_ids": [],
+        "model_row_ids": [
+          "arc-mira-agency",
+          "cont-archive-key",
+          "cont-pov"
+        ]
+      },
+      {
+        "content_unit_id": "content-chapter-04",
+        "safe_meaning": "Reframes the map as decoy and prepares the final choice.",
+        "required": true,
+        "evidence_anchor_ids": [],
+        "alternative_ids": [],
+        "limitation_ids": [],
+        "model_row_ids": [
+          "promise-rival-trap",
+          "arc-rival-exposure",
+          "cont-pov"
+        ]
+      },
+      {
+        "content_unit_id": "content-chapter-05",
+        "safe_meaning": "Pays the book conflict while deferring the series origin mystery.",
+        "required": true,
+        "evidence_anchor_ids": [],
+        "alternative_ids": [],
+        "limitation_ids": [],
+        "model_row_ids": [
+          "promise-map-control",
+          "promise-rival-trap",
+          "promise-series-map-origin",
+          "arc-mira-agency",
+          "arc-rival-exposure",
+          "cont-archive-key",
+          "cont-pov"
+        ]
+      }
+    ],
+    "evidence_anchors": [],
+    "alternatives": [],
+    "limitations": [],
+    "citation_duties": [],
+    "must_preserve_tokens": [],
+    "verbatim_obligations": [],
+    "prohibited_overclaims": []
+  },
+  "composition_plan": {
+    "schema_version": "2.0",
+    "plan_id": "plan-aurora",
+    "final_owner": "fiction-writing",
+    "central_question": "A junior archivist exposes a rival's trap and chooses public risk to protect a dangerous map.",
+    "central_throughline": "A junior archivist exposes a rival's trap and chooses public risk to protect a dangerous map.",
+    "artifact_form": "novel",
+    "structure_authority": "route_selected",
+    "opening_job": "A junior archivist exposes a rival's trap and chooses public risk to protect a dangerous map.",
+    "conclusion_job": "The map is secured, the rival is exposed, and the origin mystery remains for the series.",
+    "planned_units": [
+      {
+        "planned_unit_id": "series-aurora",
+        "parent_unit_id": null,
+        "unit_kind": "series",
+        "order": 1,
+        "required": false,
+        "title": "series-aurora",
+        "source_outline_ids": [],
+        "reader_job": "A junior archivist exposes a rival's trap and chooses public risk to protect a dangerous map.",
+        "content_unit_ids": [],
+        "limitation_ids": [],
+        "relation_to_previous": "The map is rumor and the protagonist avoids public conflict.",
+        "incoming_reader_state": "The map is rumor and the protagonist avoids public conflict.",
+        "outgoing_reader_state": "The map is secured, the rival is exposed, and the origin mystery remains for the series.",
+        "downstream_unit_ids": [],
+        "presentation_mode": "prose",
+        "target_extent": 50
+      },
+      {
+        "planned_unit_id": "book-01",
+        "parent_unit_id": "series-aurora",
+        "unit_kind": "book",
+        "order": 1,
+        "required": false,
+        "title": "The Aurora Key",
+        "source_outline_ids": [],
+        "reader_job": "Establishes the map conflict and leaves the origin mystery for the series.",
+        "content_unit_ids": [],
+        "limitation_ids": [],
+        "relation_to_previous": "The map is rumor and the protagonist avoids public conflict.",
+        "incoming_reader_state": "The map is rumor and the protagonist avoids public conflict.",
+        "outgoing_reader_state": "The map is secured, the rival is exposed, and the origin mystery remains for the series.",
+        "downstream_unit_ids": [],
+        "presentation_mode": "prose",
+        "target_extent": 50
+      },
+      {
+        "planned_unit_id": "volume-01",
+        "parent_unit_id": "book-01",
+        "unit_kind": "volume",
+        "order": 1,
+        "required": false,
+        "title": "Archive Pressure",
+        "source_outline_ids": [],
+        "reader_job": "The protagonist moves from private suspicion to public exposure.",
+        "content_unit_ids": [],
+        "limitation_ids": [],
+        "relation_to_previous": "The archive seems sealed and safe.",
+        "incoming_reader_state": "The archive seems sealed and safe.",
+        "outgoing_reader_state": "The archive has become evidence in public.",
+        "downstream_unit_ids": [],
+        "presentation_mode": "prose",
+        "target_extent": 50
+      },
+      {
+        "planned_unit_id": "chapter-01",
+        "parent_unit_id": "volume-01",
+        "unit_kind": "chapter",
+        "order": 1,
+        "required": true,
+        "title": "The Quiet Key",
+        "source_outline_ids": [],
+        "reader_job": "Introduces the archive breach and Mira's suspicion.",
+        "content_unit_ids": [],
+        "limitation_ids": [],
+        "relation_to_previous": "Mira trusts the archive rules.",
+        "incoming_reader_state": "The reader expects a controlled archive mystery.",
+        "outgoing_reader_state": "The reader knows the archive rules have been breached.",
+        "downstream_unit_ids": [
+          "chapter-02"
+        ],
+        "presentation_mode": "prose",
+        "target_extent": 50
+      },
+      {
+        "planned_unit_id": "chapter-02",
+        "parent_unit_id": "volume-01",
+        "unit_kind": "chapter",
+        "order": 2,
+        "required": true,
+        "title": "False Ink",
+        "source_outline_ids": [],
+        "reader_job": "Turns suspicion into a baited trail.",
+        "content_unit_ids": [],
+        "limitation_ids": [],
+        "relation_to_previous": "Mira thinks the key movement is an accident.",
+        "incoming_reader_state": "The reader suspects hidden access.",
+        "outgoing_reader_state": "The reader knows Mira is being baited.",
+        "downstream_unit_ids": [
+          "chapter-03"
+        ],
+        "presentation_mode": "prose",
+        "target_extent": 50
+      },
+      {
+        "planned_unit_id": "chapter-03",
+        "parent_unit_id": "volume-01",
+        "unit_kind": "chapter",
+        "order": 3,
+        "required": true,
+        "title": "Public Door",
+        "source_outline_ids": [],
+        "reader_job": "Forces Mira to choose public risk over private caution.",
+        "content_unit_ids": [],
+        "limitation_ids": [],
+        "relation_to_previous": "Mira has proof but no safe witness.",
+        "incoming_reader_state": "The reader knows Mira is walking into a trap.",
+        "outgoing_reader_state": "The reader knows Mira has exposed herself and forced a witness.",
+        "downstream_unit_ids": [
+          "chapter-04"
+        ],
+        "presentation_mode": "prose",
+        "target_extent": 50
+      },
+      {
+        "planned_unit_id": "chapter-04",
+        "parent_unit_id": "volume-01",
+        "unit_kind": "chapter",
+        "order": 4,
+        "required": true,
+        "title": "The Rival's Ledger",
+        "source_outline_ids": [],
+        "reader_job": "Reframes the map as decoy and prepares the final choice.",
+        "content_unit_ids": [],
+        "limitation_ids": [],
+        "relation_to_previous": "Mira believes the map itself is the prize.",
+        "incoming_reader_state": "The reader expects the rival's plan to tighten.",
+        "outgoing_reader_state": "The reader understands the map room contains a decoy.",
+        "downstream_unit_ids": [
+          "chapter-05"
+        ],
+        "presentation_mode": "prose",
+        "target_extent": 50
+      },
+      {
+        "planned_unit_id": "chapter-05",
+        "parent_unit_id": "volume-01",
+        "unit_kind": "chapter",
+        "order": 5,
+        "required": true,
+        "title": "Glass Case",
+        "source_outline_ids": [],
+        "reader_job": "Pays the book conflict while deferring the series origin mystery.",
+        "content_unit_ids": [],
+        "limitation_ids": [],
+        "relation_to_previous": "Mira knows the rival's trap but not the true map's origin.",
+        "incoming_reader_state": "The reader knows the true map is still vulnerable.",
+        "outgoing_reader_state": "The reader knows the map is secured, the rival is exposed, and the origin remains open.",
+        "downstream_unit_ids": [],
+        "presentation_mode": "prose",
+        "target_extent": 50
+      },
+      {
+        "planned_unit_id": "scene-01a",
+        "parent_unit_id": "chapter-01",
+        "unit_kind": "scene",
+        "order": 1,
+        "required": true,
+        "title": "Missing Key",
+        "source_outline_ids": [],
+        "reader_job": "Mira notices the moved key.",
+        "content_unit_ids": [
+          "content-chapter-01"
+        ],
+        "limitation_ids": [],
+        "relation_to_previous": "Archive order feels stable.",
+        "incoming_reader_state": "Archive order feels stable.",
+        "outgoing_reader_state": "Archive order is suspect.",
+        "downstream_unit_ids": [],
+        "presentation_mode": "prose",
+        "target_extent": 50
+      },
+      {
+        "planned_unit_id": "scene-02a",
+        "parent_unit_id": "chapter-02",
+        "unit_kind": "scene",
+        "order": 1,
+        "required": true,
+        "title": "False Note",
+        "source_outline_ids": [],
+        "reader_job": "The false note redirects Mira.",
+        "content_unit_ids": [
+          "content-chapter-02"
+        ],
+        "limitation_ids": [],
+        "relation_to_previous": "Mira follows procedure.",
+        "incoming_reader_state": "Mira follows procedure.",
+        "outgoing_reader_state": "Mira follows a baited trail.",
+        "downstream_unit_ids": [],
+        "presentation_mode": "prose",
+        "target_extent": 50
+      },
+      {
+        "planned_unit_id": "scene-03a",
+        "parent_unit_id": "chapter-03",
+        "unit_kind": "scene",
+        "order": 1,
+        "required": true,
+        "title": "Witness Desk",
+        "source_outline_ids": [],
+        "reader_job": "Mira chooses a public witness.",
+        "content_unit_ids": [
+          "content-chapter-03"
+        ],
+        "limitation_ids": [],
+        "relation_to_previous": "Mira is private.",
+        "incoming_reader_state": "Mira is private.",
+        "outgoing_reader_state": "Mira is visible.",
+        "downstream_unit_ids": [],
+        "presentation_mode": "prose",
+        "target_extent": 50
+      },
+      {
+        "planned_unit_id": "scene-04a",
+        "parent_unit_id": "chapter-04",
+        "unit_kind": "scene",
+        "order": 1,
+        "required": true,
+        "title": "Rival Ledger",
+        "source_outline_ids": [],
+        "reader_job": "Mira reads the rival's ledger.",
+        "content_unit_ids": [
+          "content-chapter-04"
+        ],
+        "limitation_ids": [],
+        "relation_to_previous": "Mira misidentifies the prize.",
+        "incoming_reader_state": "Mira misidentifies the prize.",
+        "outgoing_reader_state": "Mira identifies the decoy.",
+        "downstream_unit_ids": [],
+        "presentation_mode": "prose",
+        "target_extent": 50
+      },
+      {
+        "planned_unit_id": "scene-05a",
+        "parent_unit_id": "chapter-05",
+        "unit_kind": "scene",
+        "order": 1,
+        "required": true,
+        "title": "Glass Case",
+        "source_outline_ids": [],
+        "reader_job": "Mira secures the true map.",
+        "content_unit_ids": [
+          "content-chapter-05"
+        ],
+        "limitation_ids": [],
+        "relation_to_previous": "The true map is vulnerable.",
+        "incoming_reader_state": "The true map is vulnerable.",
+        "outgoing_reader_state": "The true map is protected.",
+        "downstream_unit_ids": [],
+        "presentation_mode": "prose",
+        "target_extent": 50
+      }
+    ],
+    "allowed_list_zones": [],
+    "content_dispositions": [
+      {
+        "content_unit_id": "content-chapter-01",
+        "disposition": "body",
+        "planned_unit_ids": [
+          "scene-01a"
+        ],
+        "reason": "Original chapter contribution carried by its same planned ancestors and scene."
+      },
+      {
+        "content_unit_id": "content-chapter-02",
+        "disposition": "body",
+        "planned_unit_ids": [
+          "scene-02a"
+        ],
+        "reason": "Original chapter contribution carried by its same planned ancestors and scene."
+      },
+      {
+        "content_unit_id": "content-chapter-03",
+        "disposition": "body",
+        "planned_unit_ids": [
+          "scene-03a"
+        ],
+        "reason": "Original chapter contribution carried by its same planned ancestors and scene."
+      },
+      {
+        "content_unit_id": "content-chapter-04",
+        "disposition": "body",
+        "planned_unit_ids": [
+          "scene-04a"
+        ],
+        "reason": "Original chapter contribution carried by its same planned ancestors and scene."
+      },
+      {
+        "content_unit_id": "content-chapter-05",
+        "disposition": "body",
+        "planned_unit_ids": [
+          "scene-05a"
+        ],
+        "reason": "Original chapter contribution carried by its same planned ancestors and scene."
+      }
+    ],
+    "limitation_dispositions": [],
+    "unresolved_conflicts": []
+  },
+  "route_composition": {
+    "schema_version": "2.0",
+    "composition_id": "plan-aurora-fiction",
+    "final_owner": "fiction-writing",
+    "output_room": "reader_native",
+    "artifact_kind": "novel",
+    "prose_phase": "integrated_draft",
+    "structure_authority": "route_selected",
+    "voice_contract_ref": "voice-contract",
+    "unit_plans": [
+      {
+        "unit_id": "series-aurora",
+        "unit_kind": "series",
+        "contribution": "A junior archivist exposes a rival's trap and chooses public risk to protect a dangerous map.",
+        "entry_state": "The map is rumor and the protagonist avoids public conflict.",
+        "exit_state": "The map is secured, the rival is exposed, and the origin mystery remains for the series.",
+        "focal_desire": "A junior archivist exposes a rival's trap and chooses public risk to protect a dangerous map.",
+        "resistance_or_cost": "The map is rumor and the protagonist avoids public conflict.",
+        "reader_state_before": "The map is rumor and the protagonist avoids public conflict.",
+        "reader_state_after": "The map is secured, the rival is exposed, and the origin mystery remains for the series.",
+        "open_questions_in": [],
+        "open_questions_out": [],
+        "voice_owner": "Mira",
+        "rhythm_role": "series-aurora",
+        "prohibited_reveals": [],
+        "downstream_unit_ids": []
+      },
+      {
+        "unit_id": "book-01",
+        "unit_kind": "book",
+        "contribution": "Establishes the map conflict and leaves the origin mystery for the series.",
+        "entry_state": "The map is rumor and the protagonist avoids public conflict.",
+        "exit_state": "The map is secured, the rival is exposed, and the origin mystery remains for the series.",
+        "focal_desire": "Establishes the map conflict and leaves the origin mystery for the series.",
+        "resistance_or_cost": "The map is rumor and the protagonist avoids public conflict.",
+        "reader_state_before": "The map is rumor and the protagonist avoids public conflict.",
+        "reader_state_after": "The map is secured, the rival is exposed, and the origin mystery remains for the series.",
+        "open_questions_in": [],
+        "open_questions_out": [],
+        "voice_owner": "Mira",
+        "rhythm_role": "The Aurora Key",
+        "prohibited_reveals": [],
+        "downstream_unit_ids": []
+      },
+      {
+        "unit_id": "volume-01",
+        "unit_kind": "volume",
+        "contribution": "The protagonist moves from private suspicion to public exposure.",
+        "entry_state": "The archive seems sealed and safe.",
+        "exit_state": "The archive has become evidence in public.",
+        "focal_desire": "The protagonist moves from private suspicion to public exposure.",
+        "resistance_or_cost": "The archive seems sealed and safe.",
+        "reader_state_before": "The archive seems sealed and safe.",
+        "reader_state_after": "The archive has become evidence in public.",
+        "open_questions_in": [],
+        "open_questions_out": [],
+        "voice_owner": "Mira",
+        "rhythm_role": "Archive Pressure",
+        "prohibited_reveals": [],
+        "downstream_unit_ids": []
+      },
+      {
+        "unit_id": "chapter-01",
+        "unit_kind": "chapter",
+        "contribution": "Introduces the archive breach and Mira's suspicion.",
+        "entry_state": "Mira trusts the archive rules.",
+        "exit_state": "Mira suspects the rival can enter after hours.",
+        "focal_desire": "Introduces the archive breach and Mira's suspicion.",
+        "resistance_or_cost": "Mira trusts the archive rules.",
+        "reader_state_before": "The reader expects a controlled archive mystery.",
+        "reader_state_after": "The reader knows the archive rules have been breached.",
+        "open_questions_in": [
+          "Why are the archive rules emphasized?"
+        ],
+        "open_questions_out": [
+          "Who moved the key after hours?"
+        ],
+        "voice_owner": "Mira",
+        "rhythm_role": "The Quiet Key",
+        "prohibited_reveals": [],
+        "downstream_unit_ids": [
+          "chapter-02"
+        ]
+      },
+      {
+        "unit_id": "chapter-02",
+        "unit_kind": "chapter",
+        "contribution": "Turns suspicion into a baited trail.",
+        "entry_state": "Mira thinks the key movement is an accident.",
+        "exit_state": "Mira knows someone is baiting her.",
+        "focal_desire": "Turns suspicion into a baited trail.",
+        "resistance_or_cost": "Mira thinks the key movement is an accident.",
+        "reader_state_before": "The reader suspects hidden access.",
+        "reader_state_after": "The reader knows Mira is being baited.",
+        "open_questions_in": [
+          "Who moved the key?"
+        ],
+        "open_questions_out": [
+          "What does the rival gain if Mira follows the bait?"
+        ],
+        "voice_owner": "Mira",
+        "rhythm_role": "False Ink",
+        "prohibited_reveals": [],
+        "downstream_unit_ids": [
+          "chapter-03"
+        ]
+      },
+      {
+        "unit_id": "chapter-03",
+        "unit_kind": "chapter",
+        "contribution": "Forces Mira to choose public risk over private caution.",
+        "entry_state": "Mira has proof but no safe witness.",
+        "exit_state": "Mira is exposed and the rival knows she saw the bait.",
+        "focal_desire": "Forces Mira to choose public risk over private caution.",
+        "resistance_or_cost": "Mira has proof but no safe witness.",
+        "reader_state_before": "The reader knows Mira is walking into a trap.",
+        "reader_state_after": "The reader knows Mira has exposed herself and forced a witness.",
+        "open_questions_in": [
+          "What does the rival gain from Mira's movement?"
+        ],
+        "open_questions_out": [
+          "What did the rival learn from Mira's public choice?"
+        ],
+        "voice_owner": "Mira",
+        "rhythm_role": "Public Door",
+        "prohibited_reveals": [],
+        "downstream_unit_ids": [
+          "chapter-04"
+        ]
+      },
+      {
+        "unit_id": "chapter-04",
+        "unit_kind": "chapter",
+        "contribution": "Reframes the map as decoy and prepares the final choice.",
+        "entry_state": "Mira believes the map itself is the prize.",
+        "exit_state": "Mira understands that the rival wants her to move the decoy.",
+        "focal_desire": "Reframes the map as decoy and prepares the final choice.",
+        "resistance_or_cost": "Mira believes the map itself is the prize.",
+        "reader_state_before": "The reader expects the rival's plan to tighten.",
+        "reader_state_after": "The reader understands the map room contains a decoy.",
+        "open_questions_in": [
+          "What did the rival want Mira to move?"
+        ],
+        "open_questions_out": [
+          "Where is the true map?"
+        ],
+        "voice_owner": "Mira",
+        "rhythm_role": "The Rival's Ledger",
+        "prohibited_reveals": [],
+        "downstream_unit_ids": [
+          "chapter-05"
+        ]
+      },
+      {
+        "unit_id": "chapter-05",
+        "unit_kind": "chapter",
+        "contribution": "Pays the book conflict while deferring the series origin mystery.",
+        "entry_state": "Mira knows the rival's trap but not the true map's origin.",
+        "exit_state": "Mira protects the map, exposes the rival, and defers the origin mystery.",
+        "focal_desire": "Pays the book conflict while deferring the series origin mystery.",
+        "resistance_or_cost": "Mira knows the rival's trap but not the true map's origin.",
+        "reader_state_before": "The reader knows the true map is still vulnerable.",
+        "reader_state_after": "The reader knows the map is secured, the rival is exposed, and the origin remains open.",
+        "open_questions_in": [
+          "Where is the true map?"
+        ],
+        "open_questions_out": [
+          "Where did the true map come from?"
+        ],
+        "voice_owner": "Mira",
+        "rhythm_role": "Glass Case",
+        "prohibited_reveals": [],
+        "downstream_unit_ids": []
+      },
+      {
+        "unit_id": "scene-01a",
+        "unit_kind": "scene",
+        "contribution": "Mira notices the moved key.",
+        "entry_state": "Archive order feels stable.",
+        "exit_state": "Archive order is suspect.",
+        "focal_desire": "Mira notices the moved key.",
+        "resistance_or_cost": "Archive order feels stable.",
+        "reader_state_before": "Archive order feels stable.",
+        "reader_state_after": "Archive order is suspect.",
+        "open_questions_in": [],
+        "open_questions_out": [],
+        "voice_owner": "Mira",
+        "rhythm_role": "Missing Key",
+        "prohibited_reveals": [],
+        "downstream_unit_ids": []
+      },
+      {
+        "unit_id": "scene-02a",
+        "unit_kind": "scene",
+        "contribution": "The false note redirects Mira.",
+        "entry_state": "Mira follows procedure.",
+        "exit_state": "Mira follows a baited trail.",
+        "focal_desire": "The false note redirects Mira.",
+        "resistance_or_cost": "Mira follows procedure.",
+        "reader_state_before": "Mira follows procedure.",
+        "reader_state_after": "Mira follows a baited trail.",
+        "open_questions_in": [],
+        "open_questions_out": [],
+        "voice_owner": "Mira",
+        "rhythm_role": "False Note",
+        "prohibited_reveals": [],
+        "downstream_unit_ids": []
+      },
+      {
+        "unit_id": "scene-03a",
+        "unit_kind": "scene",
+        "contribution": "Mira chooses a public witness.",
+        "entry_state": "Mira is private.",
+        "exit_state": "Mira is visible.",
+        "focal_desire": "Mira chooses a public witness.",
+        "resistance_or_cost": "Mira is private.",
+        "reader_state_before": "Mira is private.",
+        "reader_state_after": "Mira is visible.",
+        "open_questions_in": [],
+        "open_questions_out": [],
+        "voice_owner": "Mira",
+        "rhythm_role": "Witness Desk",
+        "prohibited_reveals": [],
+        "downstream_unit_ids": []
+      },
+      {
+        "unit_id": "scene-04a",
+        "unit_kind": "scene",
+        "contribution": "Mira reads the rival's ledger.",
+        "entry_state": "Mira misidentifies the prize.",
+        "exit_state": "Mira identifies the decoy.",
+        "focal_desire": "Mira reads the rival's ledger.",
+        "resistance_or_cost": "Mira misidentifies the prize.",
+        "reader_state_before": "Mira misidentifies the prize.",
+        "reader_state_after": "Mira identifies the decoy.",
+        "open_questions_in": [],
+        "open_questions_out": [],
+        "voice_owner": "Mira",
+        "rhythm_role": "Rival Ledger",
+        "prohibited_reveals": [],
+        "downstream_unit_ids": []
+      },
+      {
+        "unit_id": "scene-05a",
+        "unit_kind": "scene",
+        "contribution": "Mira secures the true map.",
+        "entry_state": "The true map is vulnerable.",
+        "exit_state": "The true map is protected.",
+        "focal_desire": "Mira secures the true map.",
+        "resistance_or_cost": "The true map is vulnerable.",
+        "reader_state_before": "The true map is vulnerable.",
+        "reader_state_after": "The true map is protected.",
+        "open_questions_in": [],
+        "open_questions_out": [],
+        "voice_owner": "Mira",
+        "rhythm_role": "Glass Case",
+        "prohibited_reveals": [],
+        "downstream_unit_ids": []
+      }
+    ],
+    "story_movements": [
+      {
+        "movement_id": "movement-chapter-01",
+        "unit_ids": [
+          "chapter-01"
+        ],
+        "entry_story_state": "Mira trusts the archive rules.",
+        "primary_pressure": "Introduces the archive breach and Mira's suspicion.",
+        "reader_state_change": "Mira finds that the archive key has been moved.",
+        "irreversible_change": "Mira suspects the rival can enter after hours.",
+        "exit_story_state": "Mira suspects the rival can enter after hours.",
+        "downstream_unit_ids": [],
+        "promise_ids": []
+      },
+      {
+        "movement_id": "movement-chapter-02",
+        "unit_ids": [
+          "chapter-02"
+        ],
+        "entry_story_state": "Mira thinks the key movement is an accident.",
+        "primary_pressure": "Turns suspicion into a baited trail.",
+        "reader_state_change": "A false note points Mira toward the map room.",
+        "irreversible_change": "Mira knows someone is baiting her.",
+        "exit_story_state": "Mira knows someone is baiting her.",
+        "downstream_unit_ids": [],
+        "promise_ids": []
+      },
+      {
+        "movement_id": "movement-chapter-03",
+        "unit_ids": [
+          "chapter-03"
+        ],
+        "entry_story_state": "Mira has proof but no safe witness.",
+        "primary_pressure": "Forces Mira to choose public risk over private caution.",
+        "reader_state_change": "Mira chooses exposure to force the archive door open.",
+        "irreversible_change": "Mira is exposed and the rival knows she saw the bait.",
+        "exit_story_state": "Mira is exposed and the rival knows she saw the bait.",
+        "downstream_unit_ids": [],
+        "promise_ids": []
+      },
+      {
+        "movement_id": "movement-chapter-04",
+        "unit_ids": [
+          "chapter-04"
+        ],
+        "entry_story_state": "Mira believes the map itself is the prize.",
+        "primary_pressure": "Reframes the map as decoy and prepares the final choice.",
+        "reader_state_change": "Mira reads the rival's ledger and learns the map is a decoy.",
+        "irreversible_change": "Mira understands that the rival wants her to move the decoy.",
+        "exit_story_state": "Mira understands that the rival wants her to move the decoy.",
+        "downstream_unit_ids": [],
+        "promise_ids": []
+      },
+      {
+        "movement_id": "movement-chapter-05",
+        "unit_ids": [
+          "chapter-05"
+        ],
+        "entry_story_state": "Mira knows the rival's trap but not the true map's origin.",
+        "primary_pressure": "Pays the book conflict while deferring the series origin mystery.",
+        "reader_state_change": "Mira secures the true map and leaves its origin unresolved.",
+        "irreversible_change": "Mira protects the map, exposes the rival, and defers the origin mystery.",
+        "exit_story_state": "Mira protects the map, exposes the rival, and defers the origin mystery.",
+        "downstream_unit_ids": [],
+        "promise_ids": []
+      }
+    ],
+    "promise_and_reveal_bindings": [],
+    "realization_boundaries": [
+      "The original story model and manuscript, without additional story content."
+    ],
+    "voice_contract": {
+      "pov": "limited third person",
+      "tense": "past",
+      "narration_distance": "close",
+      "register": "precise, tactile, low ornament",
+      "allowed_variation": [
+        "ledger quotations may become more formal"
+      ]
+    },
+    "longform_project": "project-mesh.json"
+  }
+}

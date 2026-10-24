@@ -3,21 +3,179 @@
   "case_id": "near-future-current-bookable",
   "base_plan": "skills/logic-writing/routes/travel/examples/good_city_couple_trip/plan.json",
   "mutations": [
-    {"op": "set", "path": ["trip_context", "trip_id"], "value": "fixture-city-near-2026"},
-    {"op": "set", "path": ["trip_context", "date_relation"], "value": "near_future"},
-    {"op": "set", "path": ["trip_context", "start_date"], "value": "2026-08-01"},
-    {"op": "set", "path": ["trip_context", "end_date"], "value": "2026-08-03"},
-    {"op": "set", "path": ["trip_context", "allowed_claim_level"], "value": "bookable"},
-    {"op": "set_each", "path": ["source_portfolio", "sources"], "field": "freshness_status", "value": "current"},
-    {"op": "append", "path": ["source_portfolio", "sources"], "value": {"source_id": "src-forecast", "source_class": "weather_forecast", "source_date": "2026-07-14", "coverage_period": "2026-08-01 through 2026-08-03 frozen fixture", "locator": "fixture://forecast", "access_status": "inspected", "content_sha256": "fixture-forecast", "can_support": ["daily precipitation and wind window"], "cannot_support": ["live day-of change"], "freshness_status": "current", "next_action": "refresh before departure"}},
-    {"op": "append", "path": ["source_portfolio", "sources"], "value": {"source_id": "src-alert", "source_class": "weather_alert", "source_date": "2026-07-14", "coverage_period": "2026-08-01 through 2026-08-03 frozen fixture", "locator": "fixture://alert", "access_status": "inspected", "content_sha256": "fixture-alert", "can_support": ["official advisory state"], "cannot_support": ["future advisory changes"], "freshness_status": "current", "next_action": "refresh before departure"}},
-    {"op": "set", "path": ["traveler_native_guide", "weather_evidence_summary", "date_relation"], "value": "near_future"},
-    {"op": "set", "path": ["traveler_native_guide", "weather_evidence_summary", "source_type"], "value": "forecast_and_alert"},
-    {"op": "set", "path": ["traveler_native_guide", "weather_evidence_summary", "weather_source_mode"], "value": "forecast_alert"},
-    {"op": "set", "path": ["traveler_native_guide", "weather_evidence_summary", "source_ids"], "value": ["src-forecast", "src-alert"]},
-    {"op": "set", "path": ["traveler_native_guide", "weather_evidence_summary", "covered_dates"], "value": ["2026-08-01", "2026-08-02", "2026-08-03"]},
-    {"op": "set", "path": ["traveler_native_guide", "weather_evidence_summary", "missing_or_downgraded_hazards"], "value": []},
-    {"op": "set", "path": ["traveler_native_guide", "weather_evidence_summary", "claim_status"], "value": "checked"},
-    {"op": "set", "path": ["traveler_native_guide", "weather_evidence_summary", "recheck_note"], "value": "Refresh forecast and alerts before departure."}
+    {
+      "op": "set",
+      "path": [
+        "trip_context",
+        "trip_id"
+      ],
+      "value": "fixture-city-near-2026"
+    },
+    {
+      "op": "set",
+      "path": [
+        "trip_context",
+        "date_relation"
+      ],
+      "value": "near_future"
+    },
+    {
+      "op": "set",
+      "path": [
+        "trip_context",
+        "start_date"
+      ],
+      "value": "2026-08-01"
+    },
+    {
+      "op": "set",
+      "path": [
+        "trip_context",
+        "end_date"
+      ],
+      "value": "2026-08-03"
+    },
+    {
+      "op": "set",
+      "path": [
+        "trip_context",
+        "requested_claim_level"
+      ],
+      "value": "bookable"
+    },
+    {
+      "op": "set_each",
+      "path": [
+        "source_portfolio",
+        "sources"
+      ],
+      "field": "checked_on",
+      "value": "2026-07-14"
+    },
+    {
+      "op": "append",
+      "path": [
+        "source_portfolio",
+        "sources"
+      ],
+      "value": {
+        "source_id": "src-forecast",
+        "source_class": "weather_forecast",
+        "source_date": "2026-07-14",
+        "coverage_period": "2026-08-01 through 2026-08-03 frozen fixture",
+        "locator": "fixture://forecast",
+        "content_sha256": "fixture-forecast",
+        "can_support": [
+          "daily precipitation and wind window"
+        ],
+        "cannot_support": [
+          "live day-of change"
+        ],
+        "next_action": "refresh before departure",
+        "checked_on": "2026-07-14"
+      }
+    },
+    {
+      "op": "append",
+      "path": [
+        "source_portfolio",
+        "sources"
+      ],
+      "value": {
+        "source_id": "src-alert",
+        "source_class": "weather_alert",
+        "source_date": "2026-07-14",
+        "coverage_period": "2026-08-01 through 2026-08-03 frozen fixture",
+        "locator": "fixture://alert",
+        "content_sha256": "fixture-alert",
+        "can_support": [
+          "official advisory state"
+        ],
+        "cannot_support": [
+          "future advisory changes"
+        ],
+        "next_action": "refresh before departure",
+        "checked_on": "2026-07-14"
+      }
+    },
+    {
+      "op": "set",
+      "path": [
+        "trip_context",
+        "weather_evidence_summary",
+        "date_relation"
+      ],
+      "value": "near_future"
+    },
+    {
+      "op": "set",
+      "path": [
+        "trip_context",
+        "weather_evidence_summary",
+        "source_type"
+      ],
+      "value": "forecast_and_alert"
+    },
+    {
+      "op": "set",
+      "path": [
+        "trip_context",
+        "weather_evidence_summary",
+        "weather_source_mode"
+      ],
+      "value": "forecast_alert"
+    },
+    {
+      "op": "set",
+      "path": [
+        "trip_context",
+        "weather_evidence_summary",
+        "source_ids"
+      ],
+      "value": [
+        "src-forecast",
+        "src-alert"
+      ]
+    },
+    {
+      "op": "set",
+      "path": [
+        "trip_context",
+        "weather_evidence_summary",
+        "covered_dates"
+      ],
+      "value": [
+        "2026-08-01",
+        "2026-08-02",
+        "2026-08-03"
+      ]
+    },
+    {
+      "op": "set",
+      "path": [
+        "trip_context",
+        "weather_evidence_summary",
+        "missing_or_downgraded_hazards"
+      ],
+      "value": []
+    },
+    {
+      "op": "set",
+      "path": [
+        "trip_context",
+        "weather_evidence_summary",
+        "claim_status"
+      ],
+      "value": "checked"
+    },
+    {
+      "op": "set",
+      "path": [
+        "trip_context",
+        "weather_evidence_summary",
+        "recheck_note"
+      ],
+      "value": "Refresh forecast and alerts before departure."
+    }
   ]
 }

@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 from _common import cli_validate, require_mapping, validation_result
-from reader_pipeline import fill_check_fingerprints, validate_shared_writing as _validate_shared_writing
+from reader_fill import fill_check_fingerprints
+from reader_binding import validate_shared_writing as _validate_shared_writing
 
 
 def validate_shared_writing(value, *, artifact_map=None, reader_brief=None):

@@ -1,7 +1,7 @@
 # Logic Writing
 
 <p align="center">
-  <img src="https://img.shields.io/badge/source-4.0.13-6f42c1" alt="源码版本 4.0.13" />
+  <img src="https://img.shields.io/badge/source-4.0.14-6f42c1" alt="源码版本 4.0.14" />
   <img src="https://img.shields.io/badge/skill-logic--writing-334155" alt="技能 logic-writing" />
   <img src="https://img.shields.io/badge/routes-4-0a7f5a" alt="四条最终路线" />
   <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT 许可证" />
@@ -32,8 +32,9 @@
 
 上一步失败且没有所需记录时，直接显示它的第一条错误。绑定或评审证据引用了已消失的正文单元时，会在补任何指纹前停止；须按当前 ArtifactMap 更正引用。
 
-调查和学术之间用当前的 `ResearchPacket` 交接证据；写作者收到的是去掉内部
-台账语言的 `ReaderBrief`。
+每篇成品只在内容边界里维护自己的证据。ResearchGuard 的研究文件夹保存
+来源和措辞许可，收尾只读它的一份 `verdict`。写作上下文只收到
+`ReaderBrief.writer_input`，不接收内部台账或专业工具路径。
 
 ## 一个入口，四条最终路线
 
@@ -41,7 +42,7 @@
 | --- | --- | --- |
 | 调查报告、简报、证据包、决策说明、调查型回答 | `investigation` | 资料深度、观点竞争、关键数字、反面证据、时间/因果链、有边界的结论 |
 | 论文、学位论文章节、文献综述、研究计划、实质性学术修订 | `academic-writing` | 结构、引文、修订溯源、图表、Word/PDF 工作流 |
-| 故事计划、短篇、小说章节、长篇、系列设定、故事审计或修订 | `fiction-writing` | 转折、场景、承诺兑现、连续性、声音、世界一致性、模型—正文绑定 |
+| 故事计划、短篇、小说章节、长篇、系列设定、故事审计或修订 | `fiction-writing` | 转折、场景、承诺兑现、连续性、声音、世界一致性、共享计划—正文绑定 |
 | 行程、目的地攻略、路线方案、住宿策略、旅行者适配建议 | `travel-guide` | 有日期的证据、天气/警报、可行性、体力与偏好、住宿、负面证据、可达备选 |
 
 路由看的是“最后交什么”，不是第一步做什么，也不是题材是什么。旅游研究
@@ -69,12 +70,21 @@
 
 判断记录用 `judge_kind` 明说是 `independent_context` 还是 `self_review`。
 自评通过也保留明确风险，不允许宽泛结论；质量未通过时仍须修复。
+宽泛质量声明还要求完整的当前质量链、独立阅读、适用的原生研究/世界检查，
+以及对仍然存活的竞争结论作出明确处置。`contested` 保留为研究风险，
+“可以停止搜索”不会自动变成“可以断言”。
+
+CompositionPlan 是唯一的单元树。长篇项目指向它并使用其单元 id；旅行用
+一份 `trip_plan` 行程配合指南计划。`world_contract` / `world_refs` 绑定世界
+引用，未被检查抓住的已知坏变体保持可见；`show_plan.py` 把计划放在当前文字
+旁边读回。这些检查从实际文件推出边界和剩余工作，不接受手写最终结论。
 
 然后每条路线再加自己的标准：调查和学术看证据与引用，小说看戏剧化、声音
 和兑现，旅行看日期、能不能走、适不适合这个人、备选是否真的就在附近。
 
 ## 专业技能仍然各管各的
 
+- ResearchGuard 的 `status` 提供问题级 `verdict`；`research_folder` 导入来源拥有的锚点，手写身份冲突会报错。
 - SourceGuard 决定下一步搜什么、资料深度够不够。
 - LogicGuard 负责资料保存、论证支持、结构、引文语义、模型深化和综合计划。
 - TraceGuard 负责重要的时间、执行、因果、竞争叙事、反事实和预测边界。
@@ -131,7 +141,7 @@ ResearchGuard 和 WorldGuard 需要另外安装。然后调用：
 
 每次推送和拉取请求都会运行 CI：全量 pytest、小说与旅行回归、`python -m flowguard map check`、
 `python -m flowguard release`，以及安装文件的字节检查。第二个作业在声明的最低 ResearchGuard 版本上
-运行测试和成员预检。发布工作流只在同一源码提交的 CI 成功后发布。这些检查覆盖脚本和契约，
+运行测试、问题级 status 预检和三个成员预检。发布工作流只在同一源码提交的 CI 成功后发布。这些检查覆盖脚本和契约，
 不证明某篇具体文字的质量；最终收尾仍须阅读实际成品。
 
 ## 不负责什么

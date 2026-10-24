@@ -25,14 +25,25 @@ Record promises in the ledger `promises` section. Each promise must have a stabl
   "promise_type": "dramatic_question",
   "source_row_id": "scene-001",
   "source_row_kind": "scene",
-  "introduced_by": ["scene-001", "turn-first-plot-point"],
+  "introduced_by": [
+    "scene-001",
+    "turn-first-plot-point"
+  ],
   "promise_text": "Who will reach the missing map first?",
   "reader_expectation": "The story will answer who controls the map and what that control costs.",
   "importance": "key",
   "expected_payoff": {
     "payoff_type": "answer_and_cost",
-    "target_rows": ["scene-010", "turn-climax-001", "resolution-main"],
-    "minimum_evidence": ["scene_contract", "structure_turn", "worldguard_claim"]
+    "target_rows": [
+      "scene-010",
+      "turn-climax-001",
+      "resolution-main"
+    ],
+    "minimum_evidence": [
+      "scene_contract",
+      "structure_turn",
+      "worldguard_claim"
+    ]
   },
   "current_payoff": {
     "status": "planned",
@@ -43,7 +54,10 @@ Record promises in the ledger `promises` section. Each promise must have a stabl
   "inversion": {
     "allowed": true,
     "inversion_rule": "The answer may reveal that controlling the map is a trap if setup rows make the reversal legible.",
-    "requires_setup_rows": ["scene-003", "promise-map-race"],
+    "requires_setup_rows": [
+      "scene-003",
+      "promise-map-race"
+    ],
     "status": "not_used"
   },
   "abandonment": {
@@ -58,10 +72,21 @@ Record promises in the ledger `promises` section. Each promise must have a stabl
     "human_review_required": false
   },
   "links": {
-    "structure_rows": ["turn-first-plot-point", "turn-climax-001"],
-    "scene_rows": ["scene-001", "scene-006", "scene-010"],
-    "worldguard_claim_rows": ["wg-claim-map-possession"],
-    "support_rows": ["support-map-rule"]
+    "structure_rows": [
+      "turn-first-plot-point",
+      "turn-climax-001"
+    ],
+    "scene_rows": [
+      "scene-001",
+      "scene-006",
+      "scene-010"
+    ],
+    "worldguard_claim_rows": [
+      "wg-claim-map-possession"
+    ],
+    "support_rows": [
+      "support-map-rule"
+    ]
   },
   "status": "open",
   "closure_effect": "blocks_full_closure_until_paid_or_deferred",

@@ -109,6 +109,14 @@ def resolve_review_obligations(owner: str, profile: str, reader_intent: Mapping[
             _row(owner, "reveal_boundary", "required", "Prohibited reveals remain unknown to the focal character until licensed."),
             _row(owner, "scene_movement", "required", "The final scene or movement must cause a reader-state or story-state change."),
         ])
+        if selected_composition.get("longform_project"):
+            for dimension, basis in (
+                ("explanation_pressure", "Review what the scene lets readers infer without explaining it twice."),
+                ("variation", "Review variation in scene resistance, rhythm and revelation."),
+                ("register_ownership", "Review which character or narrator owns each register."),
+            ):
+                obligations.append(dict(obligation_id=dimension, dimension_id=dimension,
+                    status="required", applicability="required", basis=basis))
         if selected_composition.get("artifact_kind") == "revision" or profile == "audit":
             obligations.append(_row(owner, "revision_report", "required", "A fiction revision task must report actual changes and their continuity effects."))
     elif owner == "travel-guide":

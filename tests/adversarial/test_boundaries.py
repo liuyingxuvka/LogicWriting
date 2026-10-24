@@ -6,7 +6,7 @@ import pytest
 
 from _common import ValidationError, fingerprint
 from tests.v2_support import derive_protocol_closure as derive_closure
-from reader_pipeline import validate_route_artifact_review
+from reader_checks import validate_route_artifact_review
 from tests.v2_support import closure_input, complete_chain
 
 
@@ -73,7 +73,7 @@ def _boundary_review(chain):
 
 
 def test_review_must_answer_every_limitation_and_overclaim(tmp_path):
-    from reader_pipeline import _review_boundary_checks
+    from reader_checks import _review_boundary_checks
     chain = complete_chain(tmp_path)
     brief, review = _boundary_review(chain)
     review['limitation_checks'] = []
@@ -83,7 +83,7 @@ def test_review_must_answer_every_limitation_and_overclaim(tmp_path):
 
 
 def test_limitation_excerpt_must_be_in_its_planned_unit(tmp_path):
-    from reader_pipeline import _review_boundary_checks
+    from reader_checks import _review_boundary_checks
     chain = complete_chain(tmp_path)
     brief, review = _boundary_review(chain)
     shared = copy.deepcopy(chain['shared_writing'])
@@ -97,7 +97,8 @@ def test_limitation_excerpt_must_be_in_its_planned_unit(tmp_path):
 
 def test_limitation_adjacency_uses_offsets_not_map_array_order(tmp_path):
     from _common import fingerprint_without
-    from reader_pipeline import _review_boundary_checks, build_artifact_map, validate_artifact_map
+    from reader_checks import _review_boundary_checks
+    from artifact_map import build_artifact_map, validate_artifact_map
 
     chain = complete_chain(tmp_path)
     piece = tmp_path / 'three-paragraphs.md'
@@ -128,7 +129,7 @@ def test_limitation_adjacency_uses_offsets_not_map_array_order(tmp_path):
 
 
 def test_present_overclaim_forces_repair(tmp_path):
-    from reader_pipeline import _route_review_from_current
+    from reader_checks import _route_review_from_current
     from tests.v2_support import span_evidence
     chain = complete_chain(tmp_path)
     brief, review = _boundary_review(chain)

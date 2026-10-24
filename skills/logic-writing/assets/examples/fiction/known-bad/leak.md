@@ -1,10 +1,7 @@
-The ferry's horn had gone at six, and with it Brandt, the harbormaster, his whole iron ring of keys jangling on his belt as he stepped aboard. Tova had watched him go from the office window and only afterwards looked at the clearance papers for the *Merel*, still unstamped on his desk. The seal was in the cabinet behind him. The cabinet was locked. The tide would turn at half past seven, and the *Merel* would not wait for it.
+The ferry's horn had gone at six, and with it Brandt, the harbormaster, his whole iron ring of keys jangling on his belt as he stepped aboard. Tova had watched him go from the office window and only afterwards looked at the clearance papers for the *Merel*, still unstamped on his desk. The seal was in the cabinet behind him. The cabinet was locked. The tide would turn at half past seven, and the *Merel* would not wait for it. SourceGuard
 
 She tried the cabinet anyway, because there was nothing else to try. Then she went down to the watch house, where Ilse sat with her boots on the stove rail and the spare-key box closed in front of her. "It opens at the seven bell," Ilse said, without looking up. "You know that. Everybody knows that." Tova sat on the bench and counted the gulls on the breakwater and did not argue, because arguing would not make the bell ring sooner.
 
 When it rang, Ilse turned the little dial, lifted the lid and held out two keys on a ring with a paper tag, one for the office door and one for the cabinet. Tova ran. On the office stairs she fumbled the lock twice, then remembered it stuck to the left, and the door gave. The second key turned in the cabinet. She pressed the seal into the wax hard enough to leave a ridge, and was out again before the ink had dried.
 
 The quay lamps were lit. The *Merel*'s gangway was already half drawn in, and the mate was leaning on the rail with the face of a man who had decided not to wait. Tova held the papers over her head like a flag. He looked at the stamp, then at her, then at the water, which had not yet started to fall. "Close," he said, and took them.
-
-
-The workflow returned current_pass.

@@ -1,0 +1,41 @@
+sources:
+- source_id: src-whatsnew-314
+  title: What's New 3.14
+  cannot_support_structural_use: Official status only; says nothing about third-party
+    package readiness.; No date or criteria for phase III.; Project-reported range,
+    not an independent benchmark.
+- source_id: src-whatsnew-313
+  title: What's New 3.13
+  cannot_support_structural_use: 3.13 only.
+- source_id: src-pep-779
+  title: PEP 779
+  cannot_support_structural_use: Does not state phase III criteria.
+anchors:
+- anchor_id: anc-314-supported
+  source_id: src-whatsnew-314
+  locator: Doc/whatsnew/3.14.rst, 'Free-threaded Python is officially supported'
+  normalized_summary: Supported, no longer experimental; start of phase II; still
+    optional.
+  text: ''
+- anchor_id: anc-314-phase3-undecided
+  source_id: src-whatsnew-314
+  locator: Doc/whatsnew/3.14.rst, same section, last paragraph
+  normalized_summary: Phase III (default or sole build) is undecided.
+  text: ''
+- anchor_id: anc-314-perf
+  source_id: src-whatsnew-314
+  locator: Doc/whatsnew/3.14.rst, 'Free-threaded mode improvements'
+  normalized_summary: Single-thread penalty roughly 5-10% depending on platform and
+    compiler.
+  text: ''
+- anchor_id: anc-313-experimental
+  source_id: src-whatsnew-313
+  locator: Doc/whatsnew/3.13.rst, free-threaded CPython section
+  normalized_summary: Experimental and not enabled by default in 3.13.
+  text: ''
+- anchor_id: anc-779-phase3-different
+  source_id: src-pep-779
+  locator: PEP 779, Requirements section note
+  normalized_summary: PEP 779 criteria apply to entering phase II only; the default
+    decision is separate.
+  text: ''

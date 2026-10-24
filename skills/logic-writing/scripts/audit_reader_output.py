@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 from _common import cli_validate, require_mapping, validation_result
-from reader_pipeline import build_reader_audit, fill_check_fingerprints, validate_reader_audit_current
+from reader_checks import build_reader_audit, validate_reader_audit_current
+from reader_fill import fill_check_fingerprints
 
 
 def audit_reader_output(value):

@@ -35,7 +35,9 @@ Record adapter mappings in the ledger `worldguard_claims` section.
   "story_context": {
     "scene_id": "scene-003",
     "structure_id": "sequence-2",
-    "promise_ids": ["promise-map-race"]
+    "promise_ids": [
+      "promise-map-race"
+    ]
   },
   "worldguard_input": {
     "event": "archive door remains locked during scene-003",

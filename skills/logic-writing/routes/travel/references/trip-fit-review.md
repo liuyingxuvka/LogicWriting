@@ -1,6 +1,6 @@
 # Trip Fit Review
 
-Trip Fit Review is the final human-like suitability check. It is not a fact check; it consumes candidate, source, feasibility, route trace, lodging, and story-output evidence.
+Trip Fit Review is the final human-like suitability check. It is not a fact check; it consumes candidate, source, feasibility, route, lodging, and story-output evidence.
 
 ## Required Dimensions
 
@@ -32,7 +32,7 @@ Each dimension row declares `input_field` and exact current `input_values`. The 
 - shopping or brand interest;
 - night-return comfort.
 
-## Outcomes
+## Dimension outcomes
 
 - `pass`: suitable for the stated claim level.
 - `downgraded`: usable only at a lower claim level or with warnings.
@@ -41,3 +41,5 @@ Each dimension row declares `input_field` and exact current `input_values`. The 
 - `blocked`: missing evidence or constraints prevent useful advice.
 
 The review should ask: would a careful human travel advisor send this route to this traveler, with these caveats, today?
+
+The review has a stable `fit_id`. Keep statuses on the individual dimension rows; the overall fit result is derived from all required rows and their exact profile bindings. Do not supply `trip_fit_review.status`. The recommendation references actual `route_ids`, candidate ids and world checks; its overall result is derived from those references and fit, rather than supplied by the caller.

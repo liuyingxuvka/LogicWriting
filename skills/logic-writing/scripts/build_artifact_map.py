@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from _common import cli_validate, require_mapping, validation_result
-from reader_pipeline import build_artifact_map
+from artifact_map import build_artifact_map
 
 
 def validate_request(value):

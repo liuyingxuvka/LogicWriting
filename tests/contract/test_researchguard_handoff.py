@@ -337,7 +337,7 @@ def test_native_predecessor_graph_rejects_cycles_outside_body_order():
 
 
 def test_reader_brief_requires_an_exhaustive_native_unit_mapping(tmp_path):
-    from reader_pipeline import build_reader_brief
+    from reader_plan import build_reader_brief
     from tests.v2_support import make_reader_chain
 
     chain = make_reader_chain(tmp_path / "reader-chain", owner="investigation")
@@ -371,7 +371,8 @@ def test_real_native_researchguard_plan_round_trips_into_reader_brief(tmp_path):
     """Prove the local provider-to-consumer path with native bytes and joins."""
 
     native_plan, native_plan_path = _native_researchguard_ready_plan(tmp_path)
-    from reader_pipeline import build_reader_brief, validate_writer_input
+    from reader_plan import build_reader_brief
+    from writer_projection import validate_writer_input
     from tests.v2_support import make_reader_chain
 
     chain = make_reader_chain(tmp_path / "reader-chain", owner="investigation")

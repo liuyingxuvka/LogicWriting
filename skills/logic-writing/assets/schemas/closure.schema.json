@@ -5,93 +5,321 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "schema_version", "closure_id", "final_owner", "judge_kind", "artifact_fingerprint",
-    "reader_intent_fingerprint", "composition_plan_fingerprint", "route_extension_fingerprint",
-    "artifact_map_fingerprint", "shared_writing_contract_fingerprint",
-    "deterministic_audit_fingerprint", "route_audit_fingerprint", "judgment_fingerprint",
-    "revision_provenance_fingerprint", "status", "residual_risk", "next_actions", "safe_claim",
-    "unsafe_claim_boundary", "provider_checks", "broad_claim_allowed", "closure_fingerprint"
+    "schema_version",
+    "closure_id",
+    "final_owner",
+    "judge_kind",
+    "artifact_fingerprint",
+    "reader_intent_fingerprint",
+    "composition_plan_fingerprint",
+    "route_extension_fingerprint",
+    "artifact_map_fingerprint",
+    "shared_writing_contract_fingerprint",
+    "deterministic_audit_fingerprint",
+    "route_audit_fingerprint",
+    "judgment_fingerprint",
+    "revision_provenance_fingerprint",
+    "status",
+    "residual_risk",
+    "next_actions",
+    "safe_claim",
+    "unsafe_claim_boundary",
+    "provider_checks",
+    "broad_claim_allowed",
+    "closure_fingerprint"
   ],
   "properties": {
-    "schema_version": { "const": "2.0" },
-    "closure_id": { "$ref": "#/$defs/id" },
-    "final_owner": { "enum": ["investigation", "academic-writing", "fiction-writing", "travel-guide"] },
-    "judge_kind": { "enum": ["independent_context", "self_review"] },
-    "artifact_fingerprint": { "$ref": "#/$defs/fp" },
-    "reader_intent_fingerprint": { "$ref": "#/$defs/fp" },
-    "composition_plan_fingerprint": { "$ref": "#/$defs/fp" },
-    "route_extension_fingerprint": { "$ref": "#/$defs/fp" },
-    "artifact_map_fingerprint": { "$ref": "#/$defs/fp" },
-    "shared_writing_contract_fingerprint": { "$ref": "#/$defs/fp" },
-    "deterministic_audit_fingerprint": { "$ref": "#/$defs/fp" },
-    "route_audit_fingerprint": { "$ref": "#/$defs/fp" },
-    "judgment_fingerprint": { "$ref": "#/$defs/fp" },
-    "revision_provenance_fingerprint": { "$ref": "#/$defs/fp" },
-    "status": { "enum": ["passed", "needs_repair"] },
-    "residual_risk": { "type": "array", "items": { "$ref": "#/$defs/residual" } },
-    "next_actions": { "type": "array", "items": { "$ref": "#/$defs/nextAction" } },
-    "safe_claim": { "type": "string", "minLength": 1 },
-    "unsafe_claim_boundary": { "type": "string", "minLength": 1 },
-    "provider_checks": { "type": "array", "items": { "$ref": "#/$defs/providerCheck" } },
-    "broad_claim_allowed": { "type": "boolean" },
-    "closure_fingerprint": { "$ref": "#/$defs/fp" }
+    "schema_version": {
+      "const": "2.0"
+    },
+    "closure_id": {
+      "$ref": "#/$defs/id"
+    },
+    "final_owner": {
+      "enum": [
+        "investigation",
+        "academic-writing",
+        "fiction-writing",
+        "travel-guide"
+      ]
+    },
+    "judge_kind": {
+      "enum": [
+        "independent_context",
+        "self_review"
+      ]
+    },
+    "artifact_fingerprint": {
+      "$ref": "#/$defs/fp"
+    },
+    "reader_intent_fingerprint": {
+      "$ref": "#/$defs/fp"
+    },
+    "composition_plan_fingerprint": {
+      "$ref": "#/$defs/fp"
+    },
+    "route_extension_fingerprint": {
+      "$ref": "#/$defs/fp"
+    },
+    "artifact_map_fingerprint": {
+      "$ref": "#/$defs/fp"
+    },
+    "shared_writing_contract_fingerprint": {
+      "$ref": "#/$defs/fp"
+    },
+    "deterministic_audit_fingerprint": {
+      "$ref": "#/$defs/fp"
+    },
+    "route_audit_fingerprint": {
+      "$ref": "#/$defs/fp"
+    },
+    "judgment_fingerprint": {
+      "$ref": "#/$defs/fp"
+    },
+    "revision_provenance_fingerprint": {
+      "$ref": "#/$defs/fp"
+    },
+    "status": {
+      "enum": [
+        "passed",
+        "needs_repair"
+      ]
+    },
+    "residual_risk": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/residual"
+      }
+    },
+    "next_actions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/nextAction"
+      }
+    },
+    "safe_claim": {
+      "type": "string",
+      "minLength": 1
+    },
+    "unsafe_claim_boundary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "provider_checks": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/providerCheck"
+      }
+    },
+    "broad_claim_allowed": {
+      "type": "boolean"
+    },
+    "closure_fingerprint": {
+      "$ref": "#/$defs/fp"
+    }
   },
   "allOf": [
     {
-      "if": {"properties": {"status": {"const": "passed"}}, "required": ["status"]},
+      "if": {
+        "properties": {
+          "status": {
+            "const": "passed"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
       "then": {
         "properties": {
-          "next_actions": {"maxItems": 0}
+          "next_actions": {
+            "maxItems": 0
+          }
         }
       }
     },
     {
-      "if": {"properties": {"judge_kind": {"const": "self_review"}}, "required": ["judge_kind"]},
+      "if": {
+        "properties": {
+          "judge_kind": {
+            "const": "self_review"
+          }
+        },
+        "required": [
+          "judge_kind"
+        ]
+      },
       "then": {
         "properties": {
-          "residual_risk": {"minItems": 1},
-          "broad_claim_allowed": {"const": false}
+          "residual_risk": {
+            "minItems": 1
+          },
+          "broad_claim_allowed": {
+            "const": false
+          }
         }
       }
     },
     {
-      "if": {"properties": {"status": {"const": "needs_repair"}}, "required": ["status"]},
+      "if": {
+        "properties": {
+          "status": {
+            "const": "needs_repair"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
       "then": {
         "properties": {
-          "residual_risk": {"minItems": 1},
-          "next_actions": {"minItems": 1},
-          "broad_claim_allowed": {"const": false}
+          "residual_risk": {
+            "minItems": 1
+          },
+          "next_actions": {
+            "minItems": 1
+          },
+          "broad_claim_allowed": {
+            "const": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "passed"
+          },
+          "judge_kind": {
+            "const": "independent_context"
+          },
+          "provider_checks": {
+            "items": {
+              "properties": {
+                "passed": {
+                  "const": true
+                }
+              },
+              "required": [
+                "passed"
+              ]
+            }
+          }
+        },
+        "required": [
+          "status",
+          "judge_kind",
+          "provider_checks"
+        ]
+      },
+      "then": {
+        "properties": {
+          "broad_claim_allowed": {
+            "const": true
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "broad_claim_allowed": {
+            "const": false
+          }
         }
       }
     }
-    ,{"if":{"properties":{"status":{"const":"passed"},"judge_kind":{"const":"independent_context"},"provider_checks":{"items":{"properties":{"passed":{"const":true}},"required":["passed"]}}},"required":["status","judge_kind","provider_checks"]},"then":{"properties":{"broad_claim_allowed":{"const":true}}},"else":{"properties":{"broad_claim_allowed":{"const":false}}}}
   ],
   "$defs": {
-    "providerCheck": {"type":"object","additionalProperties":false,"required":["provider","path","status","passed","required"],"properties":{"provider":{"enum":["sourceguard","logicguard","worldguard"]},"path":{"type":["string","null"]},"status":{},"passed":{"type":"boolean"},"required":{"type":"boolean"}}},
+    "providerCheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "path",
+        "status",
+        "passed",
+        "required"
+      ],
+      "properties": {
+        "provider": {
+          "enum": [
+            "researchguard",
+            "worldguard"
+          ]
+        },
+        "path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "status": {},
+        "passed": {
+          "type": "boolean"
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
     "id": {
       "type": "string",
       "minLength": 2,
       "maxLength": 160,
       "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
     },
-    "fp": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "fp": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
     "residual": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["defect_id", "owner", "reason"],
+      "required": [
+        "defect_id",
+        "owner",
+        "reason"
+      ],
       "properties": {
-        "defect_id": { "$ref": "#/$defs/id" },
-        "owner": { "enum": ["investigation", "academic-writing", "fiction-writing", "travel-guide"] },
-        "reason": { "type": "string", "minLength": 1 }
+        "defect_id": {
+          "$ref": "#/$defs/id"
+        },
+        "owner": {
+          "enum": [
+            "investigation",
+            "academic-writing",
+            "fiction-writing",
+            "travel-guide"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        }
       }
     },
     "nextAction": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["owner", "action"],
+      "required": [
+        "owner",
+        "action"
+      ],
       "properties": {
-        "owner": { "enum": ["investigation", "academic-writing", "fiction-writing", "travel-guide"] },
-        "action": { "const": "repair_and_rerun" }
+        "owner": {
+          "enum": [
+            "investigation",
+            "academic-writing",
+            "fiction-writing",
+            "travel-guide"
+          ]
+        },
+        "action": {
+          "const": "repair_and_rerun"
+        }
       }
     }
   }

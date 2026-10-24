@@ -19,17 +19,17 @@ from _common import (
     require_schema,
     validation_result,
 )
-from reader_pipeline import (
-    validate_artifact_map,
-    _compare_reader_audit,
-    _build_reader_audit_from_current,
-    fill_closure_fingerprints,
-    _reader_judgment_from_current,
-    validate_revision_provenance,
-    _route_review_from_current,
-    validate_route_composition,
-    _shared_writing_from_current,
-)
+from researchguard_status import assess_research_verdict
+from _common import read_worldguard_report
+from route_inputs import route_extension_fingerprint
+from world_refs import world_ref_unquoted
+from known_bad import check_known_bad
+from artifact_map import validate_artifact_map
+from reader_checks import _compare_reader_audit, _build_reader_audit_from_current, _reader_judgment_from_current, _route_review_from_current
+from reader_fill import fill_closure_fingerprints
+from reader_plan import validate_revision_provenance
+from reader_plan_core import validate_route_composition
+from reader_binding import _shared_writing_from_current
 
 
 REQUIRED_DIMENSIONS = {
@@ -63,27 +63,23 @@ def _exact(value: Mapping[str, Any], field: str, label: str) -> str:
 
 
 PROVIDER_STATUS_FIELDS = {
-    "sourceguard": ("status", "stop_sufficient"),
-    "logicguard": ("wording_license", "assert"),
+    "researchguard": ("verdict", "passed"),
     "worldguard": ("status", "PASS"),
 }
 
 
 def required_providers(owner, brief, route_composition):
-    live = any(row.get("status") == "live" for row in
-               brief.get("content_boundaries", {}).get("alternatives", []))
-    required = {"sourceguard"} if owner == "investigation" else set()
-    if live and owner in {"investigation", "academic-writing"}:
-        required.add("logicguard")
-    if owner == "travel-guide" or (
-        owner == "fiction-writing" and route_composition.get("world_check_required", False)
-    ):
+    live = any(row.get("status") == "live" for row in brief.get("content_boundaries", {}).get("alternatives", []))
+    required = {"researchguard"} if owner == "investigation" else set()
+    if owner == "academic-writing" and (live or brief.get("research_folder")):
+        required.add("researchguard")
+    if owner == "travel-guide" or (owner == "fiction-writing" and route_composition.get("world_check_required", False)):
         required.add("worldguard")
     return required
 
 
 def provider_checks(owner, brief, route_composition, reports):
-    """Copy saved native statuses; never execute a provider or certify its evidence."""
+    """Read saved native results only; never invoke a provider from closure."""
     required = required_providers(owner, brief, route_composition)
     if not isinstance(reports, list):
         raise ValidationError("provider_reports must be a list")
@@ -93,27 +89,27 @@ def provider_checks(owner, brief, route_composition, reports):
         provider, path = report.get("provider"), report.get("path")
         if not isinstance(provider, str) or provider not in PROVIDER_STATUS_FIELDS or not isinstance(path, str) or not path:
             raise ValidationError("provider report needs a known provider and a nonempty path")
-        field, passing = PROVIDER_STATUS_FIELDS[provider]
-        document, status = {}, "unreadable"
-        try:
-            document = load_json(path)
-            if isinstance(document, dict) and field in document:
-                status = document[field]
-        except (OSError, ValueError, UnicodeError):
-            pass
-        passed = status == passing
-        checks.append(dict(provider=provider, path=path, status=status,
-                           passed=passed, required=provider in required))
-        if not passed:
+        if provider == "researchguard":
+            try:
+                document = load_json(path)
+            except (OSError, ValueError, UnicodeError):
+                document = {}
+            assessment = assess_research_verdict(document, brief.get("content_boundaries", {}).get("alternatives", []))
+            status, passed, reason = assessment["status"], assessment["passed"], assessment["reason"]
+            risks.extend(dict(row, owner=owner) for row in assessment["residual_risk"])
+        else:
+            status = read_worldguard_report(path)
+            passed = status == "PASS"
             reason = f"{provider} report {path}: {status}"
-            if provider == "logicguard" and isinstance(document, dict) and "reason" in document:
-                reason += f"; {document['reason']}"
+        checks.append(dict(provider=provider, path=path, status=status, passed=passed,
+                           reason=reason, required=provider in required))
+        if not passed:
             risks.append(dict(defect_id=f"provider:{provider}", owner=owner, reason=reason))
     supplied = {row["provider"] for row in checks}
     for provider in sorted(required - supplied):
-        checks.append(dict(provider=provider, path=None, status="not_run", passed=False, required=True))
-        risks.append(dict(defect_id=f"provider:{provider}", owner=owner,
-                          reason=f"{provider} report is missing: not_run"))
+        reason = f"{provider} report is missing: not_run"
+        checks.append(dict(provider=provider, path=None, status="not_run", passed=False, required=True, reason=reason))
+        risks.append(dict(defect_id=f"provider:{provider}", owner=owner, reason=reason))
     return checks, risks, all(row["passed"] for row in checks)
 
 
@@ -162,7 +158,7 @@ def derive_closure(
         owner=owner,
         route=route,
         amap=amap,
-        required_dimensions=REQUIRED_DIMENSIONS[owner],
+        required_dimensions=(*REQUIRED_DIMENSIONS[owner], *( ("explanation_pressure", "variation", "register_ownership") if owner == "fiction-writing" and route.get("longform_project") else ())),
         brief=brief, shared=shared,
     )
     judgment = _reader_judgment_from_current(
@@ -208,6 +204,40 @@ def derive_closure(
     ]
     if status == "passed":
         residual = []
+    # In-process domain closure contributes real failed surfaces to the same quality gate.
+    if owner == "fiction-writing" and route.get("longform_project"):
+        import sys
+        fiction_scripts = Path(__file__).resolve().parents[1] / "routes/fiction/scripts"
+        if str(fiction_scripts) not in sys.path:
+            sys.path.insert(0, str(fiction_scripts))
+        from longform_closure_check import validate as validate_longform
+        project_path = route["longform_project"]
+        longform = validate_longform(load_json(project_path), project_path)
+        if not longform["passed"]:
+            status = "needs_repair"
+            for surface, report in longform["surface_checks"].items():
+                if not report["passed"]:
+                    errors = [row for row in report["issues"] if row.get("severity", "error") == "error"]
+                    for issue in errors or [{"code": "not_passed", "message": "Surface validation failed."}]:
+                        residual.append(dict(defect_id=f"longform:{surface}:{issue['code']}", owner=owner, reason=issue.get("message", "Surface validation failed.")))
+            if not residual:
+                residual.append(dict(defect_id="longform:project:invalid", owner=owner, reason="The current longform project has not passed."))
+    units = {row["artifact_unit_id"]: row for row in amap["units"]}
+    for code in world_ref_unquoted(brief["composition_plan"], route_review, shared, lambda span: None):
+        residual.append(dict(defect_id=code, owner=owner, reason="A planned world reference lacks a quotation in its bound current text."))
+    try:
+        bad = check_known_bad(request, _baseline_result=dict(caught=status != "passed", step="baseline", error="The current quality chain needs repair."))
+    except ValidationError:
+        current = Path(amap["artifact_path"]).read_bytes()
+        if "sha256:" + hashlib.sha256(current).hexdigest() != amap["artifact_fingerprint"]:
+            raise ValidationError("ArtifactMap became stale during closure")
+        raise
+    if bad.get("status") == "baseline_not_passed":
+        residual.append(dict(defect_id="known-bad:baseline-not-passed", owner=owner, reason="The current baseline quality chain has not passed; mutation detection is not claimed."))
+    else:
+        for row in bad.get("variants", bad.get("results", [])):
+            if not row["caught"]:
+                residual.append(dict(defect_id=f"toothless:{row['kind']}:{row.get('unit') or row['name']}", owner=owner, reason="A declared known-bad mutation was not caught by the actual quality chain."))
     if self_review:
         residual.append({
             "defect_id": "reader.self-review",
@@ -239,6 +269,8 @@ def derive_closure(
         raise ValidationError("ArtifactMap artifact is missing before closure") from exc
     if "sha256:" + hashlib.sha256(final_bytes).hexdigest() != amap["artifact_fingerprint"]:
         raise ValidationError("ArtifactMap became stale during closure")
+    if route_extension_fingerprint(route) != route["extension_fingerprint"]:
+        raise ValidationError("route composition inputs became stale during closure")
     closure = {
         "schema_version": "2.0",
         "closure_id": request["closure_id"],

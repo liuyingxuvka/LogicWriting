@@ -1,0 +1,71 @@
+{
+  "suite": "researchguard-suite",
+  "question": "Should we plan for free-threaded Python now, and is it about to become the default?",
+  "verdict": {
+    "search": "stop_sufficient",
+    "root_claim": null,
+    "live_hypotheses": [
+      "h-main-answer"
+    ],
+    "contested": false,
+    "errors": 0
+  },
+  "ablations": [],
+  "disagreements": [],
+  "models": {
+    "source": {
+      "path": "source.yaml",
+      "status": "ok"
+    }
+  },
+  "hypotheses": [
+    {
+      "id": "h-main-answer",
+      "text": "Free-threading moved from experimental to supported-but-optional in 3.14; the default switch is undecided, so test now but do not plan on a default date.",
+      "logic": null,
+      "trace": null,
+      "experiment": {
+        "status": "not_listed"
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "anchor": "anc-314-supported",
+      "source": "src-whatsnew-314",
+      "lineage": "",
+      "used_by": []
+    },
+    {
+      "anchor": "anc-314-phase3-undecided",
+      "source": "src-whatsnew-314",
+      "lineage": "",
+      "used_by": []
+    },
+    {
+      "anchor": "anc-314-perf",
+      "source": "src-whatsnew-314",
+      "lineage": "",
+      "used_by": []
+    },
+    {
+      "anchor": "anc-313-experimental",
+      "source": "src-whatsnew-313",
+      "lineage": "",
+      "used_by": []
+    },
+    {
+      "anchor": "anc-779-phase3-different",
+      "source": "src-pep-779",
+      "lineage": "",
+      "used_by": []
+    }
+  ],
+  "open_gaps": [],
+  "next": [],
+  "errors": [],
+  "warnings": [
+    "hypothesis_unused:h-main-answer"
+  ],
+  "info": []
+}

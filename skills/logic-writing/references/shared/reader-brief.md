@@ -1,29 +1,43 @@
 # ReaderBrief v2
 
-ReaderBrief is the sanitized handoff from content authority to the selected
-final writer. It preserves the exact `ReaderIntent`, terminal deliverable,
-content boundaries, whole-artifact `CompositionPlan`, and the selected route
-extension.
+ReaderBrief binds the exact ReaderIntent, content boundaries, whole-artifact
+CompositionPlan and selected route extension. Its `writer_input` is the sanitized
+projection given to the writing context. Keep internal paths, native-provider
+results, raw ledgers and agent instructions in the work room.
 
-`ReaderIntent` is not a topic summary. It keeps language, audience, purpose,
-artifact mode and format, requested or existing structure, locked headings,
-list/table policy, style, extent, citations, required and forbidden content,
-reference examples, and unresolved choices. Material conflicts stop drafting.
+ReaderIntent is not a topic summary. Preserve language, audience, purpose,
+artifact mode/format, requested or existing structure, locked headings,
+list/table policy, style, extent, citations, required/forbidden content,
+reference examples and unresolved choices. Material conflicts stop drafting.
 
 Content units carry safe meaning, evidence anchors, alternatives, limitations,
-citation duties, exact-preservation duties, and prohibited overclaims. These
-fields control what may be said; they do not dictate paragraph order or provide
-approved sentences to copy.
+citation duties, exact-preservation duties and prohibited overclaims. They
+constrain content without dictating paragraphs or supplying approved sentences.
+The CompositionPlan owns the central question and throughline, opening and
+conclusion jobs, hierarchy, reader-state changes, downstream relationships,
+content/limitation placement, presentation mode and planned extent. Required
+outline rows and content must be planned or explicitly dispositioned.
 
-The `CompositionPlan` controls how the whole artifact works: central question
-and throughline, opening and conclusion jobs, hierarchy, reader-state changes,
-unit relationships, downstream consumers, content and limitation placement,
-presentation mode, and target extent. Every required outline row and content
-unit must be planned or explicitly dispositioned.
+## Source-owned research anchors
 
-The brief excludes Guard names, raw ledgers, agent instructions, and status
-prose from the reader artifact. Keep those in the audit output.
+A request may name `research_folder`, relative to its JSON file, as a research
+folder or `research.yaml`. Its `models.source` points to native source YAML.
+The builder reads it without invoking ResearchGuard. Missing anchor ids are
+imported; a handwritten id with a different source id or locator fails
+`anchor_conflict:<id>`. Matching author-written relation, summary and boundary
+stay unchanged. Source dates, roles, uncertainty and wording authority remain
+with ResearchGuard; a saved `verdict` is the single research closure report.
 
-### Repeated placement fields
+The work-room brief retains the research-folder binding when supplied, so
+academic closure can require that report. A content boundary is the piece's one
+evidence model; it does not duplicate the research engine's source library or
+licensing machinery.
 
-A brief request may omit content dispositions for content already named by planned units; the builder fills `body` rows in plan order. It likewise fills body limitation dispositions from `limitation_ids` and the native limitation's affected content and placement. Explicit rows remain authoritative and are checked. Unplaced content requires an explicit disposition; hidden dispositions are never inferred. Defaults are filled once, before fingerprints.
+## Repeated placement fields
+
+A request may omit repeated dispositions for content already named by planned
+units; the builder fills body rows in plan order. It likewise fills body
+limitation dispositions from `limitation_ids`, affected content and placement.
+Explicit rows remain authoritative and are checked. Unplaced content needs an
+explicit disposition; deliberate omissions and hidden placements are never
+inferred. Defaults are filled before fingerprints.

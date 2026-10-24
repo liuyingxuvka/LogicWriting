@@ -43,9 +43,9 @@ def mutate_project_id(root: Path) -> None:
 
 
 def mutate_parent(root: Path) -> None:
-    path = root / "novel-ledger.json"
+    path = root / "brief-request.json"
     payload = read(path)
-    payload["hierarchy"]["chapters"][0]["parent_id"] = "missing-volume"
+    payload["composition_plan"]["planned_units"][1]["parent_unit_id"] = "missing-volume"
     write(path, payload)
 
 
@@ -53,13 +53,6 @@ def mutate_revision(root: Path) -> None:
     path = root / "voice-style-report.json"
     payload = read(path)
     payload["model_revision"] = "stale-revision"
-    write(path, payload)
-
-
-def mutate_artifact(root: Path) -> None:
-    path = root / "semantic-review.json"
-    payload = read(path)
-    payload["artifact_sha256"] = "sha256:" + "0" * 64
     write(path, payload)
 
 
@@ -76,7 +69,7 @@ def case_result(
     expected_codes: set[str],
     repository_root: Path,
 ) -> dict[str, Any]:
-    # The fixture is self-contained: every referenced surface and receipt is
+    # The fixture is self-contained: every referenced model surface is
     # copied below the temporary project root.  Keeping the copy on the local
     # scratch volume avoids multi-minute archive-drive latency during the
     # mutation matrix.  The copied root is also the containment boundary
@@ -117,7 +110,6 @@ def main(argv: list[str] | None = None) -> int:
         "cross-project": (mutate_project_id, {"project_identity_mismatch"}),
         "dangling-parent": (mutate_parent, {"dangling_mesh_edge"}),
         "stale-model": (mutate_revision, {"model_revision_mismatch"}),
-        "mixed-artifact": (mutate_artifact, {"artifact_identity_mismatch", "native_owner_failed"}),
         "native-invalid-child": (mutate_native_child, {"native_owner_failed"}),
     }
     results = []

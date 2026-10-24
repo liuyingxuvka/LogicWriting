@@ -32,201 +32,52 @@ def fixture(repo_root: Path, relative: str) -> str:
 
 
 def command_matrix(repo_root: Path) -> list[dict[str, Any]]:
-    longform = "longform_novel_project"
-    failures = "longform_failure_cases"
-    commands: list[dict[str, Any]] = [
-        {
-            "id": "positive.novel_ledger",
-            "argv": [sys.executable, script(repo_root, "novel_ledger_check.py"), fixture(repo_root, f"{longform}/novel-ledger.json"), "--json"],
-            "expected_exit_code": 0,
-        },
-        {
-            "id": "positive.story_contribution",
-            "argv": [sys.executable, script(repo_root, "story_contribution_check.py"), fixture(repo_root, f"{longform}/novel-ledger.json"), "--json"],
-            "expected_exit_code": 0,
-        },
-        {
-            "id": "positive.promise_payoff",
-            "argv": [sys.executable, script(repo_root, "promise_payoff_check.py"), fixture(repo_root, f"{longform}/promise-payoff.json"), "--json"],
-            "expected_exit_code": 0,
-        },
-        {
-            "id": "positive.chapter_interface",
-            "argv": [sys.executable, script(repo_root, "chapter_interface_check.py"), fixture(repo_root, f"{longform}/chapter-interfaces.json"), "--json"],
-            "expected_exit_code": 0,
-        },
-        {
-            "id": "positive.voice_style",
-            "argv": [sys.executable, script(repo_root, "voice_style_continuity_check.py"), fixture(repo_root, f"{longform}/voice-style-report.json"), "--json"],
-            "expected_exit_code": 0,
-        },
-        {
-            "id": "positive.model_prose_binding",
-            "argv": [sys.executable, script(repo_root, "model_prose_binding_check.py"), fixture(repo_root, f"{longform}/model-prose-binding.json"), "--json"],
-            "expected_exit_code": 0,
-        },
-        {
-            "id": "positive.semantic_review",
-            "argv": [sys.executable, script(repo_root, "semantic_review_check.py"), fixture(repo_root, f"{longform}/semantic-review.json"), "--json"],
-            "expected_exit_code": 0,
-        },
-        {
-            "id": "negative.semantic_review_incomplete_contract",
-            "argv": [sys.executable, script(repo_root, "semantic_review_check.py"), fixture(repo_root, f"{failures}/semantic-review-incomplete-contract.json"), "--json"],
-            "expected_exit_code": 1,
-            "expected_issue_codes": {"missing_rubric_dimension", "passed_with_blocking_scope"},
-        },
-        {
-            "id": "positive.longform_closure",
-            "argv": [sys.executable, script(repo_root, "longform_closure_check.py"), str(Path(fixture(repo_root, f"{longform}/longform-final-prose-closure.json")).relative_to(repo_root)), "--json"],
-            "expected_exit_code": 0,
-        },
-        {
-            "id": "path.absolute_positive_closure_from_repo",
-            "argv": [sys.executable, script(repo_root, "longform_closure_check.py"), str((repo_root / "skills" / "logic-writing" / "routes" / "fiction" / "examples" / longform / "longform-final-prose-closure.json").resolve()), "--json"],
-            "expected_exit_code": 0,
-        },
-        {
-            "id": "negative.substitute_reverse_outline_as_ledger",
-            "argv": [sys.executable, script(repo_root, "longform_closure_check.py"), fixture(repo_root, f"{failures}/substitute-reverse-outline-as-ledger.json"), "--json"],
-            "expected_exit_code": 1,
-            "expected_issue_codes": {"surface_evidence_invalid"},
-        },
-        {
-            "id": "negative.weak_reverse_outline_direct",
-            "argv": [sys.executable, script(repo_root, "longform_closure_check.py"), fixture(repo_root, f"{failures}/weak-reverse-outline.json"), "--json"],
-            "expected_exit_code": 1,
-        },
-        {
-            "id": "negative.markdown_surface_substitution",
-            "argv": [sys.executable, script(repo_root, "longform_closure_check.py"), fixture(repo_root, f"{failures}/markdown-model-surface-substitution.json"), "--json"],
-            "expected_exit_code": 1,
-            "expected_issue_codes": {"surface_evidence_not_local_json"},
-        },
-        {
-            "id": "negative.final_prose_hash_mismatch",
-            "argv": [sys.executable, script(repo_root, "longform_closure_check.py"), fixture(repo_root, f"{failures}/final-prose-hash-mismatch.json"), "--json"],
-            "expected_exit_code": 1,
-            "expected_issue_codes": {"content_hash_mismatch"},
-        },
-        {
-            "id": "negative.final_prose_missing_artifact",
-            "argv": [sys.executable, script(repo_root, "longform_closure_check.py"), fixture(repo_root, f"{failures}/final-prose-missing-artifact.json"), "--json"],
-            "expected_exit_code": 1,
-            "expected_issue_codes": {"missing_final_prose_surface"},
-        },
-        {
-            "id": "negative.final_prose_missing_source_requirements",
-            "argv": [sys.executable, script(repo_root, "longform_closure_check.py"), fixture(repo_root, f"{failures}/final-prose-missing-source-requirements.json"), "--json"],
-            "expected_exit_code": 1,
-            "expected_issue_codes": {"missing_final_prose_surface"},
-        },
-        {
-            "id": "negative.final_prose_nonexistent_manuscript",
-            "argv": [sys.executable, script(repo_root, "longform_closure_check.py"), fixture(repo_root, f"{failures}/final-prose-nonexistent-manuscript.json"), "--json"],
-            "expected_exit_code": 1,
-            "expected_issue_codes": {"content_file_missing"},
-        },
-        {
-            "id": "negative.final_chapter_prose_bypass",
-            "argv": [sys.executable, script(repo_root, "longform_closure_check.py"), fixture(repo_root, f"{failures}/final-chapter-prose-bypass.json"), "--json"],
-            "expected_exit_code": 1,
-            "expected_issue_codes": {"missing_final_prose_surface"},
-        },
-        {
-            "id": "negative.final_volume_prose_bypass",
-            "argv": [sys.executable, script(repo_root, "longform_closure_check.py"), fixture(repo_root, f"{failures}/final-volume-prose-bypass.json"), "--json"],
-            "expected_exit_code": 1,
-            "expected_issue_codes": {"missing_final_prose_surface"},
-        },
-        {
-            "id": "negative.fake_chapter_interface",
-            "argv": [sys.executable, script(repo_root, "chapter_interface_check.py"), fixture(repo_root, f"{failures}/fake-chapter-interface.json"), "--json"],
-            "expected_exit_code": 1,
-        },
-        {
-            "id": "negative.unresolved_key_promise",
-            "argv": [sys.executable, script(repo_root, "novel_ledger_check.py"), fixture(repo_root, f"{failures}/unresolved-key-promise.json"), "--json"],
-            "expected_exit_code": 1,
-        },
-        {
-            "id": "negative.missing_material_continuity",
-            "argv": [sys.executable, script(repo_root, "novel_ledger_check.py"), fixture(repo_root, f"{failures}/missing-material-continuity.json"), "--json"],
-            "expected_exit_code": 1,
-        },
-        {
-            "id": "negative.orphan_chapter",
-            "argv": [sys.executable, script(repo_root, "story_contribution_check.py"), fixture(repo_root, f"{failures}/orphan-chapter.json"), "--json"],
-            "expected_exit_code": 1,
-        },
-        {
-            "id": "negative.pov_drift",
-            "argv": [sys.executable, script(repo_root, "voice_style_continuity_check.py"), fixture(repo_root, f"{failures}/pov-drift.json"), "--json"],
-            "expected_exit_code": 1,
-        },
-        {
-            "id": "negative.unbound_prose_span",
-            "argv": [sys.executable, script(repo_root, "model_prose_binding_check.py"), fixture(repo_root, f"{failures}/unbound-prose-span.json"), "--json"],
-            "expected_exit_code": 1,
-            "expected_issue_codes": {"unresolved_binding_gap"},
-        },
-        {
-            "id": "negative.unrealized_model_ref",
-            "argv": [sys.executable, script(repo_root, "model_prose_binding_check.py"), fixture(repo_root, f"{failures}/unrealized-model-ref.json"), "--json"],
-            "expected_exit_code": 1,
-            "expected_issue_codes": {"unresolved_binding_gap"},
-        },
-        {
-            "id": "negative.duplicate_binding_without_delta",
-            "argv": [sys.executable, script(repo_root, "model_prose_binding_check.py"), fixture(repo_root, f"{failures}/duplicate-binding-without-delta.json"), "--json"],
-            "expected_exit_code": 1,
-            "expected_issue_codes": {"duplicate_binding_without_delta"},
-        },
-        {
-            "id": "negative.smooth_reveal_without_resistance",
-            "argv": [sys.executable, script(repo_root, "model_prose_binding_check.py"), fixture(repo_root, f"{failures}/smooth-reveal-without-resistance.json"), "--json"],
-            "expected_exit_code": 1,
-            "expected_issue_codes": {"unresolved_drift_finding"},
-        },
-        {
-            "id": "negative.premature_hypothesis_collapse",
-            "argv": [sys.executable, script(repo_root, "model_prose_binding_check.py"), fixture(repo_root, f"{failures}/premature-hypothesis-collapse.json"), "--json"],
-            "expected_exit_code": 1,
-            "expected_issue_codes": {"unresolved_drift_finding"},
-        },
-        {
-            "id": "negative.term_register_owner_drift",
-            "argv": [sys.executable, script(repo_root, "model_prose_binding_check.py"), fixture(repo_root, f"{failures}/term-register-owner-drift.json"), "--json"],
-            "expected_exit_code": 1,
-            "expected_issue_codes": {"unresolved_drift_finding"},
-        },
-        {
-            "id": "negative.length_outlier_without_binding_review",
-            "argv": [sys.executable, script(repo_root, "model_prose_binding_check.py"), fixture(repo_root, f"{failures}/length-outlier-without-binding-review.json"), "--json"],
-            "expected_exit_code": 1,
-            "expected_issue_codes": {"missing_binding_density_review"},
-        },
-    ]
+    positive = "longform_novel_project"
+    negative = "longform_failure_cases"
+    rows = []
+    for owner, filename in (("novel_ledger", "novel-ledger.json"), ("story_contribution", "novel-ledger.json"),
+                            ("promise_payoff", "promise-payoff.json"), ("chapter_interface", "chapter-interfaces.json"),
+                            ("voice_style_continuity", "voice-style-report.json"), ("longform_closure", "project-mesh.json")):
+        rows.append(dict(id="positive."+owner, argv=[sys.executable, script(repo_root, owner+"_check.py"), fixture(repo_root, positive+"/"+filename), "--json"], expected_exit_code=0))
+    for name, owner, code in (("fake-chapter-interface", "chapter_interface", None),
+                              ("unresolved-key-promise", "novel_ledger", "unresolved_key_or_major_promise"),
+                              ("missing-material-continuity", "novel_ledger", "missing_continuity"),
+                              ("orphan-chapter", "story_contribution", "unit_not_in_plan:novel_ledger:chapter-orphan"),
+                              ("pov-drift", "voice_style_continuity", "blocking_voice_style_drift")):
+        row = dict(id="negative."+name, argv=[sys.executable, script(repo_root, owner+"_check.py"), fixture(repo_root, negative+"/"+name+".json"), "--json"], expected_exit_code=1)
+        if code: row["expected_issue_codes"] = {code}
+        rows.append(row)
     failure_path = current_failure_path()
     if failure_path is not None:
-        commands.append(
-            {
-                "id": "current_failure.external_final_closure",
-                "argv": [sys.executable, script(repo_root, "longform_closure_check.py"), str(failure_path), "--json"],
-                "expected_exit_code": 1,
-                "expected_any_issue_codes": {"surface_evidence_invalid", "surface_evidence_not_local_json", "invalid_content_reference"},
-            }
-        )
-    repository_aware_checks = {
-        "longform_closure_check.py",
-        "model_prose_binding_check.py",
-        "semantic_review_check.py",
-    }
-    for command in commands:
-        argv = command["argv"]
-        if Path(argv[1]).name in repository_aware_checks:
-            argv.extend(["--repo-root", str(repo_root)])
-    return commands
+        rows.append(dict(id="current_failure.external_final_closure",
+            argv=[sys.executable, script(repo_root, "longform_closure_check.py"), str(failure_path), "--json"],
+            expected_exit_code=1, require_domain_rejection=True))
+    return rows
+
+
+def reader_chain_result(repo_root: Path) -> dict[str, Any]:
+    """Run the standard eight-step interface against the existing exact manuscript."""
+    import shutil
+    import tempfile
+    with tempfile.TemporaryDirectory(prefix="fiction-reader-chain-") as tmp:
+        target = Path(tmp)/"project"
+        shutil.copytree(Path(fixture(repo_root,"longform_novel_project")), target)
+        common = repo_root/"skills/logic-writing/scripts"
+        steps = ((common/"select_route.py", "route-request.json", "route-decision.json"),
+                 (common/"build_reader_brief.py", "brief-request.json", "reader-brief.json"),
+                 (common/"build_artifact_map.py", "map-request.json", "artifact-map.json"),
+                 (common/"validate_shared_writing.py", "shared-writing.json", "shared-writing-result.json"),
+                 (common/"audit_reader_output.py", "audit-request.json", "audit.json"),
+                 (Path(script(repo_root,"validate_fiction_artifact.py")), "route-review.json", "route-review-result.json"),
+                 (common/"derive_closure.py", "closure-input.json", "closure.json"))
+        results=[]
+        for owner, source, output in steps:
+            done=subprocess.run([sys.executable,str(owner),"--input",str(target/source),"--output",str(target/output)],cwd=target,text=True,capture_output=True)
+            results.append(dict(step=owner.name,exit_code=done.returncode,stderr=done.stderr))
+            if done.returncode:
+                results[-1]["result"] = parse_json((target/output).read_text()) if (target/output).is_file() else None
+                break
+        return dict(id="positive.standard_reader_chain",passed=len(results)==len(steps) and all(row["exit_code"]==0 for row in results),steps=results)
 
 
 def parse_json(stdout: str) -> Any:
@@ -260,7 +111,11 @@ def run_case(case: dict[str, Any], repo_root: Path) -> dict[str, Any]:
     }
     if expected != 0 and observed_codes & {"read_error", "json_decode_error"}:
         passed = False
-    if Path(case["argv"][1]).name == "model_prose_binding_check.py" and observed_codes & invalid_input_codes:
+    if case.get("require_domain_rejection") and (
+        not observed_codes or observed_codes & (invalid_input_codes | {
+            "missing_surfaces", "retired_closure_field", "surface_read_error"
+        })
+    ):
         passed = False
     if expected_codes and not set(expected_codes).issubset(observed_codes):
         passed = False
@@ -283,6 +138,7 @@ def run_case(case: dict[str, Any], repo_root: Path) -> dict[str, Any]:
 def build_report(repo_root: Path) -> dict[str, Any]:
     cases = command_matrix(repo_root)
     results = [run_case(case, repo_root) for case in cases]
+    results.append(reader_chain_result(repo_root))
     failures = [result for result in results if not result["passed"]]
     return {
         "schema_version": "storyline-design.longform_regression.report.v1",
@@ -310,7 +166,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Longform regression: {'passed' if report['passed'] else 'failed'}")
         for result in report["results"]:
             status = "ok" if result["passed"] else "fail"
-            print(f"- {status}: {result['id']} exit {result['actual_exit_code']} expected {result['expected_exit_code']}")
+            print(f"- {status}: {result['id']}")
     return 0 if report["passed"] else 1
 
 

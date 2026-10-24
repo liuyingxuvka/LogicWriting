@@ -5,9 +5,9 @@ the four final owners from that deliverable; a needed evidence search becomes a
 bounded `investigation` child of academic, fiction or travel work; a trivial
 request is skipped, an unknown one is ambiguous, and a material ReaderIntent
 conflict blocks; an open material choice asks the user before routing.
-LogicGuard, SourceGuard and TraceGuard run only through the single
-`researchguard` console: a provider-root override is refused, and
-ExperimentGuard and the ResearchGuard umbrella are out of scope.
+LogicGuard, SourceGuard, TraceGuard and the question status command run only
+through the single `researchguard` console: a provider-root override is refused,
+and ExperimentGuard remains outside the writing provider routes.
 
 Conformance replays model traces on the real `select_route` and on the real
 `provider_preflight.preflight` (the branches that need no installed provider).
@@ -44,6 +44,9 @@ IMPLEMENTED_BY = {
     "ProviderPreflight": "skills/logic-writing/scripts/provider_preflight.py:preflight",
 }
 TESTED_BY = {
+    "researchguard_status_is_primary": [
+        "tests/unit/test_researchguard_provider_topology.py:test_researchguard_status_uses_one_console",
+    ],
     "open_material_choice_blocks": [
         "tests/unit/test_routing.py:test_open_material_choice_asks_the_user_first",
     ],
@@ -60,12 +63,12 @@ TESTED_BY = {
     ],
     "members_use_one_console": [
         "tests/unit/test_researchguard_provider_topology.py:test_each_member_uses_one_researchguard_console",
+        "tests/unit/test_researchguard_provider_topology.py:test_researchguard_status_uses_one_console",
         "tests/unit/test_researchguard_provider_topology.py:test_console_on_path_is_used_when_researchguard_is_in_another_python",
     ],
     "no_alternate_provider_path": [
         "tests/unit/test_researchguard_provider_topology.py:test_member_provider_root_is_rejected_before_console_execution",
         "tests/unit/test_researchguard_provider_topology.py:test_scope_out_provider_runs_no_console",
-        "tests/unit/test_researchguard_provider_topology.py:test_umbrella_scope_out_provider_runs_no_console",
     ],
     "path_console_is_used": [
         "tests/unit/test_researchguard_provider_topology.py:test_console_on_path_is_used_when_researchguard_is_in_another_python",
@@ -87,8 +90,9 @@ OWNER_OF = {
 }
 TRIVIAL = ("grammar_only",)
 UNKNOWN = ("unresolved",)
-MEMBERS = ("sourceguard", "logicguard", "traceguard")
-SCOPE_OUT = ("experimentguard", "researchguard")
+MEMBERS = ("sourceguard", "logicguard", "traceguard", "researchguard")
+MEMBER_COMMANDS = {"sourceguard": "source", "logicguard": "logic", "traceguard": "trace", "researchguard": "status"}
+SCOPE_OUT = ("experimentguard",)
 PATH_CONSOLES = ("current", "old", "absent")   # researchguard on PATH: at the minimum version, below it, none
 
 
@@ -116,6 +120,7 @@ class State:
     provider_root: bool = False
     provider_status: str = ""       # status of the last preflight
     console: str = ""               # console the last preflight would use
+    member_command: str = ""        # actual semantic/status command chosen on that console
     path_console: str = ""          # PATH_CONSOLES case of the last preflight ("" when it was not a PATH case)
     console_source: str = ""        # "path" when the console was found on PATH
     install_hint: bool = False      # the result says how to install ResearchGuard
@@ -127,13 +132,16 @@ class Step:
     name = "Step"
     reads = ("status",)
     writes = ("deliverable", "conflict", "open_choice", "status", "owner", "children", "provider", "provider_root",
-              "provider_status", "console", "path_console", "console_source", "install_hint")
+              "provider_status", "console", "member_command", "path_console", "console_source", "install_hint")
 
     def owner_for(self, event: Event) -> str:
         return OWNER_OF.get(event.deliverable, "")
 
     def has_open_choice(self, event: Event) -> bool:
         return event.open_choice
+
+    def member_command(self, event: Event) -> str:
+        return MEMBER_COMMANDS.get(event.provider, "")
 
     def provider_result(self, event: Event) -> tuple[str, str]:
         if event.provider in SCOPE_OUT:
@@ -175,7 +183,8 @@ class Step:
         else:
             (status, console), source, hint = self.provider_result(event), "", False
         new = replace(state, provider=event.provider, provider_root=event.provider_root, provider_status=status,
-                      console=console, path_console=event.path_console, console_source=source, install_hint=hint)
+                      console=console, member_command=self.member_command(event), path_console=event.path_console,
+                      console_source=source, install_hint=hint)
         return (FunctionResult(status, new, label=f"preflight_{status}"),)
 
 
@@ -232,6 +241,19 @@ class OldPathConsoleAccepted(Step):
         return ("current_pass", "path", False) if event.path_console == "old" else super().path_result(event)
 
 
+class StatusUsesLogic(Step):
+    """Known-bad: the question-status provider is sent to a semantic member."""
+
+    def member_command(self, event: Event) -> str:
+        return "logic" if event.provider == "researchguard" else super().member_command(event)
+
+
+def _researchguard_status_is_primary(state: State, trace) -> InvariantResult:
+    if state.provider == "researchguard" and state.member_command != "status":
+        return InvariantResult.fail("ResearchGuard must use its native status command")
+    return InvariantResult.pass_()
+
+
 def _exactly_one_final_owner(state: State, trace) -> InvariantResult:
     if state.status == "current" and (state.owner not in FINAL_OWNERS or state.owner in state.children):
         return InvariantResult.fail("a current route lacks exactly one final owner")
@@ -285,13 +307,15 @@ def _open_material_choice_blocks(state: State, trace) -> InvariantResult:
 
 
 INVARIANTS = (
+    Invariant("researchguard_status_is_primary", "ResearchGuard question status uses its own primary console command",
+              _researchguard_status_is_primary),
     Invariant("open_material_choice_blocks", "a material choice stops routing until the user answers",
               _open_material_choice_blocks),
     Invariant("exactly_one_final_owner", "one request has exactly one final owner, or none", _exactly_one_final_owner),
     Invariant("owner_follows_the_terminal_deliverable", "the owner comes from the terminal deliverable",
               _owner_follows_the_terminal_deliverable),
     Invariant("bounded_research_is_a_child", "research is a bounded investigation child", _bounded_research_is_a_child),
-    Invariant("members_use_one_console", "LogicGuard, SourceGuard and TraceGuard use the researchguard console",
+    Invariant("members_use_one_console", "ResearchGuard status and three semantic members use one console",
               _members_use_one_console),
     Invariant("no_alternate_provider_path", "no provider-root override and no out-of-scope provider runs",
               _no_alternate_provider_path),
@@ -323,7 +347,8 @@ def build_explorer() -> Explorer:
 
 
 def broken_variants() -> dict:
-    return {"open_choice_ignored": _explorer(OpenChoiceIgnored()),
+    return {"researchguard_status_uses_logic": _explorer(StatusUsesLogic()),
+            "open_choice_ignored": _explorer(OpenChoiceIgnored()),
             "research_child_takes_ownership": _explorer(ResearchChildTakesOwnership()),
             "provider_root_accepted": _explorer(ProviderRootAccepted()),
             "path_console_ignored": _explorer(PathConsoleIgnored()),
@@ -336,7 +361,7 @@ FAKE_CONSOLE = """import sys
 args = sys.argv[1:]
 if args == ["--version"]:
     print("researchguard {version}")
-elif len(args) == 2 and args[0] in ("source", "logic", "trace") and args[1] == "--help":
+elif len(args) == 2 and args[0] in ("source", "logic", "trace", "status") and args[1] == "--help":
     print("usage: researchguard " + args[0])
 else:
     sys.exit(2)
@@ -435,7 +460,8 @@ class _RealRouting:
                 result = self.preflight(event.provider, provider_root=str(self.root) if event.provider_root else None)
             evidence, output = result["evidence"], result["status"]
             state = replace(state, provider=event.provider, provider_root=event.provider_root, provider_status=output,
-                            console=str(evidence.get("provider_console_id", "")), path_console=event.path_console,
+                            console=str(evidence.get("provider_console_id", "")),
+                            member_command=str(evidence.get("member_command", "")), path_console=event.path_console,
                             console_source=str(evidence.get("console_source", "")),
                             install_hint=bool(evidence.get("message")))
         self.state = state

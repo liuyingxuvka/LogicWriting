@@ -7,6 +7,8 @@ import argparse
 import json
 import sys
 from pathlib import Path
+from fiction_plan import project_surface
+
 from typing import Any
 
 import storyline_route_check
@@ -69,51 +71,23 @@ def extract_units(payload: Any, reporter: Reporter) -> tuple[list[tuple[str, dic
 
 
 def check_unit(path: str, unit: dict[str, Any], reporter: Reporter) -> None:
-    required = {
-        "id": str,
-        "kind": str,
-        "parent_id": str,
-        "importance": str,
-        "status": str,
-        "contribution": str,
-        "downstream_use": list,
-        "terminal_treatment": str,
-        "repair_action": str,
-        "evidence_refs": list,
-    }
-    for field, expected in required.items():
-        field_path = f"{path}.{field}"
-        if field not in unit:
-            reporter.error("missing_required_field", field_path, "Required story contribution field is missing.")
-            continue
-        if not isinstance(unit[field], expected):
-            reporter.error("invalid_type", field_path, f"Expected {expected.__name__}, got {type(unit[field]).__name__}.")
-            continue
-        if expected is str and field not in {"repair_action"} and is_blank(unit[field]):
-            reporter.error("empty_required_field", field_path, "Required field is empty or placeholder text.")
-
-    status = unit.get("status")
+    fields = {"id": str, "kind": str, "parent_id": str, "importance": str, "contribution": str,
+              "downstream_use": list, "terminal_treatment": str, "repair_action": str, "evidence_refs": list}
+    for field, expected in fields.items():
+        if not isinstance(unit.get(field), expected):
+            reporter.error("missing_required_field", f"{path}.{field}", "Required plan/domain field is missing.")
+    if is_blank(unit.get("contribution")):
+        reporter.error("missing_parent_contribution", path, "The current plan has no concrete contribution.")
     treatment = unit.get("terminal_treatment")
-    if isinstance(treatment, str) and treatment not in TERMINAL_TREATMENTS:
-        reporter.error("invalid_terminal_treatment", f"{path}.terminal_treatment", f"Unknown terminal treatment {treatment!r}.")
-    if status in PASS_STATUSES:
-        if is_blank(unit.get("contribution")):
-            reporter.error("missing_parent_contribution", f"{path}.contribution", "Passing unit needs a concrete parent contribution.")
-        if not unit.get("downstream_use") and treatment not in {"cut", "scoped_out"}:
-            reporter.error("missing_downstream_use", f"{path}.downstream_use", "Passing unit needs downstream use or a terminal scoped-out/cut treatment.")
-    elif status in BLOCKING_STATUSES:
-        reporter.error("blocking_story_unit_status", f"{path}.status", f"Story unit status {status!r} requires repair before closure.")
-        if is_blank(unit.get("repair_action")):
-            reporter.error("missing_repair_action", f"{path}.repair_action", "Non-pass story unit requires a repair action.")
-    elif status == "scoped_out":
-        if is_blank(unit.get("repair_action")) and is_blank(unit.get("contribution")):
-            reporter.error("missing_scope_reason", f"{path}.repair_action", "Scoped-out unit needs a reason or boundary.")
-    else:
-        reporter.error("invalid_status", f"{path}.status", f"Unknown story contribution status {status!r}.")
+    if treatment not in TERMINAL_TREATMENTS:
+        reporter.error("invalid_terminal_treatment", path, "Unknown domain treatment.")
+    if not unit.get("downstream_use") and not unit.get("plan_terminal") and treatment not in {"cut", "scoped_out"}:
+        reporter.error("missing_downstream_use", path, "A nonterminal unit needs a planned downstream consumer.")
 
 
 def validate(payload: Any, source_path: str) -> dict[str, Any]:
     reporter = Reporter()
+    payload, plan_context = project_surface(payload, source_path, "novel_ledger", reporter)
     route_decision: dict[str, Any] | None = None
     target = payload.get("target_artifact") if isinstance(payload, dict) else None
     if target is None and isinstance(payload, dict) and isinstance(payload.get("novel_ledger"), dict):

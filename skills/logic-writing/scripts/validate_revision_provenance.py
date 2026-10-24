@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 from _common import cli_validate, require_mapping, validation_result
-from reader_pipeline import fill_closure_fingerprints, validate_revision_provenance as _validate_revision
+from reader_fill import fill_closure_fingerprints
+from reader_plan import validate_revision_provenance as _validate_revision
 
 
 def validate_revision_provenance(value, *, target_artifact_fingerprint=None, **_ignored):

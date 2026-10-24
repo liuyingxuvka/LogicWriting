@@ -31,7 +31,7 @@ def run_case(path: Path, repository_root: Path) -> dict[str, Any]:
         mutated = apply_mutations(base, case.get("mutations", []))
     except MutationError as exc:
         return {"case": str(path), "ok": False, "error": f"mutation_invalid:{exc}"}
-    issues = validate_plan(mutated, plan_path=path, repository_root=repository_root)
+    issues = validate_plan(mutated, plan_path=base_path, repository_root=repository_root)
     return {"case": str(path), "case_id": case.get("case_id"), "ok": not issues, "issues": issues}
 
 

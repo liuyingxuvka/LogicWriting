@@ -14,9 +14,8 @@
     "novel_ledger": "novel-ledger.json",
     "chapter_interfaces": "chapter-interfaces.json",
     "promise_payoff": "promise-payoff.json",
-    "model_prose_binding": "model-prose-binding.json",
     "voice_style": "voice-style-report.json",
-    "semantic_review": "semantic-review.json",
-    "longform_closure": "longform-final-prose-closure.json"
+    "composition_plan": "brief-request.json",
+    "source_requirements": "source-requirements.json"
   }
 }

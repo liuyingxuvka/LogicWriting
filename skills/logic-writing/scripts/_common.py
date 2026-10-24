@@ -7,9 +7,9 @@ import hashlib
 import json
 import re
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any, Iterable, Mapping
 
 
 PASS = "current_pass"
@@ -30,7 +30,7 @@ DEGRADED_STATUSES = {
 }
 ALL_STATUSES = {PASS, *DEGRADED_STATUSES}
 NATIVE_OWNERS = {
-    "sourceguard", "logicguard", "traceguard", "worldguard",
+    "researchguard", "sourceguard", "logicguard", "traceguard", "worldguard",
     "flowguard", "documents", "pdf",
 }
 EVIDENCE_DOMAINS = {
@@ -260,10 +260,6 @@ _REQUEST_CONTAINER_FIELDS = frozenset({
     "native_handoff", "native_plan", "native_handoff_mapping", "artifact_map",
     "reader_brief", "contract", "shared_writing", "review", "route_review",
     "deterministic_audit", "judgment", "revision_provenance", "provenance",
-    # Research-packet envelopes and direct records accepted by existing CLIs.
-    "source_registry", "claim_support", "additional_unresolved_gaps",
-    "member_fingerprints", "unresolved_gaps", "safe_wording", "unsafe_wording",
-    "unit_bindings", "coverage_dispositions", "unit_treatments",
 })
 
 
@@ -287,6 +283,8 @@ def load_request(path: str | Path | None) -> Any:
     value = load_json(path)
     if not isinstance(value, dict):
         return value
+    if "sourceguard_model" in value:
+        raise ValidationError("`sourceguard_model` is retired; use research_folder (a ResearchGuard research folder)")
     file_request = path not in {None, "-"}
     base = Path(path).resolve().parent if file_request else Path.cwd()
     if file_request:
@@ -315,6 +313,11 @@ def load_request(path: str | Path | None) -> Any:
                     if len(objects) == 1:
                         loaded = objects[0]
             value[key] = loaded
+        if key == "route_composition" and isinstance(value[key], dict):
+            for field in ("longform_project", "world_contract", "trip_plan"):
+                reference = value[key].get(field)
+                if isinstance(reference, str) and reference:
+                    value[key][field] = str((record_base / Path(reference).expanduser()).resolve())
         if file_request and key in {"contract", "shared_writing"} and isinstance(value[key], dict):
             _absolute_artifact_path(value[key], record_base)
         if file_request and key in {"revision_provenance", "provenance"} and isinstance(value[key], dict):
@@ -323,8 +326,11 @@ def load_request(path: str | Path | None) -> Any:
                 value[key]["source_artifact_path"] = str((record_base / Path(source).expanduser()).resolve())
     if file_request and isinstance(value.get("source_artifact_path"), str):
         value["source_artifact_path"] = str((base / Path(value["source_artifact_path"]).expanduser()).resolve())
-    if file_request and isinstance(value.get("sourceguard_model"), str):
-        value["sourceguard_model"] = str((base / Path(value["sourceguard_model"]).expanduser()).resolve())
+    if "research_folder" in value:
+        folder = value["research_folder"]
+        if not isinstance(folder, str) or not folder.strip():
+            raise ValidationError("research_folder must be a nonempty ResearchGuard research folder path")
+        value["research_folder"] = str((base / Path(folder).expanduser()).resolve())
     return value
 
 
@@ -359,7 +365,7 @@ def cli_validate(validate_fn, description: str) -> int:
         return 1
 
 
-RESEARCHGUARD_MIN_VERSION = (0, 5, 0)
+RESEARCHGUARD_MIN_VERSION = (0, 5, 14)
 RESEARCHGUARD_INSTALL_HINT = 'python -m pip install "git+https://github.com/liuyingxuvka/ResearchGuard.git"'
 
 
@@ -369,3 +375,29 @@ def researchguard_version_problem(version: str | None) -> str | None:
         return None
     minimum = ".".join(str(part) for part in RESEARCHGUARD_MIN_VERSION)
     return f"ResearchGuard >= {minimum} is required, found {version or 'not installed'}; install with: {RESEARCHGUARD_INSTALL_HINT}"
+
+
+def utc_now() -> str:
+    return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+
+
+def _require_exact_fingerprint(value: Mapping[str, Any], field: str) -> None:
+    if value.get(field) != fingerprint_without(dict(value), field):
+        raise ValidationError(f"{field} does not bind the exact current object")
+
+
+def _ids(rows: Iterable[Mapping[str, Any]], field: str, label: str) -> tuple[str, ...]:
+    values = tuple(str(row.get(field, "")) for row in rows)
+    if not all(values) or len(values) != len(set(values)):
+        raise ValidationError(f"{label} ids must be non-empty and unique")
+    return values
+
+
+def read_worldguard_report(path: str | Path) -> str:
+    """Read one saved native check status; malformed reports never mean PASS."""
+    try:
+        document = json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, ValueError, TypeError):
+        return "unreadable"
+    status = document.get("status") if isinstance(document, dict) else None
+    return status if isinstance(status, str) and status in {"PASS", "FAIL", "GAP", "BOUNDARY_EXCEEDED"} else "unreadable"

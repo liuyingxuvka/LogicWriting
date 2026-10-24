@@ -7,7 +7,10 @@ import argparse
 import json
 import sys
 from pathlib import Path
+from fiction_plan import project_surface
+
 from typing import Any
+from _fiction_common import (type_name, check_enum as _check_enum)
 
 
 TOP_LEVEL_FIELDS = {
@@ -27,8 +30,6 @@ TOP_LEVEL_FIELDS = {
     "promises": list,
     "worldguard_claims": list,
     "support": list,
-    "validation": list,
-    "closure": dict,
 }
 
 CURRENTNESS_FIELDS = {
@@ -373,12 +374,6 @@ class Reporter:
         return sum(1 for issue in self.issues if issue["severity"] == "warning")
 
 
-def type_name(expected: type | tuple[type, ...]) -> str:
-    if isinstance(expected, tuple):
-        return " or ".join(t.__name__ for t in expected)
-    return expected.__name__
-
-
 def is_blank(value: Any) -> bool:
     return value is None or (isinstance(value, str) and not value.strip())
 
@@ -409,16 +404,8 @@ def check_fields(
             reporter.error("empty_required_field", field_path, "Required field is empty.")
 
 
-def check_enum(
-    value: Any,
-    allowed: set[str],
-    path: str,
-    reporter: Reporter,
-    code: str = "invalid_enum",
-) -> None:
-    if isinstance(value, str) and value in allowed:
-        return
-    reporter.error(code, path, f"Value {value!r} is not one of: {', '.join(sorted(allowed))}.")
+def check_enum(value, allowed, path, reporter, code="invalid_enum"):
+    _check_enum(value, allowed, path, reporter, code=code)
 
 
 def row_items(value: Any, path: str, reporter: Reporter) -> list[tuple[str, dict[str, Any]]]:
@@ -488,12 +475,6 @@ def check_core_design_elements(ledger: dict[str, Any], reporter: Reporter) -> No
             "promises",
             f"Artifact type {artifact_type!r} requires promise/payoff rows.",
         )
-    if artifact_type in ARTIFACTS_REQUIRING_VALIDATION and not ledger.get("validation"):
-        reporter.warning(
-            "missing_validation_evidence",
-            "validation",
-            f"Artifact type {artifact_type!r} should include validation rows before closure claims.",
-        )
 
 
 def check_cross_links(ledger: dict[str, Any], reporter: Reporter) -> None:
@@ -543,13 +524,13 @@ def read_worldguard_status(claim: dict[str, Any], source_path: str = "") -> str:
     if not isinstance(path, str):
         raise ValueError("worldguard_report_invalid: report path must be a string")
     resolved = Path(source_path).resolve().parent / Path(path).expanduser()
-    try:
-        report = json.loads(resolved.read_text(encoding="utf-8"))
-        status = report.get("status") if isinstance(report, dict) else None
-    except (OSError, ValueError) as exc:
-        raise ValueError(f"worldguard_report_invalid: {resolved}: {exc}") from exc
-    if status not in {"PASS", "FAIL", "GAP", "BOUNDARY_EXCEEDED"}:
-        raise ValueError(f"worldguard_report_invalid: {resolved}: invalid native status {status!r}")
+    common = Path(__file__).resolve().parents[3] / "scripts"
+    if str(common) not in sys.path:
+        sys.path.insert(0, str(common))
+    from _common import read_worldguard_report
+    status = read_worldguard_report(resolved)
+    if status == "unreadable":
+        raise ValueError(f"worldguard_report_invalid: {resolved}: unreadable native status")
     status = status.lower()
     if legacy is not None and legacy != status:
         raise ValueError(f"worldguard_status_mismatch: declared {legacy!r}, report says {status!r}")
@@ -558,6 +539,7 @@ def read_worldguard_status(claim: dict[str, Any], source_path: str = "") -> str:
 
 def validate_ledger(ledger: Any, source_path: str) -> dict[str, Any]:
     reporter = Reporter()
+    ledger, plan_context = project_surface(ledger, source_path, "story_ledger", reporter)
     if not isinstance(ledger, dict):
         reporter.error("invalid_root_type", "$", "Ledger root must be a JSON object.")
         return build_report(source_path, reporter)
@@ -669,14 +651,6 @@ def validate_ledger(ledger: Any, source_path: str) -> dict[str, Any]:
             if field in row:
                 check_enum(row[field], ENUMS[f"support.{field}"], f"support[{index}].{field}", reporter)
 
-    check_rows(ledger, "validation", VALIDATION_FIELDS, reporter)
-    for index, row in enumerate(ledger.get("validation", [])):
-        if isinstance(row, dict) and "status" in row:
-            check_enum(row["status"], ENUMS["validation.status"], f"validation[{index}].status", reporter)
-
-    check_fields(ledger.get("closure"), CLOSURE_FIELDS, "closure", reporter)
-    if isinstance(ledger.get("closure"), dict) and "decision" in ledger["closure"]:
-        check_enum(ledger["closure"]["decision"], ENUMS["closure.decision"], "closure.decision", reporter)
 
     check_core_design_elements(ledger, reporter)
     check_cross_links(ledger, reporter)

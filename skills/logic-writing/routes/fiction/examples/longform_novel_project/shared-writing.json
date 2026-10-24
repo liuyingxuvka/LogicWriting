@@ -1,0 +1,124 @@
+{
+  "contract": {
+    "schema_version": "2.0",
+    "contract_id": "sw-aurora",
+    "final_owner": "fiction-writing",
+    "artifact_path": "drafts/book-01-final.txt",
+    "iteration_id": "aurora-original",
+    "unit_bindings": [
+      {
+        "binding_id": "binding-chapter-01",
+        "planned_unit_id": "chapter-01",
+        "content_unit_ids": [],
+        "model_row_ids": [],
+        "route_surface_ids": [],
+        "artifact_unit_ids": [
+          "artifact:paragraph:0001"
+        ]
+      },
+      {
+        "binding_id": "binding-chapter-02",
+        "planned_unit_id": "chapter-02",
+        "content_unit_ids": [],
+        "model_row_ids": [],
+        "route_surface_ids": [],
+        "artifact_unit_ids": [
+          "artifact:paragraph:0003"
+        ]
+      },
+      {
+        "binding_id": "binding-chapter-03",
+        "planned_unit_id": "chapter-03",
+        "content_unit_ids": [],
+        "model_row_ids": [],
+        "route_surface_ids": [],
+        "artifact_unit_ids": [
+          "artifact:paragraph:0005"
+        ]
+      },
+      {
+        "binding_id": "binding-chapter-04",
+        "planned_unit_id": "chapter-04",
+        "content_unit_ids": [],
+        "model_row_ids": [],
+        "route_surface_ids": [],
+        "artifact_unit_ids": [
+          "artifact:paragraph:0007"
+        ]
+      },
+      {
+        "binding_id": "binding-chapter-05",
+        "planned_unit_id": "chapter-05",
+        "content_unit_ids": [],
+        "model_row_ids": [],
+        "route_surface_ids": [],
+        "artifact_unit_ids": [
+          "artifact:paragraph:0009"
+        ]
+      },
+      {
+        "binding_id": "binding-scene-01a",
+        "planned_unit_id": "scene-01a",
+        "content_unit_ids": [
+          "content-chapter-01"
+        ],
+        "model_row_ids": [],
+        "route_surface_ids": [],
+        "anchor_excerpts": [
+          "Mira found the archive key in the wrong drawer. The numbered seal was intact, but the"
+        ]
+      },
+      {
+        "binding_id": "binding-scene-02a",
+        "planned_unit_id": "scene-02a",
+        "content_unit_ids": [
+          "content-chapter-02"
+        ],
+        "model_row_ids": [],
+        "route_surface_ids": [],
+        "anchor_excerpts": [
+          "Three access records contradicted one another. Mira copied each time into the margin "
+        ]
+      },
+      {
+        "binding_id": "binding-scene-03a",
+        "planned_unit_id": "scene-03a",
+        "content_unit_ids": [
+          "content-chapter-03"
+        ],
+        "model_row_ids": [],
+        "route_surface_ids": [],
+        "anchor_excerpts": [
+          "At the public desk, Mira asked for the map register in front of six witnesses. The re"
+        ]
+      },
+      {
+        "binding_id": "binding-scene-04a",
+        "planned_unit_id": "scene-04a",
+        "content_unit_ids": [
+          "content-chapter-04"
+        ],
+        "model_row_ids": [],
+        "route_surface_ids": [],
+        "anchor_excerpts": [
+          "The rival's ledger named the map room twice, too neatly. Mira followed the second ent"
+        ]
+      },
+      {
+        "binding_id": "binding-scene-05a",
+        "planned_unit_id": "scene-05a",
+        "content_unit_ids": [
+          "content-chapter-05"
+        ],
+        "model_row_ids": [],
+        "route_surface_ids": [],
+        "anchor_excerpts": [
+          "Mira secured the map before the council arrived. She accepted the inquiry that would "
+        ]
+      }
+    ],
+    "coverage_dispositions": []
+  },
+  "artifact_map": "artifact-map.json",
+  "reader_brief": "reader-brief.json"
+}

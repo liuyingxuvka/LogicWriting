@@ -16,14 +16,10 @@ Record scene cards in the ledger `scenes` section. A drafted prose scene may poi
 
 ```json
 {
-  "id": "scene-006",
-  "kind": "scene",
   "owner_stage": "scenes",
-  "parent_structure_id": "part_2_reaction",
-  "turning_point_links": ["turn-midpoint-001"],
-  "scene_contract": "The protagonist discovers that the rival is using the missing map as bait.",
-  "entry_state": "The protagonist believes the map is hidden in the archive.",
-  "exit_state": "The protagonist knows the rival controls the next move.",
+  "turning_point_links": [
+    "turn-midpoint-001"
+  ],
   "irreversible_change": "The rival learns the protagonist is pursuing the map.",
   "conflict_pressure": "The protagonist needs the map, but entering the archive exposes them to the rival.",
   "character_desire": "Find the map without revealing the investigation.",
@@ -39,29 +35,38 @@ Record scene cards in the ledger `scenes` section. A drafted prose scene may poi
       "role": "escalation"
     }
   ],
-  "arc_links": ["arc-protagonist-agency"],
-  "stakes_links": ["stake-map-control"],
-  "worldguard_claim_links": ["wg-claim-archive-access"],
-  "support_links": ["support-archive-layout"],
+  "arc_links": [
+    "arc-protagonist-agency"
+  ],
+  "stakes_links": [
+    "stake-map-control"
+  ],
+  "worldguard_claim_links": [
+    "wg-claim-archive-access"
+  ],
+  "support_links": [
+    "support-archive-layout"
+  ],
   "prose_status": "not_started",
   "evidence_status": "planned",
   "contract_outcome": "revise",
   "outcome_reason": "WorldGuard access claim is not_run and midpoint handoff needs evidence.",
   "closure_effect": "return_to_worldguard",
-  "evidence_refs": []
+  "evidence_refs": [],
+  "planned_unit_id": "scene-006"
 }
 ```
 
 Required scene card fields:
 
-- `id`: stable scene id.
+- `planned_unit_id`: the existing scene unit in the canonical composition plan.
 - `kind`: `scene`.
 - `owner_stage`: `scenes`.
 - `parent_structure_id`: owning act, part, sequence, chapter, or movement row.
 - `turning_point_links`: structure-turning-points rows the scene prepares, contains, or resolves.
 - `scene_contract`: one sentence explaining why the scene exists.
-- `entry_state`: story state before the scene.
-- `exit_state`: story state after the scene.
+- Entry state is read from the fiction unit plan.
+- Exit state is read from the fiction unit plan.
 - `irreversible_change`: what cannot remain unchanged after the scene.
 - `conflict_pressure`: visible pressure, contradiction, obstacle, or forced tradeoff.
 - `character_desire`: what the focal character wants in the scene.
@@ -352,7 +357,7 @@ The scene is not ready for closure until these answers are current or the claim 
 
 For Longform Mode, scene cards may include these additional fields:
 
-- `parent_chapter_id`: chapter that owns the scene.
+- Parent chapter is read from the composition plan.
 - `chapter_interface_id`: adjacent chapter interface affected by the scene.
 - `reader_state_delta`: what the reader learns, expects, doubts, fears, or reinterprets because of the scene.
 - `serial_hook_role`: none, setup, pressure_forward, cliffhanger, quiet_bridge, payoff_delay, or volume_hook.

@@ -22,24 +22,12 @@ Use WorldGuard for generic world claims that can be checked independently of sto
 - Booking or queue chokepoints.
 - Fallback reachability from the actual route position.
 
-## Statuses
+## Saved report authority
 
-Use `pass`, `partial`, `gap`, `fail`, `boundary_exceeded`, `stale`, or `not_applicable`.
-
-Missing current evidence is `gap` or `stale`, not a weak pass. A beautiful travel story cannot convert a feasibility gap into a pass.
-
-Weather feasibility that is based only on generic seasonal language is `partial` for far-future planning and `gap` for past or near-future dated trips when daily weather affects the route.
-
-## World Check Card
+Each world check records `worldguard_report`, a path relative to the trip plan, plus its declared scope and target ids. The shared reader accepts canonical `PASS`, `FAIL`, `GAP` or `BOUNDARY_EXCEEDED`; missing, malformed and unknown-status reports are unreadable. The trip plan cannot supply a world status. It never invokes WorldGuard or TraceGuard itself.
 
 ```text
-world_check_id -> target_type(candidate|route|edge|hotel_strategy) -> target_id -> guards_checked -> status -> missing_slots -> counterexamples -> boundary -> next_action
+world_check_id -> target_type(candidate|route|trip|hotel_strategy) -> target_id -> guards_checked -> worldguard_report -> missing_slots -> counterexamples -> boundary -> next_action
 ```
 
-`missing_slots` and `counterexamples` come from each WorldGuard summary `gaps` row's `missing_slots` and `counterexample`.
-
-## Weather Check Card
-
-```text
-weather_check_id -> date_relation(past|near_future|far_future|undated) -> source_class(weather_forecast|weather_historical|weather_climate|weather_alert|missing) -> covered_dates -> affected_route_nodes -> route_adjustments -> fallback_ids -> status -> boundary -> next_action
-```
+A whole-trip check names the current `trip_id`; a candidate or route check must name that exact input. Do not reuse a report beyond its checked claim boundary. Missing evidence, real counterexamples and weather limitations remain visible. Any non-pass required report prevents booking/day-of claims.

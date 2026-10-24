@@ -9,36 +9,33 @@ Record interfaces in `chapter_interfaces` or a standalone JSON artifact:
 ```json
 {
   "id": "iface-ch03",
-  "chapter_id": "chapter-03",
-  "previous_chapter_id": "chapter-02",
-  "next_chapter_id": "chapter-04",
   "previous_output": "The protagonist realizes the archive key belongs to the rival.",
   "current_input": "She enters chapter 3 with proof of the rival's access but no safe way to confront him.",
-  "reader_state_before": ["The reader knows the rival can reach the archive."],
-  "reader_state_after": ["The reader knows the protagonist chose exposure over delay."],
-  "unresolved_tension_in": ["Who planted the false map note?"],
-  "unresolved_tension_out": ["What did the rival learn from the exposure?"],
-  "promise_movements": [{"promise_id": "promise-map-race", "role": "escalation"}],
-  "arc_movements": [{"arc_id": "arc-agency", "movement": "chooses risk instead of waiting"}],
+  "promise_movements": [
+    {
+      "promise_id": "promise-map-race",
+      "role": "escalation"
+    }
+  ],
+  "arc_movements": [
+    {
+      "arc_id": "arc-agency",
+      "movement": "chooses risk instead of waiting"
+    }
+  ],
   "hook_role": "pressure_forward",
-  "status": "pass",
-  "evidence_refs": ["reverse-outline.json#chapter-03"]
+  "evidence_refs": [
+    "reverse-outline.json#chapter-03"
+  ],
+  "planned_unit_id": "chapter-03"
 }
 ```
 
-Required fields:
-
-- `id`, `chapter_id`, `previous_chapter_id`, `next_chapter_id`;
-- `previous_output` and `current_input`;
-- `reader_state_before` and `reader_state_after`;
-- `unresolved_tension_in` and `unresolved_tension_out`;
-- `promise_movements`;
-- `arc_movements`;
-- `hook_role`;
-- `status`;
-- `evidence_refs`.
-
-Allowed statuses: pass, partial, blocked, stale, unsupported, not_run, scoped_out, or human_review.
+Required domain fields are `id`, `planned_unit_id`, previous output/current
+input, promise and arc movements, hook role and evidence references. Read
+adjacency, reader states and open questions from the canonical unit plan.
+Prose blueprints and reverse outlines also point through `planned_unit_id`;
+there is no copied chapter tree, status or model-alignment declaration.
 
 Generic handoffs such as "continues the story" or "sets up the next chapter" are not enough. The interface must name what changed and what the reader carries forward.
 
@@ -49,21 +46,31 @@ A chapter prose blueprint translates model rows into reader-native writing instr
 ```json
 {
   "id": "blueprint-ch03",
-  "chapter_id": "chapter-03",
   "source_interface_id": "iface-ch03",
   "prose_scope": "chapter",
   "pov": "limited_third",
   "tense": "past",
-  "scene_order": ["scene-03a", "scene-03b"],
-  "required_reader_experience": ["pressure", "choice", "cost"],
-  "must_include": ["archive key", "public exposure", "rival's warning"],
-  "must_not_include": ["the map's true location"],
-  "voice_style_refs": ["voice-style-report.json#voice-contract"],
-  "status": "pass"
+  "required_reader_experience": [
+    "pressure",
+    "choice",
+    "cost"
+  ],
+  "must_include": [
+    "archive key",
+    "public exposure",
+    "rival's warning"
+  ],
+  "must_not_include": [
+    "the map's true location"
+  ],
+  "voice_style_refs": [
+    "voice-style-report.json#voice-contract"
+  ],
+  "planned_unit_id": "chapter-03"
 }
 ```
 
-Required fields: `id`, `chapter_id`, `source_interface_id`, `prose_scope`, `pov`, `tense`, `scene_order`, `required_reader_experience`, `must_include`, `must_not_include`, `voice_style_refs`, and `status`.
+Required fields: `id`, `planned_unit_id`, `source_interface_id`, `prose_scope`, `pov`, `tense`, `scene_order`, `required_reader_experience`, `must_include`, `must_not_include`, `voice_style_refs`, and `status`.
 
 ## Reader-Native Brief
 
@@ -118,31 +125,29 @@ After prose exists, create a reverse outline from the actual drafted chapter:
 ```json
 {
   "id": "reverse-ch03",
-  "chapter_id": "chapter-03",
   "source_draft_ref": "drafts/chapter-03.md",
   "observed_events": [],
   "observed_reader_state_after": [],
   "observed_promise_movements": [],
   "observed_arc_movements": [],
-  "model_prose_binding_refs": [],
+  "shared_writing_refs": [],
   "binding_drift": [],
-  "model_alignment": "pass",
   "drift": [],
-  "status": "pass"
+  "planned_unit_id": "chapter-03"
 }
 ```
 
 Closure can consume prose only after reverse outline evidence shows whether the actual chapter matched the planned interface and prose blueprint.
 
-Reverse outlines should also record reader-facing drift such as reader-room contamination, authorial chapter-function explanation, unsupported or premature reveal, repeated chapter contribution, weak model-prose binding, unbound prose spans, unrealized model rows, duplicate binding, missing resistance/friction, premature reader-state collapse, register ownership drift, explanation pressure, variation pressure, or dialogue collapsing into one author voice.
+Reverse outlines should also record reader-facing drift such as reader-room contamination, authorial chapter-function explanation, unsupported or premature reveal, repeated chapter contribution, weak SharedWriting quote binding, unbound prose spans, unrealized model rows, duplicate binding, missing resistance/friction, premature reader-state collapse, register ownership drift, explanation pressure, variation pressure, or dialogue collapsing into one author voice.
 
 Reverse outlines must include `observed_events`, `observed_reader_state_after`, `observed_promise_movements`, and `observed_arc_movements`. A broad chapter summary, prose excerpt, or validation label is shallow evidence and cannot replace event-and-state rows from the actual draft.
 
-When final prose or major revision is in scope, reverse outlines should point to model-prose binding evidence through `model_prose_binding_refs` or an equivalent validation row. Unresolved `binding_drift` blocks positive chapter-interface validation.
+When final prose or major revision is in scope, reverse outlines should point to SharedWriting span evidence through `shared_writing_refs` or an equivalent validation row. Unresolved `binding_drift` blocks positive chapter-interface validation.
 
 ## Model-Prose Binding And Length Outliers
 
-Chapter interface review should treat model-prose binding as the bridge between planned chapter function and actual manuscript text.
+Chapter interface review should treat SharedWriting quote binding as the bridge between planned chapter function and actual manuscript text.
 
 Check:
 
@@ -163,6 +168,6 @@ Return to chapter interface or prose revision when:
 - promise movement contradicts the novel ledger;
 - prose blueprint bypasses voice/style constraints;
 - reverse outline shows events, promises, or reader state that the model did not support;
-- model-prose binding is missing, stale, or shows unresolved binding drift for a final-prose claim;
+- SharedWriting quote binding is missing, stale, or shows unresolved binding drift for a final-prose claim;
 - reader-native prose ending explains chapter function or forecasts the next chapter from an author-facing position;
 - adjacent chapter rhythm or function repeats without purposeful escalation, contrast, inversion, cost, or changed reader interpretation.

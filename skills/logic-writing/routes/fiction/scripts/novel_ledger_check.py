@@ -7,6 +7,8 @@ import argparse
 import json
 import sys
 from pathlib import Path
+from fiction_plan import project_surface
+
 from typing import Any
 
 import storyline_route_check
@@ -169,7 +171,6 @@ def validate_hierarchy(ledger: dict[str, Any], reporter: Reporter) -> dict[str, 
         "title": str,
         "parent_id": str,
         "order": (int, float),
-        "status": str,
         "summary": str,
         "entry_state": str,
         "exit_state": str,
@@ -186,8 +187,6 @@ def validate_hierarchy(ledger: dict[str, Any], reporter: Reporter) -> dict[str, 
             expected_kind = key[:-1]
             if row.get("kind") != expected_kind:
                 reporter.error("invalid_kind", f"{path}.kind", f"Expected kind {expected_kind!r}.")
-            if isinstance(row.get("status"), str) and row["status"] in BLOCKING_STATUSES:
-                reporter.error("blocking_hierarchy_status", f"{path}.status", "Blocking hierarchy status prevents long-form closure.")
             if isinstance(row.get("id"), str):
                 collections[key].add(row["id"])
             all_rows.append((path, row))
@@ -196,28 +195,19 @@ def validate_hierarchy(ledger: dict[str, Any], reporter: Reporter) -> dict[str, 
 
 
 def validate_story_units(ledger: dict[str, Any], reporter: Reporter) -> None:
-    unit_fields = {
-        "id": str,
-        "kind": str,
-        "parent_id": str,
-        "importance": str,
-        "status": str,
-        "contribution": str,
-        "downstream_use": list,
-        "terminal_treatment": str,
-        "repair_action": str,
-        "evidence_refs": list,
-    }
+    fields = {"id": str, "kind": str, "parent_id": str, "importance": str,
+              "contribution": str, "downstream_use": list, "terminal_treatment": str,
+              "repair_action": str, "evidence_refs": list}
     unit_rows = rows(ledger.get("story_units"), "story_units", reporter)
     if not unit_rows:
-        reporter.error("missing_story_units", "story_units", "Long-form ledgers require story_units contribution rows.")
+        reporter.error("missing_story_units", "story_units", "Long-form ledgers require plan-bound domain rows.")
     check_unique_ids(unit_rows, reporter)
     for path, row in unit_rows:
-        check_fields(row, unit_fields, path, reporter)
-        if row.get("status") in {"orphan", "duplicate", "weak", "unsupported", "stale", "blocked", "human_review", "human-review"}:
-            reporter.error("blocking_story_unit", f"{path}.status", "Story unit requires repair before aggregate closure.")
-        if row.get("status") == "pass":
-            check_nonempty_list(row, "downstream_use", path, reporter)
+        check_fields(row, fields, path, reporter)
+        if is_blank(row.get("contribution")):
+            reporter.error("missing_parent_contribution", path, "The current planned unit needs a concrete contribution.")
+        if not row.get("downstream_use") and not row.get("plan_terminal") and row.get("terminal_treatment") not in {"cut", "scoped_out"}:
+            reporter.error("missing_downstream_use", path, "A nonterminal planned unit needs a downstream consumer.")
 
 
 def validate_arcs_threads(ledger: dict[str, Any], reporter: Reporter) -> None:
@@ -281,30 +271,16 @@ def validate_continuity(ledger: dict[str, Any], reporter: Reporter) -> None:
 
 
 def validate_draft_validation_closure(ledger: dict[str, Any], reporter: Reporter) -> None:
-    draft_fields = {"chapters_planned": list, "chapters_drafted": list, "chapters_reverse_outlined": list, "current_revision_round": (int, str), "prose_claim_boundary": str, "latest_draft_refs": list, "stale_after": list}
+    # Progress metadata is not a validation result; final closure runs the owners.
+    draft_fields = {"chapters_planned": list, "chapters_drafted": list, "chapters_reverse_outlined": list,
+                    "current_revision_round": (int, str), "prose_claim_boundary": str,
+                    "latest_draft_refs": list, "stale_after": list}
     check_fields(ledger.get("draft_state"), draft_fields, "draft_state", reporter)
-
-    validation_rows = rows(ledger.get("validation"), "validation", reporter)
-    if not validation_rows:
-        reporter.error("missing_validation", "validation", "Long-form ledgers require validation rows.")
-    for path, row in validation_rows:
-        check_fields(row, {"id": str, "check_name": str, "surface": str, "checked_ids": list, "status": str, "evidence_ref": str, "rerun_required_when": list}, path, reporter)
-        if row.get("status") not in PASS_STATUSES:
-            reporter.error("validation_not_passed", f"{path}.status", "Validation rows must pass for the positive ledger fixture.")
-
-    closure_fields = {"closure_level": str, "decision": str, "claim_boundary": str, "blocking_rows": list, "deferred_rows": list, "stale_rows": list, "latest_validation_refs": list, "prose_allowed": bool}
-    if check_fields(ledger.get("closure"), closure_fields, "closure", reporter):
-        closure = ledger["closure"]
-        if closure.get("decision") not in {"pass", "passed", "partial", "blocked", "human_review", "human-review"}:
-            reporter.error("invalid_closure_decision", "closure.decision", "Unexpected closure decision.")
-        if closure.get("decision") in {"pass", "passed"}:
-            for field in ("blocking_rows", "stale_rows"):
-                if closure.get(field):
-                    reporter.error("closure_has_blocking_rows", f"closure.{field}", "Passing closure cannot include blocking or stale rows.")
 
 
 def validate_ledger(payload: Any, source_path: str) -> dict[str, Any]:
     reporter = Reporter()
+    payload, plan_context = project_surface(payload, source_path, "novel_ledger", reporter)
     ledger = payload.get("novel_ledger") if isinstance(payload, dict) and isinstance(payload.get("novel_ledger"), dict) else payload
     if not isinstance(ledger, dict):
         reporter.error("invalid_root_type", "$", "Novel ledger root must be an object.")
@@ -324,8 +300,6 @@ def validate_ledger(payload: Any, source_path: str) -> dict[str, Any]:
         "continuity": list,
         "chapter_interfaces": list,
         "draft_state": dict,
-        "validation": list,
-        "closure": dict,
     }
     check_fields(ledger, root_fields, "", reporter)
     if ledger.get("schema_version") != "storyline-design.novel_ledger.v2":

@@ -1,40 +1,65 @@
 # Migration to the current Logic Writing
 
-This patch keeps the `logic-writing` entrypoint and four final owners. The
-three native research members need ResearchGuard at or above the minimum
-version declared in `skills/logic-writing/scripts/_common.py`; repository
-maintenance uses FlowGuard. WorldGuard is found next to `logic-writing` in the
-skills root, or through `--provider-root`.
+Keep the `logic-writing` entrypoint, four final owners and existing user material.
+ResearchGuard's installed console supplies the research question result and its
+three native semantic members. The minimum version has one authority in
+`skills/logic-writing/scripts/_common.py`. WorldGuard remains a separate native
+owner, found in the skills root or through its explicit `--provider-root`.
 
-Keep manuscripts, evidence libraries, travel plans and other user material.
-Rebuild affected current byte references and reader evidence after changes;
-historical receipts do not become current by changing their version text.
+SourceRegistry, ClaimSupport and ResearchPacket and their scripts are removed;
+a piece's evidence stays in its content boundaries and ResearchGuard research folder.
+
+Brief requests use `research_folder`, relative to their JSON file, for a folder
+or `research.yaml`. Source-owned anchor ids, source ids and locators cannot be
+silently overridden: conflicting handwritten ownership fails
+`anchor_conflict:<id>`, while matching author summaries and dispositions remain.
+Save one `researchguard status <folder> --json --output research-status.json` and
+name the `researchguard` report in closure. Native errors, stop conditions,
+wording limits and live hypotheses remain authoritative; `contested` is a risk,
+not a new gate. A source-only stop is not a root-claim assert license.
 
 ## Current maintenance
 
-Use `.flowguard/map.json` to find the existing runtime/schema/test owner and its
-native state models. Former writer projection, editorial disposition,
-composition graph and artifact audit declarations belong to reader-artifact;
-ResearchGuard handoff belongs to research-packet. Run affected ordinary tests
-or native checks during development. Before a release, CI runs the full pytest suite, the fiction and travel
-regressions, the models and the map check on the exact source commit.
+Find the current runtime/schema/test owner in `.flowguard/map.json`. Reader work
+is grouped by planning, binding, checking and closure; the synthesis-plan bridge
+belongs to `researchguard-handoff`. Internal pipeline functions live with
+planning, binding, checking or closure. Supported reader-chain request wrappers
+keep their names and input/output flags; retired wrappers are removed. The
+native synthesis request/plan bridge, opaque result
+locators, exact bytes and optional provenance for new work are preserved.
 
-Final reader closure needs the deterministic audit, the route review and a
-ReaderJudgment from a reader that did not write the text; no execution capture
-is required. Plans, caller scores and completion markers cannot substitute for
-reading the actual text.
+The CompositionPlan is the piece's one unit tree. Long-form ledgers use planned
+unit ids and point to that same plan; one `longform_project` supplies actual
+project files to shared closure. Travel uses one itinerary `trip_plan` and the
+guide CompositionPlan. World references bind through `world_contract` and
+`world_refs`; missing/unknown objects are errors, not guessed replacements.
+Do not supply handwritten long-form or itinerary conclusions.
+
+After any edit, rebuild affected byte references, quoted bindings, audits and
+reviews. `create_new` may omit provenance and receive the not-applicable default;
+`revise_existing` still needs real source bytes and complete treatments.
+Quality `passed` requires the actual audit, route review and judgment. A
+self-review remains explicit and never grants a broad claim. Broader claims also
+need an independent read, applicable native verdicts and disposition of material
+live competition. Plans, labels and caller scores do not verify a read.
+
+Use `scripts/show_plan.py` to inspect current plan/text bindings and
+`scripts/known_bad.py` for deterministic defects in a disposable copy of the
+current piece. They do not generate new prose. Normal development uses affected
+checks; final CI runs the complete suite and native gates on the publication
+source. Installation, Git tag and hosted Release identities remain separate.
 
 ## Installation
 
 Install with `python scripts/install_skill.py --target <skills dir>`; add
-`--check` to compare an installed copy with the source (see README).
+`--check` to compare the installed copy with source. This copies the one canonical
+skill; project metadata installation does not install it.
 
-The old `storyline-design` and `travel-story-planner` ids remain retired with
-no runtime aliases. Move any old active directories outside the skill root;
-all supported intents enter through `$logic-writing`. Keep separate native
-SourceGuard, LogicGuard, TraceGuard, WorldGuard, Documents and PDF
-responsibilities. Source parity, installation, Git tag and hosted Release
-identities are checked separately.
+The former `storyline-design` and `travel-story-planner` skill ids remain retired
+without runtime aliases. Preserve user
+manuscripts, libraries and plans when moving old active skill directories out of
+the skills root. All supported writing intents enter through `$logic-writing`;
+ResearchGuard, WorldGuard, Documents and PDF retain their native responsibilities.
 
-Earlier migration details are retained in
+Earlier migration details remain in
 [the historical record](docs/history/migration-before-4.0.5.md).

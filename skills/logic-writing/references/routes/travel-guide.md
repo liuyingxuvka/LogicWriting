@@ -6,6 +6,12 @@ prose, and final-guide closure. A quick list of attractions is out of scope.
 
 ## Reader composition v2
 
+The travel composition requires `trip_plan`, relative to its file. The brief
+validates that trip model and every route, fit, texture and fallback reference.
+Guide structure lives only in this composition. World, route, fit and
+recommendation results and the allowed claim level are derived; source
+currency uses check dates.
+
 Select the real guide kind: itinerary, destination guide, lodging strategy,
 route plan, traveler-fit recommendation, or revision. Plan narrative body
 sections separately from the operational appendix, source-boundary zone, and
@@ -28,7 +34,7 @@ the writer owns integration and wording.
 
 ## Start with the traveler and time boundary
 
-Record trip dates, planning timestamp, date relation, allowed claim level,
+Record trip dates, planning timestamp, date relation, requested claim level,
 locations, companions, ages, stamina, walking tolerance, accessibility needs,
 interests, pace, rest, budget, safety concerns, food needs, lodging preferences,
 and travel style. A missing material preference is a visible input gap.
@@ -48,8 +54,8 @@ access gaps.
 
 Create experience candidates with source roles, negative signals, and
 WorldGuard checks. WorldGuard owns event, space, time, resource, access,
-capability, authority, conflict, and norm feasibility. TraceGuard owns the
-ordered route mesh and causal/temporal travel sequence. The route validator
+capability, authority, conflict, and norm feasibility through saved reports.
+The trip plan owns its route options and movement sequence; temporal checks come from those saved WorldGuard reports. The route validator
 checks that candidate and movement edges actually bind those native results.
 
 Validate time, distance, transport, opening/access state, capacity, queue,

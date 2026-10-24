@@ -24,22 +24,27 @@ A ReaderBrief SHALL include the reader question, audience, genre, necessary conc
 - **THEN** ReaderBrief validation SHALL fail
 - **AND** the writer SHALL not receive the stronger claim
 
-### Requirement: ReaderBrief content is verifier-derived
-The caller MAY supply only the reader context: brief identity, question, audience, genre, purpose, and concepts. Principal findings, evidence anchors, alternatives, limitations, information sequence, citations, allowed wording, and prohibited wording SHALL be derived from an authority-validated ResearchPacket.
+### Requirement: ReaderBrief preserves one evidence authority
+The caller SHALL provide reader context, one content boundary and the selected
+CompositionPlan. Native source identities and wording limits SHALL come from the
+ResearchGuard research folder and its saved verdict; the writer SHALL NOT invent
+stronger evidence or replace it with a caller-authored pass marker. Matching
+author-written summaries and dispositions remain part of the content boundary.
 
-#### Scenario: Caller supplies a preferred finding
-- **WHEN** a ReaderBrief request contains caller-authored findings, evidence anchors, limitations, citations, status, wording boundaries, or packet identity
-- **THEN** the request SHALL be rejected
+#### Scenario: A handwritten anchor changes its native owner
+- **WHEN** a handwritten anchor shares a native id but changes source id or locator
+- **THEN** the builder SHALL fail `anchor_conflict:<id>` without a partial import
 
-#### Scenario: Packet contains unsupported safe wording
-- **WHEN** a packet contains a claim whose safe wording lacks current source observation, semantic-fit, or required claim-type evidence
-- **THEN** that claim SHALL NOT become a principal finding
-- **AND** its gap or limitation SHALL remain visible
+#### Scenario: A safe meaning exceeds native support
+- **WHEN** a content unit's proposed wording lacks current observed support or
+  exceeds its native research scope
+- **THEN** the writing contract SHALL retain the gap or limitation
+- **AND** the writer SHALL NOT promote that statement into a principal finding
 
-#### Scenario: No supported principal finding remains
-- **WHEN** every candidate finding is excluded by current evidence gaps
-- **THEN** ReaderBrief construction SHALL return `blocked`
-- **AND** SHALL NOT manufacture an empty or generic conclusion
+#### Scenario: No supported principal conclusion remains
+- **WHEN** current evidence excludes every candidate principal conclusion
+- **THEN** the artifact SHALL preserve the unresolved conclusion boundary
+- **AND** SHALL NOT manufacture an empty or generic success claim
 
 ### Requirement: ReaderBrief links are internally complete
 The ReaderBrief SHALL bind one current RouteDecision, ReaderIntent, route content projection, whole-artifact CompositionPlan, selected route extension, and one final owner. Every required user-outline row, content obligation, limitation, citation duty, exact-preservation duty, planned unit, and route surface SHALL be consumed exactly as declared or receive a visible conflict or omission disposition.
@@ -57,7 +62,7 @@ The ReaderBrief SHALL bind one current RouteDecision, ReaderIntent, route conten
 - **THEN** they may be consumed by one planned unit without creating one paragraph per content unit
 
 #### Scenario: Citation points to no observed anchor
-- **WHEN** a citation names a source but no observed source anchor that supports its target wording
+- **WHEN** a citation names a source but no observed source anchor that supports the wording it claims to support
 - **THEN** ReaderBrief validation SHALL fail
 
 #### Scenario: Sequence omits a finding
@@ -236,7 +241,7 @@ Content boundaries SHALL define safe meaning, evidence anchors, alternatives, li
 - **THEN** deterministic audit fails with the affected content and artifact units
 
 ### Requirement: Whole-artifact composition precedes final drafting
-The selected route SHALL produce a CompositionPlan that maps every required user-outline row and content obligation into ordered artifact units with parent ownership, reader job, incoming and outgoing reader state, relation to prior units, downstream consumers, presentation mode, and target extent. Unresolved material conflicts SHALL block final drafting.
+The selected route SHALL produce a CompositionPlan that maps every required user-outline row and content obligation into ordered artifact units with parent ownership, reader job, incoming and outgoing reader state, relation to prior units, downstream consumers, presentation mode, and planned extent. Unresolved material conflicts SHALL block final drafting.
 
 #### Scenario: Findings are copied into sequential cards
 - **WHEN** a plan creates one shallow planned unit for every finding without reader or downstream justification
