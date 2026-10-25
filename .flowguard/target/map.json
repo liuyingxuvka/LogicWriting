@@ -1,0 +1,61 @@
+{
+  "schema": "flowguard.target.v1",
+  "goal": "LW-307: known-bad edits break the plan relations (swap, noworld, noalt must be caught; rule plan_relation_variants_are_caught, known-bad swapped_units_not_generated)",
+  "components": [
+    {
+      "id": "reader-closure",
+      "layer": "reader",
+      "summary": "Derive quality closure from the real reader chain, saved native verdicts and in-process domain checks.",
+      "responsibilities": [
+        "Derive quality closure from the real reader chain, saved native verdicts and in-process domain checks.",
+        "Known-bad edits are caught or listed as toothless closure risks.",
+        "Saved provider reports count only when they belong to the brief.",
+        "Known-bad edits also swap sibling units and remove world or alternative sentences."
+      ],
+      "files": [
+        "skills/logic-writing/assets/schemas/closure.schema.json",
+        "skills/logic-writing/references/shared/closure.md",
+        "skills/logic-writing/scripts/derive_closure.py",
+        "skills/logic-writing/scripts/known_bad.py"
+      ],
+      "entrypoints": [
+        "skills/logic-writing/scripts/derive_closure.py:derive_closure",
+        "skills/logic-writing/scripts/derive_closure.py:main",
+        "skills/logic-writing/scripts/derive_closure.py:provider_checks",
+        "skills/logic-writing/scripts/known_bad.py:check_known_bad",
+        "skills/logic-writing/scripts/known_bad.py:main"
+      ],
+      "state": [
+        "Computed quality status, provider verdicts, residual risks and broad-claim permission."
+      ],
+      "side_effects": [
+        "Read current artifact, saved provider reports and declared longform project surfaces; write JSON only to an explicit --output."
+      ],
+      "depends_on": [
+        "fiction-model",
+        "reader-binding",
+        "reader-checks",
+        "reader-inputs",
+        "reader-plan",
+        "researchguard-handoff",
+        "shared-contracts",
+        "world-references"
+      ],
+      "tests": [
+        "tests/adversarial/test_boundaries.py",
+        "tests/e2e/test_reader_v2_benchmark.py",
+        "tests/e2e/test_routes.py",
+        "tests/e2e/test_worked_examples.py",
+        "tests/unit/test_freshness_closure.py",
+        "tests/unit/test_known_bad.py"
+      ],
+      "models": [
+        ".flowguard/models/closure_claim_model.py",
+        ".flowguard/models/known_bad_generator_model.py"
+      ],
+      "parent": "reader-artifact"
+    }
+  ],
+  "flows": [],
+  "remove": []
+}
