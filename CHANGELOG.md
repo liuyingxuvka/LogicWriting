@@ -6,18 +6,19 @@ releases, tags, package publications, installations, or predecessor deletions.
 The format follows the main ideas of Keep a Changelog, and the source version
 line follows semantic versioning.
 
-## [Unreleased]
+## [4.0.15] - 2026-10-25
 
 ### Changed
 
-- Closure checks that each saved provider report belongs to the brief: a ResearchGuard report must match the research folder's question, hypotheses, models and source anchors, and a WorldGuard report must name the world contract's id; a report from another question or world now fails with research_report_mismatch or world_report_mismatch. ResearchGuard 0.5.15 is the minimum supported release.
-- With research_status (the saved researchguard status report), imported anchors take their relation from the research model's direction for the root claim (counter, limit, support, else context); a handwritten relation that contradicts it fails anchor_relation_conflict.
+- Closure checks that each saved provider report belongs to the brief. A ResearchGuard report must match the research folder's question, hypotheses, models and source anchors, and a WorldGuard report must name the world contract's id; a report from another question or world fails with research_report_mismatch or world_report_mismatch and closure needs repair. After a research folder or world contract changes, save its report again. A travel trip plan's world reports are checked the same way when the brief is built.
+- A brief request may name research_status, the saved researchguard status report of its research folder. Imported anchors then take their relation from the research model's direction for the root claim (counter, limit, support, else context; without research_status they are context), and a handwritten relation that contradicts it fails anchor_relation_conflict.
 - The deterministic audit checks that sibling planned units appear in the text in plan order and reports plan_order_mismatch otherwise.
-- show_plan starts with a one-line summary of bindings, audit, review, closure and uncaught known-bad edits, and lists each unit's findings with quoted spans, its evidence anchors and world references.
-- Known-bad edits also break the plan's relations: two sibling sections swapped, a sentence holding a world reference removed, and a sentence binding a live alternative removed; each must be caught.
-- The skill starts from the model: read an existing plan back with show_plan, or the research and world models it relies on, before choosing a route; SKILL.md is under 200 lines and the reader-chain details live in references/shared/reader-chain.md.
-- Maintenance checks of the skill's own model tree run on FlowGuard 0.70.12.
+- show_plan starts with a one-line summary of bindings, audit, review, closure and uncaught known-bad edits, and lists each unit's findings with quoted spans, its evidence anchors and world references; results made from other bytes show as stale.
+- Known-bad edits also break the plan's relations: two sibling sections swapped, a sentence holding a world reference removed, and a sentence binding a live alternative removed; each must be caught. The shipped known-bad catalogs include the new edits.
+- The skill starts from the model: read an existing plan back with show_plan, or the research and world models it relies on, before choosing a route. SKILL.md is under 200 lines; the reader-chain details live in references/shared/reader-chain.md and the route notes in the route references.
 - Long-form ledger arcs and threads no longer require a status field; negative domain states still block.
+- ResearchGuard 0.5.15 is the minimum supported release; the shipped research-status.json is regenerated with it.
+- Maintenance checks of the skill's own model tree run on FlowGuard 0.70.12.
 
 ### Removed
 
