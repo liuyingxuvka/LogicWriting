@@ -148,7 +148,16 @@ The installer copies `skills/logic-writing` to `<target>/logic-writing`,
 replacing an older copy, and leaves out the fixtures and regression runners that
 only this repository's tests use. `--check` exits 1 when the installed copy
 differs from the source. ResearchGuard and WorldGuard are
-installed separately. Then invoke `$logic-writing`:
+installed separately.
+
+When a piece already has a plan, start by reading it back; the first line sums up
+bindings, audit, review, closure and uncaught known-bad edits:
+
+```text
+python skills/logic-writing/scripts/show_plan.py --input <folder>/reader-brief.json
+```
+
+Then invoke `$logic-writing`:
 
 ```text
 Use $logic-writing to turn this request into the correct reader-ready artifact.

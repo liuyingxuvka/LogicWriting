@@ -15,6 +15,7 @@ line follows semantic versioning.
 - The deterministic audit checks that sibling planned units appear in the text in plan order and reports plan_order_mismatch otherwise.
 - show_plan starts with a one-line summary of bindings, audit, review, closure and uncaught known-bad edits, and lists each unit's findings with quoted spans, its evidence anchors and world references.
 - Known-bad edits also break the plan's relations: two sibling sections swapped, a sentence holding a world reference removed, and a sentence binding a live alternative removed; each must be caught.
+- The skill starts from the model: read an existing plan back with show_plan, or the research and world models it relies on, before choosing a route; SKILL.md is under 200 lines and the reader-chain details live in references/shared/reader-chain.md.
 - Maintenance checks of the skill's own model tree run on FlowGuard 0.70.12.
 
 ## [4.0.14] - 2026-10-24

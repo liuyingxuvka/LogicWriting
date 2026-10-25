@@ -70,3 +70,18 @@ def test_comparison_rechecks_same_size_and_mtime_bytes_in_one_process(tmp_path):
         path.write_bytes(original)
         os.utime(path, ns=(stat.st_atime_ns, stat.st_mtime_ns))
         assert installer.differences(source, target) == []
+
+
+def test_skill_starts_from_the_model():
+    from pathlib import Path
+    import re
+    skill = Path(__file__).resolve().parents[2] / "skills/logic-writing"
+    text = (skill / "SKILL.md").read_text(encoding="utf-8")
+    assert len(text.splitlines()) <= 200
+    headings = re.findall(r"^## (.+)$", text, flags=re.MULTILINE)
+    assert headings[0] == "Start from the model"
+    section = text.split("## Start from the model", 1)[1].split("\n## ", 1)[0]
+    for needle in ("show_plan.py", "UNBOUND", "researchguard status", "timeline"):
+        assert needle in section, needle
+    assert (skill / "references/shared/reader-chain.md").is_file()
+    assert "(references/shared/reader-chain.md)" in text

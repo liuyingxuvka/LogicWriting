@@ -159,3 +159,13 @@ obligations and the eight reader dimensions together. Preserve both existing
 required dimensions, scores and their current fingerprint bindings. If a
 revision round fixes none of the reported defects, stop and return the artifact
 with the audit note.
+
+## From the entrypoint
+
+Begin with the claim, decision, scope, source roles, and stopping rule. Preserve
+sources and anchors through SourceGuard. Use LogicGuard when live competing
+conclusions remain, many critical assertions need modeling, or the user asks
+for an argument graph; otherwise SourceGuard observations and brief boundaries
+are enough. Its source library is only for deeper LogicGuard models. Invoke
+TraceGuard only when the claim
+actually depends on a trace. Keep evidence in `content_boundaries` and a ResearchGuard research folder. Use `research_folder` for source-owned anchors and save its native `verdict`; never maintain a second evidence registry. A bounded investigation child returns content units, anchors, alternatives and limitations to its parent, which keeps final ownership.

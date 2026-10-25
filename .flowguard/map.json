@@ -79,7 +79,7 @@
         ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:ca159cedba188b6b0acc4e5526c51c4c66e2ffe84a2001e977cb8e65107361c4"
+      "fingerprint": "sha256:79af385121966d3571ac874caf522513d34eb62653f9f9bec7c350e23302633b"
     },
     {
       "id": "fiction",
@@ -337,7 +337,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:591db2ce4337cf5caa5f0ebda5915e9a41c79c1edfd44cdab8d88fddcde72f3a"
+      "fingerprint": "sha256:fbf807f2a7df9e3ff2435480f1c462a1b4ffd81d2d54d52e951788a7d6f70a18"
     },
     {
       "id": "academic",
@@ -382,7 +382,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:59c1aea8ffa1e4e2ba5056bab104c712b812fcd6b987587d477a63f89081d173"
+      "fingerprint": "sha256:202e0fe98ba153d26a85e2c42d6ecc3a6b60c517fb2365306b9c46aa1bbcb1c8"
     },
     {
       "id": "release",
@@ -448,7 +448,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:924319c5d2acc65850d009d946bbb6b57c44a2dc987b5a7b097460cc42c5d4de"
+      "fingerprint": "sha256:0ba2efa7f1dec10802c64a09856a7d2a82b2e9ada4a8f3ea814b06f7a414bca6"
     },
     {
       "id": "providers",

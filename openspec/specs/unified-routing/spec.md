@@ -3,6 +3,13 @@
 ## Purpose
 Define how LogicWriting selects one final route owner, preserves route boundaries, and records explicit handoffs and blocked outcomes across research, planning, and writing workflows.
 ## Requirements
+### Requirement: Start from the model of the piece
+The entrypoint SHALL first read back an existing plan of the piece (the CompositionPlan, with `scripts/show_plan.py`), or the research and world models it relies on, and SHALL build the plan first when none exists, before selecting a route or running the reader chain.
+
+#### Scenario: Existing plan is read back first
+- **WHEN** a request concerns a piece that already has a ReaderBrief or a later chain file
+- **THEN** the work SHALL start from the `show_plan.py` readback and continue from `UNBOUND` units and units with findings
+
 ### Requirement: Exactly one final owner
 The system SHALL assign exactly one `final_owner` to every non-trivial run. Allowed final owners SHALL be `investigation`, `academic-writing`, `fiction-writing`, and `travel-guide`; child routes, shared kernels, and adapters SHALL NOT become co-owners.
 

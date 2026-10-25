@@ -130,3 +130,10 @@ obligations and the eight reader dimensions together. Preserve both existing
 required dimensions, scores and their current fingerprint bindings. If a
 revision round fixes none of the reported defects, stop and return the artifact
 with the audit note.
+
+## From the entrypoint
+
+Bind the traveler profile, time/weather mode, source roles, candidates,
+WorldGuard feasibility in one itinerary `trip_plan`, lodging, fit, negative evidence,
+reachable fallbacks, the same trip plan and guide units, and review of the
+actual guide. Use the shared reader chain for the guide's text bindings.

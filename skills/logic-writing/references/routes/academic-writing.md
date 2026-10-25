@@ -178,3 +178,10 @@ Inspect source ids, then derive closure:
 python <skill-root>/scripts/build_source_unit_manifest.py --manifest-id revision --source old.md --target new.md --output units.json
 python <skill-root>/scripts/derive_closure.py --input closure-input.json
 ```
+
+## From the entrypoint
+
+Model the real artifact units before broad drafting or revision. Deepen
+important shallow units, keep a revision-provenance record, and use bounded
+investigation requests for missing evidence. The academic route integrates the
+evidence and owns the final artifact. Live alternatives or an explicit `research_folder` require a saved ResearchGuard verdict at closure.
