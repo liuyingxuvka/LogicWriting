@@ -110,6 +110,15 @@ def rows(value: Any, path: str, reporter: Reporter) -> list[tuple[str, dict[str,
     return output
 
 
+def check_optional_fields(obj: Any, fields: dict[str, type | tuple[type, ...]], path: str, reporter: Reporter) -> None:
+    """Fields that may be left out; a value that is given must still have the right type."""
+    if not isinstance(obj, dict):
+        return
+    for field, expected in fields.items():
+        if field in obj and not isinstance(obj[field], expected):
+            reporter.error("invalid_type", f"{path}.{field}", f"Expected {type_name(expected)}, got {type(obj[field]).__name__}.")
+
+
 def check_nonempty_list(obj: dict[str, Any], field: str, path: str, reporter: Reporter) -> None:
     value = obj.get(field)
     field_path = f"{path}.{field}" if path else field
@@ -211,16 +220,18 @@ def validate_story_units(ledger: dict[str, Any], reporter: Reporter) -> None:
 
 
 def validate_arcs_threads(ledger: dict[str, Any], reporter: Reporter) -> None:
-    arc_fields = {"id": str, "arc_type": str, "owner": str, "scope": str, "start_state": str, "turning_points": list, "end_state": str, "linked_chapters": list, "status": str}
-    thread_fields = {"id": str, "thread_type": str, "introduced_by": str, "active_in": list, "resolved_by": list, "deferred_to": str, "importance": str, "status": str}
+    arc_fields = {"id": str, "arc_type": str, "owner": str, "scope": str, "start_state": str, "turning_points": list, "end_state": str, "linked_chapters": list}
+    thread_fields = {"id": str, "thread_type": str, "introduced_by": str, "active_in": list, "resolved_by": list, "deferred_to": str, "importance": str}
     for path, row in rows(ledger.get("arcs"), "arcs", reporter):
         check_fields(row, arc_fields, path, reporter)
+        check_optional_fields(row, {"status": str}, path, reporter)
         check_nonempty_list(row, "turning_points", path, reporter)
         check_nonempty_list(row, "linked_chapters", path, reporter)
         if row.get("status") in BLOCKING_STATUSES:
             reporter.error("blocking_arc_status", f"{path}.status", "Arc has a blocking status.")
     for path, row in rows(ledger.get("threads"), "threads", reporter):
         check_fields(row, thread_fields, path, reporter)
+        check_optional_fields(row, {"status": str}, path, reporter)
         check_nonempty_list(row, "active_in", path, reporter)
         if row.get("importance") in {"key", "major"} and row.get("status") in {"open", "blocked", "unsupported", "stale"}:
             reporter.error("unresolved_thread", f"{path}.status", "Key or major thread is unresolved.")
@@ -259,12 +270,13 @@ def validate_promises(ledger: dict[str, Any], closure_level: str, reporter: Repo
 
 
 def validate_continuity(ledger: dict[str, Any], reporter: Reporter) -> None:
-    fields = {"id": str, "continuity_type": str, "fact": str, "scope": str, "first_seen": str, "last_checked": str, "affected_units": list, "status": str, "repair_action": str, "evidence_refs": list}
+    fields = {"id": str, "continuity_type": str, "fact": str, "scope": str, "first_seen": str, "affected_units": list, "status": str, "repair_action": str, "evidence_refs": list}
     continuity_rows = rows(ledger.get("continuity"), "continuity", reporter)
     if not continuity_rows:
         reporter.error("missing_continuity", "continuity", "Long-form ledgers require continuity rows.")
     for path, row in continuity_rows:
         check_fields(row, fields, path, reporter)
+        check_optional_fields(row, {"last_checked": str}, path, reporter)
         check_nonempty_list(row, "affected_units", path, reporter)
         if row.get("status") in {"blocked", "stale", "unsupported", "drift", "human_review", "human-review"}:
             reporter.error("blocking_continuity_status", f"{path}.status", "Continuity row blocks long-form closure.")

@@ -17,6 +17,11 @@ line follows semantic versioning.
 - Known-bad edits also break the plan's relations: two sibling sections swapped, a sentence holding a world reference removed, and a sentence binding a live alternative removed; each must be caught.
 - The skill starts from the model: read an existing plan back with show_plan, or the research and world models it relies on, before choosing a route; SKILL.md is under 200 lines and the reader-chain details live in references/shared/reader-chain.md.
 - Maintenance checks of the skill's own model tree run on FlowGuard 0.70.12.
+- Long-form ledger arcs and threads no longer require a status field; negative domain states still block.
+
+### Removed
+
+- Removed the unused verification-contract fallback from the privacy and public-docs checks.
 
 ## [4.0.14] - 2026-10-24
 

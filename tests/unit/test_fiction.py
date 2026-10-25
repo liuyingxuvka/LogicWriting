@@ -228,3 +228,16 @@ def test_emptied_ledger_fails_longform_closure(tmp_path, monkeypatch):
     report = validate(payload, str(source))
     assert report["decision"] == "needs_repair"
     assert report["surface_checks"]["novel_ledger"]["passed"] is False
+
+
+def test_ledger_arcs_do_not_require_a_status(monkeypatch):
+    monkeypatch.syspath_prepend(str(ROUTE / "scripts"))
+    from novel_ledger_check import Reporter, validate_arcs_threads
+    arc = {"id": "arc-a", "arc_type": "character", "owner": "Tova", "scope": "book", "start_state": "afraid",
+           "turning_points": ["chapter-02"], "end_state": "brave", "linked_chapters": ["chapter-01"]}
+    reporter = Reporter()
+    validate_arcs_threads({"arcs": [arc], "threads": []}, reporter)
+    assert reporter.error_count == 0
+    reporter = Reporter()
+    validate_arcs_threads({"arcs": [dict(arc, status="blocked")], "threads": []}, reporter)
+    assert "blocking_arc_status" in {row["code"] for row in reporter.issues}

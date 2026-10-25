@@ -10,8 +10,6 @@ from pathlib import Path
 from typing import Any
 
 
-RELEASE_CONTRACT_RELATIVE = Path("openspec/verification-contract.yaml")
-
 
 def run(command: list[str], *, cwd: Path, timeout: int = 300) -> subprocess.CompletedProcess[str]:
     resolved = list(command)

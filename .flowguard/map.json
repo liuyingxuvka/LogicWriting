@@ -185,7 +185,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:994ea141c8c3dc90b6310e560463d9bfa813b5e3b11ea76dfc34d19cb255b3b5"
+      "fingerprint": "sha256:e9d9a7e71f7937eb0879bb3a5305c0bda6e2a9a26e9f200393c6261b60f4ad2a"
     },
     {
       "id": "travel",
@@ -382,7 +382,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:202e0fe98ba153d26a85e2c42d6ecc3a6b60c517fb2365306b9c46aa1bbcb1c8"
+      "fingerprint": "sha256:1ffb59780ad17272a8536f40c44fd5400ddb67cb724e46b9b38bc26cc4682f48"
     },
     {
       "id": "release",
@@ -448,7 +448,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:0ba2efa7f1dec10802c64a09856a7d2a82b2e9ada4a8f3ea814b06f7a414bca6"
+      "fingerprint": "sha256:1cdda111e841d9f52fa8db1d8f67badc889a77b06e12cc0f6e5f586c89243e3c"
     },
     {
       "id": "providers",
@@ -772,7 +772,7 @@
       ],
       "parent": "reader-artifact",
       "status": "confirmed",
-      "fingerprint": "sha256:26b14e420aa4afcef47fe627fb68bf693dbf51d14a888049fadb5a090bf1d758"
+      "fingerprint": "sha256:9bb22edde250ca71779d903a09d962c813c6375bffb0f827daec2894370b5303"
     },
     {
       "id": "reader-commands",
@@ -897,7 +897,7 @@
         ".flowguard/models/fiction_tree_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:52e29394471b7b4e57ed72d01339cdbe1bea3e8a1c7f64e926df8c404bd22874"
+      "fingerprint": "sha256:f6517d10c7e8d00298b8be0e198d961c6483c9694a82702e8c768bf98f0fb2b4"
     },
     {
       "id": "travel-model",

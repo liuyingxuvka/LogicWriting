@@ -274,7 +274,7 @@ def derive_closure(
         safe_claim += "; provider reports: " + ", ".join(
             f"{row['provider']} {row['status']}" for row in checks)
     # A same-call snapshot is useful only while the underlying bytes remain
-    # current. Re-read once before emitting or committing any closure receipt.
+    # current. Re-read once before emitting or committing any closure result.
     try:
         final_bytes = Path(amap["artifact_path"]).read_bytes()
     except OSError as exc:

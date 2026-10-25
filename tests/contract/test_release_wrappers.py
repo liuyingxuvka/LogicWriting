@@ -39,42 +39,21 @@ def test_skill_static_validator_accepts_placeholder_detector_source():
     assert report["errors"] == []
 
 
-def test_public_docs_frozen_fallback_uses_contract_admission(tmp_path, monkeypatch):
+def test_public_docs_fallback_scans_every_file(tmp_path, monkeypatch):
     public_docs = _load("check_public_docs")
     monkeypatch.setattr(public_docs, "git_lines", lambda *_args: [])
-    contract_path = (
-        tmp_path
-        / "openspec"
-        / "verification-contract.yaml"
-    )
-    contract_path.parent.mkdir(parents=True)
-    contract_path.write_text(
-        yaml.safe_dump(
-            {
-                "freshness": {
-                    "exclude": [
-                        "docs/coordination.md",
-                        "docs/flowguard_adoption_log.md",
-                    ]
-                }
-            },
-            sort_keys=True,
-        ),
-        encoding="utf-8",
-    )
     docs = tmp_path / "docs"
     docs.mkdir()
     (docs / "coordination.md").write_text("local only\n", encoding="utf-8")
-    (docs / "flowguard_adoption_log.md").write_text(
-        "local only\n", encoding="utf-8"
-    )
     (docs / "architecture.md").write_text("public\n", encoding="utf-8")
+    (tmp_path / ".git").mkdir()
+    (tmp_path / ".git" / "HEAD").write_text("ref: refs/heads/main\n", encoding="utf-8")
 
     inventory = public_docs._public_inventory(tmp_path)
 
-    assert "docs/coordination.md" not in inventory
-    assert "docs/flowguard_adoption_log.md" not in inventory
-    assert "docs/architecture.md" in inventory
+    # Outside git nothing is hidden: an executor journal is public inventory and is rejected.
+    assert {"docs/coordination.md", "docs/architecture.md"} <= inventory
+    assert ".git/HEAD" not in inventory
 
 
 def test_public_docs_reject_executor_journals(monkeypatch):
@@ -88,41 +67,17 @@ def test_public_docs_reject_executor_journals(monkeypatch):
     assert "internal_record_is_public:XR_LOG.md" in report["findings"]
 
 
-def test_privacy_frozen_fallback_uses_contract_admission(tmp_path, monkeypatch):
+def test_privacy_fallback_scans_every_file(tmp_path, monkeypatch):
     privacy = _load("check_privacy")
     monkeypatch.setattr(privacy, "git_lines", lambda *_args: [])
-    contract_path = (
-        tmp_path
-        / "openspec"
-        / "verification-contract.yaml"
-    )
-    contract_path.parent.mkdir(parents=True)
-    contract_path.write_text(
-        yaml.safe_dump(
-            {
-                "freshness": {
-                    "exclude": [
-                        "**/verification-report.json",
-                        "**/verification-receipts/**",
-                        "docs/coordination.md",
-                    ]
-                }
-            },
-            sort_keys=True,
-        ),
-        encoding="utf-8",
-    )
     machine_path = "C:" + chr(92) + "Users" + chr(92) + "example" + chr(92) + "secret"
     docs = tmp_path / "docs"
     docs.mkdir()
-    (docs / "coordination.md").write_text(machine_path, encoding="utf-8")
-    receipt = contract_path.parent / "verification-receipts" / "receipt.json"
-    receipt.parent.mkdir()
-    receipt.write_text(json.dumps({"path": machine_path}), encoding="utf-8")
-    report_path = contract_path.parent / "verification-report.json"
-    report_path.write_text(json.dumps({"path": machine_path}), encoding="utf-8")
     public = docs / "architecture.md"
     public.write_text("public and portable\n", encoding="utf-8")
+    cache = tmp_path / "run-artifacts"
+    cache.mkdir()
+    (cache / "local.json").write_text(json.dumps({"path": machine_path}), encoding="utf-8")
 
     assert privacy.scan(tmp_path)["status"] == "passed"
 

@@ -76,7 +76,7 @@ Apply two specific depth gates where relevant:
   conditions, and limitation. A named method without this chain is still
   shallow.
 
-LogicGuard artifact synthesis may provide story plans and paragraph blueprints.
+LogicGuard synthesis provides an argument-ordered unit table; it is a plan input, not final prose and not postwrite evidence.
 Those are plans, not final prose and not postwrite evidence.
 
 For an important paragraph, the blueprint should identify its job, incoming

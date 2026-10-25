@@ -45,11 +45,11 @@ Unknown units fail with `unit_not_in_plan:novel_ledger:<id>`.
 
 Arc rows track movement:
 
-- `id`, `arc_type`, `owner`, `scope`, `start_state`, `turning_points`, `end_state`, `linked_chapters`, `status`.
+- `id`, `arc_type`, `owner`, `scope`, `start_state`, `turning_points`, `end_state`, `linked_chapters`; optional `status` (a negative state such as `blocked`, `gap`, `stale`, `unsupported` or `human_review` blocks; no `pass` is needed).
 
 Thread rows track serial continuity:
 
-- `id`, `thread_type`, `introduced_by`, `active_in`, `resolved_by`, `deferred_to`, `importance`, `status`.
+- `id`, `thread_type`, `introduced_by`, `active_in`, `resolved_by`, `deferred_to`, `importance`; optional `status` (an unresolved key or major thread blocks).
 
 Key or major arcs and threads cannot be open without payoff, deferral boundary, or human-review decision at book closure.
 
@@ -75,7 +75,7 @@ Continuity rows track facts the reader expects to remain stable.
 
 Required fields:
 
-- `id`, `continuity_type`, `fact`, `scope`, `first_seen`, `last_checked`, `affected_units`, `status`, `repair_action`, and `evidence_refs`.
+- `id`, `continuity_type`, `fact`, `scope`, `first_seen`, optional `last_checked`, `affected_units`, `status`, `repair_action`, and `evidence_refs`.
 
 Continuity types include character_state, relationship_state, timeline, place, object, resource, world_rule, clue_state, POV, voice, style, and canon.
 
