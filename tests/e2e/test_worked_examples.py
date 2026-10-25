@@ -142,3 +142,37 @@ def test_saved_research_status_matches_researchguard():
                          capture_output=True, text=True, timeout=60)
     assert run.returncode == 0, run.stdout + run.stderr
     assert json.loads(run.stdout) == json.loads((folder / 'research-status.json').read_text(encoding='utf-8'))
+
+
+def test_show_plan_shows_findings_on_the_failing_unit(tmp_path):
+    sys.path.insert(0, str(SKILL / 'scripts'))
+    from _common import load_request
+    from show_plan import plan_view, render_plan
+    from tests.v2_support import run_example_steps
+    folder = tmp_path / 'investigation'
+    shutil.copytree(EXAMPLES / 'investigation', folder)
+    code, _closure = run_chain(folder, 'investigation')
+    assert code == 0
+    view = plan_view(load_request(folder / 'closure-input.json'), input_path=folder / 'closure-input.json')
+    first = render_plan(view).splitlines()[0]
+    assert first.startswith('units: 5 (5 bound, 0 unbound); audit: passed')
+    assert 'closure: passed' in first and first.endswith('known-bad: 0 uncaught')
+    assert all(unit['anchors'] for unit in view['planned_units'])
+    # A result file made from other bytes is stale, never shown as current.
+    piece = folder / 'piece.md'
+    original = piece.read_text(encoding='utf-8')
+    piece.write_text(original + '\nAn added closing sentence for the stale check.\n', encoding='utf-8')
+    run_example_steps(folder, 'shared_writing')
+    stale = plan_view(load_request(folder / 'closure-input.json'), input_path=folder / 'closure-input.json')
+    assert 'audit: stale' in stale['summary'] and 'closure: stale' in stale['summary']
+    piece.write_text(original, encoding='utf-8')
+    # The known-bad leak text, audited: the leaking unit shows workflow_leak under it.
+    shutil.copyfile(EXAMPLES / 'investigation/known-bad/leak.md', piece)
+    audit = run_example_steps(folder)['audit']['reader_audit']
+    assert audit['status'] == 'repair'
+    view = plan_view(load_request(folder / 'audit-request.json'), input_path=folder / 'audit-request.json')
+    leaking = [unit['planned_unit_id'] for unit in view['planned_units']
+               if any(row['code'] == 'workflow_leak' for row in unit['findings'])]
+    assert len(leaking) == 1
+    assert 'audit: repair' in view['summary'] and 'review: stale' in view['summary']
+    assert 'findings: workflow_leak' in render_plan(view)

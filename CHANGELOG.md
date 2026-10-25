@@ -13,6 +13,7 @@ line follows semantic versioning.
 - Closure checks that each saved provider report belongs to the brief: a ResearchGuard report must match the research folder's question, hypotheses, models and source anchors, and a WorldGuard report must name the world contract's id; a report from another question or world now fails with research_report_mismatch or world_report_mismatch. ResearchGuard 0.5.15 is the minimum supported release.
 - With research_status (the saved researchguard status report), imported anchors take their relation from the research model's direction for the root claim (counter, limit, support, else context); a handwritten relation that contradicts it fails anchor_relation_conflict.
 - The deterministic audit checks that sibling planned units appear in the text in plan order and reports plan_order_mismatch otherwise.
+- show_plan starts with a one-line summary of bindings, audit, review, closure and uncaught known-bad edits, and lists each unit's findings with quoted spans, its evidence anchors and world references.
 - Maintenance checks of the skill's own model tree run on FlowGuard 0.70.12.
 
 ## [4.0.14] - 2026-10-24

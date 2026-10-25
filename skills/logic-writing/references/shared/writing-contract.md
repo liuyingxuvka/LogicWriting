@@ -55,9 +55,17 @@ several matching units require a longer quote. A quote can follow a moved or
 renumbered paragraph. If IDs are also supplied they must agree; supplied spans
 still undergo normal freshness checks. Old ID-only requests remain supported.
 
-`python scripts/show_plan.py --input show-request.json` displays the question,
-throughline, every planned unit's job and reader states, content and limitations,
-and the first sentence of its bound text. Read a brief request or
+`python scripts/show_plan.py --input show-request.json` first prints one summary
+line (`units: <n> (<b> bound, <u> unbound); audit: ...; review: ...; closure: ...;
+known-bad: <m> uncaught`), then the question, throughline, every planned unit's
+job and reader states, content and limitations, and the first sentence of its
+bound text. Under each unit it lists the audit and review findings that land on
+its bound text (`findings:`, with the quoted span), its evidence `anchors:` with
+their relation, its `world:` references and, for a revision, `from:` the source
+units and their treatment. It reads `audit.json`, `route-review-result.json` and
+`closure.json` beside the input (or embedded in the request); a result made from
+other bytes than the current map shows `stale`, and a missing one `not_run`.
+Continue from `UNBOUND` units and units with findings. Read a brief request or
 `reader-brief.json` directly before drafting; units without current text bindings
 appear as `UNBOUND`. Later chain JSON files can use the `reader-brief.json` beside
 them, or a request can name `reader_brief`, `artifact_map` and `shared_writing`

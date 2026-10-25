@@ -79,7 +79,7 @@
         ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:f7e97be8ea2ec6f74af8adadc79c2c26983b8c231ae90fc39b214b0e096bea3c"
+      "fingerprint": "sha256:cf8f424b7086c06f2074038d11eb5b62bc64c3acce7098bf2dbdf0d47fc72e75"
     },
     {
       "id": "fiction",
@@ -778,7 +778,8 @@
       "layer": "routes",
       "summary": "Expose the reader-chain commands and readable plan view without generating prose.",
       "responsibilities": [
-        "Expose the reader-chain commands and readable plan view without generating prose."
+        "Expose the reader-chain commands and readable plan view without generating prose.",
+        "The plan readback shows each unit's findings, anchors and world references."
       ],
       "files": [
         "skills/logic-writing/scripts/audit_reader_output.py",
@@ -800,7 +801,8 @@
         "reader-checks",
         "reader-inputs",
         "reader-plan",
-        "shared-contracts"
+        "shared-contracts",
+        "world-references"
       ],
       "tests": [
         "tests/e2e/test_worked_examples.py",
@@ -808,7 +810,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:8c1c1a6f46bd73b211c68462012ac8b8045c87cc793f62745ac421106e3066c5"
+      "fingerprint": "sha256:fdcb6836ad213bf5ae9f7bf53fc26e43e564e9fc136ec34ef4b1d9d6d5044b85"
     },
     {
       "id": "world-references",

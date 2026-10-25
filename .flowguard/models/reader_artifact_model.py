@@ -52,6 +52,9 @@ TESTED_BY = {
     "closure_belongs_to_the_final_owner": [
         "tests/e2e/test_routes.py:test_each_final_owner_delivers_one_complete_current_artifact",
     ],
+    "readback_shows_failing_units": [
+        "tests/e2e/test_worked_examples.py:test_show_plan_shows_findings_on_the_failing_unit",
+    ],
     "text_follows_plan_order": [
         "tests/unit/test_reader.py:test_audit_finds_text_out_of_plan_order",
     ],
@@ -62,7 +65,7 @@ TESTED_BY = {
 
 ROOT = Path(__file__).resolve().parents[2]
 OWNERS = ("investigation", "academic-writing", "fiction-writing", "travel-guide")
-AUX_EVENTS = {"import", "order"}  # events on their own state fields, independent of the review chain
+AUX_EVENTS = {"import", "order", "readback"}  # events on their own state fields, independent of the review chain
 # Import cases: the research direction of one anchor for the root claim, and the relation it gets.
 IMPORT_RELATIONS = {"oppose": "counter", "limit": "limit", "support": "support", "none": "context",
                     "no_status": "context", "hand_conflict": "anchor_relation_conflict"}
@@ -70,8 +73,8 @@ IMPORT_RELATIONS = {"oppose": "counter", "limit": "limit", "support": "support",
 
 @dataclass(frozen=True)
 class Event:
-    kind: str                       # review | self_review | edit | close | import | order
-    quality: str = ""               # review: pass | repair; import: a key of IMPORT_RELATIONS; order: in_order | swapped
+    kind: str                       # review | self_review | edit | close | import | order | readback
+    quality: str = ""               # review: pass | repair; import: a key of IMPORT_RELATIONS; order: in_order | swapped; readback: clean | leak
 
 
 @dataclass(frozen=True)
@@ -88,6 +91,8 @@ class State:
     relation: str = ""              # the relation that anchor got, or the build error code
     order_case: str = ""            # in_order | swapped: sibling sections in the text against the plan
     order_audit: str = ""           # passed | plan_order_mismatch
+    readback_case: str = ""         # clean | leak: the text read back after its audit
+    readback: str = ""              # clean | shown | hidden: whether a failing unit shows its audit finding
 
 
 class Step:
@@ -114,7 +119,14 @@ class Step:
     def order_audit_for(self, case: str) -> str:
         return "plan_order_mismatch" if case == "swapped" else "passed"
 
+    def readback_for(self, case: str) -> str:
+        return "shown" if case == "leak" else "clean"
+
     def apply(self, event: Event, state: State):
+        if event.kind == "readback":
+            shown = self.readback_for(event.quality)
+            return (FunctionResult("read", replace(state, readback_case=event.quality, readback=shown),
+                                   label=f"readback_{event.quality}"),)
         if event.kind == "order":
             audit = self.order_audit_for(event.quality)
             return (FunctionResult("audited", replace(state, order_case=event.quality, order_audit=audit),
@@ -180,6 +192,19 @@ class SwappedSectionsPass(Step):
         return "passed"
 
 
+class ReadbackHidesFindings(Step):
+    """Known-bad: the plan readback shows the plan and text but not the checks' findings."""
+
+    def readback_for(self, case: str) -> str:
+        return "hidden" if case == "leak" else "clean"
+
+
+def _readback_shows_failing_units(state: State, trace) -> InvariantResult:
+    if state.readback_case == "leak" and state.readback != "shown":
+        return InvariantResult.fail("a unit failing its audit reads back without the finding")
+    return InvariantResult.pass_()
+
+
 def _text_follows_plan_order(state: State, trace) -> InvariantResult:
     if state.order_case == "swapped" and state.order_audit != "plan_order_mismatch":
         return InvariantResult.fail("sibling sections appear in the text out of plan order and the audit passed")
@@ -217,6 +242,8 @@ def _closure_belongs_to_the_final_owner(state: State, trace) -> InvariantResult:
 
 
 INVARIANTS = (
+    Invariant("readback_shows_failing_units", "each failure on a unit is visible under that unit in the readback",
+              _readback_shows_failing_units),
     Invariant("text_follows_plan_order", "sibling planned units appear in the text in plan order",
               _text_follows_plan_order),
     Invariant("imported_anchor_keeps_research_direction", "an imported anchor takes its relation from the research direction",
@@ -231,7 +258,8 @@ INVARIANTS = (
               _closure_belongs_to_the_final_owner),
 )
 EVENTS = (Event("review", "pass"), Event("review", "repair"), Event("self_review", "pass"), Event("edit"), Event("close"),
-          *(Event("import", case) for case in IMPORT_RELATIONS), Event("order", "in_order"), Event("order", "swapped"))
+          *(Event("import", case) for case in IMPORT_RELATIONS), Event("order", "in_order"), Event("order", "swapped"),
+          Event("readback", "clean"), Event("readback", "leak"))
 
 
 def _explorer(step: Step) -> Explorer:
@@ -249,7 +277,8 @@ def broken_variants() -> dict:
             "repair_reported_as_pass": _explorer(RepairReportedAsPass()),
             "closure_for_sibling_owner": _explorer(CloseForSiblingOwner()),
             "imported_counter_anchor_marked_support": _explorer(ImportedCounterMarkedSupport()),
-            "swapped_sections_pass": _explorer(SwappedSectionsPass())}
+            "swapped_sections_pass": _explorer(SwappedSectionsPass()),
+            "readback_hides_findings": _explorer(ReadbackHidesFindings())}
 
 
 class _RealReaderChain:
@@ -312,6 +341,21 @@ class _RealReaderChain:
         row = next(row for row in request["content_boundaries"]["evidence_anchors"] if row["anchor_id"] == f"a-{name}")
         return row["relation"]
 
+    def _readback(self, case: str) -> str:
+        """Audit the investigation example (or its known-bad leak text) and read the plan back."""
+        from _common import load_request
+        from show_plan import plan_view
+        from tests.v2_support import run_example_steps
+        folder = self._workdir()
+        example = ROOT / "skills/logic-writing/assets/examples/investigation"
+        shutil.copytree(example, folder)
+        if case == "leak":
+            shutil.copyfile(example / "known-bad/leak.md", folder / "piece.md")
+        run_example_steps(folder)
+        view = plan_view(load_request(folder / "audit-request.json"), input_path=folder / "audit-request.json")
+        shown = any(row.get("code") == "workflow_leak" for unit in view["planned_units"] for row in unit.get("findings", []))
+        return "shown" if shown else "clean" if case == "clean" else "hidden"
+
     def _order(self, case: str) -> str:
         """Run the investigation example to its audit, with two sibling sections swapped when asked."""
         import json
@@ -344,6 +388,10 @@ class _RealReaderChain:
     def apply_step(self, step) -> ReplayObservation:
         event = step.function_input
         state = self.state
+        if event.kind == "readback":
+            state = replace(state, readback_case=event.quality, readback=self._readback(event.quality))
+            self.state = state
+            return ReplayObservation(function_name=step.function_name, observed_output="read", observed_state=state)
         if event.kind == "order":
             state = replace(state, order_case=event.quality, order_audit=self._order(event.quality))
             self.state = state
