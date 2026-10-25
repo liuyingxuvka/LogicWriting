@@ -130,3 +130,21 @@ def test_show_plan_prints_every_planned_unit(tmp_path):
     assert chain['paragraph']['text'][:40] in text
     chain['shared_writing']['unit_bindings'] = []
     assert 'UNBOUND' in render_plan(plan_view({k:chain[k] for k in ('reader_brief', 'artifact_map', 'shared_writing')}))
+
+
+def test_audit_finds_text_out_of_plan_order(tmp_path):
+    import shutil
+    from pathlib import Path
+    from tests.v2_support import run_example_steps, swap_sections
+    example = Path(__file__).resolve().parents[2] / "skills/logic-writing/assets/examples/investigation"
+    folder = tmp_path / "investigation"
+    shutil.copytree(example, folder)
+    audit = run_example_steps(folder)["audit"]["reader_audit"]
+    assert audit["status"] == "passed" and audit["quality_dimensions"]["plan_order"] == "passed"
+    # Quote bindings follow the moved paragraphs; only their order in the text changes.
+    swap_sections(folder / "piece.md", "## What it costs", "## Will it become the default?")
+    audit = run_example_steps(folder)["audit"]["reader_audit"]
+    assert audit["status"] == "repair"
+    mismatch = [row for row in audit["findings"] if row["code"] == "plan_order_mismatch"]
+    assert len(mismatch) == 1 and "comes after" in mismatch[0]["message"]
+    assert audit["quality_dimensions"]["plan_order"] == "repair"

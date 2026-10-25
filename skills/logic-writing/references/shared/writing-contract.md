@@ -41,7 +41,10 @@ text and forces repair. Missing or duplicate rows are errors. Update review
 status and required repairs accordingly. Optional `forbidden_patterns` are
 case-insensitive regular expressions checked by audit as `overclaim_pattern`.
 `binding_declared` checks declared bindings, while quoted review checks their
-meaning. Audit does not decide whether a fact is true.
+meaning. Audit does not decide whether a fact is true. Sibling planned units must
+appear in the text in their plan `order`; otherwise audit reports
+`plan_order_mismatch` (dimension `plan_order`). To change the order, change the
+plan first.
 
 ## Bind with quotations
 

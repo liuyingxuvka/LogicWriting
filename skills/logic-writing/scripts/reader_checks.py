@@ -97,6 +97,29 @@ def _build_reader_audit_from_current(*, audit_id, amap, brief, contract, audited
         if row["unit_kind"] == "list" and plan and plan["presentation_mode"] == "prose":
             add("disallowed_list_zone", row["artifact_unit_id"], "a prose-required planned unit is realized as a list or labeled card block")
 
+    # Sibling planned units must appear in the text in plan order (only bound units take part).
+    position = {row["artifact_unit_id"]: index for index, row in enumerate(units)}
+    first_position: dict[str, int] = {}
+    for binding in contract["unit_bindings"]:
+        places = [position[unit_id] for unit_id in binding["artifact_unit_ids"] if unit_id in position]
+        if places:
+            planned_id = binding["planned_unit_id"]
+            first_position[planned_id] = min(places + ([first_position[planned_id]] if planned_id in first_position else []))
+    siblings: dict[Any, list[Mapping[str, Any]]] = {}
+    for planned in brief["composition_plan"]["planned_units"]:
+        if planned["planned_unit_id"] in first_position:
+            siblings.setdefault(planned.get("parent_unit_id"), []).append(planned)
+    for children in siblings.values():
+        previous = None
+        for planned in sorted(children, key=lambda row: row.get("order", 0)):
+            here = first_position[planned["planned_unit_id"]]
+            if previous is not None and here < first_position[previous["planned_unit_id"]]:
+                add("plan_order_mismatch", units[here]["artifact_unit_id"],
+                    f"planned unit {planned['planned_unit_id']} comes after {previous['planned_unit_id']} in the plan "
+                    "but before it in the text")
+                break
+            previous = planned
+
     for overclaim in brief['content_boundaries']['prohibited_overclaims']:
         for pattern in overclaim.get('forbidden_patterns', []):
             try:
@@ -222,6 +245,7 @@ def _build_reader_audit_from_current(*, audit_id, amap, brief, contract, audited
         "language_fit": {"wrong_language"},
         "binding_declared": {"unbound_body_unit"},
         "claim_boundaries": {"overclaim_pattern"},
+        "plan_order": {"plan_order_mismatch"},
     }
     dimensions = {
         name: ("repair" if any(f["code"] in codes for f in findings) else "passed")

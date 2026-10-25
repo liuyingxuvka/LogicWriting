@@ -52,6 +52,9 @@ TESTED_BY = {
     "closure_belongs_to_the_final_owner": [
         "tests/e2e/test_routes.py:test_each_final_owner_delivers_one_complete_current_artifact",
     ],
+    "text_follows_plan_order": [
+        "tests/unit/test_reader.py:test_audit_finds_text_out_of_plan_order",
+    ],
     "imported_anchor_keeps_research_direction": [
         "tests/unit/test_researchguard_status.py:test_imported_anchor_takes_the_research_direction",
     ],
@@ -59,6 +62,7 @@ TESTED_BY = {
 
 ROOT = Path(__file__).resolve().parents[2]
 OWNERS = ("investigation", "academic-writing", "fiction-writing", "travel-guide")
+AUX_EVENTS = {"import", "order"}  # events on their own state fields, independent of the review chain
 # Import cases: the research direction of one anchor for the root claim, and the relation it gets.
 IMPORT_RELATIONS = {"oppose": "counter", "limit": "limit", "support": "support", "none": "context",
                     "no_status": "context", "hand_conflict": "anchor_relation_conflict"}
@@ -66,8 +70,8 @@ IMPORT_RELATIONS = {"oppose": "counter", "limit": "limit", "support": "support",
 
 @dataclass(frozen=True)
 class Event:
-    kind: str                       # review | self_review | edit | close | import
-    quality: str = ""               # review: pass | repair; import: a key of IMPORT_RELATIONS
+    kind: str                       # review | self_review | edit | close | import | order
+    quality: str = ""               # review: pass | repair; import: a key of IMPORT_RELATIONS; order: in_order | swapped
 
 
 @dataclass(frozen=True)
@@ -82,6 +86,8 @@ class State:
     broad_claim: bool = False
     import_case: str = ""           # the last imported anchor's research direction case
     relation: str = ""              # the relation that anchor got, or the build error code
+    order_case: str = ""            # in_order | swapped: sibling sections in the text against the plan
+    order_audit: str = ""           # passed | plan_order_mismatch
 
 
 class Step:
@@ -105,7 +111,14 @@ class Step:
     def relation_for(self, case: str) -> str:
         return IMPORT_RELATIONS[case]
 
+    def order_audit_for(self, case: str) -> str:
+        return "plan_order_mismatch" if case == "swapped" else "passed"
+
     def apply(self, event: Event, state: State):
+        if event.kind == "order":
+            audit = self.order_audit_for(event.quality)
+            return (FunctionResult("audited", replace(state, order_case=event.quality, order_audit=audit),
+                                   label=f"order_{event.quality}"),)
         if event.kind == "import":
             relation = self.relation_for(event.quality)
             return (FunctionResult("imported", replace(state, import_case=event.quality, relation=relation),
@@ -160,6 +173,19 @@ class ImportedCounterMarkedSupport(Step):
         return "support"
 
 
+class SwappedSectionsPass(Step):
+    """Known-bad: the audit never compares the text order with the plan order."""
+
+    def order_audit_for(self, case: str) -> str:
+        return "passed"
+
+
+def _text_follows_plan_order(state: State, trace) -> InvariantResult:
+    if state.order_case == "swapped" and state.order_audit != "plan_order_mismatch":
+        return InvariantResult.fail("sibling sections appear in the text out of plan order and the audit passed")
+    return InvariantResult.pass_()
+
+
 def _imported_anchor_keeps_research_direction(state: State, trace) -> InvariantResult:
     if state.import_case and state.relation != IMPORT_RELATIONS[state.import_case]:
         return InvariantResult.fail("an imported anchor lost its research direction")
@@ -191,6 +217,8 @@ def _closure_belongs_to_the_final_owner(state: State, trace) -> InvariantResult:
 
 
 INVARIANTS = (
+    Invariant("text_follows_plan_order", "sibling planned units appear in the text in plan order",
+              _text_follows_plan_order),
     Invariant("imported_anchor_keeps_research_direction", "an imported anchor takes its relation from the research direction",
               _imported_anchor_keeps_research_direction),
     Invariant("closure_requires_current_artifact", "closure passes only on a review of the current bytes",
@@ -203,7 +231,7 @@ INVARIANTS = (
               _closure_belongs_to_the_final_owner),
 )
 EVENTS = (Event("review", "pass"), Event("review", "repair"), Event("self_review", "pass"), Event("edit"), Event("close"),
-          *(Event("import", case) for case in IMPORT_RELATIONS))
+          *(Event("import", case) for case in IMPORT_RELATIONS), Event("order", "in_order"), Event("order", "swapped"))
 
 
 def _explorer(step: Step) -> Explorer:
@@ -220,7 +248,8 @@ def broken_variants() -> dict:
             "close_accepts_self_review": _explorer(CloseAcceptsSelfReview()),
             "repair_reported_as_pass": _explorer(RepairReportedAsPass()),
             "closure_for_sibling_owner": _explorer(CloseForSiblingOwner()),
-            "imported_counter_anchor_marked_support": _explorer(ImportedCounterMarkedSupport())}
+            "imported_counter_anchor_marked_support": _explorer(ImportedCounterMarkedSupport()),
+            "swapped_sections_pass": _explorer(SwappedSectionsPass())}
 
 
 class _RealReaderChain:
@@ -283,9 +312,42 @@ class _RealReaderChain:
         row = next(row for row in request["content_boundaries"]["evidence_anchors"] if row["anchor_id"] == f"a-{name}")
         return row["relation"]
 
+    def _order(self, case: str) -> str:
+        """Run the investigation example to its audit, with two sibling sections swapped when asked."""
+        import json
+        from _common import dump_json, load_request
+        from audit_reader_output import audit_reader_output
+        from build_artifact_map import validate_request as build_map
+        from build_reader_brief import validate_request as build_brief
+        from select_route import validate_request as select
+        from validate_shared_writing import validate_shared_writing
+        folder = self._workdir()
+        shutil.copytree(ROOT / "skills/logic-writing/assets/examples/investigation", folder)
+        if case == "swapped":
+            piece = folder / "piece.md"
+            text = piece.read_text(encoding="utf-8")
+            first, second = text.index("## What it costs"), text.index("## Will it become the default?")
+            end = text.find("\n## ", second + 1)
+            end = len(text) if end < 0 else end + 1
+            piece.write_text(text[:first] + text[second:end] + text[first:second] + text[end:], encoding="utf-8")
+        for function, request, output in ((select, "route-request.json", "route-decision.json"),
+                                          (build_brief, "brief-request.json", "reader-brief.json"),
+                                          (build_map, "map-request.json", "artifact-map.json"),
+                                          (validate_shared_writing, "shared-writing.json", "shared-writing-result.json"),
+                                          (audit_reader_output, "audit-request.json", "audit.json")):
+            result = function(load_request(folder / request))
+            dump_json(result, folder / output)
+        audit = json.loads((folder / "audit.json").read_text(encoding="utf-8"))["reader_audit"]
+        codes = {row["code"] for row in audit["findings"]}
+        return "plan_order_mismatch" if "plan_order_mismatch" in codes else audit["status"]
+
     def apply_step(self, step) -> ReplayObservation:
         event = step.function_input
         state = self.state
+        if event.kind == "order":
+            state = replace(state, order_case=event.quality, order_audit=self._order(event.quality))
+            self.state = state
+            return ReplayObservation(function_name=step.function_name, observed_output="audited", observed_state=state)
         if event.kind == "import":
             state = replace(state, import_case=event.quality, relation=self._import(event.quality))
             self.state = state
@@ -333,9 +395,19 @@ class _RealReaderChain:
 
 
 def conformance():
-    """Replay traces covering every modeled transition against the real reader chain."""
+    """Replay traces covering every modeled transition against the real reader chain.
+
+    Import and order events touch only their own state fields, so each is replayed once
+    from a fresh state; the chain events are covered on traces without them.
+    """
     last = None
-    for trace in select_covering_traces(build_explorer().explore().traces):
+    traces = build_explorer().explore().traces
+    chain = [trace for trace in traces if all(step.function_input.kind not in AUX_EVENTS for step in trace.steps)]
+    aux = {}
+    for trace in traces:
+        if len(trace.steps) == 1 and trace.steps[0].function_input.kind in AUX_EVENTS and trace.steps[0].old_state.owner == OWNERS[0]:
+            aux.setdefault(trace.steps[0].function_input, trace)
+    for trace in (*select_covering_traces(chain), *aux.values()):
         adapter = _RealReaderChain()
         try:
             last = replay_trace(trace=trace, adapter=adapter, invariants=INVARIANTS,

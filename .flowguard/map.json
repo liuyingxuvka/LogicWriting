@@ -79,7 +79,7 @@
         ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:8fe55a41210d32ab03e577eb552c1b254c6ac28f8abdb2d55d36ab64e015af1c"
+      "fingerprint": "sha256:f7e97be8ea2ec6f74af8adadc79c2c26983b8c231ae90fc39b214b0e096bea3c"
     },
     {
       "id": "fiction",
@@ -654,7 +654,8 @@
       "layer": "reader",
       "summary": "Audit current text and validate evidence-bound route review and independent reader judgment.",
       "responsibilities": [
-        "Audit current text and validate evidence-bound route review and independent reader judgment."
+        "Audit current text and validate evidence-bound route review and independent reader judgment.",
+        "Sibling planned units must appear in the text in plan order."
       ],
       "files": [
         "skills/logic-writing/assets/schemas/reader-audit.schema.json",
@@ -686,7 +687,7 @@
       "models": [],
       "parent": "reader-artifact",
       "status": "confirmed",
-      "fingerprint": "sha256:54f0e39030c962d52d1b82bdb034f4ca21d3581a71cbadcbeed84cc30e5917cb"
+      "fingerprint": "sha256:28c3f4d6c8dad65f442cc5da42b6cec5a059b06723ec489fa87518253b52c1d0"
     },
     {
       "id": "reader-inputs",

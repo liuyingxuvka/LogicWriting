@@ -581,3 +581,33 @@ def derive_protocol_closure(value, **kwargs):
     """Derive closure for protocol state tests."""
     from derive_closure import derive_closure
     return derive_closure(value, **kwargs)
+
+
+def run_example_steps(folder: Path, until: str = "audit") -> dict:
+    """Run a copied worked example in process, step by step, until `until`; returns each step's result."""
+    from _common import dump_json, load_request
+    from audit_reader_output import audit_reader_output
+    from build_artifact_map import validate_request as build_map
+    from build_reader_brief import validate_request as build_brief
+    from select_route import validate_request as select
+    from validate_shared_writing import validate_shared_writing
+    results = {}
+    for step, function, request, output in (("route", select, "route-request.json", "route-decision.json"),
+                                            ("brief", build_brief, "brief-request.json", "reader-brief.json"),
+                                            ("map", build_map, "map-request.json", "artifact-map.json"),
+                                            ("shared_writing", validate_shared_writing, "shared-writing.json", "shared-writing-result.json"),
+                                            ("audit", audit_reader_output, "audit-request.json", "audit.json")):
+        results[step] = function(load_request(folder / request))
+        dump_json(results[step], folder / output)
+        if step == until:
+            break
+    return results
+
+
+def swap_sections(piece: Path, first_heading: str, second_heading: str) -> None:
+    """Move the section starting at second_heading in front of the one at first_heading (existing text only)."""
+    text = piece.read_text(encoding="utf-8")
+    first, second = text.index(first_heading), text.index(second_heading)
+    end = text.find("\n## ", second + 1)
+    end = len(text) if end < 0 else end + 1
+    piece.write_text(text[:first] + text[second:end] + text[first:second] + text[end:], encoding="utf-8")

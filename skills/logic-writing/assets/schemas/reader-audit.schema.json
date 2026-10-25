@@ -53,7 +53,8 @@
         "fragmentation": { "$ref": "#/$defs/status" },
         "language_fit": { "$ref": "#/$defs/status" },
         "claim_boundaries": { "$ref": "#/$defs/status" },
-        "binding_declared": { "$ref": "#/$defs/status" }
+        "binding_declared": { "$ref": "#/$defs/status" },
+        "plan_order": { "$ref": "#/$defs/status" }
       }
     },
     "status": { "enum": ["passed", "repair", "blocked", "stale"] },
