@@ -79,7 +79,7 @@
         ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:cf8f424b7086c06f2074038d11eb5b62bc64c3acce7098bf2dbdf0d47fc72e75"
+      "fingerprint": "sha256:ca159cedba188b6b0acc4e5526c51c4c66e2ffe84a2001e977cb8e65107361c4"
     },
     {
       "id": "fiction",
@@ -185,7 +185,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:7cdbbe42ff6aa5e8e845a82c40b0b50022a31375072e9cfc44bcdd609dd57365"
+      "fingerprint": "sha256:994ea141c8c3dc90b6310e560463d9bfa813b5e3b11ea76dfc34d19cb255b3b5"
     },
     {
       "id": "travel",
@@ -286,7 +286,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:b6d9ae068a644f36c76208407c154a6207c4b4ad801918d12b976efff1bb00b5"
+      "fingerprint": "sha256:5fd3873ec278a58d6667acf9aa5376ef45bf9894f37beb6eb3602b0262b54c7b"
     },
     {
       "id": "investigation",
@@ -337,7 +337,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:aedb51bed99d00309cbe2cbe8d57b950077ae9c81badb00d570ed55bea7a68a0"
+      "fingerprint": "sha256:591db2ce4337cf5caa5f0ebda5915e9a41c79c1edfd44cdab8d88fddcde72f3a"
     },
     {
       "id": "academic",
@@ -382,7 +382,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:d41162be406712ece7dae49d68452a57f9e9ea4cf266788600925004a9e0a3a0"
+      "fingerprint": "sha256:59c1aea8ffa1e4e2ba5056bab104c712b812fcd6b987587d477a63f89081d173"
     },
     {
       "id": "release",
@@ -726,7 +726,8 @@
       "responsibilities": [
         "Derive quality closure from the real reader chain, saved native verdicts and in-process domain checks.",
         "Known-bad edits are caught or listed as toothless closure risks.",
-        "Saved provider reports count only when they belong to the brief."
+        "Saved provider reports count only when they belong to the brief.",
+        "Known-bad edits also swap sibling units and remove world or alternative sentences."
       ],
       "files": [
         "skills/logic-writing/assets/schemas/closure.schema.json",
@@ -771,7 +772,7 @@
       ],
       "parent": "reader-artifact",
       "status": "confirmed",
-      "fingerprint": "sha256:fa7990e2d1d449e05b84f2a4cb457d9d636f541cfc7bcc396c244ea76de241b0"
+      "fingerprint": "sha256:26b14e420aa4afcef47fe627fb68bf693dbf51d14a888049fadb5a090bf1d758"
     },
     {
       "id": "reader-commands",

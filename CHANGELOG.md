@@ -14,6 +14,7 @@ line follows semantic versioning.
 - With research_status (the saved researchguard status report), imported anchors take their relation from the research model's direction for the root claim (counter, limit, support, else context); a handwritten relation that contradicts it fails anchor_relation_conflict.
 - The deterministic audit checks that sibling planned units appear in the text in plan order and reports plan_order_mismatch otherwise.
 - show_plan starts with a one-line summary of bindings, audit, review, closure and uncaught known-bad edits, and lists each unit's findings with quoted spans, its evidence anchors and world references.
+- Known-bad edits also break the plan's relations: two sibling sections swapped, a sentence holding a world reference removed, and a sentence binding a live alternative removed; each must be caught.
 - Maintenance checks of the skill's own model tree run on FlowGuard 0.70.12.
 
 ## [4.0.14] - 2026-10-24

@@ -7,8 +7,16 @@
     "code": "workflow_leak",
     "step": "audit"
   },
+  "noworld-u-unlock.md": {
+    "error": "review evidence excerpt is absent from the current unit",
+    "step": "review"
+  },
   "short.md": {
     "error": "binding b-u-wait: quote \"She tried the cabinet anyway, because there was nothing else\" is not in the current text; binding b-u-unlock: quote \"When it rang, Ilse turned the little dial, lifted the lid an\" is not in the current text; binding b-u-quay: quote \"The quay lamps were lit. The *Merel*'s gangway was already h\" is not in the current text",
     "step": "shared_writing"
+  },
+  "swap.md": {
+    "code": "plan_order_mismatch",
+    "step": "audit"
   }
 }

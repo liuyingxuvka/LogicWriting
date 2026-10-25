@@ -42,8 +42,72 @@ def _without_sentence(text, excerpt):
     return remaining
 
 
+def _safe(identity):
+    return re.sub(r'[^A-Za-z0-9_.-]', '_', identity)
+
+
+def _relation_variants(text, *, planned, boundaries, artifact_map, shared_writing, route_review):
+    """Edits that break the plan's relations: sibling order, world references, live alternatives."""
+    cases = []
+    spans = {row['artifact_unit_id']: (row['start'], row['end']) for row in artifact_map['units']}
+    bound = {}
+    for binding in shared_writing['unit_bindings']:
+        places = [spans[identity] for identity in binding.get('artifact_unit_ids', []) if identity in spans]
+        if places:
+            start, end = min(place[0] for place in places), max(place[1] for place in places)
+            old = bound.get(binding['planned_unit_id'])
+            bound[binding['planned_unit_id']] = (min(start, old[0]), max(end, old[1])) if old else (start, end)
+    siblings = {}
+    for unit in planned:
+        siblings.setdefault(unit.get('parent_unit_id'), []).append(unit)
+    pair = None
+    for children in siblings.values():
+        ordered = sorted(children, key=lambda unit: unit.get('order', 0))
+        for first, second in zip(ordered, ordered[1:]):
+            a, b = bound.get(first['planned_unit_id']), bound.get(second['planned_unit_id'])
+            if a and b and a[1] <= b[0]:
+                pair = (first, second, a, b)
+                break
+        if pair:
+            break
+    if pair:
+        first, second, a, b = pair
+        # Move the existing text of the two sibling units past each other; nothing else changes.
+        swapped = text[:a[0]] + text[b[0]:b[1]] + text[a[1]:b[0]] + text[a[0]:a[1]] + text[b[1]:]
+        cases.append(dict(kind='swap', name='swap', unit=second['planned_unit_id'], text=swapped))
+    refs = {unit['planned_unit_id'] for unit in planned if unit.get('world_refs')}
+    for check in route_review.get('world_ref_checks', []):
+        unit = check.get('planned_unit_id')
+        if unit not in refs or not check.get('evidence'):
+            continue
+        changed = text
+        for evidence in check['evidence']:
+            if evidence['excerpt'] in changed:
+                changed = _without_sentence(changed, evidence['excerpt'])
+        if changed != text and not any(case['name'] == 'noworld-' + _safe(unit) for case in cases):
+            cases.append(dict(kind='noworld', name='noworld-' + _safe(unit), unit=unit, text=changed))
+    for alternative in boundaries.get('alternatives', []):
+        if alternative.get('status') != 'live':
+            continue
+        contents = set(alternative.get('content_unit_ids', []))
+        excerpt = next((quote for binding in shared_writing['unit_bindings']
+                        if contents & set(binding.get('content_unit_ids', []))
+                        for quote in binding.get('anchor_excerpts') or [] if quote in text), None)
+        if excerpt is None:
+            unit_ids = [identity for binding in shared_writing['unit_bindings']
+                        if contents & set(binding.get('content_unit_ids', [])) for identity in binding.get('artifact_unit_ids', [])]
+            first = next((spans[identity] for identity in unit_ids if identity in spans), None)
+            if first is not None:
+                excerpt = re.split(r'(?<=[.!?。！？])\s+', text[first[0]:first[1]].strip(), maxsplit=1)[0]
+        if excerpt:
+            identity = alternative['alternative_id']
+            cases.append(dict(kind='noalt', name='noalt-' + _safe(identity), unit=identity,
+                              text=_without_sentence(text, excerpt)))
+    return cases
+
+
 def text_variants(text, *, reader_brief, artifact_map, shared_writing, route_review):
-    """Only delete/truncate text or insert phrases already in its plan/glossary."""
+    """Only delete, move or truncate text, or insert phrases already in its plan/glossary."""
     boundaries = reader_brief['content_boundaries']
     end = _first_body_end(artifact_map)
     cases = [dict(kind='empty', name='empty', unit=None, text=''),
@@ -77,9 +141,10 @@ def text_variants(text, *, reader_brief, artifact_map, shared_writing, route_rev
             if evidence['excerpt'] in changed:
                 changed = _without_sentence(changed, evidence['excerpt'])
         identity = limitation['limitation_id']
-        safe = re.sub(r'[^A-Za-z0-9_.-]', '_', identity)
-        cases.append(dict(kind='nolim', name='nolim-' + safe, unit=identity, text=changed))
+        cases.append(dict(kind='nolim', name='nolim-' + _safe(identity), unit=identity, text=changed))
     planned = reader_brief['composition_plan']['planned_units']
+    cases.extend(_relation_variants(text, planned=planned, boundaries=boundaries, artifact_map=artifact_map,
+                                    shared_writing=shared_writing, route_review=route_review))
     if len(planned) > 1:
         first_id = planned[0]['planned_unit_id']
         ids = {identity for binding in shared_writing['unit_bindings']

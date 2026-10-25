@@ -148,3 +148,38 @@ def test_audit_finds_text_out_of_plan_order(tmp_path):
     mismatch = [row for row in audit["findings"] if row["code"] == "plan_order_mismatch"]
     assert len(mismatch) == 1 and "comes after" in mismatch[0]["message"]
     assert audit["quality_dimensions"]["plan_order"] == "repair"
+
+
+def test_relation_variants_are_generated_and_caught(tmp_path):
+    import json
+    import shutil
+    from pathlib import Path
+    from _common import load_request
+    from known_bad import check_known_bad
+    from tests.v2_support import run_example_steps
+    examples = Path(__file__).resolve().parents[2] / "skills/logic-writing/assets/examples"
+
+    def variants(route, edit=None):
+        folder = tmp_path / route
+        shutil.rmtree(folder, ignore_errors=True)
+        shutil.copytree(examples / route, folder)
+        if edit:
+            edit(folder)
+        run_example_steps(folder, "review")
+        result = check_known_bad(load_request(folder / "closure-input.json"))
+        return {row["name"]: row for row in result["variants"]}
+
+    fiction = variants("fiction")
+    assert fiction["swap"]["caught"] and fiction["swap"]["code"] == "plan_order_mismatch"
+    assert fiction["noworld-u-unlock"]["caught"]
+    investigation = variants("investigation")
+    assert investigation["swap"]["code"] == "plan_order_mismatch"
+    assert not any(name.startswith(("noworld-", "noalt-")) for name in investigation)
+
+    def live_alternative(folder):
+        request = json.loads((folder / "brief-request.json").read_text(encoding="utf-8"))
+        request["content_boundaries"]["alternatives"][0]["status"] = "live"
+        (folder / "brief-request.json").write_text(json.dumps(request), encoding="utf-8")
+    live = variants("investigation", live_alternative)
+    assert live["noalt-alt-default-soon"]["caught"]
+    assert all(row["caught"] for row in live.values())

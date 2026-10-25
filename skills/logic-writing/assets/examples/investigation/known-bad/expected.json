@@ -27,6 +27,10 @@
     "error": "binding b-u-history: quote \"In Python 3.13 the free-threaded mode shipped\" is not in the current text; binding b-u-cost: quote \"Support does not mean it is free.\" is not in the current text; binding b-u-next: quote \"Not on any announced schedule.\" is not in the current text; binding b-u-recommend: quote \"It is reasonable to start testing your service\" is not in the current text",
     "step": "shared_writing"
   },
+  "swap.md": {
+    "code": "plan_order_mismatch",
+    "step": "audit"
+  },
   "token.md": {
     "code": "must_preserve_missing",
     "step": "audit"

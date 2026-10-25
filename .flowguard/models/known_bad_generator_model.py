@@ -36,6 +36,8 @@ TESTED_BY = {
         "tests/unit/test_known_bad.py:test_variants_use_only_existing_words_and_keep_the_original"],
     "original_text_is_never_changed": [
         "tests/unit/test_known_bad.py:test_variants_use_only_existing_words_and_keep_the_original"],
+    "plan_relation_variants_are_caught": [
+        "tests/unit/test_reader.py:test_relation_variants_are_generated_and_caught"],
 }
 NOT_MODELED = {
     "skills/logic-writing/scripts/known_bad.py:main": "Command wrapper that prints check_known_bad results or writes the catalog; the catalog bytes are compared with the shipped known-bad folders.",
@@ -47,6 +49,7 @@ CASES = {
     "generate": "existing_words_only",
     "reread_original": "unchanged",
     "close": "uncaught_listed",
+    "relations": "relation_variants_caught",
 }
 
 
@@ -97,6 +100,19 @@ class EditsTheOriginal(Generator):
         return "edited" if case == "reread_original" else super().result_for(case)
 
 
+class SwappedUnitsNotGenerated(Generator):
+    """Known-bad: the generator only edits words, never the plan's order or world references."""
+
+    def result_for(self, case):
+        return "relation_variants_missing" if case == "relations" else super().result_for(case)
+
+
+def plan_relation_variants_are_caught(state: State, trace) -> InvariantResult:
+    if state.case == "relations" and state.result != "relation_variants_caught":
+        return InvariantResult.fail("swapped siblings or a removed world reference are not generated and caught")
+    return InvariantResult.pass_()
+
+
 def every_variant_is_caught_or_toothless(state: State, trace) -> InvariantResult:
     if state.case == "close" and state.result != "uncaught_listed":
         return InvariantResult.fail("an uncaught variant is missing from closure's toothless risks")
@@ -116,6 +132,8 @@ def original_text_is_never_changed(state: State, trace) -> InvariantResult:
 
 
 INVARIANTS = (
+    Invariant("plan_relation_variants_are_caught", "variants that break plan order and world references are generated and caught",
+              plan_relation_variants_are_caught),
     Invariant("every_variant_is_caught_or_toothless", "each variant is caught or listed as a toothless risk",
               every_variant_is_caught_or_toothless),
     Invariant("variants_only_delete_or_insert_plan_phrases", "variants only delete, truncate or insert plan phrases",
@@ -137,7 +155,8 @@ def build_explorer() -> Explorer:
 def broken_variants() -> dict:
     return {"uncaught_variant_hidden": _explorer(HidesUncaughtVariant()),
             "variant_writes_new_words": _explorer(WritesNewWords()),
-            "variant_edits_the_original": _explorer(EditsTheOriginal())}
+            "variant_edits_the_original": _explorer(EditsTheOriginal()),
+            "swapped_units_not_generated": _explorer(SwappedUnitsNotGenerated())}
 
 
 def _words(text: str) -> set[str]:
@@ -159,7 +178,29 @@ class _RealGenerator:
         self.request = closure_input(complete_chain(self.folder, "investigation"))
         self.state = state
 
+    def _relations(self) -> str:
+        """Run the fiction example's chain to its review, then generate and check its variants."""
+        import subprocess
+        from _common import load_request
+        skill = ROOT / "skills" / "logic-writing"
+        folder = self.folder / "fiction"
+        shutil.copytree(skill / "assets/examples/fiction", folder)
+        for script, request, output in (("scripts/select_route.py", "route-request.json", "route-decision.json"),
+                                        ("scripts/build_reader_brief.py", "brief-request.json", "reader-brief.json"),
+                                        ("scripts/build_artifact_map.py", "map-request.json", "artifact-map.json"),
+                                        ("scripts/validate_shared_writing.py", "shared-writing.json", "shared-writing-result.json"),
+                                        ("scripts/audit_reader_output.py", "audit-request.json", "audit.json"),
+                                        ("routes/fiction/scripts/validate_fiction_artifact.py", "route-review.json", "route-review-result.json")):
+            subprocess.run([sys.executable, str(skill / script), "--input", str(folder / request), "--output", str(folder / output)],
+                           cwd=skill, capture_output=True, text=True, timeout=60, check=True)
+        variants = self.check(load_request(folder / "closure-input.json"))["variants"]
+        kinds = {row["kind"]: row["caught"] for row in variants}
+        wanted = {"swap", "noworld"}
+        return "relation_variants_caught" if wanted <= kinds.keys() and all(kinds[kind] for kind in wanted) else "relation_variants_missing"
+
     def _run(self, case: str) -> str:
+        if case == "relations":
+            return self._relations()
         request = self.request
         path = Path(request["artifact_map"]["artifact_path"])
         text = path.read_text(encoding="utf-8")

@@ -24,8 +24,12 @@ Generate the same deterministic bad pieces for an edited work after the review:
 python scripts/known_bad.py --input "$example/closure-input.json" --write-catalog "$example/known-bad"
 ```
 
-It deletes or truncates existing text, or inserts a phrase already in the plan or
-internal-term glossary; it calls no language model. Each variant reruns mapping,
+It deletes, moves or truncates existing text, or inserts a phrase already in the
+plan or internal-term glossary; it calls no language model. Besides the text edits
+it also breaks the plan's relations: `swap` moves two adjacent sibling units past
+each other (caught by `plan_order_mismatch`), `noworld-<unit>` removes the sentence
+holding a unit's quoted world reference, and `noalt-<alternative>` removes the
+sentence binding a live alternative. Each variant reruns mapping,
 SharedWriting, audit and the saved route review, reporting the first rejection.
 An uncaught variant exits 1; closure retains it as nonblocking `toothless` risk.
 The shipped `known-bad/` catalogs come from this generator, not hand-written edits.

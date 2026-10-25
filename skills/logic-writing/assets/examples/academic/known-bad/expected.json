@@ -18,5 +18,9 @@
   "short.md": {
     "error": "binding binding:academic:scope: quote \"This introduction proposes a conceptual framework, not a dem\" is not in the current text",
     "step": "shared_writing"
+  },
+  "swap.md": {
+    "code": "plan_order_mismatch",
+    "step": "audit"
   }
 }
