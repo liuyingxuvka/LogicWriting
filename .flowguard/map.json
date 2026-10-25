@@ -456,7 +456,7 @@
       "summary": "Explicit native provider boundaries and availability checks.",
       "responsibilities": [
         "Preflight only the selected native ResearchGuard member or explicit portable/document provider.",
-        "Require ResearchGuard >= 0.5.0 (minimum declared once in skills/logic-writing/scripts/_common.py), found in the running Python or else as the researchguard command on PATH; keep WorldGuard portable launcher availability separate from domain judgment.",
+        "Require the ResearchGuard minimum declared once in skills/logic-writing/scripts/_common.py, found in the running Python or else as the researchguard command on PATH; keep WorldGuard portable launcher availability separate from domain judgment.",
         "Find the WorldGuard package in the skill's runtime/ copy, or two levels above the skill inside the WorldGuard repository.",
         "Return provider availability and selected native evidence without a report-wide fingerprint."
       ],
@@ -1100,6 +1100,17 @@
       "component": "travel-model",
       "contains": "shared-contracts",
       "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/travel/scripts/travel_contract.py:12 imports _common. The static map resolver searches only the importing script directory."
+    },
+    {
+      "code": "large_component",
+      "component": "fiction-model",
+      "reason": "One domain job: the fiction tree checks of one long-form project (ledger, interfaces, promises, continuity, voice), each script one surface; the model fiction_tree shows its rules, so size does not hide structure."
+    },
+    {
+      "code": "large_file",
+      "component": "travel-model",
+      "contains": "travel_contract.py",
+      "reason": "One trip-plan contract whose validators share the same indexes in one pass (sources, candidates, world checks, routes, fallbacks, fit); the model trip_feasibility binds its rules."
     }
   ]
 }
