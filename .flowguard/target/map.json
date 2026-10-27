@@ -40,7 +40,8 @@
         "academic",
         "fiction",
         "investigation",
-        "travel"
+        "travel",
+        "reader-closure"
       ],
       "tests": [
         "tests/e2e/test_worked_examples.py",
@@ -50,6 +51,291 @@
       "models": [
         ".flowguard/models/plan_readback_model.py"
       ]
+    },
+    {
+      "id": "fiction",
+      "layer": "routes",
+      "summary": "Expose fiction depth selection, story-native checks and existing manuscript regressions.",
+      "responsibilities": [
+        "Select compact, short-story or longform depth; delegate current manuscript review to the shared reader chain and preserve native promises, arcs and continuity checks."
+      ],
+      "files": [
+        "skills/logic-writing/assets/examples/fiction/brief-request.json",
+        "skills/logic-writing/assets/examples/fiction/closure-input.json",
+        "skills/logic-writing/assets/examples/fiction/known-bad/empty.md",
+        "skills/logic-writing/assets/examples/fiction/known-bad/expected.json",
+        "skills/logic-writing/assets/examples/fiction/known-bad/leak.md",
+        "skills/logic-writing/assets/examples/fiction/known-bad/short.md",
+        "skills/logic-writing/assets/examples/fiction/piece.md",
+        "skills/logic-writing/assets/examples/fiction/route-request.json",
+        "skills/logic-writing/assets/examples/fiction/route-review.json",
+        "skills/logic-writing/assets/examples/fiction/shared-writing.json",
+        "skills/logic-writing/assets/examples/fiction/world.yaml",
+        "skills/logic-writing/assets/examples/fiction/worldguard-check.json",
+        "skills/logic-writing/routes/fiction/examples/longform_failure_cases/fake-chapter-interface.json",
+        "skills/logic-writing/routes/fiction/examples/longform_failure_cases/migration-index.json",
+        "skills/logic-writing/routes/fiction/examples/longform_failure_cases/missing-material-continuity.json",
+        "skills/logic-writing/routes/fiction/examples/longform_failure_cases/orphan-chapter.json",
+        "skills/logic-writing/routes/fiction/examples/longform_failure_cases/pov-drift.json",
+        "skills/logic-writing/routes/fiction/examples/longform_failure_cases/unresolved-key-promise.json",
+        "skills/logic-writing/routes/fiction/examples/longform_novel_project/brief-request.json",
+        "skills/logic-writing/routes/fiction/examples/longform_novel_project/chapter-interfaces.json",
+        "skills/logic-writing/routes/fiction/examples/longform_novel_project/closure-input.json",
+        "skills/logic-writing/routes/fiction/examples/longform_novel_project/drafts/book-01-final.txt",
+        "skills/logic-writing/routes/fiction/examples/longform_novel_project/novel-ledger.json",
+        "skills/logic-writing/routes/fiction/examples/longform_novel_project/project-mesh.json",
+        "skills/logic-writing/routes/fiction/examples/longform_novel_project/promise-payoff.json",
+        "skills/logic-writing/routes/fiction/examples/longform_novel_project/route-request.json",
+        "skills/logic-writing/routes/fiction/examples/longform_novel_project/route-review.json",
+        "skills/logic-writing/routes/fiction/examples/longform_novel_project/shared-writing.json",
+        "skills/logic-writing/routes/fiction/examples/longform_novel_project/source-requirements.json",
+        "skills/logic-writing/routes/fiction/examples/longform_novel_project/voice-style-report.json",
+        "skills/logic-writing/routes/fiction/examples/route_cases/compact-final-prose-blocked.json",
+        "skills/logic-writing/routes/fiction/examples/route_cases/compact-micro-story.json",
+        "skills/logic-writing/routes/fiction/examples/route_cases/explicit-alias-short-story.json",
+        "skills/logic-writing/routes/fiction/examples/route_cases/final-chapter-prose.json",
+        "skills/logic-writing/routes/fiction/examples/route_cases/final-volume-prose.json",
+        "skills/logic-writing/routes/fiction/examples/route_cases/missing-prose-phase.json",
+        "skills/logic-writing/routes/fiction/examples/route_cases/novella-post-draft.json",
+        "skills/logic-writing/routes/fiction/examples/route_cases/pre-draft-chapter-plan.json",
+        "skills/logic-writing/routes/fiction/examples/route_cases/unknown-artifact.json",
+        "skills/logic-writing/routes/fiction/examples/short_story_project/brief-request.json",
+        "skills/logic-writing/routes/fiction/examples/short_story_project/scene-cards.yaml",
+        "skills/logic-writing/routes/fiction/examples/short_story_project/story-ledger.yaml",
+        "skills/logic-writing/routes/fiction/examples/short_story_project/worldguard-claims.yaml",
+        "skills/logic-writing/routes/fiction/references/artifact-taxonomy.json",
+        "skills/logic-writing/routes/fiction/references/chapter-interface-prose-blueprint.md",
+        "skills/logic-writing/routes/fiction/references/closure-report.md",
+        "skills/logic-writing/routes/fiction/references/guard-depth-policy.md",
+        "skills/logic-writing/routes/fiction/references/logicguard-theme-contract.md",
+        "skills/logic-writing/routes/fiction/references/longform-closure.md",
+        "skills/logic-writing/routes/fiction/references/longform-lifecycle.md",
+        "skills/logic-writing/routes/fiction/references/novel-ledger.md",
+        "skills/logic-writing/routes/fiction/references/project-model-mesh.md",
+        "skills/logic-writing/routes/fiction/references/promise-payoff-ledger.md",
+        "skills/logic-writing/routes/fiction/references/scene-contract.md",
+        "skills/logic-writing/routes/fiction/references/sourceguard-canon-contract.md",
+        "skills/logic-writing/routes/fiction/references/story-artifact-lifecycle.md",
+        "skills/logic-writing/routes/fiction/references/story-contribution-contract.md",
+        "skills/logic-writing/routes/fiction/references/story-engineering-ledger.md",
+        "skills/logic-writing/routes/fiction/references/structure-turning-points.md",
+        "skills/logic-writing/routes/fiction/references/traceguard-storyline-contract.md",
+        "skills/logic-writing/routes/fiction/references/voice-style-continuity.md",
+        "skills/logic-writing/routes/fiction/references/workflow.md",
+        "skills/logic-writing/routes/fiction/references/worldguard-adapter.md",
+        "skills/logic-writing/routes/fiction/scripts/run_longform_regression.py",
+        "skills/logic-writing/routes/fiction/scripts/run_native_regression.py",
+        "skills/logic-writing/routes/fiction/scripts/run_route_regression.py",
+        "skills/logic-writing/routes/fiction/scripts/run_story_model_mesh_regression.py",
+        "skills/logic-writing/routes/fiction/scripts/validate_fiction_artifact.py"
+      ],
+      "entrypoints": [
+        "skills/logic-writing/routes/fiction/scripts/run_longform_regression.py:main",
+        "skills/logic-writing/routes/fiction/scripts/run_native_regression.py:main",
+        "skills/logic-writing/routes/fiction/scripts/run_route_regression.py:main",
+        "skills/logic-writing/routes/fiction/scripts/run_story_model_mesh_regression.py:main",
+        "skills/logic-writing/routes/fiction/scripts/validate_fiction_artifact.py:validate_fiction_artifact"
+      ],
+      "state": [],
+      "side_effects": [
+        "Run declared native regression commands and create disposable temporary copies of example inputs."
+      ],
+      "depends_on": [
+        "fiction-model",
+        "reader-checks",
+        "reader-closure",
+        "reader-inputs",
+        "shared-contracts"
+      ],
+      "tests": [
+        "tests/unit/test_fiction.py"
+      ],
+      "models": []
+    },
+    {
+      "id": "travel",
+      "layer": "routes",
+      "summary": "Expose trip validation, derived claim levels and traveler-facing review commands.",
+      "responsibilities": [
+        "Validate trip candidates, fit, dates and reachable fallbacks through the trip model; check the actual guide with current route-semantic review and keep its dedicated finite regressions."
+      ],
+      "files": [
+        "skills/logic-writing/assets/examples/travel/brief-request.json",
+        "skills/logic-writing/assets/examples/travel/closure-input.json",
+        "skills/logic-writing/assets/examples/travel/known-bad/empty.md",
+        "skills/logic-writing/assets/examples/travel/known-bad/expected.json",
+        "skills/logic-writing/assets/examples/travel/known-bad/leak.md",
+        "skills/logic-writing/assets/examples/travel/known-bad/nolim-lim-illustrative.md",
+        "skills/logic-writing/assets/examples/travel/known-bad/short.md",
+        "skills/logic-writing/assets/examples/travel/piece.md",
+        "skills/logic-writing/assets/examples/travel/route-request.json",
+        "skills/logic-writing/assets/examples/travel/route-review.json",
+        "skills/logic-writing/assets/examples/travel/shared-writing.json",
+        "skills/logic-writing/assets/examples/travel/trip-plan.json",
+        "skills/logic-writing/assets/examples/travel/world.yaml",
+        "skills/logic-writing/assets/examples/travel/worldguard-check.json",
+        "skills/logic-writing/routes/travel/examples/failure_cases/accessibility_review_missing.json",
+        "skills/logic-writing/routes/travel/examples/failure_cases/candidate_dangling_risk.json",
+        "skills/logic-writing/routes/travel/examples/failure_cases/candidate_source_role_mismatch.json",
+        "skills/logic-writing/routes/travel/examples/failure_cases/candidate_unknown_source.json",
+        "skills/logic-writing/routes/travel/examples/failure_cases/candidate_wrong_world_target.json",
+        "skills/logic-writing/routes/travel/examples/failure_cases/child_protection_missing.json",
+        "skills/logic-writing/routes/travel/examples/failure_cases/claim_level_overreach.json",
+        "skills/logic-writing/routes/travel/examples/failure_cases/date_relation_lie.json",
+        "skills/logic-writing/routes/travel/examples/failure_cases/fallback_unknown_replacement.json",
+        "skills/logic-writing/routes/travel/examples/failure_cases/fallback_unreachable.json",
+        "skills/logic-writing/routes/travel/examples/failure_cases/fit_input_drift.json",
+        "skills/logic-writing/routes/travel/examples/failure_cases/lodging_nonhotel.json",
+        "skills/logic-writing/routes/travel/examples/failure_cases/route_edge_chain_broken.json",
+        "skills/logic-writing/routes/travel/examples/failure_cases/route_wrong_world_target.json",
+        "skills/logic-writing/routes/travel/examples/failure_cases/upstream_nonpass_overwritten.json",
+        "skills/logic-writing/routes/travel/examples/failure_cases/walking_tolerance_exceeded.json",
+        "skills/logic-writing/routes/travel/examples/failure_cases/weather_chronology_mismatch.json",
+        "skills/logic-writing/routes/travel/examples/good_city_couple_trip/plan.json",
+        "skills/logic-writing/routes/travel/examples/good_text_outputs/city_couple_native_guide.review.json",
+        "skills/logic-writing/routes/travel/examples/good_text_outputs/city_couple_native_guide.txt",
+        "skills/logic-writing/routes/travel/examples/positive_cases/accessibility.json",
+        "skills/logic-writing/routes/travel/examples/positive_cases/day_of.json",
+        "skills/logic-writing/routes/travel/examples/positive_cases/family_child.json",
+        "skills/logic-writing/routes/travel/examples/positive_cases/low_stamina.json",
+        "skills/logic-writing/routes/travel/examples/positive_cases/near_future_bookable.json",
+        "skills/logic-writing/routes/travel/examples/positive_cases/past_observed.json",
+        "skills/logic-writing/routes/travel/examples/text_failure_cases/artifact_hash_drift.json",
+        "skills/logic-writing/routes/travel/examples/text_failure_cases/bullet_list_only.json",
+        "skills/logic-writing/routes/travel/examples/text_failure_cases/internal_jargon_leak.json",
+        "skills/logic-writing/routes/travel/examples/text_failure_cases/missing_day_headings.json",
+        "skills/logic-writing/routes/travel/examples/text_failure_cases/missing_reverse_review.json",
+        "skills/logic-writing/routes/travel/examples/text_failure_cases/named_fallback_drift.json",
+        "skills/logic-writing/routes/travel/examples/text_failure_cases/observation_drift.json",
+        "skills/logic-writing/routes/travel/examples/text_failure_cases/weather_evidence_missing.json",
+        "skills/logic-writing/routes/travel/examples/text_failure_cases/weather_mode_missing.json",
+        "skills/logic-writing/routes/travel/examples/world-report-fail.json",
+        "skills/logic-writing/routes/travel/references/experience-candidate-pool.md",
+        "skills/logic-writing/routes/travel/references/guard-role-map.md",
+        "skills/logic-writing/routes/travel/references/negative-evidence-and-fallback.md",
+        "skills/logic-writing/routes/travel/references/route-mesh.md",
+        "skills/logic-writing/routes/travel/references/runtime-workflow.md",
+        "skills/logic-writing/routes/travel/references/source-portfolio.md",
+        "skills/logic-writing/routes/travel/references/story-output-contract.md",
+        "skills/logic-writing/routes/travel/references/traveler-native-guide-compiler.md",
+        "skills/logic-writing/routes/travel/references/traveler-profile.md",
+        "skills/logic-writing/routes/travel/references/trip-fit-review.md",
+        "skills/logic-writing/routes/travel/references/world-feasibility.md",
+        "skills/logic-writing/routes/travel/scripts/validate_failure_cases.py",
+        "skills/logic-writing/routes/travel/scripts/validate_positive_cases.py",
+        "skills/logic-writing/routes/travel/scripts/validate_travel_artifact.py",
+        "skills/logic-writing/routes/travel/scripts/validate_travel_plan.py",
+        "skills/logic-writing/routes/travel/scripts/validate_travel_text_outputs.py"
+      ],
+      "entrypoints": [
+        "skills/logic-writing/routes/travel/scripts/validate_failure_cases.py:main",
+        "skills/logic-writing/routes/travel/scripts/validate_positive_cases.py:main",
+        "skills/logic-writing/routes/travel/scripts/validate_travel_artifact.py:validate_travel_artifact",
+        "skills/logic-writing/routes/travel/scripts/validate_travel_plan.py:main",
+        "skills/logic-writing/routes/travel/scripts/validate_travel_text_outputs.py:main"
+      ],
+      "state": [],
+      "side_effects": [],
+      "depends_on": [
+        "reader-binding",
+        "reader-checks",
+        "reader-closure",
+        "reader-inputs",
+        "shared-contracts",
+        "travel-model"
+      ],
+      "tests": [
+        "tests/unit/test_travel.py"
+      ],
+      "models": []
+    },
+    {
+      "id": "academic",
+      "layer": "routes",
+      "summary": "Academic final-owner semantics and revision.",
+      "responsibilities": [
+        "Check hierarchical academic contribution, citation duties, method depth, qualifications and figure/table jobs against the current manuscript."
+      ],
+      "files": [
+        "skills/logic-writing/assets/examples/academic/brief-request.json",
+        "skills/logic-writing/assets/examples/academic/closure-input.json",
+        "skills/logic-writing/assets/examples/academic/known-bad/empty.md",
+        "skills/logic-writing/assets/examples/academic/known-bad/expected.json",
+        "skills/logic-writing/assets/examples/academic/known-bad/leak.md",
+        "skills/logic-writing/assets/examples/academic/known-bad/nocite.md",
+        "skills/logic-writing/assets/examples/academic/known-bad/nolim-lim-conceptual.md",
+        "skills/logic-writing/assets/examples/academic/known-bad/short.md",
+        "skills/logic-writing/assets/examples/academic/piece.md",
+        "skills/logic-writing/assets/examples/academic/route-request.json",
+        "skills/logic-writing/assets/examples/academic/route-review.json",
+        "skills/logic-writing/assets/examples/academic/shared-writing.json",
+        "skills/logic-writing/references/routes/academic-writing.md",
+        "skills/logic-writing/routes/academic/scripts/validate_academic_artifact.py"
+      ],
+      "entrypoints": [
+        "skills/logic-writing/routes/academic/scripts/validate_academic_artifact.py:validate_academic_artifact"
+      ],
+      "state": [
+        "Current academic composition/review and exact revision provenance."
+      ],
+      "side_effects": [],
+      "depends_on": [
+        "reader-checks",
+        "reader-closure",
+        "reader-inputs",
+        "shared-contracts"
+      ],
+      "tests": [
+        "tests/unit/test_academic.py"
+      ],
+      "models": []
+    },
+    {
+      "id": "investigation",
+      "layer": "routes",
+      "summary": "Investigation final-owner semantics.",
+      "responsibilities": [
+        "Check bounded answers against source anchors, alternatives, contrary evidence and recheck conditions; preserve independent reader review."
+      ],
+      "files": [
+        "skills/logic-writing/assets/examples/investigation/brief-request.json",
+        "skills/logic-writing/assets/examples/investigation/closure-input.json",
+        "skills/logic-writing/assets/examples/investigation/known-bad/empty.md",
+        "skills/logic-writing/assets/examples/investigation/known-bad/expected.json",
+        "skills/logic-writing/assets/examples/investigation/known-bad/leak.md",
+        "skills/logic-writing/assets/examples/investigation/known-bad/nocite.md",
+        "skills/logic-writing/assets/examples/investigation/known-bad/nolim-lim-perf.md",
+        "skills/logic-writing/assets/examples/investigation/known-bad/nolim-lim-scope.md",
+        "skills/logic-writing/assets/examples/investigation/known-bad/overclaim.md",
+        "skills/logic-writing/assets/examples/investigation/known-bad/short.md",
+        "skills/logic-writing/assets/examples/investigation/known-bad/token.md",
+        "skills/logic-writing/assets/examples/investigation/piece.md",
+        "skills/logic-writing/assets/examples/investigation/research-status.json",
+        "skills/logic-writing/assets/examples/investigation/research/research.yaml",
+        "skills/logic-writing/assets/examples/investigation/research/source.yaml",
+        "skills/logic-writing/assets/examples/investigation/route-request.json",
+        "skills/logic-writing/assets/examples/investigation/route-review.json",
+        "skills/logic-writing/assets/examples/investigation/shared-writing.json",
+        "skills/logic-writing/references/routes/investigation.md",
+        "skills/logic-writing/routes/investigation/scripts/validate_investigation_artifact.py"
+      ],
+      "entrypoints": [
+        "skills/logic-writing/routes/investigation/scripts/validate_investigation_artifact.py:validate_investigation_artifact"
+      ],
+      "state": [
+        "Current investigation route composition/review and evidence limitations."
+      ],
+      "side_effects": [],
+      "depends_on": [
+        "reader-checks",
+        "reader-closure",
+        "reader-inputs",
+        "shared-contracts"
+      ],
+      "tests": [
+        "tests/unit/test_investigation.py"
+      ],
+      "models": []
     }
   ],
   "flows": [],
