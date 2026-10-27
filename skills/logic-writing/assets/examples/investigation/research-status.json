@@ -1,4 +1,14 @@
 {
+  "input_digests": [
+    {
+      "path": "research.yaml",
+      "sha256": "ba450dcaf9aa36fc10c5b093833844e07a313159b55e6569a7004cc672ba833d"
+    },
+    {
+      "path": "source.yaml",
+      "sha256": "4fc82173b75545ac01a7135d299c04439f38ed20df8fb518ade6a86de6b5572e"
+    }
+  ],
   "suite": "researchguard-suite",
   "question": "Should we plan for free-threaded Python now, and is it about to become the default?",
   "verdict": {
@@ -34,6 +44,9 @@
       "anchor": "anc-314-supported",
       "source": "src-whatsnew-314",
       "lineage": "",
+      "locator": "Doc/whatsnew/3.14.rst, 'Free-threaded Python is officially supported'",
+      "summary": "Supported, no longer experimental; start of phase II; still optional.",
+      "boundary": "Official status only; says nothing about third-party package readiness.; No date or criteria for phase III.; Project-reported range, not an independent benchmark.",
       "used_by": [],
       "directions": []
     },
@@ -41,6 +54,9 @@
       "anchor": "anc-314-phase3-undecided",
       "source": "src-whatsnew-314",
       "lineage": "",
+      "locator": "Doc/whatsnew/3.14.rst, same section, last paragraph",
+      "summary": "Phase III (default or sole build) is undecided.",
+      "boundary": "Official status only; says nothing about third-party package readiness.; No date or criteria for phase III.; Project-reported range, not an independent benchmark.",
       "used_by": [],
       "directions": []
     },
@@ -48,6 +64,9 @@
       "anchor": "anc-314-perf",
       "source": "src-whatsnew-314",
       "lineage": "",
+      "locator": "Doc/whatsnew/3.14.rst, 'Free-threaded mode improvements'",
+      "summary": "Single-thread penalty roughly 5-10% depending on platform and compiler.",
+      "boundary": "Official status only; says nothing about third-party package readiness.; No date or criteria for phase III.; Project-reported range, not an independent benchmark.",
       "used_by": [],
       "directions": []
     },
@@ -55,6 +74,9 @@
       "anchor": "anc-313-experimental",
       "source": "src-whatsnew-313",
       "lineage": "",
+      "locator": "Doc/whatsnew/3.13.rst, free-threaded CPython section",
+      "summary": "Experimental and not enabled by default in 3.13.",
+      "boundary": "3.13 only.",
       "used_by": [],
       "directions": []
     },
@@ -62,6 +84,9 @@
       "anchor": "anc-779-phase3-different",
       "source": "src-pep-779",
       "lineage": "",
+      "locator": "PEP 779, Requirements section note",
+      "summary": "PEP 779 criteria apply to entering phase II only; the default decision is separate.",
+      "boundary": "Does not state phase III criteria.",
       "used_by": [],
       "directions": []
     }

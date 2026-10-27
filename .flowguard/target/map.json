@@ -1,0 +1,85 @@
+{
+  "schema": "flowguard.target.v1",
+  "goal": "LW-401: writes and renamed anchors for FlowGuard 0.70.13",
+  "components": [
+    {
+      "id": "reader-binding",
+      "layer": "reader",
+      "summary": "Partition current text and bind each planned unit to real unique quoted spans.",
+      "responsibilities": [
+        "Partition current text and bind each planned unit to real unique quoted spans."
+      ],
+      "files": [
+        "skills/logic-writing/assets/schemas/artifact-map.schema.json",
+        "skills/logic-writing/assets/schemas/shared-writing-contract.schema.json",
+        "skills/logic-writing/scripts/artifact_map.py",
+        "skills/logic-writing/scripts/reader_binding.py",
+        "skills/logic-writing/scripts/text_extent.py"
+      ],
+      "entrypoints": [
+        "skills/logic-writing/scripts/artifact_map.py:build_artifact_map",
+        "skills/logic-writing/scripts/reader_binding.py:quote_binding_units",
+        "skills/logic-writing/scripts/reader_binding.py:_resolve_quote",
+        "skills/logic-writing/scripts/reader_binding.py:validate_shared_writing"
+      ],
+      "state": [
+        "Actual artifact bytes, partitions and exact quote-to-plan span bindings."
+      ],
+      "side_effects": [
+        "Read the explicitly named current artifact bytes."
+      ],
+      "depends_on": [
+        "shared-contracts"
+      ],
+      "tests": [
+        "tests/adversarial/test_reader_integrity_regressions.py",
+        "tests/unit/test_reader.py",
+        "tests/unit/test_shared_writing.py"
+      ],
+      "models": [
+        ".flowguard/models/shared_writing_binding_model.py"
+      ],
+      "parent": "reader-artifact"
+    },
+    {
+      "id": "reader-checks",
+      "layer": "reader",
+      "summary": "Audit current text and validate evidence-bound route review and independent reader judgment.",
+      "responsibilities": [
+        "Audit current text and validate evidence-bound route review and independent reader judgment.",
+        "Sibling planned units must appear in the text in plan order."
+      ],
+      "files": [
+        "skills/logic-writing/assets/schemas/reader-audit.schema.json",
+        "skills/logic-writing/assets/schemas/reader-judgment.schema.json",
+        "skills/logic-writing/assets/schemas/route-artifact-review.schema.json",
+        "skills/logic-writing/scripts/reader_checks.py",
+        "skills/logic-writing/scripts/review_obligations.py"
+      ],
+      "entrypoints": [
+        "skills/logic-writing/scripts/reader_checks.py:reader_judgment_from_current",
+        "skills/logic-writing/scripts/reader_checks.py:route_review_from_current",
+        "skills/logic-writing/scripts/reader_checks.py:build_reader_audit",
+        "skills/logic-writing/scripts/reader_checks.py:validate_route_artifact_review"
+      ],
+      "state": [
+        "Current audit findings, quoted review dimensions and reader judgment."
+      ],
+      "side_effects": [],
+      "depends_on": [
+        "reader-binding",
+        "reader-plan",
+        "shared-contracts",
+        "world-references"
+      ],
+      "tests": [
+        "tests/unit/test_reader.py",
+        "tests/unit/test_review_obligations.py"
+      ],
+      "models": [],
+      "parent": "reader-artifact"
+    }
+  ],
+  "flows": [],
+  "remove": []
+}
