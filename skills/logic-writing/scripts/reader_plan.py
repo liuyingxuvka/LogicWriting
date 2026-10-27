@@ -1,7 +1,7 @@
 """Reader plan: current reader-chain responsibilities."""
 from __future__ import annotations
 
-from _common import ValidationError, _ids, _require_exact_fingerprint, fill_fingerprint, fill_missing, fingerprint, fingerprint_without, require_mapping, require_schema, utc_now
+from _common import ValidationError, unique_ids, require_exact_fingerprint, fill_fingerprint, fill_missing, fingerprint, fingerprint_without, require_mapping, require_schema, utc_now
 from artifact_map import validate_artifact_map
 from copy import deepcopy
 from reader_plan_core import open_material_choices, validate_composition_plan, validate_reader_intent, validate_route_composition
@@ -33,15 +33,15 @@ def build_reader_brief(
             f"{first['question']}; ask the user before planning"
         )
     require_schema("route-decision.schema.json", decision, label="RouteDecision")
-    _require_exact_fingerprint(decision, "decision_fingerprint")
+    require_exact_fingerprint(decision, "decision_fingerprint")
     if decision["status"] != "current" or decision["final_owner"] not in FINAL_OWNERS:
         raise ValidationError("ReaderBrief requires one current final owner")
     intent = validate_reader_intent(decision["reader_intent"])
     if decision["reader_intent_fingerprint"] != intent["intent_fingerprint"]:
         raise ValidationError("RouteDecision copied a different ReaderIntent fingerprint")
     boundaries = require_mapping(content_boundaries, "content boundaries")
-    content_ids = _ids(boundaries.get("content_units", ()), "content_unit_id", "content unit")
-    limitation_ids = _ids(boundaries.get("limitations", ()), "limitation_id", "limitation")
+    content_ids = unique_ids(boundaries.get("content_units", ()), "content_unit_id", "content unit")
+    limitation_ids = unique_ids(boundaries.get("limitations", ()), "limitation_id", "limitation")
     plan = validate_composition_plan(
         composition_plan,
         reader_intent=intent,
@@ -233,7 +233,7 @@ def validate_revision_provenance(
         if not isinstance(treatments, list) or not treatments:
             raise ValidationError("revise_existing requires source-unit treatments")
         treatments = [require_mapping(row, "source unit treatment") for row in treatments]
-        _ids(treatments, "source_unit_id", "source unit treatment")
+        unique_ids(treatments, "source_unit_id", "source unit treatment")
         for row in treatments:
             if row["source_unit_id"] not in source_ids:
                 raise ValidationError(f"unknown source_unit_id: {row['source_unit_id']}")
@@ -242,5 +242,5 @@ def validate_revision_provenance(
                     raise ValidationError(f"unknown target_unit_id: {target}")
     fill_fingerprint(provenance, "provenance_fingerprint")
     require_schema("revision-provenance.schema.json", provenance, label="revision provenance")
-    _require_exact_fingerprint(provenance, "provenance_fingerprint")
+    require_exact_fingerprint(provenance, "provenance_fingerprint")
     return provenance

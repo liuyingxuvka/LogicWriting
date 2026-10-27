@@ -51,8 +51,8 @@ HIDDEN_CONTENT_DISPOSITIONS = {
     "omitted", "internal", "blocked", "deferred", "conflict",
 }
 
-_BODY_UNIT_KINDS = {"paragraph", "list", "table", "quote", "scene", "code"}
+BODY_UNIT_KINDS = {"paragraph", "list", "table", "quote", "scene", "code"}
 
-_CJK = re.compile(r"[\u3400-\u4dbf\u4e00-\u9fff]")
+CJK = re.compile(r"[\u3400-\u4dbf\u4e00-\u9fff]")
 
-_LATIN = re.compile(r"[A-Za-z]")
+LATIN = re.compile(r"[A-Za-z]")

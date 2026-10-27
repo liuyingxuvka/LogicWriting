@@ -448,7 +448,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:de70e7686dcd8de5b59341125e530733eac9c5dfdd75a34b297ab7a51e672753"
+      "fingerprint": "sha256:9d61aa9ebcb598eb95e9b55cf35f03b60c60cb5a6ad24f4eca98fbe214b88453"
     },
     {
       "id": "providers",
@@ -519,7 +519,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:7097dd0e2f4052efa28a0e14896fb3a1b568e2e8263f1687f8832d1f3631d1a9"
+      "fingerprint": "sha256:ec3317ec0d61fb4bfd2856914d6eabb1e27a2614e4c23541e8af387548885b4d"
     },
     {
       "id": "researchguard-handoff",
@@ -606,7 +606,7 @@
       "models": [],
       "parent": "reader-artifact",
       "status": "confirmed",
-      "fingerprint": "sha256:16723ff0e6bac9eac19b4c9adb395fb269dd2913f3818988ba2b893f73f68625"
+      "fingerprint": "sha256:f9b151103463ee88b75756077b36647d672754c7dc0cd5879659229e68557e81"
     },
     {
       "id": "reader-binding",
@@ -624,7 +624,7 @@
       ],
       "entrypoints": [
         "skills/logic-writing/scripts/artifact_map.py:build_artifact_map",
-        "skills/logic-writing/scripts/reader_binding.py:_quote_binding_units",
+        "skills/logic-writing/scripts/reader_binding.py:quote_binding_units",
         "skills/logic-writing/scripts/reader_binding.py:_resolve_quote",
         "skills/logic-writing/scripts/reader_binding.py:validate_shared_writing"
       ],
@@ -647,7 +647,7 @@
       ],
       "parent": "reader-artifact",
       "status": "confirmed",
-      "fingerprint": "sha256:d46ca91683c7a44e314aa555500bf7bf0938cbef7a620f95789ae6c987a4bc0e"
+      "fingerprint": "sha256:4987482e859810b4fb33842e9e94ec23bb0a4563c33c9bce01a96b93bfb28f75"
     },
     {
       "id": "reader-checks",
@@ -665,8 +665,8 @@
         "skills/logic-writing/scripts/review_obligations.py"
       ],
       "entrypoints": [
-        "skills/logic-writing/scripts/reader_checks.py:_reader_judgment_from_current",
-        "skills/logic-writing/scripts/reader_checks.py:_route_review_from_current",
+        "skills/logic-writing/scripts/reader_checks.py:reader_judgment_from_current",
+        "skills/logic-writing/scripts/reader_checks.py:route_review_from_current",
         "skills/logic-writing/scripts/reader_checks.py:build_reader_audit",
         "skills/logic-writing/scripts/reader_checks.py:validate_route_artifact_review"
       ],
@@ -684,10 +684,12 @@
         "tests/unit/test_reader.py",
         "tests/unit/test_review_obligations.py"
       ],
-      "models": [],
+      "models": [
+        ".flowguard/models/plan_order_model.py"
+      ],
       "parent": "reader-artifact",
       "status": "confirmed",
-      "fingerprint": "sha256:28c3f4d6c8dad65f442cc5da42b6cec5a059b06723ec489fa87518253b52c1d0"
+      "fingerprint": "sha256:2b4d18adb6f47cc4509ac7bb1948bf08b8b73ab68bbdb1ce795cd1be00b0e03f"
     },
     {
       "id": "reader-inputs",
@@ -712,12 +714,15 @@
       ],
       "tests": [
         "tests/unit/test_cli_inputs.py",
-        "tests/unit/test_shared_writing.py"
+        "tests/unit/test_shared_writing.py",
+        "tests/unit/test_researchguard_status.py"
       ],
-      "models": [],
+      "models": [
+        ".flowguard/models/anchor_import_model.py"
+      ],
       "parent": "reader-artifact",
       "status": "confirmed",
-      "fingerprint": "sha256:49f79a9a042f297d688ecfa6bcb76eca551f45caa8f8afefa794e0a340bfcb3f"
+      "fingerprint": "sha256:045ffe1e98d364cf058b128fb0c56c7f673de234dc53695ec0d2d45addf97da6"
     },
     {
       "id": "reader-closure",
@@ -772,7 +777,7 @@
       ],
       "parent": "reader-artifact",
       "status": "confirmed",
-      "fingerprint": "sha256:9bb22edde250ca71779d903a09d962c813c6375bffb0f827daec2894370b5303"
+      "fingerprint": "sha256:91d312ad35b3471f45486a98522ba56c83fcafa0239a40e0a74331d95fdb77b5"
     },
     {
       "id": "reader-commands",
@@ -809,9 +814,11 @@
         "tests/e2e/test_worked_examples.py",
         "tests/unit/test_cli_inputs.py"
       ],
-      "models": [],
+      "models": [
+        ".flowguard/models/plan_readback_model.py"
+      ],
       "status": "confirmed",
-      "fingerprint": "sha256:fdcb6836ad213bf5ae9f7bf53fc26e43e564e9fc136ec34ef4b1d9d6d5044b85"
+      "fingerprint": "sha256:9b0b12e40424743a8c1811c75d531434bd17d276b6d5872b707086b82fc3f25d"
     },
     {
       "id": "world-references",
@@ -976,132 +983,6 @@
   ],
   "accepted_debts": [
     {
-      "code": "dep_unused",
-      "component": "fiction",
-      "contains": "reader-checks",
-      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/fiction/scripts/validate_fiction_artifact.py:15 imports reader_checks. The static map resolver searches only the importing script directory."
-    },
-    {
-      "code": "dep_unused",
-      "component": "fiction",
-      "contains": "reader-closure",
-      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/fiction/scripts/validate_fiction_artifact.py:13 imports derive_closure. The static map resolver searches only the importing script directory."
-    },
-    {
-      "code": "dep_unused",
-      "component": "fiction",
-      "contains": "reader-inputs",
-      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/fiction/scripts/validate_fiction_artifact.py:14 imports reader_fill. The static map resolver searches only the importing script directory."
-    },
-    {
-      "code": "dep_unused",
-      "component": "fiction",
-      "contains": "shared-contracts",
-      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/fiction/scripts/validate_fiction_artifact.py:12 imports _common. The static map resolver searches only the importing script directory."
-    },
-    {
-      "code": "dep_unused",
-      "component": "travel",
-      "contains": "reader-binding",
-      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/travel/scripts/validate_travel_text_outputs.py:12 imports artifact_map. The static map resolver searches only the importing script directory."
-    },
-    {
-      "code": "dep_unused",
-      "component": "travel",
-      "contains": "reader-checks",
-      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/travel/scripts/validate_travel_artifact.py:15 imports reader_checks. The static map resolver searches only the importing script directory."
-    },
-    {
-      "code": "dep_unused",
-      "component": "travel",
-      "contains": "reader-closure",
-      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/travel/scripts/validate_travel_artifact.py:13 imports derive_closure. The static map resolver searches only the importing script directory."
-    },
-    {
-      "code": "dep_unused",
-      "component": "travel",
-      "contains": "reader-inputs",
-      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/travel/scripts/validate_travel_artifact.py:14 imports reader_fill. The static map resolver searches only the importing script directory."
-    },
-    {
-      "code": "dep_unused",
-      "component": "travel",
-      "contains": "shared-contracts",
-      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/travel/scripts/validate_travel_artifact.py:12 imports _common. The static map resolver searches only the importing script directory."
-    },
-    {
-      "code": "dep_unused",
-      "component": "investigation",
-      "contains": "reader-checks",
-      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/investigation/scripts/validate_investigation_artifact.py:15 imports reader_checks. The static map resolver searches only the importing script directory."
-    },
-    {
-      "code": "dep_unused",
-      "component": "investigation",
-      "contains": "reader-closure",
-      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/investigation/scripts/validate_investigation_artifact.py:13 imports derive_closure. The static map resolver searches only the importing script directory."
-    },
-    {
-      "code": "dep_unused",
-      "component": "investigation",
-      "contains": "reader-inputs",
-      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/investigation/scripts/validate_investigation_artifact.py:14 imports reader_fill. The static map resolver searches only the importing script directory."
-    },
-    {
-      "code": "dep_unused",
-      "component": "investigation",
-      "contains": "shared-contracts",
-      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/investigation/scripts/validate_investigation_artifact.py:12 imports _common. The static map resolver searches only the importing script directory."
-    },
-    {
-      "code": "dep_unused",
-      "component": "academic",
-      "contains": "reader-checks",
-      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/academic/scripts/validate_academic_artifact.py:15 imports reader_checks. The static map resolver searches only the importing script directory."
-    },
-    {
-      "code": "dep_unused",
-      "component": "academic",
-      "contains": "reader-closure",
-      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/academic/scripts/validate_academic_artifact.py:13 imports derive_closure. The static map resolver searches only the importing script directory."
-    },
-    {
-      "code": "dep_unused",
-      "component": "academic",
-      "contains": "reader-inputs",
-      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/academic/scripts/validate_academic_artifact.py:14 imports reader_fill. The static map resolver searches only the importing script directory."
-    },
-    {
-      "code": "dep_unused",
-      "component": "academic",
-      "contains": "shared-contracts",
-      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/academic/scripts/validate_academic_artifact.py:12 imports _common. The static map resolver searches only the importing script directory."
-    },
-    {
-      "code": "dep_unused",
-      "component": "reader-plan",
-      "contains": "travel-model",
-      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/scripts/reader_plan.py:57 imports travel_contract. The static map resolver searches only the importing script directory."
-    },
-    {
-      "code": "dep_unused",
-      "component": "reader-closure",
-      "contains": "fiction-model",
-      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/scripts/derive_closure.py:213 imports longform_closure_check. The static map resolver searches only the importing script directory."
-    },
-    {
-      "code": "dep_unused",
-      "component": "fiction-model",
-      "contains": "shared-contracts",
-      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/fiction/scripts/story_ledger_check.py:543 imports _common. The static map resolver searches only the importing script directory."
-    },
-    {
-      "code": "dep_unused",
-      "component": "travel-model",
-      "contains": "shared-contracts",
-      "reason": "Real cross-directory script import resolved by explicit route sys.path: skills/logic-writing/routes/travel/scripts/travel_contract.py:12 imports _common. The static map resolver searches only the importing script directory."
-    },
-    {
       "code": "large_component",
       "component": "fiction-model",
       "reason": "One domain job: the fiction tree checks of one long-form project (ledger, interfaces, promises, continuity, voice), each script one surface; the model fiction_tree shows its rules, so size does not hide structure."
@@ -1111,6 +992,35 @@
       "component": "travel-model",
       "contains": "travel_contract.py",
       "reason": "One trip-plan contract whose validators share the same indexes in one pass (sources, candidates, world checks, routes, fallbacks, fit); the model trip_feasibility binds its rules."
+    },
+    {
+      "code": "large_model",
+      "component": "route_and_guard_model",
+      "reason": "split in LW-409"
+    },
+    {
+      "code": "test_file_mixes_models",
+      "component": "tests/unit/test_freshness_closure.py",
+      "reason": "split in LW-410"
     }
-  ]
+  ],
+  "import_roots": [
+    "skills/logic-writing/scripts",
+    "skills/logic-writing/routes/fiction/scripts",
+    "skills/logic-writing/routes/travel/scripts"
+  ],
+  "model_digests": {
+    ".flowguard/models/anchor_import_model.py": "22b463807a025740aed89c220f5ee8b2fe01d9ff7380a7de2fecbee394c5b44a",
+    ".flowguard/models/closure_claim_model.py": "e6f3c119a95a902a967df7a6cad208040daa01c3161a56079cf3d0d39c35b93e",
+    ".flowguard/models/fiction_tree_model.py": "36899630f1d0a27e1240bd8a1a409ffb759f446678f3b4c47a131866253f8114",
+    ".flowguard/models/known_bad_generator_model.py": "368c71fa5a1c708e0ffaa9d2ae89198c9a816ca215fe4972900a00158bc9e185",
+    ".flowguard/models/plan_order_model.py": "eb1222578e6caabb43254467a7b67f96103700b0a1623b6af74dad5b8af41a34",
+    ".flowguard/models/plan_readback_model.py": "f939d5c6bdbb77ecf93c5aca3a6dbaf9bcd276c3fc849c867c6e6d9e2e935398",
+    ".flowguard/models/reader_artifact_model.py": "f6aaac4cdc55c3cefb8a5193e2301bec18ae6f04c94282adbcb429f84c40c992",
+    ".flowguard/models/route_and_guard_model.py": "0c0d49b01c4c9c46a86ab4c4de5131001f1cad25f3dc42cf3558f5936a9b2bb9",
+    ".flowguard/models/shared_writing_binding_model.py": "da43286400469dc66a8d200bc400a8e887ab980b3113c0f9b2083b95b69d9e71",
+    ".flowguard/models/trip_feasibility_model.py": "13236812298b9625d1bf9a687a2d4c589be11e8b91b4a345dc304e02aed0dae4",
+    ".flowguard/models/world_references_model.py": "723c38108da2224cdb4445ac2ada6916e50503de7ec92d9ada286bc1c5812816"
+  },
+  "fingerprint_format": 2
 }

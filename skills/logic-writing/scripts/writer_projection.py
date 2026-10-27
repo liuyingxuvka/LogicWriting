@@ -1,7 +1,7 @@
 """Writer projection: current reader-chain responsibilities."""
 from __future__ import annotations
 
-from _common import ValidationError, _ids, fingerprint, fingerprint_without, require_mapping
+from _common import ValidationError, unique_ids, fingerprint, fingerprint_without, require_mapping
 from reader_plan_core import _canonical_plan_order, validate_reader_intent
 from reader_rules import VISIBLE_CONTENT_DISPOSITIONS, WRITER_INTERNAL
 from typing import Any, Iterable, Mapping
@@ -612,10 +612,10 @@ def validate_writer_input(value: Any, *, reader_brief: Mapping[str, Any] | None 
     intent = validate_reader_intent(writer_input["reader_intent"])
     selected_rows = list(writer_input["selected_content"])
     # Keep the id collection set-like for the boundary and hidden-content
-    # membership checks below.  `_ids` returns a tuple for stable ordering,
+    # membership checks below.  `unique_ids` returns a tuple for stable ordering,
     # but comparing that tuple with the ReaderBrief boundary set raises a
     # runtime TypeError on the native handoff path.
-    selected_ids = set(_ids(selected_rows, "content_unit_id", "writer content")) if selected_rows else set()
+    selected_ids = set(unique_ids(selected_rows, "content_unit_id", "writer content")) if selected_rows else set()
     for row in selected_rows:
         disposition = row.get("disposition")
         if disposition is not None and disposition not in VISIBLE_CONTENT_DISPOSITIONS:
@@ -631,7 +631,7 @@ def validate_writer_input(value: Any, *, reader_brief: Mapping[str, Any] | None 
         raise ValidationError("writer_input gaps must identify a concrete unresolved subject")
     composition = require_mapping(writer_input["composition"], "writer_input composition")
     units = list(composition.get("units", []))
-    unit_ids = _ids(units, "planned_unit_id", "writer unit") if units else ()
+    unit_ids = unique_ids(units, "planned_unit_id", "writer unit") if units else ()
     body_order = composition.get("body_unit_order")
     if body_order is not None:
         if list(body_order) != list(unit_ids):

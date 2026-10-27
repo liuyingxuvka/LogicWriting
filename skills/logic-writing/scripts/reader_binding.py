@@ -1,7 +1,7 @@
 """Reader binding: current reader-chain responsibilities."""
 from __future__ import annotations
 
-from _common import ValidationError, _require_exact_fingerprint, require_mapping, require_schema
+from _common import ValidationError, require_exact_fingerprint, require_mapping, require_schema
 from artifact_map import validate_artifact_map
 from pathlib import Path
 from typing import Any, Mapping
@@ -14,7 +14,7 @@ def validate_shared_writing(
     reader_brief: Mapping[str, Any],
 ) -> dict[str, Any]:
     amap = validate_artifact_map(artifact_map)
-    return _shared_writing_from_current(value, amap=amap, reader_brief=reader_brief)
+    return shared_writing_from_current(value, amap=amap, reader_brief=reader_brief)
 
 
 def _resolve_quote(units, quote):
@@ -28,7 +28,7 @@ def _resolve_quote(units, quote):
     return matches[0]
 
 
-def _quote_binding_units(binding, units):
+def quote_binding_units(binding, units):
     quotes = binding.get('anchor_excerpts')
     if quotes is None:
         return None
@@ -49,13 +49,13 @@ def _quote_binding_units(binding, units):
     return list(resolved.values())
 
 
-def _shared_writing_from_current(value, *, amap, reader_brief):
+def shared_writing_from_current(value, *, amap, reader_brief):
     contract = require_mapping(value, "SharedWriting")
     require_schema("shared-writing-contract.schema.json", contract, label="SharedWriting")
-    _require_exact_fingerprint(contract, "contract_fingerprint")
+    require_exact_fingerprint(contract, "contract_fingerprint")
     brief = require_mapping(reader_brief, "ReaderBrief")
     require_schema("reader-brief.schema.json", brief, label="ReaderBrief")
-    _require_exact_fingerprint(brief, "brief_fingerprint")
+    require_exact_fingerprint(brief, "brief_fingerprint")
     expected = {
         "final_owner": brief["final_owner"],
         "route_decision_fingerprint": brief["route_decision_fingerprint"],
@@ -81,7 +81,7 @@ def _shared_writing_from_current(value, *, amap, reader_brief):
     bound_plans: set[str] = set()
     bound_content: set[str] = set()
     for binding in contract["unit_bindings"]:
-        _quote_binding_units(binding, units)
+        quote_binding_units(binding, units)
         planned_id = binding["planned_unit_id"]
         if planned_id not in plan_units:
             raise ValidationError(f"SharedWriting references unknown planned unit {planned_id}")

@@ -25,11 +25,11 @@ from route_inputs import route_extension_fingerprint
 from world_refs import world_ref_unquoted
 from known_bad import check_known_bad
 from artifact_map import validate_artifact_map
-from reader_checks import _compare_reader_audit, _build_reader_audit_from_current, _reader_judgment_from_current, _route_review_from_current
+from reader_checks import compare_reader_audit, build_reader_audit_from_current, reader_judgment_from_current, route_review_from_current
 from reader_fill import fill_closure_fingerprints
 from reader_plan import validate_revision_provenance
 from reader_plan_core import validate_route_composition
-from reader_binding import _shared_writing_from_current
+from reader_binding import shared_writing_from_current
 
 
 REQUIRED_DIMENSIONS = {
@@ -156,13 +156,13 @@ def derive_closure(
         content_boundaries=brief["content_boundaries"],
     )
     amap = validate_artifact_map(request["artifact_map"])
-    shared = _shared_writing_from_current(request["shared_writing"], amap=amap, reader_brief=brief)
+    shared = shared_writing_from_current(request["shared_writing"], amap=amap, reader_brief=brief)
     audit = require_mapping(request["deterministic_audit"], "ReaderAudit")
     require_schema("reader-audit.schema.json", audit, label="ReaderAudit")
-    current_audit = _build_reader_audit_from_current(
+    current_audit = build_reader_audit_from_current(
         audit_id=audit["audit_id"], amap=amap, brief=brief, contract=shared, audited_at=audit.get("audited_at"))
-    audit = _compare_reader_audit(audit, current_audit)
-    route_review = _route_review_from_current(
+    audit = compare_reader_audit(audit, current_audit)
+    route_review = route_review_from_current(
         request["route_review"],
         owner=owner,
         route=route,
@@ -170,7 +170,7 @@ def derive_closure(
         required_dimensions=(*REQUIRED_DIMENSIONS[owner], *( ("explanation_pressure", "variation", "register_ownership") if owner == "fiction-writing" and route.get("longform_project") else ())),
         brief=brief, shared=shared,
     )
-    judgment = _reader_judgment_from_current(
+    judgment = reader_judgment_from_current(
         request["judgment"],
         amap=amap,
         brief=brief,

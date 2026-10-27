@@ -17,7 +17,7 @@ COMPONENTS = ["reader-binding"]
 IMPLEMENTED_BY = {
     "ValidateBinding": "skills/logic-writing/scripts/reader_binding.py:validate_shared_writing",
     "ResolveQuote": "skills/logic-writing/scripts/reader_binding.py:_resolve_quote",
-    "QuoteUnits": "skills/logic-writing/scripts/reader_binding.py:_quote_binding_units",
+    "QuoteUnits": "skills/logic-writing/scripts/reader_binding.py:quote_binding_units",
 }
 TESTED_BY = {
     "quote_is_unique_and_at_least_12_chars": [
@@ -122,7 +122,7 @@ class Native:
 
     def apply_step(self, step):
         from _common import ValidationError
-        from reader_binding import validate_shared_writing, _resolve_quote, _quote_binding_units
+        from reader_binding import validate_shared_writing, _resolve_quote, quote_binding_units
         from reader_fill import fill_check_fingerprints
         from artifact_map import build_artifact_map
         from tests.v2_support import make_reader_chain
@@ -151,13 +151,13 @@ class Native:
                 _resolve_quote(units, "This quotation does not occur in the artifact.")
             elif kind == "short":
                 binding["anchor_excerpts"] = [quote[:5]]
-                _quote_binding_units(binding, units)
+                quote_binding_units(binding, units)
             elif kind == "ambiguous":
                 chain["artifact_path"].write_text(chain["artifact_path"].read_text()+"\n\n"+quote+"\n", encoding="utf-8")
                 duplicate = build_artifact_map(chain["artifact_path"], map_id="map:ambiguous", language="en")
                 binding["anchor_excerpts"] = [quote]
                 binding.pop("artifact_unit_ids", None)
-                _quote_binding_units(binding, {row["artifact_unit_id"]: row for row in duplicate["units"]})
+                quote_binding_units(binding, {row["artifact_unit_id"]: row for row in duplicate["units"]})
             else:
                 contract = copy.deepcopy(chain["shared_writing"])
                 current_binding = contract["unit_bindings"][0]

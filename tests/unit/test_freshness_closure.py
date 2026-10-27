@@ -21,7 +21,7 @@ def test_complete_current_chain_closes(owner, tmp_path, monkeypatch):
     chain = complete_chain(tmp_path, owner)
     request = closure_input(chain)
     original_map = artifact_map.validate_artifact_map
-    original_audit = reader_checks._build_reader_audit_from_current
+    original_audit = reader_checks.build_reader_audit_from_current
     calls = {"map": 0, "audit": 0}
     def mapped(value):
         calls["map"] += 1
@@ -33,8 +33,8 @@ def test_complete_current_chain_closes(owner, tmp_path, monkeypatch):
         return original_audit(**kwargs)
     monkeypatch.setattr(closure_module, "validate_artifact_map", mapped)
     monkeypatch.setattr(artifact_map, "validate_artifact_map", mapped)
-    monkeypatch.setattr(closure_module, "_build_reader_audit_from_current", audited)
-    monkeypatch.setattr(reader_checks, "_build_reader_audit_from_current", audited)
+    monkeypatch.setattr(closure_module, "build_reader_audit_from_current", audited)
+    monkeypatch.setattr(reader_checks, "build_reader_audit_from_current", audited)
     result = derive_closure(request)
     assert calls == {"map": 1, "audit": 1}
     def changed_during_audit(**kwargs):
@@ -42,7 +42,7 @@ def test_complete_current_chain_closes(owner, tmp_path, monkeypatch):
         artifact = Path(chain["artifact_map"]["artifact_path"])
         artifact.write_bytes(artifact.read_bytes() + b"changed")
         return report
-    monkeypatch.setattr(closure_module, "_build_reader_audit_from_current", changed_during_audit)
+    monkeypatch.setattr(closure_module, "build_reader_audit_from_current", changed_during_audit)
     with pytest.raises(ValidationError, match="stale during closure"):
         derive_closure(request)
     assert result["closure"]["status"] == "passed"

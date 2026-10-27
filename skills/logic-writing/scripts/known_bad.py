@@ -11,8 +11,8 @@ import re
 from _common import ValidationError, dump_json, load_request, require_mapping, validation_result
 from artifact_map import build_artifact_map_from_text, validate_artifact_map
 from reader_fill import fill_check_fingerprints
-from reader_binding import _shared_writing_from_current
-from reader_checks import _build_reader_audit_from_current, _route_review_from_current
+from reader_binding import shared_writing_from_current
+from reader_checks import build_reader_audit_from_current, route_review_from_current
 
 
 # First named term in _common.contains_internal_language's existing glossary.
@@ -196,10 +196,10 @@ def _first_rejection(text, request):
             artifact_format=original['artifact_format'])
         step = 'shared_writing'
         envelope = fill_check_fingerprints(dict(artifact_map=amap, reader_brief=brief, contract=contract))
-        shared = _shared_writing_from_current(envelope['contract'], amap=amap, reader_brief=brief)
+        shared = shared_writing_from_current(envelope['contract'], amap=amap, reader_brief=brief)
         step = 'audit'
         old_audit = request.get('deterministic_audit', {})
-        audit = _build_reader_audit_from_current(audit_id=old_audit.get('audit_id', 'known-bad'),
+        audit = build_reader_audit_from_current(audit_id=old_audit.get('audit_id', 'known-bad'),
             amap=amap, brief=brief, contract=shared, audited_at=old_audit.get('audited_at'))
         if audit['status'] != 'passed':
             finding = audit['findings'][0]
@@ -209,7 +209,7 @@ def _first_rejection(text, request):
             shared_writing=shared, route_composition=brief['route_extension'], review=review))
         # Constant lookup only: never call closure or any provider recursively.
         from derive_closure import REQUIRED_DIMENSIONS
-        checked = _route_review_from_current(envelope['review'], owner=brief['final_owner'],
+        checked = route_review_from_current(envelope['review'], owner=brief['final_owner'],
             route=brief['route_extension'], amap=amap,
             required_dimensions=REQUIRED_DIMENSIONS[brief['final_owner']],
             review_obligations=request.get('review_obligations'), brief=brief, shared=shared)

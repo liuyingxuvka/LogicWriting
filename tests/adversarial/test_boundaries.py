@@ -129,7 +129,7 @@ def test_limitation_adjacency_uses_offsets_not_map_array_order(tmp_path):
 
 
 def test_present_overclaim_forces_repair(tmp_path):
-    from reader_checks import _route_review_from_current
+    from reader_checks import route_review_from_current
     from tests.v2_support import span_evidence
     chain = complete_chain(tmp_path)
     brief, review = _boundary_review(chain)
@@ -137,10 +137,10 @@ def test_present_overclaim_forces_repair(tmp_path):
     review.pop('review_fingerprint')
     review['review_fingerprint'] = fingerprint(review)
     with pytest.raises(ValidationError, match='status is not derived'):
-        _route_review_from_current(review, owner='investigation', route=chain['route_composition'], amap=chain['artifact_map'],
+        route_review_from_current(review, owner='investigation', route=chain['route_composition'], amap=chain['artifact_map'],
                                    brief=brief, shared=chain['shared_writing'])
     review.update(status='repair', required_repairs=['oc:universal'])
     review.pop('review_fingerprint')
     review['review_fingerprint'] = fingerprint(review)
-    assert _route_review_from_current(review, owner='investigation', route=chain['route_composition'], amap=chain['artifact_map'],
+    assert route_review_from_current(review, owner='investigation', route=chain['route_composition'], amap=chain['artifact_map'],
                                      brief=brief, shared=chain['shared_writing'])['status'] == 'repair'

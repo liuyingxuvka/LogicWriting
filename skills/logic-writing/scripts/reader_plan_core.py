@@ -4,7 +4,7 @@ from __future__ import annotations
 from world_refs import validate_world_refs
 from route_inputs import route_extension_fingerprint
 
-from _common import ValidationError, _ids, _require_exact_fingerprint, fingerprint_without, require_mapping, require_schema
+from _common import ValidationError, unique_ids, require_exact_fingerprint, fingerprint_without, require_mapping, require_schema
 from reader_rules import FINAL_OWNERS, HIDDEN_CONTENT_DISPOSITIONS, ROUTE_SCHEMA, VISIBLE_CONTENT_DISPOSITIONS
 from typing import Any, Iterable, Mapping
 
@@ -42,12 +42,12 @@ def _canonical_plan_order(planned_units: Iterable[Mapping[str, Any]]) -> list[st
 def validate_reader_intent(value: Any) -> dict[str, Any]:
     intent = require_mapping(value, "ReaderIntent")
     require_schema("reader-intent.schema.json", intent, label="ReaderIntent")
-    _require_exact_fingerprint(intent, "intent_fingerprint")
+    require_exact_fingerprint(intent, "intent_fingerprint")
     extent = intent["extent"]
     if not extent["minimum"] <= extent["target"] <= extent["maximum"]:
         raise ValidationError("ReaderIntent extent must satisfy minimum <= target <= maximum")
     rows = intent["structure"]["requested_outline"]
-    outline_ids = set(_ids(rows, "outline_id", "outline"))
+    outline_ids = set(unique_ids(rows, "outline_id", "outline"))
     for row in rows:
         parent = row["parent_outline_id"]
         if parent is not None and parent not in outline_ids:
@@ -83,7 +83,7 @@ def validate_writing_request(value: Any) -> dict[str, Any]:
     validate_reader_intent(request["reader_intent"])
     if request["reader_intent"]["intent_fingerprint"] == request["request_fingerprint"]:
         raise ValidationError("request_fingerprint must bind the whole request, not alias ReaderIntent")
-    _require_exact_fingerprint(request, "request_fingerprint")
+    require_exact_fingerprint(request, "request_fingerprint")
     deliverable = dict(request["terminal_deliverable"])
     if deliverable["fingerprint"] != fingerprint_without(deliverable, "fingerprint"):
         raise ValidationError("terminal_deliverable fingerprint is not current")
@@ -99,7 +99,7 @@ def validate_composition_plan(
 ) -> dict[str, Any]:
     plan = require_mapping(value, "CompositionPlan")
     require_schema("composition-plan.schema.json", plan, label="CompositionPlan")
-    _require_exact_fingerprint(plan, "plan_fingerprint")
+    require_exact_fingerprint(plan, "plan_fingerprint")
     intent = validate_reader_intent(reader_intent)
     if plan["reader_intent_fingerprint"] != intent["intent_fingerprint"]:
         raise ValidationError("CompositionPlan does not bind the current ReaderIntent")
@@ -110,7 +110,7 @@ def validate_composition_plan(
         raise ValidationError("material ReaderIntent conflicts must be resolved before drafting")
 
     planned = plan["planned_units"]
-    planned_ids = set(_ids(planned, "planned_unit_id", "planned unit"))
+    planned_ids = set(unique_ids(planned, "planned_unit_id", "planned unit"))
     by_id = {row["planned_unit_id"]: row for row in planned}
     parent_orders: set[tuple[str | None, int]] = set()
     for unit in planned:
@@ -149,7 +149,7 @@ def validate_composition_plan(
         raise ValidationError(f"required ReaderIntent outline rows are not planned: {missing_outline}")
 
     required_content = set(content_unit_ids)
-    _ids(plan["content_dispositions"], "content_unit_id", "content disposition")
+    unique_ids(plan["content_dispositions"], "content_unit_id", "content disposition")
     disposition_by_id = {row["content_unit_id"]: row for row in plan["content_dispositions"]}
     if set(disposition_by_id) != required_content:
         missing = sorted(required_content - set(disposition_by_id))

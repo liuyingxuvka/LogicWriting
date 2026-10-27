@@ -8,7 +8,7 @@ from researchguard_status import fill_anchors_from_research
 from _common import ValidationError, fill_fingerprint, fill_missing, fingerprint, fingerprint_text, require_mapping
 from copy import deepcopy
 from pathlib import Path
-from reader_binding import _quote_binding_units
+from reader_binding import quote_binding_units
 from reader_plan import validate_revision_provenance
 from typing import Any, Mapping
 
@@ -170,7 +170,7 @@ def fill_check_fingerprints(request: dict[str, Any]) -> dict[str, Any]:
             if not isinstance(binding, dict):
                 continue
             try:
-                resolved = _quote_binding_units(binding, units)
+                resolved = quote_binding_units(binding, units)
                 if resolved is not None:
                     resolved_bindings.append((binding, resolved))
             except ValidationError as exc:

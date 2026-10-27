@@ -386,12 +386,12 @@ def utc_now() -> str:
     return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
 
-def _require_exact_fingerprint(value: Mapping[str, Any], field: str) -> None:
+def require_exact_fingerprint(value: Mapping[str, Any], field: str) -> None:
     if value.get(field) != fingerprint_without(dict(value), field):
         raise ValidationError(f"{field} does not bind the exact current object")
 
 
-def _ids(rows: Iterable[Mapping[str, Any]], field: str, label: str) -> tuple[str, ...]:
+def unique_ids(rows: Iterable[Mapping[str, Any]], field: str, label: str) -> tuple[str, ...]:
     values = tuple(str(row.get(field, "")) for row in rows)
     if not all(values) or len(values) != len(set(values)):
         raise ValidationError(f"{label} ids must be non-empty and unique")

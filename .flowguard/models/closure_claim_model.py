@@ -19,10 +19,7 @@ from flowguard.explorer import Explorer
 MODEL_ID = 'closure_claim_model'
 PARENT = 'reader-closure'
 COMPONENTS = ['reader-closure', 'travel-model', 'researchguard-handoff']
-IMPLEMENTED_BY = {
-    'Close': 'skills/logic-writing/scripts/derive_closure.py:derive_closure',
-    'Reports': 'skills/logic-writing/scripts/derive_closure.py:provider_checks',
-}
+IMPLEMENTED_BY = {'Reports': 'skills/logic-writing/scripts/derive_closure.py:provider_checks'}
 TESTED_BY = {
     'research_verdict_risks_are_preserved': ['tests/unit/test_freshness_closure.py:test_provider_status_is_copied_from_the_report_file'],
     "travel_world_failure_limits_claim": ["tests/unit/test_freshness_closure.py:test_failing_world_report_limits_the_travel_closure"],
@@ -385,3 +382,7 @@ def conformance():
         return result
     finally:
         adapter.close()
+
+USES = {'Close': 'skills/logic-writing/scripts/derive_closure.py:derive_closure'}
+
+NOT_MODELED = {'skills/logic-writing/scripts/derive_closure.py:main': 'Command wrapper: reads the closure request file, calls derive_closure (bound as Close in USES) and writes the closure JSON.'}

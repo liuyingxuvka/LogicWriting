@@ -6,6 +6,10 @@ releases, tags, package publications, installations, or predecessor deletions.
 The format follows the main ideas of Keep a Changelog, and the source version
 line follows semantic versioning.
 
+## Unreleased
+
+- Maintenance checks run on FlowGuard 0.70.13; ResearchGuard 0.5.16 is the minimum.
+
 ## [4.0.15] - 2026-10-25
 
 ### Changed

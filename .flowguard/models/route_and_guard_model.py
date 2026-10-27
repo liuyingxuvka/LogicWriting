@@ -491,3 +491,5 @@ def conformance():
     finally:
         consoles.close()
     return last
+
+NOT_MODELED = {'skills/logic-writing/scripts/provider_preflight.py:main': 'Command wrapper: reads the provider name from the command line, calls preflight (anchored as ProviderPreflight) and prints its JSON result.'}

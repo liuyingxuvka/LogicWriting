@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any, Iterable, Mapping
 
 from _common import (ValidationError, fingerprint, fingerprint_text,
-                     require_mapping, require_schema, _require_exact_fingerprint, _ids)
+                     require_mapping, require_schema, require_exact_fingerprint, unique_ids)
 
 
 
@@ -208,7 +208,7 @@ def build_artifact_map_from_text(text: str, *, artifact_path: str | Path,
 def validate_artifact_map(value: Any) -> dict[str, Any]:
     artifact_map = require_mapping(value, "ArtifactMap")
     require_schema("artifact-map.schema.json", artifact_map, label="ArtifactMap")
-    _require_exact_fingerprint(artifact_map, "map_fingerprint")
+    require_exact_fingerprint(artifact_map, "map_fingerprint")
     path = Path(artifact_map["artifact_path"]).expanduser().resolve()
     if not path.is_file():
         raise ValidationError("ArtifactMap artifact is missing")
@@ -227,12 +227,12 @@ def validate_artifact_map_from_text(value: Any, text: str) -> dict[str, Any]:
     """Apply the same partition/fingerprint checks to an explicit text snapshot."""
     artifact_map = require_mapping(value, "ArtifactMap")
     require_schema("artifact-map.schema.json", artifact_map, label="ArtifactMap")
-    _require_exact_fingerprint(artifact_map, "map_fingerprint")
+    require_exact_fingerprint(artifact_map, "map_fingerprint")
     actual_fp = "sha256:" + __import__("hashlib").sha256(text.encode("utf-8")).hexdigest()
     if actual_fp != artifact_map["artifact_fingerprint"]:
         raise ValidationError("ArtifactMap is stale for the current bytes")
     units = list(artifact_map["units"])
-    unit_ids = set(_ids(units, "artifact_unit_id", "artifact unit"))
+    unit_ids = set(unique_ids(units, "artifact_unit_id", "artifact unit"))
     documents = [row for row in units if row["unit_kind"] == "document"]
     if len(documents) != 1:
         raise ValidationError("ArtifactMap must contain exactly one document overview unit")

@@ -3,12 +3,12 @@ from __future__ import annotations
 
 from world_refs import world_ref_unquoted
 
-from _common import ValidationError, _require_exact_fingerprint, fingerprint, fingerprint_text, require_mapping, require_schema, utc_now
+from _common import ValidationError, require_exact_fingerprint, fingerprint, fingerprint_text, require_mapping, require_schema, utc_now
 from artifact_map import validate_artifact_map
 import re
-from reader_binding import _shared_writing_from_current
+from reader_binding import shared_writing_from_current
 from reader_plan_core import validate_route_composition
-from reader_rules import PLACEHOLDER, SENTENCE_MARK, WORKFLOW_LEAK, _BODY_UNIT_KINDS, _CJK, _LATIN
+from reader_rules import PLACEHOLDER, SENTENCE_MARK, WORKFLOW_LEAK, BODY_UNIT_KINDS, CJK, LATIN
 from text_extent import measure_text
 from typing import Any, Iterable, Mapping
 
@@ -21,8 +21,8 @@ def _measure_extent(text: str, unit: str, metric_id: str | None = None) -> int:
 def _language_mismatch(text: str, language: str) -> bool:
     """Return true only for an obvious whole-document language mismatch."""
     compact = re.sub(r"\s+", "", text)
-    cjk = len(_CJK.findall(compact))
-    latin = len(_LATIN.findall(compact))
+    cjk = len(CJK.findall(compact))
+    latin = len(LATIN.findall(compact))
     normalized = language.casefold()
     if normalized.startswith(("zh", "ja", "ko")):
         return latin >= 30 and cjk == 0
@@ -65,12 +65,12 @@ def build_reader_audit(
     amap = validate_artifact_map(artifact_map)
     brief = require_mapping(reader_brief, "ReaderBrief")
     require_schema("reader-brief.schema.json", brief, label="ReaderBrief")
-    contract = _shared_writing_from_current(shared_writing, amap=amap, reader_brief=brief)
-    return _build_reader_audit_from_current(audit_id=audit_id, amap=amap, brief=brief,
+    contract = shared_writing_from_current(shared_writing, amap=amap, reader_brief=brief)
+    return build_reader_audit_from_current(audit_id=audit_id, amap=amap, brief=brief,
                                            contract=contract, audited_at=audited_at)
 
 
-def _build_reader_audit_from_current(*, audit_id, amap, brief, contract, audited_at=None):
+def build_reader_audit_from_current(*, audit_id, amap, brief, contract, audited_at=None):
     units = amap["units"]
     visible_units = [row for row in units if row["unit_kind"] != "document"]
     text = "\n".join(row["text"] for row in visible_units)
@@ -127,7 +127,7 @@ def _build_reader_audit_from_current(*, audit_id, amap, brief, contract, audited
             except re.error as exc:
                 raise ValidationError(f"overclaim {overclaim['overclaim_id']}: invalid forbidden pattern: {exc}") from exc
             for row in visible_units:
-                if row['unit_kind'] in _BODY_UNIT_KINDS and matcher.search(row['text']):
+                if row['unit_kind'] in BODY_UNIT_KINDS and matcher.search(row['text']):
                     add('overclaim_pattern', row['artifact_unit_id'], f"forbidden pattern matched overclaim {overclaim['overclaim_id']}")
 
     headings = {re.sub(r"^#{1,6}\s+", "", row["text"]).strip() for row in units if row["unit_kind"] == "heading"}
@@ -220,7 +220,7 @@ def _build_reader_audit_from_current(*, audit_id, amap, brief, contract, audited
     extent_unit = brief["reader_intent"]["extent"]["unit"]
     body_text = "\n".join(
         row["text"] for row in visible_units
-        if row["unit_kind"] in _BODY_UNIT_KINDS and row["zone"] not in {"source_boundary"}
+        if row["unit_kind"] in BODY_UNIT_KINDS and row["zone"] not in {"source_boundary"}
     )
     body_count = _measure_extent(
         body_text,
@@ -285,19 +285,19 @@ def validate_reader_audit_current(
     """Recompute every substantive audit result from current bytes and inputs."""
     candidate = require_mapping(audit, "ReaderAudit")
     require_schema("reader-audit.schema.json", candidate, label="ReaderAudit")
-    _require_exact_fingerprint(candidate, "audit_fingerprint")
+    require_exact_fingerprint(candidate, "audit_fingerprint")
     current = build_reader_audit(
         audit_id=candidate["audit_id"], artifact_map=artifact_map,
         reader_brief=reader_brief, shared_writing=shared_writing,
         audited_at=candidate.get("audited_at"),
     )
-    return _compare_reader_audit(candidate, current, rules_version=rules_version)
+    return compare_reader_audit(candidate, current, rules_version=rules_version)
 
 
-def _compare_reader_audit(candidate, current, *, rules_version="reader-audit-rules.v2"):
+def compare_reader_audit(candidate, current, *, rules_version="reader-audit-rules.v2"):
     candidate = require_mapping(candidate, "ReaderAudit")
     require_schema("reader-audit.schema.json", candidate, label="ReaderAudit")
-    _require_exact_fingerprint(candidate, "audit_fingerprint")
+    require_exact_fingerprint(candidate, "audit_fingerprint")
     ignored = {"audit_id", "audited_at", "audit_fingerprint"}
     left = {key: value for key, value in candidate.items() if key not in ignored}
     right = {key: value for key, value in current.items() if key not in ignored}
@@ -342,8 +342,8 @@ def validate_route_artifact_review(
         if (reader_brief['final_owner'] != owner or
             reader_brief['route_extension']['extension_fingerprint'] != route['extension_fingerprint']):
             raise ValidationError('boundary review ReaderBrief belongs to a sibling or stale route')
-        shared = _shared_writing_from_current(shared_writing, amap=amap, reader_brief=reader_brief)
-    return _route_review_from_current(value, owner=owner, route=route, amap=amap,
+        shared = shared_writing_from_current(shared_writing, amap=amap, reader_brief=reader_brief)
+    return route_review_from_current(value, owner=owner, route=route, amap=amap,
                                       required_dimensions=required_dimensions, review_obligations=review_obligations,
                                       brief=reader_brief, shared=shared)
 
@@ -352,7 +352,7 @@ def _review_boundary_checks(review, *, brief, shared, amap):
     """Validate the reviewer's quoted boundary declarations against current bindings."""
     units = {row['artifact_unit_id']: row for row in amap['units']}
     body = [row['artifact_unit_id'] for row in sorted(amap['units'], key=lambda row: (row['start'], row['end']))
-            if row['unit_kind'] in _BODY_UNIT_KINDS]
+            if row['unit_kind'] in BODY_UNIT_KINDS]
     dispositions = {row['limitation_id']: row for row in brief['composition_plan'].get('limitation_dispositions', [])
                     if row['disposition'] in {'body', 'note'}}
     limitations = {row['limitation_id']: row for row in brief['content_boundaries']['limitations']}
@@ -390,10 +390,10 @@ def _review_boundary_checks(review, *, brief, shared, amap):
         raise ValidationError(f'route review omits required boundary checks: {missing}')
 
 
-def _route_review_from_current(value, *, owner, route, amap, required_dimensions=(), review_obligations=None, brief=None, shared=None):
+def route_review_from_current(value, *, owner, route, amap, required_dimensions=(), review_obligations=None, brief=None, shared=None):
     review = require_mapping(value, "route artifact review")
     require_schema("route-artifact-review.schema.json", review, label="route artifact review")
-    _require_exact_fingerprint(review, "review_fingerprint")
+    require_exact_fingerprint(review, "review_fingerprint")
     if review["final_owner"] != owner or review["route_extension_fingerprint"] != route["extension_fingerprint"]:
         raise ValidationError("route review belongs to a sibling or stale route composition")
     if review["artifact_map_fingerprint"] != amap["map_fingerprint"] or review["artifact_fingerprint"] != amap["artifact_fingerprint"]:
@@ -449,26 +449,26 @@ def validate_reader_judgment(
 ) -> dict[str, Any]:
     amap = validate_artifact_map(artifact_map)
     brief = require_mapping(reader_brief, "ReaderBrief")
-    contract = _shared_writing_from_current(shared_writing, amap=amap, reader_brief=brief)
+    contract = shared_writing_from_current(shared_writing, amap=amap, reader_brief=brief)
     candidate = require_mapping(deterministic_audit, "ReaderAudit")
     require_schema("reader-audit.schema.json", candidate, label="ReaderAudit")
-    _require_exact_fingerprint(candidate, "audit_fingerprint")
-    current = _build_reader_audit_from_current(audit_id=candidate["audit_id"], amap=amap, brief=brief,
+    require_exact_fingerprint(candidate, "audit_fingerprint")
+    current = build_reader_audit_from_current(audit_id=candidate["audit_id"], amap=amap, brief=brief,
                                               contract=contract, audited_at=candidate.get("audited_at"))
-    audit = _compare_reader_audit(candidate, current)
-    return _reader_judgment_from_current(value, amap=amap, brief=brief, contract=contract, audit=audit,
+    audit = compare_reader_audit(candidate, current)
+    return reader_judgment_from_current(value, amap=amap, brief=brief, contract=contract, audit=audit,
                                          route_review=route_review,
                                          review_obligations=review_obligations)
 
 
-def _reader_judgment_from_current(value, *, amap, brief, contract, audit, route_review,
+def reader_judgment_from_current(value, *, amap, brief, contract, audit, route_review,
                                    review_obligations=None):
     judgment = require_mapping(value, "ReaderJudgment")
     require_schema("reader-judgment.schema.json", judgment, label="ReaderJudgment")
-    _require_exact_fingerprint(judgment, "judgment_fingerprint")
+    require_exact_fingerprint(judgment, "judgment_fingerprint")
     review = require_mapping(route_review, "route artifact review")
     require_schema("route-artifact-review.schema.json", review, label="route artifact review")
-    _require_exact_fingerprint(review, "review_fingerprint")
+    require_exact_fingerprint(review, "review_fingerprint")
     if judgment["judge_kind"] == "independent_context" and judgment["producer_id"] == judgment["judge_id"]:
         raise ValidationError("routine ReaderJudgment requires an independent judge context")
     if review_obligations is not None:

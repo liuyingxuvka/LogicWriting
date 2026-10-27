@@ -11,7 +11,7 @@ import re
 from _common import load_request
 from artifact_map import validate_artifact_map
 from reader_fill import fill_check_fingerprints
-from reader_binding import _shared_writing_from_current
+from reader_binding import shared_writing_from_current
 from world_refs import planned_world_refs
 
 # Result files of the same chain, read beside the input like reader-brief.json and artifact-map.json.
@@ -156,7 +156,7 @@ def plan_view(request, *, input_path=None):
         current_map = validate_artifact_map(amap)
         envelope = fill_check_fingerprints(deepcopy(dict(
             reader_brief=brief, artifact_map=current_map, contract=shared)))
-        shared = _shared_writing_from_current(envelope['contract'],
+        shared = shared_writing_from_current(envelope['contract'],
             amap=current_map, reader_brief=brief)
         amap = current_map
     else:
