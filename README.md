@@ -197,3 +197,12 @@ lists. Human judgment remains explicit where deterministic checks stop.
 [MIT](LICENSE)
 
 Brief requests derive repeated body-content and limitation placements from planned units, and fiction unit plans inherit their shared reader fields. Explicit dispositions remain checked; deliberate omissions are never inferred.
+
+Run existing text through the native reader chain with
+`python skills/logic-writing/scripts/run_chain.py <folder>`; `--until` stops at a
+chosen step and `--refresh-providers` explicitly refreshes native saved reports.
+Closure itself reads reports without executing providers. Changed raw inputs
+produce `research_report_stale:<path>` or `world_report_stale:<path>`; refresh the
+corresponding native report before continuing. CompositionPlan is the one plan:
+split an oversized unit into child units with `parent_unit_id`, then plan and
+check only the units needed by the target text.

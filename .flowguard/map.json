@@ -74,7 +74,8 @@
       "tests": [
         "tests/e2e/test_worked_examples.py",
         "tests/e2e/test_reader_v2_benchmark.py",
-        "tests/contract/test_prompt_size.py"
+        "tests/contract/test_prompt_size.py",
+        "tests/unit/test_reader_artifact_model.py"
       ],
       "models": [
         ".flowguard/models/reader_artifact_model.py"
@@ -459,7 +460,7 @@
         ".flowguard/models/skill_install_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:9d61aa9ebcb598eb95e9b55cf35f03b60c60cb5a6ad24f4eca98fbe214b88453"
+      "fingerprint": "sha256:89d0ea7bf693c4a91d5b6f7d79b85155ae1e23f14bb9347075ac522f148e98e4"
     },
     {
       "id": "providers",
@@ -838,7 +839,7 @@
         ".flowguard/models/plan_readback_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:a40480bb67369eee76a8530f3b8b9da3310ad1c3f0001b3e7cfc2d30b0aaabfd"
+      "fingerprint": "sha256:4fa0703ea0ae6dbacbe71b91dd81418b6af6c07611b97dabb83c5772ebb9f77d"
     },
     {
       "id": "world-references",
@@ -1014,11 +1015,6 @@
       "reason": "One trip-plan contract whose validators share the same indexes in one pass (sources, candidates, world checks, routes, fallbacks, fit); the model trip_feasibility binds its rules."
     },
     {
-      "code": "test_file_mixes_models",
-      "component": "tests/unit/test_freshness_closure.py",
-      "reason": "split in LW-410"
-    },
-    {
       "code": "large_model",
       "component": "closure_claim_model",
       "reason": "one decision table judged through one entry function: there is no composing function to split into steps, and halving the table makes two models replay the same function with no new information"
@@ -1038,13 +1034,13 @@
   ],
   "model_digests": {
     ".flowguard/models/anchor_import_model.py": "c2aa2f7c2cc5ba937cfd9092b7135caf9328b7cfa8a64343b47e0f0b8638847d",
-    ".flowguard/models/closure_claim_model.py": "dba3bf085d7671304999ae3bb1489c280fd2addccc17e8a5a6f96309b301c986",
-    ".flowguard/models/fiction_tree_model.py": "36899630f1d0a27e1240bd8a1a409ffb759f446678f3b4c47a131866253f8114",
+    ".flowguard/models/closure_claim_model.py": "0ec09e46c3b5a26428662cda0e020f7a04bb55479c7114342e935b49d6d81454",
+    ".flowguard/models/fiction_tree_model.py": "0ddabded08324082ba916fdc10f9b75f915085f21d6a08b910126b130d509f9c",
     ".flowguard/models/known_bad_generator_model.py": "4e875b2d2bcfebb1a00d4851f7ab350c60c81dddca8c125413377307ea1391c5",
     ".flowguard/models/plan_order_model.py": "eb1222578e6caabb43254467a7b67f96103700b0a1623b6af74dad5b8af41a34",
     ".flowguard/models/plan_readback_model.py": "cde4b54937582e0b8fbb27c8f084498b06c00b2a749afcd663132c5d708c424b",
     ".flowguard/models/provider_preflight_model.py": "d78fe03165665eda9c3ce0a954f661a4e187e20c9c9b99a7d073b2d50ed415b2",
-    ".flowguard/models/reader_artifact_model.py": "9a4b0a0927df7b2b63173aa3684eb075bcdb0972c59f620bd00c4949d7ce5bdf",
+    ".flowguard/models/reader_artifact_model.py": "b434161ea3eded45e67b715d206e773b0c6203e1f0a1e28444561be6cd399f66",
     ".flowguard/models/route_review_model.py": "a24f47fdc46d89c4b03f323784ca3275ffecc5d7807ebf5cccbf24254bb395d5",
     ".flowguard/models/route_selection_model.py": "b7c3820531c7260538571157b99d82b78cc0194ba4c57b8c0dbf44fc0f3496d9",
     ".flowguard/models/shared_contracts_model.py": "f3a093e25d0322ab3fc1d7473ce6451f2e9e69a033959f70e93aeeba1e1ea2ef",

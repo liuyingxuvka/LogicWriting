@@ -65,7 +65,8 @@ def _refresh(request,folder):
 def _failure(step,payload):
     errors=payload.get('errors') or []
     findings=payload.get('findings') or payload.get('reader_audit',{}).get('findings') or []
-    reason=str(errors[0]) if errors else str(findings[0].get('code')) if findings else str(payload.get('status','failed'))
+    provider_reasons=[str(row['reason']) for row in payload.get('closure',{}).get('provider_checks',[]) if not row.get('passed') and row.get('reason')]
+    reason=str(errors[0]) if errors else str(findings[0].get('code')) if findings else provider_reasons[0] if provider_reasons else str(payload.get('status','failed'))
     return {'step':step,'code':reason.split(':',1)[0],'message':reason}
 
 
@@ -129,7 +130,7 @@ def run_chain(folder, *, until='closure', refresh_providers=False):
         if payload.get('status') not in {'current_pass','passed'}:
             return _finish(folder,results,_failure(step,payload),1)
         if step=='closure' and any(row.get('required') and not row.get('passed') for row in payload['closure'].get('provider_checks',[])):
-            return _finish(folder,results,{'step':'closure','code':'provider_report_failed','message':'a required saved provider report did not pass'},1)
+            return _finish(folder,results,_failure(step,payload),1)
         if step==until:return _finish(folder,results,None,0)
     raise AssertionError('unreachable chain step')
 

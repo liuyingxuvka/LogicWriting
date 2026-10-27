@@ -8,6 +8,8 @@ line follows semantic versioning.
 
 ## Unreleased
 
+- Keep bound closure and reader tests with their model owners, preserve every moved assertion, and refresh the project agent rules.
+
 - Bound entry and route prompt loading; detailed reference paragraphs move to on-demand pages without changing their gates or ledgers.
 
 - Remove the unused native synthesis bridge; CompositionPlan is the one plan of a piece. Saved ResearchGuard reports and anchor import remain native.
