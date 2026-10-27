@@ -144,6 +144,16 @@ def _check_artifact_unit_membership(request, units):
         review = request.get(key)
         if not isinstance(review, dict):
             continue
+        for limitation in rows(review.get('limitation_checks')):
+            for evidence in rows(_mapping(limitation).get('evidence')):
+                excerpt=_mapping(evidence).get('excerpt')
+                if isinstance(excerpt,str) and excerpt and not any(excerpt in str(unit.get('text','')) for unit in units.values()):
+                    raise ValidationError('limitation_quote_missing:'+str(_mapping(limitation).get('limitation_id','')))
+        for limitation in rows(review.get('limitation_checks')):
+            for evidence in rows(_mapping(limitation).get('evidence')):
+                unit_id=_mapping(evidence).get('artifact_unit_id')
+                if isinstance(unit_id,str) and unit_id not in units:
+                    raise ValidationError('limitation_quote_missing:'+str(_mapping(limitation).get('limitation_id','')))
         for row in [*rows(review.get("dimensions")), *rows(review.get("limitation_checks")), *rows(review.get("overclaim_checks")), *rows(review.get("world_ref_checks"))]:
             for evidence in rows(_mapping(row).get("evidence")):
                 check(_mapping(evidence).get("artifact_unit_id"), "review evidence")

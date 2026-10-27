@@ -8,6 +8,8 @@ line follows semantic versioning.
 
 ## Unreleased
 
+- Plan readback remains available when required new units are not bound yet; passing checks and missing limitation quotes are labeled explicitly.
+
 - Research anchor imports read the fresh saved report only, including its source-owned locator, summary and boundary.
 
 - Closure checks the saved provider reports against their current raw input files; stale reports require repair.

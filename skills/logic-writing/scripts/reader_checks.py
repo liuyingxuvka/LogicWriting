@@ -383,7 +383,12 @@ def _review_boundary_checks(review, *, brief, shared, amap):
                     allowed |= {body[j] for i, unit in enumerate(body) if unit in allowed
                                 for j in (i-1, i+1) if 0 <= j < len(body)}
             for evidence in row['evidence']:
-                _verify_span_evidence(evidence, units)
+                try:
+                    _verify_span_evidence(evidence, units)
+                except ValidationError as exc:
+                    if kind=='limitation_checks':
+                        raise ValidationError(f'limitation_quote_missing:{row_id}') from exc
+                    raise
                 if evidence['artifact_unit_id'] not in allowed:
                     raise ValidationError(f'{row_id}: excerpt must be in its bound planned unit or permitted adjacent body unit')
     if missing:
@@ -415,15 +420,16 @@ def route_review_from_current(value, *, owner, route, amap, required_dimensions=
     missing = set(required_dimensions) - present_dimensions
     if missing:
         raise ValidationError(f"route review omits required dimensions: {sorted(missing)}")
+    if brief is not None:
+        if shared is None:
+            raise ValidationError('boundary review requires SharedWriting with ReaderBrief')
+        _review_boundary_checks(review, brief=brief, shared=shared, amap=amap)
     for row in review["dimensions"]:
         for evidence in row["evidence"]:
             _verify_span_evidence(evidence, units)
     for finding in review["findings"]:
         _verify_span_evidence(finding["evidence"], units)
     if brief is not None:
-        if shared is None:
-            raise ValidationError('boundary review requires SharedWriting with ReaderBrief')
-        _review_boundary_checks(review, brief=brief, shared=shared, amap=amap)
         world_ref_unquoted(brief["composition_plan"], review, shared, lambda span: _verify_span_evidence(span, units))
     elif review.get("world_ref_checks"):
         raise ValidationError("world_ref_checks requires the current ReaderBrief and SharedWriting")

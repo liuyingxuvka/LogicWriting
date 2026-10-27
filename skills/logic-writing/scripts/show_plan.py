@@ -8,10 +8,10 @@ import json
 from pathlib import Path
 import re
 
-from _common import load_request
+from _common import load_request, ValidationError
 from artifact_map import validate_artifact_map
 from reader_fill import fill_check_fingerprints
-from reader_binding import shared_writing_from_current
+from reader_binding import shared_writing_from_current, quote_binding_units
 from world_refs import planned_world_refs
 
 # Result files of the same chain, read beside the input like reader-brief.json and artifact-map.json.
@@ -30,6 +30,53 @@ def _find_record(value, marker, wrappers):
     if marker in value:
         return value
     return None
+
+
+def _load_view_input(path):
+    """Read an interrupted chain without writing or claiming that its binding passed."""
+    path=Path(path).resolve()
+    try:
+        return load_request(path)
+    except (OSError,ValueError) as error:
+        raw=json.loads(path.read_text(encoding='utf-8'))
+        if not isinstance(raw,dict):raise error
+        route=raw.get('route_decision')
+        if path.name=='brief-request.json' and isinstance(route,str) and not (path.parent/route).exists():
+            from select_route import validate_request
+            decision=validate_request(load_request(path.parent/'route-request.json'))['route_decision']
+            request=deepcopy(raw)
+            request['route_decision']=decision
+            for key in ('composition_plan','content_boundaries','route_composition'):
+                reference=request.get(key)
+                if isinstance(reference,str) and reference.endswith('.json'):
+                    record=load_request(path.parent/reference)
+                    request[key]=record.get(key,record) if isinstance(record,dict) else record
+            return request
+        blocked_path=path.parent/'shared-writing-result.json'
+        if not blocked_path.is_file():raise error
+        blocked=json.loads(blocked_path.read_text(encoding='utf-8'))
+        if not isinstance(blocked,dict) or blocked.get('status')!='blocked':raise error
+        request=load_request(path.parent/'shared-writing.json')
+        if not isinstance(request,dict):raise error
+        request['_binding_blocked']=blocked
+        return request
+
+
+def _partial_shared(shared, amap):
+    """Resolve each existing quote against the current map using the native binding rules."""
+    units={row['artifact_unit_id']:row for row in amap['units']}
+    rows=[]
+    for binding in shared.get('unit_bindings',[]):
+        if not isinstance(binding,dict):continue
+        probe=deepcopy(binding)
+        if 'anchor_excerpts' not in probe:
+            probe['anchor_excerpts']=[span.get('excerpt','') for span in probe.get('artifact_spans',[]) if isinstance(span,dict)]
+        try:
+            resolved=quote_binding_units(probe,units) or []
+        except ValidationError:
+            resolved=[]
+        rows.append(dict(binding,artifact_unit_ids=[row['artifact_unit_id'] for row in resolved]))
+    return dict(shared,unit_bindings=rows)
 
 
 def _records(request, input_path=None):
@@ -54,7 +101,7 @@ def _records(request, input_path=None):
     return brief, plan, shared or {}, amap or {}
 
 
-def _results(request, input_path, amap):
+def _results(request, input_path, amap, plan=None):
     """The chain's audit, review and closure records; `stale` when not made from the current bytes."""
     found = {}
     for name, filename, marker, wrappers in RESULTS:
@@ -68,7 +115,7 @@ def _results(request, input_path, amap):
                     record = None
         if record is None or not amap:
             found[name] = None
-        elif record.get('artifact_fingerprint') != amap.get('artifact_fingerprint'):
+        elif record.get('artifact_fingerprint') != amap.get('artifact_fingerprint') or (plan and record.get('composition_plan_fingerprint') and record['composition_plan_fingerprint']!=plan.get('plan_fingerprint')):
             found[name] = 'stale'
         else:
             found[name] = record
@@ -99,7 +146,7 @@ def _unit_findings(ids, results):
                 for evidence in row.get('evidence', []):
                     if evidence.get('artifact_unit_id') in ids:
                         rows.append(dict(code=f"{key[:-7]} {row.get(identity, '')}", message=row.get('status', 'quoted'),
-                                         excerpt=_excerpt(evidence.get('excerpt', '')), source='review'))
+                                         excerpt=_excerpt(evidence.get('excerpt', '')), source='review', passed=row.get('status') in {'present','absent','passed'}))
     return rows
 
 
@@ -121,7 +168,11 @@ def _summary(view, results):
         known_bad = f'{uncaught} uncaught'
     else:
         known_bad = _status(closure)
-    return (f"units: {len(units)} ({bound} bound, {len(units) - bound} unbound); "
+    unbound=', '.join(unit['planned_unit_id']+(' new' if unit.get('new') else '') for unit in units if not unit['bound'])
+    details=': '+unbound if unbound else ''
+    blocked=results.get('binding')
+    binding=("shared_writing: blocked ("+'; '.join(str(row) for row in blocked.get('errors',[]))+'); ') if isinstance(blocked,dict) else ''
+    return (f"units: {len(units)} ({bound} bound, {len(units) - bound} unbound{details}); {binding}"
             f"audit: {_status(results['audit'], True)}; review: {_status(results['review'])}; "
             f"closure: {_status(closure)}; known-bad: {known_bad}")
 
@@ -152,7 +203,12 @@ def _tree_order(rows):
 
 def plan_view(request, *, input_path=None):
     brief, plan, shared, amap = _records(request, input_path)
-    if shared.get('unit_bindings') and amap:
+    partial=request.get('_binding_blocked')
+    declared={row.get('planned_unit_id') for row in shared.get('unit_bindings',[]) if isinstance(row,dict)}
+    if partial and amap:
+        amap=validate_artifact_map(amap)
+        shared=_partial_shared(shared,amap)
+    elif shared.get('unit_bindings') and amap:
         current_map = validate_artifact_map(amap)
         envelope = fill_check_fingerprints(deepcopy(dict(
             reader_brief=brief, artifact_map=current_map, contract=shared)))
@@ -170,7 +226,8 @@ def plan_view(request, *, input_path=None):
     content_anchors = {row['content_unit_id']: row.get('evidence_anchor_ids', []) for row in boundaries.get('content_units', [])}
     relations = {row['anchor_id']: row.get('relation', '') for row in boundaries.get('evidence_anchors', [])}
     world = planned_world_refs(plan)
-    results = _results(request, input_path, amap)
+    results = _results(request, input_path, amap, plan)
+    if partial:results['binding']=partial
     provenance = _find_record(request, 'unit_treatments', ('revision_provenance', 'provenance')) or {}
     treatments = provenance.get('unit_treatments') or []
     limitations = {row['limitation_id']: row['safe_meaning'] for row in boundaries.get('limitations', [])}
@@ -180,17 +237,19 @@ def plan_view(request, *, input_path=None):
         bindings = [row for row in shared.get('unit_bindings', [])
                     if row.get('planned_unit_id') == unit['planned_unit_id']]
         ids = list(dict.fromkeys(identity for row in bindings for identity in row.get('artifact_unit_ids', [])))
+        ids=[identity for identity in ids if identity in units]
+        checks=_unit_findings(set(ids),results)
         texts = [units[identity]['text'] for identity in ids]
         texts = [re.split(r'(?<=[.!?。！？])\s+', text, maxsplit=1)[0][:110] for text in texts]
         result['planned_units'].append(dict(order=unit.get('order'),
             planned_unit_id=unit['planned_unit_id'], parent_unit_id=unit.get('parent_unit_id'), depth=depth,
             title=unit.get('title', unit['planned_unit_id']), bound_unit_ids=ids,
-            bound=bool(bindings), reader_job=unit.get('reader_job', ''),
+            bound=bool(ids), new=bool(partial and unit['planned_unit_id'] not in declared), reader_job=unit.get('reader_job', ''),
             incoming_reader_state=unit.get('incoming_reader_state', ''),
             outgoing_reader_state=unit.get('outgoing_reader_state', ''),
             content=[content.get(identity, identity) for identity in unit.get('content_unit_ids', [])],
             limitations=[limitations.get(identity, identity) for identity in unit.get('limitation_ids', [])], text=texts,
-            findings=_unit_findings(set(ids), results),
+            findings=[row for row in checks if not row.get('passed')], checks=[row for row in checks if row.get('passed')],
             anchors=[dict(anchor_id=anchor, relation=relations.get(anchor, ''))
                      for identity in unit.get('content_unit_ids', []) for anchor in content_anchors.get(identity, [])],
             world_refs=list(world.get(unit['planned_unit_id'], ())),
@@ -209,12 +268,14 @@ def render_plan(view):
     lines += [f"Q: {view['central_question']}", f"Throughline: {view['central_throughline']}"]
     for unit in view['planned_units']:
         padding = '  ' * unit['depth']
-        where = ', '.join(unit['bound_unit_ids']) or ('BOUND' if unit['bound'] else 'UNBOUND')
+        where = ', '.join(unit['bound_unit_ids']) or ('BOUND' if unit['bound'] else 'UNBOUND'+(' new' if unit.get('new') else ''))
         lines += ['', f"{padding}{unit['order']}. {unit['title']} [{where}]",
                   f"{padding}   job: {unit['reader_job']}",
                   f"{padding}   reader: {unit['incoming_reader_state']} -> {unit['outgoing_reader_state']}"]
         for key, label in (('content', 'says'), ('limitations', 'limit'), ('text', 'text')):
             lines += [f'{padding}   {label}: {text}' for text in unit[key]]
+        for row in unit.get('checks',[]):
+            lines.append(f"{padding}   checks: {row['code']}: {row['message']}")
         for row in unit['findings']:
             quote = f' "{row["excerpt"]}"' if row.get('excerpt') else ''
             lines.append(f"{padding}   findings: {row['code']}: {row['message']}{quote}")
@@ -233,7 +294,7 @@ def main():
     parser.add_argument('--json', action='store_true')
     args = parser.parse_args()
     try:
-        view = plan_view(load_request(args.input), input_path=args.input)
+        view = plan_view(_load_view_input(args.input), input_path=args.input)
     except (OSError, ValueError, TypeError, KeyError) as exc:
         print(f'show_plan: {exc}')
         return 2

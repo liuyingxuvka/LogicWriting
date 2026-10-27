@@ -95,7 +95,25 @@ class _RealReaderChain:
         shutil.copytree(example, folder)
         if case == "leak":
             shutil.copyfile(example / "known-bad/leak.md", folder / "piece.md")
-        run_example_steps(folder)
+        if case=='ahead':
+            import json
+            request=json.loads((folder/'brief-request.json').read_text())
+            rows=request['composition_plan']['planned_units']
+            unit=copy.deepcopy(rows[-1]);unit.update(planned_unit_id='u-libs',order=max(row['order'] for row in rows)+1,title='Libraries',content_unit_ids=[],limitation_ids=[])
+            rows.append(unit)
+            (folder/'brief-request.json').write_text(json.dumps(request))
+            run_example_steps(folder,until='map')
+            from _common import cli_validate
+            from validate_shared_writing import validate_shared_writing
+            previous=sys.argv
+            try:
+                sys.argv=['validate_shared_writing.py','--input',str(folder/'shared-writing.json'),'--output',str(folder/'shared-writing-result.json')]
+                binding_code=cli_validate(validate_shared_writing,'Bind the current text')
+            finally:
+                sys.argv=previous
+            if binding_code==0:raise AssertionError('ahead fixture unexpectedly bound every required unit')
+        else:
+            run_example_steps(folder)
         import io, json
         from contextlib import redirect_stdout
         from show_plan import main
@@ -107,9 +125,14 @@ class _RealReaderChain:
                 code = main()
         finally:
             sys.argv = previous
+        if case=='ahead' and code not in (0,None):return 'hidden'
         if code not in (0, None):
             raise AssertionError('native show_plan failed')
         view = json.loads(output.getvalue())
+        if case=='ahead':
+            row=next((row for row in view['planned_units'] if row['planned_unit_id']=='u-libs'),{})
+            return 'ahead_shown' if row.get('new') and not row.get('bound') and 'shared_writing: blocked' in view['summary'] else 'hidden'
+
         shown = any(row.get("code") == "workflow_leak" for unit in view["planned_units"] for row in unit.get("findings", []))
         return "shown" if shown else "clean" if case == "clean" else "hidden"
 

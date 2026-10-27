@@ -286,7 +286,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:f5319b61b1c68efe369af1f0fcad46c578108d4735f99fb81bcb00f41d9f823c"
+      "fingerprint": "sha256:b460e6301225ae961bfe5d78c4453d2bad74c4c12030b5dab8630d014a83f657"
     },
     {
       "id": "investigation",
@@ -337,7 +337,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:4594a55a18e8d6a1416036ed66739d59c5c7d5b98689cd034e4033fc63a661e8"
+      "fingerprint": "sha256:727d97e7cf1f7faaee0bfce8af769fb42cbba81a32d09df2b5d10056f57387a3"
     },
     {
       "id": "academic",
@@ -689,7 +689,7 @@
       ],
       "parent": "reader-artifact",
       "status": "confirmed",
-      "fingerprint": "sha256:2b4d18adb6f47cc4509ac7bb1948bf08b8b73ab68bbdb1ce795cd1be00b0e03f"
+      "fingerprint": "sha256:2eb7d3d2aa514f59552bdc7d36d9ae6be741ce453ee1e0be09d72170e0d85bf6"
     },
     {
       "id": "reader-inputs",
@@ -722,7 +722,7 @@
       ],
       "parent": "reader-artifact",
       "status": "confirmed",
-      "fingerprint": "sha256:045ffe1e98d364cf058b128fb0c56c7f673de234dc53695ec0d2d45addf97da6"
+      "fingerprint": "sha256:51a2072873833e10908ec5da4fec31e7a53b64d001c72b37898aae913fc22b19"
     },
     {
       "id": "reader-closure",
@@ -782,8 +782,8 @@
     },
     {
       "id": "reader-commands",
-      "layer": "routes",
-      "summary": "Expose the reader-chain commands and readable plan view without generating prose.",
+      "layer": "entry",
+      "summary": "Expose read-only plan views and reader-chain command entrypoints, selecting the existing route in memory when a draft has no saved decision.",
       "responsibilities": [
         "Expose the reader-chain commands and readable plan view without generating prose.",
         "The plan readback shows each unit's findings, anchors and world references."
@@ -808,6 +808,7 @@
         "reader-checks",
         "reader-inputs",
         "reader-plan",
+        "routing",
         "shared-contracts",
         "world-references"
       ],
@@ -819,7 +820,7 @@
         ".flowguard/models/plan_readback_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:9b0b12e40424743a8c1811c75d531434bd17d276b6d5872b707086b82fc3f25d"
+      "fingerprint": "sha256:1b6d32556261cb15c7f39cbe26f9840616d9aea2e017e862770674e165d95a0e"
     },
     {
       "id": "world-references",
@@ -1021,7 +1022,7 @@
     ".flowguard/models/fiction_tree_model.py": "36899630f1d0a27e1240bd8a1a409ffb759f446678f3b4c47a131866253f8114",
     ".flowguard/models/known_bad_generator_model.py": "368c71fa5a1c708e0ffaa9d2ae89198c9a816ca215fe4972900a00158bc9e185",
     ".flowguard/models/plan_order_model.py": "eb1222578e6caabb43254467a7b67f96103700b0a1623b6af74dad5b8af41a34",
-    ".flowguard/models/plan_readback_model.py": "f939d5c6bdbb77ecf93c5aca3a6dbaf9bcd276c3fc849c867c6e6d9e2e935398",
+    ".flowguard/models/plan_readback_model.py": "cde4b54937582e0b8fbb27c8f084498b06c00b2a749afcd663132c5d708c424b",
     ".flowguard/models/reader_artifact_model.py": "f6aaac4cdc55c3cefb8a5193e2301bec18ae6f04c94282adbcb429f84c40c992",
     ".flowguard/models/route_and_guard_model.py": "0c0d49b01c4c9c46a86ab4c4de5131001f1cad25f3dc42cf3558f5936a9b2bb9",
     ".flowguard/models/shared_writing_binding_model.py": "da43286400469dc66a8d200bc400a8e887ab980b3113c0f9b2083b95b69d9e71",

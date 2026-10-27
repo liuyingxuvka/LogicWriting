@@ -7,7 +7,7 @@ from _reader_chain_fixture import _RealReaderChain, NativeReport
 MODEL_ID = 'plan_readback_model'
 PARENT = 'reader-commands'
 IMPLEMENTED_BY = {'ShowPlan': 'skills/logic-writing/scripts/show_plan.py:main', 'PlanView': 'skills/logic-writing/scripts/show_plan.py:plan_view'}
-TESTED_BY = {'readback_shows_failing_units': ['tests/e2e/test_worked_examples.py:test_show_plan_shows_findings_on_the_failing_unit']}
+TESTED_BY = {'readback_shows_the_plan_ahead_of_the_text':['tests/e2e/test_worked_examples.py:test_show_plan_reads_back_while_the_plan_is_ahead'],'readback_shows_failing_units': ['tests/e2e/test_worked_examples.py:test_show_plan_shows_findings_on_the_failing_unit']}
 @dataclass(frozen=True)
 class Event:
     kind: str                       # review | self_review | edit | close | import | order | readback
@@ -23,7 +23,7 @@ class Step:
     reads=()
     writes=('readback_case', 'readback')
     def readback_for(self, case: str) -> str:
-        return "shown" if case == "leak" else "clean"
+        return "ahead_shown" if case=="ahead" else "shown" if case == "leak" else "clean"
     def apply(self,event,state):
         result=self.readback_for(event.quality)
         return (FunctionResult('read',replace(state,readback_case=event.quality,readback=result),label='readback'+'_'+event.quality),)
@@ -39,13 +39,21 @@ def _readback_shows_failing_units(state: State, trace) -> InvariantResult:
         return InvariantResult.fail("a unit failing its audit reads back without the finding")
     return InvariantResult.pass_()
 
-INVARIANTS = (Invariant("readback_shows_failing_units", "each failure on a unit is visible under that unit in the readback",
+def readback_shows_the_plan_ahead_of_the_text(state,trace):
+    if state.readback_case=='ahead' and state.readback!='ahead_shown':
+        return InvariantResult.fail('blocked binding hides the plan ahead of the current text')
+    return InvariantResult.pass_()
+
+class BlockedChainHidesThePlan(Step):
+    def readback_for(self,case):return 'hidden' if case=='ahead' else super().readback_for(case)
+
+INVARIANTS = (Invariant('readback_shows_the_plan_ahead_of_the_text','planned new units remain readable while binding is blocked',readback_shows_the_plan_ahead_of_the_text),Invariant("readback_shows_failing_units", "each failure on a unit is visible under that unit in the readback",
               _readback_shows_failing_units),)
-CASES = ('clean', 'leak')
+CASES = ('clean', 'leak', 'ahead')
 EVENTS=tuple(Event('readback',case) for case in CASES)
 def _explorer(step):return Explorer(workflow=Workflow((step,)),initial_states=(State(),),external_inputs=EVENTS,invariants=INVARIANTS,max_sequence_length=1,progress_steps=0)
 def build_explorer():return _explorer(Step())
-def broken_variants():return {'readback_hides_findings':_explorer(ReadbackHidesFindings())}
+def broken_variants():return {'blocked_chain_hides_the_plan':_explorer(BlockedChainHidesThePlan()),'readback_hides_findings':_explorer(ReadbackHidesFindings())}
 def conformance():
     count=0
     for trace in build_explorer().explore().traces:

@@ -176,3 +176,46 @@ def test_show_plan_shows_findings_on_the_failing_unit(tmp_path):
     assert len(leaking) == 1
     assert 'audit: repair' in view['summary'] and 'review: stale' in view['summary']
     assert 'findings: workflow_leak' in render_plan(view)
+
+
+def test_show_plan_reads_back_while_the_plan_is_ahead(tmp_path,monkeypatch,capsys):
+    import copy,hashlib
+    from _common import cli_validate
+    from validate_shared_writing import validate_shared_writing
+    from tests.v2_support import run_example_steps
+    from show_plan import main,render_plan
+    def view(path):
+        with monkeypatch.context() as patch:
+            patch.setattr(sys,'argv',['show_plan.py','--input',str(path),'--json'])
+            assert main()==0
+        return json.loads(capsys.readouterr().out)
+    folder=tmp_path/'ahead'
+    shutil.copytree(EXAMPLES/'investigation',folder)
+    run_example_steps(folder,until='review')
+    healthy=view(folder/'audit-request.json')
+    rendered=render_plan(healthy)
+    assert 'checks: limitation lim-perf: present' in rendered
+    assert 'findings: limitation lim-perf: present' not in rendered
+    request=json.loads((folder/'brief-request.json').read_text())
+    rows=request['composition_plan']['planned_units']
+    unit=copy.deepcopy(rows[-1]);unit.update(planned_unit_id='u-libs',order=max(row['order'] for row in rows)+1,title='Libraries',content_unit_ids=[],limitation_ids=[])
+    rows.append(unit)
+    (folder/'brief-request.json').write_text(json.dumps(request))
+    run_example_steps(folder,until='map')
+    with monkeypatch.context() as patch:
+        patch.setattr(sys,'argv',['validate_shared_writing.py','--input',str(folder/'shared-writing.json'),'--output',str(folder/'shared-writing-result.json')])
+        assert cli_validate(validate_shared_writing,'Bind current text')==1
+    before={path.relative_to(folder).as_posix():hashlib.sha256(path.read_bytes()).hexdigest() for path in folder.rglob('*') if path.is_file()}
+    result=view(folder/'audit-request.json')
+    assert len(result['planned_units'])==6
+    added=next(row for row in result['planned_units'] if row['planned_unit_id']=='u-libs')
+    assert added['new'] and not added['bound']
+    assert sum(row['bound'] for row in result['planned_units'])==5
+    assert 'u-libs new' in result['summary'] and 'shared_writing: blocked' in result['summary']
+    assert before=={path.relative_to(folder).as_posix():hashlib.sha256(path.read_bytes()).hexdigest() for path in folder.rglob('*') if path.is_file()}
+    bare=tmp_path/'bare'
+    shutil.copytree(EXAMPLES/'investigation',bare)
+    names={path.relative_to(bare) for path in bare.rglob('*') if path.is_file()}
+    assert not (bare/'route-decision.json').exists()
+    assert len(view(bare/'brief-request.json')['planned_units'])==5
+    assert names=={path.relative_to(bare) for path in bare.rglob('*') if path.is_file()}

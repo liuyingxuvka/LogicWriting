@@ -12,11 +12,11 @@
     "step": "audit"
   },
   "nolim-lim-perf.md": {
-    "error": "review evidence names artifact unit artifact:paragraph:0008, which is not in the current ArtifactMap (it has artifact:document … artifact:paragraph:0009)",
+    "error": "limitation_quote_missing:lim-perf",
     "step": "review"
   },
   "nolim-lim-scope.md": {
-    "error": "review evidence excerpt is absent from the current unit",
+    "error": "limitation_quote_missing:lim-scope",
     "step": "review"
   },
   "overclaim.md": {

@@ -8,7 +8,7 @@
     "step": "audit"
   },
   "nolim-lim-illustrative.md": {
-    "error": "review evidence excerpt is absent from the current unit",
+    "error": "limitation_quote_missing:lim-illustrative",
     "step": "review"
   },
   "noworld-travel_morning.md": {
