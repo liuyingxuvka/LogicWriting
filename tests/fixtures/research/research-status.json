@@ -35,7 +35,11 @@
           "direction": "oppose",
           "node": null
         }
-      ]
+      ],
+      "source": "s-report",
+      "locator": "p. 1",
+      "summary": "Rates rose before the closure.",
+      "boundary": "Use only what the quoted passage says."
     },
     {
       "anchor": "a-mixed",
@@ -52,7 +56,11 @@
           "direction": "oppose",
           "node": null
         }
-      ]
+      ],
+      "source": "s-report",
+      "locator": "p. 2",
+      "summary": "One route supports it and one opposes it.",
+      "boundary": "Use only what the quoted passage says."
     },
     {
       "anchor": "a-limit",
@@ -63,7 +71,11 @@
           "direction": "limit",
           "node": "E_limit"
         }
-      ]
+      ],
+      "source": "s-report",
+      "locator": "p. 3",
+      "summary": "Only one lane was measured.",
+      "boundary": "Use only what the quoted passage says."
     },
     {
       "anchor": "a-support",
@@ -74,11 +86,19 @@
           "direction": "support",
           "node": null
         }
-      ]
+      ],
+      "source": "s-report",
+      "locator": "p. 4",
+      "summary": "Rates rose the week of the closure.",
+      "boundary": "Use only what the quoted passage says."
     },
     {
       "anchor": "a-none",
-      "directions": []
+      "directions": [],
+      "source": "s-report",
+      "locator": "p. 5",
+      "summary": "The port has three terminals.",
+      "boundary": "Use only what the quoted passage says."
     }
   ],
   "input_digests": [

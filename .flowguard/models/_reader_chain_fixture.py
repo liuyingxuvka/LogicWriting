@@ -63,6 +63,11 @@ class _RealReaderChain:
                       {"route": route, "hypothesis": "h-root", "direction": direction, "node": None}
                       for route, direction in directions[name]]} for name in anchors]}
         import hashlib
+        for index,row in enumerate(report['evidence'],1):
+            row.update(source='s1',locator=f'p. {index}',summary=f'Passage {index}.',boundary='Use only what the quoted passage says.')
+        if case=='support':
+            row=next(row for row in report['evidence'] if row['anchor']=='a-support')
+            row.update(locator='report locator',summary='Report-normalized passage.',boundary='Report-owned scope.')
         report['input_digests']=[{'path':name,'sha256':hashlib.sha256((folder/name).read_bytes()).hexdigest()} for name in ('research.yaml','source.yaml')]
         (folder / "research-status.json").write_text(json.dumps(report), encoding="utf-8")
         name = {"no_status": "oppose", "hand_conflict": "oppose"}.get(case, case)
@@ -76,6 +81,8 @@ class _RealReaderChain:
         except self.validation_error as exc:
             return str(exc).split(":", 1)[0]
         row = next(row for row in request["content_boundaries"]["evidence_anchors"] if row["anchor_id"] == f"a-{name}")
+        expected=next(item for item in report['evidence'] if item['anchor']==f'a-{name}')
+        self.import_fields_match=(row['locator']==expected['locator'] and row['observed_summary']==expected['summary'] and row['boundary']==expected['boundary'])
         return row["relation"]
 
     def _readback(self, case: str) -> str:
@@ -149,7 +156,9 @@ class _RealReaderChain:
             self.state = state
             return ReplayObservation(function_name=step.function_name, observed_output="audited", observed_state=state)
         if event.kind == "import":
-            state = replace(state, import_case=event.quality, relation=self._import(event.quality))
+            relation=self._import(event.quality)
+            fields={'report_fields_match':getattr(self,'import_fields_match',True)} if hasattr(state,'report_fields_match') else {}
+            state = replace(state, import_case=event.quality, relation=relation, **fields)
             self.state = state
             return ReplayObservation(function_name=step.function_name, observed_output="imported", observed_state=state)
         if event.kind in {"review", "self_review"}:

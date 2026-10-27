@@ -524,7 +524,7 @@
     {
       "id": "researchguard-handoff",
       "layer": "evidence",
-      "summary": "Read one native ResearchGuard verdict and preserve atomic native source anchors.",
+      "summary": "Read fresh saved ResearchGuard verdicts and source-owned report anchors; verify raw input digests without parsing native YAML.",
       "responsibilities": [
         "Read one native ResearchGuard verdict and preserve atomic native source anchors.",
         "A saved research report must match its folder's question, hypotheses, models and anchors.",
@@ -553,7 +553,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:7f8166f4f70a86b572c5cfd588bf5360289111959a79cb5716ae0b134bb19960"
+      "fingerprint": "sha256:8b4045e75bb4880d73f6ee051feae4bb6f138262097ae529b435584867457348"
     },
     {
       "id": "reader-plan",
@@ -1016,7 +1016,7 @@
     "skills/logic-writing/routes/travel/scripts"
   ],
   "model_digests": {
-    ".flowguard/models/anchor_import_model.py": "22b463807a025740aed89c220f5ee8b2fe01d9ff7380a7de2fecbee394c5b44a",
+    ".flowguard/models/anchor_import_model.py": "c2aa2f7c2cc5ba937cfd9092b7135caf9328b7cfa8a64343b47e0f0b8638847d",
     ".flowguard/models/closure_claim_model.py": "b7dc3bdc23fb1f45f18beecc656223a0e3b67dfd1df9b300e243bbea5de31a5d",
     ".flowguard/models/fiction_tree_model.py": "36899630f1d0a27e1240bd8a1a409ffb759f446678f3b4c47a131866253f8114",
     ".flowguard/models/known_bad_generator_model.py": "368c71fa5a1c708e0ffaa9d2ae89198c9a816ca215fe4972900a00158bc9e185",

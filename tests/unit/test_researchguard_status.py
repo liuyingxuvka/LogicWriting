@@ -9,6 +9,7 @@ import yaml
 
 from _common import ValidationError, load_request
 from researchguard_status import assess_research_verdict, fill_anchors_from_research
+from tests.v2_support import save_source_report
 
 
 def _report():
@@ -80,7 +81,7 @@ def test_handwritten_anchor_conflict_is_atomic_and_missing_anchors_import(tmp_pa
     authored = {"anchor_id": "existing", "source_id": "s", "locator": "p1", "relation": "limit",
                 "boundary": "Author scope remains unchanged.", "observed_summary": "Author summary remains unchanged."}
     authored[conflict_field] = "conflicting owner"
-    request = {"research_folder": str(research), "content_boundaries": {"evidence_anchors": [authored]}}
+    request = {"research_folder": str(research), "research_status":save_source_report(research), "content_boundaries": {"evidence_anchors": [authored]}}
     before = copy.deepcopy(request)
     with pytest.raises(ValidationError, match="anchor_conflict:existing"):
         fill_anchors_from_research(request)
@@ -166,7 +167,8 @@ def test_imported_anchor_takes_the_research_direction(tmp_path):
     status = str(folder / "research-status.json")
     assert imported(research_status=status) == {"a-oppose": "counter", "a-mixed": "counter", "a-limit": "limit",
                                                  "a-support": "support", "a-none": "context"}
-    assert set(imported().values()) == {"context"}
+    with pytest.raises(ValidationError, match='research_folder needs research_status'):
+        imported()
 
     # A handwritten relation may be weaker than the research, never the opposite.
     def handwritten(anchor_id, locator, relation):
@@ -197,3 +199,28 @@ def test_imported_anchor_takes_the_research_direction(tmp_path):
     (folder / "research-status.json").write_text(json.dumps(other), encoding="utf-8")
     with pytest.raises(ValidationError, match="research_report_stale:research.yaml"):
         imported(research_status=status)
+
+
+def test_research_folder_without_status_is_refused(tmp_path):
+    with pytest.raises(ValidationError,match='research_folder needs research_status: run researchguard status'):
+        fill_anchors_from_research({'research_folder':str(tmp_path)})
+
+
+def test_imported_anchor_matches_the_report_row(tmp_path):
+    from pathlib import Path
+    import shutil
+    from reader_fill import fill_brief_fingerprints
+    folder=tmp_path/'research'
+    shutil.copytree(Path(__file__).resolve().parents[1]/'fixtures/research',folder)
+    path=folder/'research-status.json'
+    report=json.loads(path.read_text())
+    expected=next(row for row in report['evidence'] if row['anchor']=='a-support')
+    expected.update(locator='Saved report locator',summary='Report-normalized summary.',boundary='Report-owned boundary.')
+    path.write_text(json.dumps(report))
+    request={'research_folder':str(folder),'research_status':str(path),'content_boundaries':{'evidence_anchors':[]}}
+    fill_brief_fingerprints(request)
+    actual=next(row for row in request['content_boundaries']['evidence_anchors'] if row['anchor_id']==expected['anchor'])
+    assert actual['source_id']==expected['source']
+    assert actual['locator']==expected['locator']
+    assert actual['observed_summary']==expected['summary']
+    assert actual['boundary']==expected['boundary']

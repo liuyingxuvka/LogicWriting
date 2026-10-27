@@ -622,3 +622,24 @@ def swap_sections(piece: Path, first_heading: str, second_heading: str) -> None:
     end = text.find("\n## ", second + 1)
     end = len(text) if end < 0 else end + 1
     piece.write_text(text[:first] + text[second:end] + text[first:second] + text[end:], encoding="utf-8")
+
+
+def save_source_report(folder):
+    """Build explicit transport data from a small native test folder, never research evidence."""
+    import hashlib,json,yaml
+    folder=Path(folder)
+    index=yaml.safe_load((folder/'research.yaml').read_text())
+    source_name=index['models']['source']
+    source=yaml.safe_load((folder/source_name).read_text())
+    sources={row['source_id']:row for row in source['sources']}
+    report={'question':index.get('question','Test question'), 'hypotheses':index.get('hypotheses',[]),
+            'models':{'source':{'path':source_name,'status':'ok'}},
+            'verdict':{'search':'stop_sufficient','root_claim':None,'live_hypotheses':[], 'contested':False,'errors':0},
+            'evidence':[{'anchor':row['anchor_id'],'source':row['source_id'],'locator':row.get('locator'),
+                         'summary':row.get('normalized_summary') or str(row.get('text') or '')[:200],
+                         'boundary':sources[row['source_id']].get('cannot_support_structural_use') or 'Use only what the quoted passage says.',
+                         'directions':[]} for row in source['anchors']],
+            'input_digests':[{'path':name,'sha256':hashlib.sha256((folder/name).read_bytes()).hexdigest()} for name in sorted({'research.yaml',source_name})]}
+    path=folder/'research-status.json'
+    path.write_text(json.dumps(report,ensure_ascii=False))
+    return str(path)

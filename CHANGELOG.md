@@ -8,6 +8,8 @@ line follows semantic versioning.
 
 ## Unreleased
 
+- Research anchor imports read the fresh saved report only, including its source-owned locator, summary and boundary.
+
 - Closure checks the saved provider reports against their current raw input files; stale reports require repair.
 
 - Maintenance checks run on FlowGuard 0.70.13; ResearchGuard 0.5.16 is the minimum.

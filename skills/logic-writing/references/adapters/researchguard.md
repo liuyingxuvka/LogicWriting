@@ -56,24 +56,13 @@ live alternatives or the request names a research folder. Preserve native
 
 ## Import source-owned anchors
 
-A brief request names `research_folder`, relative to the request JSON, pointing
-to the folder or `research.yaml`. The source YAML is the index's `models.source`.
-The reader imports missing anchors using native source ids, locators, summaries,
-text and source boundaries. A handwritten anchor with the same id but a different
-source id or locator fails `anchor_conflict:<id>`; it cannot override its owner.
-For matching identities, author-written `relation`, `boundary` and
-`observed_summary` remain unchanged. Import only reads files; it performs no
-retrieval or provider call.
-
-Steps: first save `researchguard status <folder> --json --output research-status.json`;
-the brief request names `research_folder` and `research_status`
-(`research-status.json`); the closure input's `provider_reports` lists the same
-file. With `research_status`, imported anchors take their `relation` from the
-report's direct directions for the root claim (`counter`, `limit`, `support`,
-else `context`); without it they are `context`. A handwritten `relation` that
-contradicts the research direction fails `anchor_relation_conflict:<id>`.
-ResearchGuard's `references/research-tree.md` defines which evidence is direct;
-LogicWriting does not recompute directions.
+A request with `research_folder` must also name `research_status`. First save a fresh
+native report with the command above. Anchor imports read only its `evidence` rows:
+`anchor`, `source`, `locator`, `summary`, `boundary` and native `directions`.
+Logic Writing compares raw input digests before importing; it never parses the native
+research or source YAML. Empty report boundaries keep the scoped default “Use only
+what the quoted passage says.” Handwritten identity or support/counter conflicts fail
+atomically, while authored summaries and narrower boundaries remain intact.
 
 ## Native member responsibilities
 

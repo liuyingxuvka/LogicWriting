@@ -75,31 +75,6 @@ def assess_research_verdict(document: Any, alternatives=()) -> dict[str, Any]:
     return {"status": "passed", "passed": True, "reason": reason, "residual_risk": risks}
 
 
-def read_research_folder(location: Any) -> tuple[dict[str, Any], dict[str, Any]]:
-    """Read the research index and its SourceGuard model; never runs ResearchGuard."""
-    if not isinstance(location, (str, Path)) or not str(location).strip():
-        raise ValidationError("research_folder must name a ResearchGuard research folder or research.yaml")
-    try:
-        import yaml
-    except ImportError as exc:
-        raise ValidationError("reading a ResearchGuard research folder needs PyYAML (it comes with ResearchGuard)") from exc
-    index_path = Path(location).expanduser()
-    if index_path.is_dir():
-        index_path /= "research.yaml"
-    try:
-        index = require_mapping(yaml.safe_load(index_path.read_text(encoding="utf-8")), "ResearchGuard research index")
-        if index.get("schema") != "researchguard.research.v1":
-            raise ValidationError("research_folder needs a researchguard.research.v1 index")
-        models = require_mapping(index.get("models"), "research models")
-        source_path = models.get("source")
-        if not isinstance(source_path, str) or not source_path:
-            raise ValidationError("research_folder must name models.source")
-        model = require_mapping(yaml.safe_load((index_path.parent / source_path).read_text(encoding="utf-8")), "SourceGuard model")
-    except (OSError, yaml.YAMLError) as exc:
-        raise ValidationError(f"cannot read research_folder {location}: {exc}") from exc
-    return index, model
-
-
 def research_report_identity_problems(document: Any, research_folder: Any) -> list[str]:
     """A saved research report counts only while its declared input bytes match."""
     if not isinstance(research_folder, (str, Path)) or not str(research_folder).strip():
@@ -120,15 +95,16 @@ def relation_for_root_claim(rows: Any, root_id: str | None) -> str:
     return "context"
 
 
-def research_directions(report_path: Any, research_folder: Any) -> dict[str, str]:
+def research_directions(report_path: Any, research_folder: Any, *, document=None) -> dict[str, str]:
     """Relations of the saved report's anchors for its root claim; empty without a report."""
     if report_path is None:
         return {}
-    import json
-    try:
-        document = json.loads(Path(report_path).read_text(encoding="utf-8"))
-    except (OSError, UnicodeError, ValueError, TypeError) as exc:
-        raise ValidationError(f"cannot read research_status {report_path}: {exc}") from exc
+    if document is None:
+        import json
+        try:
+            document = json.loads(Path(report_path).read_text(encoding="utf-8"))
+        except (OSError, UnicodeError, ValueError, TypeError) as exc:
+            raise ValidationError(f"cannot read research_status {report_path}: {exc}") from exc
     problems = research_report_identity_problems(document, research_folder)
     if problems:
         raise ValidationError("; ".join(problems))
@@ -147,12 +123,26 @@ def fill_anchors_from_research(request: dict[str, Any]) -> dict[str, Any]:
         if "research_status" in request:
             raise ValidationError("research_status needs research_folder")
         return request
-    _index, model = read_research_folder(request["research_folder"])
-    directions = research_directions(request.get("research_status"), request["research_folder"])
-    source_rows, native_anchors = model.get("sources", []), model.get("anchors", [])
-    if not isinstance(source_rows, list) or not isinstance(native_anchors, list):
-        raise ValidationError("SourceGuard sources and anchors must be lists")
-    sources = {row["source_id"]: row.get("cannot_support_structural_use") for row in source_rows if isinstance(row, Mapping) and row.get("source_id")}
+    status = request.get('research_status')
+    if not status:
+        raise ValidationError('research_folder needs research_status: run researchguard status <folder> --json --output research-status.json')
+    import json
+    try:
+        document=json.loads(Path(status).read_text(encoding='utf-8'))
+    except (OSError,UnicodeError,ValueError,TypeError) as exc:
+        raise ValidationError(f'cannot read research_status {status}: {exc}') from exc
+    directions=research_directions(status,request['research_folder'],document=document)
+    evidence=document.get('evidence')
+    if not isinstance(evidence,list):
+        raise ValidationError('ResearchGuard report evidence must be a list')
+    native_anchors=[]
+    for row in evidence:
+        row=require_mapping(row,'ResearchGuard report evidence')
+        if not isinstance(row.get('source'),str) or not row['source']:
+            raise ValidationError('ResearchGuard report anchor needs source')
+        native_anchors.append({'anchor_id':row.get('anchor'),'source_id':row['source'],
+                               'locator':row.get('locator'),'summary':row.get('summary'),
+                               'boundary':row.get('boundary')})
     boundaries = require_mapping(request.get("content_boundaries", {}), "content_boundaries")
     anchors = boundaries.get("evidence_anchors", [])
     if not isinstance(anchors, list):
@@ -183,9 +173,9 @@ def fill_anchors_from_research(request: dict[str, Any]) -> dict[str, Any]:
             continue
         additions.append({"anchor_id": anchor_id, "source_id": row.get("source_id"),
                           "locator": row.get("locator"), "relation": relation,
-                          "observed_summary": row.get("normalized_summary") or str(row.get("text") or "")[:200],
-                          "boundary": sources.get(row.get("source_id")) or "Use only what the quoted passage says."})
-    # Commit only after every source row and ownership conflict has been checked.
+                          "observed_summary": row.get("summary"),
+                          "boundary": row.get("boundary") or "Use only what the quoted passage says."})
+    # Commit only after every report row and ownership conflict has been checked.
     if "content_boundaries" not in request:
         request["content_boundaries"] = boundaries
     if "evidence_anchors" not in boundaries:
