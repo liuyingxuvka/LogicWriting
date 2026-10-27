@@ -1,0 +1,7 @@
+{
+  "schema": "flowguard.target.v1",
+  "goal": "LW-404: imported anchors come from the saved report (rule imported_anchor_matches_the_report_row)",
+  "components": [],
+  "flows": [],
+  "remove": []
+}
