@@ -48,7 +48,7 @@
         "tests/unit/test_routing.py"
       ],
       "models": [
-        ".flowguard/models/route_and_guard_model.py"
+        ".flowguard/models/route_selection_model.py"
       ],
       "status": "confirmed",
       "fingerprint": "sha256:ee12114b33c236d1686484520422c348896ca9c4798e11db89e3ccda3aecd944"
@@ -184,9 +184,12 @@
         "shared-contracts"
       ],
       "tests": [
-        "tests/unit/test_fiction.py"
+        "tests/unit/test_fiction.py",
+        "tests/unit/test_route_review.py"
       ],
-      "models": [],
+      "models": [
+        ".flowguard/models/route_review_model.py"
+      ],
       "status": "confirmed",
       "fingerprint": "sha256:fa11ba905a325588be6cd8982ba13fbee56052da5f2697081b724755c4d6346f"
     },
@@ -283,9 +286,12 @@
         "travel-model"
       ],
       "tests": [
-        "tests/unit/test_travel.py"
+        "tests/unit/test_travel.py",
+        "tests/unit/test_route_review.py"
       ],
-      "models": [],
+      "models": [
+        ".flowguard/models/route_review_model.py"
+      ],
       "status": "confirmed",
       "fingerprint": "sha256:26d9c2c6cafd5b0f3f36e6cfb643b8b2f6036b8adb8d0e572125a28e9fc23dc0"
     },
@@ -332,9 +338,12 @@
         "shared-contracts"
       ],
       "tests": [
-        "tests/unit/test_investigation.py"
+        "tests/unit/test_investigation.py",
+        "tests/unit/test_route_review.py"
       ],
-      "models": [],
+      "models": [
+        ".flowguard/models/route_review_model.py"
+      ],
       "status": "confirmed",
       "fingerprint": "sha256:8369a04629641b71bb70ef32f31a68d1d16b2ebecf8fa525eb3776fdbba46032"
     },
@@ -375,9 +384,12 @@
         "shared-contracts"
       ],
       "tests": [
-        "tests/unit/test_academic.py"
+        "tests/unit/test_academic.py",
+        "tests/unit/test_route_review.py"
       ],
-      "models": [],
+      "models": [
+        ".flowguard/models/route_review_model.py"
+      ],
       "status": "confirmed",
       "fingerprint": "sha256:0b3c4cac818b83dff3dd47f438e9fbf03c5e97edb7b1bc81534dd79fbce77ea9"
     },
@@ -443,7 +455,9 @@
         "tests/contract/test_privacy_scan.py",
         "tests/contract/test_release_wrappers.py"
       ],
-      "models": [],
+      "models": [
+        ".flowguard/models/skill_install_model.py"
+      ],
       "status": "confirmed",
       "fingerprint": "sha256:9d61aa9ebcb598eb95e9b55cf35f03b60c60cb5a6ad24f4eca98fbe214b88453"
     },
@@ -478,7 +492,7 @@
         "tests/unit/test_researchguard_provider_topology.py"
       ],
       "models": [
-        ".flowguard/models/route_and_guard_model.py"
+        ".flowguard/models/provider_preflight_model.py"
       ],
       "status": "confirmed",
       "fingerprint": "sha256:f06600a8eecfa1acd9ce4341b21719831098646303967cfb15f711f3eb638278"
@@ -514,7 +528,9 @@
         "tests/contract/test_schemas.py",
         "tests/unit/test_cli_inputs.py"
       ],
-      "models": [],
+      "models": [
+        ".flowguard/models/shared_contracts_model.py"
+      ],
       "status": "confirmed",
       "fingerprint": "sha256:a787389a9fd7d1d9b0d8b0abcfa799c63578169f2871a5e77281fdd4db50265d"
     },
@@ -974,7 +990,7 @@
       "steps": [
         "routing:select_route"
       ],
-      "model": ".flowguard/models/route_and_guard_model.py"
+      "model": ".flowguard/models/route_selection_model.py"
     },
     {
       "id": "provider-preflight",
@@ -982,7 +998,7 @@
       "steps": [
         "providers:preflight"
       ],
-      "model": ".flowguard/models/route_and_guard_model.py"
+      "model": ".flowguard/models/provider_preflight_model.py"
     }
   ],
   "accepted_debts": [
@@ -996,11 +1012,6 @@
       "component": "travel-model",
       "contains": "travel_contract.py",
       "reason": "One trip-plan contract whose validators share the same indexes in one pass (sources, candidates, world checks, routes, fallbacks, fit); the model trip_feasibility binds its rules."
-    },
-    {
-      "code": "large_model",
-      "component": "route_and_guard_model",
-      "reason": "split in LW-409"
     },
     {
       "code": "test_file_mixes_models",
@@ -1032,9 +1043,13 @@
     ".flowguard/models/known_bad_generator_model.py": "4e875b2d2bcfebb1a00d4851f7ab350c60c81dddca8c125413377307ea1391c5",
     ".flowguard/models/plan_order_model.py": "eb1222578e6caabb43254467a7b67f96103700b0a1623b6af74dad5b8af41a34",
     ".flowguard/models/plan_readback_model.py": "cde4b54937582e0b8fbb27c8f084498b06c00b2a749afcd663132c5d708c424b",
-    ".flowguard/models/reader_artifact_model.py": "0fc5560b295844be59eabed6038f3d79f84e42c7116f4eabe820fa587a855b18",
-    ".flowguard/models/route_and_guard_model.py": "0c0d49b01c4c9c46a86ab4c4de5131001f1cad25f3dc42cf3558f5936a9b2bb9",
+    ".flowguard/models/provider_preflight_model.py": "d78fe03165665eda9c3ce0a954f661a4e187e20c9c9b99a7d073b2d50ed415b2",
+    ".flowguard/models/reader_artifact_model.py": "9a4b0a0927df7b2b63173aa3684eb075bcdb0972c59f620bd00c4949d7ce5bdf",
+    ".flowguard/models/route_review_model.py": "a24f47fdc46d89c4b03f323784ca3275ffecc5d7807ebf5cccbf24254bb395d5",
+    ".flowguard/models/route_selection_model.py": "b7c3820531c7260538571157b99d82b78cc0194ba4c57b8c0dbf44fc0f3496d9",
+    ".flowguard/models/shared_contracts_model.py": "f3a093e25d0322ab3fc1d7473ce6451f2e9e69a033959f70e93aeeba1e1ea2ef",
     ".flowguard/models/shared_writing_binding_model.py": "da43286400469dc66a8d200bc400a8e887ab980b3113c0f9b2083b95b69d9e71",
+    ".flowguard/models/skill_install_model.py": "4764f9a030f1f7d6f180ea55f3cad1f920f69a266e1970fc97f2485d4d8705b7",
     ".flowguard/models/trip_feasibility_model.py": "13236812298b9625d1bf9a687a2d4c589be11e8b91b4a345dc304e02aed0dae4",
     ".flowguard/models/world_references_model.py": "723c38108da2224cdb4445ac2ada6916e50503de7ec92d9ada286bc1c5812816"
   },

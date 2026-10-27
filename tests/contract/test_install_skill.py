@@ -85,3 +85,18 @@ def test_skill_starts_from_the_model():
         assert needle in section, needle
     assert (skill / "references/shared/reader-chain.md").is_file()
     assert "(references/shared/reader-chain.md)" in text
+
+
+def test_check_fails_on_a_changed_copy_in_process(tmp_path,monkeypatch,capsys):
+    import importlib.util
+    spec=importlib.util.spec_from_file_location('installer_in_process',INSTALL)
+    installer=importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(installer)
+    monkeypatch.setattr(sys,'argv',['install_skill.py','--target',str(tmp_path)])
+    assert installer.main()==0
+    monkeypatch.setattr(sys,'argv',['install_skill.py','--target',str(tmp_path),'--check'])
+    assert installer.main()==0
+    path=tmp_path/'logic-writing/SKILL.md'
+    data=path.read_bytes();path.write_bytes(bytes([data[0]^1])+data[1:])
+    assert installer.main()==1
+    assert 'differs: SKILL.md' in capsys.readouterr().out
