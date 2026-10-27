@@ -6,7 +6,7 @@ releases, tags, package publications, installations, or predecessor deletions.
 The format follows the main ideas of Keep a Changelog, and the source version
 line follows semantic versioning.
 
-## Unreleased
+## v4.0.16 - 2026-10-27 - Fresh provider reports and a smaller reader model
 
 - Keep bound closure and reader tests with their model owners, preserve every moved assertion, and refresh the project agent rules.
 
