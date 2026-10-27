@@ -13,24 +13,13 @@ The plan (CompositionPlan) is the model of the piece. Read it back before choosi
 - A research question is involved: read `researchguard status <folder>` first (one hypothesis: `--hypothesis <id>`), save it with `--json --output research-status.json`, and name `research_folder` and `research_status` in the brief request.
 - A story or trip world is involved: read WorldGuard's `timeline --contract <world>` first (`--mesh` for a tree).
 - No plan yet: choose one final route and build the brief from the example in `assets/examples/<route>/`; that plan is the model.
+- When one planned unit gets too big, split it into child units (parent_unit_id), and plan and check only the units the target text needs.
 
 Logic Writing has one entrypoint and four focused routes. It investigates hard
 questions, builds defensible academic artifacts, plans and repairs fiction,
 builds operational travel guides, and translates internal analysis into
 language a reader can follow. It owns routing, bounded handoffs, freshness,
 reader-facing translation and final closure, never a specialist's native judgment.
-
-## Use When
-
-- Use for deep research, source-backed investigation, evidence synthesis, disputed claims, technical briefings, decision reports, and research reports.
-- Use for academic papers, theses, dissertations, literature reviews, proposals, scholarly reports, and substantive academic revision.
-- Use for fiction, story, short-story, chapter, novel, series, continuity, promise-payoff, manuscript planning, writing, auditing, or revision.
-- Use for evidence-heavy travel guides, itineraries, destination guides, route plans, lodging strategy, weather or hazard planning, fallbacks, and traveler-fit recommendations.
-
-## Do Not Use When
-
-- Do not use for a quick factual lookup, grammar-only edit, casual low-stakes copy, or lightweight attraction list.
-- Do not use when the final deliverable is owned entirely by one specialist and no investigation, academic, fiction, or travel writing artifact is required.
 
 ## Choose the final route
 
@@ -52,26 +41,9 @@ Read [references/router.md](references/router.md) for routing details.
 
 ## Commands
 
-Run the existing text through every native step with `python scripts/run_chain.py <folder>`;
-use `--until route|brief|map|binding|audit|review|closure` to stop early.
-Only `--refresh-providers` runs native providers to refresh saved reports.
-
-Run from the skill root with Python 3.10 or newer; each step reads `--input <file>`
-and may save `--output <file>`. Request fields, fingerprints, relative paths and the
-route playbooks are in [references/shared/reader-chain.md](references/shared/reader-chain.md).
-
-1. `scripts/select_route.py` with `route-request.json` -> RouteDecision.
-2. `scripts/build_reader_brief.py` with `brief-request.json` (optional `research_folder`, `research_status`) -> ReaderBrief.
-3. Write the artifact from `ReaderBrief.writer_input` (UTF-8 text or Markdown).
-4. `scripts/build_artifact_map.py` with `map-request.json` -> ArtifactMap.
-5. `scripts/validate_shared_writing.py` with `shared-writing.json` -> SharedWriting.
-6. `scripts/audit_reader_output.py` with `audit-request.json` -> ReaderAudit.
-7. `routes/<route>/scripts/validate_<route>_artifact.py` with `route-review.json` -> route review.
-8. `scripts/derive_closure.py` with `closure-input.json` -> closure.
-
-Read back with `scripts/show_plan.py --input <chain file>`; check known-bad edits with
-`scripts/known_bad.py --input closure-input.json`; check a provider with
-`scripts/provider_preflight.py <provider>` before a specialist handoff.
+Run existing text with `python scripts/run_chain.py <folder> [--refresh-providers]`.
+See [reader-chain commands and inputs](references/shared/reader-chain.md) for
+step selection, native refresh, expert commands and saved reports.
 
 ## Hard Gates
 
@@ -110,11 +82,3 @@ closed, add a short, plain-language audit note containing these exact fields:
 Keep those fields out of normal prose when every required gate passes and the
 user did not request an audit record. Never describe an output as complete when
 one of the five fields contains a material unresolved item.
-
-Brief requests may omit repeated body dispositions and shared fiction unit fields already present in planned units. The builder fills them before fingerprints; explicit values and deliberate omissions still require validation.
-
-For revisions, `scripts/build_source_unit_manifest.py` lists real source units
-before treatments; `scripts/validate_revision_provenance.py` checks them against
-the revised current text. Closure performs the same required revision check.
-`create_new` may omit provenance and receives the explicit not-applicable default;
-this does not relax revision source-byte or treatment requirements.

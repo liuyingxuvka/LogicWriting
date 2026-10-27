@@ -21,59 +21,9 @@ WorldGuard owns generic world-claim validation:
 
 Do not add story-specific fields to WorldGuard core files, schemas, guard families, statuses, or model mesh semantics. If a story needs a literary field, store it in the StorylineDesign ledger and map only the generic world claim to WorldGuard.
 
-## Adapter Row Shape
+## Native world references
 
-Record adapter mappings in the ledger `worldguard_claims` section.
-
-```json
-{
-  "id": "wg-claim-001",
-  "source_row_id": "scene-003",
-  "source_row_kind": "scene",
-  "claim_type": "causal",
-  "claim_text": "The locked archive door prevents the protagonist from reaching the map before the rival.",
-  "story_context": {
-    "scene_id": "scene-003",
-    "structure_id": "sequence-2",
-    "promise_ids": [
-      "promise-map-race"
-    ]
-  },
-  "worldguard_input": {
-    "event": "archive door remains locked during scene-003",
-    "agent": "protagonist",
-    "space": "archive",
-    "resource": "map",
-    "causal_link": "locked door delays protagonist access"
-  },
-  "authority_scope": "draft_current",
-  "owner": {
-    "story_semantics": "StorylineDesign",
-    "world_claim_validation": "WorldGuard"
-  },
-  "worldguard_status": "not_run",
-  "worldguard_evidence_refs": [],
-  "adapter_status": "planned",
-  "closure_effect": "blocks_full_closure_until_checked_or_scoped_out"
-}
-```
-
-Required fields:
-
-- `id`: stable adapter claim id.
-- `source_row_id`: ledger row that created the mapping.
-- `source_row_kind`: premise, structure, scene, character_arc, promise, support, or closure.
-- `claim_type`: event, motive, agent, space, resource, causal, conflict, norm, timeline, authority, or support.
-- `claim_text`: generic world claim in non-literary terms.
-- `worldguard_input`: normalized claim payload or notes for the WorldGuard-facing check.
-- `authority_scope`: user_canon, draft_current, generated_assumption, external_source, inferred, or unknown.
-- `worldguard_report`: native WorldGuard check summary path, relative to the ledger. Read its top-level status (PASS, FAIL, GAP or BOUNDARY_EXCEEDED) in lower case. No report means not_run and never passes. Legacy worldguard_status: not_run is accepted; other handwritten statuses require a report and must match it.
-- `adapter_status`: planned, mapped, pass, partial, blocked, gap, skipped, stale, or human_review.
-- `closure_effect`: continue, return_to_ledger, return_to_scene, return_to_structure, user_decision, or scoped_out.
-
-When WorldGuard runs, put the path of its `run_worldguard.py check` report in
-`worldguard_report`; validators read its overall native status themselves. Attach the report itself; no
-extra wrapper record is needed.
+Add `world_refs` to the world contract; see [the native WorldGuard adapter](../../../references/adapters/worldguard.md).
 
 ## Mapping Targets
 

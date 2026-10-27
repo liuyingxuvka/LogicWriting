@@ -73,13 +73,14 @@
       "depends_on": [],
       "tests": [
         "tests/e2e/test_worked_examples.py",
-        "tests/e2e/test_reader_v2_benchmark.py"
+        "tests/e2e/test_reader_v2_benchmark.py",
+        "tests/contract/test_prompt_size.py"
       ],
       "models": [
         ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:6b0f156f81aeeeae1a31a66161b1f1c0ce62a813f931542ff15b9c2871f5a599"
+      "fingerprint": "sha256:2e2817a9dbb8e7dee5adac07860392d2fb18a41c9cf182496cb4c4cf75cba692"
     },
     {
       "id": "fiction",
@@ -156,7 +157,13 @@
         "skills/logic-writing/routes/fiction/scripts/run_native_regression.py",
         "skills/logic-writing/routes/fiction/scripts/run_route_regression.py",
         "skills/logic-writing/routes/fiction/scripts/run_story_model_mesh_regression.py",
-        "skills/logic-writing/routes/fiction/scripts/validate_fiction_artifact.py"
+        "skills/logic-writing/routes/fiction/scripts/validate_fiction_artifact.py",
+        "skills/logic-writing/routes/fiction/references/promise-payoff-ledger-details.md",
+        "skills/logic-writing/routes/fiction/references/scene-contract-details.md",
+        "skills/logic-writing/routes/fiction/references/workflow-details.md",
+        "skills/logic-writing/routes/fiction/references/structure-turning-points-details.md",
+        "skills/logic-writing/routes/fiction/references/longform-lifecycle-details.md",
+        "skills/logic-writing/routes/fiction/references/story-engineering-ledger-details.md"
       ],
       "entrypoints": [
         "skills/logic-writing/routes/fiction/scripts/run_longform_regression.py:main",
@@ -181,7 +188,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:98abcbb7e0dc4f07d8f67d1ea7f1d9c5758343ffbda2b3b7bd0d5032acefc165"
+      "fingerprint": "sha256:fa11ba905a325588be6cd8982ba13fbee56052da5f2697081b724755c4d6346f"
     },
     {
       "id": "travel",
