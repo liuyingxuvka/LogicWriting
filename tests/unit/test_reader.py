@@ -166,7 +166,7 @@ def test_relation_variants_are_generated_and_caught(tmp_path):
         if edit:
             edit(folder)
         run_example_steps(folder, "review")
-        result = check_known_bad(load_request(folder / "closure-input.json"))
+        result = check_known_bad(load_request(folder / "closure-input.json", defaults=__import__("derive_closure").CLOSURE_INPUT_FILES))
         return {row["name"]: row for row in result["variants"]}
 
     fiction = variants("fiction")

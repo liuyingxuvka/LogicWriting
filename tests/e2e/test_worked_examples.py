@@ -22,6 +22,12 @@ STEPS = [
 
 def run_chain(folder, route, until='closure'):
     outputs = {}
+    for name, request in {
+        'map-request.json': {'artifact_path': 'piece.md', 'map_id': 'map:single', 'language': 'en', 'artifact_format': 'markdown'},
+        'audit-request.json': {'audit_id': 'audit:single', 'artifact_map': 'artifact-map.json', 'reader_brief': 'reader-brief.json', 'shared_writing': 'shared-writing-result.json'},
+    }.items():
+        path = folder / name
+        if not path.exists(): path.write_text(json.dumps(request))
     for step, script, request, output in STEPS:
         run = subprocess.run([sys.executable, str(SKILL / script.format(route=route)),
                               '--input', str(folder / request), '--output', str(folder / output)],
@@ -153,7 +159,7 @@ def test_show_plan_shows_findings_on_the_failing_unit(tmp_path):
     shutil.copytree(EXAMPLES / 'investigation', folder)
     code, _closure = run_chain(folder, 'investigation')
     assert code == 0
-    view = plan_view(load_request(folder / 'closure-input.json'), input_path=folder / 'closure-input.json')
+    view = plan_view(load_request(folder / 'closure-input.json', defaults=__import__('derive_closure').CLOSURE_INPUT_FILES), input_path=folder / 'closure-input.json')
     first = render_plan(view).splitlines()[0]
     assert first.startswith('units: 5 (5 bound, 0 unbound); audit: passed')
     assert 'closure: passed' in first and first.endswith('known-bad: 0 uncaught')
@@ -163,7 +169,7 @@ def test_show_plan_shows_findings_on_the_failing_unit(tmp_path):
     original = piece.read_text(encoding='utf-8')
     piece.write_text(original + '\nAn added closing sentence for the stale check.\n', encoding='utf-8')
     run_example_steps(folder, 'shared_writing')
-    stale = plan_view(load_request(folder / 'closure-input.json'), input_path=folder / 'closure-input.json')
+    stale = plan_view(load_request(folder / 'closure-input.json', defaults=__import__('derive_closure').CLOSURE_INPUT_FILES), input_path=folder / 'closure-input.json')
     assert 'audit: stale' in stale['summary'] and 'closure: stale' in stale['summary']
     piece.write_text(original, encoding='utf-8')
     # The known-bad leak text, audited: the leaking unit shows workflow_leak under it.
@@ -192,7 +198,7 @@ def test_show_plan_reads_back_while_the_plan_is_ahead(tmp_path,monkeypatch,capsy
     folder=tmp_path/'ahead'
     shutil.copytree(EXAMPLES/'investigation',folder)
     run_example_steps(folder,until='review')
-    healthy=view(folder/'audit-request.json')
+    healthy=view(folder/'shared-writing-result.json')
     rendered=render_plan(healthy)
     assert 'checks: limitation lim-perf: present' in rendered
     assert 'findings: limitation lim-perf: present' not in rendered
@@ -206,7 +212,7 @@ def test_show_plan_reads_back_while_the_plan_is_ahead(tmp_path,monkeypatch,capsy
         patch.setattr(sys,'argv',['validate_shared_writing.py','--input',str(folder/'shared-writing.json'),'--output',str(folder/'shared-writing-result.json')])
         assert cli_validate(validate_shared_writing,'Bind current text')==1
     before={path.relative_to(folder).as_posix():hashlib.sha256(path.read_bytes()).hexdigest() for path in folder.rglob('*') if path.is_file()}
-    result=view(folder/'audit-request.json')
+    result=view(folder/'shared-writing-result.json')
     assert len(result['planned_units'])==6
     added=next(row for row in result['planned_units'] if row['planned_unit_id']=='u-libs')
     assert added['new'] and not added['bound']

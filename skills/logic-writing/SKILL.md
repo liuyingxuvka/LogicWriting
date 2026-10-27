@@ -52,6 +52,10 @@ Read [references/router.md](references/router.md) for routing details.
 
 ## Commands
 
+Run the existing text through every native step with `python scripts/run_chain.py <folder>`;
+use `--until route|brief|map|binding|audit|review|closure` to stop early.
+Only `--refresh-providers` runs native providers to refresh saved reports.
+
 Run from the skill root with Python 3.10 or newer; each step reads `--input <file>`
 and may save `--output <file>`. Request fields, fingerprints, relative paths and the
 route playbooks are in [references/shared/reader-chain.md](references/shared/reader-chain.md).

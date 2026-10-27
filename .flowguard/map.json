@@ -79,7 +79,7 @@
         ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:79af385121966d3571ac874caf522513d34eb62653f9f9bec7c350e23302633b"
+      "fingerprint": "sha256:6b0f156f81aeeeae1a31a66161b1f1c0ce62a813f931542ff15b9c2871f5a599"
     },
     {
       "id": "fiction",
@@ -89,14 +89,12 @@
         "Select compact, short-story or longform depth; delegate current manuscript review to the shared reader chain and preserve native promises, arcs and continuity checks."
       ],
       "files": [
-        "skills/logic-writing/assets/examples/fiction/audit-request.json",
         "skills/logic-writing/assets/examples/fiction/brief-request.json",
         "skills/logic-writing/assets/examples/fiction/closure-input.json",
         "skills/logic-writing/assets/examples/fiction/known-bad/empty.md",
         "skills/logic-writing/assets/examples/fiction/known-bad/expected.json",
         "skills/logic-writing/assets/examples/fiction/known-bad/leak.md",
         "skills/logic-writing/assets/examples/fiction/known-bad/short.md",
-        "skills/logic-writing/assets/examples/fiction/map-request.json",
         "skills/logic-writing/assets/examples/fiction/piece.md",
         "skills/logic-writing/assets/examples/fiction/route-request.json",
         "skills/logic-writing/assets/examples/fiction/route-review.json",
@@ -109,12 +107,10 @@
         "skills/logic-writing/routes/fiction/examples/longform_failure_cases/orphan-chapter.json",
         "skills/logic-writing/routes/fiction/examples/longform_failure_cases/pov-drift.json",
         "skills/logic-writing/routes/fiction/examples/longform_failure_cases/unresolved-key-promise.json",
-        "skills/logic-writing/routes/fiction/examples/longform_novel_project/audit-request.json",
         "skills/logic-writing/routes/fiction/examples/longform_novel_project/brief-request.json",
         "skills/logic-writing/routes/fiction/examples/longform_novel_project/chapter-interfaces.json",
         "skills/logic-writing/routes/fiction/examples/longform_novel_project/closure-input.json",
         "skills/logic-writing/routes/fiction/examples/longform_novel_project/drafts/book-01-final.txt",
-        "skills/logic-writing/routes/fiction/examples/longform_novel_project/map-request.json",
         "skills/logic-writing/routes/fiction/examples/longform_novel_project/novel-ledger.json",
         "skills/logic-writing/routes/fiction/examples/longform_novel_project/project-mesh.json",
         "skills/logic-writing/routes/fiction/examples/longform_novel_project/promise-payoff.json",
@@ -185,7 +181,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:097d0ed5331631a5fa67f2603bbbf5cec1855f6504d47c37b700b48ea44ad3d6"
+      "fingerprint": "sha256:98abcbb7e0dc4f07d8f67d1ea7f1d9c5758343ffbda2b3b7bd0d5032acefc165"
     },
     {
       "id": "travel",
@@ -195,7 +191,6 @@
         "Validate trip candidates, fit, dates and reachable fallbacks through the trip model; check the actual guide with current route-semantic review and keep its dedicated finite regressions."
       ],
       "files": [
-        "skills/logic-writing/assets/examples/travel/audit-request.json",
         "skills/logic-writing/assets/examples/travel/brief-request.json",
         "skills/logic-writing/assets/examples/travel/closure-input.json",
         "skills/logic-writing/assets/examples/travel/known-bad/empty.md",
@@ -203,7 +198,6 @@
         "skills/logic-writing/assets/examples/travel/known-bad/leak.md",
         "skills/logic-writing/assets/examples/travel/known-bad/nolim-lim-illustrative.md",
         "skills/logic-writing/assets/examples/travel/known-bad/short.md",
-        "skills/logic-writing/assets/examples/travel/map-request.json",
         "skills/logic-writing/assets/examples/travel/piece.md",
         "skills/logic-writing/assets/examples/travel/route-request.json",
         "skills/logic-writing/assets/examples/travel/route-review.json",
@@ -286,7 +280,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:b460e6301225ae961bfe5d78c4453d2bad74c4c12030b5dab8630d014a83f657"
+      "fingerprint": "sha256:26d9c2c6cafd5b0f3f36e6cfb643b8b2f6036b8adb8d0e572125a28e9fc23dc0"
     },
     {
       "id": "investigation",
@@ -296,7 +290,6 @@
         "Check bounded answers against source anchors, alternatives, contrary evidence and recheck conditions; preserve independent reader review."
       ],
       "files": [
-        "skills/logic-writing/assets/examples/investigation/audit-request.json",
         "skills/logic-writing/assets/examples/investigation/brief-request.json",
         "skills/logic-writing/assets/examples/investigation/closure-input.json",
         "skills/logic-writing/assets/examples/investigation/known-bad/empty.md",
@@ -308,7 +301,6 @@
         "skills/logic-writing/assets/examples/investigation/known-bad/overclaim.md",
         "skills/logic-writing/assets/examples/investigation/known-bad/short.md",
         "skills/logic-writing/assets/examples/investigation/known-bad/token.md",
-        "skills/logic-writing/assets/examples/investigation/map-request.json",
         "skills/logic-writing/assets/examples/investigation/piece.md",
         "skills/logic-writing/assets/examples/investigation/research-status.json",
         "skills/logic-writing/assets/examples/investigation/research/research.yaml",
@@ -337,7 +329,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:727d97e7cf1f7faaee0bfce8af769fb42cbba81a32d09df2b5d10056f57387a3"
+      "fingerprint": "sha256:8369a04629641b71bb70ef32f31a68d1d16b2ebecf8fa525eb3776fdbba46032"
     },
     {
       "id": "academic",
@@ -347,7 +339,6 @@
         "Check hierarchical academic contribution, citation duties, method depth, qualifications and figure/table jobs against the current manuscript."
       ],
       "files": [
-        "skills/logic-writing/assets/examples/academic/audit-request.json",
         "skills/logic-writing/assets/examples/academic/brief-request.json",
         "skills/logic-writing/assets/examples/academic/closure-input.json",
         "skills/logic-writing/assets/examples/academic/known-bad/empty.md",
@@ -356,7 +347,6 @@
         "skills/logic-writing/assets/examples/academic/known-bad/nocite.md",
         "skills/logic-writing/assets/examples/academic/known-bad/nolim-lim-conceptual.md",
         "skills/logic-writing/assets/examples/academic/known-bad/short.md",
-        "skills/logic-writing/assets/examples/academic/map-request.json",
         "skills/logic-writing/assets/examples/academic/piece.md",
         "skills/logic-writing/assets/examples/academic/route-request.json",
         "skills/logic-writing/assets/examples/academic/route-review.json",
@@ -382,7 +372,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:1ffb59780ad17272a8536f40c44fd5400ddb67cb724e46b9b38bc26cc4682f48"
+      "fingerprint": "sha256:0b3c4cac818b83dff3dd47f438e9fbf03c5e97edb7b1bc81534dd79fbce77ea9"
     },
     {
       "id": "release",
@@ -484,7 +474,7 @@
         ".flowguard/models/route_and_guard_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:e2221b0f112812a4b241a6c1e50bf7fb103fc92053afb4d06942f5d1bcb9b84b"
+      "fingerprint": "sha256:f06600a8eecfa1acd9ce4341b21719831098646303967cfb15f711f3eb638278"
     },
     {
       "id": "shared-contracts",
@@ -519,7 +509,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:1026a9f6219c805b5d154b97247f3925075aae1cf4db90e514d15cb61db68813"
+      "fingerprint": "sha256:15d64c82f7ad592421ed18873c0faa9cba4b3f0ca403315dd7280046809dbdc6"
     },
     {
       "id": "researchguard-handoff",
@@ -778,7 +768,7 @@
       ],
       "parent": "reader-artifact",
       "status": "confirmed",
-      "fingerprint": "sha256:f597ef55327e046f9098accafb1d64028701bc5f387ec6ec54bffc00b1354c9d"
+      "fingerprint": "sha256:86e9c03f6332241c9d4f4356e35a9cc22024f3bc5255c63706ee3a8bd4cf0e63"
     },
     {
       "id": "reader-commands",
@@ -794,33 +784,43 @@
         "skills/logic-writing/scripts/build_reader_brief.py",
         "skills/logic-writing/scripts/show_plan.py",
         "skills/logic-writing/scripts/validate_revision_provenance.py",
-        "skills/logic-writing/scripts/validate_shared_writing.py"
+        "skills/logic-writing/scripts/validate_shared_writing.py",
+        "skills/logic-writing/scripts/run_chain.py"
       ],
       "entrypoints": [
-        "skills/logic-writing/scripts/show_plan.py:main"
+        "skills/logic-writing/scripts/show_plan.py:main",
+        "skills/logic-writing/scripts/run_chain.py:run_chain"
       ],
       "state": [],
       "side_effects": [
-        "Read explicitly supplied input records and write only requested JSON output."
+        "Read explicitly supplied input records and write only requested JSON output.",
+        "Write requested reader-chain JSON results and, only with --refresh-providers, refresh native saved provider reports."
       ],
       "depends_on": [
+        "academic",
+        "fiction",
+        "investigation",
+        "providers",
         "reader-binding",
         "reader-checks",
+        "reader-closure",
         "reader-inputs",
         "reader-plan",
         "routing",
         "shared-contracts",
+        "travel",
         "world-references"
       ],
       "tests": [
         "tests/e2e/test_worked_examples.py",
-        "tests/unit/test_cli_inputs.py"
+        "tests/unit/test_cli_inputs.py",
+        "tests/unit/test_run_chain.py"
       ],
       "models": [
         ".flowguard/models/plan_readback_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:1b6d32556261cb15c7f39cbe26f9840616d9aea2e017e862770674e165d95a0e"
+      "fingerprint": "sha256:1d17158d5adabde2dee42ba605e7a1d20a2adcd73447a825673adb42bca9a55a"
     },
     {
       "id": "world-references",
@@ -1014,16 +1014,18 @@
   "import_roots": [
     "skills/logic-writing/scripts",
     "skills/logic-writing/routes/fiction/scripts",
-    "skills/logic-writing/routes/travel/scripts"
+    "skills/logic-writing/routes/travel/scripts",
+    "skills/logic-writing/routes/academic/scripts",
+    "skills/logic-writing/routes/investigation/scripts"
   ],
   "model_digests": {
     ".flowguard/models/anchor_import_model.py": "c2aa2f7c2cc5ba937cfd9092b7135caf9328b7cfa8a64343b47e0f0b8638847d",
     ".flowguard/models/closure_claim_model.py": "b7dc3bdc23fb1f45f18beecc656223a0e3b67dfd1df9b300e243bbea5de31a5d",
     ".flowguard/models/fiction_tree_model.py": "36899630f1d0a27e1240bd8a1a409ffb759f446678f3b4c47a131866253f8114",
-    ".flowguard/models/known_bad_generator_model.py": "368c71fa5a1c708e0ffaa9d2ae89198c9a816ca215fe4972900a00158bc9e185",
+    ".flowguard/models/known_bad_generator_model.py": "4e875b2d2bcfebb1a00d4851f7ab350c60c81dddca8c125413377307ea1391c5",
     ".flowguard/models/plan_order_model.py": "eb1222578e6caabb43254467a7b67f96103700b0a1623b6af74dad5b8af41a34",
     ".flowguard/models/plan_readback_model.py": "cde4b54937582e0b8fbb27c8f084498b06c00b2a749afcd663132c5d708c424b",
-    ".flowguard/models/reader_artifact_model.py": "f6aaac4cdc55c3cefb8a5193e2301bec18ae6f04c94282adbcb429f84c40c992",
+    ".flowguard/models/reader_artifact_model.py": "0fc5560b295844be59eabed6038f3d79f84e42c7116f4eabe820fa587a855b18",
     ".flowguard/models/route_and_guard_model.py": "0c0d49b01c4c9c46a86ab4c4de5131001f1cad25f3dc42cf3558f5936a9b2bb9",
     ".flowguard/models/shared_writing_binding_model.py": "da43286400469dc66a8d200bc400a8e887ab980b3113c0f9b2083b95b69d9e71",
     ".flowguard/models/trip_feasibility_model.py": "13236812298b9625d1bf9a687a2d4c589be11e8b91b4a345dc304e02aed0dae4",

@@ -260,3 +260,18 @@ audit or the reader judgment reports defects, revise the actual text, rebuild
 the ArtifactMap and rerun the audit and the read. If a revision round fixes
 none of the reported defects, stop and return the artifact with the audit note.
 Repeated closure calls never count as repair attempts.
+
+## Run an existing example or working folder
+
+`python scripts/run_chain.py <folder>` runs native steps in process on existing text.
+It writes the usual JSON results, prints the plan summary and first failure, and
+stops there: exit 0 for a passing chain, 1 for a native rejection, 2 for unreadable
+inputs or an unavailable refresh provider. `--until` accepts route, brief, map,
+binding, audit, review or closure. The single-step commands remain available.
+Map and audit request files are optional; the command uses piece.md and current
+result files. The seven chain-file fields in closure-input.json may be omitted;
+explicit fields retain their meaning and resolve beside that input file.
+`--refresh-providers` refreshes researchguard status for research_folder and runs
+the same verified portable WorldGuard launcher as provider_preflight for a
+world_contract. Install ResearchGuard >= 0.5.16 and WorldGuard >= 0.7.23 beside
+this skill before refreshing. Closure itself only reads saved native reports.

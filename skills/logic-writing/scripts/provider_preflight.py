@@ -13,7 +13,7 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from _common import dump_json, researchguard_version_problem, validation_result
+from _common import ValidationError, dump_json, researchguard_version_problem, validation_result
 
 
 RESEARCHGUARD_MEMBERS = {
@@ -312,6 +312,24 @@ def preflight(provider: str, *, provider_root: str | None = None, require_render
             else "provider or render dependency is not currently available"
         ),
     )
+
+
+def provider_command(provider: str, *, provider_root: str | None = None) -> list[str]:
+    """Resolve the same verified native launcher as preflight for an explicit refresh."""
+    result = preflight(provider, provider_root=provider_root)
+    if result["status"] != "current_pass":
+        hint = ("Install ResearchGuard >= 0.5.16 in this Python or on PATH" if provider == "researchguard"
+                else "Install WorldGuard >= 0.7.23 beside the logic-writing skill")
+        raise ValidationError(hint + ": " + str(result["evidence"].get("reason", result["status"])))
+    if provider == "researchguard":
+        distribution = _researchguard_distribution()
+        console = _researchguard_console(distribution) if distribution is not None else shutil.which("researchguard")
+        if console:
+            return [console]
+    elif provider == "worldguard":
+        root = Path(provider_root).expanduser().resolve() if provider_root else Path(__file__).resolve().parents[2] / "worldguard"
+        return [sys.executable, str(root / "scripts/run_worldguard.py")]
+    raise ValidationError("No refresh command for provider: " + provider)
 
 
 def main():

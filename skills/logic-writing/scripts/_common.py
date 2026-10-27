@@ -271,7 +271,7 @@ def _absolute_artifact_path(record: dict[str, Any], base: Path) -> None:
             record["artifact_path"] = str((base / artifact_path).resolve())
 
 
-def load_request(path: str | Path | None) -> Any:
+def load_request(path: str | Path | None, *, defaults: dict | None = None) -> Any:
     """Load a request whose top-level object fields may name JSON files instead.
 
     Only known container fields accept file references; scalar IDs, artifact
@@ -283,6 +283,8 @@ def load_request(path: str | Path | None) -> Any:
     value = load_json(path)
     if not isinstance(value, dict):
         return value
+    if defaults is not None:
+        value = {**defaults, **value}
     if "sourceguard_model" in value:
         raise ValidationError("`sourceguard_model` is retired; use research_folder (a ResearchGuard research folder)")
     file_request = path not in {None, "-"}

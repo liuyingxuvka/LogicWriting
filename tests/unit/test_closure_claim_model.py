@@ -32,7 +32,7 @@ def test_stale_world_report_fails_closure(tmp_path):
     folder=tmp_path/'fiction'
     shutil.copytree(EXAMPLES/'fiction',folder)
     run_example_steps(folder,until='review')
-    request=fill_closure_fingerprints(load_request(folder/'closure-input.json'))
+    request=fill_closure_fingerprints(load_request(folder/'closure-input.json', defaults=__import__('derive_closure').CLOSURE_INPUT_FILES))
     assert derive_closure(request)['closure']['status']=='passed'
     world=folder/'world.yaml'
     original=world.read_text()

@@ -185,15 +185,12 @@ class _RealGenerator:
         skill = ROOT / "skills" / "logic-writing"
         folder = self.folder / "fiction"
         shutil.copytree(skill / "assets/examples/fiction", folder)
-        for script, request, output in (("scripts/select_route.py", "route-request.json", "route-decision.json"),
-                                        ("scripts/build_reader_brief.py", "brief-request.json", "reader-brief.json"),
-                                        ("scripts/build_artifact_map.py", "map-request.json", "artifact-map.json"),
-                                        ("scripts/validate_shared_writing.py", "shared-writing.json", "shared-writing-result.json"),
-                                        ("scripts/audit_reader_output.py", "audit-request.json", "audit.json"),
-                                        ("routes/fiction/scripts/validate_fiction_artifact.py", "route-review.json", "route-review-result.json")):
-            subprocess.run([sys.executable, str(skill / script), "--input", str(folder / request), "--output", str(folder / output)],
-                           cwd=skill, capture_output=True, text=True, timeout=60, check=True)
-        variants = self.check(load_request(folder / "closure-input.json"))["variants"]
+        from run_chain import run_chain
+        from derive_closure import CLOSURE_INPUT_FILES
+        result = run_chain(folder, until='review')
+        if result['exit_code'] != 0:
+            raise AssertionError(result['first_failure'])
+        variants = self.check(load_request(folder / "closure-input.json", defaults=CLOSURE_INPUT_FILES))["variants"]
         kinds = {row["kind"]: row["caught"] for row in variants}
         wanted = {"swap", "noworld"}
         return "relation_variants_caught" if wanted <= kinds.keys() and all(kinds[kind] for kind in wanted) else "relation_variants_missing"

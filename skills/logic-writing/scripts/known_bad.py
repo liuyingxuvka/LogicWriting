@@ -265,7 +265,8 @@ def main():
     parser.add_argument('--write-catalog')
     args = parser.parse_args()
     try:
-        result = check_known_bad(load_request(args.input), write_catalog=args.write_catalog)
+        from derive_closure import CLOSURE_INPUT_FILES
+        result = check_known_bad(load_request(args.input, defaults=CLOSURE_INPUT_FILES), write_catalog=args.write_catalog)
     except (OSError, ValueError, ValidationError) as exc:
         dump_json(validation_result(status='blocked', errors=[str(exc)]))
         return 2

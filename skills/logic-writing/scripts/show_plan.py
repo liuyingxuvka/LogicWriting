@@ -36,7 +36,14 @@ def _load_view_input(path):
     """Read an interrupted chain without writing or claiming that its binding passed."""
     path=Path(path).resolve()
     try:
-        return load_request(path)
+        value = load_request(path)
+        if path.name == 'shared-writing-result.json' and isinstance(value, dict) and value.get('status') == 'blocked':
+            request = load_request(path.parent / 'shared-writing.json')
+            request['_binding_blocked'] = value
+            return request
+        if path.name == 'shared-writing-result.json' and isinstance(value, dict) and isinstance(value.get('shared_writing'), dict):
+            return {'shared_writing': value['shared_writing']}
+        return value
     except (OSError,ValueError) as error:
         raw=json.loads(path.read_text(encoding='utf-8'))
         if not isinstance(raw,dict):raise error

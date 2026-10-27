@@ -8,6 +8,8 @@ line follows semantic versioning.
 
 ## Unreleased
 
+- Run the native reader chain on existing text with one command; optional provider refresh is explicit and repeated request files are unnecessary.
+
 - Plan readback remains available when required new units are not bound yet; passing checks and missing limitation quotes are labeled explicitly.
 
 - Research anchor imports read the fresh saved report only, including its source-owned locator, summary and boundary.

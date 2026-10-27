@@ -584,35 +584,9 @@ def derive_protocol_closure(value, **kwargs):
 
 
 def run_example_steps(folder: Path, until: str = "audit") -> dict:
-    """Run a copied worked example in process, step by step, until `until` (audit or review); returns each step's result."""
-    from _common import dump_json, load_request
-    from audit_reader_output import audit_reader_output
-    from build_artifact_map import validate_request as build_map
-    from build_reader_brief import validate_request as build_brief
-    from select_route import validate_request as select
-    from validate_shared_writing import validate_shared_writing
-    results = {}
-    for step, function, request, output in (("route", select, "route-request.json", "route-decision.json"),
-                                            ("brief", build_brief, "brief-request.json", "reader-brief.json"),
-                                            ("map", build_map, "map-request.json", "artifact-map.json"),
-                                            ("shared_writing", validate_shared_writing, "shared-writing.json", "shared-writing-result.json"),
-                                            ("audit", audit_reader_output, "audit-request.json", "audit.json")):
-        results[step] = function(load_request(folder / request))
-        dump_json(results[step], folder / output)
-        if step == until:
-            return results
-    if until == "review":
-        import importlib
-        import sys as _sys
-        route = {"investigation": "investigation", "academic-writing": "academic", "fiction-writing": "fiction",
-                 "travel-guide": "travel"}[results["route"]["route_decision"]["final_owner"]]
-        scripts = Path(__file__).resolve().parents[1] / f"skills/logic-writing/routes/{route}/scripts"
-        if str(scripts) not in _sys.path:
-            _sys.path.insert(0, str(scripts))
-        validate = getattr(importlib.import_module(f"validate_{route}_artifact"), f"validate_{route}_artifact")
-        results["review"] = validate(load_request(folder / "route-review.json"))
-        dump_json(results["review"], folder / "route-review-result.json")
-    return results
+    """Run the public native chain on the copied finite fixture."""
+    from run_chain import run_chain
+    return run_chain(folder, until='binding' if until == 'shared_writing' else until)['results']
 
 
 def swap_sections(piece: Path, first_heading: str, second_heading: str) -> None:

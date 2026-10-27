@@ -120,7 +120,7 @@ class _RealReaderChain:
         previous = sys.argv
         output = io.StringIO()
         try:
-            sys.argv = ['show_plan.py', '--input', str(folder / 'audit-request.json'), '--json']
+            sys.argv = ['show_plan.py', '--input', str(folder / 'shared-writing-result.json'), '--json']
             with redirect_stdout(output):
                 code = main()
         finally:
@@ -154,13 +154,8 @@ class _RealReaderChain:
             end = text.find("\n## ", second + 1)
             end = len(text) if end < 0 else end + 1
             piece.write_text(text[:first] + text[second:end] + text[first:second] + text[end:], encoding="utf-8")
-        for function, request, output in ((select, "route-request.json", "route-decision.json"),
-                                          (build_brief, "brief-request.json", "reader-brief.json"),
-                                          (build_map, "map-request.json", "artifact-map.json"),
-                                          (validate_shared_writing, "shared-writing.json", "shared-writing-result.json"),
-                                          (audit_reader_output, "audit-request.json", "audit.json")):
-            result = function(load_request(folder / request))
-            dump_json(result, folder / output)
+        from run_chain import run_chain
+        run_chain(folder, until='audit')
         audit = json.loads((folder / "audit.json").read_text(encoding="utf-8"))["reader_audit"]
         if case == 'swapped' and (audit['status'] == 'passed' or audit['quality_dimensions']['plan_order'] != 'repair'):
             raise AssertionError('native order audit did not mark the swapped sections for repair')
@@ -170,6 +165,20 @@ class _RealReaderChain:
     def apply_step(self, step) -> ReplayObservation:
         event = step.function_input
         state = self.state
+        if event.kind == 'chain':
+            import json
+            from run_chain import run_chain
+            folder = self._workdir()
+            example = ROOT / 'skills/logic-writing/assets/examples/investigation'
+            shutil.copytree(example, folder)
+            if event.quality == 'repair':
+                shutil.copyfile(example / 'known-bad/leak.md', folder / 'piece.md')
+            result = run_chain(folder, until='audit')
+            audit = json.loads((folder / 'audit.json').read_text())['reader_audit']
+            native = 'passed' if audit['status'] == 'passed' else 'failed'
+            state = replace(state, chain_native_status=native, chain_reported_status=result['status'])
+            self.state = state
+            return ReplayObservation(function_name=step.function_name, observed_output='command', observed_state=state)
         if event.kind == "readback":
             state = replace(state, readback_case=event.quality, readback=self._readback(event.quality))
             self.state = state

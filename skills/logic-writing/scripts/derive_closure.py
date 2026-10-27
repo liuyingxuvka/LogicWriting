@@ -314,13 +314,21 @@ def derive_closure(
     return {"closure": closure}
 
 
+CLOSURE_INPUT_FILES = {
+    "route_decision": "route-decision.json", "reader_brief": "reader-brief.json",
+    "route_composition": "reader-brief.json", "artifact_map": "artifact-map.json",
+    "shared_writing": "shared-writing-result.json", "deterministic_audit": "audit.json",
+    "route_review": "route-review-result.json",
+}
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", required=True)
     parser.add_argument("--output")
     args = parser.parse_args()
     try:
-        result = derive_closure(fill_closure_fingerprints(load_request(args.input)))
+        result = derive_closure(fill_closure_fingerprints(load_request(args.input, defaults=CLOSURE_INPUT_FILES)))
     except (OSError, ValueError, ValidationError) as exc:
         dump_json(validation_result(status="blocked", errors=[str(exc)]), args.output)
         return 2
