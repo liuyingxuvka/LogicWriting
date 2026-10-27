@@ -1,0 +1,57 @@
+{
+  "schema": "flowguard.target.v1",
+  "goal": "LW-406: one chain command",
+  "components": [
+    {
+      "id": "reader-commands",
+      "layer": "entry",
+      "summary": "Expose read-only plan views and reader-chain command entrypoints, selecting the existing route in memory when a draft has no saved decision.",
+      "responsibilities": [
+        "Expose the reader-chain commands and readable plan view without generating prose.",
+        "The plan readback shows each unit's findings, anchors and world references."
+      ],
+      "files": [
+        "skills/logic-writing/scripts/audit_reader_output.py",
+        "skills/logic-writing/scripts/build_artifact_map.py",
+        "skills/logic-writing/scripts/build_reader_brief.py",
+        "skills/logic-writing/scripts/show_plan.py",
+        "skills/logic-writing/scripts/validate_revision_provenance.py",
+        "skills/logic-writing/scripts/validate_shared_writing.py",
+        "skills/logic-writing/scripts/run_chain.py"
+      ],
+      "entrypoints": [
+        "skills/logic-writing/scripts/show_plan.py:main",
+        "skills/logic-writing/scripts/run_chain.py:run_chain"
+      ],
+      "state": [],
+      "side_effects": [
+        "Read explicitly supplied input records and write only requested JSON output.",
+        "Write requested reader-chain JSON results and, only with --refresh-providers, refresh native saved provider reports."
+      ],
+      "depends_on": [
+        "reader-binding",
+        "reader-checks",
+        "reader-inputs",
+        "reader-plan",
+        "routing",
+        "shared-contracts",
+        "world-references",
+        "providers",
+        "academic",
+        "fiction",
+        "investigation",
+        "travel"
+      ],
+      "tests": [
+        "tests/e2e/test_worked_examples.py",
+        "tests/unit/test_cli_inputs.py",
+        "tests/unit/test_run_chain.py"
+      ],
+      "models": [
+        ".flowguard/models/plan_readback_model.py"
+      ]
+    }
+  ],
+  "flows": [],
+  "remove": []
+}
