@@ -9,6 +9,12 @@
   },
   "contract_id": "scene-last-tide-001",
   "gaps": [],
+  "input_digests": [
+    {
+      "path": "world.yaml",
+      "sha256": "15b3ea12dfa926e6512a1c1e02843a0e4010d76820874eb96a3aff838f94063d"
+    }
+  ],
   "output": "summary only; add --json for the full report",
   "scope_limits": [
     "one evening",

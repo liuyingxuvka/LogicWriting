@@ -9,7 +9,7 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
-from _common import ValidationError, require_mapping
+from _common import ValidationError, require_mapping, input_digest_problems
 
 
 SEARCH_STATES = {"continue_search", "stop_sufficient", "blocked_unresolved_critical", "not_run"}
@@ -101,42 +101,13 @@ def read_research_folder(location: Any) -> tuple[dict[str, Any], dict[str, Any]]
 
 
 def research_report_identity_problems(document: Any, research_folder: Any) -> list[str]:
-    """Problem codes when a saved status report is not the report of this research folder.
-
-    Compares only identity fields the native report writes: question, hypothesis ids and
-    texts in index order, model routes and paths, and the source model's anchor ids.
-    """
-    if research_folder is None:
-        return ["research_report_unbound:research_folder"]
-    try:
-        index, model = read_research_folder(research_folder)
-    except ValidationError:
-        return ["research_report_unbound:research_folder"]
-    if not isinstance(document, Mapping):
-        document = {}
-    problems = []
-    if document.get("question") != index.get("question"):
-        problems.append("research_report_mismatch:question")
-
-    def hypothesis_rows(rows):
-        if not isinstance(rows, list):
-            return None
-        return [(row.get("id"), row.get("text")) if isinstance(row, Mapping) else None for row in rows]
-    if hypothesis_rows(document.get("hypotheses")) != hypothesis_rows(index.get("hypotheses", [])):
-        problems.append("research_report_mismatch:hypotheses")
-    reported = document.get("models")
-    reported_paths = ({route: row.get("path") if isinstance(row, Mapping) else None for route, row in reported.items()}
-                      if isinstance(reported, Mapping) else None)
-    declared = {route: path for route, path in index.get("models", {}).items() if route != "experiment_observations"}
-    if reported_paths != declared:
-        problems.append("research_report_mismatch:models")
-    evidence = document.get("evidence")
-    reported_anchors = ({row.get("anchor") for row in evidence if isinstance(row, Mapping)}
-                        if isinstance(evidence, list) else None)
-    source_anchors = {row.get("anchor_id") for row in model.get("anchors", []) if isinstance(row, Mapping)}
-    if reported_anchors != source_anchors:
-        problems.append("research_report_mismatch:anchors")
-    return problems
+    """A saved research report counts only while its declared input bytes match."""
+    if not isinstance(research_folder, (str, Path)) or not str(research_folder).strip():
+        return ['research_report_unbound:research_folder']
+    base = Path(research_folder).expanduser()
+    if base.name == 'research.yaml':
+        base = base.parent
+    return input_digest_problems(document, base, 'research.yaml', 'research_report_stale')
 
 
 def relation_for_root_claim(rows: Any, root_id: str | None) -> str:

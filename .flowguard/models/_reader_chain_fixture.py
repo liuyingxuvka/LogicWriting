@@ -62,6 +62,8 @@ class _RealReaderChain:
                   "evidence": [{"anchor": f"a-{name}", "directions": [
                       {"route": route, "hypothesis": "h-root", "direction": direction, "node": None}
                       for route, direction in directions[name]]} for name in anchors]}
+        import hashlib
+        report['input_digests']=[{'path':name,'sha256':hashlib.sha256((folder/name).read_bytes()).hexdigest()} for name in ('research.yaml','source.yaml')]
         (folder / "research-status.json").write_text(json.dumps(report), encoding="utf-8")
         name = {"no_status": "oppose", "hand_conflict": "oppose"}.get(case, case)
         handwritten = ([{"anchor_id": "a-oppose", "source_id": "s1", "locator": "p. 1", "relation": "support",

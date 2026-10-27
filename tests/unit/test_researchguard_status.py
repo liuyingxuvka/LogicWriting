@@ -122,19 +122,24 @@ def test_report_from_another_folder_fails_the_provider_check(tmp_path):
     foreign["question"] = "Why did container freight rates surge in 2021?"
     foreign["hypotheses"] = [{"id": "h_suez", "text": "The Suez blockage caused the surge."}]
     foreign["verdict"]["live_hypotheses"] = ["h_suez"]
+    import hashlib
+    index=yaml.safe_load((folder/'research.yaml').read_text())
+    index.update(question=foreign['question'],hypotheses=foreign['hypotheses'])
+    for row in foreign['input_digests']:
+        if row['path']=='research.yaml':row['sha256']=hashlib.sha256(yaml.safe_dump(index,sort_keys=False).encode()).hexdigest()
     report = tmp_path / "research-status.json"
     report.write_text(json.dumps(foreign), encoding="utf-8")
     rows, risks, passed = provider_checks("investigation", {"research_folder": str(folder)}, {},
                                           [{"provider": "researchguard", "path": str(report)}])
     assert not passed and rows[0]["status"] == "failed"
-    assert rows[0]["reason"].startswith("research_report_mismatch:question; research_report_mismatch:hypotheses")
+    assert rows[0]["reason"].startswith("research_report_stale:research.yaml")
     assert any(row["defect_id"] == "provider:researchguard" for row in risks)
 
     source = folder / "source.yaml"
     model = yaml.safe_load(source.read_text(encoding="utf-8"))
     model["anchors"] = model["anchors"][1:]
     source.write_text(yaml.safe_dump(model, sort_keys=False), encoding="utf-8")
-    assert research_report_identity_problems(saved, str(folder)) == ["research_report_mismatch:anchors"]
+    assert research_report_identity_problems(saved, str(folder)) == ["research_report_stale:source.yaml"]
 
     report.write_text(json.dumps(saved), encoding="utf-8")
     rows, _risks, passed = provider_checks("investigation", {}, {}, [{"provider": "researchguard", "path": str(report)}])
@@ -184,6 +189,11 @@ def test_imported_anchor_takes_the_research_direction(tmp_path):
         fill_brief_fingerprints({"research_status": status, "content_boundaries": {"evidence_anchors": []}})
     other = json.loads((folder / "research-status.json").read_text(encoding="utf-8"))
     other["question"] = "Another question?"
+    import hashlib
+    index=yaml.safe_load((folder/'research.yaml').read_text())
+    index['question']=other['question']
+    for row in other['input_digests']:
+        if row['path']=='research.yaml':row['sha256']=hashlib.sha256(yaml.safe_dump(index,sort_keys=False).encode()).hexdigest()
     (folder / "research-status.json").write_text(json.dumps(other), encoding="utf-8")
-    with pytest.raises(ValidationError, match="research_report_mismatch:question"):
+    with pytest.raises(ValidationError, match="research_report_stale:research.yaml"):
         imported(research_status=status)

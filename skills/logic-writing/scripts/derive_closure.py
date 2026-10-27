@@ -78,8 +78,8 @@ def required_providers(owner, brief, route_composition):
     return required
 
 
-IDENTITY_PROBLEMS = ("research_report_mismatch:", "research_report_unbound:",
-                     "world_report_mismatch:", "world_report_unbound:")
+IDENTITY_PROBLEMS = ("research_report_stale:", "research_report_unbound:",
+                     "world_report_mismatch:", "world_report_unbound:", "world_report_stale:")
 
 
 def provider_checks(owner, brief, route_composition, reports):
@@ -257,7 +257,7 @@ def derive_closure(
         owner, brief, route, request.get("provider_reports", []))
     residual.extend(provider_risks)
     if any(row["reason"].startswith(IDENTITY_PROBLEMS) for row in checks):
-        # A report of another research folder or world is a defect of this closure's inputs.
+        # Foreign or stale provider evidence is a defect of this closure's inputs.
         status = "needs_repair"
     reader_basis = "a self-review by the writer" if self_review else "independent reader judgment"
     if status == "passed":

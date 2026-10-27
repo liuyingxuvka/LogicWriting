@@ -1,8 +1,7 @@
-"""Saved provider reports constrain broad claims without changing textual closure.
+"""Saved provider reports constrain broad claims while their raw inputs remain current.
 
-A saved report counts only when it belongs to the brief: a ResearchGuard report must
-match the research folder's question, hypotheses, models and source anchors, and a
-WorldGuard report must name the world contract's id.
+ResearchGuard inputs are checked by digest; WorldGuard also retains its contract identity.
+Closure never runs a provider. The independent trip validator reads raw saved status.
 """
 from dataclasses import dataclass, replace
 from pathlib import Path
@@ -19,16 +18,8 @@ from flowguard.explorer import Explorer
 MODEL_ID = 'closure_claim_model'
 PARENT = 'reader-closure'
 COMPONENTS = ['reader-closure', 'travel-model', 'researchguard-handoff']
-IMPLEMENTED_BY = {'Reports': 'skills/logic-writing/scripts/derive_closure.py:provider_checks'}
-TESTED_BY = {
-    'research_verdict_risks_are_preserved': ['tests/unit/test_freshness_closure.py:test_provider_status_is_copied_from_the_report_file'],
-    "travel_world_failure_limits_claim": ["tests/unit/test_freshness_closure.py:test_failing_world_report_limits_the_travel_closure"],
-    'broad_claim_needs_every_required_provider': ['tests/unit/test_freshness_closure.py:test_missing_required_provider_report_blocks_the_broad_claim'],
-    'provider_status_is_copied_unchanged': ['tests/unit/test_freshness_closure.py:test_provider_status_is_copied_from_the_report_file'],
-    'missing_or_failed_provider_is_named': ['tests/unit/test_freshness_closure.py:test_unreadable_report_is_not_a_pass'],
-    'research_report_belongs_to_the_folder': ['tests/unit/test_researchguard_status.py:test_report_from_another_folder_fails_the_provider_check'],
-    'world_report_belongs_to_the_contract': ['tests/unit/test_freshness_closure.py:test_world_report_for_another_contract_fails_closure'],
-}
+IMPLEMENTED_BY = {'Reports': 'skills/logic-writing/scripts/derive_closure.py:provider_checks', 'ResearchVerdict': 'skills/logic-writing/scripts/researchguard_status.py:assess_research_verdict', 'ResearchIdentity': 'skills/logic-writing/scripts/researchguard_status.py:research_report_identity_problems'}
+TESTED_BY = {'research_verdict_risks_are_preserved': ['tests/unit/test_freshness_closure.py:test_provider_status_is_copied_from_the_report_file'], 'travel_world_failure_limits_claim': ['tests/unit/test_freshness_closure.py:test_failing_world_report_limits_the_travel_closure'], 'broad_claim_needs_every_required_provider': ['tests/unit/test_freshness_closure.py:test_missing_required_provider_report_blocks_the_broad_claim'], 'provider_status_is_copied_unchanged': ['tests/unit/test_freshness_closure.py:test_provider_status_is_copied_from_the_report_file'], 'missing_or_failed_provider_is_named': ['tests/unit/test_freshness_closure.py:test_unreadable_report_is_not_a_pass'], 'research_report_belongs_to_the_folder': ['tests/unit/test_researchguard_status.py:test_report_from_another_folder_fails_the_provider_check'], 'world_report_belongs_to_the_contract': ['tests/unit/test_freshness_closure.py:test_world_report_for_another_contract_fails_closure'], 'research_report_is_current': ['tests/unit/test_closure_claim_model.py:test_stale_research_report_fails_the_provider_check'], 'world_report_is_current': ['tests/unit/test_closure_claim_model.py:test_stale_world_report_fails_closure']}
 ROOT = Path(__file__).resolve().parents[2]
 EXAMPLES = ROOT / 'skills/logic-writing/assets/examples'
 WORLD_ID = 'old-market-day'  # contract_id of the travel example's world.yaml
@@ -65,8 +56,16 @@ def expected_status(state):
     if state.report == 'not_run':
         return 'not_run'
     if provider(state) == 'worldguard':
-        return state.report if state.report in {'PASS', 'FAIL'} else 'failed' if state.report == 'world_foreign' else 'unreadable'
-    return 'passed' if state.report in RESEARCH_PASS else 'failed' if state.report in RESEARCH_FAIL | {'research_foreign'} else 'unreadable'
+        return state.report if state.report in {'PASS', 'FAIL'} else 'failed' if state.report in {'world_foreign', 'world_stale'} else 'unreadable'
+    return 'passed' if state.report in RESEARCH_PASS else 'failed' if state.report in RESEARCH_FAIL | {'research_foreign', 'research_stale'} else 'unreadable'
+
+
+def stale_report(state):
+    return state.report == {'researchguard':'research_stale','worldguard':'world_stale'}[provider(state)]
+
+def trip_report_status(state):
+    # The trip validator reads the saved provider status; closure separately rejects stale inputs.
+    return 'PASS' if state.report=='world_stale' else expected_status(state)
 
 
 def foreign_identity(state):
@@ -85,11 +84,14 @@ def expected_research_risks(state):
 
 def report_input(owner, case):
     """Finite native input cases, including the source-only shipped verdict shape."""
-    if case in {'PASS', 'FAIL'}:
-        return {'status': case, 'contract_id': WORLD_ID}, []
-    if case == 'world_foreign':
-        return {'status': 'PASS', 'contract_id': 'another-world'}, []
-    if case not in RESEARCH_PASS | RESEARCH_FAIL | {'research_foreign'}:
+    if case in {'PASS','FAIL','world_foreign','world_stale'}:
+        import hashlib
+        world=EXAMPLES/'travel/world.yaml'
+        raw=world.read_bytes()+(b'\n' if case=='world_stale' else b'')
+        return {'status':'PASS' if case in {'world_foreign','world_stale'} else case,
+                'contract_id':'another-world' if case=='world_foreign' else WORLD_ID,
+                'input_digests':[{'path':world.name,'sha256':hashlib.sha256(raw).hexdigest()}]}, []
+    if case not in RESEARCH_PASS | RESEARCH_FAIL | {'research_foreign', 'research_stale'}:
         return {}, []
     document = json.loads((EXAMPLES / 'investigation/research-status.json').read_text(encoding="utf-8"))
     verdict = document['verdict']
@@ -98,6 +100,11 @@ def report_input(owner, case):
         document['question'] = 'Why did container freight rates surge in 2021?'
         document['hypotheses'] = [{'id': 'h_suez', 'text': 'The Suez blockage caused the surge.'}]
         verdict['live_hypotheses'] = ['h_suez']
+        import yaml,hashlib
+        index=yaml.safe_load((EXAMPLES/'investigation/research/research.yaml').read_text())
+        index.update(question=document['question'],hypotheses=document['hypotheses'])
+        for row in document['input_digests']:
+            if row['path']=='research.yaml':row['sha256']=hashlib.sha256(yaml.safe_dump(index,sort_keys=False).encode()).hexdigest()
         return document, []
     verdict = document['verdict']
     if case != 'research_source_only':
@@ -116,6 +123,10 @@ def report_input(owner, case):
         # The report keeps the folder's identity; the brief calls a live hypothesis rejected.
         return document, ([{'alternative_id': 'h-main-answer', 'safe_meaning': 'A live hypothesis is called rejected.',
                             'status': 'rejected', 'content_unit_ids': ['content:answer']}] if owner == 'investigation' else [])
+    if case=='research_stale':
+        import hashlib
+        for row in document['input_digests']:
+            if row['path']=='source.yaml':row['sha256']=hashlib.sha256((EXAMPLES/'investigation/research/source.yaml').read_bytes()+b'\n').hexdigest()
     return document, []
 
 
@@ -134,10 +145,10 @@ class Step:
         result = replace(state, closed=True, copied=PASSING[provider(state)] if self.rewrite else current_status,
                          broad=state.independent and (passing or self.ignore),
                          named=not passing and not self.omit,
-                         travel_claim_level='bookable' if state.owner == 'travel-guide' and passing else 'initial_plan',
+                         travel_claim_level='bookable' if state.owner == 'travel-guide' and trip_report_status(state)=='PASS' else 'initial_plan',
                          research_risks=expected_research_risks(state))
         case_label = 'foreign_report' if (state.owner == 'travel-guide' and state.report in RESEARCH_PASS | RESEARCH_FAIL | {'research_foreign'}) or (state.owner == 'investigation' and state.report in {'PASS', 'FAIL', 'world_foreign'}) else state.report
-        output = 'needs_repair' if foreign_identity(state) else 'passed'
+        output = 'needs_repair' if foreign_identity(state) or stale_report(state) else 'passed'
         return (FunctionResult(output, result, label=f'closed:{state.owner}:{case_label}'),)
 
 
@@ -182,7 +193,7 @@ class TravelReadsHandwrittenWorldStatus(Step):
 
 
 def travel_world_failure_limits_claim(state, trace):
-    if state.owner == 'travel-guide' and state.closed and expected_status(state) != 'PASS' and state.travel_claim_level != 'initial_plan':
+    if state.owner == 'travel-guide' and state.closed and trip_report_status(state) != 'PASS' and state.travel_claim_level != 'initial_plan':
         return InvariantResult.fail('a non-pass saved world report permits only initial planning')
     return InvariantResult.pass_()
 
@@ -249,7 +260,34 @@ def world_report_belongs_to_the_contract(state, trace):
     return InvariantResult.pass_()
 
 
+def research_report_is_current(state,trace):
+    if state.closed and provider(state)=='researchguard' and state.report=='research_stale' and (state.copied!='failed' or state.broad or not state.named):
+        return InvariantResult.fail('stale research report licensed closure')
+    return InvariantResult.pass_()
+
+def world_report_is_current(state,trace):
+    if state.closed and provider(state)=='worldguard' and state.report=='world_stale' and (state.copied!='failed' or state.broad or not state.named):
+        return InvariantResult.fail('stale world report licensed closure')
+    return InvariantResult.pass_()
+
+class StaleResearchReportPasses(Step):
+    def apply(self,event,state):
+        rows=super().apply(event,state)
+        if event.kind=='close' and provider(state)=='researchguard' and state.report=='research_stale':
+            return tuple(replace(row,output='passed',new_state=replace(row.new_state,copied='passed',broad=state.independent,named=False)) for row in rows)
+        return rows
+
+class StaleWorldReportPasses(Step):
+    def apply(self,event,state):
+        rows=super().apply(event,state)
+        if event.kind=='close' and provider(state)=='worldguard' and state.report=='world_stale':
+            return tuple(replace(row,output='passed',new_state=replace(row.new_state,copied='PASS',broad=state.independent,named=False)) for row in rows)
+        return rows
+
+
 INVARIANTS = (
+    Invariant('research_report_is_current','research inputs match the saved report',research_report_is_current),
+    Invariant('world_report_is_current','world inputs match the saved report',world_report_is_current),
     Invariant('research_report_belongs_to_the_folder', 'a research report counts only for its own research folder', research_report_belongs_to_the_folder),
     Invariant('world_report_belongs_to_the_contract', 'a world report counts only for its own world contract', world_report_belongs_to_the_contract),
     Invariant('research_verdict_risks_are_preserved', 'disagreement and wording boundaries remain honest', research_verdict_risks_are_preserved),
@@ -258,7 +296,7 @@ INVARIANTS = (
     Invariant('provider_status_is_copied_unchanged', 'native status remains unchanged', status_copied),
     Invariant('missing_or_failed_provider_is_named', 'all missing or failing providers are named', failure_named),
 )
-EVENTS = tuple(Event('report', status) for status in (*sorted(RESEARCH_PASS | RESEARCH_FAIL), 'research_foreign', 'PASS', 'FAIL', 'world_foreign', 'unreadable')) + (Event('close'),)
+EVENTS = tuple(Event('report', status) for status in (*sorted(RESEARCH_PASS | RESEARCH_FAIL), 'research_foreign', 'PASS', 'FAIL', 'world_foreign', 'unreadable', 'research_stale', 'world_stale')) + (Event('close'),)
 
 
 def explorer(step):
@@ -273,7 +311,9 @@ def build_explorer():
 
 
 def broken_variants():
-    return {'drops_research_risks': explorer(DropsResearchRisks()),
+    return {'stale_research_report_passes':explorer(StaleResearchReportPasses()),
+            'stale_world_report_passes':explorer(StaleWorldReportPasses()),
+            'drops_research_risks': explorer(DropsResearchRisks()),
             'closure_reads_member_reports': explorer(ReadsMemberReports()),
             'travel_reads_handwritten_world_status': explorer(TravelReadsHandwrittenWorldStatus()),
             'closure_ignores_provider_reports': explorer(IgnoreReports()),
@@ -383,6 +423,6 @@ def conformance():
     finally:
         adapter.close()
 
-USES = {'Close': 'skills/logic-writing/scripts/derive_closure.py:derive_closure'}
+USES = {'Close': 'skills/logic-writing/scripts/derive_closure.py:derive_closure', 'WorldIdentity': 'skills/logic-writing/scripts/_common.py:worldguard_report_identity_problems', 'InputDigests': 'skills/logic-writing/scripts/_common.py:input_digest_problems', 'TravelClaims': 'skills/logic-writing/routes/travel/scripts/travel_contract.py:review_plan'}
 
 NOT_MODELED = {'skills/logic-writing/scripts/derive_closure.py:main': 'Command wrapper: reads the closure request file, calls derive_closure (bound as Close in USES) and writes the closure JSON.'}

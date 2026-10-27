@@ -62,21 +62,19 @@ unreadable JSON or an invalid/missing verdict is `unreadable`.
 
 ## Each saved report belongs to the brief
 
-Closure counts a saved report only when it is the report of the research folder
-or world the brief names. It compares only identity fields the native tool wrote
-with the current files; it never runs a provider.
+Closure counts a saved report only while its declared raw input bytes match the current files. It never runs a provider.
 
-- ResearchGuard: the report's `question`, the `id`/`text` of `hypotheses` (in
-  index order), `models` (route and path, without `experiment_observations`) and
-  the set of `evidence[].anchor` must equal the brief's `research_folder`:
-  `research.yaml` and its source model's anchor ids. A difference is
-  `research_report_mismatch:<question|hypotheses|models|anchors>`; a report with
-  no readable `research_folder` is `research_report_unbound:research_folder`.
+- ResearchGuard: `input_digests` must include `research.yaml` and match every
+  declared input in `research_folder`. Changed or missing bytes are
+  `research_report_stale:<path>`; missing or malformed digests are
+  `research_report_stale:input_digests`. No bound folder is
+  `research_report_unbound:research_folder`. Closure does not parse the research YAML.
 - WorldGuard: the report's `contract_id` (default summary or `--json` report)
   must equal the composition's `world_contract` id: its `contract_id`, else
   `claim.claim_id`, as WorldGuard defines it. A difference is
   `world_report_mismatch:contract_id`; no readable `world_contract` is
-  `world_report_unbound:world_contract`. A travel trip plan's
+  `world_report_unbound:world_contract`. Its raw input digests must also match;
+  changed bytes are `world_report_stale:<path>`. A travel trip plan's
   `world_feasibility` reports are checked the same way when the brief is built
   (`travel_composition.world_report.mismatch`).
 
@@ -111,3 +109,5 @@ competition. Provider failures do not rewrite the textual-quality status;
 they remain in `provider_checks`/`residual_risk` and prevent the broader claim.
 A passing text-layer check never proves factual truth, a source's freshness,
 world-model completeness or the rendering of an uninspected document.
+
+Saved ResearchGuard and WorldGuard reports must contain current `input_digests`. Closure only compares the declared raw files; it never runs a provider. Changed inputs require refreshed reports before a broad claim.

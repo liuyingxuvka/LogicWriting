@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import copy
+import hashlib
+from pathlib import Path
 
 import pytest
 
@@ -180,6 +182,10 @@ def _research_document(*, withhold=False):
 def test_provider_status_is_copied_from_the_report_file(tmp_path, provider, document, status):
     import json
     request = closure_input(complete_chain(tmp_path, 'travel-guide' if provider == 'worldguard' else 'investigation'))
+    if provider=='worldguard':
+        document=copy.deepcopy(document)
+        world=Path(request['route_composition']['world_contract'])
+        document['input_digests']=[{'path':world.name,'sha256':hashlib.sha256(world.read_bytes()).hexdigest()}]
     path = tmp_path / 'report.json'
     path.write_text(json.dumps(document))
     request['provider_reports'] = [row for row in request['provider_reports'] if row['provider'] != provider]
@@ -232,6 +238,8 @@ def test_failing_world_report_limits_the_travel_closure(tmp_path):
     failed = tmp_path / 'world-fail.json'
     failed.write_text(json.dumps({'status': 'FAIL', 'contract_id': 'old-market-day'}))
     request = closure_input(complete_chain(tmp_path / 'chain', 'travel-guide'))
+    world=Path(request['route_composition']['world_contract'])
+    failed.write_text(json.dumps({'status':'FAIL','contract_id':'old-market-day','input_digests':[{'path':world.name,'sha256':hashlib.sha256(world.read_bytes()).hexdigest()}]}))
     request['provider_reports'] = [dict(provider='worldguard', path=str(failed))]
     closure = derive_closure(request)['closure']
     assert closure['provider_checks'][0]['status'] == 'FAIL'
@@ -260,7 +268,7 @@ def test_world_report_for_another_contract_fails_closure(tmp_path):
     # Without contract_id the contract is named by claim.claim_id, as in WorldGuard.
     world = tmp_path / 'world.yaml'
     world.write_text('claim: {claim_id: c_only}\ninputs: {events: []}\n')
-    report.write_text(json.dumps({'status': 'PASS', 'contract_id': 'c_only'}))
+    report.write_text(json.dumps({'status': 'PASS', 'contract_id': 'c_only', 'input_digests':[{'path':world.name,'sha256':hashlib.sha256(world.read_bytes()).hexdigest()}]}))
     rows, _risks, passed = provider_checks('travel-guide', {}, {'world_contract': str(world)},
                                            [dict(provider='worldguard', path=str(report))])
     assert passed and rows[0]['status'] == 'PASS'

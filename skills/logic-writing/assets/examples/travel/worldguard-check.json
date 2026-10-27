@@ -8,6 +8,12 @@
   },
   "contract_id": "old-market-day",
   "gaps": [],
+  "input_digests": [
+    {
+      "path": "world.yaml",
+      "sha256": "aa395ccfad0da5f81a7ddeb0a9c17fc48cffb9b97154d78b5631ffce93cb140b"
+    }
+  ],
   "output": "summary only; add --json for the full report",
   "scope_limits": [
     "illustrative places only",

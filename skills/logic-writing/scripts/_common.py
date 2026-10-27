@@ -436,4 +436,37 @@ def worldguard_report_identity_problems(report_path: str | Path, world_contract:
     except (OSError, UnicodeError, ValueError, TypeError):
         report = None
     actual = report.get("contract_id") if isinstance(report, Mapping) else None
-    return [] if actual == expected else ["world_report_mismatch:contract_id"]
+    problems = [] if actual == expected else ['world_report_mismatch:contract_id']
+    contract_path = Path(world_contract).expanduser()
+    return problems + input_digest_problems(report, contract_path.parent, contract_path.name, 'world_report_stale')
+
+
+def input_digest_problems(document, base_dir, required, code):
+    """Compare a saved provider's declared raw input bytes, without invoking it."""
+    from pathlib import PurePosixPath, PureWindowsPath
+    rows = document.get('input_digests') if isinstance(document, Mapping) else None
+    if not isinstance(rows, list):
+        return [code + ':input_digests']
+    paths = []
+    for row in rows:
+        if (not isinstance(row, Mapping) or set(row) != {'path', 'sha256'}
+                or not isinstance(row['path'], str) or not row['path']
+                or not isinstance(row['sha256'], str) or re.fullmatch(r'[0-9a-f]{64}', row['sha256']) is None):
+            return [code + ':input_digests']
+        paths.append(row['path'])
+    if paths != sorted(set(paths)):
+        return [code + ':input_digests']
+    problems = [] if required in paths else [code + ':' + required]
+    base = Path(base_dir).expanduser()
+    for row in rows:
+        path = row['path']
+        if PurePosixPath(path).is_absolute() or PureWindowsPath(path).drive or '\\' in path:
+            problems.append(code + ':' + path)
+            continue
+        try:
+            digest = hashlib.sha256((base / path).read_bytes()).hexdigest()
+        except (OSError, ValueError):
+            digest = None
+        if digest != row['sha256']:
+            problems.append(code + ':' + path)
+    return list(dict.fromkeys(problems))

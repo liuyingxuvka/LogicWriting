@@ -46,9 +46,9 @@ hypotheses. `alternative_status_conflict:<id>` is a failure. `contested` contrib
 A source-only question may have no root-claim license; stopping search never
 turns that absence into assert wording. Keep the missing license visible.
 
-The saved report must belong to the brief's `research_folder`. After the
-folder's question, hypotheses, models or source anchors change, save the report
-again; otherwise closure reports `research_report_mismatch:<field>`.
+The saved report's `input_digests` must match the current `research_folder`.
+After an input file changes, save the report again; otherwise closure reports
+`research_report_stale:<path>`. Closure compares raw hashes and does not parse research YAML.
 
 Investigation always needs this report. Academic work needs it when there are
 live alternatives or the request names a research folder. Preserve native

@@ -185,7 +185,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:e9d9a7e71f7937eb0879bb3a5305c0bda6e2a9a26e9f200393c6261b60f4ad2a"
+      "fingerprint": "sha256:097d0ed5331631a5fa67f2603bbbf5cec1855f6504d47c37b700b48ea44ad3d6"
     },
     {
       "id": "travel",
@@ -286,7 +286,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:5fd3873ec278a58d6667acf9aa5376ef45bf9894f37beb6eb3602b0262b54c7b"
+      "fingerprint": "sha256:f5319b61b1c68efe369af1f0fcad46c578108d4735f99fb81bcb00f41d9f823c"
     },
     {
       "id": "investigation",
@@ -519,7 +519,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:ec3317ec0d61fb4bfd2856914d6eabb1e27a2614e4c23541e8af387548885b4d"
+      "fingerprint": "sha256:1026a9f6219c805b5d154b97247f3925075aae1cf4db90e514d15cb61db68813"
     },
     {
       "id": "researchguard-handoff",
@@ -553,7 +553,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:6df371401bc6983bde2d77c5790e2f73fc499a96979c0adfefae0f39cdc79a3e"
+      "fingerprint": "sha256:7f8166f4f70a86b572c5cfd588bf5360289111959a79cb5716ae0b134bb19960"
     },
     {
       "id": "reader-plan",
@@ -727,7 +727,7 @@
     {
       "id": "reader-closure",
       "layer": "reader",
-      "summary": "Derive quality closure from the real reader chain, saved native verdicts and in-process domain checks.",
+      "summary": "Derive current-text quality closure and broad-claim limits from read-only, fresh provider reports, native domain checks and known-bad mutations.",
       "responsibilities": [
         "Derive quality closure from the real reader chain, saved native verdicts and in-process domain checks.",
         "Known-bad edits are caught or listed as toothless closure risks.",
@@ -769,7 +769,8 @@
         "tests/e2e/test_routes.py",
         "tests/e2e/test_worked_examples.py",
         "tests/unit/test_freshness_closure.py",
-        "tests/unit/test_known_bad.py"
+        "tests/unit/test_known_bad.py",
+        "tests/unit/test_closure_claim_model.py"
       ],
       "models": [
         ".flowguard/models/closure_claim_model.py",
@@ -777,7 +778,7 @@
       ],
       "parent": "reader-artifact",
       "status": "confirmed",
-      "fingerprint": "sha256:91d312ad35b3471f45486a98522ba56c83fcafa0239a40e0a74331d95fdb77b5"
+      "fingerprint": "sha256:f597ef55327e046f9098accafb1d64028701bc5f387ec6ec54bffc00b1354c9d"
     },
     {
       "id": "reader-commands",
@@ -1002,6 +1003,11 @@
       "code": "test_file_mixes_models",
       "component": "tests/unit/test_freshness_closure.py",
       "reason": "split in LW-410"
+    },
+    {
+      "code": "large_model",
+      "component": "closure_claim_model",
+      "reason": "one decision table judged through one entry function: there is no composing function to split into steps, and halving the table makes two models replay the same function with no new information"
     }
   ],
   "import_roots": [
@@ -1011,7 +1017,7 @@
   ],
   "model_digests": {
     ".flowguard/models/anchor_import_model.py": "22b463807a025740aed89c220f5ee8b2fe01d9ff7380a7de2fecbee394c5b44a",
-    ".flowguard/models/closure_claim_model.py": "e6f3c119a95a902a967df7a6cad208040daa01c3161a56079cf3d0d39c35b93e",
+    ".flowguard/models/closure_claim_model.py": "b7dc3bdc23fb1f45f18beecc656223a0e3b67dfd1df9b300e243bbea5de31a5d",
     ".flowguard/models/fiction_tree_model.py": "36899630f1d0a27e1240bd8a1a409ffb759f446678f3b4c47a131866253f8114",
     ".flowguard/models/known_bad_generator_model.py": "368c71fa5a1c708e0ffaa9d2ae89198c9a816ca215fe4972900a00158bc9e185",
     ".flowguard/models/plan_order_model.py": "eb1222578e6caabb43254467a7b67f96103700b0a1623b6af74dad5b8af41a34",

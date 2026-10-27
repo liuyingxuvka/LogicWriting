@@ -42,6 +42,32 @@
         "e_tide_turns": "t7"
       },
       "status": "FAIL"
+    },
+    {
+      "assertion": {
+        "at": "t8",
+        "holds": "papers_on_ship"
+      },
+      "claim_row": 4,
+      "code": "CLAIM_ASSERTION_FALSE",
+      "guard": "EventGuard",
+      "observed": {
+        "holding_fluents": [
+          "brandt_has_ring_key",
+          "brandt_on_island",
+          "office_open",
+          "papers_stamped",
+          "tova_has_spare"
+        ],
+        "holds": false
+      },
+      "status": "FAIL"
+    }
+  ],
+  "input_digests": [
+    {
+      "path": "world-late.yaml",
+      "sha256": "a257d8ebe1ad7839fc9e23305ec6ec52c37ac595cfb8d264019d451b39f96360"
     }
   ],
   "output": "summary only; add --json for the full report",

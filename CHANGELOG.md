@@ -8,6 +8,8 @@ line follows semantic versioning.
 
 ## Unreleased
 
+- Closure checks the saved provider reports against their current raw input files; stale reports require repair.
+
 - Maintenance checks run on FlowGuard 0.70.13; ResearchGuard 0.5.16 is the minimum.
 
 ## [4.0.15] - 2026-10-25

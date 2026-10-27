@@ -1,15 +1,94 @@
 {
   "question": "Did the port closure raise freight rates?",
-  "hypotheses": [{"id": "h-closure", "text": "The port closure raised freight rates."}],
-  "models": {"source": {"path": "source.yaml", "status": "ok"}},
-  "verdict": {"search": "stop_sufficient", "root_claim": {"id": "h-closure", "wording_license": "qualify", "reason": "Counterevidence remains."},
-              "live_hypotheses": ["h-closure"], "contested": true, "errors": 0},
+  "hypotheses": [
+    {
+      "id": "h-closure",
+      "text": "The port closure raised freight rates."
+    }
+  ],
+  "models": {
+    "source": {
+      "path": "source.yaml",
+      "status": "ok"
+    }
+  },
+  "verdict": {
+    "search": "stop_sufficient",
+    "root_claim": {
+      "id": "h-closure",
+      "wording_license": "qualify",
+      "reason": "Counterevidence remains."
+    },
+    "live_hypotheses": [
+      "h-closure"
+    ],
+    "contested": true,
+    "errors": 0
+  },
   "evidence": [
-    {"anchor": "a-oppose", "directions": [{"route": "trace", "hypothesis": "h-closure", "direction": "oppose", "node": null}]},
-    {"anchor": "a-mixed", "directions": [{"route": "logic", "hypothesis": "h-closure", "direction": "support", "node": "E_mixed"},
-                                         {"route": "trace", "hypothesis": "h-closure", "direction": "oppose", "node": null}]},
-    {"anchor": "a-limit", "directions": [{"route": "logic", "hypothesis": "h-closure", "direction": "limit", "node": "E_limit"}]},
-    {"anchor": "a-support", "directions": [{"route": "trace", "hypothesis": "h-closure", "direction": "support", "node": null}]},
-    {"anchor": "a-none", "directions": []}
+    {
+      "anchor": "a-oppose",
+      "directions": [
+        {
+          "route": "trace",
+          "hypothesis": "h-closure",
+          "direction": "oppose",
+          "node": null
+        }
+      ]
+    },
+    {
+      "anchor": "a-mixed",
+      "directions": [
+        {
+          "route": "logic",
+          "hypothesis": "h-closure",
+          "direction": "support",
+          "node": "E_mixed"
+        },
+        {
+          "route": "trace",
+          "hypothesis": "h-closure",
+          "direction": "oppose",
+          "node": null
+        }
+      ]
+    },
+    {
+      "anchor": "a-limit",
+      "directions": [
+        {
+          "route": "logic",
+          "hypothesis": "h-closure",
+          "direction": "limit",
+          "node": "E_limit"
+        }
+      ]
+    },
+    {
+      "anchor": "a-support",
+      "directions": [
+        {
+          "route": "trace",
+          "hypothesis": "h-closure",
+          "direction": "support",
+          "node": null
+        }
+      ]
+    },
+    {
+      "anchor": "a-none",
+      "directions": []
+    }
+  ],
+  "input_digests": [
+    {
+      "path": "research.yaml",
+      "sha256": "7aa2a87839d0355ea114c15532b3a76e44190969d2c46b6120aaa5bac52f1e72"
+    },
+    {
+      "path": "source.yaml",
+      "sha256": "398f9474ea2a47d536665490d386e896809d97d94457418b675140782f48c37c"
+    }
   ]
 }
