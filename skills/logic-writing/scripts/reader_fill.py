@@ -91,14 +91,6 @@ def fill_brief_fingerprints(request: dict[str, Any]) -> dict[str, Any]:
     fill_missing(route, "composition_plan_fingerprint", plan.get("plan_fingerprint") if isinstance(plan, Mapping) else None)
     if isinstance(route, dict) and route.get("extension_fingerprint") is None:
         route["extension_fingerprint"] = route_extension_fingerprint(route)
-    if request.get("native_plan") is not None and request.get("native_handoff") is None and intent_fp:
-        from researchguard_handoff import build_researchguard_handoff
-
-        request["native_handoff"] = build_researchguard_handoff(
-            request["native_plan"],
-            reader_intent_fingerprint=intent_fp,
-            native_result_locator=request.get("native_result_locator"),
-        )
     return request
 
 

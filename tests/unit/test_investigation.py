@@ -57,3 +57,14 @@ def test_handwritten_anchor_conflicting_with_the_research_folder_is_an_error(tmp
     request = load_request(request_path)
     fill_anchors_from_research(request)
     assert request["content_boundaries"]["evidence_anchors"][0]["boundary"] == "No extrapolation"
+
+
+def test_native_handoff_is_retired(tmp_path):
+    import json
+    import pytest
+    from _common import load_request, ValidationError
+    for field in ('native_handoff', 'native_plan', 'native_handoff_mapping'):
+        path = tmp_path / 'retired.json'
+        path.write_text(json.dumps({field: {}}))
+        with pytest.raises(ValidationError, match='native_handoff is retired: composition_plan is the one plan of a piece'):
+            load_request(path)

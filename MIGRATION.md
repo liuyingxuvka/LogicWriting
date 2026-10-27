@@ -21,12 +21,9 @@ not a new gate. A source-only stop is not a root-claim assert license.
 ## Current maintenance
 
 Find the current runtime/schema/test owner in `.flowguard/map.json`. Reader work
-is grouped by planning, binding, checking and closure; the synthesis-plan bridge
-belongs to `researchguard-handoff`. Internal pipeline functions live with
-planning, binding, checking or closure. Supported reader-chain request wrappers
-keep their names and input/output flags; retired wrappers are removed. The
-native synthesis request/plan bridge, opaque result
-locators, exact bytes and optional provenance for new work are preserved.
+is grouped by planning, binding, checking and closure. Supported reader-chain
+request wrappers keep their names and input/output flags. ResearchGuard supplies
+fresh saved reports and source anchors; CompositionPlan is the sole writing plan.
 
 The CompositionPlan is the piece's one unit tree. Long-form ledgers use planned
 unit ids and point to that same plan; one `longform_project` supplies actual

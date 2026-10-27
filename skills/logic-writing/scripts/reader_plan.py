@@ -17,9 +17,6 @@ def build_reader_brief(
     composition_plan: Mapping[str, Any],
     route_composition: Mapping[str, Any],
     brief_id: str,
-    native_handoff: Mapping[str, Any] | None = None,
-    native_plan: Mapping[str, Any] | None = None,
-    native_handoff_mapping: Iterable[Mapping[str, Any]] | None = None,
     research_folder: str | None = None,
     research_status: str | None = None,
 ) -> dict[str, Any]:
@@ -75,63 +72,6 @@ def build_reader_brief(
                                    "message": f"{report} does not belong to the composition's world_contract: {'; '.join(problems)}"})
         if issues:
             raise ValidationError("travel composition input is invalid: " + "; ".join(row["code"] + ": " + row["message"] for row in issues))
-    if native_handoff is not None:
-        # The native plan is optional only for callers that already resolved
-        # the opaque provider result.  When it is supplied, the adapter
-        # rebuilds the handoff so a caller cannot alter units, dispositions,
-        # or native identities and then merely re-sign the envelope.
-        from researchguard_handoff import validate_researchguard_handoff
-
-        native_value = require_mapping(native_handoff, "ResearchGuard semantic handoff")
-        if native_value.get("stage") not in {None, "semantic"}:
-            raise ValidationError("ReaderBrief accepts only the stage-1 semantic ResearchGuard handoff")
-        if native_value.get("status") != "current_pass":
-            raise ValidationError("blocked ResearchGuard handoff cannot enter ReaderBrief")
-        if native_value.get("reader_intent_fingerprint") != intent["intent_fingerprint"]:
-            raise ValidationError("ResearchGuard handoff does not bind the current ReaderIntent")
-        if native_plan is not None:
-            validate_researchguard_handoff(
-                native_value,
-                native_plan,
-                reader_intent_fingerprint=intent["intent_fingerprint"],
-            )
-        else:
-            if native_value.get("handoff_fingerprint") != fingerprint_without(dict(native_value), "handoff_fingerprint"):
-                raise ValidationError("ResearchGuard handoff fingerprint is stale")
-        if native_handoff_mapping is None:
-            raise ValidationError("a ResearchGuard handoff requires an explicit native-to-reader unit mapping")
-        # Validate the mapping against the current composition before the
-        # writer projection is constructed.
-        planned_ids = {
-            str(row["planned_unit_id"])
-            for row in plan.get("planned_units", [])
-        }
-        native_ids = {
-            str(row["unit_id"])
-            for row in native_value.get("units", [])
-            if isinstance(row, Mapping) and row.get("unit_id")
-        }
-        mapping_rows = list(native_handoff_mapping)
-        mapped_native = {
-            str(row.get("native_unit_id"))
-            for row in mapping_rows
-            if isinstance(row, Mapping)
-        }
-        if mapped_native != native_ids:
-            raise ValidationError("native-to-reader unit mapping must exactly cover the current native units")
-        for row in mapping_rows:
-            if not isinstance(row, Mapping) or not isinstance(row.get("planned_unit_ids"), list) or not row["planned_unit_ids"]:
-                raise ValidationError("native-to-reader unit mapping has an invalid planned unit list")
-            if any(str(item) not in planned_ids for item in row["planned_unit_ids"]):
-                raise ValidationError("native-to-reader unit mapping references an unknown planned unit")
-        mapped_planned = {
-            str(item)
-            for row in mapping_rows
-            if isinstance(row, Mapping)
-            for item in row.get("planned_unit_ids", [])
-        }
-        if mapped_planned != planned_ids:
-            raise ValidationError("native-to-reader unit mapping must cover every current planned unit")
     route = validate_route_composition(
         route_composition,
         owner=owner,
@@ -152,8 +92,6 @@ def build_reader_brief(
         plan=plan,
         route=route,
         boundaries=boundaries,
-        native_handoff=native_handoff,
-        native_handoff_mapping=native_handoff_mapping,
     )
     brief = {
         "schema_version": "2.0",

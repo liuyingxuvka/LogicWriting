@@ -568,17 +568,6 @@
           },
           "uniqueItems": true
         },
-        "native_handoff": {
-          "type": "object",
-          "additionalProperties": true
-        },
-        "native_handoff_mapping": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/nativeHandoffMapping"
-          },
-          "uniqueItems": true
-        },
         "route_semantics": {
           "type": "object",
           "additionalProperties": true

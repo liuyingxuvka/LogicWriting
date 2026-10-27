@@ -385,8 +385,6 @@ def build_writer_input(
     plan: Mapping[str, Any],
     route: Mapping[str, Any],
     boundaries: Mapping[str, Any],
-    native_handoff: Mapping[str, Any] | None = None,
-    native_handoff_mapping: Iterable[Mapping[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Build the sole reader-facing writer projection.
 
@@ -590,11 +588,6 @@ def build_writer_input(
         ),
         "gaps": gaps,
     }
-    if native_handoff is not None:
-        writer_input["native_handoff"] = dict(native_handoff)
-        writer_input["native_handoff_mapping"] = [
-            dict(row) for row in (native_handoff_mapping or ())
-        ]
     return writer_input
 
 
@@ -603,7 +596,6 @@ def validate_writer_input(value: Any, *, reader_brief: Mapping[str, Any] | None 
     required = {"schema_version", "reader_intent", "selected_content", "composition", "limitations", "citations", "route_semantics", "gaps"}
     allowed = required | {
         "evidence", "exact_obligations", "forbidden_claims",
-        "native_handoff", "native_handoff_mapping",
     }
     if not required <= set(writer_input) or set(writer_input) - allowed or writer_input.get("schema_version") not in {"1.0", "1.1"}:
         raise ValidationError("writer_input contains unsupported or missing fields")
@@ -614,7 +606,7 @@ def validate_writer_input(value: Any, *, reader_brief: Mapping[str, Any] | None 
     # Keep the id collection set-like for the boundary and hidden-content
     # membership checks below.  `unique_ids` returns a tuple for stable ordering,
     # but comparing that tuple with the ReaderBrief boundary set raises a
-    # runtime TypeError on the native handoff path.
+    # runtime TypeError when comparing the current inventory.
     selected_ids = set(unique_ids(selected_rows, "content_unit_id", "writer content")) if selected_rows else set()
     for row in selected_rows:
         disposition = row.get("disposition")
@@ -653,29 +645,6 @@ def validate_writer_input(value: Any, *, reader_brief: Mapping[str, Any] | None 
             if evidence_key in evidence_ids:
                 raise ValidationError("writer_input evidence repeats an anchor for one content unit")
             evidence_ids.add(evidence_key)
-    if "native_handoff" in writer_input:
-        handoff = require_mapping(writer_input["native_handoff"], "writer_input native_handoff")
-        if handoff.get("status") != "current_pass":
-            raise ValidationError("writer_input cannot consume a blocked ResearchGuard handoff")
-        if handoff.get("reader_intent_fingerprint") != intent["intent_fingerprint"]:
-            raise ValidationError("writer_input native_handoff does not bind its ReaderIntent")
-        if handoff.get("handoff_fingerprint") != fingerprint_without(dict(handoff), "handoff_fingerprint"):
-            raise ValidationError("writer_input native_handoff fingerprint is stale")
-        mapping = writer_input.get("native_handoff_mapping")
-        if not isinstance(mapping, list) or not mapping:
-            raise ValidationError("writer_input native_handoff_mapping is required for a native handoff")
-        native_ids = {str(row.get("unit_id")) for row in handoff.get("units", []) if isinstance(row, Mapping)}
-        mapped_ids = {str(row.get("native_unit_id")) for row in mapping if isinstance(row, Mapping)}
-        if mapped_ids != native_ids:
-            raise ValidationError("writer_input native handoff mapping is not exhaustive")
-        mapped_planned = {
-            str(item)
-            for row in mapping
-            if isinstance(row, Mapping)
-            for item in row.get("planned_unit_ids", [])
-        }
-        if mapped_planned != set(unit_ids):
-            raise ValidationError("writer_input native handoff mapping must cover every planned unit")
     if "exact_obligations" in writer_input:
         exact = require_mapping(writer_input["exact_obligations"], "writer_input exact_obligations")
         for kind in ("must_preserve", "verbatim"):

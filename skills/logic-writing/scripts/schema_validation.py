@@ -42,7 +42,6 @@ SUPPORTED_SCHEMA_NAMES = (
     "reader-brief.schema.json",
     "reader-intent.schema.json",
     "reader-judgment.schema.json",
-    "researchguard-logic-handoff.schema.json",
     "revision-provenance.schema.json",
     "route-decision.schema.json",
     "route-artifact-review.schema.json",

@@ -89,24 +89,3 @@ plausible mechanism is not execution evidence.
 ExperimentGuard remains outside LogicWriting's provider routes; it only recommends
 finite experiments in its own native domain. The retired umbrella run command is
 not an execution path.
-
-## Preserve the synthesis bridge
-
-The stable bridge remains `researchguard.logic.synthesis-request.v1` → native
-`researchguard.logic.synthesis-plan.v1` →
-`assets/schemas/researchguard-logic-handoff.schema.json` → `ReaderBrief.writer_input`.
-Give `scripts/build_reader_brief.py` the native plan, its opaque
-`native_result_locator` and an exhaustive `native_handoff_mapping`.
-`scripts/researchguard_handoff.py` checks native model/request identity, complete
-body-unit order, acyclic parent/predecessor links, argument closure, source-branch
-bindings and candidate dispositions. The mapping covers every native unit and
-every current planned reader unit; empty, partial, unknown-unit or blocked mappings
-cannot enter the writer workspace. A blocked support/budget/request result stays
-blocked and never becomes a quality or final-closure pass.
-
-Native `model_fingerprint` and `selection_request_fingerprint` are lowercase
-64-character digests. Only the typed LogicWriting fields add a `sha256:` label;
-`native_result_fingerprint` still hashes the exact native payload. Raw and labelled
-values must be valid lowercase SHA-256 digests. Preserve ReaderIntent,
-CompositionPlan and writer-projection bindings together, native payload bytes and
-opaque result locators. Do not change this bridge to manufacture a pass.

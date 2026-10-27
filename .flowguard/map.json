@@ -509,7 +509,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:15d64c82f7ad592421ed18873c0faa9cba4b3f0ca403315dd7280046809dbdc6"
+      "fingerprint": "sha256:a787389a9fd7d1d9b0d8b0abcfa799c63578169f2871a5e77281fdd4db50265d"
     },
     {
       "id": "researchguard-handoff",
@@ -521,13 +521,10 @@
         "Imported anchors take their relation from the saved research direction."
       ],
       "files": [
-        "skills/logic-writing/assets/schemas/researchguard-logic-handoff.schema.json",
         "skills/logic-writing/references/adapters/researchguard.md",
-        "skills/logic-writing/scripts/researchguard_handoff.py",
         "skills/logic-writing/scripts/researchguard_status.py"
       ],
       "entrypoints": [
-        "skills/logic-writing/scripts/researchguard_handoff.py:build_researchguard_handoff",
         "skills/logic-writing/scripts/researchguard_status.py:assess_research_verdict",
         "skills/logic-writing/scripts/researchguard_status.py:fill_anchors_from_research"
       ],
@@ -537,13 +534,12 @@
         "shared-contracts"
       ],
       "tests": [
-        "tests/contract/test_researchguard_handoff.py",
         "tests/unit/test_investigation.py",
         "tests/unit/test_researchguard_status.py"
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:8b4045e75bb4880d73f6ee051feae4bb6f138262097ae529b435584867457348"
+      "fingerprint": "sha256:92a4f3c5722de13c846ca8df9edd7070def74281603592d3c571c1c38bb46427"
     },
     {
       "id": "reader-plan",
@@ -581,7 +577,6 @@
       "side_effects": [],
       "depends_on": [
         "reader-binding",
-        "researchguard-handoff",
         "shared-contracts",
         "travel-model",
         "world-references"
@@ -596,7 +591,7 @@
       "models": [],
       "parent": "reader-artifact",
       "status": "confirmed",
-      "fingerprint": "sha256:f9b151103463ee88b75756077b36647d672754c7dc0cd5879659229e68557e81"
+      "fingerprint": "sha256:ffc468af9379e242c005ee52a921ca0655e53a198359f72a3348b662c26d1230"
     },
     {
       "id": "reader-binding",
@@ -712,7 +707,7 @@
       ],
       "parent": "reader-artifact",
       "status": "confirmed",
-      "fingerprint": "sha256:51a2072873833e10908ec5da4fec31e7a53b64d001c72b37898aae913fc22b19"
+      "fingerprint": "sha256:99053691af20691de38a36965c03c85199f3708b5e48376ec310344b388f542d"
     },
     {
       "id": "reader-closure",
@@ -820,7 +815,7 @@
         ".flowguard/models/plan_readback_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:1d17158d5adabde2dee42ba605e7a1d20a2adcd73447a825673adb42bca9a55a"
+      "fingerprint": "sha256:a40480bb67369eee76a8530f3b8b9da3310ad1c3f0001b3e7cfc2d30b0aaabfd"
     },
     {
       "id": "world-references",
@@ -1009,6 +1004,11 @@
       "code": "large_model",
       "component": "closure_claim_model",
       "reason": "one decision table judged through one entry function: there is no composing function to split into steps, and halving the table makes two models replay the same function with no new information"
+    },
+    {
+      "code": "high_fan_out",
+      "component": "reader-commands",
+      "reason": "run_chain orchestrates the seven native reader steps and four final route validators without taking over their domain rules; its direct imports make the real dependency graph visible."
     }
   ],
   "import_roots": [
@@ -1020,7 +1020,7 @@
   ],
   "model_digests": {
     ".flowguard/models/anchor_import_model.py": "c2aa2f7c2cc5ba937cfd9092b7135caf9328b7cfa8a64343b47e0f0b8638847d",
-    ".flowguard/models/closure_claim_model.py": "b7dc3bdc23fb1f45f18beecc656223a0e3b67dfd1df9b300e243bbea5de31a5d",
+    ".flowguard/models/closure_claim_model.py": "dba3bf085d7671304999ae3bb1489c280fd2addccc17e8a5a6f96309b301c986",
     ".flowguard/models/fiction_tree_model.py": "36899630f1d0a27e1240bd8a1a409ffb759f446678f3b4c47a131866253f8114",
     ".flowguard/models/known_bad_generator_model.py": "4e875b2d2bcfebb1a00d4851f7ab350c60c81dddca8c125413377307ea1391c5",
     ".flowguard/models/plan_order_model.py": "eb1222578e6caabb43254467a7b67f96103700b0a1623b6af74dad5b8af41a34",

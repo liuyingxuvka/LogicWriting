@@ -257,7 +257,7 @@ _REQUEST_CONTAINER_FIELDS = frozenset({
     # Reviewed envelopes for the route, brief, map/audit, review and closure CLIs.
     "writing_request", "material_assumptions", "intent_conflicts",
     "route_decision", "content_boundaries", "composition_plan", "route_composition",
-    "native_handoff", "native_plan", "native_handoff_mapping", "artifact_map",
+    "artifact_map",
     "reader_brief", "contract", "shared_writing", "review", "route_review",
     "deterministic_audit", "judgment", "revision_provenance", "provenance",
 })
@@ -285,6 +285,8 @@ def load_request(path: str | Path | None, *, defaults: dict | None = None) -> An
         return value
     if defaults is not None:
         value = {**defaults, **value}
+    if {"native_handoff", "native_plan", "native_handoff_mapping"} & value.keys():
+        raise ValidationError("native_handoff is retired: composition_plan is the one plan of a piece")
     if "sourceguard_model" in value:
         raise ValidationError("`sourceguard_model` is retired; use research_folder (a ResearchGuard research folder)")
     file_request = path not in {None, "-"}

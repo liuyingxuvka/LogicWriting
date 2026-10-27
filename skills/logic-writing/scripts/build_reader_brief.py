@@ -14,9 +14,6 @@ def build_reader_brief(
     composition_plan,
     route_composition,
     brief_id,
-    native_handoff=None,
-    native_plan=None,
-    native_handoff_mapping=None,
     research_folder=None,
     research_status=None,
 ):
@@ -26,9 +23,6 @@ def build_reader_brief(
         composition_plan=composition_plan,
         route_composition=route_composition,
         brief_id=brief_id,
-        native_handoff=native_handoff,
-        native_plan=native_plan,
-        native_handoff_mapping=native_handoff_mapping,
         research_folder=research_folder,
         research_status=research_status,
     )
@@ -42,9 +36,6 @@ def validate_request(value):
         composition_plan=request.get("composition_plan"),
         route_composition=request.get("route_composition"),
         brief_id=request.get("brief_id"),
-        native_handoff=request.get("native_handoff"),
-        native_plan=request.get("native_plan"),
-        native_handoff_mapping=request.get("native_handoff_mapping"),
         research_folder=request.get("research_folder"),
         research_status=request.get("research_status"),
     )

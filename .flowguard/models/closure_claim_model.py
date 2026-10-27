@@ -14,6 +14,7 @@ from flowguard import (FunctionResult, Invariant, InvariantResult, ReplayObserva
                        Workflow, replay_trace, select_covering_traces)
 from flowguard.conformance import projected_output_matches, projected_state_matches
 from flowguard.explorer import Explorer
+from flowguard.map.facts import CodeFacts
 
 MODEL_ID = 'closure_claim_model'
 PARENT = 'reader-closure'
@@ -419,7 +420,10 @@ def conformance():
                                   rules=(projected_state_matches(), projected_output_matches()))
             if not result.ok:
                 return result
-        return result
+        facts = CodeFacts(ROOT)
+        facts.unreferenced("skills/logic-writing/scripts/researchguard_handoff.py:build_researchguard_handoff")
+        facts.check("native provider replay conforms", result.ok, result.format_text())
+        return facts.report()
     finally:
         adapter.close()
 

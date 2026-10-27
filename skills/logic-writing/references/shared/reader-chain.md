@@ -65,9 +65,7 @@ ArtifactMap; the scripts never guess a replacement unit.
    `writing_request`, `decision_id`, `decided_at`; returns the RouteDecision.
 2. `python scripts/build_reader_brief.py --input brief-request.json` with
    `route_decision`, `content_boundaries`, `composition_plan`,
-   `route_composition`, `brief_id` (add `native_plan`, `native_result_locator`
-   and `native_handoff_mapping` only when a ResearchGuard synthesis plan is
-   used). Later steps can name this result file for `reader_brief` and
+   `route_composition`, `brief_id`. Later steps can name this result file for `reader_brief` and
    `route_composition`. Optionally set `research_folder` to the ResearchGuard folder or `research.yaml`; missing anchors are imported from its `models.source`. Matching handwritten dispositions stay unchanged; a different source id or locator fails `anchor_conflict:<id>`. With `research_status` (the saved `researchguard status --json` report of that folder), imported anchors take their relation from the research direction; a contradicting handwritten relation fails `anchor_relation_conflict:<id>`.
 3. Write the artifact as UTF-8 text or Markdown from `ReaderBrief.writer_input`. For travel, attach one `trip_plan`; for long-form fiction, name its `longform_project`. Supply `world_contract` and `world_refs` when the route requires a WorldGuard check.
 4. `python scripts/build_artifact_map.py --input map-request.json` with
@@ -157,15 +155,6 @@ console and the selected member command only. Never import an old member
 package, invoke `python -m`, locate a sibling checkout, try another member, or
 accept a provider-root override. If the console is missing, older than the
 minimum version, or times out, report that status and stop that handoff.
-
-For LogicGuard artifact synthesis, map the current
-`researchguard.logic.synthesis-plan.v1` through
-`scripts/researchguard_handoff.py` and its
-`assets/schemas/researchguard-logic-handoff.schema.json` contract before constructing the
-ReaderBrief. This bridge carries the reader-selected unit order, argument
-closure, source branch ids, and dispositions while retaining the native result
-locator as an opaque reference. A blocked or stale native plan remains
-blocked; the bridge never licenses prose quality or final closure.
 
 Read [references/adapters/researchguard.md](../adapters/researchguard.md)
 before a ResearchGuard handoff. It is the single adapter for the question and all three semantic members; save `researchguard status <folder> --json --output research-status.json` as the one research provider report for closure.
