@@ -337,7 +337,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:fbf807f2a7df9e3ff2435480f1c462a1b4ffd81d2d54d52e951788a7d6f70a18"
+      "fingerprint": "sha256:4594a55a18e8d6a1416036ed66739d59c5c7d5b98689cd034e4033fc63a661e8"
     },
     {
       "id": "academic",
@@ -519,7 +519,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:4caab8e8950a566a1fe92b8cb1be6abc582812882351b0504f1360843bdb6b3a"
+      "fingerprint": "sha256:7097dd0e2f4052efa28a0e14896fb3a1b568e2e8263f1687f8832d1f3631d1a9"
     },
     {
       "id": "researchguard-handoff",

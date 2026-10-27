@@ -81,5 +81,9 @@
     }
   ],
   "flows": [],
-  "remove": []
+  "remove": [
+    "entrypoint:skills/logic-writing/scripts/reader_binding.py:_quote_binding_units",
+    "entrypoint:skills/logic-writing/scripts/reader_checks.py:_reader_judgment_from_current",
+    "entrypoint:skills/logic-writing/scripts/reader_checks.py:_route_review_from_current"
+  ]
 }
