@@ -8,6 +8,8 @@ line follows semantic versioning.
 
 ## Unreleased
 
+- Size caps on skill text and example files are replaced by checks for repeated paragraphs, dead links and unknown names; totals are printed, not limited.
+
 - A stale saved report is named once, with the option that refreshes it.
 
 - A saved research report counts only when its input digests cover research.yaml and every file its models name.

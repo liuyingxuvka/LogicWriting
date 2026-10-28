@@ -71,7 +71,7 @@ Required evidence:
 - LogicGuard theme support when theme/ending interpretation is material;
 - SourceGuard canon/source support when supplied material constrains output;
 - reverse outlines from actual prose;
-- `scripts/longform_closure_check.py` on the closure bundle (reverse outline
+- `routes/fiction/scripts/longform_closure_check.py` on the closure bundle (reverse outline
   and, for final prose, source requirements).
 
 ### Final Manuscript

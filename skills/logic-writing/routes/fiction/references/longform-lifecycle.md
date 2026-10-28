@@ -38,7 +38,7 @@ Gate:
 
 ## Stage 2: Novel Ledger
 
-Create or update `references/novel-ledger.md` fields for:
+Create or update `routes/fiction/references/novel-ledger.md` fields for:
 
 - book, volume, chapter, and scene hierarchy;
 - arcs, threads, promises, clues, mysteries, stakes, and continuity records;
@@ -55,7 +55,7 @@ Gate:
 
 ## Stage 3: Story Contribution
 
-Use `references/story-contribution-contract.md` to check each important story unit.
+Use `routes/fiction/references/story-contribution-contract.md` to check each important story unit.
 
 For every book, volume, chapter, scene, arc, thread, promise, and continuity row, identify:
 
@@ -79,7 +79,7 @@ Gate:
 
 ## Stage 4: Chapter Interface
 
-Use `references/chapter-interface-prose-blueprint.md` to bind chapter-to-chapter movement.
+Use `routes/fiction/references/chapter-interface-prose-blueprint.md` to bind chapter-to-chapter movement.
 
 For each chapter in scope, record:
 
@@ -101,7 +101,7 @@ Gate:
 
 ## Stage 5: Voice And Style Continuity
 
-Use `references/voice-style-continuity.md` to preserve narrative voice across chapters.
+Use `routes/fiction/references/voice-style-continuity.md` to preserve narrative voice across chapters.
 
 Check:
 

@@ -53,7 +53,7 @@ Gate:
 
 ## Stage 8: Longform Closure
 
-Use `references/longform-closure.md` to aggregate evidence by level:
+Use `routes/fiction/references/longform-closure.md` to aggregate evidence by level:
 
 - chapter closure checks local chapter interface, scene contracts, voice/style, promises, and reverse outline;
 - volume closure checks all included chapters plus volume arcs and volume promises;

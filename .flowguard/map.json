@@ -74,7 +74,7 @@
       "tests": [
         "tests/e2e/test_worked_examples.py",
         "tests/e2e/test_reader_v2_benchmark.py",
-        "tests/contract/test_prompt_size.py",
+        "tests/contract/test_route_text.py",
         "tests/unit/test_reader_artifact_model.py"
       ],
       "models": [
@@ -192,7 +192,7 @@
         ".flowguard/models/route_review_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:fa11ba905a325588be6cd8982ba13fbee56052da5f2697081b724755c4d6346f"
+      "fingerprint": "sha256:bb3fae10f50034c6ae118837769306acd0c9b912d6c7f3ad68c6224d5ab62e51"
     },
     {
       "id": "travel",
