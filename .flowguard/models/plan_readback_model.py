@@ -96,11 +96,31 @@ class PlanFileReadsBackNoBinding(Step):
         return results
 
 
-INVARIANTS = (Invariant('readback_is_the_same_from_every_chain_file', 'every chain file reads back the same bound units and findings as the binding result', readback_is_the_same_from_every_chain_file),Invariant('readback_shows_the_plan_ahead_of_the_text','planned new units remain readable while binding is blocked',readback_shows_the_plan_ahead_of_the_text),Invariant("readback_shows_failing_units", "each failure on a unit is visible under that unit in the readback",
-              _readback_shows_failing_units),)
+INVARIANTS = (
+    Invariant(
+        "readback_is_the_same_from_every_chain_file",
+        "every chain file reads back the same bound units and findings as the binding result",
+        readback_is_the_same_from_every_chain_file,
+    ),
+    Invariant(
+        "readback_shows_the_plan_ahead_of_the_text",
+        "planned new units remain readable while binding is blocked",
+        readback_shows_the_plan_ahead_of_the_text,
+    ),
+    Invariant(
+        "readback_shows_failing_units",
+        "each failure on a unit is visible under that unit in the readback",
+        _readback_shows_failing_units,
+    ),
+)
 CASES = ('clean', 'leak', 'ahead')
-INPUT_FILES = ('reader-brief.json', 'closure-input.json', 'shared-writing.json', 'shared-writing-result.json')
-EVENTS=tuple(Event('readback',case,name) for case in CASES for name in INPUT_FILES)
+INPUT_FILES = (
+    "reader-brief.json",
+    "closure-input.json",
+    "shared-writing.json",
+    "shared-writing-result.json",
+)
+EVENTS = tuple(Event("readback", case, name) for case in CASES for name in INPUT_FILES)
 def _explorer(step):return Explorer(workflow=Workflow((step,)),initial_states=(State(),),external_inputs=EVENTS,invariants=INVARIANTS,max_sequence_length=1,progress_steps=0)
 def build_explorer():return _explorer(Step())
 def broken_variants():

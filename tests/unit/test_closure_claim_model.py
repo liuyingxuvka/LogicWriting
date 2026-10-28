@@ -182,3 +182,30 @@ def test_world_report_for_another_contract_fails_closure(tmp_path):
     rows, _risks, passed = provider_checks('travel-guide', {}, {}, [dict(provider='worldguard', path=str(report))])
     assert not passed and rows[0]['reason'].startswith('world_report_unbound:world_contract')
 
+
+
+def test_report_missing_a_models_digest_is_stale(tmp_path):
+    from researchguard_status import research_report_identity_problems
+
+    source = EXAMPLES / "investigation"
+    folder = tmp_path / "research"
+    shutil.copytree(source / "research", folder)
+    document = json.loads((source / "research-status.json").read_text())
+    document["input_digests"] = [
+        row for row in document["input_digests"] if row["path"] != "source.yaml"
+    ]
+    assert research_report_identity_problems(document, folder) == [
+        "research_report_stale:source.yaml"
+    ]
+    report = tmp_path / "report.json"
+    report.write_text(json.dumps(document))
+    rows, risks, passed = provider_checks(
+        "investigation",
+        {"research_folder": str(folder)},
+        {},
+        [{"provider": "researchguard", "path": str(report)}],
+    )
+    assert not passed
+    assert rows[0]["status"] == "failed"
+    assert rows[0]["reason"] == "research_report_stale:source.yaml"
+    assert risks

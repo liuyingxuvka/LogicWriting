@@ -57,3 +57,22 @@ def test_run_chain_provider_refresh_is_explicit(tmp_path,monkeypatch):
     assert run_chain(folder,until='brief')['exit_code']==0
     result=run_chain(folder,refresh_providers=True)
     assert result['exit_code']==2 and 'Install ResearchGuard' in result['first_failure']['message']
+
+
+def test_stale_report_line_names_the_code_once(tmp_path, monkeypatch, capsys):
+    import sys
+    import run_chain as chain
+
+    folder = tmp_path / "fiction"
+    shutil.copytree(EXAMPLES / "fiction", folder)
+    world = folder / "world.yaml"
+    world.write_text(world.read_text() + "\n# probe\n")
+    monkeypatch.setattr(sys, "argv", ["run_chain.py", str(folder)])
+    assert chain.main() == 1
+    lines = capsys.readouterr().out.splitlines()
+    assert (
+        lines[1]
+        == "first failure: closure: world_report_stale:world.yaml (saved report is from other inputs; run with --refresh-providers)"
+    )
+    assert lines[1].count("world_report_stale") == 1
+    assert ": PASS" not in lines[1]

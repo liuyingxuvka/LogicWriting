@@ -8,6 +8,10 @@ line follows semantic versioning.
 
 ## Unreleased
 
+- A stale saved report is named once, with the option that refreshes it.
+
+- A saved research report counts only when its input digests cover research.yaml and every file its models name.
+
 - Schema validation checks each distinct contract object once per run; results and outputs are unchanged.
 
 - The four reader models state their purpose in the map again.

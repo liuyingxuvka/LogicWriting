@@ -78,11 +78,38 @@ def assess_research_verdict(document: Any, alternatives=()) -> dict[str, Any]:
 def research_report_identity_problems(document: Any, research_folder: Any) -> list[str]:
     """A saved research report counts only while its declared input bytes match."""
     if not isinstance(research_folder, (str, Path)) or not str(research_folder).strip():
-        return ['research_report_unbound:research_folder']
+        return ["research_report_unbound:research_folder"]
     base = Path(research_folder).expanduser()
-    if base.name == 'research.yaml':
+    if base.name == "research.yaml":
         base = base.parent
-    return input_digest_problems(document, base, 'research.yaml', 'research_report_stale')
+    problems = input_digest_problems(document, base, "research.yaml", "research_report_stale")
+    import yaml
+    from collections.abc import Mapping
+
+    try:
+        index = yaml.safe_load((base / "research.yaml").read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, yaml.YAMLError):
+        return problems
+    if not isinstance(index, Mapping) or not isinstance(index.get("models"), Mapping):
+        return problems
+    digests = document.get("input_digests", []) if isinstance(document, Mapping) else []
+    if not isinstance(digests, list):
+        digests = []
+    declared = {
+        row.get("path")
+        for row in digests
+        if isinstance(row, Mapping) and isinstance(row.get("path"), str)
+    }
+    required = []
+    for name, value in index["models"].items():
+        if isinstance(value, str):
+            required.append(value)
+        elif name == "experiment_observations" and isinstance(value, list):
+            required.extend(path for path in value if isinstance(path, str))
+    for path in required:
+        if path not in declared:
+            problems.append("research_report_stale:" + path)
+    return list(dict.fromkeys(problems))
 
 
 def relation_for_root_claim(rows: Any, root_id: str | None) -> str:

@@ -91,15 +91,26 @@ def provider_checks(owner, brief, route_composition, reports):
     for report in reports:
         report = require_mapping(report, "provider report")
         provider, path = report.get("provider"), report.get("path")
-        if not isinstance(provider, str) or provider not in PROVIDER_STATUS_FIELDS or not isinstance(path, str) or not path:
+        if (
+            not isinstance(provider, str)
+            or provider not in PROVIDER_STATUS_FIELDS
+            or not isinstance(path, str)
+            or not path
+        ):
             raise ValidationError("provider report needs a known provider and a nonempty path")
         if provider == "researchguard":
             try:
                 document = load_json(path)
             except (OSError, ValueError, UnicodeError):
                 document = {}
-            assessment = assess_research_verdict(document, brief.get("content_boundaries", {}).get("alternatives", []))
-            status, passed, reason = assessment["status"], assessment["passed"], assessment["reason"]
+            assessment = assess_research_verdict(
+                document, brief.get("content_boundaries", {}).get("alternatives", [])
+            )
+            status, passed, reason = (
+                assessment["status"],
+                assessment["passed"],
+                assessment["reason"],
+            )
             risks.extend(dict(row, owner=owner) for row in assessment["residual_risk"])
             # The report counts only for the research folder the brief names.
             problems = research_report_identity_problems(document, brief.get("research_folder"))
@@ -107,17 +118,36 @@ def provider_checks(owner, brief, route_composition, reports):
             status = read_worldguard_report(path)
             passed = status == "PASS"
             reason = f"{provider} report {path}: {status}"
-            problems = worldguard_report_identity_problems(path, route_composition.get("world_contract"))
+            problems = worldguard_report_identity_problems(
+                path, route_composition.get("world_contract")
+            )
         if problems and status != "unreadable":  # an unreadable report already fails
-            status, passed, reason = "failed", False, "; ".join([*problems, reason])
-        checks.append(dict(provider=provider, path=path, status=status, passed=passed,
-                           reason=reason, required=provider in required))
+            status, passed, reason = "failed", False, "; ".join(problems)
+        checks.append(
+            dict(
+                provider=provider,
+                path=path,
+                status=status,
+                passed=passed,
+                reason=reason,
+                required=provider in required,
+            )
+        )
         if not passed:
             risks.append(dict(defect_id=f"provider:{provider}", owner=owner, reason=reason))
     supplied = {row["provider"] for row in checks}
     for provider in sorted(required - supplied):
         reason = f"{provider} report is missing: not_run"
-        checks.append(dict(provider=provider, path=None, status="not_run", passed=False, required=True, reason=reason))
+        checks.append(
+            dict(
+                provider=provider,
+                path=None,
+                status="not_run",
+                passed=False,
+                required=True,
+                reason=reason,
+            )
+        )
         risks.append(dict(defect_id=f"provider:{provider}", owner=owner, reason=reason))
     return checks, risks, all(row["passed"] for row in checks)
 

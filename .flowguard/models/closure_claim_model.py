@@ -19,8 +19,41 @@ from flowguard.map.facts import CodeFacts
 MODEL_ID = 'closure_claim_model'
 PARENT = 'reader-closure'
 COMPONENTS = ['reader-closure', 'travel-model', 'researchguard-handoff']
-IMPLEMENTED_BY = {'Reports': 'skills/logic-writing/scripts/derive_closure.py:provider_checks', 'ResearchVerdict': 'skills/logic-writing/scripts/researchguard_status.py:assess_research_verdict', 'ResearchIdentity': 'skills/logic-writing/scripts/researchguard_status.py:research_report_identity_problems'}
-TESTED_BY = {'research_verdict_risks_are_preserved': ['tests/unit/test_closure_claim_model.py:test_provider_status_is_copied_from_the_report_file'], 'travel_world_failure_limits_claim': ['tests/unit/test_closure_claim_model.py:test_failing_world_report_limits_the_travel_closure'], 'broad_claim_needs_every_required_provider': ['tests/unit/test_closure_claim_model.py:test_missing_required_provider_report_blocks_the_broad_claim'], 'provider_status_is_copied_unchanged': ['tests/unit/test_closure_claim_model.py:test_provider_status_is_copied_from_the_report_file'], 'missing_or_failed_provider_is_named': ['tests/unit/test_closure_claim_model.py:test_unreadable_report_is_not_a_pass'], 'research_report_belongs_to_the_folder': ['tests/unit/test_researchguard_status.py:test_report_from_another_folder_fails_the_provider_check'], 'world_report_belongs_to_the_contract': ['tests/unit/test_closure_claim_model.py:test_world_report_for_another_contract_fails_closure'], 'research_report_is_current': ['tests/unit/test_closure_claim_model.py:test_stale_research_report_fails_the_provider_check'], 'world_report_is_current': ['tests/unit/test_closure_claim_model.py:test_stale_world_report_fails_closure']}
+IMPLEMENTED_BY = {
+    "Reports": "skills/logic-writing/scripts/derive_closure.py:provider_checks",
+    "ResearchVerdict": "skills/logic-writing/scripts/researchguard_status.py:assess_research_verdict",
+    "ResearchIdentity": "skills/logic-writing/scripts/researchguard_status.py:research_report_identity_problems",
+}
+TESTED_BY = {
+    "research_verdict_risks_are_preserved": [
+        "tests/unit/test_closure_claim_model.py:test_provider_status_is_copied_from_the_report_file"
+    ],
+    "travel_world_failure_limits_claim": [
+        "tests/unit/test_closure_claim_model.py:test_failing_world_report_limits_the_travel_closure"
+    ],
+    "broad_claim_needs_every_required_provider": [
+        "tests/unit/test_closure_claim_model.py:test_missing_required_provider_report_blocks_the_broad_claim"
+    ],
+    "provider_status_is_copied_unchanged": [
+        "tests/unit/test_closure_claim_model.py:test_provider_status_is_copied_from_the_report_file"
+    ],
+    "missing_or_failed_provider_is_named": [
+        "tests/unit/test_closure_claim_model.py:test_unreadable_report_is_not_a_pass"
+    ],
+    "research_report_belongs_to_the_folder": [
+        "tests/unit/test_researchguard_status.py:test_report_from_another_folder_fails_the_provider_check"
+    ],
+    "world_report_belongs_to_the_contract": [
+        "tests/unit/test_closure_claim_model.py:test_world_report_for_another_contract_fails_closure"
+    ],
+    "research_report_is_current": [
+        "tests/unit/test_closure_claim_model.py:test_stale_research_report_fails_the_provider_check",
+        "tests/unit/test_closure_claim_model.py:test_report_missing_a_models_digest_is_stale",
+    ],
+    "world_report_is_current": [
+        "tests/unit/test_closure_claim_model.py:test_stale_world_report_fails_closure"
+    ],
+}
 ROOT = Path(__file__).resolve().parents[2]
 EXAMPLES = ROOT / 'skills/logic-writing/assets/examples'
 WORLD_ID = 'old-market-day'  # contract_id of the travel example's world.yaml
@@ -54,15 +87,32 @@ def provider(state):
 
 
 def expected_status(state):
-    if state.report == 'not_run':
-        return 'not_run'
-    if provider(state) == 'worldguard':
-        return state.report if state.report in {'PASS', 'FAIL'} else 'failed' if state.report in {'world_foreign', 'world_stale'} else 'unreadable'
-    return 'passed' if state.report in RESEARCH_PASS else 'failed' if state.report in RESEARCH_FAIL | {'research_foreign', 'research_stale'} else 'unreadable'
+    if state.report == "not_run":
+        return "not_run"
+    if provider(state) == "worldguard":
+        return (
+            state.report
+            if state.report in {"PASS", "FAIL"}
+            else "failed" if state.report in {"world_foreign", "world_stale"} else "unreadable"
+        )
+    return (
+        "passed"
+        if state.report in RESEARCH_PASS
+        else (
+            "failed"
+            if state.report
+            in RESEARCH_FAIL | {"research_foreign", "research_stale", "research_digest_omitted"}
+            else "unreadable"
+        )
+    )
 
 
 def stale_report(state):
-    return state.report == {'researchguard':'research_stale','worldguard':'world_stale'}[provider(state)]
+    return state.report in (
+        {"research_stale", "research_digest_omitted"}
+        if provider(state) == "researchguard"
+        else {"world_stale"}
+    )
 
 def trip_report_status(state):
     # The trip validator reads the saved provider status; closure separately rejects stale inputs.
@@ -85,49 +135,85 @@ def expected_research_risks(state):
 
 def report_input(owner, case):
     """Finite native input cases, including the source-only shipped verdict shape."""
-    if case in {'PASS','FAIL','world_foreign','world_stale'}:
+    if case in {"PASS", "FAIL", "world_foreign", "world_stale"}:
         import hashlib
-        world=EXAMPLES/'travel/world.yaml'
-        raw=world.read_bytes()+(b'\n' if case=='world_stale' else b'')
-        return {'status':'PASS' if case in {'world_foreign','world_stale'} else case,
-                'contract_id':'another-world' if case=='world_foreign' else WORLD_ID,
-                'input_digests':[{'path':world.name,'sha256':hashlib.sha256(raw).hexdigest()}]}, []
-    if case not in RESEARCH_PASS | RESEARCH_FAIL | {'research_foreign', 'research_stale'}:
+
+        world = EXAMPLES / "travel/world.yaml"
+        raw = world.read_bytes() + (b"\n" if case == "world_stale" else b"")
+        return {
+            "status": "PASS" if case in {"world_foreign", "world_stale"} else case,
+            "contract_id": "another-world" if case == "world_foreign" else WORLD_ID,
+            "input_digests": [{"path": world.name, "sha256": hashlib.sha256(raw).hexdigest()}],
+        }, []
+    if case not in RESEARCH_PASS | RESEARCH_FAIL | {
+        "research_foreign",
+        "research_stale",
+        "research_digest_omitted",
+    }:
         return {}, []
-    document = json.loads((EXAMPLES / 'investigation/research-status.json').read_text(encoding="utf-8"))
-    verdict = document['verdict']
-    if case == 'research_foreign':
+    document = json.loads(
+        (EXAMPLES / "investigation/research-status.json").read_text(encoding="utf-8")
+    )
+    verdict = document["verdict"]
+    if case == "research_foreign":
         # Another question's report (the Ever Given probe): same verdict shape, other identity.
-        document['question'] = 'Why did container freight rates surge in 2021?'
-        document['hypotheses'] = [{'id': 'h_suez', 'text': 'The Suez blockage caused the surge.'}]
-        verdict['live_hypotheses'] = ['h_suez']
-        import yaml,hashlib
-        index=yaml.safe_load((EXAMPLES/'investigation/research/research.yaml').read_text())
-        index.update(question=document['question'],hypotheses=document['hypotheses'])
-        for row in document['input_digests']:
-            if row['path']=='research.yaml':row['sha256']=hashlib.sha256(yaml.safe_dump(index,sort_keys=False).encode()).hexdigest()
+        document["question"] = "Why did container freight rates surge in 2021?"
+        document["hypotheses"] = [{"id": "h_suez", "text": "The Suez blockage caused the surge."}]
+        verdict["live_hypotheses"] = ["h_suez"]
+        import yaml, hashlib
+
+        index = yaml.safe_load((EXAMPLES / "investigation/research/research.yaml").read_text())
+        index.update(question=document["question"], hypotheses=document["hypotheses"])
+        for row in document["input_digests"]:
+            if row["path"] == "research.yaml":
+                row["sha256"] = hashlib.sha256(
+                    yaml.safe_dump(index, sort_keys=False).encode()
+                ).hexdigest()
         return document, []
-    verdict = document['verdict']
-    if case != 'research_source_only':
-        verdict['root_claim'] = {'id': 'h-main-answer', 'wording_license': 'assert',
-                                 'reason': 'Native argument support is sufficient within scope.'}
-    if case == 'research_contested':
-        verdict['contested'] = True
-    elif case == 'research_search_open':
-        verdict['search'] = 'continue_search'
-    elif case == 'research_errors':
-        verdict['errors'] = 1
-    elif case == 'research_live_withhold':
-        verdict['root_claim'].update(wording_license='withhold', reason='Native counterevidence remains.')
-        verdict['live_hypotheses'].append('h-other')
-    elif case == 'research_alternative_conflict':
+    verdict = document["verdict"]
+    if case != "research_source_only":
+        verdict["root_claim"] = {
+            "id": "h-main-answer",
+            "wording_license": "assert",
+            "reason": "Native argument support is sufficient within scope.",
+        }
+    if case == "research_contested":
+        verdict["contested"] = True
+    elif case == "research_search_open":
+        verdict["search"] = "continue_search"
+    elif case == "research_errors":
+        verdict["errors"] = 1
+    elif case == "research_live_withhold":
+        verdict["root_claim"].update(
+            wording_license="withhold", reason="Native counterevidence remains."
+        )
+        verdict["live_hypotheses"].append("h-other")
+    elif case == "research_alternative_conflict":
         # The report keeps the folder's identity; the brief calls a live hypothesis rejected.
-        return document, ([{'alternative_id': 'h-main-answer', 'safe_meaning': 'A live hypothesis is called rejected.',
-                            'status': 'rejected', 'content_unit_ids': ['content:answer']}] if owner == 'investigation' else [])
-    if case=='research_stale':
+        return document, (
+            [
+                {
+                    "alternative_id": "h-main-answer",
+                    "safe_meaning": "A live hypothesis is called rejected.",
+                    "status": "rejected",
+                    "content_unit_ids": ["content:answer"],
+                }
+            ]
+            if owner == "investigation"
+            else []
+        )
+    if case == "research_digest_omitted":
+        document["input_digests"] = [
+            row for row in document["input_digests"] if row["path"] != "source.yaml"
+        ]
+    if case == "research_stale":
         import hashlib
-        for row in document['input_digests']:
-            if row['path']=='source.yaml':row['sha256']=hashlib.sha256((EXAMPLES/'investigation/research/source.yaml').read_bytes()+b'\n').hexdigest()
+
+        for row in document["input_digests"]:
+            if row["path"] == "source.yaml":
+                row["sha256"] = hashlib.sha256(
+                    (EXAMPLES / "investigation/research/source.yaml").read_bytes() + b"\n"
+                ).hexdigest()
     return document, []
 
 
@@ -261,9 +347,14 @@ def world_report_belongs_to_the_contract(state, trace):
     return InvariantResult.pass_()
 
 
-def research_report_is_current(state,trace):
-    if state.closed and provider(state)=='researchguard' and state.report=='research_stale' and (state.copied!='failed' or state.broad or not state.named):
-        return InvariantResult.fail('stale research report licensed closure')
+def research_report_is_current(state, trace):
+    if (
+        state.closed
+        and provider(state) == "researchguard"
+        and stale_report(state)
+        and (state.copied != "failed" or state.broad or not state.named)
+    ):
+        return InvariantResult.fail("stale research report licensed closure")
     return InvariantResult.pass_()
 
 def world_report_is_current(state,trace):
@@ -297,7 +388,7 @@ INVARIANTS = (
     Invariant('provider_status_is_copied_unchanged', 'native status remains unchanged', status_copied),
     Invariant('missing_or_failed_provider_is_named', 'all missing or failing providers are named', failure_named),
 )
-EVENTS = tuple(Event('report', status) for status in (*sorted(RESEARCH_PASS | RESEARCH_FAIL), 'research_foreign', 'PASS', 'FAIL', 'world_foreign', 'unreadable', 'research_stale', 'world_stale')) + (Event('close'),)
+EVENTS = tuple(Event('report', status) for status in (*sorted(RESEARCH_PASS | RESEARCH_FAIL), 'research_foreign', 'PASS', 'FAIL', 'world_foreign', 'unreadable', 'research_stale', 'research_digest_omitted', 'world_stale')) + (Event('close'),)
 
 
 def explorer(step):

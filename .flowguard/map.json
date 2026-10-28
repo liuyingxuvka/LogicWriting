@@ -538,11 +538,12 @@
     {
       "id": "researchguard-handoff",
       "layer": "evidence",
-      "summary": "Read fresh saved ResearchGuard verdicts and source-owned report anchors; verify raw input digests without parsing native YAML.",
+      "summary": "Read fresh saved ResearchGuard verdicts and source-owned report anchors; verify raw digests and index coverage without parsing native models.",
       "responsibilities": [
         "Read one native ResearchGuard verdict and preserve atomic native source anchors.",
         "A saved research report must match its folder's question, hypotheses, models and anchors.",
-        "Imported anchors take their relation from the saved research direction."
+        "Imported anchors take their relation from the saved research direction.",
+        "A research report covers research.yaml and every model or observation path named by its index."
       ],
       "files": [
         "skills/logic-writing/references/adapters/researchguard.md",
@@ -563,7 +564,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:92a4f3c5722de13c846ca8df9edd7070def74281603592d3c571c1c38bb46427"
+      "fingerprint": "sha256:a3acb192d34ce4a60647f3ba94fb6e5fe180f875459c03747406162ef13e8bae"
     },
     {
       "id": "reader-plan",
@@ -787,7 +788,7 @@
       ],
       "parent": "reader-artifact",
       "status": "confirmed",
-      "fingerprint": "sha256:86e9c03f6332241c9d4f4356e35a9cc22024f3bc5255c63706ee3a8bd4cf0e63"
+      "fingerprint": "sha256:3afd1950f78a1f24e5221daa92b276f9b71151652ade43023875a24ba3e1a580"
     },
     {
       "id": "reader-commands",
@@ -839,7 +840,7 @@
         ".flowguard/models/plan_readback_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:0c1c09162f4519353c725637b4388fe3109980424c37d550305037afc98475e4"
+      "fingerprint": "sha256:3331e90094b5df7ba3158b548778ea0811dcb43fb7f1eba7332fdaf186a8dd7c"
     },
     {
       "id": "world-references",
@@ -1034,11 +1035,11 @@
   ],
   "model_digests": {
     ".flowguard/models/anchor_import_model.py": "b1e75b0c5162cf139e3b303ee10b830ed6d9e00bf3c9ba539735dbfbda2ca21d",
-    ".flowguard/models/closure_claim_model.py": "84d980683fec99f5abd0a799f8fd3232312e0277b571a1e2f8eb882f1efc9bbb",
+    ".flowguard/models/closure_claim_model.py": "4afd2da7a0feb0e515ef45f1bc2ba038e649e0572522a890175de808cafaa2ed",
     ".flowguard/models/fiction_tree_model.py": "0ddabded08324082ba916fdc10f9b75f915085f21d6a08b910126b130d509f9c",
     ".flowguard/models/known_bad_generator_model.py": "1475207e86b1c490e83138f3871df0843ceee6a7d3c61e33485ba0046edcbbb2",
     ".flowguard/models/plan_order_model.py": "7a32290b4c7c769f30df00b78f74b9cd868790da3ff4ff2b9034034b42aa2da5",
-    ".flowguard/models/plan_readback_model.py": "0f0fe9ed82d4949563e8ba1070d4b9025fb9043967d4d6763ca173ebbd4d5865",
+    ".flowguard/models/plan_readback_model.py": "93324fd82b0aa352665e289fcf7c60c77f558af5d9814625efe20fe16ce3eed4",
     ".flowguard/models/provider_preflight_model.py": "d78fe03165665eda9c3ce0a954f661a4e187e20c9c9b99a7d073b2d50ed415b2",
     ".flowguard/models/reader_artifact_model.py": "4861a104114cc29c29fd9adc78f646306a5588c9153c0689c14cb89ed1fe56a9",
     ".flowguard/models/route_review_model.py": "a24f47fdc46d89c4b03f323784ca3275ffecc5d7807ebf5cccbf24254bb395d5",

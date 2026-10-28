@@ -136,12 +136,22 @@ def run_chain(folder, *, until='closure', refresh_providers=False):
 
 
 def main():
-    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('folder');parser.add_argument('--until',choices=STEPS,default='closure');parser.add_argument('--refresh-providers',action='store_true');args=parser.parse_args()
-    result=run_chain(args.folder,until=args.until,refresh_providers=args.refresh_providers)
-    print(result['summary'])
-    if result['first_failure']:
-        row=result['first_failure'];print(f"first failure: {row['step']}: {row['code']}: {row['message']}")
-    return result['exit_code']
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("folder")
+    parser.add_argument("--until", choices=STEPS, default="closure")
+    parser.add_argument("--refresh-providers", action="store_true")
+    args = parser.parse_args()
+    result = run_chain(args.folder, until=args.until, refresh_providers=args.refresh_providers)
+    print(result["summary"])
+    if result["first_failure"]:
+        row = result["first_failure"]
+        message = row["message"]
+        if not message.startswith(row["code"] + ":"):
+            message = row["code"] + ": " + message
+        if "research_report_stale:" in message or "world_report_stale:" in message:
+            message += " (saved report is from other inputs; run with --refresh-providers)"
+        print(f"first failure: {row['step']}: {message}")
+    return result["exit_code"]
 
 
 if __name__=='__main__':raise SystemExit(main())
