@@ -1,3 +1,4 @@
+"""Anchors imported from a saved ResearchGuard report keep the report row's relation, locator, summary and boundary."""
 from __future__ import annotations
 from dataclasses import dataclass, replace
 from flowguard import FunctionResult, Invariant, InvariantResult, Workflow, replay_trace, select_covering_traces
@@ -6,8 +7,17 @@ from flowguard.explorer import Explorer
 from _reader_chain_fixture import _RealReaderChain, NativeReport
 MODEL_ID = 'anchor_import_model'
 PARENT = 'reader-inputs'
-IMPLEMENTED_BY = {'ImportAnchors': 'skills/logic-writing/scripts/reader_fill.py:fill_brief_fingerprints'}
-TESTED_BY = {'imported_anchor_matches_the_report_row':['tests/unit/test_researchguard_status.py:test_imported_anchor_matches_the_report_row'],'imported_anchor_keeps_research_direction': ['tests/unit/test_researchguard_status.py:test_imported_anchor_takes_the_research_direction']}
+IMPLEMENTED_BY = {
+    "ImportAnchors": "skills/logic-writing/scripts/reader_fill.py:fill_brief_fingerprints"
+}
+TESTED_BY = {
+    "imported_anchor_matches_the_report_row": [
+        "tests/unit/test_researchguard_status.py:test_imported_anchor_matches_the_report_row"
+    ],
+    "imported_anchor_keeps_research_direction": [
+        "tests/unit/test_researchguard_status.py:test_imported_anchor_takes_the_research_direction"
+    ],
+}
 @dataclass(frozen=True)
 class Event:
     kind: str                       # review | self_review | edit | close | import | order | readback

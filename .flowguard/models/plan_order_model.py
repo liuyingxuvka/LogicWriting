@@ -1,3 +1,4 @@
+"""Sibling planned units appear in the text in plan order; the deterministic audit sends a swapped pair to repair and hands that result to reader_artifact_model."""
 from __future__ import annotations
 from dataclasses import dataclass, replace
 from flowguard import FunctionResult, Invariant, InvariantResult, Workflow, replay_trace, select_covering_traces
@@ -6,11 +7,13 @@ from flowguard.explorer import Explorer
 from _reader_chain_fixture import _RealReaderChain, NativeReport
 MODEL_ID = 'plan_order_model'
 PARENT = 'reader-checks'
-IMPLEMENTED_BY = {'ReaderAudit': 'skills/logic-writing/scripts/reader_checks.py:build_reader_audit'}
+IMPLEMENTED_BY = {"ReaderAudit": "skills/logic-writing/scripts/reader_checks.py:build_reader_audit"}
 USES = {
     'RunChain': 'skills/logic-writing/scripts/run_chain.py:run_chain',
 }
-TESTED_BY = {'text_follows_plan_order': ['tests/unit/test_reader.py:test_audit_finds_text_out_of_plan_order']}
+TESTED_BY = {
+    "text_follows_plan_order": ["tests/unit/test_reader.py:test_audit_finds_text_out_of_plan_order"]
+}
 @dataclass(frozen=True)
 class Event:
     kind: str                       # review | self_review | edit | close | import | order | readback

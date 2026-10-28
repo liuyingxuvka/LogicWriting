@@ -85,55 +85,84 @@ class _RealReaderChain:
         self.import_fields_match=(row['locator']==expected['locator'] and row['observed_summary']==expected['summary'] and row['boundary']==expected['boundary'])
         return row["relation"]
 
-    def _readback(self, case: str) -> str:
+    def _readback(self, case: str, input_name="shared-writing-result.json") -> str:
         """Audit the investigation example (or its known-bad leak text) and read the plan back."""
         from _common import load_request
         from show_plan import plan_view
         from tests.v2_support import run_example_steps
+
         folder = self._workdir()
         example = ROOT / "skills/logic-writing/assets/examples/investigation"
         shutil.copytree(example, folder)
         if case == "leak":
             shutil.copyfile(example / "known-bad/leak.md", folder / "piece.md")
-        if case=='ahead':
+        if case == "ahead":
             import json
-            request=json.loads((folder/'brief-request.json').read_text())
-            rows=request['composition_plan']['planned_units']
-            unit=copy.deepcopy(rows[-1]);unit.update(planned_unit_id='u-libs',order=max(row['order'] for row in rows)+1,title='Libraries',content_unit_ids=[],limitation_ids=[])
+
+            request = json.loads((folder / "brief-request.json").read_text())
+            rows = request["composition_plan"]["planned_units"]
+            unit = copy.deepcopy(rows[-1])
+            unit.update(
+                planned_unit_id="u-libs",
+                order=max(row["order"] for row in rows) + 1,
+                title="Libraries",
+                content_unit_ids=[],
+                limitation_ids=[],
+            )
             rows.append(unit)
-            (folder/'brief-request.json').write_text(json.dumps(request))
-            run_example_steps(folder,until='map')
+            (folder / "brief-request.json").write_text(json.dumps(request))
+            run_example_steps(folder, until="map")
             from _common import cli_validate
             from validate_shared_writing import validate_shared_writing
-            previous=sys.argv
+
+            previous = sys.argv
             try:
-                sys.argv=['validate_shared_writing.py','--input',str(folder/'shared-writing.json'),'--output',str(folder/'shared-writing-result.json')]
-                binding_code=cli_validate(validate_shared_writing,'Bind the current text')
+                sys.argv = [
+                    "validate_shared_writing.py",
+                    "--input",
+                    str(folder / "shared-writing.json"),
+                    "--output",
+                    str(folder / "shared-writing-result.json"),
+                ]
+                binding_code = cli_validate(validate_shared_writing, "Bind the current text")
             finally:
-                sys.argv=previous
-            if binding_code==0:raise AssertionError('ahead fixture unexpectedly bound every required unit')
+                sys.argv = previous
+            if binding_code == 0:
+                raise AssertionError("ahead fixture unexpectedly bound every required unit")
         else:
             run_example_steps(folder)
         import io, json
         from contextlib import redirect_stdout
         from show_plan import main
+
         previous = sys.argv
         output = io.StringIO()
         try:
-            sys.argv = ['show_plan.py', '--input', str(folder / 'shared-writing-result.json'), '--json']
+            sys.argv = ["show_plan.py", "--input", str(folder / input_name), "--json"]
             with redirect_stdout(output):
                 code = main()
         finally:
             sys.argv = previous
-        if case=='ahead' and code not in (0,None):return 'hidden'
         if code not in (0, None):
-            raise AssertionError('native show_plan failed')
+            return "hidden"
         view = json.loads(output.getvalue())
-        if case=='ahead':
-            row=next((row for row in view['planned_units'] if row['planned_unit_id']=='u-libs'),{})
-            return 'ahead_shown' if row.get('new') and not row.get('bound') and 'shared_writing: blocked' in view['summary'] else 'hidden'
+        if case == "ahead":
+            row = next((row for row in view["planned_units"] if row["planned_unit_id"] == "u-libs"), {})
+            return (
+                "ahead_shown"
+                if row.get("new")
+                and not row.get("bound")
+                and "shared_writing: blocked" in view["summary"]
+                else "hidden"
+            )
 
-        shown = any(row.get("code") == "workflow_leak" for unit in view["planned_units"] for row in unit.get("findings", []))
+        if case == "clean":
+            return "clean" if all(unit["bound"] for unit in view["planned_units"]) else "unbound"
+        shown = any(
+            row.get("code") == "workflow_leak"
+            for unit in view["planned_units"]
+            for row in unit.get("findings", [])
+        )
         return "shown" if shown else "clean" if case == "clean" else "hidden"
 
     def _order(self, case: str) -> str:
@@ -165,37 +194,64 @@ class _RealReaderChain:
     def apply_step(self, step) -> ReplayObservation:
         event = step.function_input
         state = self.state
-        if event.kind == 'chain':
+        if event.kind == "chain":
             import json
             from run_chain import run_chain
+
             folder = self._workdir()
-            example = ROOT / 'skills/logic-writing/assets/examples/investigation'
+            example = ROOT / "skills/logic-writing/assets/examples/investigation"
             shutil.copytree(example, folder)
-            if event.quality == 'repair':
-                shutil.copyfile(example / 'known-bad/leak.md', folder / 'piece.md')
-            result = run_chain(folder, until='audit')
-            audit = json.loads((folder / 'audit.json').read_text())['reader_audit']
-            native = 'passed' if audit['status'] == 'passed' else 'failed'
-            state = replace(state, chain_native_status=native, chain_reported_status=result['status'])
+            if event.quality == "repair":
+                shutil.copyfile(example / "known-bad/leak.md", folder / "piece.md")
+            result = run_chain(folder, until="audit")
+            audit = json.loads((folder / "audit.json").read_text())["reader_audit"]
+            native = "passed" if audit["status"] == "passed" else "failed"
+            state = replace(state, chain_native_status=native, chain_reported_status=result["status"])
             self.state = state
-            return ReplayObservation(function_name=step.function_name, observed_output='command', observed_state=state)
+            return ReplayObservation(
+                function_name=step.function_name, observed_output="command", observed_state=state
+            )
         if event.kind == "readback":
-            state = replace(state, readback_case=event.quality, readback=self._readback(event.quality))
+            fields = (
+                {"readback_input": getattr(event, "input", "")}
+                if hasattr(state, "readback_input")
+                else {}
+            )
+            state = replace(
+                state,
+                readback_case=event.quality,
+                readback=self._readback(
+                    event.quality, getattr(event, "input", "") or "shared-writing-result.json"
+                ),
+                **fields
+            )
             self.state = state
-            return ReplayObservation(function_name=step.function_name, observed_output="read", observed_state=state)
+            return ReplayObservation(
+                function_name=step.function_name, observed_output="read", observed_state=state
+            )
         if event.kind == "order":
             state = replace(state, order_case=event.quality, order_audit=self._order(event.quality))
             self.state = state
-            return ReplayObservation(function_name=step.function_name, observed_output="audited", observed_state=state)
+            return ReplayObservation(
+                function_name=step.function_name, observed_output="audited", observed_state=state
+            )
         if event.kind == "import":
-            relation=self._import(event.quality)
-            fields={'report_fields_match':getattr(self,'import_fields_match',True)} if hasattr(state,'report_fields_match') else {}
+            relation = self._import(event.quality)
+            fields = (
+                {"report_fields_match": getattr(self, "import_fields_match", True)}
+                if hasattr(state, "report_fields_match")
+                else {}
+            )
             state = replace(state, import_case=event.quality, relation=relation, **fields)
             self.state = state
-            return ReplayObservation(function_name=step.function_name, observed_output="imported", observed_state=state)
+            return ReplayObservation(
+                function_name=step.function_name, observed_output="imported", observed_state=state
+            )
         if event.kind in {"review", "self_review"}:
             # the actual text with a fresh ReaderBrief, ArtifactMap, audit, route review and ReaderJudgment
-            chain = self.complete_chain(self._workdir(), state.owner, pass_quality=event.quality == "pass")
+            chain = self.complete_chain(
+                self._workdir(), state.owner, pass_quality=event.quality == "pass"
+            )
             if event.kind == "self_review":
                 judgment = copy.deepcopy(chain["judgment"])
                 judgment["judge_kind"] = "self_review"
@@ -205,15 +261,25 @@ class _RealReaderChain:
                 chain["judgment"] = judgment
             self.chain = chain
             judgment = chain["judgment"]
-            state = replace(state, owner=chain["route_decision"]["final_owner"], reviewed=True, current=True,
-                            quality="pass" if judgment["status"] == "passed" else "repair",
-                            independent=judgment["judge_kind"] == "independent_context",
-                            closure="", closure_owner="", broad_claim=False)
+            state = replace(
+                state,
+                owner=chain["route_decision"]["final_owner"],
+                reviewed=True,
+                current=True,
+                quality="pass" if judgment["status"] == "passed" else "repair",
+                independent=judgment["judge_kind"] == "independent_context",
+                closure="",
+                closure_owner="",
+                broad_claim=False,
+            )
             output = "reviewed"
         elif event.kind == "edit":
             if self.chain is not None:
                 path = Path(self.chain["artifact_path"])
-                path.write_text(path.read_text(encoding="utf-8") + "\n\nA materially new paragraph.", encoding="utf-8")
+                path.write_text(
+                    path.read_text(encoding="utf-8") + "\n\nA materially new paragraph.",
+                    encoding="utf-8",
+                )
             state = replace(state, current=False, closure="", closure_owner="", broad_claim=False)
             output = "edited"
         else:
@@ -221,12 +287,18 @@ class _RealReaderChain:
             if self.chain is not None:
                 try:
                     closure = self.derive_closure(self.closure_input(self.chain))["closure"]
-                    output, closure_owner, broad_claim = closure["status"], closure["final_owner"], closure["broad_claim_allowed"]
+                    output, closure_owner, broad_claim = (
+                        closure["status"],
+                        closure["final_owner"],
+                        closure["broad_claim_allowed"],
+                    )
                 except self.validation_error:
                     output = "rejected"
             state = replace(state, closure=output, closure_owner=closure_owner, broad_claim=broad_claim)
         self.state = state
-        return ReplayObservation(function_name=step.function_name, observed_output=output, observed_state=state)
+        return ReplayObservation(
+            function_name=step.function_name, observed_output=output, observed_state=state
+        )
 
     def observe_state(self) -> State:
         return self.state

@@ -8,6 +8,10 @@ line follows semantic versioning.
 
 ## Unreleased
 
+- The four reader models state their purpose in the map again.
+
+- show_plan reads the plan back the same way from every chain file: the binding result when it passed, otherwise the request's bindings against the current artifact map.
+
 - The self-models declare the product functions their replays call, so a change to run_chain selects every model that runs it.
 
 - Maintenance checks run on FlowGuard 0.70.14; ResearchGuard 0.5.16 stays the minimum.

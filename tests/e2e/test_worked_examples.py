@@ -84,56 +84,95 @@ def test_known_bad_catalog_is_generated_and_fully_caught(tmp_path, route):
         p.name: p.read_bytes() for p in expected.iterdir()}
 
 
-@pytest.mark.parametrize('route', ['investigation', 'academic', 'fiction', 'travel'])
+@pytest.mark.parametrize("route", ["investigation", "academic", "fiction", "travel"])
 def test_show_plan_reads_every_chain_file(tmp_path, route):
     folder = tmp_path / route
     shutil.copytree(EXAMPLES / route, folder)
-    code, review = run_chain(folder, route, 'review')
+    code, review = run_chain(folder, route, "review")
     assert code == 0, review
-    plan = json.loads((folder / 'brief-request.json').read_text())['composition_plan']
-    for filename in ('reader-brief.json', 'shared-writing.json',
-                     'shared-writing-result.json', 'audit-request.json'):
-        run = subprocess.run([sys.executable, str(SKILL / 'scripts/show_plan.py'),
-                              '--input', str(folder / filename)],
-                             cwd=SKILL, capture_output=True, text=True, timeout=30)
+    plan = json.loads((folder / "brief-request.json").read_text())["composition_plan"]
+    summary = None
+    for filename in (
+        "reader-brief.json",
+        "shared-writing.json",
+        "shared-writing-result.json",
+        "audit-request.json",
+    ):
+        run = subprocess.run(
+            [
+                sys.executable,
+                str(SKILL / "scripts/show_plan.py"),
+                "--input",
+                str(folder / filename),
+            ],
+            cwd=SKILL,
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
         assert run.returncode == 0, (filename, run.stdout, run.stderr)
-        assert plan['central_question'] in run.stdout
-        if filename == 'reader-brief.json':
-            assert run.stdout.count('UNBOUND') == len(plan['planned_units'])
+        assert plan["central_question"] in run.stdout
+        current = run.stdout.splitlines()[0]
+        if summary is None:
+            summary = current
+        assert current == summary
 
-    if route == 'investigation':
+    if route == "investigation":
         from copy import deepcopy
 
-        saved = json.loads((folder / 'shared-writing-result.json').read_text())['shared_writing']
-        bad_request = folder / 'show-plan-invalid-binding.json'
-        for kind in ('unknown_plan', 'unknown_artifact', 'missing_quote', 'ambiguous_quote'):
+        saved = json.loads((folder / "shared-writing-result.json").read_text())["shared_writing"]
+        bad_request = folder / "show-plan-invalid-binding.json"
+        for kind in ("unknown_plan", "unknown_artifact", "missing_quote", "ambiguous_quote"):
             contract = deepcopy(saved)
-            contract.pop('contract_fingerprint', None)
-            binding = contract['unit_bindings'][0]
-            if kind == 'unknown_plan':
-                binding['planned_unit_id'] = 'planned-unit-that-does-not-exist'
-            elif kind == 'unknown_artifact':
-                binding['artifact_unit_ids'] = ['artifact:missing']
+            contract.pop("contract_fingerprint", None)
+            binding = contract["unit_bindings"][0]
+            if kind == "unknown_plan":
+                binding["planned_unit_id"] = "planned-unit-that-does-not-exist"
+            elif kind == "unknown_artifact":
+                binding["artifact_unit_ids"] = ["artifact:missing"]
             else:
-                binding.pop('artifact_unit_ids', None)
-                binding.pop('artifact_spans', None)
-                binding['anchor_excerpts'] = (['free-threaded'] if kind == 'ambiguous_quote'
-                    else ['A quotation that is absent from this current article.'])
-            bad_request.write_text(json.dumps(dict(reader_brief='reader-brief.json',
-                artifact_map='artifact-map.json', shared_writing=contract)))
-            run = subprocess.run([sys.executable, str(SKILL / 'scripts/show_plan.py'),
-                                  '--input', str(bad_request)], cwd=SKILL,
-                                 capture_output=True, text=True, timeout=30)
+                binding.pop("artifact_unit_ids", None)
+                binding.pop("artifact_spans", None)
+                binding["anchor_excerpts"] = (
+                    ["free-threaded"]
+                    if kind == "ambiguous_quote"
+                    else ["A quotation that is absent from this current article."]
+                )
+            bad_request.write_text(
+                json.dumps(
+                    dict(
+                        reader_brief="reader-brief.json",
+                        artifact_map="artifact-map.json",
+                        shared_writing=contract,
+                    )
+                )
+            )
+            run = subprocess.run(
+                [sys.executable, str(SKILL / "scripts/show_plan.py"), "--input", str(bad_request)],
+                cwd=SKILL,
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
             assert run.returncode == 2, (kind, run.stdout, run.stderr)
-            assert run.stdout.startswith('show_plan: ') and 'Traceback' not in run.stderr
-        piece = folder / 'piece.md'
+            assert run.stdout.startswith("show_plan: ") and "Traceback" not in run.stderr
+        piece = folder / "piece.md"
         original = piece.read_bytes()
         try:
-            piece.write_bytes(original + b'\n')
-            run = subprocess.run([sys.executable, str(SKILL / 'scripts/show_plan.py'),
-                                  '--input', str(folder / 'shared-writing-result.json')],
-                                 cwd=SKILL, capture_output=True, text=True, timeout=30)
-            assert run.returncode == 2 and 'stale' in run.stdout
+            piece.write_bytes(original + b"\n")
+            run = subprocess.run(
+                [
+                    sys.executable,
+                    str(SKILL / "scripts/show_plan.py"),
+                    "--input",
+                    str(folder / "shared-writing-result.json"),
+                ],
+                cwd=SKILL,
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+            assert run.returncode == 2 and "stale" in run.stdout
         finally:
             piece.write_bytes(original)
 
@@ -225,3 +264,60 @@ def test_show_plan_reads_back_while_the_plan_is_ahead(tmp_path,monkeypatch,capsy
     assert not (bare/'route-decision.json').exists()
     assert len(view(bare/'brief-request.json')['planned_units'])==5
     assert names=={path.relative_to(bare) for path in bare.rglob('*') if path.is_file()}
+
+
+def test_show_plan_reads_back_the_same_from_every_chain_file(tmp_path, monkeypatch, capsys):
+    import copy
+    import hashlib
+    from run_chain import run_chain as run_full_chain
+    from show_plan import main
+
+    expected = {
+        "ok": "units: 5 (5 bound, 0 unbound); audit: passed (0 findings); review: passed; closure: passed; known-bad: 0 uncaught",
+        "inv": "units: 6 (5 bound, 1 unbound: u-libs new); shared_writing: blocked (required planned units are unbound: ['u-libs']); audit: not_run; review: not_run; closure: not_run; known-bad: not_run",
+    }
+    for name in ("ok", "inv"):
+        folder = tmp_path / name
+        shutil.copytree(EXAMPLES / "investigation", folder)
+        if name == "inv":
+            path = folder / "brief-request.json"
+            request = json.loads(path.read_text())
+            rows = request["composition_plan"]["planned_units"]
+            unit = copy.deepcopy(rows[-1])
+            unit.update(
+                planned_unit_id="u-libs",
+                order=max(row["order"] for row in rows) + 1,
+                title="Libraries",
+                content_unit_ids=[],
+                limitation_ids=[],
+            )
+            rows.append(unit)
+            path.write_text(json.dumps(request))
+        result = run_full_chain(folder)
+        assert result["exit_code"] == (0 if name == "ok" else 1)
+        before = {
+            p.relative_to(folder): hashlib.sha256(p.read_bytes()).hexdigest()
+            for p in folder.rglob("*")
+            if p.is_file()
+        }
+        summaries = []
+        for filename in (
+            "brief-request.json",
+            "reader-brief.json",
+            "closure-input.json",
+            "shared-writing.json",
+            "shared-writing-result.json",
+        ):
+            with monkeypatch.context() as patch:
+                patch.setattr(
+                    sys, "argv", ["show_plan.py", "--input", str(folder / filename), "--json"]
+                )
+                assert main() == 0
+            summaries.append(json.loads(capsys.readouterr().out)["summary"])
+        assert summaries == [expected[name]] * 5
+        after = {
+            p.relative_to(folder): hashlib.sha256(p.read_bytes()).hexdigest()
+            for p in folder.rglob("*")
+            if p.is_file()
+        }
+        assert before == after

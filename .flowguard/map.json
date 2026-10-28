@@ -795,7 +795,7 @@
       "summary": "Expose read-only plan views and reader-chain command entrypoints, selecting the existing route in memory when a draft has no saved decision.",
       "responsibilities": [
         "Expose the reader-chain commands and readable plan view without generating prose.",
-        "The plan readback shows each unit's findings, anchors and world references."
+        "The plan readback shows each unit's findings, anchors and world references. Bindings and findings read back identically from every chain file, including an interrupted binding step."
       ],
       "files": [
         "skills/logic-writing/scripts/audit_reader_output.py",
@@ -839,7 +839,7 @@
         ".flowguard/models/plan_readback_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:4fa0703ea0ae6dbacbe71b91dd81418b6af6c07611b97dabb83c5772ebb9f77d"
+      "fingerprint": "sha256:0c1c09162f4519353c725637b4388fe3109980424c37d550305037afc98475e4"
     },
     {
       "id": "world-references",
@@ -1033,14 +1033,14 @@
     "skills/logic-writing/routes/investigation/scripts"
   ],
   "model_digests": {
-    ".flowguard/models/anchor_import_model.py": "c2aa2f7c2cc5ba937cfd9092b7135caf9328b7cfa8a64343b47e0f0b8638847d",
+    ".flowguard/models/anchor_import_model.py": "b1e75b0c5162cf139e3b303ee10b830ed6d9e00bf3c9ba539735dbfbda2ca21d",
     ".flowguard/models/closure_claim_model.py": "84d980683fec99f5abd0a799f8fd3232312e0277b571a1e2f8eb882f1efc9bbb",
     ".flowguard/models/fiction_tree_model.py": "0ddabded08324082ba916fdc10f9b75f915085f21d6a08b910126b130d509f9c",
     ".flowguard/models/known_bad_generator_model.py": "1475207e86b1c490e83138f3871df0843ceee6a7d3c61e33485ba0046edcbbb2",
-    ".flowguard/models/plan_order_model.py": "d37127c4a318d1940044fbacbfba283d69af3106b3201f6cf28ba0922cc753ef",
-    ".flowguard/models/plan_readback_model.py": "c131ade6c4af070266a9dca6904da88c197a782c280ecfab83a3ba1ff22bed8a",
+    ".flowguard/models/plan_order_model.py": "7a32290b4c7c769f30df00b78f74b9cd868790da3ff4ff2b9034034b42aa2da5",
+    ".flowguard/models/plan_readback_model.py": "0f0fe9ed82d4949563e8ba1070d4b9025fb9043967d4d6763ca173ebbd4d5865",
     ".flowguard/models/provider_preflight_model.py": "d78fe03165665eda9c3ce0a954f661a4e187e20c9c9b99a7d073b2d50ed415b2",
-    ".flowguard/models/reader_artifact_model.py": "b434161ea3eded45e67b715d206e773b0c6203e1f0a1e28444561be6cd399f66",
+    ".flowguard/models/reader_artifact_model.py": "4861a104114cc29c29fd9adc78f646306a5588c9153c0689c14cb89ed1fe56a9",
     ".flowguard/models/route_review_model.py": "a24f47fdc46d89c4b03f323784ca3275ffecc5d7807ebf5cccbf24254bb395d5",
     ".flowguard/models/route_selection_model.py": "2f75c31bd5c5b3c040d2d34f6677ceed9f9c15921421c9a222640a7a93c97e00",
     ".flowguard/models/shared_contracts_model.py": "f3a093e25d0322ab3fc1d7473ce6451f2e9e69a033959f70e93aeeba1e1ea2ef",

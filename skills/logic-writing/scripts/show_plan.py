@@ -14,6 +14,14 @@ from reader_fill import fill_check_fingerprints
 from reader_binding import shared_writing_from_current, quote_binding_units
 from world_refs import planned_world_refs
 
+CHAIN_FILES = frozenset((
+    'brief-request.json', 'reader-brief.json', 'closure-input.json',
+    'shared-writing.json', 'shared-writing-result.json', 'route-request.json',
+    'route-decision.json', 'map-request.json', 'artifact-map.json',
+    'audit-request.json', 'audit.json', 'route-review.json',
+    'route-review-result.json', 'closure.json',
+))
+
 # Result files of the same chain, read beside the input like reader-brief.json and artifact-map.json.
 RESULTS = (('audit', 'audit.json', 'findings', ('reader_audit', 'deterministic_audit')),
            ('review', 'route-review-result.json', 'review_fingerprint', ('route_review',)),
@@ -32,41 +40,117 @@ def _find_record(value, marker, wrappers):
     return None
 
 
-def _load_view_input(path):
+def _read_view_input(path):
     """Read an interrupted chain without writing or claiming that its binding passed."""
-    path=Path(path).resolve()
+    path = Path(path).resolve()
     try:
         value = load_request(path)
-        if path.name == 'shared-writing-result.json' and isinstance(value, dict) and value.get('status') == 'blocked':
-            request = load_request(path.parent / 'shared-writing.json')
-            request['_binding_blocked'] = value
+        if (
+            path.name == "shared-writing-result.json"
+            and isinstance(value, dict)
+            and value.get("status") == "blocked"
+        ):
+            request = load_request(path.parent / "shared-writing.json")
+            request["_binding_blocked"] = value
             return request
-        if path.name == 'shared-writing-result.json' and isinstance(value, dict) and isinstance(value.get('shared_writing'), dict):
-            return {'shared_writing': value['shared_writing']}
+        if (
+            path.name == "shared-writing-result.json"
+            and isinstance(value, dict)
+            and isinstance(value.get("shared_writing"), dict)
+        ):
+            return {"shared_writing": value["shared_writing"]}
         return value
-    except (OSError,ValueError) as error:
-        raw=json.loads(path.read_text(encoding='utf-8'))
-        if not isinstance(raw,dict):raise error
-        route=raw.get('route_decision')
-        if path.name=='brief-request.json' and isinstance(route,str) and not (path.parent/route).exists():
+    except (OSError, ValueError) as error:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+        if not isinstance(raw, dict):
+            raise error
+        route = raw.get("route_decision")
+        if (
+            path.name == "brief-request.json"
+            and isinstance(route, str)
+            and not (path.parent / route).exists()
+        ):
             from select_route import validate_request
-            decision=validate_request(load_request(path.parent/'route-request.json'))['route_decision']
-            request=deepcopy(raw)
-            request['route_decision']=decision
-            for key in ('composition_plan','content_boundaries','route_composition'):
-                reference=request.get(key)
-                if isinstance(reference,str) and reference.endswith('.json'):
-                    record=load_request(path.parent/reference)
-                    request[key]=record.get(key,record) if isinstance(record,dict) else record
+
+            decision = validate_request(load_request(path.parent / "route-request.json"))[
+                "route_decision"
+            ]
+            request = deepcopy(raw)
+            request["route_decision"] = decision
+            for key in ("composition_plan", "content_boundaries", "route_composition"):
+                reference = request.get(key)
+                if isinstance(reference, str) and reference.endswith(".json"):
+                    record = load_request(path.parent / reference)
+                    request[key] = record.get(key, record) if isinstance(record, dict) else record
             return request
-        blocked_path=path.parent/'shared-writing-result.json'
-        if not blocked_path.is_file():raise error
-        blocked=json.loads(blocked_path.read_text(encoding='utf-8'))
-        if not isinstance(blocked,dict) or blocked.get('status')!='blocked':raise error
-        request=load_request(path.parent/'shared-writing.json')
-        if not isinstance(request,dict):raise error
-        request['_binding_blocked']=blocked
+        blocked_path = path.parent / "shared-writing-result.json"
+        if not blocked_path.is_file():
+            raise error
+        blocked = json.loads(blocked_path.read_text(encoding="utf-8"))
+        if not isinstance(blocked, dict) or blocked.get("status") != "blocked":
+            raise error
+        request = load_request(path.parent / "shared-writing.json")
+        if not isinstance(request, dict):
+            raise error
+        request["_binding_blocked"] = blocked
         return request
+
+
+def _load_view_input(path):
+    """Combine the input's plan with the current bindings beside any chain file."""
+    value = _read_view_input(path)
+    path = Path(path).resolve()
+    result_path = path.parent / "shared-writing-result.json"
+    shared_path = path.parent / "shared-writing.json"
+    map_path = path.parent / "artifact-map.json"
+    if not isinstance(value, dict):
+        return value
+    # Explicit custom requests keep their own binding validation.
+    if (
+        path.name not in CHAIN_FILES
+        and _find_record(value, "unit_bindings", ("shared_writing", "contract")) is not None
+    ):
+        return value
+    value = dict(value)
+    if result_path.is_file():
+        result = json.loads(result_path.read_text(encoding="utf-8"))
+        if isinstance(result, dict) and result.get("status") == "blocked":
+            value["shared_writing"] = (
+                _find_record(
+                    load_request(shared_path), "unit_bindings", ("shared_writing", "contract")
+                )
+                or {}
+            )
+            value["_binding_blocked"] = result
+        elif (
+            isinstance(result, dict)
+            and result.get("status") in {"current_pass", "passed"}
+            and isinstance(result.get("shared_writing"), dict)
+        ):
+            value["shared_writing"] = result["shared_writing"]
+        elif shared_path.is_file() and map_path.is_file():
+            value["shared_writing"] = (
+                _find_record(
+                    load_request(shared_path), "unit_bindings", ("shared_writing", "contract")
+                )
+                or {}
+            )
+            value["_binding_partial"] = True
+        else:
+            return value
+    elif shared_path.is_file() and map_path.is_file():
+        value["shared_writing"] = (
+            _find_record(load_request(shared_path), "unit_bindings", ("shared_writing", "contract"))
+            or {}
+        )
+        value["_binding_partial"] = True
+    else:
+        return value
+    if map_path.is_file():
+        value["artifact_map"] = (
+            _find_record(load_request(map_path), "units", ("artifact_map",)) or {}
+        )
+    return value
 
 
 def _partial_shared(shared, amap):
@@ -87,24 +171,35 @@ def _partial_shared(shared, amap):
 
 
 def _records(request, input_path=None):
-    brief = _find_record(request, 'composition_plan', ('reader_brief',))
+    brief = _find_record(request, "composition_plan", ("reader_brief",))
     if brief is None and input_path is not None:
-        sibling = Path(input_path).resolve().parent / 'reader-brief.json'
+        sibling = Path(input_path).resolve().parent / "reader-brief.json"
         if sibling.is_file() and sibling != Path(input_path).resolve():
-            brief = _find_record(load_request(sibling), 'composition_plan', ('reader_brief',))
+            brief = _find_record(load_request(sibling), "composition_plan", ("reader_brief",))
     if brief is None:
-        raise ValueError('no composition plan; supply a brief request/result or a chain file beside reader-brief.json')
-    plan = brief.get('composition_plan')
-    if not isinstance(plan, dict) or not isinstance(plan.get('planned_units'), list):
-        raise ValueError('the input has no readable composition_plan.planned_units')
-    if any(not isinstance(row, dict) for row in plan['planned_units']):
-        raise ValueError('planned_units must contain readable unit records')
-    shared = _find_record(request, 'unit_bindings', ('shared_writing', 'contract'))
-    amap = _find_record(request, 'units', ('artifact_map',))
-    if shared is not None and amap is None and input_path is not None:
-        sibling = Path(input_path).resolve().parent / 'artifact-map.json'
+        raise ValueError(
+            "no composition plan; supply a brief request/result or a chain file beside reader-brief.json"
+        )
+    plan = brief.get("composition_plan")
+    if not isinstance(plan, dict) or not isinstance(plan.get("planned_units"), list):
+        raise ValueError("the input has no readable composition_plan.planned_units")
+    if any(not isinstance(row, dict) for row in plan["planned_units"]):
+        raise ValueError("planned_units must contain readable unit records")
+    # The input keeps authority over the plan; binding validation needs the full native brief.
+    if input_path is not None and "brief_fingerprint" not in brief:
+        sibling = Path(input_path).resolve().parent / "reader-brief.json"
         if sibling.is_file():
-            amap = _find_record(load_request(sibling), 'units', ('artifact_map',))
+            native_brief = _find_record(
+                load_request(sibling), "composition_plan", ("reader_brief",)
+            )
+            if native_brief is not None:
+                brief = native_brief
+    shared = _find_record(request, "unit_bindings", ("shared_writing", "contract"))
+    amap = _find_record(request, "units", ("artifact_map",))
+    if shared is not None and amap is None and input_path is not None:
+        sibling = Path(input_path).resolve().parent / "artifact-map.json"
+        if sibling.is_file():
+            amap = _find_record(load_request(sibling), "units", ("artifact_map",))
     return brief, plan, shared or {}, amap or {}
 
 
@@ -210,62 +305,123 @@ def _tree_order(rows):
 
 def plan_view(request, *, input_path=None):
     brief, plan, shared, amap = _records(request, input_path)
-    partial=request.get('_binding_blocked')
-    declared={row.get('planned_unit_id') for row in shared.get('unit_bindings',[]) if isinstance(row,dict)}
+    partial = request.get("_binding_blocked") or request.get("_binding_partial")
+    declared = {
+        row.get("planned_unit_id")
+        for row in shared.get("unit_bindings", [])
+        if isinstance(row, dict)
+    }
     if partial and amap:
-        amap=validate_artifact_map(amap)
-        shared=_partial_shared(shared,amap)
-    elif shared.get('unit_bindings') and amap:
+        amap = validate_artifact_map(amap)
+        shared = _partial_shared(shared, amap)
+    elif shared.get("unit_bindings") and amap:
         current_map = validate_artifact_map(amap)
-        envelope = fill_check_fingerprints(deepcopy(dict(
-            reader_brief=brief, artifact_map=current_map, contract=shared)))
-        shared = shared_writing_from_current(envelope['contract'],
-            amap=current_map, reader_brief=brief)
+        envelope = fill_check_fingerprints(
+            deepcopy(dict(reader_brief=brief, artifact_map=current_map, contract=shared))
+        )
+        shared = shared_writing_from_current(
+            envelope["contract"], amap=current_map, reader_brief=brief
+        )
         amap = current_map
     else:
         # A plan alone (or an as-yet unbound draft) makes no text-binding claim.
         shared = {}
-    units = {row['artifact_unit_id']: row for row in amap.get('units', [])}
-    boundaries = brief.get('content_boundaries') or {}
+    units = {row["artifact_unit_id"]: row for row in amap.get("units", [])}
+    boundaries = brief.get("content_boundaries") or {}
     if not isinstance(boundaries, dict):
-        raise ValueError('content_boundaries is not a readable record')
-    content = {row['content_unit_id']: row['safe_meaning'] for row in boundaries.get('content_units', [])}
-    content_anchors = {row['content_unit_id']: row.get('evidence_anchor_ids', []) for row in boundaries.get('content_units', [])}
-    relations = {row['anchor_id']: row.get('relation', '') for row in boundaries.get('evidence_anchors', [])}
+        raise ValueError("content_boundaries is not a readable record")
+    content = {
+        row["content_unit_id"]: row["safe_meaning"] for row in boundaries.get("content_units", [])
+    }
+    content_anchors = {
+        row["content_unit_id"]: row.get("evidence_anchor_ids", [])
+        for row in boundaries.get("content_units", [])
+    }
+    relations = {
+        row["anchor_id"]: row.get("relation", "") for row in boundaries.get("evidence_anchors", [])
+    }
     world = planned_world_refs(plan)
-    results = _results(request, input_path, amap, plan)
-    if partial:results['binding']=partial
-    provenance = _find_record(request, 'unit_treatments', ('revision_provenance', 'provenance')) or {}
-    treatments = provenance.get('unit_treatments') or []
-    limitations = {row['limitation_id']: row['safe_meaning'] for row in boundaries.get('limitations', [])}
-    result = dict(central_question=plan.get('central_question', ''),
-                  central_throughline=plan.get('central_throughline', ''), planned_units=[])
-    for unit, depth in _tree_order(plan['planned_units']):
-        bindings = [row for row in shared.get('unit_bindings', [])
-                    if row.get('planned_unit_id') == unit['planned_unit_id']]
-        ids = list(dict.fromkeys(identity for row in bindings for identity in row.get('artifact_unit_ids', [])))
-        ids=[identity for identity in ids if identity in units]
-        checks=_unit_findings(set(ids),results)
-        texts = [units[identity]['text'] for identity in ids]
-        texts = [re.split(r'(?<=[.!?。！？])\s+', text, maxsplit=1)[0][:110] for text in texts]
-        result['planned_units'].append(dict(order=unit.get('order'),
-            planned_unit_id=unit['planned_unit_id'], parent_unit_id=unit.get('parent_unit_id'), depth=depth,
-            title=unit.get('title', unit['planned_unit_id']), bound_unit_ids=ids,
-            bound=bool(ids), new=bool(partial and unit['planned_unit_id'] not in declared), reader_job=unit.get('reader_job', ''),
-            incoming_reader_state=unit.get('incoming_reader_state', ''),
-            outgoing_reader_state=unit.get('outgoing_reader_state', ''),
-            content=[content.get(identity, identity) for identity in unit.get('content_unit_ids', [])],
-            limitations=[limitations.get(identity, identity) for identity in unit.get('limitation_ids', [])], text=texts,
-            findings=[row for row in checks if not row.get('passed')], checks=[row for row in checks if row.get('passed')],
-            anchors=[dict(anchor_id=anchor, relation=relations.get(anchor, ''))
-                     for identity in unit.get('content_unit_ids', []) for anchor in content_anchors.get(identity, [])],
-            world_refs=list(world.get(unit['planned_unit_id'], ())),
-            **{'from': [dict(source_unit_id=row.get('source_unit_id'), treatment=row.get('treatment'))
-                        for row in treatments if unit['planned_unit_id'] in row.get('target_unit_ids', [])]}))
-    audit = results['audit']
-    result['document'] = ([dict(code=row['code'], message=row['message']) for row in audit.get('findings', [])
-                           if 'artifact:document' in row.get('affected_unit_ids', [])] if isinstance(audit, dict) else [])
-    result['summary'] = _summary(result, results)
+    results = _results(request, input_path, amap, brief.get("composition_plan") or plan)
+    if isinstance(partial, dict):
+        results["binding"] = partial
+    provenance = (
+        _find_record(request, "unit_treatments", ("revision_provenance", "provenance")) or {}
+    )
+    treatments = provenance.get("unit_treatments") or []
+    limitations = {
+        row["limitation_id"]: row["safe_meaning"] for row in boundaries.get("limitations", [])
+    }
+    result = dict(
+        central_question=plan.get("central_question", ""),
+        central_throughline=plan.get("central_throughline", ""),
+        planned_units=[],
+    )
+    for unit, depth in _tree_order(plan["planned_units"]):
+        bindings = [
+            row
+            for row in shared.get("unit_bindings", [])
+            if row.get("planned_unit_id") == unit["planned_unit_id"]
+        ]
+        ids = list(
+            dict.fromkeys(
+                identity for row in bindings for identity in row.get("artifact_unit_ids", [])
+            )
+        )
+        ids = [identity for identity in ids if identity in units]
+        checks = _unit_findings(set(ids), results)
+        texts = [units[identity]["text"] for identity in ids]
+        texts = [re.split(r"(?<=[.!?。！？])\s+", text, maxsplit=1)[0][:110] for text in texts]
+        result["planned_units"].append(
+            dict(
+                order=unit.get("order"),
+                planned_unit_id=unit["planned_unit_id"],
+                parent_unit_id=unit.get("parent_unit_id"),
+                depth=depth,
+                title=unit.get("title", unit["planned_unit_id"]),
+                bound_unit_ids=ids,
+                bound=bool(ids),
+                new=bool(partial and unit["planned_unit_id"] not in declared),
+                reader_job=unit.get("reader_job", ""),
+                incoming_reader_state=unit.get("incoming_reader_state", ""),
+                outgoing_reader_state=unit.get("outgoing_reader_state", ""),
+                content=[
+                    content.get(identity, identity) for identity in unit.get("content_unit_ids", [])
+                ],
+                limitations=[
+                    limitations.get(identity, identity)
+                    for identity in unit.get("limitation_ids", [])
+                ],
+                text=texts,
+                findings=[row for row in checks if not row.get("passed")],
+                checks=[row for row in checks if row.get("passed")],
+                anchors=[
+                    dict(anchor_id=anchor, relation=relations.get(anchor, ""))
+                    for identity in unit.get("content_unit_ids", [])
+                    for anchor in content_anchors.get(identity, [])
+                ],
+                world_refs=list(world.get(unit["planned_unit_id"], ())),
+                **{
+                    "from": [
+                        dict(
+                            source_unit_id=row.get("source_unit_id"), treatment=row.get("treatment")
+                        )
+                        for row in treatments
+                        if unit["planned_unit_id"] in row.get("target_unit_ids", [])
+                    ]
+                }
+            )
+        )
+    audit = results["audit"]
+    result["document"] = (
+        [
+            dict(code=row["code"], message=row["message"])
+            for row in audit.get("findings", [])
+            if "artifact:document" in row.get("affected_unit_ids", [])
+        ]
+        if isinstance(audit, dict)
+        else []
+    )
+    result["summary"] = _summary(result, results)
     return result
 
 
