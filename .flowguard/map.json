@@ -460,7 +460,7 @@
         ".flowguard/models/skill_install_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:89d0ea7bf693c4a91d5b6f7d79b85155ae1e23f14bb9347075ac522f148e98e4"
+      "fingerprint": "sha256:1d858d5def424e3c18e3c6dd0e0520d885df0278c424dfc79bf81ab2ab4270f0"
     },
     {
       "id": "providers",
