@@ -7,6 +7,12 @@ from _reader_chain_fixture import _RealReaderChain, NativeReport
 MODEL_ID = 'plan_readback_model'
 PARENT = 'reader-commands'
 IMPLEMENTED_BY = {'ShowPlan': 'skills/logic-writing/scripts/show_plan.py:main', 'PlanView': 'skills/logic-writing/scripts/show_plan.py:plan_view'}
+# RunChain: the readback fixture runs the chain through tests/v2_support.run_example_steps; the lint does not follow that branch, AnchorWatch shows it runs.
+USES = {
+    'CliValidate': 'skills/logic-writing/scripts/_common.py:cli_validate',
+    'ValidateSharedWriting': 'skills/logic-writing/scripts/validate_shared_writing.py:validate_shared_writing',
+    'RunChain': 'skills/logic-writing/scripts/run_chain.py:run_chain',
+}
 TESTED_BY = {'readback_shows_the_plan_ahead_of_the_text':['tests/e2e/test_worked_examples.py:test_show_plan_reads_back_while_the_plan_is_ahead'],'readback_shows_failing_units': ['tests/e2e/test_worked_examples.py:test_show_plan_shows_findings_on_the_failing_unit']}
 @dataclass(frozen=True)
 class Event:

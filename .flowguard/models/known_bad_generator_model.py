@@ -29,6 +29,11 @@ IMPLEMENTED_BY = {
     "CheckKnownBad": "skills/logic-writing/scripts/known_bad.py:check_known_bad",
     "TextVariants": "skills/logic-writing/scripts/known_bad.py:text_variants",
 }
+USES = {
+    'LoadRequest': 'skills/logic-writing/scripts/_common.py:load_request',
+    'DeriveClosure': 'skills/logic-writing/scripts/derive_closure.py:derive_closure',
+    'RunChain': 'skills/logic-writing/scripts/run_chain.py:run_chain',
+}
 TESTED_BY = {
     "every_variant_is_caught_or_toothless": [
         "tests/unit/test_known_bad.py:test_uncaught_variant_is_a_toothless_risk"],

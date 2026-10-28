@@ -8,6 +8,8 @@ line follows semantic versioning.
 
 ## Unreleased
 
+- The self-models declare the product functions their replays call, so a change to run_chain selects every model that runs it.
+
 - Maintenance checks run on FlowGuard 0.70.14; ResearchGuard 0.5.16 stays the minimum.
 
 ## v4.0.16 - 2026-10-27 - Fresh provider reports and a smaller reader model

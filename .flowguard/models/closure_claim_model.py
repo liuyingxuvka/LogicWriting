@@ -427,6 +427,12 @@ def conformance():
     finally:
         adapter.close()
 
-USES = {'Close': 'skills/logic-writing/scripts/derive_closure.py:derive_closure', 'WorldIdentity': 'skills/logic-writing/scripts/_common.py:worldguard_report_identity_problems', 'InputDigests': 'skills/logic-writing/scripts/_common.py:input_digest_problems', 'TravelClaims': 'skills/logic-writing/routes/travel/scripts/travel_contract.py:review_plan'}
+USES = {
+    'Close': 'skills/logic-writing/scripts/derive_closure.py:derive_closure',
+    'WorldIdentity': 'skills/logic-writing/scripts/_common.py:worldguard_report_identity_problems',
+    'InputDigests': 'skills/logic-writing/scripts/_common.py:input_digest_problems',
+    'TravelClaims': 'skills/logic-writing/routes/travel/scripts/travel_contract.py:review_plan',
+    'ApplyMutations': 'skills/logic-writing/routes/travel/scripts/fixture_mutation.py:apply_mutations',
+}
 
 NOT_MODELED = {'skills/logic-writing/scripts/derive_closure.py:main': 'Command wrapper: reads the closure request file, calls derive_closure (bound as Close in USES) and writes the closure JSON.'}

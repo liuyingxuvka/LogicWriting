@@ -7,6 +7,9 @@ from _reader_chain_fixture import _RealReaderChain, NativeReport
 MODEL_ID = 'plan_order_model'
 PARENT = 'reader-checks'
 IMPLEMENTED_BY = {'ReaderAudit': 'skills/logic-writing/scripts/reader_checks.py:build_reader_audit'}
+USES = {
+    'RunChain': 'skills/logic-writing/scripts/run_chain.py:run_chain',
+}
 TESTED_BY = {'text_follows_plan_order': ['tests/unit/test_reader.py:test_audit_finds_text_out_of_plan_order']}
 @dataclass(frozen=True)
 class Event:

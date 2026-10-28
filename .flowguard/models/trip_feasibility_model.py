@@ -28,6 +28,9 @@ IMPLEMENTED_BY = {
     "ClaimLevel": "skills/logic-writing/routes/travel/scripts/travel_contract.py:derive_allowed_claim_level",
     "CompositionRefs": "skills/logic-writing/routes/travel/scripts/travel_contract.py:validate_composition_refs",
 }
+USES = {
+    'ApplyMutations': 'skills/logic-writing/routes/travel/scripts/fixture_mutation.py:apply_mutations',
+}
 TESTED_BY = {
     "handwritten_world_status_is_rejected": ["tests/unit/test_travel.py:test_handwritten_world_status_is_rejected"],
     "claim_level_never_exceeds_saved_evidence": [

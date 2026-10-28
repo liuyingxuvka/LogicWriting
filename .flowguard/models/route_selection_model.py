@@ -19,6 +19,9 @@ MODEL_ID = 'route_selection_model'
 PARENT = 'routing'
 COMPONENTS = ['routing']
 IMPLEMENTED_BY = {'SelectRoute': 'skills/logic-writing/scripts/select_route.py:select_route'}
+USES = {
+    'CompleteRequest': 'skills/logic-writing/scripts/select_route.py:complete_request',
+}
 TESTED_BY = {'open_material_choice_blocks': ['tests/unit/test_routing.py:test_open_material_choice_asks_the_user_first'], 'exactly_one_final_owner': ['tests/unit/test_routing.py:test_terminal_deliverable_selects_exactly_one_owner', 'tests/unit/test_routing.py:test_ambiguous_deliverable_blocks_without_guessing_owner'], 'owner_follows_the_terminal_deliverable': ['tests/unit/test_routing.py:test_terminal_deliverable_selects_exactly_one_owner', 'tests/unit/test_routing.py:test_material_reader_intent_conflict_blocks_drafting'], 'bounded_research_is_a_child': ['tests/unit/test_routing.py:test_bounded_research_is_child_not_final_owner']}
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPTS = ROOT / "skills" / "logic-writing" / "scripts"

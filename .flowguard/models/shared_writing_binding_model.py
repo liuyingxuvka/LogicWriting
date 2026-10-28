@@ -19,6 +19,10 @@ IMPLEMENTED_BY = {
     "ResolveQuote": "skills/logic-writing/scripts/reader_binding.py:_resolve_quote",
     "QuoteUnits": "skills/logic-writing/scripts/reader_binding.py:quote_binding_units",
 }
+USES = {
+    'BuildArtifactMap': 'skills/logic-writing/scripts/artifact_map.py:build_artifact_map',
+    'FillCheckFingerprints': 'skills/logic-writing/scripts/reader_fill.py:fill_check_fingerprints',
+}
 TESTED_BY = {
     "quote_is_unique_and_at_least_12_chars": [
         "tests/unit/test_shared_writing.py:test_current_plan_to_byte_binding_passes",
