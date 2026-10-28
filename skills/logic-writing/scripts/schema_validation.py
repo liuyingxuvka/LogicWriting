@@ -19,6 +19,7 @@ formats are hard failures; there is no network lookup or fallback validator.
 from __future__ import annotations
 
 import json
+import hashlib
 import math
 import re
 from dataclasses import dataclass
@@ -703,6 +704,7 @@ def _valid_date_time(value: str) -> bool:
 _SCHEMA_DOCUMENTS = MappingProxyType(_load_schema_documents())
 _REGISTRY = _LocalSchemaRegistry(_SCHEMA_DOCUMENTS)
 _RUNTIME = _Draft202012Runtime(_REGISTRY)
+_VALIDATION_MEMO: dict[tuple[str, str], tuple[SchemaValidationIssue, ...]] = {}
 
 
 def validate_schema(
@@ -716,8 +718,22 @@ def validate_schema(
     """
 
     resource = _REGISTRY.require(schema_name)
+    key = None
+    try:
+        canonical = json.dumps(
+            artifact, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False
+        )
+        if json.loads(canonical) == artifact:
+            key = (schema_name, hashlib.sha256(canonical.encode("utf-8")).hexdigest())
+    except (TypeError, ValueError):
+        pass
+    if key is not None and key in _VALIDATION_MEMO:
+        return _VALIDATION_MEMO[key]
     issues = _RUNTIME.validate(artifact, resource.document, resource)
-    return tuple(sorted(set(issues)))
+    result = tuple(sorted(set(issues)))
+    if key is not None:
+        _VALIDATION_MEMO[key] = result
+    return result
 
 
 def assert_schema_valid(schema_name: str, artifact: Any) -> None:

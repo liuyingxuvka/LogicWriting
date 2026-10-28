@@ -533,7 +533,7 @@
         ".flowguard/models/shared_contracts_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:a787389a9fd7d1d9b0d8b0abcfa799c63578169f2871a5e77281fdd4db50265d"
+      "fingerprint": "sha256:bff9897e323e9971fcb75d82eaad9b9a311f4e7fb12b4140ec6d82c6398b7bb1"
     },
     {
       "id": "researchguard-handoff",

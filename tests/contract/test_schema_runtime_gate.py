@@ -167,3 +167,59 @@ def test_runtime_does_not_depend_on_site_packages():
 
     assert completed.returncode == 0, completed.stderr
     assert completed.stdout.strip() == str(len(EXPECTED))
+
+
+def test_each_distinct_schema_object_is_validated_once(tmp_path, monkeypatch):
+    import shutil
+    import schema_validation
+    from run_chain import run_chain
+
+    monkeypatch.setattr(schema_validation, "_VALIDATION_MEMO", {}, raising=False)
+    original_runtime = schema_validation._RUNTIME.validate
+    original_gate = schema_validation.validate_schema
+    seen = set()
+    calls = 0
+    depth = 0
+
+    def count_runtime(*args, **kwargs):
+        nonlocal calls, depth
+        if depth == 0:
+            calls += 1
+        depth += 1
+        try:
+            return original_runtime(*args, **kwargs)
+        finally:
+            depth -= 1
+
+    def count_gate(schema_name, artifact):
+        seen.add(
+            (
+                schema_name,
+                json.dumps(artifact, sort_keys=True, separators=(",", ":"), ensure_ascii=False),
+            )
+        )
+        return original_gate(schema_name, artifact)
+
+    monkeypatch.setattr(schema_validation._RUNTIME, "validate", count_runtime)
+    monkeypatch.setattr(schema_validation, "validate_schema", count_gate)
+    source = (
+        Path(__file__).resolve().parents[2] / "skills/logic-writing/assets/examples/investigation"
+    )
+    folder = tmp_path / "investigation"
+    shutil.copytree(source, folder)
+    result = run_chain(folder)
+    assert result["exit_code"] == 0
+    assert calls == len(seen) > 0
+    print(f"schema validation: {calls} real validations, {len(seen)} distinct schema/object pairs")
+
+
+def test_schema_memo_cannot_reuse_a_json_array_result_for_a_tuple(monkeypatch):
+    import schema_validation
+
+    monkeypatch.setattr(schema_validation, "_VALIDATION_MEMO", {}, raising=False)
+    artifact = make_intent()
+    assert validate_schema("reader-intent.schema.json", artifact) == ()
+    changed = copy.deepcopy(artifact)
+    changed["required_content"] = tuple(changed["required_content"])
+    issues = validate_schema("reader-intent.schema.json", changed)
+    assert any(issue.path == "$.required_content" and issue.keyword == "type" for issue in issues)

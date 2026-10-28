@@ -8,6 +8,8 @@ line follows semantic versioning.
 
 ## Unreleased
 
+- Schema validation checks each distinct contract object once per run; results and outputs are unchanged.
+
 - The four reader models state their purpose in the map again.
 
 - show_plan reads the plan back the same way from every chain file: the binding result when it passed, otherwise the request's bindings against the current artifact map.
