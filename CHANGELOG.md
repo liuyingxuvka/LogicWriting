@@ -6,7 +6,7 @@ releases, tags, package publications, installations, or predecessor deletions.
 The format follows the main ideas of Keep a Changelog, and the source version
 line follows semantic versioning.
 
-## Unreleased
+## v4.1.0 - 2026-10-31 - Claims held to their evidence, the request and a stamped review
 
 - README and README.zh-CN rewritten: the problem it solves for an AI user, a before/after example, a quick start from the git tag, and the badge shows the source version.
 
