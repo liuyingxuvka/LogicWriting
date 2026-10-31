@@ -219,6 +219,9 @@ class _RealReaderChain:
                 next(row for row in boundaries['content_units']
                      if row['content_unit_id'] == 'cu-recommend')['evidence_anchor_ids'].append('anc-invented')
         path.write_text(json.dumps(request))
+        if case in ('research', 'outside'):
+            from run_chain import _stamp_review
+            assert _stamp_review(folder)['exit_code'] == 0
         result = run_chain(folder, until='closure' if case in ('research', 'outside') else 'brief')
         if result['exit_code']:
             return result['first_failure']['code']
@@ -294,6 +297,8 @@ class _RealReaderChain:
             path.write_text(json.dumps(request))
             writer_line = 'added by the writer: cu-recommend: ' + writer['safe_meaning']
             if input_name != 'brief-request.json':
+                from run_chain import _stamp_review
+                assert _stamp_review(folder)['exit_code'] == 0
                 if input_name == 'closure-input.json':
                     previous = sys.argv
                     output = io.StringIO()
@@ -461,8 +466,8 @@ class _RealReaderChain:
             from reader_fill import fill_check_fingerprints, fill_closure_fingerprints
             from reader_checks import build_reader_audit_from_current
 
-            # Tamper a current brief, preserving identities and recomputing actual
-            # bindings/audit references so stale metadata cannot stand in for this gate.
+            # Tamper after initialization; recompute supporting inputs but retain
+            # the old judgment. The content gate must still be the observed rejection.
             request = copy.deepcopy(self.closure_input(self.complete_chain(self._workdir())))
             brief = request['reader_brief']
             boundaries = brief['content_boundaries']
@@ -487,9 +492,6 @@ class _RealReaderChain:
             request['deterministic_audit'] = build_reader_audit_from_current(
                 audit_id=audit['audit_id'], amap=request['artifact_map'], brief=brief,
                 contract=shared, audited_at=audit.get('audited_at'))
-            for field in ('reader_brief_fingerprint', 'shared_writing_contract_fingerprint',
-                          'deterministic_audit_fingerprint', 'judgment_fingerprint'):
-                request['judgment'].pop(field, None)
             fill_closure_fingerprints(request)
             try:
                 return self.derive_closure(request)['closure']['status']
@@ -542,6 +544,13 @@ class _RealReaderChain:
             piece = folder / 'piece.md'
             piece.write_text(piece.read_text().rstrip('\n') + ' ' + meaning + '\n')
         path.write_text(json.dumps(request))
+        if case == 'reason':
+            from run_chain import _stamp_review
+            judgment_path = folder / 'closure-input.json'
+            saved = json.loads(judgment_path.read_text())
+            next(row for row in saved['judgment']['reverse_outline'] if 'cu-recommend' in row['content_unit_ids'])['content_unit_ids'].append('cu-migrate')
+            judgment_path.write_text(json.dumps(saved))
+            assert _stamp_review(folder)['exit_code'] == 0
         result = run_chain(folder, until='closure' if case == 'reason' else 'brief')
         if result['exit_code']:
             return result['first_failure']['code']
