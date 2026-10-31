@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import importlib.util
 import json
+import shutil
 import sys
 import threading
 import time
@@ -37,6 +38,29 @@ def test_skill_static_validator_accepts_placeholder_detector_source():
 
     assert report["status"] == "passed"
     assert report["errors"] == []
+
+
+def test_skill_validator_counts_no_lines_or_characters(tmp_path):
+    validator = _load("validate_skill")
+    skill = tmp_path / "logic-writing"
+    shutil.copytree(ROOT / "skills" / "logic-writing", skill)
+    skill_md = skill / "SKILL.md"
+    padded = skill_md.read_text(encoding="utf-8") + "\n" + "<!-- padding -->\n" * 150
+    skill_md.write_text(padded, encoding="utf-8")
+
+    report = validator.validate_skill(skill)
+    assert report["status"] == "passed", report["errors"]
+
+    description = next(line for line in padded.splitlines() if line.startswith("description:"))
+    short = padded.replace(description, "description: Use for academic and investigation pieces.", 1)
+    skill_md.write_text(short, encoding="utf-8")
+    report = validator.validate_skill(skill)
+    assert report["status"] == "passed", report["errors"]
+
+    skill_md.write_text(short.replace("academic and investigation", "academic", 1), encoding="utf-8")
+    report = validator.validate_skill(skill)
+    assert report["status"] == "failed"
+    assert report["errors"] == ["frontmatter description must explain both activation routes"]
 
 
 def test_public_docs_fallback_scans_every_file(tmp_path, monkeypatch):

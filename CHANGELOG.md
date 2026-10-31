@@ -10,6 +10,8 @@ line follows semantic versioning.
 
 - Maintenance runs on FlowGuard 0.71.0: the project rules name req add and every exit of target check, CLAUDE.md imports AGENTS.md, and the accepted debt carries an expiry.
 
+- The skill validator no longer fails on the number of lines in SKILL.md or the length of the description; it checks that the description names both routes.
+
 ## v4.0.17 - 2026-10-28 - Plan readback from every chain file and declared replays
 
 - Size caps on skill text and example files are replaced by checks for repeated paragraphs, dead links and unknown names; totals are printed, not limited.

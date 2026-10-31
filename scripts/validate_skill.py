@@ -42,10 +42,8 @@ def validate_skill(root: Path):
     if fields.get("name") != "logic-writing":
         errors.append("frontmatter name must be logic-writing")
     description = fields.get("description", "")
-    if len(description) < 80 or "academic" not in description.lower() or "investigation" not in description.lower():
+    if "academic" not in description.lower() or "investigation" not in description.lower():
         errors.append("frontmatter description must explain both activation routes")
-    if len(text.splitlines()) > 200:
-        errors.append("SKILL.md exceeds 200 lines")
     if PLACEHOLDERS.search(text):
         errors.append("SKILL.md contains a placeholder")
     if (root / "README.md").exists() or (root / "CHANGELOG.md").exists():
