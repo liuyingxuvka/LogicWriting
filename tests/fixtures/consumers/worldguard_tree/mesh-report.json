@@ -1,0 +1,36 @@
+{
+  "checked": {
+    "edges": 3,
+    "node_variants": 3,
+    "nodes": 3,
+    "roots": 1,
+    "variants": 0
+  },
+  "gaps": [],
+  "input_digests": [
+    {
+      "path": "ch1_fixed.yaml",
+      "sha256": "bd89328891aa6cf28fcb425048c2ee9f0aae8f6aefc3ba677dcbda7e13f955a3"
+    },
+    {
+      "path": "ch2_fixed.yaml",
+      "sha256": "d2120eee154842a108f5b475810fc3efd8a60e508f85d2c2988a029188f4780b"
+    },
+    {
+      "path": "mesh_fixed.yaml",
+      "sha256": "1a91b1fb6289ce3338f30f0d98d1e4b7d93627f5ceb94a52e56ea61bdf2c79e0"
+    }
+  ],
+  "mesh_id": "lighthouse",
+  "output": "summary only; add --json for the full report",
+  "scope_limits": [
+    "chapter 1 only",
+    "chapter 2 only"
+  ],
+  "status": "PASS",
+  "tree": [
+    "story PASS",
+    "  ch1 PASS -> continues ch2 PASS",
+    "  ch2 PASS"
+  ]
+}

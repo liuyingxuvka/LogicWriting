@@ -1,0 +1,11 @@
+touch: skills/logic-writing/scripts/_common.py:worldguard_report_identity_problems
+touch: skills/logic-writing/scripts/_common.py:load_request
+touch: skills/logic-writing/scripts/derive_closure.py:provider_checks
+touch: skills/logic-writing/scripts/reader_plan.py:build_reader_brief
+touch: skills/logic-writing/scripts/run_chain.py:_refresh
+touch: skills/logic-writing/scripts/world_refs.py:validate_world_refs
+touch: skills/logic-writing/scripts/show_plan.py:_summary
+changes: closure_claim_model.world_report_belongs_to_the_contract by R1 "已有规则 `world_report_belongs_to_the_contract` 对树也成立，同一个规则管两种报告。"
+changes: closure_claim_model.world_report_is_current by R1 "已有规则 `world_report_is_current` 对树报告的每个节点文件都成立。"
+changes: world_references.world_refs_name_contract_ids by R1 "已有规则 `world_refs_name_contract_ids` 对树也成立。"
+# Scope limits: retain only actual WorldGuard report limits as owner/path-attributed nonblocking residual risks; summary adds only a count (approved 610 scope correction).

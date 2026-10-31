@@ -1,0 +1,97 @@
+{
+  "schema": "flowguard.target.v1",
+  "goal": "LW-610: a WorldGuard tree report binds like one contract",
+  "components": [
+    {
+      "id": "reader-closure",
+      "layer": "reader",
+      "summary": "Derive current-text quality closure and broad-claim limits from read-only, fresh provider reports, native domain checks and known-bad mutations.",
+      "responsibilities": [
+        "Derive quality closure from the real reader chain, saved native verdicts and in-process domain checks.",
+        "Known-bad edits are caught or listed as toothless closure risks.",
+        "Saved provider reports count only when they belong to the brief.",
+        "Known-bad edits also swap sibling units, remove world or alternative sentences, insert unsupported alternatives and strip required-unit anchors."
+      ],
+      "files": [
+        "skills/logic-writing/assets/schemas/closure.schema.json",
+        "skills/logic-writing/references/shared/closure.md",
+        "skills/logic-writing/scripts/derive_closure.py",
+        "skills/logic-writing/scripts/known_bad.py"
+      ],
+      "entrypoints": [
+        "skills/logic-writing/scripts/derive_closure.py:derive_closure",
+        "skills/logic-writing/scripts/derive_closure.py:main",
+        "skills/logic-writing/scripts/derive_closure.py:provider_checks",
+        "skills/logic-writing/scripts/known_bad.py:check_known_bad",
+        "skills/logic-writing/scripts/known_bad.py:main"
+      ],
+      "state": [
+        "Computed quality status, provider verdicts, residual risks and broad-claim permission."
+      ],
+      "side_effects": [
+        "Read current artifact, saved provider reports and declared longform project surfaces; write JSON only to an explicit --output."
+      ],
+      "depends_on": [
+        "fiction-model",
+        "reader-binding",
+        "reader-checks",
+        "reader-inputs",
+        "reader-plan",
+        "researchguard-handoff",
+        "shared-contracts",
+        "world-references"
+      ],
+      "tests": [
+        "tests/adversarial/test_boundaries.py",
+        "tests/e2e/test_reader_v2_benchmark.py",
+        "tests/e2e/test_routes.py",
+        "tests/e2e/test_worked_examples.py",
+        "tests/unit/test_freshness_closure.py",
+        "tests/unit/test_known_bad.py",
+        "tests/unit/test_closure_claim_model.py",
+        "tests/unit/test_world_mesh.py"
+      ],
+      "models": [
+        ".flowguard/models/closure_claim_model.py",
+        ".flowguard/models/known_bad_generator_model.py"
+      ],
+      "parent": "reader-artifact"
+    },
+    {
+      "id": "world-references",
+      "layer": "evidence",
+      "summary": "Check declared native world ids and same-unit quotations without running WorldGuard.",
+      "responsibilities": [
+        "Check declared native world ids and same-unit quotations without running WorldGuard.",
+        "World references name contract ids and unquoted ones become risks."
+      ],
+      "files": [
+        "skills/logic-writing/references/adapters/worldguard.md",
+        "skills/logic-writing/scripts/world_refs.py"
+      ],
+      "entrypoints": [
+        "skills/logic-writing/scripts/world_refs.py:world_ref_unquoted"
+      ],
+      "state": [],
+      "side_effects": [],
+      "depends_on": [
+        "shared-contracts"
+      ],
+      "tests": [
+        "tests/unit/test_world_refs.py",
+        "tests/unit/test_world_mesh.py"
+      ],
+      "models": [
+        ".flowguard/models/world_references_model.py"
+      ]
+    }
+  ],
+  "flows": [],
+  "remove": [],
+  "requests": [
+    {
+      "id": "R1",
+      "part": true
+    }
+  ]
+}
