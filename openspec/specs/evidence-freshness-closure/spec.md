@@ -130,7 +130,7 @@ Every `needs_repair` closure SHALL keep the residual defects, the current safe c
 - **THEN** closure is `needs_repair`, its next action is `repair_and_rerun` for the final owner, and `broad_claim_allowed` is false
 
 ### Requirement: Repair rounds stop when nothing is fixed
-When the audit or the reader judgment reports defects, the writer SHALL revise the actual text, rebuild the ArtifactMap and rerun the audit and the read. If a revision round fixes none of the reported defects, the writer SHALL stop and return the artifact with the audit note. Repeated closure derivation SHALL NOT count as repair.
+When the audit or the reader judgment reports defects, the writer SHALL revise the actual text, rebuild the ArtifactMap and rerun the audit and the read. If a revision round resolves none of the actual defects, the writer SHALL stop and return the artifact with the audit note. Repeated closure derivation SHALL NOT count as repair.
 
 #### Scenario: Closure is derived twice on unchanged bytes
 - **WHEN** closure is derived again without any change to the artifact

@@ -6,7 +6,7 @@
 - Treat `skills/logic-writing` as the single canonical installable skill source.
 - Do not edit files currently claimed by another active writer.
 - Keep generated receipts, model evidence, caches, and release scratch data outside source authority.
-- Do not run repository-wide formatters, dependency installs, or broad generators unless the active OpenSpec task requires them.
+- Do not run repository-wide formatters, dependency installs, or broad generators unless the task requires them.
 
 ## Product boundaries
 

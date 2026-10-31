@@ -170,7 +170,7 @@ One context independent of the writer may assess this route's semantic
 obligations and the eight reader dimensions together. Preserve both existing
 `route_review` and `ReaderJudgment`, including actual spans, reverse outline,
 required dimensions, scores and their current fingerprint bindings. If a
-revision round fixes none of the reported defects, stop and return the artifact
+revision round resolves none of the actual defects, stop and return the artifact
 with the audit note.
 
 For a brief request, each `unit_plans` row may omit `contribution`, incoming/outgoing reader states and downstream units; these come from the same planned unit. Open-question and prohibited-reveal arrays default to empty. Keep the fiction-specific id, kind, entry/exit story states, focal desire, cost, voice owner and rhythm role. Explicit fields are preserved and checked.

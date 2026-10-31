@@ -51,7 +51,7 @@
         ".flowguard/models/route_selection_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:ee12114b33c236d1686484520422c348896ca9c4798e11db89e3ccda3aecd944"
+      "fingerprint": "sha256:d9d25d0c71f1168b4857f4acb02b681917565236d2467f051bfad7fd88e49b77"
     },
     {
       "id": "reader-artifact",
@@ -346,7 +346,7 @@
         ".flowguard/models/route_review_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:8369a04629641b71bb70ef32f31a68d1d16b2ebecf8fa525eb3776fdbba46032"
+      "fingerprint": "sha256:7adea610ef1d5af5ba1c713524e17b743d17564976494265749623933213c697"
     },
     {
       "id": "academic",
@@ -392,7 +392,7 @@
         ".flowguard/models/route_review_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:0b3c4cac818b83dff3dd47f438e9fbf03c5e97edb7b1bc81534dd79fbce77ea9"
+      "fingerprint": "sha256:8104c948fa8b4d7234a7a5f7fedbc0c62c659f023d5fda1114ed2b2937260d53"
     },
     {
       "id": "release",
@@ -460,7 +460,7 @@
         ".flowguard/models/skill_install_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:fb8fdc1ebc69b25013a14addd908ae3598f4a429984c9209bd2bef3e3bbbbdd7"
+      "fingerprint": "sha256:e392bb00ae0708d8af10e9e9c6873c5170b92eb5471210b462045363bf6eee34"
     },
     {
       "id": "providers",

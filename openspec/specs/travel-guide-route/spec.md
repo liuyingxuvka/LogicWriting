@@ -52,9 +52,10 @@ The final guide SHALL be the actual text bound by its ArtifactMap, tied to the t
 - **WHEN** the reverse guide review names a different trip id or observations that are not in the actual guide
 - **THEN** final travel closure SHALL fail
 
-#### Scenario: Claim level exceeds the evidence
-- **WHEN** `trip_context.allowed_claim_level` is not the level the current evidence supports
-- **THEN** the plan check reports `trip_context.allowed_claim_level.derived_mismatch`
+#### Scenario: A manual claim level is supplied
+- **WHEN** `trip_context.allowed_claim_level` is supplied
+- **THEN** the plan check reports `trip_context.allowed_claim_level.retired`
+- **AND** `validate_travel_plan.py` derives the allowed claim level from the current evidence
 
 ### Requirement: Travel selects a guide kind before composition
 The travel route SHALL select itinerary, destination guide, lodging strategy, route plan, traveler-fit recommendation, or revision before applying structure requirements. Only a multi-day itinerary SHALL require day units; other guide kinds SHALL use their reader task and user structure.

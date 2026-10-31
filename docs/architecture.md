@@ -100,10 +100,10 @@ typed non-pass states.
 
 This repository is maintained with FlowGuard; user writing tasks do not use it.
 `.flowguard/models/` holds executable route, current-artifact, closure-provider and
-unique-quote binding models. `route_and_guard_model` checks that one
-current request gets exactly one final owner, material open choices stop
-routing before planning, and ResearchGuard members run only through the
-`researchguard` console. `reader_artifact_model` checks, for each of
+unique-quote binding models. `route_selection_model` checks that one
+current request gets exactly one final owner and material open choices stop
+routing before planning. `provider_preflight_model` checks that ResearchGuard
+members run only through the `researchguard` console. `reader_artifact_model` checks, for each of
 the four final owners, that closure follows a quality review of the current
 bytes and that broad claims require an independent context. A passing self-review
 keeps an explicit risk and no broad claim. Each model explores its states, keeps known-bad variants that

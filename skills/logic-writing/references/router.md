@@ -8,7 +8,7 @@ Route by what the user expects to receive at the end.
 | Paper, thesis chapter, dissertation section, literature review, proposal, substantive academic revision | `academic-writing` | Bounded `investigation` gap requests plus specialist adapters |
 | Short story, fiction chapter, novel, fiction outline, story audit, substantive fiction revision | `fiction-writing` | Bounded investigation and specialist adapters; fiction retains closure |
 | Itinerary, destination guide, lodging strategy, route plan, traveler-fit recommendation | `travel-guide` | Bounded investigation and specialist adapters; shared reader projection is not a fiction child |
-| Quick fact, grammar-only edit, casual copy | none | Exit with `trivial_or_out_of_scope` |
+| Quick fact, grammar-only edit, casual copy | none | Exit: `select_route.py` returns status `skipped` with a reason |
 
 ## Decision record
 

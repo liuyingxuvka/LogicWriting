@@ -12,6 +12,8 @@ line follows semantic versioning.
 
 - The skill validator no longer fails on the number of lines in SKILL.md or the length of the description; it checks that the description names both routes.
 
+- Specs and references now name the router's skipped status, the derived travel claim level and the current FlowGuard models, and every copy of the repair-round rule uses the kernel's wording.
+
 ## v4.0.17 - 2026-10-28 - Plan readback from every chain file and declared replays
 
 - Size caps on skill text and example files are replaced by checks for repeated paragraphs, dead links and unknown names; totals are printed, not limited.

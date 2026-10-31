@@ -281,7 +281,7 @@ When a planned unit requires prose, deterministic and qualitative review SHALL d
 - **THEN** its bullets do not count against the narrative-body prose ratio
 
 ### Requirement: A non-pass is repaired on the actual text
-When the deterministic audit or the reader judgment reports defects, closure SHALL be `needs_repair`; the writer SHALL revise the actual text, rebuild the ArtifactMap and rerun the audit and the read, and SHALL stop and return the artifact with the audit note when a revision round fixes none of the reported defects.
+When the deterministic audit or the reader judgment reports defects, closure SHALL be `needs_repair`; the writer SHALL revise the actual text, rebuild the ArtifactMap and rerun the audit and the read, and SHALL stop and return the artifact with the audit note when a revision round resolves none of the actual defects.
 
 #### Scenario: Repair adds only connector words
 - **WHEN** a revision changes only transition phrases while the reported defects remain

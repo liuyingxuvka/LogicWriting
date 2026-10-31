@@ -104,7 +104,7 @@ The system SHALL skip the unified workflow for quick factual lookups, grammar-on
 
 #### Scenario: Grammar-only edit
 - **WHEN** the user requests only grammar correction for a short paragraph
-- **THEN** route selection SHALL return `skip_with_reason`
+- **THEN** route selection SHALL return status `skipped` with a reason
 - **AND** neither route SHALL activate
 
 #### Scenario: Source-sensitive question

@@ -146,8 +146,8 @@ Never strengthen these states into pass: `not_run`, `stale`,
 Only the selected final route may issue final closure. Child routes close only
 their bounded request. Closure status is `passed` or `needs_repair`. If the
 audit or the reader judgment reports defects, revise the actual text, rebuild
-the ArtifactMap and rerun the audit and the read. If a revision round fixes
-none of the reported defects, stop and return the artifact with the audit note.
+the ArtifactMap and rerun the audit and the read. If a revision round resolves
+none of the actual defects, stop and return the artifact with the audit note.
 Repeated closure calls never count as repair attempts.
 
 ## Brief omissions and revisions
