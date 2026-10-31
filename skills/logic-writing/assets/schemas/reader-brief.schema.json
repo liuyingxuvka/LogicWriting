@@ -250,6 +250,9 @@
         "boundary": {
           "type": "string",
           "minLength": 1
+        },
+        "outside_research": {
+          "type": "string"
         }
       }
     },

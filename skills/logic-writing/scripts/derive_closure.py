@@ -19,7 +19,7 @@ from _common import (
     require_schema,
     validation_result,
 )
-from researchguard_status import assess_research_verdict, research_report_identity_problems
+from researchguard_status import assess_research_verdict, research_report_identity_problems, validate_anchor_authority
 from _common import read_worldguard_report, worldguard_report_identity_problems
 from route_inputs import route_extension_fingerprint
 from world_refs import world_ref_unquoted
@@ -173,6 +173,7 @@ def derive_closure(
     brief = require_mapping(request["reader_brief"], "ReaderBrief")
     require_schema("reader-brief.schema.json", brief, label="ReaderBrief")
     evidence_risks = validate_evidence_boundaries(brief)
+    authority_risks = validate_anchor_authority(brief)
     if brief["route_decision_fingerprint"] != decision["decision_fingerprint"]:
         raise ValidationError("ReaderBrief is stale for RouteDecision")
     if brief["final_owner"] != owner:
@@ -288,6 +289,7 @@ def derive_closure(
     checks, provider_risks, providers_passed = provider_checks(
         owner, brief, route, request.get("provider_reports", []))
     residual.extend(provider_risks)
+    residual.extend(dict(row, owner=owner) for row in authority_risks)
     if any(row["reason"].startswith(IDENTITY_PROBLEMS) for row in checks):
         # Foreign or stale provider evidence is a defect of this closure's inputs.
         status = "needs_repair"

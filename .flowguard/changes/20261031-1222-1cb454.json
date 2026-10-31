@@ -1,0 +1,67 @@
+{
+  "kind": "change",
+  "goal": "LW-606: anchors of a researched brief come from the research report",
+  "requests": [
+    {
+      "id": "R1",
+      "part": true
+    }
+  ],
+  "base": "8d26169e914982f9e7a77c3a9e08a2e305bd5f94",
+  "tree": "1cb4549c71a05a962ec55a9c5f234d0bcbe9be8a0af6b69f83010fe3898367fb",
+  "promoted": "2026-10-31T12:22:46.121297+00:00",
+  "plan": [
+    {
+      "line": "touch: skills/logic-writing/scripts/researchguard_status.py:fill_anchors_from_research",
+      "added_after_code": null,
+      "cleared": []
+    },
+    {
+      "line": "touch: skills/logic-writing/scripts/reader_plan.py:build_reader_brief",
+      "added_after_code": null,
+      "cleared": []
+    },
+    {
+      "line": "touch: skills/logic-writing/scripts/derive_closure.py:derive_closure",
+      "added_after_code": null,
+      "cleared": []
+    }
+  ],
+  "rules": [
+    {
+      "id": "anchor_import_model.anchors_come_from_research",
+      "old": null,
+      "new": "fp:af778ef534899d72ad55a94881338ff8d269ca3bac232ea344991577f53c4dd8",
+      "provenance": "unjudged: no checked PLAN changes line"
+    }
+  ],
+  "acceptances": [],
+  "existing_cleared": [],
+  "implemented_by": [
+    "skills/logic-writing/scripts/derive_closure.py:derive_closure",
+    "skills/logic-writing/scripts/reader_plan.py:build_reader_brief",
+    "skills/logic-writing/scripts/researchguard_status.py:fill_anchors_from_research",
+    "skills/logic-writing/scripts/researchguard_status.py:validate_anchor_authority",
+    "tests/unit/test_evidence_rules.py:_invented_anchor",
+    "tests/unit/test_evidence_rules.py:test_anchor_outside_the_research_report_fails",
+    "tests/unit/test_evidence_rules.py:test_evidence_scope_boundaries",
+    "tests/unit/test_evidence_rules.py:test_outside_research_reason_is_a_residual_risk",
+    "tests/unit/test_researchguard_provider_topology.py:_Distribution.__init__",
+    "tests/unit/test_researchguard_provider_topology.py:_completed",
+    "tests/unit/test_researchguard_provider_topology.py:_install_distribution_probe",
+    "tests/unit/test_researchguard_provider_topology.py:test_console_on_path_is_used_when_researchguard_is_in_another_python",
+    "tests/unit/test_researchguard_provider_topology.py:test_console_on_path_is_used_when_researchguard_is_in_another_python.path_console",
+    "tests/unit/test_researchguard_provider_topology.py:test_console_version_mismatch_blocks_before_member.wrong_version",
+    "tests/unit/test_researchguard_provider_topology.py:test_distribution_version_mismatch_blocks_before_console",
+    "tests/unit/test_researchguard_provider_topology.py:test_each_member_uses_one_researchguard_console",
+    "tests/unit/test_researchguard_provider_topology.py:test_member_timeout_is_visible_and_has_no_retry.timed_out",
+    "tests/unit/test_researchguard_provider_topology.py:test_missing_console_blocks_without_old_module_import",
+    "tests/unit/test_researchguard_provider_topology.py:test_newer_researchguard_release_meets_the_minimum",
+    "tests/unit/test_researchguard_provider_topology.py:test_newer_researchguard_release_meets_the_minimum.completed",
+    "tests/unit/test_researchguard_provider_topology.py:test_too_old_console_on_path_blocks_with_the_install_message",
+    "tests/v2_support.py:make_reader_chain"
+  ],
+  "new_actions": [],
+  "corrections": [],
+  "checked": "This promotion ran one fresh target check with bound tests and the remaining function-selected tests; 3 warning(s) remained. The tree identifies the checked post-promotion content, before later component confirmation. Implementation provenance lists changed Python function definitions from the Git diff. Available static rule identities and checked PLAN lines are recorded. PLAN edit ordering, per-item clearance, acceptances, existing-item clearance and new-action judgments are not assessed; unknown order is null and unsupported lists are empty."
+}

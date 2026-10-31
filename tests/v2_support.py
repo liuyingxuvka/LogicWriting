@@ -334,6 +334,8 @@ def make_reader_chain(workdir: Path, owner: str = "investigation", *, language: 
         "verbatim_obligations": [],
         "prohibited_overclaims": [],
     }
+    if research_folder:
+        boundaries['evidence_anchors'][0]['outside_research'] = 'Synthetic protocol fixture evidence, not a result of the shipped research folder.'
     brief = build_reader_brief(
         route_decision=decision,
         content_boundaries=boundaries,
@@ -341,6 +343,7 @@ def make_reader_chain(workdir: Path, owner: str = "investigation", *, language: 
         route_composition=route,
         brief_id=f"brief:{owner}",
         research_folder=research_folder,
+        research_status=str(Path(research_folder).parent / 'research-status.json') if research_folder else None,
     )
     artifact_path = workdir / f"{owner}.md"
     if language.casefold().startswith("en"):

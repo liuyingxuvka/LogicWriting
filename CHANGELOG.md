@@ -18,6 +18,8 @@ line follows semantic versioning.
 
 - In investigation and academic pieces, and any brief with a research folder, a required unit needs an evidence anchor that is not only counter (or an unsupported_reason, reported as a residual risk), and may not restate an unsupported alternative unless it answers it.
 
+- With a research folder, every brief anchor must be a row of the saved research report or carry outside_research (reported as a residual risk); otherwise the brief fails with anchor_not_in_research.
+
 ## v4.0.17 - 2026-10-28 - Plan readback from every chain file and declared replays
 
 - Size caps on skill text and example files are replaced by checks for repeated paragraphs, dead links and unknown names; totals are printed, not limited.

@@ -8,6 +8,7 @@ from reader_plan_core import open_material_choices, validate_composition_plan, v
 from reader_rules import FINAL_OWNERS, ROUTE_PROFILE_FIELD, ROUTE_SCHEMA
 from typing import Any, Iterable, Mapping
 from writer_projection import build_writer_input, validate_writer_input
+from researchguard_status import validate_anchor_authority
 
 
 _CONTENT_STOP_WORDS = frozenset('the a an in of to is and or it be will so'.split())
@@ -156,6 +157,7 @@ def build_reader_brief(
     validate_writer_input(writer_input, composition_plan=plan)
     require_schema("reader-brief.schema.json", brief, label="ReaderBrief")
     validate_evidence_boundaries(brief)
+    validate_anchor_authority(brief)
     return brief
 
 

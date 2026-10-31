@@ -85,6 +85,40 @@ class _RealReaderChain:
         self.import_fields_match=(row['locator']==expected['locator'] and row['observed_summary']==expected['summary'] and row['boundary']==expected['boundary'])
         return row["relation"]
 
+    def _anchor_authority(self, case):
+        """Read the public H3 brief input and its declared outside-research risk."""
+        import json
+        from run_chain import run_chain
+
+        folder = self._workdir()
+        route = 'fiction' if case == 'no_folder' else 'investigation'
+        shutil.copytree(ROOT / 'skills/logic-writing/assets/examples' / route, folder)
+        path = folder / 'brief-request.json'
+        request = json.loads(path.read_text())
+        reason = 'This anchor is an outside opinion; it is not a result of the research folder.'
+        if case != 'research':
+            anchor = {'anchor_id': 'anc-invented', 'source_id': 'src-blog',
+                      'locator': 'a blog post, 2025', 'relation': 'support',
+                      'observed_summary': 'Free-threading is production ready.',
+                      'boundary': "One author's opinion."}
+            if case in ('outside', 'blank_reason'):
+                anchor['outside_research'] = reason if case == 'outside' else '  '
+            boundaries = request['content_boundaries']
+            boundaries['evidence_anchors'].append(anchor)
+            if route == 'investigation':
+                next(row for row in boundaries['content_units']
+                     if row['content_unit_id'] == 'cu-recommend')['evidence_anchor_ids'].append('anc-invented')
+        path.write_text(json.dumps(request))
+        result = run_chain(folder, until='closure' if case in ('research', 'outside') else 'brief')
+        if result['exit_code']:
+            return result['first_failure']['code']
+        if case == 'outside':
+            closure = result['results']['closure']['closure']
+            risk = {'defect_id': 'outside_research:anc-invented',
+                    'owner': 'investigation', 'reason': reason}
+            return 'passed+risk' if closure['status'] == 'passed' and risk in closure['residual_risk'] else 'missing-risk'
+        return 'passed'
+
     def _readback(self, case: str, input_name="shared-writing-result.json") -> str:
         """Audit the investigation example (or its known-bad leak text) and read the plan back."""
         from _common import load_request
@@ -293,7 +327,8 @@ class _RealReaderChain:
             identity = 'cu-default-next' if case in responses else 'cu-migrate'
             anchors = ['anc-314-supported'] if case in responses else []
             if case == 'counter_only':
-                counter = dict(boundaries['evidence_anchors'][0], anchor_id='anc-counter', relation='counter')
+                counter = dict(boundaries['evidence_anchors'][0], anchor_id='anc-counter', relation='counter',
+                               outside_research='Synthetic counter-only probe, not a result of the research folder.')
                 boundaries['evidence_anchors'].append(counter)
                 anchors = ['anc-counter']
             unit = dict(content_unit_id=identity, safe_meaning=meaning, required=case != 'optional',
@@ -327,6 +362,12 @@ class _RealReaderChain:
     def apply_step(self, step) -> ReplayObservation:
         event = step.function_input
         state = self.state
+        if event.kind == 'anchor_authority':
+            result = self._anchor_authority(event.quality)
+            state = replace(state, authority_case=event.quality, authority_result=result)
+            self.state = state
+            return ReplayObservation(function_name=step.function_name,
+                                     observed_output=result, observed_state=state)
         if event.kind == 'evidence':
             result = self._evidence(event.quality)
             state = replace(state, evidence_case=event.quality, evidence_result=result)

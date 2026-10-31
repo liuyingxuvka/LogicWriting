@@ -1,4 +1,0 @@
-touch: skills/logic-writing/scripts/researchguard_status.py:fill_anchors_from_research
-touch: skills/logic-writing/scripts/reader_plan.py:build_reader_brief
-touch: skills/logic-writing/scripts/derive_closure.py:derive_closure
-# The R1-prescribed recovery now uses researchguard sync (new in v0.6.0); source must raise the actual minimum to 0.6.0.

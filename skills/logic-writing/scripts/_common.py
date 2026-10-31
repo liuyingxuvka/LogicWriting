@@ -374,7 +374,7 @@ def cli_validate(validate_fn, description: str) -> int:
         return 1
 
 
-RESEARCHGUARD_MIN_VERSION = (0, 5, 16)
+RESEARCHGUARD_MIN_VERSION = (0, 6, 0)
 RESEARCHGUARD_INSTALL_HINT = 'python -m pip install "git+https://github.com/liuyingxuvka/ResearchGuard.git"'
 
 

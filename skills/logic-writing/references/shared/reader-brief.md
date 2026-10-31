@@ -36,6 +36,13 @@ does not match every sentence.
 
 ## Source-owned research anchors
 
+With `research_folder`, every brief anchor must occur in the saved report's
+`evidence[]` by `anchor`, or carry a nonempty `outside_research` reason.
+An unknown anchor without that reason fails `anchor_not_in_research:<id>`;
+the error names the native source-add/sync/refresh repair. An explicit reason
+is retained as `outside_research:<id>` in closure's `residual_risk`.
+Without a research folder this membership check does not apply.
+
 A request may name `research_folder`, relative to its JSON file, as a research
 folder or `research.yaml`. Its `models.source` points to native source YAML.
 The builder reads it without invoking ResearchGuard. Missing anchor ids are

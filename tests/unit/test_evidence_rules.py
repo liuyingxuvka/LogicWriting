@@ -117,7 +117,8 @@ def test_evidence_scope_boundaries(tmp_path, case):
         request, unit = _add_unit(folder, required=case != 'optional', reason='  ' if case == 'blank_reason' else None)
         if case == 'counter_only':
             request['content_boundaries']['evidence_anchors'].append(
-                dict(request['content_boundaries']['evidence_anchors'][0], anchor_id='anc-counter', relation='counter'))
+                dict(request['content_boundaries']['evidence_anchors'][0], anchor_id='anc-counter', relation='counter',
+                     outside_research='Synthetic counter-only probe, not a result of the research folder.'))
             unit['evidence_anchor_ids'] = ['anc-counter']
     _save(folder, request)
     if case in ('optional', 'nonresearch'):
@@ -153,3 +154,34 @@ def test_unicode_words_and_empty_filtered_alternative(tmp_path, alternative, mea
             _build(folder)
     else:
         assert _build(folder)['final_owner'] == 'investigation'
+
+
+def _invented_anchor(folder, reason=None):
+    request = json.loads((folder / 'brief-request.json').read_text())
+    anchor = dict(anchor_id='anc-invented', source_id='src-blog', locator='a blog post, 2025',
+                  relation='support', observed_summary='Free-threading is production ready.',
+                  boundary="One author's opinion.")
+    if reason is not None:
+        anchor['outside_research'] = reason
+    request['content_boundaries']['evidence_anchors'].append(anchor)
+    next(row for row in request['content_boundaries']['content_units']
+         if row['content_unit_id'] == 'cu-recommend')['evidence_anchor_ids'].append('anc-invented')
+    _save(folder, request)
+
+
+@pytest.mark.parametrize('reason', [None, '  '])
+def test_anchor_outside_the_research_report_fails(tmp_path, reason):
+    folder = _example(tmp_path)
+    _invented_anchor(folder, reason)
+    with pytest.raises(ValidationError, match=r'^anchor_not_in_research:anc-invented \('):
+        _build(folder)
+
+
+def test_outside_research_reason_is_a_residual_risk(tmp_path):
+    folder = _example(tmp_path)
+    reason = 'This anchor is an outside opinion; it is not a result of the research folder.'
+    _invented_anchor(folder, reason)
+    result = run_chain(folder)
+    assert result['exit_code'] == 0, result
+    assert {'defect_id': 'outside_research:anc-invented', 'owner': 'investigation',
+            'reason': reason} in result['results']['closure']['closure']['residual_risk']

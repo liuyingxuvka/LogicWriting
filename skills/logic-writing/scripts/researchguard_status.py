@@ -142,6 +142,39 @@ def research_directions(report_path: Any, research_folder: Any, *, document=None
             for row in document.get("evidence", []) if isinstance(row, Mapping) and isinstance(row.get("anchor"), str)}
 
 
+def validate_anchor_authority(request: Mapping[str, Any], *, document=None) -> list[dict[str, str]]:
+    """Check report membership and retain explicitly declared outside-research gaps."""
+    if 'research_folder' not in request:
+        return []
+    status = request.get('research_status')
+    if not status:
+        raise ValidationError('research_folder needs research_status: run researchguard status <folder> --json --output research-status.json')
+    if document is None:
+        import json
+        try:
+            document = json.loads(Path(status).read_text(encoding='utf-8'))
+        except (OSError, UnicodeError, ValueError, TypeError) as exc:
+            raise ValidationError(f'cannot read research_status {status}: {exc}') from exc
+    native_ids = set(research_directions(status, request['research_folder'], document=document))
+    if not isinstance(document.get('evidence'), list):
+        raise ValidationError('ResearchGuard report evidence must be a list')
+    boundaries = require_mapping(request.get('content_boundaries', {}), 'content_boundaries')
+    anchors = boundaries.get('evidence_anchors', [])
+    if not isinstance(anchors, list):
+        raise ValidationError('content_boundaries.evidence_anchors must be a list')
+    risks = []
+    for anchor in anchors:
+        anchor = require_mapping(anchor, 'evidence anchor')
+        identity = anchor.get('anchor_id')
+        reason = anchor.get('outside_research', '')
+        reason = reason.strip() if isinstance(reason, str) else ''
+        if identity not in native_ids and not reason:
+            raise ValidationError(f'anchor_not_in_research:{identity} (the anchor is not in the saved research report; add it to the research folder with researchguard source add-anchor and researchguard sync, then rerun with --refresh-providers, or give outside_research: <reason>)')
+        if reason:
+            risks.append(dict(defect_id='outside_research:' + identity, reason=reason))
+    return risks
+
+
 def fill_anchors_from_research(request: dict[str, Any]) -> dict[str, Any]:
     """Import missing anchors atomically; handwritten ownership conflicts fail."""
     if "sourceguard_model" in request:
@@ -181,6 +214,7 @@ def fill_anchors_from_research(request: dict[str, Any]) -> dict[str, Any]:
         if anchor_id in existing:
             raise ValidationError(f"duplicate anchor_id:{anchor_id}")
         existing[anchor_id] = row
+    validate_anchor_authority(request, document=document)
     additions, seen = [], set()
     for row in native_anchors:
         row = require_mapping(row, "SourceGuard anchor")

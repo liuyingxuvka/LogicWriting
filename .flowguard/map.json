@@ -534,7 +534,7 @@
         ".flowguard/models/shared_contracts_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:bff9897e323e9971fcb75d82eaad9b9a311f4e7fb12b4140ec6d82c6398b7bb1"
+      "fingerprint": "sha256:b5aa8c25b165880e11c8f2e5ac149bb9fe9d7dbfa2b200055bf4b23eebef7930"
     },
     {
       "id": "researchguard-handoff",
@@ -565,7 +565,7 @@
       ],
       "models": [],
       "status": "confirmed",
-      "fingerprint": "sha256:a3acb192d34ce4a60647f3ba94fb6e5fe180f875459c03747406162ef13e8bae"
+      "fingerprint": "sha256:b6c4469bde91272f3c3657080f2c2f4010f273075619cfa3c1b3c4ef05afc446"
     },
     {
       "id": "reader-plan",
@@ -603,6 +603,7 @@
       "side_effects": [],
       "depends_on": [
         "reader-binding",
+        "researchguard-handoff",
         "shared-contracts",
         "travel-model",
         "world-references"
@@ -618,7 +619,7 @@
       "models": [],
       "parent": "reader-artifact",
       "status": "confirmed",
-      "fingerprint": "sha256:f1ce875fd4d9dfaf187b3fc4127d6c89425f8b8098ffffb10430835a398c100d"
+      "fingerprint": "sha256:b10ae3898910128a9146c066f8ab213ba20626e7658dfe0bad825dad7a7350a1"
     },
     {
       "id": "reader-binding",
@@ -790,7 +791,7 @@
       ],
       "parent": "reader-artifact",
       "status": "confirmed",
-      "fingerprint": "sha256:ff75e7b9bd3986a186840d068a2bd0236ea50b0886af0687c88a3ef0cc016efb"
+      "fingerprint": "sha256:378ac6cba20b0bdcbfb8fb3f85733db2767d2b7a7d09ab9d067d484282350634"
     },
     {
       "id": "reader-commands",
@@ -1021,7 +1022,7 @@
     "skills/logic-writing/routes/investigation/scripts"
   ],
   "model_digests": {
-    ".flowguard/models/anchor_import_model.py": "b1e75b0c5162cf139e3b303ee10b830ed6d9e00bf3c9ba539735dbfbda2ca21d",
+    ".flowguard/models/anchor_import_model.py": "6e3bf80d1b6d6c3bd78b75c83b3be1893c2f929549ff774d85e34a2a0b259a77",
     ".flowguard/models/closure_claim_model.py": "4afd2da7a0feb0e515ef45f1bc2ba038e649e0572522a890175de808cafaa2ed",
     ".flowguard/models/fiction_tree_model.py": "0ddabded08324082ba916fdc10f9b75f915085f21d6a08b910126b130d509f9c",
     ".flowguard/models/known_bad_generator_model.py": "1475207e86b1c490e83138f3871df0843ceee6a7d3c61e33485ba0046edcbbb2",
