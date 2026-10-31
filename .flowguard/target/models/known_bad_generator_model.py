@@ -226,6 +226,7 @@ class _RealGenerator:
 
     def _evidence_request(self, scope=False, nonresearch=False):
         from _common import load_request
+        from reader_fill import fill_closure_fingerprints
         from run_chain import run_chain
         from derive_closure import CLOSURE_INPUT_FILES
         route = 'fiction' if nonresearch else 'investigation'
@@ -254,7 +255,7 @@ class _RealGenerator:
         result = run_chain(folder, until='review')
         if result['exit_code']:
             raise AssertionError(result['first_failure'])
-        return load_request(folder / 'closure-input.json', defaults=CLOSURE_INPUT_FILES)
+        return fill_closure_fingerprints(load_request(folder / 'closure-input.json', defaults=CLOSURE_INPUT_FILES))
 
     def _evidence(self, case):
         request = self._evidence_request(scope=case == 'evidence_scope')
