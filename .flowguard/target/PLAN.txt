@@ -1,0 +1,2 @@
+touch: skills/logic-writing/scripts/known_bad.py:text_variants
+touch: skills/logic-writing/scripts/known_bad.py:check_known_bad
