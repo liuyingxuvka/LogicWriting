@@ -1,0 +1,3 @@
+# changes: model.rule by ID "quote" | changes: model.rule because "reason" | touch: path:qualified_name [because "reason"]
+touch: skills/logic-writing/scripts/show_plan.py:plan_view
+touch: skills/logic-writing/scripts/show_plan.py:render_plan
