@@ -10,7 +10,9 @@ line follows semantic versioning.
 
 - README and README.zh-CN rewritten: the problem it solves for an AI user, a before/after example, a quick start from the git tag, and the badge shows the source version.
 
-- Execution timestamps no longer affect record fingerprints; a review is explicitly stamped on its current text and plan with run_chain.py --stamp-review. Default closure refuses missing or stale stamps, preserves valid repair judgments, and still checks revision provenance.
+- Each record's own execution timestamp is excluded from its fingerprint; domain dates and nested evidence times remain bound.
+
+- A review is explicitly stamped on its current text and plan with run_chain.py --stamp-review. Default closure refuses missing or stale stamps, preserves valid repair judgments, and still checks revision provenance.
 
 - A fiction or travel composition can name a WorldGuard tree as world_mesh; closure binds its mesh-check report by mesh_id and input_digests, and refuses an old tree report without mesh_id with the command that regenerates it.
 - WorldGuard reports retain their actual scope limits as nonblocking closure risks; readback shows their count.
@@ -27,7 +29,9 @@ line follows semantic versioning.
 
 - With a research folder, every brief anchor must be a row of the saved research report or carry outside_research (reported as a residual risk); otherwise the brief fails with anchor_not_in_research.
 
-- When the saved ResearchGuard report withholds or qualifies the root claim, closure fails with wording_exceeds_license for a required unit that cites supporting evidence without a limit.
+- ResearchGuard 0.6.0 is the minimum for the sync command used in the anchor-repair instructions; installation hints name the same requirement.
+
+- When the saved ResearchGuard report withholds or qualifies the root claim, closure fails with wording_exceeds_license for a required unit that cites evidence supporting that claim without a limit anchor or declared limitation.
 
 - The brief stores the user's request once, as received; each required unit names its source (request, research or ai), a request unit's quote must occur verbatim in the request, and closure lists the units the writer added.
 
