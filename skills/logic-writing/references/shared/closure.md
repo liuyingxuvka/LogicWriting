@@ -62,6 +62,8 @@ unreadable JSON or an invalid/missing verdict is `unreadable`.
 
 ## Each saved report belongs to the brief
 
+When the saved report withholds or qualifies the root claim, every required unit that cites an anchor supporting it also cites a limit anchor or a limitation.
+
 Closure counts a saved report only while its declared raw input bytes match the current files. It never runs a provider.
 
 - ResearchGuard: `input_digests` must include `research.yaml` and match every

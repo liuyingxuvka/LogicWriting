@@ -19,7 +19,7 @@ from _common import (
     require_schema,
     validation_result,
 )
-from researchguard_status import assess_research_verdict, research_report_identity_problems, validate_anchor_authority
+from researchguard_status import assess_research_verdict, research_report_identity_problems, research_wording_boundary, validate_anchor_authority
 from _common import read_worldguard_report, worldguard_report_identity_problems
 from route_inputs import route_extension_fingerprint
 from world_refs import world_ref_unquoted
@@ -288,6 +288,21 @@ def derive_closure(
         })
     checks, provider_risks, providers_passed = provider_checks(
         owner, brief, route, request.get("provider_reports", []))
+    for check in checks:
+        if (check['provider'] != 'researchguard' or check['status'] in ('not_run', 'unreadable')
+                or check['reason'].startswith(IDENTITY_PROBLEMS)):
+            continue
+        boundary = research_wording_boundary(load_json(check['path']))
+        if boundary is None:
+            continue
+        root_id, wording, support = boundary
+        boundaries = brief['content_boundaries']
+        relations = {row['anchor_id']: row['relation'] for row in boundaries['evidence_anchors']}
+        for unit in boundaries['content_units']:
+            if (unit['required'] and support.intersection(unit['evidence_anchor_ids'])
+                    and not any(relations.get(anchor) == 'limit' for anchor in unit['evidence_anchor_ids'])
+                    and not unit['limitation_ids']):
+                raise ValidationError(f"wording_exceeds_license:{unit['content_unit_id']}:{root_id} (the saved research report licenses {root_id} only as {wording}; cite a limit anchor or a limitation in this unit)")
     residual.extend(provider_risks)
     residual.extend(dict(row, owner=owner) for row in authority_risks)
     if any(row["reason"].startswith(IDENTITY_PROBLEMS) for row in checks):

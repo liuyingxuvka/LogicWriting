@@ -1,2 +1,0 @@
-touch: skills/logic-writing/scripts/derive_closure.py:derive_closure
-# Keep the old report/close sequence; the independent initial-state license probes terminate after one step.

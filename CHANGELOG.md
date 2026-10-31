@@ -20,6 +20,8 @@ line follows semantic versioning.
 
 - With a research folder, every brief anchor must be a row of the saved research report or carry outside_research (reported as a residual risk); otherwise the brief fails with anchor_not_in_research.
 
+- When the saved ResearchGuard report withholds or qualifies the root claim, closure fails with wording_exceeds_license for a required unit that cites supporting evidence without a limit.
+
 ## v4.0.17 - 2026-10-28 - Plan readback from every chain file and declared replays
 
 - Size caps on skill text and example files are replaced by checks for repeated paragraphs, dead links and unknown names; totals are printed, not limited.

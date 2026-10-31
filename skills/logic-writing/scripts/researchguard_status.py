@@ -75,6 +75,23 @@ def assess_research_verdict(document: Any, alternatives=()) -> dict[str, Any]:
     return {"status": "passed", "passed": True, "reason": reason, "residual_risk": risks}
 
 
+def research_wording_boundary(document: Mapping[str, Any]) -> tuple[str, str, set[str]] | None:
+    """Return the restricted root and only the anchors that directly support that root."""
+    root = document.get('verdict', {}).get('root_claim')
+    if not isinstance(root, Mapping) or root.get('wording_license') not in ('withhold', 'qualify'):
+        return None
+    support = set()
+    for row in document.get('evidence', []):
+        if not isinstance(row, Mapping):
+            continue
+        directions = row.get('directions')
+        if (isinstance(row.get('anchor'), str) and isinstance(directions, list)
+                and any(isinstance(direction, Mapping) and direction.get('hypothesis') == root['id']
+                        and direction.get('direction') == 'support' for direction in directions)):
+            support.add(row['anchor'])
+    return root['id'], root['wording_license'], support
+
+
 def research_report_identity_problems(document: Any, research_folder: Any) -> list[str]:
     """A saved research report counts only while its declared input bytes match."""
     if not isinstance(research_folder, (str, Path)) or not str(research_folder).strip():

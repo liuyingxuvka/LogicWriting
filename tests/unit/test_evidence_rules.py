@@ -185,3 +185,44 @@ def test_outside_research_reason_is_a_residual_risk(tmp_path):
     assert result['exit_code'] == 0, result
     assert {'defect_id': 'outside_research:anc-invented', 'owner': 'investigation',
             'reason': reason} in result['results']['closure']['closure']['residual_risk']
+
+
+def _root_license(folder, wording, limit=None):
+    path = folder / 'research-status.json'
+    report = json.loads(path.read_text())
+    report['verdict']['root_claim'] = dict(id='h-main-answer', wording_license=wording,
+                                          reason='The root claim remains bounded by its counterevidence.')
+    next(row for row in report['evidence'] if row['anchor'] == 'anc-314-supported')['directions'] = [
+        dict(route='logic', hypothesis='h-main-answer', direction='support', node='E_supported')]
+    path.write_text(json.dumps(report))
+    request = json.loads((folder / 'brief-request.json').read_text())
+    unit = next(row for row in request['content_boundaries']['content_units']
+                if row['content_unit_id'] == 'cu-status-314')
+    if limit == 'anchor':
+        unit['evidence_anchor_ids'].append('anc-314-phase3-undecided')
+    elif limit == 'limitation':
+        unit['limitation_ids'] = ['lim-scope']
+    _save(folder, request)
+
+
+@pytest.mark.parametrize('wording', ['withhold', 'qualify'])
+def test_withheld_root_claim_needs_a_limit(tmp_path, wording):
+    folder = _example(tmp_path)
+    _root_license(folder, wording)
+    result = run_chain(folder)
+    assert result['exit_code'] == 1, result
+    failure = result['first_failure']
+    assert failure['step'] == 'closure'
+    assert failure['message'].startswith('wording_exceeds_license:cu-status-314:h-main-answer (')
+    assert 'cu-recommend' not in failure['message']
+
+
+@pytest.mark.parametrize('wording, limit', [('withhold', 'anchor'), ('qualify', 'limitation')])
+def test_limit_anchor_satisfies_the_license(tmp_path, wording, limit):
+    folder = _example(tmp_path)
+    _root_license(folder, wording, limit)
+    result = run_chain(folder)
+    assert result['exit_code'] == 0, result
+    closure = result['results']['closure']['closure']
+    assert closure['status'] == 'passed'
+    assert any(row['defect_id'] == 'research:wording_boundary' for row in closure['residual_risk'])

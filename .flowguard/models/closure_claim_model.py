@@ -53,6 +53,10 @@ TESTED_BY = {
     "world_report_is_current": [
         "tests/unit/test_closure_claim_model.py:test_stale_world_report_fails_closure"
     ],
+    "wording_within_license": [
+        "tests/unit/test_evidence_rules.py:test_withheld_root_claim_needs_a_limit",
+        "tests/unit/test_evidence_rules.py:test_limit_anchor_satisfies_the_license",
+    ],
 }
 ROOT = Path(__file__).resolve().parents[2]
 EXAMPLES = ROOT / 'skills/logic-writing/assets/examples'
@@ -61,6 +65,10 @@ PASSING = {'researchguard': 'passed', 'worldguard': 'PASS'}
 RESEARCH_PASS = {'research_ready', 'research_contested', 'research_source_only'}
 RESEARCH_FAIL = {'research_search_open', 'research_errors', 'research_live_withhold', 'research_alternative_conflict'}
 FOREIGN = {'research_foreign', 'world_foreign'}
+LICENSE_EXPECTED = {'source_only': 'passed', 'assert': 'passed',
+                    'withhold': 'wording_exceeds_license', 'qualify': 'wording_exceeds_license',
+                    'withhold_limit': 'passed+risk', 'qualify_limitation': 'passed+risk',
+                    'counter': 'passed+risk', 'unrelated': 'passed+risk', 'optional': 'passed+risk'}
 
 
 @dataclass(frozen=True)
@@ -74,6 +82,8 @@ class State:
     named: bool = False
     travel_claim_level: str = 'initial_plan'
     research_risks: tuple[str, ...] = ()
+    license_case: str = ''
+    license_result: str = ''
 
 
 @dataclass(frozen=True)
@@ -220,10 +230,17 @@ def report_input(owner, case):
 class Step:
     name = 'Step'
     reads = ('owner', 'independent', 'report')
-    writes = ('report', 'closed', 'copied', 'broad', 'named', 'travel_claim_level', 'research_risks')
+    writes = ('report', 'closed', 'copied', 'broad', 'named', 'travel_claim_level', 'research_risks', 'license_case', 'license_result')
     ignore, rewrite, omit = False, False, False
 
+    def license_result(self, case):
+        return LICENSE_EXPECTED[case]
+
     def apply(self, event, state):
+        if event.kind == 'license':
+            result = self.license_result(event.status)
+            return (FunctionResult(result, replace(state, license_case=event.status, license_result=result),
+                                   label='license_' + event.status),)
         if event.kind == 'report':
             return (FunctionResult('saved', replace(state, report=event.status, closed=False,
                                                    copied='', broad=False, named=False, travel_claim_level='initial_plan', research_risks=()), label='saved'),)
@@ -376,6 +393,16 @@ class StaleWorldReportPasses(Step):
             return tuple(replace(row,output='passed',new_state=replace(row.new_state,copied='PASS',broad=state.independent,named=False)) for row in rows)
         return rows
 
+def wording_within_license(state, trace):
+    if state.license_case and state.license_result != LICENSE_EXPECTED[state.license_case]:
+        return InvariantResult.fail('only required units citing support for the withheld or qualified root need a limit; other claims and rebuttals stay outside that license')
+    return InvariantResult.pass_()
+
+
+class WithheldClaimStatedPlainly(Step):
+    def license_result(self, case):
+        return 'passed+risk' if case == 'withhold' else super().license_result(case)
+
 
 INVARIANTS = (
     Invariant('research_report_is_current','research inputs match the saved report',research_report_is_current),
@@ -387,15 +414,27 @@ INVARIANTS = (
     Invariant('broad_claim_needs_every_required_provider', 'every required report passes', broad_needs_reports),
     Invariant('provider_status_is_copied_unchanged', 'native status remains unchanged', status_copied),
     Invariant('missing_or_failed_provider_is_named', 'all missing or failing providers are named', failure_named),
+    Invariant('wording_within_license',
+              'when the saved report withholds or qualifies the root claim, a required unit citing an anchor that supports it also carries a limit',
+              wording_within_license),
 )
-EVENTS = tuple(Event('report', status) for status in (*sorted(RESEARCH_PASS | RESEARCH_FAIL), 'research_foreign', 'PASS', 'FAIL', 'world_foreign', 'unreadable', 'research_stale', 'research_digest_omitted', 'world_stale')) + (Event('close'),)
+EVENTS = (tuple(Event('report', status) for status in (*sorted(RESEARCH_PASS | RESEARCH_FAIL), 'research_foreign', 'PASS', 'FAIL', 'world_foreign', 'unreadable', 'research_stale', 'research_digest_omitted', 'world_stale')) + (Event('close'),)
+          + tuple(Event('license', case) for case in LICENSE_EXPECTED))
+
+
+def terminal(event, state, trace):
+    if state.license_case:
+        return True
+    return (event.kind == 'license' and
+            (state.owner != 'investigation' or state.independent or state.report != 'not_run' or state.closed))
 
 
 def explorer(step):
     return Explorer(workflow=Workflow((step,)),
                     initial_states=tuple(State(owner, independent) for owner in ('investigation', 'travel-guide')
                                          for independent in (True, False)),
-                    external_inputs=EVENTS, invariants=INVARIANTS, max_sequence_length=2, progress_steps=0)
+                    external_inputs=EVENTS, invariants=INVARIANTS, max_sequence_length=2,
+                    terminal_predicate=terminal, progress_steps=0)
 
 
 def build_explorer():
@@ -412,11 +451,52 @@ def broken_variants():
             'failed_report_read_as_pass': explorer(RewriteFailure()),
             'missing_provider_not_named': explorer(OmitRisk()),
             'foreign_research_report_passes': explorer(ForeignResearchReportPasses()),
-            'foreign_world_report_passes': explorer(ForeignWorldReportPasses())}
+            'foreign_world_report_passes': explorer(ForeignWorldReportPasses()),
+            'withheld_claim_stated_plainly': explorer(WithheldClaimStatedPlainly())}
 
 
 class Native:
     """Replay current closure and trip validators; reuse immutable protocol fixtures."""
+    def _license_probe(self, case):
+        from run_chain import run_chain
+        with tempfile.TemporaryDirectory(prefix='lw-license-model-') as temporary:
+            folder = Path(temporary) / 'investigation'
+            shutil.copytree(EXAMPLES / 'investigation', folder)
+            report_path = folder / 'research-status.json'
+            report = json.loads(report_path.read_text())
+            if case != 'source_only':
+                license = 'assert' if case == 'assert' else 'qualify' if case in ('qualify', 'qualify_limitation') else 'withhold'
+                report['verdict']['root_claim'] = {'id': 'h-main-answer', 'wording_license': license,
+                                                   'reason': 'The root claim remains bounded by its counterevidence.'}
+                anchor = next(row for row in report['evidence'] if row['anchor'] == 'anc-314-supported')
+                anchor['directions'] = [{'route': 'logic', 'hypothesis': 'h-other' if case == 'unrelated' else 'h-main-answer',
+                                         'direction': 'oppose' if case == 'counter' else 'support', 'node': 'E_supported'}]
+            report_path.write_text(json.dumps(report))
+            path = folder / 'brief-request.json'
+            request = json.loads(path.read_text())
+            boundaries = request['content_boundaries']
+            unit = next(row for row in boundaries['content_units'] if row['content_unit_id'] == 'cu-status-314')
+            if case == 'withhold_limit':
+                unit['evidence_anchor_ids'].append('anc-314-phase3-undecided')
+            elif case == 'qualify_limitation':
+                unit['limitation_ids'] = ['lim-scope']
+            elif case == 'optional':
+                unit['required'] = False
+            elif case == 'counter':
+                next(row for row in boundaries['evidence_anchors'] if row['anchor_id'] == 'anc-314-supported')['relation'] = 'counter'
+                unit['evidence_anchor_ids'].append('anc-313-experimental')
+                unit['safe_meaning'] = 'The evidence does not support the claim that free-threading is already the default.'
+            path.write_text(json.dumps(request))
+            result = run_chain(folder)
+            if result['exit_code']:
+                return result['first_failure']['code']
+            closure = result['results']['closure']['closure']
+            if case in ('source_only', 'assert'):
+                return closure['status']
+            risk = any(row.get('defect_id') == 'research:wording_boundary'
+                       and row.get('owner') == 'investigation' for row in closure['residual_risk'])
+            return 'passed+risk' if closure['status'] == 'passed' and risk else 'missing-risk'
+
     def reset(self, state):
         self.state = state
         self._fixture([])
@@ -469,6 +549,11 @@ class Native:
 
     def apply_step(self, step):
         event, state = step.function_input, self.state
+        if event.kind == 'license':
+            result = self._license_probe(event.status)
+            state = replace(state, license_case=event.status, license_result=result)
+            self.state = state
+            return ReplayObservation(function_name=step.function_name, observed_output=result, observed_state=state)
         if event.kind == 'report':
             document, alternatives = report_input(state.owner, event.status)
             self._fixture(alternatives)
@@ -506,7 +591,11 @@ class Native:
 def conformance():
     result, adapter = None, Native()
     try:
-        for trace in select_covering_traces(build_explorer().explore().traces):
+        traces = build_explorer().explore().traces
+        old = [trace for trace in traces if not any(event.kind == 'license' for event in trace.external_inputs)]
+        probes = [trace for trace in traces if len(trace.external_inputs) == len(trace.steps) == 1
+                  and trace.steps[0].function_input.kind == 'license']
+        for trace in (*select_covering_traces(old), *probes):
             result = replay_trace(trace=trace, adapter=adapter, invariants=INVARIANTS,
                                   rules=(projected_state_matches(), projected_output_matches()))
             if not result.ok:
@@ -519,6 +608,7 @@ def conformance():
         adapter.close()
 
 USES = {
+    'LicenseProbe': 'skills/logic-writing/scripts/run_chain.py:run_chain',
     'Close': 'skills/logic-writing/scripts/derive_closure.py:derive_closure',
     'WorldIdentity': 'skills/logic-writing/scripts/_common.py:worldguard_report_identity_problems',
     'InputDigests': 'skills/logic-writing/scripts/_common.py:input_digest_problems',
