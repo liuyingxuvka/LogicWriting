@@ -1,0 +1,5 @@
+touch: skills/logic-writing/scripts/reader_plan.py:build_reader_brief
+touch: skills/logic-writing/scripts/derive_closure.py:derive_closure
+touch: skills/logic-writing/scripts/show_plan.py:plan_view
+touch: skills/logic-writing/scripts/show_plan.py:render_plan
+touch: skills/logic-writing/scripts/run_chain.py:main
