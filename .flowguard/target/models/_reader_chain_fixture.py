@@ -157,7 +157,7 @@ class _RealReaderChain:
         path.write_text(json.dumps(request))
         result = run_chain(folder, until='brief')
         if result['exit_code']:
-            return result['first_failure']['code']
+            return result['first_failure']['code'].split(' (', 1)[0]
         brief = result['results']['brief']['reader_brief']
         quoted = next(row for row in brief['content_boundaries']['content_units'] if row['content_unit_id'] == 'cu-status-314')
         return 'verbatim' if (brief.get('request') == raw and quoted.get('quote') == unit.get('quote')) else 'request_changed'
