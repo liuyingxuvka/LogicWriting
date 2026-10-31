@@ -1,7 +1,60 @@
 {
   "schema": "flowguard.target.v1",
   "goal": "LW-606: anchors of a researched brief come from the research report",
-  "components": [],
+  "components": [
+    {
+      "id": "reader-plan",
+      "layer": "reader",
+      "summary": "Validate reader intent, canonical composition, writer projection and optional revision provenance.",
+      "responsibilities": [
+        "Validate reader intent, canonical composition, writer projection and optional revision provenance.",
+        "The brief records the saved research status report it was built from."
+      ],
+      "files": [
+        "skills/logic-writing/assets/schemas/academic-composition.schema.json",
+        "skills/logic-writing/assets/schemas/composition-plan.schema.json",
+        "skills/logic-writing/assets/schemas/fiction-composition.schema.json",
+        "skills/logic-writing/assets/schemas/investigation-composition.schema.json",
+        "skills/logic-writing/assets/schemas/reader-brief.schema.json",
+        "skills/logic-writing/assets/schemas/reader-intent.schema.json",
+        "skills/logic-writing/assets/schemas/revision-provenance.schema.json",
+        "skills/logic-writing/assets/schemas/source-unit-manifest.schema.json",
+        "skills/logic-writing/assets/schemas/travel-composition.schema.json",
+        "skills/logic-writing/references/shared/reader-brief.md",
+        "skills/logic-writing/scripts/build_source_unit_manifest.py",
+        "skills/logic-writing/scripts/reader_plan.py",
+        "skills/logic-writing/scripts/reader_plan_core.py",
+        "skills/logic-writing/scripts/route_inputs.py",
+        "skills/logic-writing/scripts/writer_projection.py"
+      ],
+      "entrypoints": [
+        "skills/logic-writing/scripts/build_source_unit_manifest.py:main",
+        "skills/logic-writing/scripts/reader_plan.py:build_reader_brief",
+        "skills/logic-writing/scripts/reader_plan.py:validate_revision_provenance"
+      ],
+      "state": [
+        "Canonical intent, plan, writer projection and referenced domain-input fingerprints."
+      ],
+      "side_effects": [],
+      "depends_on": [
+        "reader-binding",
+        "shared-contracts",
+        "travel-model",
+        "world-references",
+        "researchguard-handoff"
+      ],
+      "tests": [
+        "tests/unit/test_academic.py",
+        "tests/unit/test_cli_inputs.py",
+        "tests/unit/test_composition_graph.py",
+        "tests/unit/test_editorial_dispositions.py",
+        "tests/unit/test_writer_projection.py",
+        "tests/unit/test_evidence_rules.py"
+      ],
+      "models": [],
+      "parent": "reader-artifact"
+    }
+  ],
   "flows": [],
   "remove": [],
   "requests": [
