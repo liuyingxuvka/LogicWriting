@@ -10,6 +10,7 @@ PARENT = 'reader-commands'
 IMPLEMENTED_BY = {
     "ShowPlan": "skills/logic-writing/scripts/show_plan.py:main",
     "PlanView": "skills/logic-writing/scripts/show_plan.py:plan_view",
+    "RenderPlan": "skills/logic-writing/scripts/show_plan.py:render_plan",
 }
 # RunChain: the readback fixture runs the chain through tests/v2_support.run_example_steps; the lint does not follow that branch, AnchorWatch shows it runs.
 USES = {
@@ -26,6 +27,9 @@ TESTED_BY = {
     ],
     "readback_is_the_same_from_every_chain_file": [
         "tests/e2e/test_worked_examples.py:test_show_plan_reads_back_the_same_from_every_chain_file"
+    ],
+    "says_line_shows_its_anchors": [
+        "tests/e2e/test_worked_examples.py:test_show_plan_names_anchors_per_says_line"
     ],
 }
 @dataclass(frozen=True)
@@ -46,6 +50,8 @@ class Step:
     reads=()
     writes=('readback_case', 'readback', 'readback_input')
     def readback_for(self, case: str) -> str:
+        if case == "anchors":
+            return "anchors_shown"
         return "ahead_shown" if case=="ahead" else "shown" if case == "leak" else "clean"
     def apply(self, event, state):
         result = self.readback_for(event.quality)
@@ -96,7 +102,25 @@ class PlanFileReadsBackNoBinding(Step):
         return results
 
 
+def says_line_shows_its_anchors(state, trace):
+    if state.readback_case == "anchors" and state.readback != "anchors_shown":
+        return InvariantResult.fail("each says line must show its own anchors or [no anchor]")
+    return InvariantResult.pass_()
+
+
+class SaysLineHidesAMissingAnchor(Step):
+    """Known-bad: anchors are merged for the planned unit, hiding its unanchored sentence."""
+
+    def readback_for(self, case):
+        return "anchors_hidden" if case == "anchors" else super().readback_for(case)
+
+
 INVARIANTS = (
+    Invariant(
+        "says_line_shows_its_anchors",
+        "each says line names its own anchors, and a unit without one shows [no anchor]",
+        says_line_shows_its_anchors,
+    ),
     Invariant(
         "readback_is_the_same_from_every_chain_file",
         "every chain file reads back the same bound units and findings as the binding result",
@@ -113,8 +137,9 @@ INVARIANTS = (
         _readback_shows_failing_units,
     ),
 )
-CASES = ('clean', 'leak', 'ahead')
+CASES = ('clean', 'leak', 'ahead', 'anchors')
 INPUT_FILES = (
+    "brief-request.json",
     "reader-brief.json",
     "closure-input.json",
     "shared-writing.json",
@@ -128,6 +153,7 @@ def broken_variants():
         "plan_file_reads_back_no_binding": _explorer(PlanFileReadsBackNoBinding()),
         "blocked_chain_hides_the_plan": _explorer(BlockedChainHidesThePlan()),
         "readback_hides_findings": _explorer(ReadbackHidesFindings()),
+        "says_line_hides_a_missing_anchor": _explorer(SaysLineHidesAMissingAnchor()),
     }
 def conformance():
     count = 0

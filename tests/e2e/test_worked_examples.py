@@ -193,6 +193,35 @@ def test_saved_research_status_matches_researchguard():
     assert json.loads(run.stdout) == json.loads((folder / 'research-status.json').read_text(encoding='utf-8'))
 
 
+def test_show_plan_names_anchors_per_says_line(tmp_path):
+    sys.path.insert(0, str(SKILL / "scripts"))
+    from show_plan import plan_view, render_plan
+
+    folder = tmp_path / "investigation"
+    shutil.copytree(EXAMPLES / "investigation", folder)
+    path = folder / "brief-request.json"
+    request = json.loads(path.read_text())
+    meaning = "Teams should move production services to the free-threaded build this year."
+    request["content_boundaries"]["content_units"].append({
+        "content_unit_id": "cu-migrate", "safe_meaning": meaning, "required": True,
+        "evidence_anchor_ids": [], "alternative_ids": [], "limitation_ids": [],
+        "model_row_ids": [],
+    })
+    unit = next(row for row in request["composition_plan"]["planned_units"]
+                if row["planned_unit_id"] == "u-recommend")
+    unit["content_unit_ids"].append("cu-migrate")
+    path.write_text(json.dumps(request))
+
+    view = plan_view(request, input_path=path)
+    lines = [line.strip() for line in render_plan(view).splitlines()]
+    supported = next(row["safe_meaning"]
+                     for row in request["content_boundaries"]["content_units"]
+                     if row["content_unit_id"] == "cu-recommend")
+    assert f"says: {meaning} [no anchor]" in lines
+    assert f"says: {supported} [anc-314-supported (support), anc-314-phase3-undecided (limit)]" in lines
+    assert not any(line.startswith("anchors:") for line in lines)
+
+
 def test_show_plan_shows_findings_on_the_failing_unit(tmp_path):
     sys.path.insert(0, str(SKILL / 'scripts'))
     from _common import load_request

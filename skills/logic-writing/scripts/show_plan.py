@@ -387,6 +387,17 @@ def plan_view(request, *, input_path=None):
                 content=[
                     content.get(identity, identity) for identity in unit.get("content_unit_ids", [])
                 ],
+                says=[
+                    dict(
+                        content_unit_id=identity,
+                        text=content.get(identity, identity),
+                        anchors=[
+                            dict(anchor_id=anchor, relation=relations.get(anchor, ""))
+                            for anchor in content_anchors.get(identity, [])
+                        ],
+                    )
+                    for identity in unit.get("content_unit_ids", [])
+                ],
                 limitations=[
                     limitations.get(identity, identity)
                     for identity in unit.get("limitation_ids", [])
@@ -435,15 +446,17 @@ def render_plan(view):
         lines += ['', f"{padding}{unit['order']}. {unit['title']} [{where}]",
                   f"{padding}   job: {unit['reader_job']}",
                   f"{padding}   reader: {unit['incoming_reader_state']} -> {unit['outgoing_reader_state']}"]
-        for key, label in (('content', 'says'), ('limitations', 'limit'), ('text', 'text')):
+        for row in unit['says']:
+            anchors = ', '.join(f"{anchor['anchor_id']} ({anchor['relation']})"
+                                for anchor in row['anchors']) or 'no anchor'
+            lines.append(f"{padding}   says: {row['text']} [{anchors}]")
+        for key, label in (('limitations', 'limit'), ('text', 'text')):
             lines += [f'{padding}   {label}: {text}' for text in unit[key]]
         for row in unit.get('checks',[]):
             lines.append(f"{padding}   checks: {row['code']}: {row['message']}")
         for row in unit['findings']:
             quote = f' "{row["excerpt"]}"' if row.get('excerpt') else ''
             lines.append(f"{padding}   findings: {row['code']}: {row['message']}{quote}")
-        if unit['anchors']:
-            lines.append(f"{padding}   anchors: " + ', '.join(f"{row['anchor_id']} ({row['relation']})" for row in unit['anchors']))
         if unit['world_refs']:
             lines.append(f"{padding}   world: " + ', '.join(unit['world_refs']))
         if unit['from']:

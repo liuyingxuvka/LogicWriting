@@ -81,7 +81,7 @@
         ".flowguard/models/reader_artifact_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:2e2817a9dbb8e7dee5adac07860392d2fb18a41c9cf182496cb4c4cf75cba692"
+      "fingerprint": "sha256:7b1d6e3e652317370dca71980669f265f390361cde2ac3b70c4da6c667a163fa"
     },
     {
       "id": "fiction",
@@ -840,7 +840,7 @@
         ".flowguard/models/plan_readback_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:3331e90094b5df7ba3158b548778ea0811dcb43fb7f1eba7332fdaf186a8dd7c"
+      "fingerprint": "sha256:b9f23d56f34a898b9f68ba70406c00e25799dd21a1f669be4022a949e8cc3301"
     },
     {
       "id": "world-references",
@@ -1024,7 +1024,7 @@
     ".flowguard/models/fiction_tree_model.py": "0ddabded08324082ba916fdc10f9b75f915085f21d6a08b910126b130d509f9c",
     ".flowguard/models/known_bad_generator_model.py": "1475207e86b1c490e83138f3871df0843ceee6a7d3c61e33485ba0046edcbbb2",
     ".flowguard/models/plan_order_model.py": "7a32290b4c7c769f30df00b78f74b9cd868790da3ff4ff2b9034034b42aa2da5",
-    ".flowguard/models/plan_readback_model.py": "93324fd82b0aa352665e289fcf7c60c77f558af5d9814625efe20fe16ce3eed4",
+    ".flowguard/models/plan_readback_model.py": "7947367c2e43299c6965b0ed31d2bc3d6352067e267b7ec989f7861de0b46cfa",
     ".flowguard/models/provider_preflight_model.py": "d78fe03165665eda9c3ce0a954f661a4e187e20c9c9b99a7d073b2d50ed415b2",
     ".flowguard/models/reader_artifact_model.py": "4861a104114cc29c29fd9adc78f646306a5588c9153c0689c14cb89ed1fe56a9",
     ".flowguard/models/route_review_model.py": "a24f47fdc46d89c4b03f323784ca3275ffecc5d7807ebf5cccbf24254bb395d5",

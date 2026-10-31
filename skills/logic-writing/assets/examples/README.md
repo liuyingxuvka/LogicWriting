@@ -48,8 +48,8 @@ python scripts/show_plan.py --input "$example/audit-request.json"
 ```
 
 The readback starts with a summary line of bindings, audit, review, closure and
-uncaught known-bad edits, then each unit with its findings (quoted spans), evidence
-anchors and world references. The brief alone shows every planned unit as
+uncaught known-bad edits, then each unit with its findings (quoted spans), each
+`says:` line's own evidence anchors (or `[no anchor]`) and world references. The brief alone shows every planned unit as
 `UNBOUND`; chain requests/results with bindings show the unit tree and the first
 sentence of the bound current text. Continue from `UNBOUND` units and units with
 findings.

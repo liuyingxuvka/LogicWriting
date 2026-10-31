@@ -88,7 +88,7 @@ class _RealReaderChain:
     def _readback(self, case: str, input_name="shared-writing-result.json") -> str:
         """Audit the investigation example (or its known-bad leak text) and read the plan back."""
         from _common import load_request
-        from show_plan import plan_view
+        from show_plan import plan_view, render_plan
         from tests.v2_support import run_example_steps
 
         folder = self._workdir()
@@ -96,6 +96,29 @@ class _RealReaderChain:
         shutil.copytree(example, folder)
         if case == "leak":
             shutil.copyfile(example / "known-bad/leak.md", folder / "piece.md")
+        if case == "anchors":
+            import json
+
+            path = folder / "brief-request.json"
+            request = json.loads(path.read_text())
+            meaning = "Teams should move production services to the free-threaded build this year."
+            request["content_boundaries"]["content_units"].append({
+                "content_unit_id": "cu-migrate", "safe_meaning": meaning, "required": True,
+                "evidence_anchor_ids": [], "alternative_ids": [], "limitation_ids": [],
+                "model_row_ids": [],
+            })
+            planned = next(row for row in request["composition_plan"]["planned_units"]
+                           if row["planned_unit_id"] == "u-recommend")
+            planned["content_unit_ids"].append("cu-migrate")
+            path.write_text(json.dumps(request))
+            shared_path = folder / "shared-writing.json"
+            shared = json.loads(shared_path.read_text())
+            binding = next(row for row in shared["contract"]["unit_bindings"]
+                           if row["planned_unit_id"] == "u-recommend")
+            binding["content_unit_ids"].append("cu-migrate")
+            shared_path.write_text(json.dumps(shared))
+            piece = folder / "piece.md"
+            piece.write_text(piece.read_text().rstrip("\n") + " " + meaning + "\n")
         if case == "ahead":
             import json
 
@@ -129,7 +152,7 @@ class _RealReaderChain:
                 sys.argv = previous
             if binding_code == 0:
                 raise AssertionError("ahead fixture unexpectedly bound every required unit")
-        else:
+        elif not (case == "anchors" and input_name == "brief-request.json"):
             run_example_steps(folder)
         import io, json
         from contextlib import redirect_stdout
@@ -146,6 +169,16 @@ class _RealReaderChain:
         if code not in (0, None):
             return "hidden"
         view = json.loads(output.getvalue())
+        if case == "anchors":
+            lines = [line.strip() for line in render_plan(view).splitlines()]
+            supported = next(row["safe_meaning"]
+                             for row in request["content_boundaries"]["content_units"]
+                             if row["content_unit_id"] == "cu-recommend")
+            return "anchors_shown" if (
+                f"says: {meaning} [no anchor]" in lines
+                and f"says: {supported} [anc-314-supported (support), anc-314-phase3-undecided (limit)]" in lines
+                and not any(line.startswith("anchors:") for line in lines)
+            ) else "anchors_hidden"
         if case == "ahead":
             row = next((row for row in view["planned_units"] if row["planned_unit_id"] == "u-libs"), {})
             return (

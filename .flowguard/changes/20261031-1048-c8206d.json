@@ -1,0 +1,43 @@
+{
+  "kind": "change",
+  "goal": "LW-604: the readback names each says line's anchors",
+  "requests": [
+    {
+      "id": "R1",
+      "part": true
+    }
+  ],
+  "base": "8bb4d1535ad862a20c2c1d069ceea79cfbf91f32",
+  "tree": "c8206df0a11c969e2a241d8c6267110cc7fdea51167999646f3411fc52371e5d",
+  "promoted": "2026-10-31T10:48:38.696209+00:00",
+  "plan": [
+    {
+      "line": "touch: skills/logic-writing/scripts/show_plan.py:plan_view",
+      "added_after_code": null,
+      "cleared": []
+    },
+    {
+      "line": "touch: skills/logic-writing/scripts/show_plan.py:render_plan",
+      "added_after_code": null,
+      "cleared": []
+    }
+  ],
+  "rules": [
+    {
+      "id": "plan_readback_model.says_line_shows_its_anchors",
+      "old": null,
+      "new": "fp:2414f405fc2f16c6ecf54709de992776010fcc1c264fa7f9009ec2a7de2aa346",
+      "provenance": "unjudged: no checked PLAN changes line"
+    }
+  ],
+  "acceptances": [],
+  "existing_cleared": [],
+  "implemented_by": [
+    "skills/logic-writing/scripts/show_plan.py:plan_view",
+    "skills/logic-writing/scripts/show_plan.py:render_plan",
+    "tests/e2e/test_worked_examples.py:test_show_plan_names_anchors_per_says_line"
+  ],
+  "new_actions": [],
+  "corrections": [],
+  "checked": "This promotion ran one fresh target check with bound tests and the remaining function-selected tests; 2 warning(s) remained. The tree identifies the checked post-promotion content, before later component confirmation. Implementation provenance lists changed Python function definitions from the Git diff. Available static rule identities and checked PLAN lines are recorded. PLAN edit ordering, per-item clearance, acceptances, existing-item clearance and new-action judgments are not assessed; unknown order is null and unsupported lists are empty."
+}

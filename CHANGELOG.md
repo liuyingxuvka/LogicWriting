@@ -14,6 +14,8 @@ line follows semantic versioning.
 
 - Specs and references now name the router's skipped status, the derived travel claim level and the current FlowGuard models, and every copy of the repair-round rule uses the kernel's wording.
 
+- The plan readback names each says line's own anchors and shows [no anchor] when a unit has none.
+
 ## v4.0.17 - 2026-10-28 - Plan readback from every chain file and declared replays
 
 - Size caps on skill text and example files are replaced by checks for repeated paragraphs, dead links and unknown names; totals are printed, not limited.
