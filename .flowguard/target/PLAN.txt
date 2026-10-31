@@ -3,7 +3,7 @@ touch: skills/logic-writing/scripts/_common.py:require_exact_fingerprint
 touch: skills/logic-writing/scripts/reader_checks.py:build_reader_audit_from_current
 touch: skills/logic-writing/scripts/reader_checks.py:reader_judgment_from_current
 touch: skills/logic-writing/scripts/reader_fill.py:fill_closure_fingerprints
-touch: skills/logic-writing/scripts/select_route.py:validate_request
+touch: skills/logic-writing/scripts/select_route.py:select_route
 touch: skills/logic-writing/scripts/run_chain.py:run_chain
 touch: skills/logic-writing/scripts/run_chain.py:main
 touch: skills/logic-writing/scripts/derive_closure.py:derive_closure
