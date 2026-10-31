@@ -327,7 +327,8 @@ class _RealReaderChain:
             identity = 'cu-default-next' if case in responses else 'cu-migrate'
             anchors = ['anc-314-supported'] if case in responses else []
             if case == 'counter_only':
-                counter = dict(boundaries['evidence_anchors'][0], anchor_id='anc-counter', relation='counter')
+                counter = dict(boundaries['evidence_anchors'][0], anchor_id='anc-counter', relation='counter',
+                               outside_research='Synthetic counter-only probe, not a result of the research folder.')
                 boundaries['evidence_anchors'].append(counter)
                 anchors = ['anc-counter']
             unit = dict(content_unit_id=identity, safe_meaning=meaning, required=case != 'optional',
