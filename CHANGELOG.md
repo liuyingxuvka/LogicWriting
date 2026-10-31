@@ -8,6 +8,8 @@ line follows semantic versioning.
 
 ## Unreleased
 
+- README and README.zh-CN rewritten: the problem it solves for an AI user, a before/after example, a quick start from the git tag, and the badge shows the source version.
+
 - Execution timestamps no longer affect record fingerprints; a review is explicitly stamped on its current text and plan with run_chain.py --stamp-review. Default closure refuses missing or stale stamps, preserves valid repair judgments, and still checks revision provenance.
 
 - A fiction or travel composition can name a WorldGuard tree as world_mesh; closure binds its mesh-check report by mesh_id and input_digests, and refuses an old tree report without mesh_id with the command that regenerates it.

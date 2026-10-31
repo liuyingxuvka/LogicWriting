@@ -1,7 +1,7 @@
 # Logic Writing
 
 <p align="center">
-  <img src="https://img.shields.io/badge/source-4.0.14-6f42c1" alt="Source version 4.0.14" />
+  <img src="https://img.shields.io/badge/source-4.1.0-6f42c1" alt="Source version 4.1.0" />
   <img src="https://img.shields.io/badge/skill-logic--writing-334155" alt="Skill logic-writing" />
   <img src="https://img.shields.io/badge/routes-4-0a7f5a" alt="Four final-owner routes" />
   <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT license" />
@@ -13,196 +13,263 @@
 <!-- README HERO END -->
 </p>
 
-One formal Codex skill for deep investigation, academic writing, fiction, and
-evidence-heavy travel guides. It keeps one public entrypoint, selects exactly
-one final owner, calls specialist Guard owners through their current provider
-entrypoints for native judgments, and turns the result into language a real
-reader can follow.
+<p align="center"><strong>Your AI writes a long report, paper, story or guide whose claims slowly drift away from the evidence and from what you asked for. Logic Writing makes the whole plan visible before any prose, holds every planned claim to its evidence and to your request, and refuses to close a text whose claims, sources or reviews no longer match.</strong></p>
 
-## Why one skill
+[中文说明](./README.zh-CN.md)
 
-These writing jobs share a real core: preserve the complete ReaderIntent, plan
-the whole artifact before drafting, preserve specialist authority, bind the
-plan to exact current bytes, keep internal model language out of final copy,
-and review the real result. They do not share one universal data packet.
-Investigation keeps evidence semantics, academic writing keeps scholarly
-hierarchy and provenance, fiction keeps story semantics, and travel keeps
-operational semantics.
+Logic Writing is an agent skill (Claude Code, Codex) made of Python scripts. It has one entry
+and four routes, chosen by what you finally get: an **investigation** (a researched report or answer), an
+**academic** piece, **fiction** or a story plan, a **travel guide**. The AI writes the text; the scripts check the plan
+against the evidence, the text against the plan, and the review against the text, and decide whether the piece may be
+called finished.
 
-Fiction can carry an optional structured `voice_contract` (POV and tense) into the writer input; without it, the voice reference remains an explicit gap.
+## 30 seconds: a claim with no evidence behind it
 
-A failed input result without the requested record reports its first error directly. Bindings and review evidence that name vanished artifact units stop before any fingerprints are filled; correct them against the current ArtifactMap.
+The repository ships a small investigation in `skills/logic-writing/assets/examples/investigation/`. The user asked:
+*"Is free-threaded Python ready to be the default build? Tell me its official status as of Python 3.14 and whether we
+should plan a migration now."* The research folder next to it says: officially supported in 3.14 but still optional,
+the default switch undecided.
 
-Each piece keeps evidence in its content boundaries. ResearchGuard owns the
-research folder's sources and wording limits; closure reads its one saved
-`verdict`. The writing context receives `ReaderBrief.writer_input`, not internal
-ledgers or provider paths.
+**Without Logic Writing**, the AI's conclusion gains one confident sentence that nothing in the research says:
 
-## Four final-owner routes
+> Teams should move production services to the free-threaded build this year.
 
-| Terminal deliverable | Final owner | Preserved native strength |
-| --- | --- | --- |
-| Research report, briefing, evidence package, decision note, investigated answer | `investigation` | Source depth, claim competition, numbers, negative evidence, traces, bounded conclusions |
-| Paper, thesis/dissertation unit, literature review, proposal, substantive academic revision | `academic-writing` | Structure, citations, revision provenance, figures/tables, document and PDF workflows |
-| Story plan, short story, fiction chapter, novel, series bible, story audit or revision | `fiction-writing` | Turning points, scenes, promises, continuity, voice, world consistency, the shared plan-to-text binding |
-| Itinerary, destination guide, route plan, lodging strategy, traveler-fit recommendation | `travel-guide` | Dated evidence, weather/alerts, feasibility, fit, lodging, negative evidence, reachable fallbacks |
+**With Logic Writing**, every claim of the piece is first a unit of the plan, with the evidence it rests on. Here is the
+AI's new unit. In a copy of the example (`cp -r skills/logic-writing/assets/examples/investigation ../ft-plan`) it goes
+into `content_boundaries.content_units` of `../ft-plan/brief-request.json`, and its id into the `content_unit_ids` of the
+planned unit `u-recommend`, the conclusion:
 
-Routing follows the terminal deliverable, not the first activity or the subject.
-A paper about tourism is academic. A researched historical novel is fiction. A
-story-shaped itinerary is travel. A child investigation may return a bounded
-set of content units, anchors, alternatives and limitations, plus its research
-folder; it cannot close its parent artifact. A material unresolved
-reader choice returns `needs_user_choice` without assigning an owner. Ask the
-first question, record the user's answer in ReaderIntent, and route again;
-non-material choices do not block.
+```json
+{"content_unit_id": "cu-migrate", "safe_meaning": "Teams should move production services to the free-threaded build this year.",
+ "required": true, "source": "ai", "evidence_anchor_ids": [], "alternative_ids": [], "limitation_ids": [], "model_row_ids": []}
+```
 
-## “Say it like a person” is an executable boundary
+The plan is checked before a word of the text is written:
 
-ReaderIntent preserves
-the user's structure, language, audience, format, style, extent, list/table
-policy, citations, and content duties without reducing them to a topic summary. The
-selected route then builds a whole-artifact CompositionPlan. Findings, claims,
-scene cards, and attractions provide content; they do not automatically become
-paragraphs.
+```console
+$ python skills/logic-writing/scripts/run_chain.py ../ft-plan --until brief
+units: 5 (0 bound, 5 unbound: u-answer, u-history, u-cost, u-next, u-recommend); audit: not_run; review: not_run; closure: not_run; known-bad: not_run
+added by the writer: cu-recommend: A team can test its service on the free-threaded build now, but should not plan on it becoming the default on any known date; recheck when a phase III decision is announced.
+added by the writer: cu-migrate: Teams should move production services to the free-threaded build this year.
+first failure: brief: content_unit_unsupported:cu-migrate (a required unit needs an evidence anchor that is not only counter, or an unsupported_reason)
+```
 
-The shared writing kernel asks every important unit:
+The readback of the plan shows the same thing to a person: each `says:` line carries its own evidence, and the new one
+has none.
 
-- What does the reader know or expect on entry?
-- What concrete evidence, action, object, choice, or instruction changes that?
-- What remains unresolved, or why is the unit terminal?
-- Which exact later unit consumes the change?
-- Who owns the technical, local, quoted, narrator, or character register?
-- If a pattern repeats, what new effect makes the repetition useful?
-- Which current model rows are visible in which exact delivered words?
+```console
+$ python skills/logic-writing/scripts/show_plan.py --input ../ft-plan/brief-request.json | sed -n '/^5\. /,$p'
+5. What to do [UNBOUND]
+   job: Decide
+   reader: Has status, cost and outlook -> Has a plan and a recheck trigger
+   says: A team can test its service on the free-threaded build now, but should not plan on it becoming the default on any known date; recheck when a phase III decision is announced. [anc-314-supported (support), anc-314-phase3-undecided (limit)]
+   says: Teams should move production services to the free-threaded build this year. [no anchor]
+   limit: These sources cover CPython's official position, not whether the libraries a given service depends on are ready.
+```
 
-It rejects internal workflow leakage, generic handoffs, prose that announces
-its own job, flattened voices, card-like fragmentation, repetition without
-changed effect, unbound prose, unrealized model rows, and reviews tied to an
-older artifact hash. Deterministic checks, route-semantic review, and a reader judgment all inspect
-the actual artifact. Record `judge_kind` as `independent_context` or `self_review`;
-a passing self-review keeps an explicit risk and never allows a broad claim. A repair must
-produce real new bytes and rerun the dependent checks. The current quality
-chain must close before any broader quality claim: an independent read,
-relevant native research/world checks and disposition of live competition are
-additional requirements. `contested` remains an explicit research risk; a search
-stop decision is not an assert license.
+The claim either gets evidence, or is dropped, or stays with a stated `unsupported_reason` that closure prints as a
+residual risk for the reader. Before `v4.1.0` this plan was accepted, and with the sentence written into the text the
+finished piece passed closure.
 
-One CompositionPlan is the unit tree. Long-form projects point to it and use its
-unit ids; travel combines one `trip_plan` itinerary with the guide plan. Bind
-world references through `world_contract`/`world_refs`, keep uncaught known-bad
-edits visible, and read the plan beside current text with `show_plan.py`. These
-checks derive scope and remaining work; they do not accept handwritten verdicts.
+### When the evidence changes under the text
 
-## Specialist ownership stays intact
+Continue with the `../ft-example` copy initialized in Quick start below. The research can change after the piece was
+written: a source is corrected or another passage is quoted. Closure refuses an old saved report. In the diagnostic
+below, `<ft-example>` abbreviates the absolute path of that copy:
 
-Logic Writing is an orchestration shell, not a replacement for its providers:
+```console
+$ researchguard source add-anchor ../ft-example/research/source.yaml --source-id src-whatsnew-314 --anchor-id anc-314-heading --quote 'Free-threaded Python is officially supported' --locator 'Doc/whatsnew/3.14.rst, section heading' --output ../ft-example/research/source.yaml
+{"ok": true, "output": "../ft-example/research/source.yaml"}
+$ python skills/logic-writing/scripts/run_chain.py ../ft-example
+units: 5 (0 bound, 5 unbound: u-answer, u-history, u-cost, u-next, u-recommend); audit: not_run; review: not_run; closure: not_run; known-bad: not_run
+added by the writer: cu-recommend: A team can test its service on the free-threaded build now, but should not plan on it becoming the default on any known date; recheck when a phase III decision is announced.
+first failure: brief: research_report_stale:source.yaml (saved report is from other inputs; run with --refresh-providers)
+$ python skills/logic-writing/scripts/run_chain.py ../ft-example --refresh-providers
+units: 5 (5 bound, 0 unbound); audit: passed (0 findings); review: passed; closure: not_run; known-bad: not_run
+added by the writer: cu-recommend: A team can test its service on the free-threaded build now, but should not plan on it becoming the default on any known date; recheck when a phase III decision is announced.
+first failure: closure: judgment_stale:reader_brief_fingerprint (the text, plan or file references changed after the review was stamped; reread the text, then run python skills/logic-writing/scripts/run_chain.py <ft-example> --stamp-review)
+$ python skills/logic-writing/scripts/run_chain.py ../ft-example --stamp-review
+units: 5 (5 bound, 0 unbound); audit: passed (0 findings); review: passed; closure: not_run; known-bad: not_run
+added by the writer: cu-recommend: A team can test its service on the free-threaded build now, but should not plan on it becoming the default on any known date; recheck when a phase III decision is announced.
+stamped: closure-input.json judgment j-ft-1
+$ python skills/logic-writing/scripts/run_chain.py ../ft-example
+units: 5 (5 bound, 0 unbound); audit: passed (0 findings); review: passed; closure: passed; known-bad: 0 uncaught
+added by the writer: cu-recommend: A team can test its service on the free-threaded build now, but should not plan on it becoming the default on any known date; recheck when a phase III decision is announced.
+```
 
-- ResearchGuard `status` supplies one question-level `verdict`; `research_folder`
-  imports source-owned anchors, and conflicting hand-authored ownership is an error.
-- SourceGuard owns discovery planning and evidence-depth decisions.
-- LogicGuard owns source preservation, argument support, structure, citation
-  semantics, model depth, and synthesis plans.
-- TraceGuard owns material temporal, causal, implementation, competing-story,
-  counterfactual, and prediction-boundary analysis.
-- WorldGuard owns material consistency across events, agents, spaces,
-  resources, capabilities, conflicts, authority, and norms.
-- Documents and PDF own their native file mutation, extraction, rendering, and
-  visual inspection boundaries.
+The refresh asks ResearchGuard for a current report, then checks the existing text. The changed report makes the old
+review stale. Here the added passage changes none of the existing judgments: check the affected text, plan or evidence,
+update any affected review, then explicitly bind the completed review with `--stamp-review`. The default run passes. Refresh and default runs
+never create or replace a review stamp.
 
-A missing or non-passing provider result remains visible. Logic Writing may
-explain it but cannot reimplement it locally or strengthen it into success.
+## Quick start
 
-## Architecture
+**1. Install the skill, from the release tag.**
+
+The badge names v4.1.0. The clone command requires its published tag. An unpublished candidate can use the same
+installer from its checkout; a successful installation byte check confirms that copy, not tag publication.
+
+```bash
+git clone --depth 1 --branch v4.1.0 https://github.com/liuyingxuvka/LogicWriting.git
+cd LogicWriting
+SKILLS_DIR=~/.claude/skills  # or ~/.codex/skills, or "$CODEX_HOME/skills"
+python scripts/install_skill.py --target "$SKILLS_DIR"
+python scripts/install_skill.py --target "$SKILLS_DIR" --check
+```
+
+The installer copies `skills/logic-writing/` to `<target>/logic-writing/`, replacing an older copy, without the
+fixtures and regression runners that only this repository's tests use. `pip install` is not a way to install the
+skill. The scripts need Python 3.10 or newer, and PyYAML when a piece uses a research folder or a world file.
+
+**2. For research and story worlds, install the providers**, each from its own tag. Logic Writing reads their saved
+reports; it needs the commands only to refresh them. ResearchGuard requires 0.6.0. WorldGuard 0.8.0 supplies tree
+reports; the existing single-contract path still supports 0.7.23:
+
+```bash
+python -m pip install "git+https://github.com/liuyingxuvka/ResearchGuard.git@v0.6.0"
+python -m pip install "git+https://github.com/liuyingxuvka/WorldGuard.git@v0.8.0"
+```
+
+**3. The first commands**, in the cloned folder:
+
+```bash
+cp -r skills/logic-writing/assets/examples/investigation ../ft-example
+python skills/logic-writing/scripts/show_plan.py --input ../ft-example/brief-request.json
+python skills/logic-writing/scripts/run_chain.py ../ft-example --stamp-review
+python skills/logic-writing/scripts/run_chain.py ../ft-example
+```
+
+The shipped review is already completed. Copying it changes file-reference identity, so bind it once in its final
+folder with `--stamp-review` before the first closure. For your own work, check the affected text, plan or evidence,
+update the necessary review, then explicitly stamp it when complete;
+a complete repair review may be stamped while its closure remains `needs_repair`. Later default runs never re-stamp.
+
+`show_plan.py` reads a plan back without writing anything: a summary line, then each planned unit with its job, what the
+reader knows before and after, what it says and on which evidence. `run_chain.py` runs the checks on an existing text
+(work on a copy: it writes its result files into the folder). Then ask your AI for the piece; the skill's description
+makes it load Logic Writing for a finished report, paper, story or guide (in Codex you can also name it:
+`$logic-writing`).
+
+## How it works
 
 ```mermaid
-flowchart TD
-    U["User request"] --> R["Terminal-deliverable router"]
-    R --> I["investigation"]
-    R --> A["academic-writing"]
-    R --> F["fiction-writing"]
-    R --> T["travel-guide"]
-    I & A & F & T --> K["Shared reader and artifact kernel"]
-    K --> X["Actual delivered artifact"]
-    X --> V["Reverse audit, freshness, final-owner closure"]
-    A -. "bounded evidence gap" .-> I
-    F -. "bounded evidence gap" .-> I
-    T -. "bounded evidence gap" .-> I
+flowchart LR
+  R["Your request<br/>stored once, as given"] --> B["Plan<br/>every claim a unit<br/>with its evidence"]
+  P["Saved reports<br/>ResearchGuard status<br/>WorldGuard check"] --> B
+  B --> W["The AI writes the text"]
+  W --> C["Bind, audit, review<br/>exact quotes to plan units"]
+  C --> X["Closure<br/>passed, or the first failure"]
+  P --> X
 ```
 
-The shared kernel is not a fifth route. No sibling final route invokes another;
-travel uses neutral reader projection, not the fiction route.
+- **The plan is the model of the piece.** One plan for the whole artifact: planned units (sections, scenes, days) with
+  the job each does for the reader, and content units, the claims, each with its evidence anchors, alternatives and
+  limits. Big units split into child units. Writing starts only from the plan.
+- **The plan meets the evidence.** In an investigation or an academic piece, or whenever the plan names a research
+  folder, a required unit needs a non-counter anchor or an explicit `unsupported_reason`, retained as residual risk.
+  An anchor belongs to the saved research report or declares `outside_research` with a reason, also retained as risk.
+  The bounded lexical check for unsupported alternatives permits a declared response; it is not a semantic proof.
+- **The plan meets the request.** The user's request is stored once, as received. Every required unit says where it
+  comes from: the request (with a verbatim quote of it), the research, or the AI; closure lists the units the writer
+  added, so the user sees them.
+- **The text meets the plan.** Exact quotes bind the text to the planned units; a deterministic audit checks the bound
+  text; the route's review quotes the spans it judged. A review is stamped on the text it read, so an edit afterwards
+  makes it stale, and closure says to reread and explicitly stamp again. Default runs never repair the stamp.
+- **Known-bad copies.** `known_bad.py` makes small bad copies of the piece (a citation removed, a limit dropped, an
+  unsupported alternative inserted, a unit's anchors stripped) and runs the checks on each; one that is not caught stays
+  visible as a `toothless` risk.
+- **Closure is computed.** It reads the saved results and reports, never re-runs a provider by itself, and turns nothing
+  missing, stale or skipped into a pass. A self-review is labelled as such and cannot license a broad quality claim.
 
-See [architecture](docs/architecture.md), [responsibility map](docs/responsibility-map.md),
-and [migration guide](MIGRATION.md) for the full boundaries.
+## How it works with the other Guard skills
 
-## Install
+Logic Writing reads the **saved** reports of ResearchGuard and WorldGuard; it never calls them while it checks, and
+`run_chain.py --refresh-providers` regenerates the reports when the inputs changed.
 
-Install the skill only with `scripts/install_skill.py`; `pip install .` records project metadata and does not install the skill.
+- **ResearchGuard → Logic Writing, per claim.** Save the research folder's status
+  (`researchguard status ../ft-example/research --json --output ../ft-example/research-status.json`) and name `research_folder` and
+  `research_status` in the brief. Each anchor the plan cites must be a row of that report (`anchor_not_in_research`,
+  unless it declares `outside_research` with a reason, retained as risk). When the report withholds or qualifies the
+  root claim, each required unit citing evidence supporting that claim must also carry a limit anchor or declared
+  limitation (`wording_exceeds_license`). A report older
+  than the folder is refused (`research_report_stale`).
+- **WorldGuard → Logic Writing, by binding.** A fiction or travel plan names its world (`world_contract`) and the events
+  each unit relies on (`world_refs`); closure accepts the text only with a WorldGuard report that belongs to the current
+  world files. A whole tree of chapters binds the same way (`world_mesh`, by its `mesh_id` and `input_digests`); an old
+  tree report without `mesh_id` is refused with the command that regenerates it. Actual report `scope_limits` remain
+  visible as nonblocking risks; a provider PASS keeps those limits.
 
-```text
-python scripts/install_skill.py --target ~/.claude/skills      # or "$CODEX_HOME/skills"
-python scripts/install_skill.py --target ~/.claude/skills --check
-```
+Checking a claim, a source or a causal timeline on its own, without writing a finished piece, is ResearchGuard's job.
 
-The installer copies `skills/logic-writing` to `<target>/logic-writing`,
-replacing an older copy, and leaves out the fixtures and regression runners that
-only this repository's tests use. `--check` exits 1 when the installed copy
-differs from the source. ResearchGuard and WorldGuard are
-installed separately.
+<!-- BEGIN GUARD FAMILY TABLE -->
+## The Guard family
 
-When a piece already has a plan, start by reading it back; the first line sums up
-bindings, audit, review, closure and uncaught known-bad edits:
+Five skills, one idea: each one makes the AI's answer meet a second record that the AI did not write in the same breath, and lets a tool, not the AI, do the step where the AI tends to slip. Each skill works on its own. The only data hand-over is LogicWriting reading the saved reports of ResearchGuard and WorldGuard.
 
-```text
-python skills/logic-writing/scripts/show_plan.py --input <folder>/reader-brief.json
-```
+| Skill | The AI weakness it makes up for | Use it when | Works with the others |
+|---|---|---|---|
+| [FlowGuard](https://github.com/liuyingxuvka/FlowGuard) | It changes one part of the software and does not see what that broke elsewhere; it rebuilds what already exists, or puts new code in the wrong place | you change, extend, refactor or audit software code, including the code of a simulation | Sends calculation results to PhysicsGuard, causal claims to ResearchGuard, story or plan consistency to WorldGuard, long texts to LogicWriting. The other four Guards are developed with FlowGuard |
+| [PhysicsGuard](https://github.com/liuyingxuvka/PhysicsGuard) | It does physics in its head and is confidently wrong about units, signs and balances | a number comes from physics: a simulation result, test data, or a calculation the AI made itself | Sends the simulation's code to FlowGuard. No other Guard reads its reports |
+| [ResearchGuard](https://github.com/liuyingxuvka/ResearchGuard) | It tells a confident causal story that its sources do not support | before a causal or evidential conclusion is stated: claims, sources, timelines, competing explanations | LogicWriting reads its saved status report. Sends the writing of the finished report to LogicWriting |
+| [WorldGuard](https://github.com/liuyingxuvka/WorldGuard) | Across chapters, days or steps it forgets who holds what and who is where, and writes events that cannot happen | a story, trip, plan or process must stay consistent from step to step | LogicWriting reads its saved check report. Sends software code to FlowGuard |
+| [LogicWriting](https://github.com/liuyingxuvka/LogicWriting) | In a long text it drifts away from its own plan and evidence | you need a finished piece for real readers: an investigation report, a paper, fiction or a story plan, a travel guide | Reads the saved reports of ResearchGuard and WorldGuard. Sends the checking of claims on their own to ResearchGuard |
+<!-- END GUARD FAMILY TABLE -->
 
-Then invoke `$logic-writing`:
+## Honest limits
 
-```text
-Use $logic-writing to turn this request into the correct reader-ready artifact.
-```
+**What it does not do.**
+- It does not write the text and does not judge whether it is true, beautiful, original or satisfying. Where the
+  deterministic checks stop, a human or an independent reader has to judge, and closure says so.
+- It does not cover casual copy, grammar-only edits, quick lookups, poetry as a general route, or short attraction
+  lists.
 
-The former public `storyline-design` and `travel-story-planner` skill ids are
-not compatibility aliases. Their supported intents now route through
-`$logic-writing`.
+**Where it can still miss.**
+- The checks hold a claim to an anchor; they do not read the source to see whether the anchor really supports that
+  sentence. That is ResearchGuard's job, and only as good as its records.
+- The test for a claim that restates an unsupported alternative compares content words. A paraphrase with different
+  words passes it; the plan's prohibited overclaims and the review are the remaining defences.
+- The route review and the reader judgment are written by an AI. A review by the same AI that wrote the piece is
+  labelled self-review and never licenses a broad claim, but it is still the AI judging itself.
 
-## Validation
+**What has been measured, and what has not.**
+- Measured: one small trial during the design of this release, on the shipped investigation example, adding one plan
+  unit or one sentence at a time (no long text was written). Caught: a research report older than the folder, and a
+  claim placed as its own unplanned paragraph. Passed closure although wrong: a claim with no evidence, a claim that
+  restated the unsupported alternative, an anchor that was not in the research folder, and an unqualified assertion of
+  a root claim that ResearchGuard withheld. The four original finite controls are now refused; explicit reasons,
+  declared responses and limitations retain their documented legal paths.
+- Not measured: long pieces (by design, the trials never ask the skill to write one), and whether readers find the
+  closed pieces better.
 
-CI runs on every push and pull request: the full pytest suite, fiction and travel
-regressions, `python -m flowguard map check`, `python -m flowguard release`, and
-installation byte checks. A second job checks the declared minimum ResearchGuard
-version with tests and the question-status plus three member preflights. The release workflow publishes only
-after CI succeeds on the same source commit. These checks cover scripts and
-contracts, not the quality of a particular piece of writing; final closure still
-requires a read of the actual artifact.
+## Developing Logic Writing
 
-Focused examples:
-
-```text
+```bash
+python -m pytest -q
+python scripts/check_public_docs.py
 python scripts/run_fiction_regression.py --repository-root .
 python scripts/run_travel_regression.py --repository-root .
-python -m pytest -q
 ```
 
-## Scope limits
+CI runs the full test suite, the fiction and travel regressions, the installed-skill byte check, and FlowGuard's map
+and release checks: Logic Writing uses FlowGuard to maintain itself. The workflow installs FlowGuard only from its git
+tag (`git+https://github.com/liuyingxuvka/FlowGuard.git@v0.71.0`), because the package with that name on PyPI is a
+different project. A second CI job checks the minimum ResearchGuard version Logic Writing supports. These checks cover
+the scripts and their contracts, not the quality of a particular piece of writing. AI contributors start from
+[`AGENTS.md`](./AGENTS.md); `CLAUDE.md` points Claude Code to the same file.
 
-Logic Writing does not determine factual truth, literary beauty, originality,
-or traveler satisfaction. It does not cover casual copy, grammar-only edits,
-quick lookups, poetry as a general-purpose route, or lightweight attraction
-lists. Human judgment remains explicit where deterministic checks stop.
+## Links
 
-## License
-
-[MIT](LICENSE)
-
-Brief requests derive repeated body-content and limitation placements from planned units, and fiction unit plans inherit their shared reader fields. Explicit dispositions remain checked; deliberate omissions are never inferred.
-
-Run existing text through the native reader chain with
-`python skills/logic-writing/scripts/run_chain.py <folder>`; `--until` stops at a
-chosen step and `--refresh-providers` explicitly refreshes native saved reports.
-Closure itself reads reports without executing providers. Changed raw inputs
-produce `research_report_stale:<path>` or `world_report_stale:<path>`; refresh the
-corresponding native report before continuing. CompositionPlan is the one plan:
-split an oversized unit into child units with `parent_unit_id`, then plan and
-check only the units needed by the target text.
+- The skill: [`SKILL.md`](./skills/logic-writing/SKILL.md), [routing](./skills/logic-writing/references/router.md),
+  [the reader chain](./skills/logic-writing/references/shared/reader-chain.md),
+  [the brief](./skills/logic-writing/references/shared/reader-brief.md),
+  [closure](./skills/logic-writing/references/shared/closure.md)
+- The four routes: [investigation](./skills/logic-writing/references/routes/investigation.md),
+  [academic writing](./skills/logic-writing/references/routes/academic-writing.md),
+  [fiction](./skills/logic-writing/references/routes/fiction-writing.md),
+  [travel guide](./skills/logic-writing/references/routes/travel-guide.md)
+- The providers: [ResearchGuard](./skills/logic-writing/references/adapters/researchguard.md),
+  [WorldGuard](./skills/logic-writing/references/adapters/worldguard.md)
+- Worked examples: [`assets/examples/`](./skills/logic-writing/assets/examples/README.md)
+- [Architecture](./docs/architecture.md), [responsibility map](./docs/responsibility-map.md),
+  [migration guide](./MIGRATION.md), [contributing](./CONTRIBUTING.md), [changelog](./CHANGELOG.md)
+- License: [MIT](./LICENSE)

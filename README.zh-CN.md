@@ -1,7 +1,7 @@
 # Logic Writing
 
 <p align="center">
-  <img src="https://img.shields.io/badge/source-4.0.14-6f42c1" alt="源码版本 4.0.14" />
+  <img src="https://img.shields.io/badge/source-4.1.0-6f42c1" alt="源码版本 4.1.0" />
   <img src="https://img.shields.io/badge/skill-logic--writing-334155" alt="技能 logic-writing" />
   <img src="https://img.shields.io/badge/routes-4-0a7f5a" alt="四条最终路线" />
   <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT 许可证" />
@@ -13,153 +13,228 @@
 <!-- README HERO END -->
 </p>
 
-一个正式的 Codex 写作技能，统一处理深度调查、学术写作、小说和重证据的
-旅行攻略。它只有一个公开入口，每次只选一个最终负责人；需要专业判断时，
-仍由相应 Guard 语义负责人通过当前统一入口负责，最后再把内部模型翻译成
-人能读懂的话。
+<p align="center"><strong>AI 写一篇长报告、论文、小说或攻略，写着写着，里面的说法就离证据、离你最初的要求越来越远。Logic Writing 在动笔之前先把整篇的计划摆出来，让计划里的每一个说法都对上它的证据和你的原话；说法、来源或评审对不上的文章，它不让收尾。</strong></p>
 
-## 为什么合在一起
+[English](./README.md)
 
-这四类工作确实共享一层能力：判断最后要交付什么、维护唯一负责人、保留
-专业技能的判断权、记住成品的真实版本、规划每一部分让读者新明白了什么、
-不把内部术语漏进正文，并在最后检查真正交付的文件。
+Logic Writing 是一个 AI 技能（Claude Code、Codex 都能用），由一组 Python 脚本组成。它只有一个入口，按“最后交给你的是什么”
+分四条路线：**调查**（有研究支撑的报告或回答）、**学术**写作、**小说**或故事计划、**旅行攻略**。正文由 AI 来写；脚本负责
+拿计划去对证据、拿正文去对计划、拿评审去对正文，并决定这篇东西能不能算写完。
 
-但它们并不共用一个万能大表。调查保留证据语义，小说保留故事语义，旅行
-保留时间、可行性和执行语义。合并的是外壳和真正通用的内核，不是把所有
-领域压成同一种写法。
+## 30 秒看懂：一句没有证据的话
 
-小说可用可选的结构化 `voice_contract`（人称和时态）把声音要求交给写作者；没有内容时，声音引用仍保留为明确缺口。
+仓库里自带一个小小的调查例子：`skills/logic-writing/assets/examples/investigation/`。用户问的是：*“free-threaded Python
+可以当默认构建了吗？告诉我它在 Python 3.14 的正式状态，以及我们现在要不要规划迁移。”* 旁边的研究文件夹说的是：
+3.14 正式支持，但仍是可选的；什么时候改成默认，还没有定。
 
-上一步失败且没有所需记录时，直接显示它的第一条错误。绑定或评审证据引用了已消失的正文单元时，会在补任何指纹前停止；须按当前 ArtifactMap 更正引用。
+**没有 Logic Writing**，AI 在结论里多写了一句很有把握的话，可研究里没有一处这样说：
 
-每篇成品只在内容边界里维护自己的证据。ResearchGuard 的研究文件夹保存
-来源和措辞许可，收尾只读它的一份 `verdict`。写作上下文只收到
-`ReaderBrief.writer_input`，不接收内部台账或专业工具路径。
+> Teams should move production services to the free-threaded build this year.（各团队今年就应该把生产服务迁到 free-threaded 构建上。）
 
-## 一个入口，四条最终路线
+**用 Logic Writing**，文章里的每个说法先是计划里的一个单元，带着它所依靠的证据。下面是 AI 新加的那个单元。在例子的一份副本里
+（`cp -r skills/logic-writing/assets/examples/investigation ../ft-plan`），把它加进 `../ft-plan/brief-request.json` 的
+`content_boundaries.content_units`，再把它的 id 加进结论那一节（计划单元 `u-recommend`）的 `content_unit_ids`：
 
-| 最后要交付的东西 | 最终负责人 | 保留下来的强项 |
-| --- | --- | --- |
-| 调查报告、简报、证据包、决策说明、调查型回答 | `investigation` | 资料深度、观点竞争、关键数字、反面证据、时间/因果链、有边界的结论 |
-| 论文、学位论文章节、文献综述、研究计划、实质性学术修订 | `academic-writing` | 结构、引文、修订溯源、图表、Word/PDF 工作流 |
-| 故事计划、短篇、小说章节、长篇、系列设定、故事审计或修订 | `fiction-writing` | 转折、场景、承诺兑现、连续性、声音、世界一致性、共享计划—正文绑定 |
-| 行程、目的地攻略、路线方案、住宿策略、旅行者适配建议 | `travel-guide` | 有日期的证据、天气/警报、可行性、体力与偏好、住宿、负面证据、可达备选 |
+```json
+{"content_unit_id": "cu-migrate", "safe_meaning": "Teams should move production services to the free-threaded build this year.",
+ "required": true, "source": "ai", "evidence_anchor_ids": [], "alternative_ids": [], "limitation_ids": [], "model_row_ids": []}
+```
 
-路由看的是“最后交什么”，不是第一步做什么，也不是题材是什么。旅游研究
-论文仍是学术；查了历史资料的小说仍是小说；写得像旅程故事的行程仍是旅行。
-学术、小说和旅行可以让调查路线补一个明确的证据缺口，但调查不能替父路线
-宣布最终完成。重要的未决读者选择会返回 `needs_user_choice`，暂不分配
-负责人；先问第一个问题，把用户回答写回 ReaderIntent，再重新路由。
-不重要的选择不阻塞。
+正文一个字还没写，计划就先被检查：
 
-## “说人话”不是一句口号
+```console
+$ python skills/logic-writing/scripts/run_chain.py ../ft-plan --until brief
+units: 5 (0 bound, 5 unbound: u-answer, u-history, u-cost, u-next, u-recommend); audit: not_run; review: not_run; closure: not_run; known-bad: not_run
+added by the writer: cu-recommend: A team can test its service on the free-threaded build now, but should not plan on it becoming the default on any known date; recheck when a phase III decision is announced.
+added by the writer: cu-migrate: Teams should move production services to the free-threaded build this year.
+first failure: brief: content_unit_unsupported:cu-migrate (a required unit needs an evidence anchor that is not only counter, or an unsupported_reason)
+```
 
-共享写作内核要求每个重要单元回答：
+计划的回读也把同一件事摆在人眼前：每一行 `says:` 后面跟着它自己的证据，新加的那一句什么都没有。
 
-- 读者进来时已经知道或以为什么？
-- 哪个具体证据、行动、物件、选择或指令改变了这种认识？
-- 还有什么没有解决，或者为什么这里已经可以结束？
-- 后面哪一个明确单元会用到这个变化？
-- 技术词、地方说法、引语、叙述者或人物语言到底属于谁？
-- 如果结构重复了，它产生了什么新的升级、对比、代价或解释？
-- 当前模型中的哪一行，真正落在成品的哪一段话里？
+```console
+$ python skills/logic-writing/scripts/show_plan.py --input ../ft-plan/brief-request.json | sed -n '/^5\. /,$p'
+5. What to do [UNBOUND]
+   job: Decide
+   reader: Has status, cost and outlook -> Has a plan and a recheck trigger
+   says: A team can test its service on the free-threaded build now, but should not plan on it becoming the default on any known date; recheck when a phase III decision is announced. [anc-314-supported (support), anc-314-phase3-undecided (limit)]
+   says: Teams should move production services to the free-threaded build this year. [no anchor]
+   limit: These sources cover CPython's official position, not whether the libraries a given service depends on are ready.
+```
 
-它会拦住这些常见问题：内部流程词泄漏、只说“为下文铺垫”的空衔接、
-正文解释自己打算做什么、所有人物和资料都说同一种抽象话、没有新效果的
-重复、没有模型依据的正文、没有写进成品的模型行，以及仍绑定旧稿的审查。
+这个说法要么补上证据，要么删掉，要么留着但写明 `unsupported_reason`，收尾时作为剩余风险告诉读者。`v4.1.0` 之前，
+这个计划会被接受；把这句话写进正文以后，成品照样能通过收尾。
 
-判断记录用 `judge_kind` 明说是 `independent_context` 还是 `self_review`。
-自评通过也保留明确风险，不允许宽泛结论；质量未通过时仍须修复。
-宽泛质量声明还要求完整的当前质量链、独立阅读、适用的原生研究/世界检查，
-以及对仍然存活的竞争结论作出明确处置。`contested` 保留为研究风险，
-“可以停止搜索”不会自动变成“可以断言”。
+### 正文写完以后，证据变了
 
-CompositionPlan 是唯一的单元树。长篇项目指向它并使用其单元 id；旅行用
-一份 `trip_plan` 行程配合指南计划。`world_contract` / `world_refs` 绑定世界
-引用，未被检查抓住的已知坏变体保持可见；`show_plan.py` 把计划放在当前文字
-旁边读回。这些检查从实际文件推出边界和剩余工作，不接受手写最终结论。
+接着使用下方“快速上手”里已初始化的 `../ft-example` 副本。正文写好以后研究还可能变：一个来源被更正了，或者又引了一段原文。
+收尾会拒绝旧的研究报告。下面诊断里的 `<ft-example>` 代指这个副本的绝对路径：
 
-然后每条路线再加自己的标准：调查和学术看证据与引用，小说看戏剧化、声音
-和兑现，旅行看日期、能不能走、适不适合这个人、备选是否真的就在附近。
+```console
+$ researchguard source add-anchor ../ft-example/research/source.yaml --source-id src-whatsnew-314 --anchor-id anc-314-heading --quote 'Free-threaded Python is officially supported' --locator 'Doc/whatsnew/3.14.rst, section heading' --output ../ft-example/research/source.yaml
+{"ok": true, "output": "../ft-example/research/source.yaml"}
+$ python skills/logic-writing/scripts/run_chain.py ../ft-example
+units: 5 (0 bound, 5 unbound: u-answer, u-history, u-cost, u-next, u-recommend); audit: not_run; review: not_run; closure: not_run; known-bad: not_run
+added by the writer: cu-recommend: A team can test its service on the free-threaded build now, but should not plan on it becoming the default on any known date; recheck when a phase III decision is announced.
+first failure: brief: research_report_stale:source.yaml (saved report is from other inputs; run with --refresh-providers)
+$ python skills/logic-writing/scripts/run_chain.py ../ft-example --refresh-providers
+units: 5 (5 bound, 0 unbound); audit: passed (0 findings); review: passed; closure: not_run; known-bad: not_run
+added by the writer: cu-recommend: A team can test its service on the free-threaded build now, but should not plan on it becoming the default on any known date; recheck when a phase III decision is announced.
+first failure: closure: judgment_stale:reader_brief_fingerprint (the text, plan or file references changed after the review was stamped; reread the text, then run python skills/logic-writing/scripts/run_chain.py <ft-example> --stamp-review)
+$ python skills/logic-writing/scripts/run_chain.py ../ft-example --stamp-review
+units: 5 (5 bound, 0 unbound); audit: passed (0 findings); review: passed; closure: not_run; known-bad: not_run
+added by the writer: cu-recommend: A team can test its service on the free-threaded build now, but should not plan on it becoming the default on any known date; recheck when a phase III decision is announced.
+stamped: closure-input.json judgment j-ft-1
+$ python skills/logic-writing/scripts/run_chain.py ../ft-example
+units: 5 (5 bound, 0 unbound); audit: passed (0 findings); review: passed; closure: passed; known-bad: 0 uncaught
+added by the writer: cu-recommend: A team can test its service on the free-threaded build now, but should not plan on it becoming the default on any known date; recheck when a phase III decision is announced.
+```
 
-## 专业技能仍然各管各的
+刷新让 ResearchGuard 生成当前报告，再检查已有正文。报告变化会让旧评审章失效。这里新增摘录没有改变已有判断；检查变更涉及的
+文本、计划或依据，更新必要评审，确认完成后显式 `--stamp-review` 绑定，再默认运行就能通过。刷新和默认运行都不会补盖或替换评审章。
 
-- ResearchGuard 的 `status` 提供问题级 `verdict`；`research_folder` 导入来源拥有的锚点，手写身份冲突会报错。
-- SourceGuard 决定下一步搜什么、资料深度够不够。
-- LogicGuard 负责资料保存、论证支持、结构、引文语义、模型深化和综合计划。
-- TraceGuard 负责重要的时间、执行、因果、竞争叙事、反事实和预测边界。
-- WorldGuard 负责事件、人物、空间、资源、能力、冲突、权力和规范能否一致。
-- Documents 与 PDF 负责各自真实文件的修改、提取、渲染和视觉检查。
+## 快速上手
 
-Logic Writing 可以组织和解释这些结果，但不能自己假装跑过专业检查，也不能
-把缺失、部分通过或过期的结果改写成成功。
+**1. 从发布的 tag 安装技能。**
 
-## 整体结构
+徽章写的是 v4.1.0；下面的 clone 命令要求这个 tag 已正式发布。未发布的候选版本可以在其检出目录里用同一个安装器；
+安装逐字节检查成功，只证明副本一致，不代表 tag 已发布。
+
+```bash
+git clone --depth 1 --branch v4.1.0 https://github.com/liuyingxuvka/LogicWriting.git
+cd LogicWriting
+SKILLS_DIR=~/.claude/skills  # or ~/.codex/skills, or "$CODEX_HOME/skills"
+python scripts/install_skill.py --target "$SKILLS_DIR"
+python scripts/install_skill.py --target "$SKILLS_DIR" --check
+```
+
+安装脚本把 `skills/logic-writing/` 复制到 `<目标>/logic-writing/`，替换旧的副本；只供本仓库测试用的夹具和回归脚本不会被带过去。
+`pip install` 装不了这个技能。脚本需要 Python 3.10 或更新；文章用到研究文件夹或世界文件时，还需要 PyYAML。
+
+**2. 涉及研究或故事世界时，装上两个提供方**，各自从自己的 tag 安装。Logic Writing 读的是它们存下的报告，只有刷新报告时才需要它们的命令。
+ResearchGuard 最低为 0.6.0；WorldGuard 0.8.0 提供树报告，原有单 contract 路径仍支持 0.7.23：
+
+```bash
+python -m pip install "git+https://github.com/liuyingxuvka/ResearchGuard.git@v0.6.0"
+python -m pip install "git+https://github.com/liuyingxuvka/WorldGuard.git@v0.8.0"
+```
+
+**3. 先跑这几条**，在克隆下来的目录里：
+
+```bash
+cp -r skills/logic-writing/assets/examples/investigation ../ft-example
+python skills/logic-writing/scripts/show_plan.py --input ../ft-example/brief-request.json
+python skills/logic-writing/scripts/run_chain.py ../ft-example --stamp-review
+python skills/logic-writing/scripts/run_chain.py ../ft-example
+```
+
+仓库例子的评审已经完成。复制会改变文件引用身份，因此首次收尾前要在最终目录显式 `--stamp-review` 绑定一次。自己的文章应先
+检查变更涉及的文本、计划或依据，更新必要评审，确认完成后再显式盖章。完整且发现缺陷的 repair 评审也可绑定，收尾仍为
+`needs_repair`。以后的默认运行不会重盖。
+
+`show_plan.py` 只读回计划、什么都不写：先是一行摘要，然后是每个计划单元——它为读者做什么、读者读前读后知道什么、它说了什么、
+依靠哪些证据。`run_chain.py` 对已有的正文跑一遍检查（请在副本上跑，它会把结果文件写进目录）。然后就可以让你的 AI 写成品了：
+要一篇报告、论文、小说或攻略时，技能的描述会让它加载 Logic Writing（在 Codex 里也可以直接点名：`$logic-writing`）。
+
+## 它是怎么工作的
 
 ```mermaid
-flowchart TD
-    U["用户请求"] --> R["按最终成品路由"]
-    R --> I["investigation"]
-    R --> A["academic-writing"]
-    R --> F["fiction-writing"]
-    R --> T["travel-guide"]
-    I & A & F & T --> K["共享读者与成品内核"]
-    K --> X["真正交付的成品"]
-    X --> V["反向检查、新鲜度、最终路线闭环"]
-    A -. "有限证据缺口" .-> I
-    F -. "有限证据缺口" .-> I
-    T -. "有限证据缺口" .-> I
+flowchart LR
+  R["你的要求<br/>原样存一次"] --> B["计划<br/>每个说法一个单元<br/>带着它的证据"]
+  P["存下的报告<br/>ResearchGuard status<br/>WorldGuard check"] --> B
+  B --> W["AI 写正文"]
+  W --> C["绑定、审读、评审<br/>原文引句对到计划单元"]
+  C --> X["收尾<br/>通过，或第一处失败"]
+  P --> X
 ```
 
-共享内核不是第五条路线。兄弟路线不能互相当最终负责人；旅行使用中性的
-读者投影，不会暗中调用小说路线。
+- **计划就是这篇东西的模型。** 整篇只有一个计划：计划单元（章节、场景、某一天）各自为读者做什么；内容单元就是说法，每个都带着
+  证据锚点、其他可能的说法和限制。单元太大就拆成子单元。动笔只从计划出发。
+- **计划要对上证据。** 在调查和学术写作里，或者计划指定了研究文件夹时，必需单元要有不只是反证的锚点，或显式 `unsupported_reason`
+  并保留为风险。指定研究文件夹时，锚点属于存下的研究报告，或用 `outside_research` 说明报告外的原因并保留为风险。
+  对不被支持的说法的有限词面检查允许已声明的回应，不是语义证明。
+- **计划要对上你的要求。** 用户的原话原样存一次。每个必需单元都写明出处：来自要求（附一段一字不差的原话）、来自研究，还是 AI 自己加的；
+  收尾时把作者自己加的单元列出来，让用户看得见。
+- **正文要对上计划。** 原文引句把正文绑到计划单元上；确定性的审读检查绑好的正文；路线评审引用它评过的原文片段。评审盖章在它读过的正文上，
+  之后再改正文，评审就过时了，收尾会提示检查受影响部分并显式重新盖章。默认运行不会修补评审章。
+- **已知坏的副本。** `known_bad.py` 生成几份小小的坏副本（删一处引用、去掉一个限制、塞进一个不被支持的说法、拿掉一个单元的锚点），
+  每份都跑一遍检查；没被抓住的那份不会消失，作为 `toothless` 风险留在收尾里。
+- **收尾是算出来的。** 它只读存下的结果和报告，自己从不去调用提供方，也绝不把缺失、过时或没跑的检查算成通过。自我评审会标明是自我评审，
+  不能拿来支撑“整体质量很好”这类大话。
 
-更多边界见[架构说明](docs/architecture.md)、[责任地图](docs/responsibility-map.md)
-和[迁移说明](MIGRATION.md)。
+## 和其他 Guard 技能怎么配合
 
-## 安装和使用
+Logic Writing 读的是 ResearchGuard 和 WorldGuard **存下的**报告；检查时从不调用它们。输入变了，`run_chain.py --refresh-providers`
+会重新生成报告。
 
-技能只用 `scripts/install_skill.py` 安装；`pip install .` 只登记项目元数据，不安装技能。
+- **ResearchGuard → Logic Writing，逐个说法对。** 把研究文件夹的状态存下来（`researchguard status ../ft-example/research --json --output ../ft-example/research-status.json`），
+  在简报里写上 `research_folder` 和 `research_status`。计划引用的每个锚点都必须是这份报告里的一行（`anchor_not_in_research`，除非这个锚点
+  显式 `outside_research` 说明原因，并保留为风险）。报告对根结论暂不许可断言（withhold）或要求限定（qualify）时，引用了
+  支持该根结论的证据的每个必需单元，都必须带限制锚点或已声明的 limitation（`wording_exceeds_license`）。比研究文件夹旧的报告会被拒绝（`research_report_stale`）。
+- **WorldGuard → Logic Writing，靠绑定。** 小说或旅行的计划写明它的世界（`world_contract`）和每个单元依靠的事件（`world_refs`）；
+  只有一份属于当前世界文件的 WorldGuard 报告存在，正文才能收尾。整棵章节树也能这样绑定（`world_mesh`，按 `mesh_id` 和 `input_digests`）；
+  没有 `mesh_id` 的旧树报告会被拒绝，并给出重新生成它的命令。报告实际的 `scope_limits` 保留为不阻断的风险，provider PASS 不抹掉这些边界。
 
-```text
-python scripts/install_skill.py --target ~/.claude/skills      # 或 "$CODEX_HOME/skills"
-python scripts/install_skill.py --target ~/.claude/skills --check
+只检查一个说法、一个来源或一条因果时间线、不写成品，是 ResearchGuard 的事。
+
+<!-- BEGIN GUARD FAMILY TABLE -->
+## Guard 技能家族
+
+五个技能，同一个思路：让 AI 的答案去对照一份不是它顺手写下的记录；AI 容易出错的那一步，交给工具来做，而不是让 AI 自己做。每个技能都可以单独用。技能之间唯一的数据交接，是 LogicWriting 读取 ResearchGuard 和 WorldGuard 存下的报告。
+
+| 技能 | 它弥补 AI 的哪个弱点 | 什么时候用 | 和其他技能怎么配合 |
+|---|---|---|---|
+| [FlowGuard](https://github.com/liuyingxuvka/FlowGuard) | 改了软件的一处，看不到别处因此坏了；把已经有的东西再写一遍，或者把新代码放错地方 | 修改、扩展、重构或审查软件代码，包括仿真程序本身的代码 | 计算结果交给 PhysicsGuard，因果结论交给 ResearchGuard，故事或计划的前后一致交给 WorldGuard，长文交给 LogicWriting。另外四个 Guard 自己也是用 FlowGuard 开发的 |
+| [PhysicsGuard](https://github.com/liuyingxuvka/PhysicsGuard) | 在脑子里算物理，单位、正负号、守恒算错了还说得很肯定 | 数字来自物理：仿真结果、试验数据，或者 AI 自己算的一道题 | 仿真程序的代码交给 FlowGuard。没有别的技能读它的报告 |
+| [ResearchGuard](https://github.com/liuyingxuvka/ResearchGuard) | 讲出一个很有把握的因果故事，资料其实撑不住 | 说出一个因果或证据上的结论之前：论点、来源、时间线、几种互相竞争的解释 | LogicWriting 读取它存下的状态报告。把结论写成完整的报告，交给 LogicWriting |
+| [WorldGuard](https://github.com/liuyingxuvka/WorldGuard) | 跨章节、跨天、跨步骤时，忘了谁手里有什么、谁在哪里，写出不可能发生的事 | 一个故事、行程、计划或流程，要每一步都前后一致 | LogicWriting 读取它存下的检查报告。软件代码交给 FlowGuard |
+| [LogicWriting](https://github.com/liuyingxuvka/LogicWriting) | 长文写着写着，偏离了自己的提纲和证据 | 要一篇给真实读者看的成品：调查报告、论文、小说或故事提纲、旅行攻略 | 读取 ResearchGuard 和 WorldGuard 存下的报告。只检查论点、不写成文，交给 ResearchGuard |
+<!-- END GUARD FAMILY TABLE -->
+
+## 实话实说：它的局限
+
+**它不做的事。**
+- 它不替你写正文，也不判断文章是否真实、优美、有原创性、让人满意。确定性检查管不到的地方，要由人或独立的读者来判断，收尾会写明这一点。
+- 它不管随手的文案、只改语法、快速查询、作为通用路线的诗歌，以及简短的景点清单。
+
+**它仍可能漏掉的。**
+- 检查把一个说法绑到一个锚点上，但不会去读原始资料，看这个锚点是否真的支持那句话。那是 ResearchGuard 的事，也只能做到它的记录那么好。
+- 判断“换个说法重复不被支持的说法”，比较的是实词。换一套词的转述可以绕过它；剩下的防线是计划里写明的禁用说法和评审。
+- 路线评审和读者判断是 AI 写的。由写文章的同一个 AI 做的评审会标成自我评审，绝不能支撑整体质量的结论，但它终究是 AI 在评价自己。
+
+**测过什么，没测过什么。**
+- 测过：本版本设计期间做过一次小试验，用的就是仓库自带的调查例子，每次只加一个计划单元或一句话（没有写任何长文）。抓住的：比研究文件夹旧的报告、
+  作为单独一段、计划里没有的说法。错了却通过收尾的：没有证据的说法、换个说法重复了不被支持的说法、研究文件夹里没有的锚点、把 ResearchGuard
+  要求暂不许可断言的根结论直接说成定论。原来的四个有限控制现已被拒绝；显式原因、已声明回应和限制仍保留各自合法路径。
+- 没测过：长篇（按规矩，试验从不让这个技能写长文），以及读者是否觉得收尾后的成品更好。
+
+## 开发 Logic Writing
+
+```bash
+python -m pytest -q
+python scripts/check_public_docs.py
+python scripts/run_fiction_regression.py --repository-root .
+python scripts/run_travel_regression.py --repository-root .
 ```
 
-安装脚本把 `skills/logic-writing` 复制到 `<target>/logic-writing`（替换旧副本），
-不复制只供本仓库测试使用的样例和回归脚本；`--check` 在已安装副本与源码不一致时返回 1。
-ResearchGuard 和 WorldGuard 需要另外安装。
+CI 会跑全部测试、小说和旅行的回归、装好的技能逐字节检查，以及 FlowGuard 的地图检查和发布检查：Logic Writing 用 FlowGuard 维护自己。
+工作流只从 git tag 安装 FlowGuard（`git+https://github.com/liuyingxuvka/FlowGuard.git@v0.71.0`），因为 PyPI 上同名的包是另一个项目。
+另一个 CI 作业检查 Logic Writing 支持的 ResearchGuard 最低版本。这些检查覆盖的是脚本和它们的约定，不是某一篇文章的质量。
+参与开发的 AI 从 [`AGENTS.md`](./AGENTS.md) 读起；`CLAUDE.md` 让 Claude Code 读同一个文件。
 
-已经有计划的作品，先把计划读回来；第一行汇总绑定、审计、评审、收尾和没被抓住的已知坏改动：
+## 链接
 
-```text
-python skills/logic-writing/scripts/show_plan.py --input <folder>/reader-brief.json
-```
-
-然后调用：
-
-```text
-使用 $logic-writing，把这个请求路由到正确的最终负责人，并交付人能读懂的成品。
-```
-
-旧的 `storyline-design` 和 `travel-story-planner` 不提供兼容别名；
-它们支持的需求现在统一从 `$logic-writing` 进入。
-
-## 验证边界
-
-每次推送和拉取请求都会运行 CI：全量 pytest、小说与旅行回归、`python -m flowguard map check`、
-`python -m flowguard release`，以及安装文件的字节检查。第二个作业在声明的最低 ResearchGuard 版本上
-运行测试、问题级 status 预检和三个成员预检。发布工作流只在同一源码提交的 CI 成功后发布。这些检查覆盖脚本和契约，
-不证明某篇具体文字的质量；最终收尾仍须阅读实际成品。
-
-## 不负责什么
-
-Logic Writing 不能自动判定事实真伪、文学美感、原创性或旅行满意度。它也不是
-日常文案、纯语法修改、快速查事实、通用诗歌或简单景点清单的万能入口。机器
-检查到不了的地方，必须明确保留人工判断。
-
-## 许可证
-
-[MIT](LICENSE)
-
-brief 请求中重复的正文内容和限制处置可从计划单元推出，小说单元的共享读者字段也可继承。显式填写的处置仍会检查，不自动推出刻意省略等不可见处置。
+- 技能：[`SKILL.md`](./skills/logic-writing/SKILL.md)、[路由](./skills/logic-writing/references/router.md)、
+  [阅读链](./skills/logic-writing/references/shared/reader-chain.md)、
+  [简报](./skills/logic-writing/references/shared/reader-brief.md)、
+  [收尾](./skills/logic-writing/references/shared/closure.md)
+- 四条路线：[调查](./skills/logic-writing/references/routes/investigation.md)、
+  [学术写作](./skills/logic-writing/references/routes/academic-writing.md)、
+  [小说](./skills/logic-writing/references/routes/fiction-writing.md)、
+  [旅行攻略](./skills/logic-writing/references/routes/travel-guide.md)
+- 提供方：[ResearchGuard](./skills/logic-writing/references/adapters/researchguard.md)、
+  [WorldGuard](./skills/logic-writing/references/adapters/worldguard.md)
+- 完整示例：[`assets/examples/`](./skills/logic-writing/assets/examples/README.md)
+- [架构](./docs/architecture.md)、[职责划分](./docs/responsibility-map.md)、[迁移指南](./MIGRATION.md)、
+  [参与贡献](./CONTRIBUTING.md)、[更新记录](./CHANGELOG.md)
+- 许可证：[MIT](./LICENSE)

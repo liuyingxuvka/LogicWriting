@@ -499,7 +499,7 @@
         ".flowguard/models/provider_preflight_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:f06600a8eecfa1acd9ce4341b21719831098646303967cfb15f711f3eb638278"
+      "fingerprint": "sha256:8475fe40ee19fe1b20c1c4be573cb13ef93452b435470386feb90a4874a78b0b"
     },
     {
       "id": "shared-contracts",
@@ -855,7 +855,7 @@
         ".flowguard/models/plan_readback_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:c8c245489e2192f7f94ced82c744808a12fea3f655212bdadca393505789ff6e"
+      "fingerprint": "sha256:b2df8af4f9a9a1735da5595d3df6190c6733b0df4d7c20fb370ed66982256481"
     },
     {
       "id": "world-references",

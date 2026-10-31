@@ -15,8 +15,13 @@ result files. The seven chain-file fields in closure-input.json may be omitted;
 explicit fields retain their meaning and resolve beside that input file.
 `--refresh-providers` refreshes researchguard status for research_folder and runs
 the same verified portable WorldGuard launcher as provider_preflight for a
-world_contract. Install ResearchGuard >= 0.5.16 and WorldGuard >= 0.7.23 beside
-this skill before refreshing. Closure itself only reads saved native reports.
+world_contract, or mesh-check for world_mesh. Install ResearchGuard >= 0.6.0 and WorldGuard >= 0.7.23 beside
+this skill before refreshing; tree reports require WorldGuard >= 0.8.0. Closure itself only reads saved native reports.
+
+Once a review is complete, `--stamp-review` explicitly binds it in its current
+folder. Check affected text, plans or evidence and update any necessary review
+before re-stamping; default runs never renew the stamp. A complete repair
+judgment may be stamped while closure remains needs_repair.
 
 ## Expert single steps
 

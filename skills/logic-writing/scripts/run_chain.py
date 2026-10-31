@@ -47,7 +47,7 @@ def _refresh(request,folder):
                 raise ValidationError('ResearchGuard refresh failed: '+(result.stderr or result.stdout).strip())
             document=json.loads(output.read_text())
             if not isinstance(document,dict) or 'input_digests' not in document:
-                raise ValidationError('Install ResearchGuard >= 0.5.16 to refresh input digests')
+                raise ValidationError('Install ResearchGuard >= 0.6.0 to refresh input digests')
             target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(output.read_bytes())
         request['research_status']=str(target)
     route=request.get('route_composition') or {}

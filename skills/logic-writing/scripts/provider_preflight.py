@@ -318,7 +318,7 @@ def provider_command(provider: str, *, provider_root: str | None = None) -> list
     """Resolve the same verified native launcher as preflight for an explicit refresh."""
     result = preflight(provider, provider_root=provider_root)
     if result["status"] != "current_pass":
-        hint = ("Install ResearchGuard >= 0.5.16 in this Python or on PATH" if provider == "researchguard"
+        hint = ("Install ResearchGuard >= 0.6.0 in this Python or on PATH" if provider == "researchguard"
                 else "Install WorldGuard >= 0.7.23 beside the logic-writing skill")
         raise ValidationError(hint + ": " + str(result["evidence"].get("reason", result["status"])))
     if provider == "researchguard":
