@@ -1,1 +1,145 @@
-{"closure_id":"close-tide","judgment":{"schema_version":"2.0","judgment_id":"j-tide","final_owner":"fiction-writing","producer_id":"writer","judge_id":"self-review","reverse_outline":[{"artifact_unit_id":"artifact:paragraph:0001","parent_unit_id":null,"observed_job":"setup","main_point":"keys gone, deadline","support_or_action":"horn, ring, cabinet","content_unit_ids":["cu-deadline","cu-keys-gone"],"carries_from_unit_ids":[],"relation_to_previous":"opens","downstream_effect":"raises pressure","orphaned":false,"overloaded":false,"evidence":{"artifact_unit_id":"artifact:paragraph:0001","excerpt":"The tide would turn at half past seven"}},{"artifact_unit_id":"artifact:paragraph:0002","parent_unit_id":null,"observed_job":"wait","main_point":"the bell rule","support_or_action":"Ilse's refusal","content_unit_ids":["cu-bell"],"carries_from_unit_ids":["artifact:paragraph:0001"],"relation_to_previous":"follows","downstream_effect":"raises pressure","orphaned":false,"overloaded":false,"evidence":{"artifact_unit_id":"artifact:paragraph:0002","excerpt":"It opens at the seven bell"}},{"artifact_unit_id":"artifact:paragraph:0003","parent_unit_id":null,"observed_job":"action","main_point":"unlock and seal","support_or_action":"two keys","content_unit_ids":["cu-spare"],"carries_from_unit_ids":["artifact:paragraph:0002"],"relation_to_previous":"follows","downstream_effect":"raises pressure","orphaned":false,"overloaded":false,"evidence":{"artifact_unit_id":"artifact:paragraph:0003","excerpt":"The second key turned in the cabinet."}},{"artifact_unit_id":"artifact:paragraph:0004","parent_unit_id":null,"observed_job":"payoff","main_point":"made it","support_or_action":"mate takes papers","content_unit_ids":["cu-made-it"],"carries_from_unit_ids":["artifact:paragraph:0003"],"relation_to_previous":"follows","downstream_effect":"raises pressure","orphaned":false,"overloaded":false,"evidence":{"artifact_unit_id":"artifact:paragraph:0004","excerpt":"\"Close,\" he said, and took them."}}],"scores":{"clarity":4,"structure_fidelity":4,"coherence":4,"naturalness":4,"reader_fit":4,"content_fidelity":4,"genre_fit":4,"instruction_fidelity":4},"defects":[],"strengths":[],"required_repairs":[],"status":"passed","judged_at":"2026-10-21T13:00:00Z","judge_kind":"self_review"},"revision_provenance":{"schema_version":"2.0","provenance_id":"prov-tide","final_owner":"fiction-writing","artifact_mode":"create_new","source_artifact_fingerprint":null,"applicability":"not_applicable","unit_treatments":[],"recorded_at":"2026-10-21T13:00:00Z"},"provider_reports":[{"provider":"worldguard","path":"worldguard-check.json"}]}
+{
+  "closure_id": "close-tide",
+  "judgment": {
+    "artifact_fingerprint": "sha256:f84a2189803974d81e8f343979302cca1fbc6e7e5f1081f7f0bc861c073209b7",
+    "artifact_map_fingerprint": "sha256:67f3e6e7d4f44aecbaff4004110ed95e6fd1e4cafd1d42acd378f2854e61d62f",
+    "composition_plan_fingerprint": "sha256:9e9680a96bf7eb38bfa92aceb56bc46346b38f76a6ffdd09b8cd120a5c5fdb6b",
+    "defects": [],
+    "deterministic_audit_fingerprint": "sha256:ba5d7d968c56f54aa6441d340cc7d93f5cfb8910504704826d5b5fe4dd24b1c9",
+    "evaluation_profile_fingerprint": "sha256:e999a14c36ec35a4984b4f475f7802bb171e95ba9bd22028ce113fadc65e0516",
+    "final_owner": "fiction-writing",
+    "judge_id": "self-review",
+    "judge_kind": "self_review",
+    "judged_at": "2026-10-21T13:00:00Z",
+    "judgment_fingerprint": "sha256:85dda4d957f38630f286cfe860794d49c2fbce147a3da04fa503e1bea959a87c",
+    "judgment_id": "j-tide",
+    "producer_id": "writer",
+    "reader_brief_fingerprint": "sha256:d7fb314c92c185c4f62adc84febbb4a017fd8b59491fba617984b7dd15721262",
+    "reader_intent_fingerprint": "sha256:067eb0c9d77318224749ebb6e6dd7f282c6e3437b3856e12ddd2261bc80e43b3",
+    "required_repairs": [],
+    "reverse_outline": [
+      {
+        "artifact_unit_id": "artifact:paragraph:0001",
+        "carries_from_unit_ids": [],
+        "content_unit_ids": [
+          "cu-deadline",
+          "cu-keys-gone"
+        ],
+        "downstream_effect": "raises pressure",
+        "evidence": {
+          "artifact_unit_id": "artifact:paragraph:0001",
+          "excerpt": "The tide would turn at half past seven",
+          "excerpt_fingerprint": "sha256:5b9790f6dc4a1ce4ef60efce5feeb7a7a148edd16385c0d5be0009e9c69dd6fd",
+          "locator": "char:0-429"
+        },
+        "main_point": "keys gone, deadline",
+        "observed_job": "setup",
+        "orphaned": false,
+        "overloaded": false,
+        "parent_unit_id": null,
+        "relation_to_previous": "opens",
+        "support_or_action": "horn, ring, cabinet"
+      },
+      {
+        "artifact_unit_id": "artifact:paragraph:0002",
+        "carries_from_unit_ids": [
+          "artifact:paragraph:0001"
+        ],
+        "content_unit_ids": [
+          "cu-bell"
+        ],
+        "downstream_effect": "raises pressure",
+        "evidence": {
+          "artifact_unit_id": "artifact:paragraph:0002",
+          "excerpt": "It opens at the seven bell",
+          "excerpt_fingerprint": "sha256:d92b7a169e2a35a39187bac1fe9dac1684de722b32ac586487b6168b141066a8",
+          "locator": "char:431-866"
+        },
+        "main_point": "the bell rule",
+        "observed_job": "wait",
+        "orphaned": false,
+        "overloaded": false,
+        "parent_unit_id": null,
+        "relation_to_previous": "follows",
+        "support_or_action": "Ilse's refusal"
+      },
+      {
+        "artifact_unit_id": "artifact:paragraph:0003",
+        "carries_from_unit_ids": [
+          "artifact:paragraph:0002"
+        ],
+        "content_unit_ids": [
+          "cu-spare"
+        ],
+        "downstream_effect": "raises pressure",
+        "evidence": {
+          "artifact_unit_id": "artifact:paragraph:0003",
+          "excerpt": "The second key turned in the cabinet.",
+          "excerpt_fingerprint": "sha256:065e35a3de6f7d0985001a3edb07e51e87c6ffec19645ac44eccaa013ea605e5",
+          "locator": "char:868-1286"
+        },
+        "main_point": "unlock and seal",
+        "observed_job": "action",
+        "orphaned": false,
+        "overloaded": false,
+        "parent_unit_id": null,
+        "relation_to_previous": "follows",
+        "support_or_action": "two keys"
+      },
+      {
+        "artifact_unit_id": "artifact:paragraph:0004",
+        "carries_from_unit_ids": [
+          "artifact:paragraph:0003"
+        ],
+        "content_unit_ids": [
+          "cu-made-it"
+        ],
+        "downstream_effect": "raises pressure",
+        "evidence": {
+          "artifact_unit_id": "artifact:paragraph:0004",
+          "excerpt": "\"Close,\" he said, and took them.",
+          "excerpt_fingerprint": "sha256:c64368dfa3377563da1fe365c9a9ad7f49bc4da9bd673dc06400c120a037f365",
+          "locator": "char:1288-1622"
+        },
+        "main_point": "made it",
+        "observed_job": "payoff",
+        "orphaned": false,
+        "overloaded": false,
+        "parent_unit_id": null,
+        "relation_to_previous": "follows",
+        "support_or_action": "mate takes papers"
+      }
+    ],
+    "route_audit_fingerprint": "sha256:7f68a4d5548cad2266296c85bc70276a66ba44a556d40ccb3cad3c28c949b1ef",
+    "schema_version": "2.0",
+    "scores": {
+      "clarity": 4,
+      "coherence": 4,
+      "content_fidelity": 4,
+      "genre_fit": 4,
+      "instruction_fidelity": 4,
+      "naturalness": 4,
+      "reader_fit": 4,
+      "structure_fidelity": 4
+    },
+    "shared_writing_contract_fingerprint": "sha256:f72bfcd715071dbe1351541219cabbab12ab51abac71455371343dc304220804",
+    "status": "passed",
+    "strengths": []
+  },
+  "provider_reports": [
+    {
+      "path": "worldguard-check.json",
+      "provider": "worldguard"
+    }
+  ],
+  "revision_provenance": {
+    "applicability": "not_applicable",
+    "artifact_mode": "create_new",
+    "final_owner": "fiction-writing",
+    "provenance_id": "prov-tide",
+    "recorded_at": "2026-10-21T13:00:00Z",
+    "schema_version": "2.0",
+    "source_artifact_fingerprint": null,
+    "unit_treatments": []
+  }
+}

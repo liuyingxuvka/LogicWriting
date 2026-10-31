@@ -174,6 +174,14 @@ def test_each_distinct_schema_object_is_validated_once(tmp_path, monkeypatch):
     import schema_validation
     from run_chain import run_chain
 
+    source = (
+        Path(__file__).resolve().parents[2] / "skills/logic-writing/assets/examples/investigation"
+    )
+    folder = tmp_path / "investigation"
+    shutil.copytree(source, folder)
+    from run_chain import _stamp_review
+    assert _stamp_review(folder)['exit_code'] == 0
+
     monkeypatch.setattr(schema_validation, "_VALIDATION_MEMO", {}, raising=False)
     original_runtime = schema_validation._RUNTIME.validate
     original_gate = schema_validation.validate_schema
@@ -202,11 +210,6 @@ def test_each_distinct_schema_object_is_validated_once(tmp_path, monkeypatch):
 
     monkeypatch.setattr(schema_validation._RUNTIME, "validate", count_runtime)
     monkeypatch.setattr(schema_validation, "validate_schema", count_gate)
-    source = (
-        Path(__file__).resolve().parents[2] / "skills/logic-writing/assets/examples/investigation"
-    )
-    folder = tmp_path / "investigation"
-    shutil.copytree(source, folder)
     result = run_chain(folder)
     assert result["exit_code"] == 0
     assert calls == len(seen) > 0

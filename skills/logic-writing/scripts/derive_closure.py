@@ -160,6 +160,7 @@ def provider_checks(owner, brief, route_composition, reports):
 
 def derive_closure(
     value: Any,
+    *, review_folder: str | Path | None = None,
 ) -> dict[str, Any]:
     request = copy.deepcopy(require_mapping(value, "closure input"))
     required = (
@@ -216,6 +217,7 @@ def derive_closure(
         contract=shared,
         audit=audit,
         route_review=route_review,
+        review_folder=review_folder,
     )
     provenance = validate_revision_provenance(
         request.get("revision_provenance"),
@@ -385,7 +387,8 @@ def main() -> int:
     parser.add_argument("--output")
     args = parser.parse_args()
     try:
-        result = derive_closure(fill_closure_fingerprints(load_request(args.input, defaults=CLOSURE_INPUT_FILES)))
+        result = derive_closure(fill_closure_fingerprints(load_request(args.input, defaults=CLOSURE_INPUT_FILES)),
+                                review_folder=Path(args.input).resolve().parent)
     except (OSError, ValueError, ValidationError) as exc:
         dump_json(validation_result(status="blocked", errors=[str(exc)]), args.output)
         return 2

@@ -54,7 +54,7 @@ def test_judge_must_be_independent(tmp_path):
     judgment = copy.deepcopy(chain["judgment"])
     judgment["judge_kind"] = "independent_context"
     judgment["judge_id"] = judgment["producer_id"]
-    judgment["judgment_fingerprint"] = fingerprint({k: v for k, v in judgment.items() if k != "judgment_fingerprint"})
+    judgment["judgment_fingerprint"] = fingerprint({key: value for key, value in judgment.items() if key not in ('judgment_fingerprint', 'judged_at')})
     with pytest.raises(ValidationError, match="independent"):
         validate_reader_judgment(
             judgment,
@@ -72,7 +72,7 @@ def test_judgment_excerpt_must_exist_in_current_unit(tmp_path):
     evidence = judgment["reverse_outline"][0]["evidence"]
     evidence["excerpt"] = "这段文字并不存在"
     evidence["excerpt_fingerprint"] = fingerprint_text(evidence["excerpt"])
-    judgment["judgment_fingerprint"] = fingerprint({k: v for k, v in judgment.items() if k != "judgment_fingerprint"})
+    judgment["judgment_fingerprint"] = fingerprint({key: value for key, value in judgment.items() if key not in ('judgment_fingerprint', 'judged_at')})
     with pytest.raises(ValidationError, match="absent"):
         validate_reader_judgment(
             judgment,

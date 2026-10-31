@@ -37,7 +37,7 @@ Read [references/router.md](references/router.md) for routing details.
 - Parent: `parent_unit_id` (book > volume > chapter > scene; guide > day > section).
 - Known-bad: `scripts/known_bad.py` edits of the current text (no citation, dropped token, leak, overclaim, removed limitation, truncation, swapped sibling units, removed world reference, removed live alternative, inserted unsupported alternative, stripped unit anchors); each one must be caught, and closure lists uncaught ones.
 - Real binding: exact unique quotes in the current text (SharedWriting `anchor_excerpts`), `world_refs` into the WorldGuard contract, and anchors from one ResearchGuard research folder whose saved report must belong to it. Each required unit of a researched piece cites an anchor that is not only counter, or states unsupported_reason.
-- Test binding: the deterministic audit, the route review with quoted spans, and an independent reader for broad claims.
+- Test binding: the deterministic audit, the route review with quoted spans, and an independent reader for broad claims. A review is stamped on the text it read (run_chain.py --stamp-review); an edit after the stamp makes it stale.
 - Readback: `scripts/show_plan.py` (a summary line, then the plan tree beside its bound text with each unit's findings).
 - Current vs target: the text, and for a revision its source-unit manifest, is the current model; the plan is the target, and the revised text replaces the current one when closure passes.
 

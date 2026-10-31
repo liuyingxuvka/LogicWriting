@@ -12,7 +12,7 @@ from derive_closure import CLOSURE_INPUT_FILES, derive_closure
 from _common import load_request
 from reader_plan import validate_evidence_boundaries
 from reader_fill import fill_closure_fingerprints
-from run_chain import run_chain
+from run_chain import run_chain, _stamp_review
 from known_bad import check_known_bad, text_variants
 from tests.v2_support import closure_input, complete_chain
 
@@ -73,7 +73,7 @@ def _evidence_request(tmp_path, *, unhardened=False):
         review['review']['overclaim_checks'] = [row for row in review['review']['overclaim_checks']
                                                 if row['overclaim_id'] != 'oc-unsupported-default-soon']
         path.write_text(json.dumps(review))
-    assert run_chain(folder, until='review')['exit_code'] == 0
+    assert _stamp_review(folder)['exit_code'] == 0
     return fill_closure_fingerprints(load_request(folder / 'closure-input.json', defaults=CLOSURE_INPUT_FILES))
 
 

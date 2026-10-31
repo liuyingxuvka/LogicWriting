@@ -541,10 +541,12 @@ class Native:
             return result, preserved and f'WorldGuard scope limits: {len(scopes)}' in summary
 
     def _license_probe(self, case):
-        from run_chain import run_chain
+        from run_chain import run_chain, _stamp_review
         with tempfile.TemporaryDirectory(prefix='lw-license-model-') as temporary:
             folder = Path(temporary) / 'investigation'
             shutil.copytree(EXAMPLES / 'investigation', folder)
+            if case in ('withhold', 'qualify'):
+                assert _stamp_review(folder)['exit_code'] == 0
             report_path = folder / 'research-status.json'
             report = json.loads(report_path.read_text())
             if case != 'source_only':
@@ -570,6 +572,8 @@ class Native:
                 unit['evidence_anchor_ids'].append('anc-313-experimental')
                 unit['safe_meaning'] = 'The evidence does not support the claim that free-threading is already the default.'
             path.write_text(json.dumps(request))
+            if case not in ('withhold', 'qualify'):
+                assert _stamp_review(folder)['exit_code'] == 0
             result = run_chain(folder)
             if result['exit_code']:
                 return result['first_failure']['code']
@@ -592,7 +596,7 @@ class Native:
                 sys.path.insert(0, str(path))
         from tests import v2_support as fixtures
         from derive_closure import derive_closure
-        from _common import fingerprint
+        from _common import fingerprint, fill_fingerprint
         state = self.state
         key = (state.owner, state.independent, bool(alternatives))
         if not hasattr(self, 'cache'):
@@ -612,7 +616,7 @@ class Native:
                 judgment = request['judgment']
                 judgment['judge_kind'] = 'self_review'
                 judgment.pop('judgment_fingerprint')
-                judgment['judgment_fingerprint'] = fingerprint(judgment)
+                fill_fingerprint(judgment, 'judgment_fingerprint')
             self.cache[key] = (root, request)
         self.root, request = self.cache[key]
         self.request = deepcopy(request)

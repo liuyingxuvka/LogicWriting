@@ -9,7 +9,7 @@ import pytest
 from _common import ValidationError, load_request
 from build_reader_brief import validate_request as build_brief
 from derive_closure import derive_closure
-from run_chain import run_chain
+from run_chain import run_chain, _stamp_review
 from tests.v2_support import closure_input, complete_chain
 
 EXAMPLES = Path(__file__).resolve().parents[2] / 'skills/logic-writing/assets/examples'
@@ -93,6 +93,11 @@ def test_unsupported_reason_is_a_residual_risk(tmp_path):
     folder = _example(tmp_path)
     reason = 'The evidence does not support this recommendation; keep the gap visible.'
     _add_unit(folder, reason=reason)
+    path = folder / 'closure-input.json'
+    saved = json.loads(path.read_text())
+    next(row for row in saved['judgment']['reverse_outline'] if 'cu-recommend' in row['content_unit_ids'])['content_unit_ids'].append('cu-migrate')
+    path.write_text(json.dumps(saved))
+    assert _stamp_review(folder)['exit_code'] == 0
     result = run_chain(folder)
     assert result['exit_code'] == 0, result
     assert {'defect_id': 'unsupported:cu-migrate', 'owner': 'investigation', 'reason': reason} in result['results']['closure']['closure']['residual_risk']
@@ -182,6 +187,7 @@ def test_outside_research_reason_is_a_residual_risk(tmp_path):
     folder = _example(tmp_path)
     reason = 'This anchor is an outside opinion; it is not a result of the research folder.'
     _invented_anchor(folder, reason)
+    assert _stamp_review(folder)['exit_code'] == 0
     result = run_chain(folder)
     assert result['exit_code'] == 0, result
     assert {'defect_id': 'outside_research:anc-invented', 'owner': 'investigation',
@@ -209,6 +215,7 @@ def _root_license(folder, wording, limit=None):
 @pytest.mark.parametrize('wording', ['withhold', 'qualify'])
 def test_withheld_root_claim_needs_a_limit(tmp_path, wording):
     folder = _example(tmp_path)
+    assert _stamp_review(folder)['exit_code'] == 0
     _root_license(folder, wording)
     result = run_chain(folder)
     assert result['exit_code'] == 1, result
@@ -222,6 +229,7 @@ def test_withheld_root_claim_needs_a_limit(tmp_path, wording):
 def test_limit_anchor_satisfies_the_license(tmp_path, wording, limit):
     folder = _example(tmp_path)
     _root_license(folder, wording, limit)
+    assert _stamp_review(folder)['exit_code'] == 0
     result = run_chain(folder)
     assert result['exit_code'] == 0, result
     closure = result['results']['closure']['closure']

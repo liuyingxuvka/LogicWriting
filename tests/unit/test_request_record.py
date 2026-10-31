@@ -7,7 +7,7 @@ import pytest
 
 from _common import ValidationError, load_request
 from build_reader_brief import validate_request
-from run_chain import run_chain
+from run_chain import run_chain, _stamp_review
 from show_plan import plan_view, render_plan
 
 EXAMPLE = Path(__file__).resolve().parents[2] / 'skills/logic-writing/assets/examples/investigation'
@@ -61,6 +61,7 @@ def test_ai_unit_is_listed_as_added_by_the_writer(tmp_path, multiple):
         units['cu-recommend']['required'] = False
         expected = ['cu-perf', 'cu-not-default', 'cu-recommend']
     _save(folder, request)
+    assert _stamp_review(folder)['exit_code'] == 0
     result = run_chain(folder)
     assert result['exit_code'] == 0, result
     assert result['results']['brief']['reader_brief']['request'] == raw

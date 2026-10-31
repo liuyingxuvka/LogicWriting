@@ -6,6 +6,7 @@ import subprocess
 import sys
 
 import pytest
+from run_chain import _stamp_review
 
 SKILL = Path(__file__).resolve().parents[2] / 'skills/logic-writing'
 EXAMPLES = SKILL / 'assets/examples'
@@ -22,9 +23,10 @@ STEPS = [
 
 def run_chain(folder, route, until='closure'):
     outputs = {}
+    brief_id = json.loads((folder / 'brief-request.json').read_text())['brief_id']
     for name, request in {
-        'map-request.json': {'artifact_path': 'piece.md', 'map_id': 'map:single', 'language': 'en', 'artifact_format': 'markdown'},
-        'audit-request.json': {'audit_id': 'audit:single', 'artifact_map': 'artifact-map.json', 'reader_brief': 'reader-brief.json', 'shared_writing': 'shared-writing-result.json'},
+        'map-request.json': {'artifact_path': 'piece.md', 'map_id': 'map:' + brief_id, 'language': 'en', 'artifact_format': 'markdown'},
+        'audit-request.json': {'audit_id': 'audit:' + brief_id, 'artifact_map': 'artifact-map.json', 'reader_brief': 'reader-brief.json', 'shared_writing': 'shared-writing-result.json'},
     }.items():
         path = folder / name
         if not path.exists(): path.write_text(json.dumps(request))
@@ -50,6 +52,7 @@ def test_worked_example(tmp_path, route):
     )
     folder = tmp_path / route
     shutil.copytree(source, folder)
+    assert _stamp_review(folder)['exit_code'] == 0
     code, result = run_chain(folder, route)
     assert code == 0, result
     assert result["closure"]["status"] == "passed", result
@@ -244,6 +247,7 @@ def test_show_plan_shows_findings_on_the_failing_unit(tmp_path):
     from tests.v2_support import run_example_steps
     folder = tmp_path / 'investigation'
     shutil.copytree(EXAMPLES / 'investigation', folder)
+    assert _stamp_review(folder)['exit_code'] == 0
     code, _closure = run_chain(folder, 'investigation')
     assert code == 0
     view = plan_view(load_request(folder / 'closure-input.json', defaults=__import__('derive_closure').CLOSURE_INPUT_FILES), input_path=folder / 'closure-input.json')
@@ -327,6 +331,8 @@ def test_show_plan_reads_back_the_same_from_every_chain_file(tmp_path, monkeypat
     for name in ("ok", "inv"):
         folder = tmp_path / name
         shutil.copytree(EXAMPLES / "investigation", folder)
+        if name == 'ok':
+            assert _stamp_review(folder)['exit_code'] == 0
         if name == "inv":
             path = folder / "brief-request.json"
             request = json.loads(path.read_text())

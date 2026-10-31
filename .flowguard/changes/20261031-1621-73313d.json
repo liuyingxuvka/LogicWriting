@@ -1,0 +1,136 @@
+{
+  "kind": "change",
+  "goal": "LW-611: a review belongs to the text it read",
+  "requests": [
+    {
+      "id": "R1",
+      "part": true
+    }
+  ],
+  "base": "725481d319942dc493ba88e7f28d88a68581f074",
+  "tree": "73313d5f4a70c341a7ad906967711649f50ee1ebfead07eded1e00ceb569d890",
+  "promoted": "2026-10-31T16:21:08.657008+00:00",
+  "plan": [
+    {
+      "line": "touch: skills/logic-writing/scripts/_common.py:fill_fingerprint",
+      "added_after_code": null,
+      "cleared": []
+    },
+    {
+      "line": "touch: skills/logic-writing/scripts/_common.py:require_exact_fingerprint",
+      "added_after_code": null,
+      "cleared": []
+    },
+    {
+      "line": "touch: skills/logic-writing/scripts/reader_checks.py:build_reader_audit_from_current",
+      "added_after_code": null,
+      "cleared": []
+    },
+    {
+      "line": "touch: skills/logic-writing/scripts/reader_checks.py:reader_judgment_from_current",
+      "added_after_code": null,
+      "cleared": []
+    },
+    {
+      "line": "touch: skills/logic-writing/scripts/reader_fill.py:fill_closure_fingerprints",
+      "added_after_code": null,
+      "cleared": []
+    },
+    {
+      "line": "touch: skills/logic-writing/scripts/select_route.py:select_route",
+      "added_after_code": null,
+      "cleared": []
+    },
+    {
+      "line": "touch: skills/logic-writing/scripts/run_chain.py:run_chain",
+      "added_after_code": null,
+      "cleared": []
+    },
+    {
+      "line": "touch: skills/logic-writing/scripts/run_chain.py:main",
+      "added_after_code": null,
+      "cleared": []
+    },
+    {
+      "line": "touch: skills/logic-writing/scripts/derive_closure.py:derive_closure",
+      "added_after_code": null,
+      "cleared": []
+    },
+    {
+      "line": "touch: skills/logic-writing/scripts/derive_closure.py:main",
+      "added_after_code": null,
+      "cleared": []
+    },
+    {
+      "line": "touch: skills/logic-writing/scripts/run_chain.py:_stamp_review",
+      "added_after_code": null,
+      "cleared": []
+    }
+  ],
+  "rules": [
+    {
+      "id": "reader_review_model.review_belongs_to_text",
+      "old": null,
+      "new": "fp:5329f935b5190ff32f34bf3f3b26e06523625bc3e906d3db99d577ff9a70c922",
+      "provenance": "unjudged: no checked PLAN changes line"
+    }
+  ],
+  "acceptances": [],
+  "existing_cleared": [],
+  "implemented_by": [
+    "skills/logic-writing/routes/fiction/scripts/run_longform_regression.py:reader_chain_result",
+    "skills/logic-writing/scripts/_common.py:fill_fingerprint",
+    "skills/logic-writing/scripts/_common.py:require_exact_fingerprint",
+    "skills/logic-writing/scripts/derive_closure.py:derive_closure",
+    "skills/logic-writing/scripts/derive_closure.py:main",
+    "skills/logic-writing/scripts/reader_checks.py:build_reader_audit_from_current",
+    "skills/logic-writing/scripts/reader_checks.py:reader_judgment_from_current",
+    "skills/logic-writing/scripts/reader_checks.py:validate_reader_judgment",
+    "skills/logic-writing/scripts/reader_fill.py:fill_closure_fingerprints",
+    "skills/logic-writing/scripts/run_chain.py:_stamp_judgment",
+    "skills/logic-writing/scripts/run_chain.py:_stamp_review",
+    "skills/logic-writing/scripts/run_chain.py:main",
+    "skills/logic-writing/scripts/run_chain.py:run_chain",
+    "skills/logic-writing/scripts/select_route.py:select_route",
+    "tests/adversarial/test_boundaries.py:test_present_overclaim_forces_repair",
+    "tests/adversarial/test_boundaries.py:test_review_evidence_must_be_actual_current_excerpt",
+    "tests/adversarial/test_boundaries.py:test_route_review_cannot_omit_one_required_dimension",
+    "tests/adversarial/test_boundaries.py:test_same_agent_cannot_self_judge",
+    "tests/adversarial/test_reader_integrity_regressions.py:test_reader_audit_rejects_a_caller_modified_fingerprint",
+    "tests/contract/test_schema_runtime_gate.py:test_each_distinct_schema_object_is_validated_once",
+    "tests/e2e/test_worked_examples.py:run_chain",
+    "tests/e2e/test_worked_examples.py:test_show_plan_reads_back_the_same_from_every_chain_file",
+    "tests/e2e/test_worked_examples.py:test_show_plan_shows_findings_on_the_failing_unit",
+    "tests/e2e/test_worked_examples.py:test_worked_example",
+    "tests/unit/test_academic.py:test_revision_provenance_must_bind_current_target_bytes",
+    "tests/unit/test_closure_claim_model.py:test_stale_world_report_fails_closure",
+    "tests/unit/test_evidence_rules.py:test_limit_anchor_satisfies_the_license",
+    "tests/unit/test_evidence_rules.py:test_outside_research_reason_is_a_residual_risk",
+    "tests/unit/test_evidence_rules.py:test_unsupported_reason_is_a_residual_risk",
+    "tests/unit/test_evidence_rules.py:test_withheld_root_claim_needs_a_limit",
+    "tests/unit/test_freshness_closure.py:test_closure_command_fills_judgment_and_provenance_fingerprints",
+    "tests/unit/test_known_bad.py:_evidence_request",
+    "tests/unit/test_reader.py:test_judge_must_be_independent",
+    "tests/unit/test_reader.py:test_judgment_excerpt_must_exist_in_current_unit",
+    "tests/unit/test_reader_artifact_model.py:test_self_review_closes_without_a_broad_claim",
+    "tests/unit/test_request_record.py:test_ai_unit_is_listed_as_added_by_the_writer",
+    "tests/unit/test_review_stamp.py:_copy",
+    "tests/unit/test_review_stamp.py:_stamp",
+    "tests/unit/test_review_stamp.py:test_complete_repair_review_can_be_stamped",
+    "tests/unit/test_review_stamp.py:test_edited_text_makes_the_stamped_review_stale",
+    "tests/unit/test_review_stamp.py:test_fingerprints_ignore_time_fields",
+    "tests/unit/test_review_stamp.py:test_moving_a_stamped_fixture_requires_explicit_rebinding",
+    "tests/unit/test_review_stamp.py:test_required_unit_missing_from_the_review_fails",
+    "tests/unit/test_review_stamp.py:test_stamp_failure_keeps_the_review_bytes",
+    "tests/unit/test_review_stamp.py:test_stamp_review_writes_the_fingerprints",
+    "tests/unit/test_review_stamp.py:test_unstamped_review_is_refused_with_the_command",
+    "tests/unit/test_run_chain.py:test_run_chain_matches_the_single_steps",
+    "tests/unit/test_run_chain.py:test_stale_report_line_names_the_code_once",
+    "tests/unit/test_world_mesh.py:test_world_scope_limits_remain_nonblocking_and_visible",
+    "tests/v2_support.py:_with_fp",
+    "tests/v2_support.py:complete_chain"
+  ],
+  "new_actions": [],
+  "corrections": [],
+  "checked": "This promotion ran one fresh target check with bound tests and the remaining function-selected tests; 10 warning(s) remained. The tree identifies the checked post-promotion content, before later component confirmation. Implementation provenance lists changed Python function definitions from the Git diff. Available static rule identities and checked PLAN lines are recorded. PLAN edit ordering, per-item clearance, acceptances, existing-item clearance and new-action judgments are not assessed; unknown order is null and unsupported lists are empty."
+}

@@ -105,10 +105,18 @@ def fingerprint_without(value: dict[str, Any], *keys: str) -> str:
     return fingerprint({key: item for key, item in value.items() if key not in set(keys)})
 
 
+# Only a record's own execution metadata is excluded, never nested evidence times.
+_FINGERPRINT_METADATA = {
+    'audit_fingerprint': ('audited_at',), 'judgment_fingerprint': ('judged_at',),
+    'provenance_fingerprint': ('recorded_at',), 'decision_fingerprint': ('decided_at',),
+    'review_fingerprint': ('reviewed_at',),
+}
+
+
 def fill_fingerprint(record: Any, field: str) -> None:
     """Compute a record's own fingerprint when the caller left it out; a given value is kept and checked."""
     if isinstance(record, dict) and record.get(field) is None:
-        record[field] = fingerprint_without(record, field)
+        record[field] = fingerprint_without(record, field, *_FINGERPRINT_METADATA.get(field, ()))
 
 
 def fill_missing(record: Any, field: str, value: Any) -> None:
@@ -391,7 +399,7 @@ def utc_now() -> str:
 
 
 def require_exact_fingerprint(value: Mapping[str, Any], field: str) -> None:
-    if value.get(field) != fingerprint_without(dict(value), field):
+    if value.get(field) != fingerprint_without(dict(value), field, *_FINGERPRINT_METADATA.get(field, ())):
         raise ValidationError(f"{field} does not bind the exact current object")
 
 

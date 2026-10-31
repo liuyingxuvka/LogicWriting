@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 import shutil
 import pytest
-from run_chain import run_chain
+from run_chain import run_chain, _stamp_review
 from tests.e2e.test_worked_examples import run_chain as single_steps
 
 EXAMPLES=Path(__file__).resolve().parents[2]/'skills/logic-writing/assets/examples'
@@ -12,6 +12,7 @@ EXAMPLES=Path(__file__).resolve().parents[2]/'skills/logic-writing/assets/exampl
 def test_run_chain_matches_the_single_steps(tmp_path,route):
     folder=tmp_path/route
     shutil.copytree(EXAMPLES/route,folder)
+    assert _stamp_review(folder)['exit_code'] == 0
     original=(folder/'piece.md').read_bytes()
     code,closed=single_steps(folder,route)
     assert code==0
@@ -65,6 +66,7 @@ def test_stale_report_line_names_the_code_once(tmp_path, monkeypatch, capsys):
 
     folder = tmp_path / "fiction"
     shutil.copytree(EXAMPLES / "fiction", folder)
+    assert _stamp_review(folder)['exit_code'] == 0
     world = folder / "world.yaml"
     world.write_text(world.read_text() + "\n# probe\n")
     monkeypatch.setattr(sys, "argv", ["run_chain.py", str(folder)])

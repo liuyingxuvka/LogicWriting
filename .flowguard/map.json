@@ -51,14 +51,14 @@
         ".flowguard/models/route_selection_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:d9d25d0c71f1168b4857f4acb02b681917565236d2467f051bfad7fd88e49b77"
+      "fingerprint": "sha256:3fd315eaab3ed2dcc279176bf3018f5d18391302573bff253cb1a4a94729e59c"
     },
     {
       "id": "reader-artifact",
       "layer": "reader",
-      "summary": "The current reader chain binds one plan to actual bytes and computed closure.",
+      "summary": "The current reader chain binds one plan, exact bytes and an explicitly stamped review to computed closure.",
       "responsibilities": [
-        "The current reader chain binds one plan to actual bytes and computed closure."
+        "The current reader chain binds one plan, exact bytes and an explicitly stamped review to computed closure."
       ],
       "files": [
         "skills/logic-writing/SKILL.md",
@@ -75,14 +75,16 @@
         "tests/e2e/test_worked_examples.py",
         "tests/e2e/test_reader_v2_benchmark.py",
         "tests/contract/test_route_text.py",
-        "tests/unit/test_reader_artifact_model.py"
+        "tests/unit/test_reader_artifact_model.py",
+        "tests/unit/test_review_stamp.py"
       ],
       "models": [
         ".flowguard/models/reader_artifact_model.py",
-        ".flowguard/models/reader_evidence_model.py"
+        ".flowguard/models/reader_evidence_model.py",
+        ".flowguard/models/reader_review_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:4848140853e89a741c00c0dacc0e4e946f3afd180fb79fd2f3e931de836e0809"
+      "fingerprint": "sha256:56933e12108e981e49ea335feebe2e70b0fa5787cac50b8371f533aa00f14971"
     },
     {
       "id": "fiction",
@@ -193,7 +195,7 @@
         ".flowguard/models/route_review_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:ac45ca742caad5c0ae8d7985981c87141f89b8c829bc0dacd2193c843ad26ca5"
+      "fingerprint": "sha256:9226527a566843d628a814489ba15755e6c72c1054cdded683b8172bafaf1175"
     },
     {
       "id": "travel",
@@ -295,7 +297,7 @@
         ".flowguard/models/route_review_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:7267d93439f101286e5c6373425eb8bdff3106b6c44d2ac790c5dff0f275506a"
+      "fingerprint": "sha256:5cf76cc10932cec56e8bd28cd77db02ce3f90d4f1198f6cc86f22546e788a1df"
     },
     {
       "id": "investigation",
@@ -347,7 +349,7 @@
         ".flowguard/models/route_review_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:93b007b716d663c0b151067971b502691752fed2ff932f8da43b0ec1358275a9"
+      "fingerprint": "sha256:0a92cfe5da513af32b14aa4ac0db02eedb537673d56306f0be8b73f40de63204"
     },
     {
       "id": "academic",
@@ -393,7 +395,7 @@
         ".flowguard/models/route_review_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:e1d459e3e2f3d9e129a34714af371befd532c513cea2ef899c30eecec94e0050"
+      "fingerprint": "sha256:9eae4932a40c6d1c5a5e9f21ae50e2b367b745b153688f3416623eda361522f2"
     },
     {
       "id": "release",
@@ -509,7 +511,8 @@
         "Keep same-key records available from partial result envelopes; reject failed envelopes without the requested record with their first error before sole-object fallback.",
         "Resolve revision source paths against their containing request/record files and describe source-file provenance in the current schema.",
         "Resolve research_folder and composition-owned input paths without executing native providers; preserve optional new-writing provenance and opaque native locators.",
-        "A saved world report must bind by contract id or mesh id, with raw digests covering the mesh and every file node."
+        "A saved world report must bind by contract id or mesh id, with raw digests covering the mesh and every file node.",
+        "Exclude only each record's own execution timestamp from its canonical fingerprint; preserve domain dates, nested evidence times, artifact bytes and file-reference identity."
       ],
       "files": [
         "skills/logic-writing/scripts/_common.py",
@@ -534,7 +537,7 @@
         ".flowguard/models/shared_contracts_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:80219b5d50eb58d664247475cf3763a6258b2f6cb28378b627d95972d766a4e7"
+      "fingerprint": "sha256:ac2d4eead0c02c7549f80db4641bc90b7a35a532eaf3da878192525e14b08ee8"
     },
     {
       "id": "researchguard-handoff",
@@ -669,7 +672,8 @@
       "summary": "Audit current text and validate evidence-bound route review and independent reader judgment.",
       "responsibilities": [
         "Audit current text and validate evidence-bound route review and independent reader judgment.",
-        "Sibling planned units must appear in the text in plan order."
+        "Sibling planned units must appear in the text in plan order.",
+        "Require the completed judgment to be explicitly bound to the current text, plan, references and required content units; report missing or stale review without repairing it."
       ],
       "files": [
         "skills/logic-writing/assets/schemas/reader-audit.schema.json",
@@ -703,21 +707,21 @@
       ],
       "parent": "reader-artifact",
       "status": "confirmed",
-      "fingerprint": "sha256:2eb7d3d2aa514f59552bdc7d36d9ae6be741ce453ee1e0be09d72170e0d85bf6"
+      "fingerprint": "sha256:7d5c9aaf543a9cee2f0adea0f53c9a59129aed17a9b54afa34a0be51426e77f6"
     },
     {
       "id": "reader-inputs",
       "layer": "reader",
-      "summary": "Fill absent derived references after validating existing current-unit membership.",
+      "summary": "Fill absent check and revision-provenance references after validating current-unit membership; preserve the supplied judgment.",
       "responsibilities": [
-        "Fill absent derived references after validating existing current-unit membership."
+        "Fill absent check and revision-provenance references after validating current-unit membership; preserve the supplied judgment."
       ],
       "files": [
         "skills/logic-writing/scripts/reader_fill.py"
       ],
       "entrypoints": [],
       "state": [
-        "Absent derived locators and fingerprints filled in a copied request."
+        "Absent check locators and fingerprints filled in a copied request; supplied review binding remains unchanged."
       ],
       "side_effects": [],
       "depends_on": [
@@ -736,7 +740,7 @@
       ],
       "parent": "reader-artifact",
       "status": "confirmed",
-      "fingerprint": "sha256:99053691af20691de38a36965c03c85199f3708b5e48376ec310344b388f542d"
+      "fingerprint": "sha256:8065bb6fc951f11269c4b74bcf1fa35f404fabd710588c9d1a46edf555132792"
     },
     {
       "id": "reader-closure",
@@ -747,7 +751,8 @@
         "Known-bad edits are caught or listed as toothless closure risks.",
         "Saved provider reports count only when they belong to the brief.",
         "Known-bad edits also swap sibling units, remove world or alternative sentences, insert unsupported alternatives and strip required-unit anchors.",
-        "Preserve actual WorldGuard scope limits as owner-attributed, nonblocking risks with the saved report path."
+        "Preserve actual WorldGuard scope limits as owner-attributed, nonblocking risks with the saved report path.",
+        "A completed judgment must already be stamped on current inputs; closure never creates or renews its review binding."
       ],
       "files": [
         "skills/logic-writing/assets/schemas/closure.schema.json",
@@ -794,7 +799,7 @@
       ],
       "parent": "reader-artifact",
       "status": "confirmed",
-      "fingerprint": "sha256:6325eee14bb70102c7b27ca8f34438419889cb35fbc991b67e94f92821a6e88c"
+      "fingerprint": "sha256:a803dc3933170d5a20f1f8d3b5b4b83398f0967a0f553483ff749052d94f8190"
     },
     {
       "id": "reader-commands",
@@ -803,7 +808,8 @@
       "responsibilities": [
         "Expose the reader-chain commands and readable plan view without generating prose.",
         "The plan readback shows each unit's findings, anchors and world references. Bindings and findings read back identically from every chain file, including an interrupted binding step.",
-        "Refresh WorldGuard tree reports only on request; readback shows a count of actual saved report scope limits."
+        "Refresh WorldGuard tree reports only on request; readback shows a count of actual saved report scope limits.",
+        "Only --stamp-review explicitly binds an existing completed judgment after native review and integrity checks; default runs preserve it and repair judgments remain repair."
       ],
       "files": [
         "skills/logic-writing/scripts/audit_reader_output.py",
@@ -821,7 +827,8 @@
       "state": [],
       "side_effects": [
         "Read explicitly supplied input records and write only requested JSON output.",
-        "Write requested reader-chain JSON results and, only with --refresh-providers, refresh native saved provider reports."
+        "Write requested reader-chain JSON results and, only with --refresh-providers, refresh native saved provider reports.",
+        "Only --stamp-review writes the validated judgment binding in closure-input.json."
       ],
       "depends_on": [
         "academic",
@@ -848,7 +855,7 @@
         ".flowguard/models/plan_readback_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:c6bb52e077d31fd69250355392ae54f21303aa3cd72f5bd1b6ab92d0d79e1dbe"
+      "fingerprint": "sha256:c8c245489e2192f7f94ced82c744808a12fea3f655212bdadca393505789ff6e"
     },
     {
       "id": "world-references",
@@ -1029,14 +1036,15 @@
   ],
   "model_digests": {
     ".flowguard/models/anchor_import_model.py": "6e3bf80d1b6d6c3bd78b75c83b3be1893c2f929549ff774d85e34a2a0b259a77",
-    ".flowguard/models/closure_claim_model.py": "768f8facb9a32bbebdf14649167d168d57049871559687f3b6facc60ea6f394d",
+    ".flowguard/models/closure_claim_model.py": "bf73d2fd31aa2e9a38b5a7103ca6b8d532978c01485eec083dbad0d2be472a99",
     ".flowguard/models/fiction_tree_model.py": "0ddabded08324082ba916fdc10f9b75f915085f21d6a08b910126b130d509f9c",
-    ".flowguard/models/known_bad_generator_model.py": "89323017bef560bb8dbc1b836ffb16e016cd35b36c698ece7a6404c532be7d8a",
+    ".flowguard/models/known_bad_generator_model.py": "53ed1c985e403fcacca6948489a1c67b0f7a5460aafe0386534b5cf0290bb530",
     ".flowguard/models/plan_order_model.py": "7a32290b4c7c769f30df00b78f74b9cd868790da3ff4ff2b9034034b42aa2da5",
     ".flowguard/models/plan_readback_model.py": "74df83b1afdd374d44c7f00d44870c3eaaae09f8c2c6b1792d85085f882d5c45",
     ".flowguard/models/provider_preflight_model.py": "d78fe03165665eda9c3ce0a954f661a4e187e20c9c9b99a7d073b2d50ed415b2",
     ".flowguard/models/reader_artifact_model.py": "4861a104114cc29c29fd9adc78f646306a5588c9153c0689c14cb89ed1fe56a9",
     ".flowguard/models/reader_evidence_model.py": "0fcb7be6cc5fb672b3a0c62f9062b71456baea6040de6b978a3bef674cdfdbaa",
+    ".flowguard/models/reader_review_model.py": "c7d2af396f48baad1764437930db720114561e79106288045c56df968ab7327d",
     ".flowguard/models/route_review_model.py": "a24f47fdc46d89c4b03f323784ca3275ffecc5d7807ebf5cccbf24254bb395d5",
     ".flowguard/models/route_selection_model.py": "2f75c31bd5c5b3c040d2d34f6677ceed9f9c15921421c9a222640a7a93c97e00",
     ".flowguard/models/shared_contracts_model.py": "f3a093e25d0322ab3fc1d7473ce6451f2e9e69a033959f70e93aeeba1e1ea2ef",

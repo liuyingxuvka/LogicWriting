@@ -1,9 +1,12 @@
 # Worked reader chains
 
-Copy the folder of your route, edit the piece and the plan, then rerun.
+Copy the folder of your route. Bind its existing review once in the final
+directory with `run_chain.py --stamp-review` before first closure. The article
+bytes may be identical after a copy, but file location/reference identity changed.
+After a real edit, reread the piece and update the review before explicitly stamping again.
 Run from the skill root; set `route` to investigation, academic, fiction or travel.
 These compact examples use honest author self-reviews, not independent quality evidence.
-The eight steps (step 3 is writing; here it displays the supplied piece) are:
+The commands below display the supplied piece at the writing step:
 
 ```sh
 route=investigation
@@ -15,8 +18,14 @@ python scripts/build_artifact_map.py --input "$example/map-request.json" --outpu
 python scripts/validate_shared_writing.py --input "$example/shared-writing.json" --output "$example/shared-writing-result.json"
 python scripts/audit_reader_output.py --input "$example/audit-request.json" --output "$example/audit.json"
 python routes/$route/scripts/validate_${route}_artifact.py --input "$example/route-review.json" --output "$example/route-review-result.json"
+python scripts/run_chain.py "$example" --stamp-review
 python scripts/derive_closure.py --input "$example/closure-input.json" --output "$example/closure.json"
 ```
+
+Stamping validates the supplied review against the completed reader steps and
+writes only its judgment binding. Default runs never create or refresh it:
+`judgment_unstamped` and `judgment_stale` give the explicit repair command.
+A complete `repair` judgment can be stamped; closure still reports `needs_repair`.
 
 Generate the same deterministic bad pieces for an edited work after the review:
 

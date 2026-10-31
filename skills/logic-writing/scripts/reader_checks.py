@@ -1,5 +1,6 @@
 """Reader checks: current reader-chain responsibilities."""
 from __future__ import annotations
+from pathlib import Path
 
 from world_refs import world_ref_unquoted
 
@@ -269,7 +270,8 @@ def build_reader_audit_from_current(*, audit_id, amap, brief, contract, audited_
         "status": "repair" if findings else "passed",
         "audited_at": audited_at or utc_now(),
     }
-    audit["audit_fingerprint"] = fingerprint(audit)
+    from _common import fill_fingerprint
+    fill_fingerprint(audit, 'audit_fingerprint')
     require_schema("reader-audit.schema.json", audit, label="ReaderAudit")
     return audit
 
@@ -452,6 +454,7 @@ def validate_reader_judgment(
     deterministic_audit: Mapping[str, Any],
     route_review: Mapping[str, Any],
     review_obligations: Mapping[str, Any] | None = None,
+    review_folder: str | Path | None = None,
 ) -> dict[str, Any]:
     amap = validate_artifact_map(artifact_map)
     brief = require_mapping(reader_brief, "ReaderBrief")
@@ -464,12 +467,18 @@ def validate_reader_judgment(
     audit = compare_reader_audit(candidate, current)
     return reader_judgment_from_current(value, amap=amap, brief=brief, contract=contract, audit=audit,
                                          route_review=route_review,
-                                         review_obligations=review_obligations)
+                                         review_obligations=review_obligations, review_folder=review_folder)
 
 
 def reader_judgment_from_current(value, *, amap, brief, contract, audit, route_review,
-                                   review_obligations=None):
+                                   review_obligations=None, review_folder=None):
     judgment = require_mapping(value, "ReaderJudgment")
+    command = f'python skills/logic-writing/scripts/run_chain.py {review_folder or "<folder>"} --stamp-review'
+    references = ('reader_intent_fingerprint', 'reader_brief_fingerprint', 'composition_plan_fingerprint',
+                  'artifact_map_fingerprint', 'shared_writing_contract_fingerprint', 'deterministic_audit_fingerprint',
+                  'route_audit_fingerprint', 'artifact_fingerprint', 'evaluation_profile_fingerprint', 'judgment_fingerprint')
+    if any(not judgment.get(field) for field in references):
+        raise ValidationError(f'judgment_unstamped:{judgment.get("judgment_id", "unknown")} (the review was never stamped; reread the text, then run {command})')
     require_schema("reader-judgment.schema.json", judgment, label="ReaderJudgment")
     require_exact_fingerprint(judgment, "judgment_fingerprint")
     review = require_mapping(route_review, "route artifact review")
@@ -495,7 +504,7 @@ def reader_judgment_from_current(value, *, amap, brief, contract, audit, route_r
     }
     for key, expected_value in expected.items():
         if judgment[key] != expected_value:
-            raise ValidationError(f"ReaderJudgment {key} is stale or foreign")
+            raise ValidationError(f'judgment_stale:{key} (the text, plan or file references changed after the review was stamped; reread the text, then run {command})')
     units = {row["artifact_unit_id"]: row for row in amap["units"]}
     for row in judgment["reverse_outline"]:
         _verify_span_evidence(row["evidence"], units)
@@ -505,6 +514,10 @@ def reader_judgment_from_current(value, *, amap, brief, contract, audit, route_r
     outlined_ids = {row["artifact_unit_id"] for row in judgment["reverse_outline"]}
     if actual_body_ids - outlined_ids:
         raise ValidationError(f"ReaderJudgment reverse outline omits actual units: {sorted(actual_body_ids - outlined_ids)}")
+    reviewed = {identity for row in judgment['reverse_outline'] for identity in row['content_unit_ids']}
+    for unit in brief['content_boundaries']['content_units']:
+        if unit['required'] and unit['content_unit_id'] not in reviewed:
+            raise ValidationError('judgment_content_unit_unreviewed:' + unit['content_unit_id'])
     repair_ids = {ref for row in judgment["required_repairs"] for ref in row["defect_ids"]}
     unrequested = {row["observation_id"] for row in judgment["defects"]} - repair_ids
     if unrequested:

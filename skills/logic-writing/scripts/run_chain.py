@@ -8,14 +8,14 @@ import subprocess
 import sys
 import tempfile
 
-from _common import ValidationError, dump_json, load_request, validation_result
+from _common import ValidationError, dump_json, load_json, load_request, validation_result
 from select_route import validate_request as select
 from build_reader_brief import validate_request as brief_step
 from build_artifact_map import validate_request as map_step
 from validate_shared_writing import validate_shared_writing
 from audit_reader_output import audit_reader_output
 from derive_closure import CLOSURE_INPUT_FILES, derive_closure
-from reader_fill import fill_closure_fingerprints
+from reader_fill import fill_check_fingerprints, fill_closure_fingerprints
 from provider_preflight import provider_command
 from show_plan import plan_view
 
@@ -126,7 +126,7 @@ def run_chain(folder, *, until='closure', refresh_providers=False):
                 payload=ROUTES[owner](load_request(folder/'route-review.json'))
             else:
                 request=fill_closure_fingerprints(load_request(folder/'closure-input.json',defaults=CLOSURE_INPUT_FILES))
-                closed=derive_closure(request)['closure'];payload=validation_result(status=closed['status'],closure=closed)
+                closed=derive_closure(request, review_folder=folder)['closure'];payload=validation_result(status=closed['status'],closure=closed)
             dump_json(payload,folder/OUTPUTS[step])
             results['shared_writing' if step=='binding' else step]=payload
         except (OSError,json.JSONDecodeError) as exc:
@@ -143,16 +143,74 @@ def run_chain(folder, *, until='closure', refresh_providers=False):
     raise AssertionError('unreachable chain step')
 
 
+def _stamp_judgment(request, *, review_folder=None):
+    """Bind an explicitly completed review, then run the existing integrity checks."""
+    from copy import deepcopy
+    from _common import fill_fingerprint, fingerprint, require_mapping
+    from reader_fill import fill_evidence
+    from reader_checks import validate_reader_judgment
+    prepared = fill_check_fingerprints(deepcopy(request))
+    judgment = require_mapping(prepared['judgment'], 'ReaderJudgment')
+    brief, amap = prepared['reader_brief'], prepared['artifact_map']
+    judgment.update(reader_intent_fingerprint=brief['reader_intent_fingerprint'],
+        reader_brief_fingerprint=brief['brief_fingerprint'],
+        composition_plan_fingerprint=brief['composition_plan']['plan_fingerprint'],
+        artifact_map_fingerprint=amap['map_fingerprint'],
+        shared_writing_contract_fingerprint=prepared['shared_writing']['contract_fingerprint'],
+        deterministic_audit_fingerprint=prepared['deterministic_audit']['audit_fingerprint'],
+        route_audit_fingerprint=prepared['route_review']['review_fingerprint'],
+        artifact_fingerprint=amap['artifact_fingerprint'])
+    if isinstance(judgment.get('scores'), dict):
+        judgment['evaluation_profile_fingerprint'] = fingerprint({'final_owner': judgment.get('final_owner'), 'dimensions': sorted(judgment['scores'])})
+    units = {row['artifact_unit_id']: row for row in amap['units']}
+    for row in [*(judgment.get('reverse_outline') or []), *(judgment.get('defects') or []), *(judgment.get('strengths') or [])]:
+        evidence = row.get('evidence') if isinstance(row, dict) else None
+        if isinstance(evidence, dict):
+            for field in ('locator', 'excerpt_fingerprint'):
+                evidence.pop(field, None)
+            fill_evidence(evidence, units)
+    judgment.pop('judgment_fingerprint', None)
+    fill_fingerprint(judgment, 'judgment_fingerprint')
+    return validate_reader_judgment(judgment, artifact_map=amap, reader_brief=brief,
+        shared_writing=prepared['shared_writing'], deterministic_audit=prepared['deterministic_audit'],
+        route_review=prepared['route_review'], review_obligations=prepared.get('review_obligations'), review_folder=review_folder)
+
+
+def _stamp_review(folder, *, refresh_providers=False):
+    """Finish native review before writing only its validated judgment binding."""
+    folder = Path(folder).expanduser().resolve()
+    result = run_chain(folder, until='review', refresh_providers=refresh_providers)
+    if result['exit_code']:
+        result['exit_code'] = 1
+        return result
+    try:
+        path = folder / 'closure-input.json'
+        original = load_json(path)
+        request = load_request(path, defaults=CLOSURE_INPUT_FILES)
+        judgment = _stamp_judgment(request, review_folder=folder)
+        original['judgment'] = judgment
+        dump_json(original, path)
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        result.update(status='failed', exit_code=1, first_failure={'step': 'review', 'code': str(exc).split(':', 1)[0], 'message': str(exc)})
+        return result
+    result['stamped_review'] = judgment['judgment_id']
+    return result
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("folder")
     parser.add_argument("--until", choices=STEPS, default="closure")
     parser.add_argument("--refresh-providers", action="store_true")
+    parser.add_argument('--stamp-review', action='store_true')
     args = parser.parse_args()
-    result = run_chain(args.folder, until=args.until, refresh_providers=args.refresh_providers)
+    result = (_stamp_review(args.folder, refresh_providers=args.refresh_providers) if args.stamp_review else
+              run_chain(args.folder, until=args.until, refresh_providers=args.refresh_providers))
     print(result["summary"])
     for row in result['added_by_writer']:
         print(f"added by the writer: {row['content_unit_id']}: {row['text']}")
+    if result.get('stamped_review'):
+        print(f"stamped: closure-input.json judgment {result['stamped_review']}")
     if result["first_failure"]:
         row = result["first_failure"]
         message = row["message"]

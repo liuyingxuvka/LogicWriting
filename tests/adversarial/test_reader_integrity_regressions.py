@@ -16,7 +16,7 @@ def test_reader_audit_rejects_a_caller_modified_fingerprint(tmp_path):
     chain = complete_chain(tmp_path)
     audit = copy.deepcopy(chain["deterministic_audit"])
     audit["status"] = "passed" if audit["status"] == "repair" else "repair"
-    audit["audit_fingerprint"] = fingerprint({k: v for k, v in audit.items() if k != "audit_fingerprint"})
+    audit["audit_fingerprint"] = fingerprint({key: value for key, value in audit.items() if key not in ('audit_fingerprint', 'audited_at')})
     with pytest.raises(ValidationError, match="differs|current"):
         validate_reader_audit_current(
             audit, artifact_map=chain["artifact_map"],

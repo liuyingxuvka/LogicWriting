@@ -32,6 +32,28 @@ and different producer/judge ids. A self-review is allowed but stays explicit:
 `SELF`, self-review residual risk, `broad_claim_allowed: false`, even when textual
 quality passes. Id labels alone do not authenticate who performed a read.
 
+After completing the review, explicitly bind it with
+`python skills/logic-writing/scripts/run_chain.py <folder> --stamp-review`.
+It runs the existing reader steps through route review, validates the judgment's
+dimensions, evidence and required-unit coverage, then writes only the judgment
+in `closure-input.json`. Failed input validation leaves that file unchanged.
+A valid completed `repair` judgment may be stamped; its defects remain and normal
+closure stays `needs_repair`.
+
+Default runs and closure never fill or refresh a judgment stamp. An unstamped
+review fails with `judgment_unstamped:<id>`; changed content, plan or file
+references fail with `judgment_stale:<field>`. Both name the explicit command:
+reread changed work before stamping again. A copied fixture needs one explicit
+binding in its final directory; copying preserves article bytes but changes
+file location/reference identity. A required unit missing from the review is
+`judgment_content_unit_unreviewed:<id>`.
+
+The five records keep their own execution timestamps as metadata while excluding
+them from their fingerprints: `audited_at`, `judged_at`, `recorded_at`,
+`decided_at` and `reviewed_at`. Domain evidence dates/times and raw file digests
+still participate in their existing identities. Revision provenance is still
+prepared and checked by the ordinary closure path.
+
 When a repair round resolves none of the actual defects, stop and return the
 artifact with its audit note. After a real edit, rebuild dependent maps, bindings
 and checks. Repeated calls on unchanged text do not demonstrate repair.

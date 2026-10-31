@@ -252,7 +252,8 @@ class _RealGenerator:
                 observed_summary=unit['safe_meaning'], boundary='Synthetic scope control, not a research result.'))
             unit['evidence_anchor_ids'] = ['anc-knownbad-fixture']
         path.write_text(json.dumps(request))
-        result = run_chain(folder, until='review')
+        from run_chain import _stamp_review
+        result = _stamp_review(folder)
         if result['exit_code']:
             raise AssertionError(result['first_failure'])
         return fill_closure_fingerprints(load_request(folder / 'closure-input.json', defaults=CLOSURE_INPUT_FILES))

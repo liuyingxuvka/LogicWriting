@@ -1,1 +1,167 @@
-{"closure_id":"close-ft-1","judgment":{"schema_version":"2.0","judgment_id":"j-ft-1","final_owner":"investigation","producer_id":"writer-main","judge_id":"self-review-second-pass","reverse_outline":[{"artifact_unit_id":"artifact:paragraph:0002","parent_unit_id":null,"observed_job":"answer","main_point":"Supported but optional in 3.14","support_or_action":"cites What's New 3.14","content_unit_ids":["cu-status-314"],"carries_from_unit_ids":[],"relation_to_previous":"opens","downstream_effect":"feeds the decision","orphaned":false,"overloaded":false,"evidence":{"artifact_unit_id":"artifact:paragraph:0002","excerpt":"Short answer: as of Python 3.14"}},{"artifact_unit_id":"artifact:paragraph:0004","parent_unit_id":null,"observed_job":"history","main_point":"3.13 experimental to 3.14 supported","support_or_action":"cites 3.13 and 3.14 notes","content_unit_ids":["cu-313-experimental"],"carries_from_unit_ids":["artifact:paragraph:0002"],"relation_to_previous":"follows","downstream_effect":"feeds the decision","orphaned":false,"overloaded":false,"evidence":{"artifact_unit_id":"artifact:paragraph:0004","excerpt":"In Python 3.13 the free-threaded mode shipped as an experimental feature"}},{"artifact_unit_id":"artifact:paragraph:0006","parent_unit_id":null,"observed_job":"cost","main_point":"5-10% single-thread penalty, measure yourself","support_or_action":"project estimate","content_unit_ids":["cu-perf"],"carries_from_unit_ids":["artifact:paragraph:0004"],"relation_to_previous":"follows","downstream_effect":"feeds the decision","orphaned":false,"overloaded":false,"evidence":{"artifact_unit_id":"artifact:paragraph:0006","excerpt":"roughly 5-10%"}},{"artifact_unit_id":"artifact:paragraph:0008","parent_unit_id":null,"observed_job":"outlook","main_point":"Default is undecided","support_or_action":"PEP 779 and notes","content_unit_ids":["cu-not-default"],"carries_from_unit_ids":["artifact:paragraph:0006"],"relation_to_previous":"follows","downstream_effect":"feeds the decision","orphaned":false,"overloaded":false,"evidence":{"artifact_unit_id":"artifact:paragraph:0008","excerpt":"Not on any announced schedule."}},{"artifact_unit_id":"artifact:paragraph:0010","parent_unit_id":null,"observed_job":"recommendation","main_point":"Test now, no default date, recheck at phase III","support_or_action":"limits on library readiness","content_unit_ids":["cu-recommend"],"carries_from_unit_ids":["artifact:paragraph:0008"],"relation_to_previous":"follows","downstream_effect":"feeds the decision","orphaned":false,"overloaded":false,"evidence":{"artifact_unit_id":"artifact:paragraph:0010","excerpt":"Revisit the plan when a phase III decision is announced."}}],"scores":{"clarity":4,"structure_fidelity":4,"coherence":4,"naturalness":4,"reader_fit":4,"content_fidelity":4,"genre_fit":4,"instruction_fidelity":4},"defects":[],"strengths":[],"required_repairs":[],"status":"passed","judged_at":"2026-10-21T11:20:00Z","judge_kind":"self_review"},"revision_provenance":{"schema_version":"2.0","provenance_id":"prov-ft-1","final_owner":"investigation","artifact_mode":"create_new","source_artifact_fingerprint":null,"applicability":"not_applicable","unit_treatments":[],"recorded_at":"2026-10-21T11:20:00Z"},"provider_reports":[{"provider":"researchguard","path":"research-status.json"}]}
+{
+  "closure_id": "close-ft-1",
+  "judgment": {
+    "artifact_fingerprint": "sha256:a01675bb6b4ce07ba1db5695655cef7aaa1b87646d1d7dc60579d4ba388c40e9",
+    "artifact_map_fingerprint": "sha256:b47cdbcc19966fae6dccfccd2e87caea9faccc07665b60ca645ccf2aeb19deaa",
+    "composition_plan_fingerprint": "sha256:6729ae5ee20cdf0e6f4660172b44a20dfb636a4af651451b4826bdedd2016886",
+    "defects": [],
+    "deterministic_audit_fingerprint": "sha256:b24f9ecb1587b79714d6d8e1bbc65a266b3f24d923bb17e19322bf6e78413f08",
+    "evaluation_profile_fingerprint": "sha256:c5f11adcaffc62149296d803394f59f9ad4b9d86b06786b5dea521a0e9178542",
+    "final_owner": "investigation",
+    "judge_id": "self-review-second-pass",
+    "judge_kind": "self_review",
+    "judged_at": "2026-10-21T11:20:00Z",
+    "judgment_fingerprint": "sha256:172db0fe6d87ebbae957f3462f368bddef66693f75a714868b3f09331f6feacc",
+    "judgment_id": "j-ft-1",
+    "producer_id": "writer-main",
+    "reader_brief_fingerprint": "sha256:585d22832c4b2b03a5af6eef13af2856f8263e9e01f885da357d872c43c9d868",
+    "reader_intent_fingerprint": "sha256:6d8732010b3fba6675ac11b15da0d555fb0f1af758973252458ecd8bdf2c7d53",
+    "required_repairs": [],
+    "reverse_outline": [
+      {
+        "artifact_unit_id": "artifact:paragraph:0002",
+        "carries_from_unit_ids": [],
+        "content_unit_ids": [
+          "cu-status-314"
+        ],
+        "downstream_effect": "feeds the decision",
+        "evidence": {
+          "artifact_unit_id": "artifact:paragraph:0002",
+          "excerpt": "Short answer: as of Python 3.14",
+          "excerpt_fingerprint": "sha256:f00e34572aaa31bb87294c116572886f3bfb650e21a57708025f424389ba3606",
+          "locator": "char:52-369"
+        },
+        "main_point": "Supported but optional in 3.14",
+        "observed_job": "answer",
+        "orphaned": false,
+        "overloaded": false,
+        "parent_unit_id": null,
+        "relation_to_previous": "opens",
+        "support_or_action": "cites What's New 3.14"
+      },
+      {
+        "artifact_unit_id": "artifact:paragraph:0004",
+        "carries_from_unit_ids": [
+          "artifact:paragraph:0002"
+        ],
+        "content_unit_ids": [
+          "cu-313-experimental"
+        ],
+        "downstream_effect": "feeds the decision",
+        "evidence": {
+          "artifact_unit_id": "artifact:paragraph:0004",
+          "excerpt": "In Python 3.13 the free-threaded mode shipped as an experimental feature",
+          "excerpt_fingerprint": "sha256:1b1aa7138a1578125dceaf5e9f431af8aa1bd828c2902d6ae5ec1305c2535ff5",
+          "locator": "char:406-796"
+        },
+        "main_point": "3.13 experimental to 3.14 supported",
+        "observed_job": "history",
+        "orphaned": false,
+        "overloaded": false,
+        "parent_unit_id": null,
+        "relation_to_previous": "follows",
+        "support_or_action": "cites 3.13 and 3.14 notes"
+      },
+      {
+        "artifact_unit_id": "artifact:paragraph:0006",
+        "carries_from_unit_ids": [
+          "artifact:paragraph:0004"
+        ],
+        "content_unit_ids": [
+          "cu-perf"
+        ],
+        "downstream_effect": "feeds the decision",
+        "evidence": {
+          "artifact_unit_id": "artifact:paragraph:0006",
+          "excerpt": "roughly 5-10%",
+          "excerpt_fingerprint": "sha256:8e9c198789968f8ea9f5fe919ac25916f84016bebc1dad38752b5a6b608c7db6",
+          "locator": "char:816-1169"
+        },
+        "main_point": "5-10% single-thread penalty, measure yourself",
+        "observed_job": "cost",
+        "orphaned": false,
+        "overloaded": false,
+        "parent_unit_id": null,
+        "relation_to_previous": "follows",
+        "support_or_action": "project estimate"
+      },
+      {
+        "artifact_unit_id": "artifact:paragraph:0008",
+        "carries_from_unit_ids": [
+          "artifact:paragraph:0006"
+        ],
+        "content_unit_ids": [
+          "cu-not-default"
+        ],
+        "downstream_effect": "feeds the decision",
+        "evidence": {
+          "artifact_unit_id": "artifact:paragraph:0008",
+          "excerpt": "Not on any announced schedule.",
+          "excerpt_fingerprint": "sha256:c7fbc9343b38f233ec6fd5811e64c5bf9e3eb1f2f0a3fd2f6f2c8e274ad1a352",
+          "locator": "char:1203-1754"
+        },
+        "main_point": "Default is undecided",
+        "observed_job": "outlook",
+        "orphaned": false,
+        "overloaded": false,
+        "parent_unit_id": null,
+        "relation_to_previous": "follows",
+        "support_or_action": "PEP 779 and notes"
+      },
+      {
+        "artifact_unit_id": "artifact:paragraph:0010",
+        "carries_from_unit_ids": [
+          "artifact:paragraph:0008"
+        ],
+        "content_unit_ids": [
+          "cu-recommend"
+        ],
+        "downstream_effect": "feeds the decision",
+        "evidence": {
+          "artifact_unit_id": "artifact:paragraph:0010",
+          "excerpt": "Revisit the plan when a phase III decision is announced.",
+          "excerpt_fingerprint": "sha256:8e189db466f9048f7a6ec9be42e455bc33544826f033e47d0902db47f9a45b1f",
+          "locator": "char:1771-2246"
+        },
+        "main_point": "Test now, no default date, recheck at phase III",
+        "observed_job": "recommendation",
+        "orphaned": false,
+        "overloaded": false,
+        "parent_unit_id": null,
+        "relation_to_previous": "follows",
+        "support_or_action": "limits on library readiness"
+      }
+    ],
+    "route_audit_fingerprint": "sha256:6eb647527329d4ae35a71c407a4e9c3285e0cda2f9b283d3a8ec4e51acab13ba",
+    "schema_version": "2.0",
+    "scores": {
+      "clarity": 4,
+      "coherence": 4,
+      "content_fidelity": 4,
+      "genre_fit": 4,
+      "instruction_fidelity": 4,
+      "naturalness": 4,
+      "reader_fit": 4,
+      "structure_fidelity": 4
+    },
+    "shared_writing_contract_fingerprint": "sha256:a3a37fb9d9bb0ba35febf9f1e880c6ee21e145c2c7eba9daff9c8306dbb75071",
+    "status": "passed",
+    "strengths": []
+  },
+  "provider_reports": [
+    {
+      "path": "research-status.json",
+      "provider": "researchguard"
+    }
+  ],
+  "revision_provenance": {
+    "applicability": "not_applicable",
+    "artifact_mode": "create_new",
+    "final_owner": "investigation",
+    "provenance_id": "prov-ft-1",
+    "recorded_at": "2026-10-21T11:20:00Z",
+    "schema_version": "2.0",
+    "source_artifact_fingerprint": null,
+    "unit_treatments": []
+  }
+}

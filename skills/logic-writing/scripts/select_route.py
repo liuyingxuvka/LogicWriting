@@ -120,7 +120,7 @@ def select_route(value):
     }
     if status == "needs_user_choice":
         decision["open_choices"] = choices
-    decision["decision_fingerprint"] = fingerprint(decision)
+    fill_fingerprint(decision, 'decision_fingerprint')
     require_schema("route-decision.schema.json", decision, label="RouteDecision")
     return decision
 

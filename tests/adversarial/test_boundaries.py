@@ -24,7 +24,7 @@ def test_review_evidence_must_be_actual_current_excerpt(tmp_path):
     review = copy.deepcopy(chain["route_review"])
     review["dimensions"][0]["evidence"][0]["excerpt"] = "invented evidence"
     review["dimensions"][0]["evidence"][0]["excerpt_fingerprint"] = fingerprint("invented evidence")
-    review["review_fingerprint"] = fingerprint({k: v for k, v in review.items() if k != "review_fingerprint"})
+    review["review_fingerprint"] = fingerprint({key: value for key, value in review.items() if key not in ('review_fingerprint', 'reviewed_at')})
     with pytest.raises(ValidationError):
         validate_route_artifact_review(
             review,
@@ -39,7 +39,7 @@ def test_route_review_cannot_omit_one_required_dimension(tmp_path):
     chain = complete_chain(tmp_path, "academic-writing")
     review = copy.deepcopy(chain["route_review"])
     review["dimensions"].pop()
-    review["review_fingerprint"] = fingerprint({k: v for k, v in review.items() if k != "review_fingerprint"})
+    review["review_fingerprint"] = fingerprint({key: value for key, value in review.items() if key not in ('review_fingerprint', 'reviewed_at')})
     request = closure_input(chain)
     request["route_review"] = review
     with pytest.raises(ValidationError, match="omits required"):
@@ -51,7 +51,7 @@ def test_same_agent_cannot_self_judge(tmp_path):
     judgment = copy.deepcopy(chain["judgment"])
     judgment["judge_kind"] = "independent_context"
     judgment["judge_id"] = judgment["producer_id"]
-    judgment["judgment_fingerprint"] = fingerprint({k: v for k, v in judgment.items() if k != "judgment_fingerprint"})
+    judgment["judgment_fingerprint"] = fingerprint({key: value for key, value in judgment.items() if key not in ('judgment_fingerprint', 'judged_at')})
     request = closure_input(chain)
     request["judgment"] = judgment
     with pytest.raises(ValidationError, match="independent"):
@@ -135,12 +135,12 @@ def test_present_overclaim_forces_repair(tmp_path):
     brief, review = _boundary_review(chain)
     review['overclaim_checks'][0].update(status='present', evidence=[span_evidence(chain)])
     review.pop('review_fingerprint')
-    review['review_fingerprint'] = fingerprint(review)
+    review['review_fingerprint'] = fingerprint({key: value for key, value in review.items() if key not in ('review_fingerprint', 'reviewed_at')})
     with pytest.raises(ValidationError, match='status is not derived'):
         route_review_from_current(review, owner='investigation', route=chain['route_composition'], amap=chain['artifact_map'],
                                    brief=brief, shared=chain['shared_writing'])
     review.update(status='repair', required_repairs=['oc:universal'])
     review.pop('review_fingerprint')
-    review['review_fingerprint'] = fingerprint(review)
+    review['review_fingerprint'] = fingerprint({key: value for key, value in review.items() if key not in ('review_fingerprint', 'reviewed_at')})
     assert route_review_from_current(review, owner='investigation', route=chain['route_composition'], amap=chain['artifact_map'],
                                      brief=brief, shared=chain['shared_writing'])['status'] == 'repair'

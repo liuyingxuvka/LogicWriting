@@ -23,10 +23,11 @@ class _RealReaderChain:
         for path in (ROOT, ROOT / "skills" / "logic-writing" / "scripts"):
             if str(path) not in sys.path:
                 sys.path.insert(0, str(path))
-        from _common import ValidationError, fingerprint
+        from _common import ValidationError, fingerprint, fill_fingerprint
         from derive_closure import derive_closure
         from tests.v2_support import closure_input, complete_chain
         self.validation_error, self.fingerprint = ValidationError, fingerprint
+        self.fill_fingerprint = fill_fingerprint
         self.derive_closure, self.closure_input, self.complete_chain = derive_closure, closure_input, complete_chain
         self.root = Path(tempfile.mkdtemp(prefix="lw-reader-model-"))
         self.count = 0
@@ -39,6 +40,115 @@ class _RealReaderChain:
     def _workdir(self) -> Path:
         self.count += 1
         return self.root / f"step-{self.count}"
+
+    def _review_stamp(self, case):
+        """Call the explicit public stamp command and default chain on a short example."""
+        import json
+        from contextlib import redirect_stderr, redirect_stdout
+        from io import StringIO
+        from types import SimpleNamespace
+        from unittest.mock import patch
+        from _common import load_request, fill_fingerprint
+        from derive_closure import CLOSURE_INPUT_FILES
+        from reader_fill import fill_closure_fingerprints
+        from run_chain import main, run_chain
+        def invoke(*arguments):
+            output, errors = StringIO(), StringIO()
+            with patch.object(sys, 'argv', ['run_chain.py', str(folder), *arguments]), redirect_stdout(output), redirect_stderr(errors):
+                try:code = main()
+                except SystemExit as exc:code = exc.code
+            return SimpleNamespace(returncode=code, stdout=output.getvalue(), stderr=errors.getvalue())
+        folder = self._workdir()
+        shutil.copytree(ROOT / 'skills/logic-writing/assets/examples/investigation', folder)
+        path = folder / 'closure-input.json'
+        original = json.loads(path.read_text())
+        if case == 'valid_repair':
+            judgment = original['judgment']
+            evidence = copy.deepcopy(judgment['reverse_outline'][0]['evidence'])
+            judgment['scores']['coherence'] = 3
+            judgment['status'] = 'repair'
+            # The defect and repair wording already belong to tests.v2_support.complete_chain.
+            judgment['defects'] = [dict(observation_id='judge:defect', dimension='coherence',
+                message='The actual opening does not yet license the conclusion.', severity='repair', evidence=evidence)]
+            judgment['required_repairs'] = [dict(repair_id='repair:coherence', defect_ids=['judge:defect'],
+                target_unit_ids=[evidence['artifact_unit_id']], required_change='Rebuild the opening-to-conclusion dependency.',
+                repair_owner='investigation')]
+            path.write_text(json.dumps(original))
+        if case == 'unstamped':
+            original['judgment'] = {key: value for key, value in original['judgment'].items() if not key.endswith('_fingerprint')}
+            path.write_text(json.dumps(original))
+            before = path.read_bytes()
+            observed = invoke()
+            if path.read_bytes() != before:return 'default_wrote_judgment'
+            message = observed.stdout
+            if observed.returncode and '--stamp-review' in message and 'first failure: closure: ' in message:
+                return message.split('first failure: closure: ', 1)[1].split(':', 1)[0]
+            return json.loads((folder / 'closure.json').read_text()).get('closure', {}).get('status', 'unexpected_failure')
+        if case == 'unreviewed':
+            for row in original['judgment']['reverse_outline']:
+                row['content_unit_ids'] = [identity for identity in row['content_unit_ids'] if identity != 'cu-perf']
+            path.write_text(json.dumps(original))
+        if case == 'failed_stamp':
+            piece = folder / 'piece.md'
+            piece.write_bytes(piece.read_bytes() + b'\nSourceGuard\n')
+        if case == 'invalid_review':
+            original['judgment']['reverse_outline'][0]['evidence']['excerpt'] = 'SourceGuard'
+            path.write_text(json.dumps(original))
+        before = path.read_bytes()
+        stamp = invoke('--stamp-review')
+        if case in {'failed_stamp', 'invalid_review'}:
+            return 'failed+unchanged' if stamp.returncode == 1 and path.read_bytes() == before else 'failed_stamp_wrote_or_passed'
+        if stamp.returncode and not (case == 'valid_repair' and stamp.returncode == 1 and 'stamped: closure-input.json judgment ' in stamp.stdout):
+            if case == 'unreviewed' and 'judgment_content_unit_unreviewed:cu-perf' in stamp.stdout:
+                return 'judgment_content_unit_unreviewed:cu-perf'
+            return 'stamp_unavailable'
+        saved = json.loads(path.read_text())
+        if f"stamped: closure-input.json judgment {saved['judgment']['judgment_id']}" not in stamp.stdout:
+            return 'stamp_receipt_missing'
+        if {key: value for key, value in saved.items() if key != 'judgment'} != {key: value for key, value in original.items() if key != 'judgment'}:
+            return 'stamp_changed_other_inputs'
+        stamped = path.read_bytes()
+        if case == 'moved':
+            # The article bytes stay the same; file location/reference identity changes.
+            moved = self._workdir()
+            shutil.copytree(folder, moved)
+            folder, path = moved, moved / 'closure-input.json'
+        if case == 'repeat_stamp':
+            again = invoke('--stamp-review')
+            return 'stamped+unchanged' if again.returncode == 0 and path.read_bytes() == stamped else 'repeat_stamp_changed_bytes'
+        if case == 'edited':
+            piece = folder / 'piece.md'
+            text = piece.read_text();assert 'single-threaded' in text
+            piece.write_text(text.replace('single-threaded', 'multi-threaded', 1))
+        result = run_chain(folder)
+        if path.read_bytes() != stamped:return 'default_replaced_the_stamp'
+        if case == 'valid_repair':
+            judgment = saved['judgment']
+            old = original['judgment']
+            closed = result['results'].get('closure', {}).get('closure', {})
+            preserved = (judgment['status'] == 'repair' and judgment['scores'] == old['scores']
+                         and judgment['required_repairs'] == old['required_repairs']
+                         and len(judgment['defects']) == 1
+                         and all(judgment['defects'][0][key] == value for key, value in old['defects'][0].items() if key != 'evidence'))
+            return 'stamped+needs_repair' if preserved and closed.get('status') == 'needs_repair' else 'repair_was_lost_or_passed'
+        if result['exit_code']:
+            failure = result['first_failure']
+            if case == 'unreviewed':return failure['message'].split(' (', 1)[0]
+            return failure['code'] if '--stamp-review' in failure['message'] else 'repair_command_missing'
+        if case != 'time_fields':return result['results']['closure']['closure']['status']
+        request = fill_closure_fingerprints(load_request(path, defaults=CLOSURE_INPUT_FILES))
+        for key, field, time in (('route_decision', 'decision_fingerprint', 'decided_at'),
+                                 ('deterministic_audit', 'audit_fingerprint', 'audited_at'),
+                                 ('route_review', 'review_fingerprint', 'reviewed_at'),
+                                 ('judgment', 'judgment_fingerprint', 'judged_at'),
+                                 ('revision_provenance', 'provenance_fingerprint', 'recorded_at')):
+            record = request[key];expected = record.pop(field)
+            record[time] = '2020-01-01T00:00:00Z';fill_fingerprint(record, field)
+            if record[field] != expected:return 'time_pollutes_fingerprint'
+        first = json.loads((folder / 'audit.json').read_text())['reader_audit']['audit_fingerprint']
+        again = run_chain(folder)
+        second = json.loads((folder / 'audit.json').read_text())['reader_audit']['audit_fingerprint']
+        return 'stable' if again['exit_code'] == 0 and first == second else 'rerun_invalidated_stamp'
 
     def _import(self, case: str) -> str:
         """Import one anchor from a small research folder whose saved report gives its direction."""
@@ -109,6 +219,9 @@ class _RealReaderChain:
                 next(row for row in boundaries['content_units']
                      if row['content_unit_id'] == 'cu-recommend')['evidence_anchor_ids'].append('anc-invented')
         path.write_text(json.dumps(request))
+        if case in ('research', 'outside'):
+            from run_chain import _stamp_review
+            assert _stamp_review(folder)['exit_code'] == 0
         result = run_chain(folder, until='closure' if case in ('research', 'outside') else 'brief')
         if result['exit_code']:
             return result['first_failure']['code']
@@ -184,6 +297,8 @@ class _RealReaderChain:
             path.write_text(json.dumps(request))
             writer_line = 'added by the writer: cu-recommend: ' + writer['safe_meaning']
             if input_name != 'brief-request.json':
+                from run_chain import _stamp_review
+                assert _stamp_review(folder)['exit_code'] == 0
                 if input_name == 'closure-input.json':
                     previous = sys.argv
                     output = io.StringIO()
@@ -351,8 +466,8 @@ class _RealReaderChain:
             from reader_fill import fill_check_fingerprints, fill_closure_fingerprints
             from reader_checks import build_reader_audit_from_current
 
-            # Tamper a current brief, preserving identities and recomputing actual
-            # bindings/audit references so stale metadata cannot stand in for this gate.
+            # Tamper after initialization; recompute supporting inputs but retain
+            # the old judgment. The content gate must still be the observed rejection.
             request = copy.deepcopy(self.closure_input(self.complete_chain(self._workdir())))
             brief = request['reader_brief']
             boundaries = brief['content_boundaries']
@@ -377,9 +492,6 @@ class _RealReaderChain:
             request['deterministic_audit'] = build_reader_audit_from_current(
                 audit_id=audit['audit_id'], amap=request['artifact_map'], brief=brief,
                 contract=shared, audited_at=audit.get('audited_at'))
-            for field in ('reader_brief_fingerprint', 'shared_writing_contract_fingerprint',
-                          'deterministic_audit_fingerprint', 'judgment_fingerprint'):
-                request['judgment'].pop(field, None)
             fill_closure_fingerprints(request)
             try:
                 return self.derive_closure(request)['closure']['status']
@@ -432,6 +544,13 @@ class _RealReaderChain:
             piece = folder / 'piece.md'
             piece.write_text(piece.read_text().rstrip('\n') + ' ' + meaning + '\n')
         path.write_text(json.dumps(request))
+        if case == 'reason':
+            from run_chain import _stamp_review
+            judgment_path = folder / 'closure-input.json'
+            saved = json.loads(judgment_path.read_text())
+            next(row for row in saved['judgment']['reverse_outline'] if 'cu-recommend' in row['content_unit_ids'])['content_unit_ids'].append('cu-migrate')
+            judgment_path.write_text(json.dumps(saved))
+            assert _stamp_review(folder)['exit_code'] == 0
         result = run_chain(folder, until='closure' if case == 'reason' else 'brief')
         if result['exit_code']:
             return result['first_failure']['code']
@@ -446,6 +565,10 @@ class _RealReaderChain:
     def apply_step(self, step) -> ReplayObservation:
         event = step.function_input
         state = self.state
+        if event.kind == 'stamp':
+            result = self._review_stamp(event.quality)
+            self.state = replace(state, review_case=event.quality, review_result=result)
+            return ReplayObservation(function_name=step.function_name, observed_output=result, observed_state=self.state)
         if event.kind == 'request':
             result = self._request(event.quality)
             state = replace(state, request_case=event.quality, request_result=result)
@@ -526,7 +649,7 @@ class _RealReaderChain:
                 judgment["judge_kind"] = "self_review"
                 judgment["judge_id"] = judgment["producer_id"]
                 judgment.pop("judgment_fingerprint")
-                judgment["judgment_fingerprint"] = self.fingerprint(judgment)
+                self.fill_fingerprint(judgment, 'judgment_fingerprint')
                 chain["judgment"] = judgment
             self.chain = chain
             judgment = chain["judgment"]

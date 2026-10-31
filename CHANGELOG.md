@@ -8,6 +8,8 @@ line follows semantic versioning.
 
 ## Unreleased
 
+- Execution timestamps no longer affect record fingerprints; a review is explicitly stamped on its current text and plan with run_chain.py --stamp-review. Default closure refuses missing or stale stamps, preserves valid repair judgments, and still checks revision provenance.
+
 - A fiction or travel composition can name a WorldGuard tree as world_mesh; closure binds its mesh-check report by mesh_id and input_digests, and refuses an old tree report without mesh_id with the command that regenerates it.
 - WorldGuard reports retain their actual scope limits as nonblocking closure risks; readback shows their count.
 

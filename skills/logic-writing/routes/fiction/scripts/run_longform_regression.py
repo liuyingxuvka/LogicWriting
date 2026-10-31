@@ -63,6 +63,11 @@ def reader_chain_result(repo_root: Path) -> dict[str, Any]:
         target = Path(tmp)/"project"
         shutil.copytree(Path(fixture(repo_root,"longform_novel_project")), target)
         common = repo_root/"skills/logic-writing/scripts"
+        prepared = subprocess.run([sys.executable, str(common/"run_chain.py"), str(target), "--stamp-review"],
+                                  cwd=target, text=True, capture_output=True)
+        if prepared.returncode:
+            return dict(id="positive.standard_reader_chain", passed=False,
+                        steps=[dict(step="stamp_review", exit_code=prepared.returncode, stdout=prepared.stdout, stderr=prepared.stderr)])
         steps = ((common/"select_route.py", "route-request.json", "route-decision.json"),
                  (common/"build_reader_brief.py", "brief-request.json", "reader-brief.json"),
                  (common/"build_artifact_map.py", "map-request.json", "artifact-map.json"),

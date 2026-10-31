@@ -45,9 +45,7 @@ def test_revision_provenance_must_bind_current_target_bytes(tmp_path):
     chain = complete_chain(tmp_path, "academic-writing")
     provenance = copy.deepcopy(chain["revision_provenance"])
     provenance["target_artifact_fingerprint"] = fingerprint({"old": True})
-    provenance["provenance_fingerprint"] = fingerprint({
-        key: value for key, value in provenance.items() if key != "provenance_fingerprint"
-    })
+    provenance["provenance_fingerprint"] = fingerprint({key: value for key, value in provenance.items() if key not in ('provenance_fingerprint', 'recorded_at')})
     with pytest.raises(ValidationError, match="stale"):
         validate_revision_provenance(
             provenance,

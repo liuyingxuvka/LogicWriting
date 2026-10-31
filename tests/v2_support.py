@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from _common import fingerprint, fingerprint_text, fingerprint_without
+from _common import fingerprint, fingerprint_text, fingerprint_without, fill_fingerprint
 from artifact_map import build_artifact_map
 from reader_checks import build_reader_audit
 from reader_plan import build_reader_brief
@@ -20,7 +20,11 @@ EXAMPLES = Path(__file__).resolve().parents[1] / "skills/logic-writing/assets/ex
 
 
 def _with_fp(value: dict, field: str) -> dict:
-    value[field] = route_extension_fingerprint(value) if field == "extension_fingerprint" else fingerprint_without(value, field)
+    if field == 'extension_fingerprint':
+        value[field] = route_extension_fingerprint(value)
+    else:
+        value.pop(field, None)
+        fill_fingerprint(value, field)
     return value
 
 
@@ -492,7 +496,7 @@ def complete_chain(
         "status": "passed" if pass_quality else "repair",
         "reviewed_at": NOW,
     }
-    route_review["review_fingerprint"] = fingerprint(route_review)
+    fill_fingerprint(route_review, 'review_fingerprint')
     scores = {key: 5 if pass_quality else 3 for key in (
         "clarity", "structure_fidelity", "coherence", "naturalness", "reader_fit",
         "content_fidelity", "genre_fit", "instruction_fidelity",
@@ -539,7 +543,7 @@ def complete_chain(
         "status": "passed" if pass_quality else "repair",
         "judged_at": NOW,
     }
-    judgment["judgment_fingerprint"] = fingerprint(judgment)
+    fill_fingerprint(judgment, 'judgment_fingerprint')
     provenance = {
         "schema_version": "2.0",
         "provenance_id": f"provenance:{owner}",
@@ -552,7 +556,7 @@ def complete_chain(
         "unit_treatments": [],
         "recorded_at": NOW,
     }
-    provenance["provenance_fingerprint"] = fingerprint(provenance)
+    fill_fingerprint(provenance, 'provenance_fingerprint')
     provider_reports = []
     if owner in {"investigation", "travel-guide"}:
         import json
@@ -569,6 +573,8 @@ def complete_chain(
         "revision_provenance": provenance,
         "closure_id": f"closure:{owner}",
     })
+    from run_chain import _stamp_judgment
+    chain['judgment'] = _stamp_judgment(closure_input(chain))
     return chain
 
 

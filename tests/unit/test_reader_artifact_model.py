@@ -58,7 +58,7 @@ def test_self_review_closes_without_a_broad_claim(tmp_path, same_ids, pass_quali
     if same_ids:
         judgment["judge_id"] = judgment["producer_id"]
     judgment.pop("judgment_fingerprint")
-    judgment["judgment_fingerprint"] = fingerprint(judgment)
+    judgment["judgment_fingerprint"] = fingerprint({key: value for key, value in judgment.items() if key not in ('judgment_fingerprint', 'judged_at')})
     closed = derive_closure(request)["closure"]
     assert closed["status"] == ("passed" if pass_quality else "needs_repair")
     assert closed["judge_kind"] == "self_review"
