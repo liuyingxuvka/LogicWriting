@@ -1,0 +1,13 @@
+{
+  "schema": "flowguard.target.v1",
+  "goal": "LW-607: wording stays within the research report's license",
+  "components": [],
+  "flows": [],
+  "remove": [],
+  "requests": [
+    {
+      "id": "R1",
+      "part": true
+    }
+  ]
+}
