@@ -1,0 +1,62 @@
+{
+  "kind": "change",
+  "goal": "LW-605: a required unit needs evidence and may not restate an unsupported alternative",
+  "requests": [
+    {
+      "id": "R1",
+      "part": true
+    }
+  ],
+  "base": "06f4e344fa68ab14e1f95dfdf8c13a29cfc269cc",
+  "tree": "1987e0cdf817e87bc3b699805c01e36240cbd173132c1a7baad6e5c1573d6e02",
+  "promoted": "2026-10-31T11:57:46.909230+00:00",
+  "plan": [
+    {
+      "line": "touch: skills/logic-writing/scripts/reader_plan.py:build_reader_brief",
+      "added_after_code": null,
+      "cleared": []
+    },
+    {
+      "line": "touch: skills/logic-writing/scripts/derive_closure.py:derive_closure",
+      "added_after_code": null,
+      "cleared": []
+    }
+  ],
+  "rules": [
+    {
+      "id": "reader_evidence_model.closure_refuses_unsupported_restatement",
+      "old": null,
+      "new": "fp:413e04c40a49b8a79a3e8a4da9aa97428b8d7003c0eb5818d024368fb69d6cc6",
+      "provenance": "unjudged: no checked PLAN changes line"
+    },
+    {
+      "id": "reader_evidence_model.closure_requires_support",
+      "old": null,
+      "new": "fp:76a369f2cff6616cfb3a60a78b05b9f45188da737ee2f5854d58d2b9d4465e33",
+      "provenance": "unjudged: no checked PLAN changes line"
+    }
+  ],
+  "acceptances": [],
+  "existing_cleared": [],
+  "implemented_by": [
+    "skills/logic-writing/scripts/derive_closure.py:derive_closure",
+    "skills/logic-writing/scripts/reader_plan.py:_content_words",
+    "skills/logic-writing/scripts/reader_plan.py:build_reader_brief",
+    "skills/logic-writing/scripts/reader_plan.py:validate_evidence_boundaries",
+    "tests/unit/test_evidence_rules.py:_add_unit",
+    "tests/unit/test_evidence_rules.py:_build",
+    "tests/unit/test_evidence_rules.py:_example",
+    "tests/unit/test_evidence_rules.py:_save",
+    "tests/unit/test_evidence_rules.py:test_answered_unsupported_alternative_is_allowed",
+    "tests/unit/test_evidence_rules.py:test_evidence_scope_boundaries",
+    "tests/unit/test_evidence_rules.py:test_shipped_examples_meet_the_evidence_rules",
+    "tests/unit/test_evidence_rules.py:test_unicode_words_and_empty_filtered_alternative",
+    "tests/unit/test_evidence_rules.py:test_unit_restating_an_unsupported_alternative_fails",
+    "tests/unit/test_evidence_rules.py:test_unit_without_anchor_is_unsupported",
+    "tests/unit/test_evidence_rules.py:test_unsupported_reason_is_a_residual_risk",
+    "tests/v2_support.py:make_reader_chain"
+  ],
+  "new_actions": [],
+  "corrections": [],
+  "checked": "This promotion ran one fresh target check with bound tests and the remaining function-selected tests; 2 warning(s) remained. The tree identifies the checked post-promotion content, before later component confirmation. Implementation provenance lists changed Python function definitions from the Git diff. Available static rule identities and checked PLAN lines are recorded. PLAN edit ordering, per-item clearance, acceptances, existing-item clearance and new-action judgments are not assessed; unknown order is null and unsupported lists are empty."
+}

@@ -18,6 +18,22 @@ conclusion jobs, hierarchy, reader-state changes, downstream relationships,
 content/limitation placement, presentation mode and planned extent. Required
 outline rows and content must be planned or explicitly dispositioned.
 
+## Evidence for researched units
+
+In investigation and academic pieces, and any brief with `research_folder`,
+each required content unit needs an anchor whose relation is `support`, `limit`
+or `context`, or a nonempty `unsupported_reason`. An explicit reason remains
+visible in closure as `unsupported:<content_unit_id>` in `residual_risk`.
+Optional units and nonresearch fiction or travel stay outside this requirement.
+
+The builder and closure also flag an unsupported alternative whose complete
+content-word set appears in a required unit unless that unit declares the
+alternative in `alternative_ids`. This finite lexical signal is not semantic
+entailment: declared qualifications, quotations and rebuttals are lawful answers.
+An explicit evidence gap does not replace that response declaration. Words use
+Unicode letters and numbers; an alternative emptied by stop-word filtering
+does not match every sentence.
+
 ## Source-owned research anchors
 
 A request may name `research_folder`, relative to its JSON file, as a research

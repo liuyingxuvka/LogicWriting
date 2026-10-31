@@ -27,7 +27,7 @@ from known_bad import check_known_bad
 from artifact_map import validate_artifact_map
 from reader_checks import compare_reader_audit, build_reader_audit_from_current, reader_judgment_from_current, route_review_from_current
 from reader_fill import fill_closure_fingerprints
-from reader_plan import validate_revision_provenance
+from reader_plan import validate_evidence_boundaries, validate_revision_provenance
 from reader_plan_core import validate_route_composition
 from reader_binding import shared_writing_from_current
 
@@ -172,6 +172,7 @@ def derive_closure(
         raise ValidationError("closure requires one current v2 RouteDecision")
     brief = require_mapping(request["reader_brief"], "ReaderBrief")
     require_schema("reader-brief.schema.json", brief, label="ReaderBrief")
+    evidence_risks = validate_evidence_boundaries(brief)
     if brief["route_decision_fingerprint"] != decision["decision_fingerprint"]:
         raise ValidationError("ReaderBrief is stale for RouteDecision")
     if brief["final_owner"] != owner:
@@ -243,6 +244,7 @@ def derive_closure(
     ]
     if status == "passed":
         residual = []
+    residual.extend(dict(row, owner=owner) for row in evidence_risks)
     # In-process domain closure contributes real failed surfaces to the same quality gate.
     if owner == "fiction-writing" and route.get("longform_project"):
         import sys

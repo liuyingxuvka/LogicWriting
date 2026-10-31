@@ -314,7 +314,7 @@ def make_reader_chain(workdir: Path, owner: str = "investigation", *, language: 
             "content_unit_id": "content:answer",
             "safe_meaning": "成品必须把中心问题、支撑、边界和收束写成连续正文。",
             "required": True,
-            "evidence_anchor_ids": [],
+            "evidence_anchor_ids": ["evidence:one"],
             "alternative_ids": [],
             "limitation_ids": [],
             "model_row_ids": ["model:throughline"],

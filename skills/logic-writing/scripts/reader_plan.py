@@ -10,6 +10,43 @@ from typing import Any, Iterable, Mapping
 from writer_projection import build_writer_input, validate_writer_input
 
 
+_CONTENT_STOP_WORDS = frozenset('the a an in of to is and or it be will so'.split())
+
+
+def _content_words(text):
+    """Unicode letters/numbers for the bounded lexical signal, not semantic entailment."""
+    words = ''.join(char if char.isalnum() else ' ' for char in text.casefold()).split()
+    return set(words) - _CONTENT_STOP_WORDS
+
+
+def validate_evidence_boundaries(brief):
+    """Validate researched required units and return their explicitly retained evidence gaps."""
+    if brief['final_owner'] not in ('investigation', 'academic-writing') and 'research_folder' not in brief:
+        return []
+    boundaries = brief['content_boundaries']
+    relations = {row['anchor_id']: row['relation'] for row in boundaries['evidence_anchors']}
+    unsupported = [row for row in boundaries['alternatives'] if row['status'] == 'unsupported']
+    risks = []
+    for unit in boundaries['content_units']:
+        if not unit['required']:
+            continue
+        identity = unit['content_unit_id']
+        reason = unit.get('unsupported_reason', '').strip()
+        supported = any(relations.get(anchor) in ('support', 'limit', 'context')
+                        for anchor in unit['evidence_anchor_ids'])
+        if not supported and not reason:
+            raise ValidationError(f'content_unit_unsupported:{identity} (a required unit needs an evidence anchor that is not only counter, or an unsupported_reason)')
+        words = _content_words(unit['safe_meaning'])
+        for alternative in unsupported:
+            alternative_words = _content_words(alternative['safe_meaning'])
+            if (alternative_words and alternative_words <= words
+                    and alternative['alternative_id'] not in unit['alternative_ids']):
+                raise ValidationError(f"content_unit_restates_unsupported:{identity}:{alternative['alternative_id']} (the unit's meaning contains every content word of an unsupported alternative; drop the claim, or list the alternative in alternative_ids if the unit answers it)")
+        if reason:
+            risks.append(dict(defect_id='unsupported:' + identity, reason=reason))
+    return risks
+
+
 def build_reader_brief(
     *,
     route_decision: Mapping[str, Any],
@@ -118,6 +155,7 @@ def build_reader_brief(
     brief["brief_fingerprint"] = fingerprint(brief)
     validate_writer_input(writer_input, composition_plan=plan)
     require_schema("reader-brief.schema.json", brief, label="ReaderBrief")
+    validate_evidence_boundaries(brief)
     return brief
 
 

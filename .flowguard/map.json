@@ -78,10 +78,11 @@
         "tests/unit/test_reader_artifact_model.py"
       ],
       "models": [
-        ".flowguard/models/reader_artifact_model.py"
+        ".flowguard/models/reader_artifact_model.py",
+        ".flowguard/models/reader_evidence_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:7b1d6e3e652317370dca71980669f265f390361cde2ac3b70c4da6c667a163fa"
+      "fingerprint": "sha256:33f4719edc4f012d7d1798a20748524d4e17e35839dc059609c18c6a9f9353eb"
     },
     {
       "id": "fiction",
@@ -611,12 +612,13 @@
         "tests/unit/test_cli_inputs.py",
         "tests/unit/test_composition_graph.py",
         "tests/unit/test_editorial_dispositions.py",
-        "tests/unit/test_writer_projection.py"
+        "tests/unit/test_writer_projection.py",
+        "tests/unit/test_evidence_rules.py"
       ],
       "models": [],
       "parent": "reader-artifact",
       "status": "confirmed",
-      "fingerprint": "sha256:ffc468af9379e242c005ee52a921ca0655e53a198359f72a3348b662c26d1230"
+      "fingerprint": "sha256:f1ce875fd4d9dfaf187b3fc4127d6c89425f8b8098ffffb10430835a398c100d"
     },
     {
       "id": "reader-binding",
@@ -788,7 +790,7 @@
       ],
       "parent": "reader-artifact",
       "status": "confirmed",
-      "fingerprint": "sha256:3afd1950f78a1f24e5221daa92b276f9b71151652ade43023875a24ba3e1a580"
+      "fingerprint": "sha256:ff75e7b9bd3986a186840d068a2bd0236ea50b0886af0687c88a3ef0cc016efb"
     },
     {
       "id": "reader-commands",
@@ -1027,6 +1029,7 @@
     ".flowguard/models/plan_readback_model.py": "7947367c2e43299c6965b0ed31d2bc3d6352067e267b7ec989f7861de0b46cfa",
     ".flowguard/models/provider_preflight_model.py": "d78fe03165665eda9c3ce0a954f661a4e187e20c9c9b99a7d073b2d50ed415b2",
     ".flowguard/models/reader_artifact_model.py": "4861a104114cc29c29fd9adc78f646306a5588c9153c0689c14cb89ed1fe56a9",
+    ".flowguard/models/reader_evidence_model.py": "208ee8533341cdbb835485a19225bd9ca42fbbadcad8073b64e20020e8fc4eeb",
     ".flowguard/models/route_review_model.py": "a24f47fdc46d89c4b03f323784ca3275ffecc5d7807ebf5cccbf24254bb395d5",
     ".flowguard/models/route_selection_model.py": "2f75c31bd5c5b3c040d2d34f6677ceed9f9c15921421c9a222640a7a93c97e00",
     ".flowguard/models/shared_contracts_model.py": "f3a093e25d0322ab3fc1d7473ce6451f2e9e69a033959f70e93aeeba1e1ea2ef",

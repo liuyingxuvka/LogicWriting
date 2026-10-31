@@ -207,6 +207,9 @@
             "$ref": "#/$defs/identifier"
           },
           "uniqueItems": true
+        },
+        "unsupported_reason": {
+          "type": "string"
         }
       }
     },

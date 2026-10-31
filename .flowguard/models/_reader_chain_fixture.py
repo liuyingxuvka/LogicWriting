@@ -103,7 +103,8 @@ class _RealReaderChain:
             request = json.loads(path.read_text())
             meaning = "Teams should move production services to the free-threaded build this year."
             request["content_boundaries"]["content_units"].append({
-                "content_unit_id": "cu-migrate", "safe_meaning": meaning, "required": True,
+                "content_unit_id": "cu-migrate", "safe_meaning": meaning,
+                "required": input_name == "brief-request.json",
                 "evidence_anchor_ids": [], "alternative_ids": [], "limitation_ids": [],
                 "model_row_ids": [],
             })
@@ -224,9 +225,114 @@ class _RealReaderChain:
         codes = {row["code"] for row in audit["findings"]}
         return "plan_order_mismatch" if "plan_order_mismatch" in codes else audit["status"]
 
+    def _evidence(self, case):
+        """Probe the public S1/S2 inputs and finite declared-response/scope controls."""
+        import json
+        from _common import load_request
+        from run_chain import run_chain
+
+        if case.endswith('_closure'):
+            from reader_fill import fill_check_fingerprints, fill_closure_fingerprints
+            from reader_checks import build_reader_audit_from_current
+
+            # Tamper a current brief, preserving identities and recomputing actual
+            # bindings/audit references so stale metadata cannot stand in for this gate.
+            request = copy.deepcopy(self.closure_input(self.complete_chain(self._workdir())))
+            brief = request['reader_brief']
+            boundaries = brief['content_boundaries']
+            unit = boundaries['content_units'][0]
+            if case == 'missing_closure':
+                unit['evidence_anchor_ids'] = []
+            else:
+                unit['safe_meaning'] = 'Free-threading will become the default build in the next Python release, so plan the migration for it.'
+                unit['alternative_ids'] = []
+                boundaries['alternatives'].append({
+                    'alternative_id': 'alt-default-soon',
+                    'safe_meaning': 'Free-threading will become the default in the next release.',
+                    'status': 'unsupported', 'content_unit_ids': [unit['content_unit_id']],
+                })
+            brief.pop('brief_fingerprint')
+            brief['brief_fingerprint'] = self.fingerprint(brief)
+            shared = request['shared_writing']
+            shared.pop('reader_brief_fingerprint', None)
+            shared.pop('contract_fingerprint', None)
+            fill_check_fingerprints(request)
+            audit = request['deterministic_audit']
+            request['deterministic_audit'] = build_reader_audit_from_current(
+                audit_id=audit['audit_id'], amap=request['artifact_map'], brief=brief,
+                contract=shared, audited_at=audit.get('audited_at'))
+            for field in ('reader_brief_fingerprint', 'shared_writing_contract_fingerprint',
+                          'deterministic_audit_fingerprint', 'judgment_fingerprint'):
+                request['judgment'].pop(field, None)
+            fill_closure_fingerprints(request)
+            try:
+                return self.derive_closure(request)['closure']['status']
+            except self.validation_error as exc:
+                return str(exc).split(':', 1)[0]
+
+        folder = self._workdir()
+        route = 'fiction' if case in ('nonresearch', 'research_folder') else 'academic' if case == 'academic_missing' else 'investigation'
+        shutil.copytree(ROOT / 'skills/logic-writing/assets/examples' / route, folder)
+        path = folder / 'brief-request.json'
+        request = json.loads(path.read_text())
+        boundaries = request['content_boundaries']
+        if case == 'research_folder':
+            example = ROOT / 'skills/logic-writing/assets/examples/investigation'
+            request.update(research_folder=str(example / 'research'),
+                           research_status=str(example / 'research-status.json'))
+        elif case == 'academic_missing':
+            boundaries['content_units'][0]['evidence_anchor_ids'] = []
+        elif case not in ('context', 'nonresearch'):
+            responses = {
+                'restatement': 'Free-threading will become the default build in the next Python release, so plan the migration for it.',
+                'qualified_answer': 'It is not established that free-threading will become the default in the next release.',
+                'quoted_answer': 'The claim "Free-threading will become the default in the next release." is unsupported.',
+                'rebutted_answer': 'We reject the claim that free-threading will become the default in the next release.',
+            }
+            meaning = responses.get(case, 'Teams should move production services to the free-threaded build this year.')
+            identity = 'cu-default-next' if case in responses else 'cu-migrate'
+            anchors = ['anc-314-supported'] if case in responses else []
+            if case == 'counter_only':
+                counter = dict(boundaries['evidence_anchors'][0], anchor_id='anc-counter', relation='counter')
+                boundaries['evidence_anchors'].append(counter)
+                anchors = ['anc-counter']
+            unit = dict(content_unit_id=identity, safe_meaning=meaning, required=case != 'optional',
+                        evidence_anchor_ids=anchors, alternative_ids=[], limitation_ids=[], model_row_ids=[])
+            if case in ('qualified_answer', 'quoted_answer', 'rebutted_answer'):
+                unit['alternative_ids'] = ['alt-default-soon']
+            if case == 'reason':
+                unit['unsupported_reason'] = 'The evidence does not support this recommendation; keep the gap visible.'
+            boundaries['content_units'].append(unit)
+            next(row for row in request['composition_plan']['planned_units']
+                 if row['planned_unit_id'] == 'u-recommend')['content_unit_ids'].append(identity)
+            shared_path = folder / 'shared-writing.json'
+            shared = json.loads(shared_path.read_text())
+            next(row for row in shared['contract']['unit_bindings']
+                 if row['planned_unit_id'] == 'u-recommend')['content_unit_ids'].append(identity)
+            shared_path.write_text(json.dumps(shared))
+            piece = folder / 'piece.md'
+            piece.write_text(piece.read_text().rstrip('\n') + ' ' + meaning + '\n')
+        path.write_text(json.dumps(request))
+        result = run_chain(folder, until='closure' if case == 'reason' else 'brief')
+        if result['exit_code']:
+            return result['first_failure']['code']
+        if case == 'reason':
+            closure = result['results']['closure']['closure']
+            risk = any(row.get('defect_id') == 'unsupported:cu-migrate'
+                       and row.get('reason') == unit['unsupported_reason']
+                       for row in closure['residual_risk'])
+            return 'passed+risk' if closure['status'] == 'passed' and risk else 'missing-risk'
+        return 'passed'
+
     def apply_step(self, step) -> ReplayObservation:
         event = step.function_input
         state = self.state
+        if event.kind == 'evidence':
+            result = self._evidence(event.quality)
+            state = replace(state, evidence_case=event.quality, evidence_result=result)
+            self.state = state
+            return ReplayObservation(function_name=step.function_name,
+                                     observed_output=result, observed_state=state)
         if event.kind == "chain":
             import json
             from run_chain import run_chain

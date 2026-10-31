@@ -16,6 +16,8 @@ line follows semantic versioning.
 
 - The plan readback names each says line's own anchors and shows [no anchor] when a unit has none.
 
+- In investigation and academic pieces, and any brief with a research folder, a required unit needs an evidence anchor that is not only counter (or an unsupported_reason, reported as a residual risk), and may not restate an unsupported alternative unless it answers it.
+
 ## v4.0.17 - 2026-10-28 - Plan readback from every chain file and declared replays
 
 - Size caps on skill text and example files are replaced by checks for repeated paragraphs, dead links and unknown names; totals are printed, not limited.
