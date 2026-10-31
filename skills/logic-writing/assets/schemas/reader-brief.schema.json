@@ -17,7 +17,8 @@
     "route_extension",
     "writer_input",
     "writer_input_fingerprint",
-    "brief_fingerprint"
+    "brief_fingerprint",
+    "request"
   ],
   "properties": {
     "schema_version": {
@@ -69,6 +70,10 @@
       "minLength": 1
     },
     "research_status": {
+      "type": "string",
+      "minLength": 1
+    },
+    "request": {
       "type": "string",
       "minLength": 1
     }
@@ -210,6 +215,17 @@
         },
         "unsupported_reason": {
           "type": "string"
+        },
+        "source": {
+          "enum": [
+            "request",
+            "research",
+            "ai"
+          ]
+        },
+        "quote": {
+          "type": "string",
+          "minLength": 1
         }
       }
     },

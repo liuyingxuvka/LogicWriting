@@ -57,7 +57,7 @@ def test_defaults_preserve_explicit_rows_and_do_not_invent_hidden_dispositions()
 def test_an_unplaced_content_unit_names_itself(tmp_path):
     chain = make_reader_chain(tmp_path)
     request = {"route_decision": copy.deepcopy(chain["route_decision"]), "content_boundaries": copy.deepcopy(chain["reader_brief"]["content_boundaries"]),
-        "composition_plan": copy.deepcopy(chain["plan"]), "route_composition": copy.deepcopy(chain["route_composition"]), "brief_id": "brief:defaults"}
+        "composition_plan": copy.deepcopy(chain["plan"]), "route_composition": copy.deepcopy(chain["route_composition"]), "brief_id": "brief:defaults", "request": chain["reader_brief"]["request"]}
     request["composition_plan"].pop("content_dispositions")
     request["composition_plan"].pop("plan_fingerprint")
     request["composition_plan"]["planned_units"][0]["content_unit_ids"] = []
@@ -70,7 +70,7 @@ def test_an_unplaced_content_unit_names_itself(tmp_path):
 def test_plan_defaults_precede_fingerprints_and_supplied_fingerprints_are_checked(tmp_path):
     chain = make_reader_chain(tmp_path)
     request = {"route_decision": copy.deepcopy(chain["route_decision"]), "content_boundaries": copy.deepcopy(chain["reader_brief"]["content_boundaries"]),
-        "composition_plan": copy.deepcopy(chain["plan"]), "route_composition": copy.deepcopy(chain["route_composition"]), "brief_id": "brief:defaults"}
+        "composition_plan": copy.deepcopy(chain["plan"]), "route_composition": copy.deepcopy(chain["route_composition"]), "brief_id": "brief:defaults", "request": chain["reader_brief"]["request"]}
     request["composition_plan"].pop("content_dispositions")
     request["composition_plan"].pop("plan_fingerprint")
     request["route_composition"].pop("extension_fingerprint")

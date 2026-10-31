@@ -4,7 +4,7 @@ from __future__ import annotations
 from _common import ValidationError, unique_ids, require_exact_fingerprint, fill_fingerprint, fill_missing, fingerprint, fingerprint_without, require_mapping, require_schema, utc_now
 from artifact_map import validate_artifact_map
 from copy import deepcopy
-from reader_plan_core import open_material_choices, validate_composition_plan, validate_reader_intent, validate_route_composition
+from reader_plan_core import _canonical_plan_order, open_material_choices, validate_composition_plan, validate_reader_intent, validate_route_composition
 from reader_rules import FINAL_OWNERS, ROUTE_PROFILE_FIELD, ROUTE_SCHEMA
 from typing import Any, Iterable, Mapping
 from writer_projection import build_writer_input, validate_writer_input
@@ -48,6 +48,29 @@ def validate_evidence_boundaries(brief):
     return risks
 
 
+def validate_request_sources(request, boundaries):
+    if not isinstance(request, str) or not request.strip():
+        raise ValidationError("brief_request_missing (store the user's request, as received, in request)")
+    for unit in boundaries['content_units']:
+        identity = unit['content_unit_id']
+        if unit['required'] and 'source' not in unit:
+            raise ValidationError(f'content_unit_source_missing:{identity} (a required unit names its source: request, research or ai)')
+        if unit.get('source') == 'request':
+            quote = unit.get('quote')
+            if not isinstance(quote, str) or not quote or quote not in request:
+                raise ValidationError(f"quote_not_in_request:{identity} (a request unit's quote must occur verbatim in request)")
+
+
+def writer_added_units(brief):
+    """Return all declared ai units in canonical plan order, with stable unplaced units last."""
+    content = {row['content_unit_id']: row for row in brief['content_boundaries']['content_units']}
+    planned = {row['planned_unit_id']: row for row in brief['composition_plan']['planned_units']}
+    ordered = [identity for unit_id in _canonical_plan_order(planned.values())
+               for identity in planned[unit_id].get('content_unit_ids', [])]
+    return list(dict.fromkeys(identity for identity in [*ordered, *content]
+                              if content.get(identity, {}).get('source') == 'ai'))
+
+
 def build_reader_brief(
     *,
     route_decision: Mapping[str, Any],
@@ -55,6 +78,7 @@ def build_reader_brief(
     composition_plan: Mapping[str, Any],
     route_composition: Mapping[str, Any],
     brief_id: str,
+    request: str | None = None,
     research_folder: str | None = None,
     research_status: str | None = None,
 ) -> dict[str, Any]:
@@ -77,6 +101,7 @@ def build_reader_brief(
     boundaries = require_mapping(content_boundaries, "content boundaries")
     content_ids = unique_ids(boundaries.get("content_units", ()), "content_unit_id", "content unit")
     limitation_ids = unique_ids(boundaries.get("limitations", ()), "limitation_id", "limitation")
+    validate_request_sources(request, boundaries)
     plan = validate_composition_plan(
         composition_plan,
         reader_intent=intent,
@@ -134,6 +159,7 @@ def build_reader_brief(
     brief = {
         "schema_version": "2.0",
         "brief_id": brief_id,
+        "request": request,
         "route_decision_fingerprint": decision["decision_fingerprint"],
         "reader_intent_fingerprint": intent["intent_fingerprint"],
         "final_owner": owner,

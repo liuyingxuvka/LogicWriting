@@ -97,6 +97,7 @@ def _fiction_brief_request(chain, route):
         "composition_plan": copy.deepcopy(chain["plan"]),
         "route_composition": route,
         "brief_id": "brief:voice-contract",
+        "request": chain["reader_brief"]["request"],
     }
 
 

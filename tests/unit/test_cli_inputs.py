@@ -52,6 +52,7 @@ def test_a_field_may_name_an_earlier_scripts_output(tmp_path):
         "composition_plan": chain["plan"],
         "route_composition": chain["route_composition"],
         "brief_id": "brief:file-input",
+        "request": chain["reader_brief"]["request"],
     }), encoding="utf-8")
     built = run("build_reader_brief.py", brief_input)
     assert built.returncode == 0, built.stdout + built.stderr

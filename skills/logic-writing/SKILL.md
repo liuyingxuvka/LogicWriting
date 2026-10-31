@@ -7,6 +7,8 @@ description: "Use for a finished piece for real readers: a source-backed investi
 
 ## Start from the model
 
+Store the user's request once, as received, in the brief's request; each required unit names its source (request with a verbatim quote, research, or ai), and closure lists the ai units for the user.
+
 The plan (CompositionPlan) is the model of the piece. Read it back before choosing a route or a command:
 
 - A plan exists (`reader-brief.json` or any later chain file): run `python scripts/show_plan.py --input <file>`, read its summary line, and continue from `UNBOUND` units and units with findings. Discuss the work on planned units.

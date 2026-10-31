@@ -1,0 +1,85 @@
+{
+  "kind": "change",
+  "goal": "LW-608: the brief keeps the user's request and names each unit's source",
+  "requests": [
+    {
+      "id": "R1",
+      "part": true
+    }
+  ],
+  "base": "afd817008c6829a89342239b0276fc95443fdc32",
+  "tree": "b3c95c9657c06a7dc0229d0e08ef741438c69e6edb1c739362676c03dc339fce",
+  "promoted": "2026-10-31T13:15:26.343269+00:00",
+  "plan": [
+    {
+      "line": "touch: skills/logic-writing/scripts/reader_plan.py:build_reader_brief",
+      "added_after_code": null,
+      "cleared": []
+    },
+    {
+      "line": "touch: skills/logic-writing/scripts/derive_closure.py:derive_closure",
+      "added_after_code": null,
+      "cleared": []
+    },
+    {
+      "line": "touch: skills/logic-writing/scripts/show_plan.py:plan_view",
+      "added_after_code": null,
+      "cleared": []
+    },
+    {
+      "line": "touch: skills/logic-writing/scripts/show_plan.py:render_plan",
+      "added_after_code": null,
+      "cleared": []
+    },
+    {
+      "line": "touch: skills/logic-writing/scripts/run_chain.py:main",
+      "added_after_code": null,
+      "cleared": []
+    }
+  ],
+  "rules": [
+    {
+      "id": "plan_readback_model.writer_added_units_are_listed",
+      "old": null,
+      "new": "fp:47cf96ec18823299e3c46eb1a1e33fff348b1734120e9211e0ff7ab657db6c24",
+      "provenance": "unjudged: no checked PLAN changes line"
+    },
+    {
+      "id": "reader_evidence_model.request_quote_is_verbatim",
+      "old": null,
+      "new": "fp:51e12a85e14ecdef6fa18caa544d34017641f50a78761895b1bf22ea7fe68d15",
+      "provenance": "unjudged: no checked PLAN changes line"
+    }
+  ],
+  "acceptances": [],
+  "existing_cleared": [],
+  "implemented_by": [
+    "skills/logic-writing/scripts/build_reader_brief.py:build_reader_brief",
+    "skills/logic-writing/scripts/build_reader_brief.py:validate_request",
+    "skills/logic-writing/scripts/derive_closure.py:derive_closure",
+    "skills/logic-writing/scripts/reader_plan.py:build_reader_brief",
+    "skills/logic-writing/scripts/reader_plan.py:validate_request_sources",
+    "skills/logic-writing/scripts/reader_plan.py:writer_added_units",
+    "skills/logic-writing/scripts/run_chain.py:_finish",
+    "skills/logic-writing/scripts/run_chain.py:main",
+    "skills/logic-writing/scripts/show_plan.py:plan_view",
+    "skills/logic-writing/scripts/show_plan.py:render_plan",
+    "tests/e2e/test_worked_examples.py:test_show_plan_names_anchors_per_says_line",
+    "tests/unit/test_cli_inputs.py:test_a_field_may_name_an_earlier_scripts_output",
+    "tests/unit/test_editorial_dispositions.py:test_an_unplaced_content_unit_names_itself",
+    "tests/unit/test_editorial_dispositions.py:test_plan_defaults_precede_fingerprints_and_supplied_fingerprints_are_checked",
+    "tests/unit/test_evidence_rules.py:_add_unit",
+    "tests/unit/test_fiction.py:_fiction_brief_request",
+    "tests/unit/test_reader.py:test_brief_request_fills_plan_and_route_fingerprints",
+    "tests/unit/test_request_record.py:_example",
+    "tests/unit/test_request_record.py:_save",
+    "tests/unit/test_request_record.py:test_ai_unit_is_listed_as_added_by_the_writer",
+    "tests/unit/test_request_record.py:test_brief_without_request_is_refused_with_the_fix",
+    "tests/unit/test_request_record.py:test_quote_not_in_request_fails",
+    "tests/unit/test_run_chain.py:test_stale_report_line_names_the_code_once",
+    "tests/v2_support.py:make_reader_chain"
+  ],
+  "new_actions": [],
+  "corrections": [],
+  "checked": "This promotion ran one fresh target check with bound tests and the remaining function-selected tests; 7 warning(s) remained. The tree identifies the checked post-promotion content, before later component confirmation. Implementation provenance lists changed Python function definitions from the Git diff. Available static rule identities and checked PLAN lines are recorded. PLAN edit ordering, per-item clearance, acceptances, existing-item clearance and new-action judgments are not assessed; unknown order is null and unsupported lists are empty."
+}

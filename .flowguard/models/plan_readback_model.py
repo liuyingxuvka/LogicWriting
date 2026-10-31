@@ -17,8 +17,12 @@ USES = {
     'CliValidate': 'skills/logic-writing/scripts/_common.py:cli_validate',
     'ValidateSharedWriting': 'skills/logic-writing/scripts/validate_shared_writing.py:validate_shared_writing',
     'RunChain': 'skills/logic-writing/scripts/run_chain.py:run_chain',
+    'RunChainCli': 'skills/logic-writing/scripts/run_chain.py:main',
 }
 TESTED_BY = {
+    'writer_added_units_are_listed': [
+        'tests/unit/test_request_record.py:test_ai_unit_is_listed_as_added_by_the_writer',
+    ],
     "readback_shows_the_plan_ahead_of_the_text": [
         "tests/e2e/test_worked_examples.py:test_show_plan_reads_back_while_the_plan_is_ahead"
     ],
@@ -50,6 +54,8 @@ class Step:
     reads=()
     writes=('readback_case', 'readback', 'readback_input')
     def readback_for(self, case: str) -> str:
+        if case == 'writer':
+            return 'writer_shown'
         if case == "anchors":
             return "anchors_shown"
         return "ahead_shown" if case=="ahead" else "shown" if case == "leak" else "clean"
@@ -115,7 +121,17 @@ class SaysLineHidesAMissingAnchor(Step):
         return "anchors_hidden" if case == "anchors" else super().readback_for(case)
 
 
+def writer_added_units_are_listed(state, trace):
+    if state.readback_case == 'writer' and state.readback != 'writer_shown':
+        return InvariantResult.fail('all ai units, including optional ones, are listed in closure and after the readback summary')
+    return InvariantResult.pass_()
+
+class WriterUnitLeftUnlisted(Step):
+    def readback_for(self, case):return 'writer_hidden' if case == 'writer' else super().readback_for(case)
+
 INVARIANTS = (
+    Invariant('writer_added_units_are_listed', 'every unit whose source is ai is listed as added by the writer',
+              writer_added_units_are_listed),
     Invariant(
         "says_line_shows_its_anchors",
         "each says line names its own anchors, and a unit without one shows [no anchor]",
@@ -137,7 +153,7 @@ INVARIANTS = (
         _readback_shows_failing_units,
     ),
 )
-CASES = ('clean', 'leak', 'ahead', 'anchors')
+CASES = ('clean', 'leak', 'ahead', 'anchors', 'writer')
 INPUT_FILES = (
     "brief-request.json",
     "reader-brief.json",
@@ -150,6 +166,7 @@ def _explorer(step):return Explorer(workflow=Workflow((step,)),initial_states=(S
 def build_explorer():return _explorer(Step())
 def broken_variants():
     return {
+        'writer_unit_left_unlisted': _explorer(WriterUnitLeftUnlisted()),
         "plan_file_reads_back_no_binding": _explorer(PlanFileReadsBackNoBinding()),
         "blocked_chain_hides_the_plan": _explorer(BlockedChainHidesThePlan()),
         "readback_hides_findings": _explorer(ReadbackHidesFindings()),

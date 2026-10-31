@@ -22,6 +22,8 @@ line follows semantic versioning.
 
 - When the saved ResearchGuard report withholds or qualifies the root claim, closure fails with wording_exceeds_license for a required unit that cites supporting evidence without a limit.
 
+- The brief stores the user's request once, as received; each required unit names its source (request, research or ai), a request unit's quote must occur verbatim in the request, and closure lists the units the writer added.
+
 ## v4.0.17 - 2026-10-28 - Plan readback from every chain file and declared replays
 
 - Size caps on skill text and example files are replaced by checks for repeated paragraphs, dead links and unknown names; totals are printed, not limited.

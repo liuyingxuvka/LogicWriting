@@ -204,6 +204,7 @@ def test_show_plan_names_anchors_per_says_line(tmp_path):
     meaning = "Teams should move production services to the free-threaded build this year."
     request["content_boundaries"]["content_units"].append({
         "content_unit_id": "cu-migrate", "safe_meaning": meaning, "required": True,
+        "source": "ai",
         "evidence_anchor_ids": [], "alternative_ids": [], "limitation_ids": [],
         "model_row_ids": [],
     })

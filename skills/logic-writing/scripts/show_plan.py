@@ -13,6 +13,7 @@ from artifact_map import validate_artifact_map
 from reader_fill import fill_check_fingerprints
 from reader_binding import shared_writing_from_current, quote_binding_units
 from world_refs import planned_world_refs
+from reader_plan import writer_added_units
 
 CHAIN_FILES = frozenset((
     'brief-request.json', 'reader-brief.json', 'closure-input.json',
@@ -352,6 +353,7 @@ def plan_view(request, *, input_path=None):
         row["limitation_id"]: row["safe_meaning"] for row in boundaries.get("limitations", [])
     }
     result = dict(
+        added_by_writer=[dict(content_unit_id=identity, text=content[identity]) for identity in writer_added_units(brief)],
         central_question=plan.get("central_question", ""),
         central_throughline=plan.get("central_throughline", ""),
         planned_units=[],
@@ -438,6 +440,7 @@ def plan_view(request, *, input_path=None):
 
 def render_plan(view):
     lines = [view['summary']]
+    lines += [f"added by the writer: {row['content_unit_id']}: {row['text']}" for row in view['added_by_writer']]
     lines += [f"document: {row['code']}: {row['message']}" for row in view['document']]
     lines += [f"Q: {view['central_question']}", f"Throughline: {view['central_throughline']}"]
     for unit in view['planned_units']:

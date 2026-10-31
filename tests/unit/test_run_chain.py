@@ -70,9 +70,11 @@ def test_stale_report_line_names_the_code_once(tmp_path, monkeypatch, capsys):
     monkeypatch.setattr(sys, "argv", ["run_chain.py", str(folder)])
     assert chain.main() == 1
     lines = capsys.readouterr().out.splitlines()
+    failures = [line for line in lines if line.startswith('first failure:')]
+    assert len(failures) == 1
     assert (
-        lines[1]
+        failures[0]
         == "first failure: closure: world_report_stale:world.yaml (saved report is from other inputs; run with --refresh-providers)"
     )
-    assert lines[1].count("world_report_stale") == 1
-    assert ": PASS" not in lines[1]
+    assert failures[0].count("world_report_stale") == 1
+    assert ": PASS" not in failures[0]

@@ -1,4 +1,4 @@
-"""Finite evidence gates for researched units, separate from review sequencing.
+"""Brief evidence and request-source boundaries, separate from review sequencing.
 
 The restatement check is a bounded lexical signal with explicit response ids,
 not a semantic truth judgment. Every case replays real brief/closure code.
@@ -27,6 +27,10 @@ USES = {
     'FillClosureFingerprints': 'skills/logic-writing/scripts/reader_fill.py:fill_closure_fingerprints',
 }
 TESTED_BY = {
+    'request_quote_is_verbatim': [
+        'tests/unit/test_request_record.py:test_quote_not_in_request_fails',
+        'tests/unit/test_request_record.py:test_brief_without_request_is_refused_with_the_fix',
+    ],
     'closure_requires_support': [
         'tests/unit/test_evidence_rules.py:test_unit_without_anchor_is_unsupported',
         'tests/unit/test_evidence_rules.py:test_unsupported_reason_is_a_residual_risk',
@@ -56,6 +60,10 @@ EXPECTED = {
 }
 RESTATEMENT_CASES = frozenset(('restatement', 'restatement_closure', 'qualified_answer',
                               'quoted_answer', 'rebutted_answer'))
+REQUEST_EXPECTED = {'verbatim': 'verbatim', 'missing_request': 'brief_request_missing',
+                    'missing_source': 'content_unit_source_missing', 'paraphrase': 'quote_not_in_request',
+                    'optional': 'verbatim', 'optional_case_changed': 'quote_not_in_request',
+                    'spacing_changed': 'quote_not_in_request'}
 
 
 @dataclass(frozen=True)
@@ -68,17 +76,26 @@ class Event:
 class State:
     evidence_case: str = ''
     evidence_result: str = ''
+    request_case: str = ''
+    request_result: str = ''
 
 
 class Step:
     name = 'Evidence'
     reads = ()
-    writes = ('evidence_case', 'evidence_result')
+    writes = ('evidence_case', 'evidence_result', 'request_case', 'request_result')
 
     def result(self, case):
         return EXPECTED[case]
 
+    def request_result(self, case):
+        return REQUEST_EXPECTED[case]
+
     def apply(self, event, state):
+        if event.kind == 'request':
+            result = self.request_result(event.quality)
+            return (FunctionResult(result, replace(state, request_case=event.quality, request_result=result),
+                                   label='request_' + event.quality),)
         result = self.result(event.quality)
         return (FunctionResult(result, replace(state, evidence_case=event.quality,
                                                evidence_result=result),
@@ -109,6 +126,17 @@ class UnsupportedRestatementCloses(Step):
         return 'passed' if case in ('restatement', 'restatement_closure') else super().result(case)
 
 
+def request_quote_is_verbatim(state, trace):
+    if state.request_case and state.request_result != REQUEST_EXPECTED[state.request_case]:
+        return InvariantResult.fail('the raw request is retained; required units name their source and every declared request quote is a literal substring, including optional request units')
+    return InvariantResult.pass_()
+
+
+class ParaphrasedRequestQuotePasses(Step):
+    def request_result(self, case):
+        return 'verbatim' if case == 'paraphrase' else super().request_result(case)
+
+
 INVARIANTS = (
     Invariant('closure_requires_support',
               'a required unit closes only with an evidence anchor that is not only counter, or a stated unsupported_reason',
@@ -116,8 +144,11 @@ INVARIANTS = (
     Invariant('closure_refuses_unsupported_restatement',
               'a required unit that restates an unsupported alternative does not close unless it answers it',
               closure_refuses_unsupported_restatement),
+    Invariant('request_quote_is_verbatim', "a request unit's quote occurs verbatim in the stored request",
+              request_quote_is_verbatim),
 )
-EVENTS = tuple(Event('evidence', case) for case in EXPECTED)
+EVENTS = (tuple(Event('evidence', case) for case in EXPECTED)
+          + tuple(Event('request', case) for case in REQUEST_EXPECTED))
 
 
 def _explorer(step):
@@ -132,7 +163,8 @@ def build_explorer():
 
 def broken_variants():
     return {'unit_without_anchor_closes': _explorer(UnitWithoutAnchorCloses()),
-            'unsupported_restatement_closes': _explorer(UnsupportedRestatementCloses())}
+            'unsupported_restatement_closes': _explorer(UnsupportedRestatementCloses()),
+            'paraphrased_request_quote_passes': _explorer(ParaphrasedRequestQuotePasses())}
 
 
 def conformance():

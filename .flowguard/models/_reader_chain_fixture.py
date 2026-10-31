@@ -119,6 +119,49 @@ class _RealReaderChain:
             return 'passed+risk' if closure['status'] == 'passed' and risk in closure['residual_risk'] else 'missing-risk'
         return 'passed'
 
+    def _request_metadata(self, request):
+        request['request'] = ('Is free-threaded Python ready to be the default build? '
+                              'Tell me its official status as of Python 3.14 and whether we should plan a migration now.')
+        for unit in request['content_boundaries']['content_units']:
+            unit['source'] = 'research'
+            if unit['content_unit_id'] == 'cu-status-314':
+                unit.update(source='request', quote='official status as of Python 3.14')
+            elif unit['content_unit_id'] == 'cu-recommend':
+                unit['source'] = 'ai'
+
+    def _request(self, case):
+        import json
+        from run_chain import run_chain
+        folder = self._workdir()
+        shutil.copytree(ROOT / 'skills/logic-writing/assets/examples/investigation', folder)
+        path = folder / 'brief-request.json'
+        request = json.loads(path.read_text())
+        self._request_metadata(request)
+        raw = ' \n' + request['request'] + '\n '
+        request['request'] = raw
+        unit = next(row for row in request['content_boundaries']['content_units'] if row['content_unit_id'] == 'cu-status-314')
+        if case == 'missing_request':
+            request.pop('request')
+        elif case == 'missing_source':
+            unit.pop('source')
+        elif case == 'paraphrase':
+            unit['quote'] = 'is it the default in 3.14'
+        elif case == 'optional':
+            unit['required'] = False
+            unit.pop('source')
+            unit.pop('quote')
+        elif case == 'optional_case_changed':
+            unit.update(required=False, quote='Official status as of Python 3.14')
+        elif case == 'spacing_changed':
+            unit['quote'] = '\tofficial status as of Python 3.14'
+        path.write_text(json.dumps(request))
+        result = run_chain(folder, until='brief')
+        if result['exit_code']:
+            return result['first_failure']['code'].split(' (', 1)[0]
+        brief = result['results']['brief']['reader_brief']
+        quoted = next(row for row in brief['content_boundaries']['content_units'] if row['content_unit_id'] == 'cu-status-314')
+        return 'verbatim' if (brief.get('request') == raw and quoted.get('quote') == unit.get('quote')) else 'request_changed'
+
     def _readback(self, case: str, input_name="shared-writing-result.json") -> str:
         """Audit the investigation example (or its known-bad leak text) and read the plan back."""
         from _common import load_request
@@ -128,6 +171,39 @@ class _RealReaderChain:
         folder = self._workdir()
         example = ROOT / "skills/logic-writing/assets/examples/investigation"
         shutil.copytree(example, folder)
+        writer_closure = writer_console = True
+        if case == 'writer':
+            import io, json
+            from contextlib import redirect_stdout
+            from run_chain import run_chain, main as run_main
+            path = folder / 'brief-request.json'
+            request = json.loads(path.read_text())
+            self._request_metadata(request)
+            writer = next(row for row in request['content_boundaries']['content_units'] if row['content_unit_id'] == 'cu-recommend')
+            writer['required'] = False
+            path.write_text(json.dumps(request))
+            writer_line = 'added by the writer: cu-recommend: ' + writer['safe_meaning']
+            if input_name != 'brief-request.json':
+                if input_name == 'closure-input.json':
+                    previous = sys.argv
+                    output = io.StringIO()
+                    try:
+                        sys.argv = ['run_chain.py', str(folder)]
+                        with redirect_stdout(output):
+                            code = run_main()
+                    finally:
+                        sys.argv = previous
+                    if code != 0:
+                        return 'writer_input_blocked'
+                    lines = output.getvalue().splitlines()
+                    writer_console = len(lines) > 1 and lines[1] == writer_line and lines.count(writer_line) == 1
+                    closure = json.loads((folder / 'closure.json').read_text())['closure']
+                else:
+                    result = run_chain(folder)
+                    if result['exit_code']:
+                        return 'writer_input_blocked:' + result['first_failure']['code']
+                    closure = result['results']['closure']['closure']
+                writer_closure = closure.get('added_by_writer') == ['cu-recommend']
         if case == "leak":
             shutil.copyfile(example / "known-bad/leak.md", folder / "piece.md")
         if case == "anchors":
@@ -142,6 +218,8 @@ class _RealReaderChain:
                 "evidence_anchor_ids": [], "alternative_ids": [], "limitation_ids": [],
                 "model_row_ids": [],
             })
+            if any('source' in row for row in request['content_boundaries']['content_units'][:-1]):
+                request['content_boundaries']['content_units'][-1]['source'] = 'ai'
             planned = next(row for row in request["composition_plan"]["planned_units"]
                            if row["planned_unit_id"] == "u-recommend")
             planned["content_unit_ids"].append("cu-migrate")
@@ -187,7 +265,7 @@ class _RealReaderChain:
                 sys.argv = previous
             if binding_code == 0:
                 raise AssertionError("ahead fixture unexpectedly bound every required unit")
-        elif not (case == "anchors" and input_name == "brief-request.json"):
+        elif case != 'writer' and not (case == "anchors" and input_name == "brief-request.json"):
             run_example_steps(folder)
         import io, json
         from contextlib import redirect_stdout
@@ -204,6 +282,10 @@ class _RealReaderChain:
         if code not in (0, None):
             return "hidden"
         view = json.loads(output.getvalue())
+        if case == 'writer':
+            lines = render_plan(view).splitlines()
+            return 'writer_shown' if (len(lines) > 1 and lines[1] == writer_line
+                                      and lines.count(writer_line) == 1 and writer_closure and writer_console) else 'writer_hidden'
         if case == "anchors":
             lines = [line.strip() for line in render_plan(view).splitlines()]
             supported = next(row["safe_meaning"]
@@ -333,6 +415,8 @@ class _RealReaderChain:
                 anchors = ['anc-counter']
             unit = dict(content_unit_id=identity, safe_meaning=meaning, required=case != 'optional',
                         evidence_anchor_ids=anchors, alternative_ids=[], limitation_ids=[], model_row_ids=[])
+            if any('source' in row for row in boundaries['content_units']):
+                unit['source'] = 'ai'
             if case in ('qualified_answer', 'quoted_answer', 'rebutted_answer'):
                 unit['alternative_ids'] = ['alt-default-soon']
             if case == 'reason':
@@ -362,6 +446,11 @@ class _RealReaderChain:
     def apply_step(self, step) -> ReplayObservation:
         event = step.function_input
         state = self.state
+        if event.kind == 'request':
+            result = self._request(event.quality)
+            state = replace(state, request_case=event.quality, request_result=result)
+            self.state = state
+            return ReplayObservation(function_name=step.function_name, observed_output=result, observed_state=state)
         if event.kind == 'anchor_authority':
             result = self._anchor_authority(event.quality)
             state = replace(state, authority_case=event.quality, authority_result=result)

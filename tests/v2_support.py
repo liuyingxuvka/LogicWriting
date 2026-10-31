@@ -315,6 +315,7 @@ def make_reader_chain(workdir: Path, owner: str = "investigation", *, language: 
             "safe_meaning": "成品必须把中心问题、支撑、边界和收束写成连续正文。",
             "required": True,
             "evidence_anchor_ids": ["evidence:one"],
+            "source": "ai",
             "alternative_ids": [],
             "limitation_ids": [],
             "model_row_ids": ["model:throughline"],
@@ -342,6 +343,7 @@ def make_reader_chain(workdir: Path, owner: str = "investigation", *, language: 
         composition_plan=plan,
         route_composition=route,
         brief_id=f"brief:{owner}",
+        request="请写一篇完整、连贯的成品，说明中心问题、支撑、边界和收束。",
         research_folder=research_folder,
         research_status=str(Path(research_folder).parent / 'research-status.json') if research_folder else None,
     )

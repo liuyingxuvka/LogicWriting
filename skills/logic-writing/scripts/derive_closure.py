@@ -27,7 +27,7 @@ from known_bad import check_known_bad
 from artifact_map import validate_artifact_map
 from reader_checks import compare_reader_audit, build_reader_audit_from_current, reader_judgment_from_current, route_review_from_current
 from reader_fill import fill_closure_fingerprints
-from reader_plan import validate_evidence_boundaries, validate_revision_provenance
+from reader_plan import validate_evidence_boundaries, validate_request_sources, validate_revision_provenance, writer_added_units
 from reader_plan_core import validate_route_composition
 from reader_binding import shared_writing_from_current
 
@@ -172,6 +172,7 @@ def derive_closure(
         raise ValidationError("closure requires one current v2 RouteDecision")
     brief = require_mapping(request["reader_brief"], "ReaderBrief")
     require_schema("reader-brief.schema.json", brief, label="ReaderBrief")
+    validate_request_sources(brief['request'], brief['content_boundaries'])
     evidence_risks = validate_evidence_boundaries(brief)
     authority_risks = validate_anchor_authority(brief)
     if brief["route_decision_fingerprint"] != decision["decision_fingerprint"]:
@@ -335,6 +336,7 @@ def derive_closure(
     closure = {
         "schema_version": "2.0",
         "closure_id": request["closure_id"],
+        "added_by_writer": writer_added_units(brief),
         "final_owner": owner,
         "judge_kind": judge_kind,
         "artifact_fingerprint": amap["artifact_fingerprint"],

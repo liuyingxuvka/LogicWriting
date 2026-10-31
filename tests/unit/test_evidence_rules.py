@@ -32,6 +32,7 @@ def _add_unit(folder, meaning=MIGRATE, anchors=(), *, required=True, reason=None
               alternatives=(), identity='cu-migrate'):
     request = json.loads((folder / 'brief-request.json').read_text())
     unit = dict(content_unit_id=identity, safe_meaning=meaning, required=required,
+                source='ai',
                 evidence_anchor_ids=list(anchors), alternative_ids=list(alternatives),
                 limitation_ids=[], model_row_ids=[])
     if reason is not None:

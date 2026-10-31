@@ -18,6 +18,15 @@ conclusion jobs, hierarchy, reader-state changes, downstream relationships,
 content/limitation placement, presentation mode and planned extent. Required
 outline rows and content must be planned or explicitly dispositioned.
 
+## Request and unit sources
+
+The brief stores the user's raw `request` once, without trimming or rewriting
+it. Each required content unit names its `source`: `request`, `research` or
+`ai`. A unit declared as `request` also has a nonempty `quote` that occurs
+verbatim in the stored request, including its case and whitespace; this also
+applies when that unit is optional. Closure's `added_by_writer` lists every
+`ai` unit in plan order, and plan and chain readbacks name those additions.
+
 ## Evidence for researched units
 
 In investigation and academic pieces, and any brief with `research_folder`,

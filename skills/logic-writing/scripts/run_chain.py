@@ -74,15 +74,17 @@ def _finish(folder,results,first,code):
     brief=results.get('brief',{}).get('reader_brief')
     amap=results.get('map',{}).get('artifact_map')
     binding=results.get('shared_writing',{})
+    added=[]
     try:
         request={'reader_brief':brief,'artifact_map':amap} if brief else load_request(folder/'brief-request.json')
         if binding.get('shared_writing'):request['shared_writing']=binding['shared_writing']
         elif binding:
             request.update(load_request(folder/'shared-writing.json'));request['_binding_blocked']=binding
-        summary=plan_view(request,input_path=folder/'closure-input.json')['summary']
+        view=plan_view(request,input_path=folder/'closure-input.json')
+        summary=view['summary'];added=view['added_by_writer']
     except (OSError,ValueError,KeyError,TypeError):
         summary='units: unavailable; chain: '+('not_run' if first is None else first['step']+' blocked')
-    return {'status':'passed' if code==0 else 'failed','exit_code':code,'results':results,'first_failure':first,'summary':summary}
+    return {'status':'passed' if code==0 else 'failed','exit_code':code,'results':results,'first_failure':first,'summary':summary,'added_by_writer':added}
 
 
 def run_chain(folder, *, until='closure', refresh_providers=False):
@@ -143,6 +145,8 @@ def main():
     args = parser.parse_args()
     result = run_chain(args.folder, until=args.until, refresh_providers=args.refresh_providers)
     print(result["summary"])
+    for row in result['added_by_writer']:
+        print(f"added by the writer: {row['content_unit_id']}: {row['text']}")
     if result["first_failure"]:
         row = result["first_failure"]
         message = row["message"]

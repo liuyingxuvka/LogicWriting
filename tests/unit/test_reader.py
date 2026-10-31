@@ -100,6 +100,7 @@ def test_brief_request_fills_plan_and_route_fingerprints(tmp_path):
         "composition_plan": plan,
         "route_composition": route,
         "brief_id": chain["reader_brief"]["brief_id"],
+        "request": chain["reader_brief"]["request"],
     })
     assert result["status"] == "current_pass"
     assert result["reader_brief"]["brief_fingerprint"] == chain["reader_brief"]["brief_fingerprint"]
