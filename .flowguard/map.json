@@ -460,7 +460,7 @@
         ".flowguard/models/skill_install_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:1d858d5def424e3c18e3c6dd0e0520d885df0278c424dfc79bf81ab2ab4270f0"
+      "fingerprint": "sha256:4db54c1b77db08aa5ebf3bc14a733eb5f28f49696e07b5f2739eb6ac12be56f4"
     },
     {
       "id": "providers",
@@ -1005,25 +1005,10 @@
   ],
   "accepted_debts": [
     {
-      "code": "large_component",
-      "component": "fiction-model",
-      "reason": "One domain job: the fiction tree checks of one long-form project (ledger, interfaces, promises, continuity, voice), each script one surface; the model fiction_tree shows its rules, so size does not hide structure."
-    },
-    {
-      "code": "large_file",
-      "component": "travel-model",
-      "contains": "travel_contract.py",
-      "reason": "One trip-plan contract whose validators share the same indexes in one pass (sources, candidates, world checks, routes, fallbacks, fit); the model trip_feasibility binds its rules."
-    },
-    {
       "code": "large_model",
       "component": "closure_claim_model",
-      "reason": "one decision table judged through one entry function: there is no composing function to split into steps, and halving the table makes two models replay the same function with no new information"
-    },
-    {
-      "code": "high_fan_out",
-      "component": "reader-commands",
-      "reason": "run_chain orchestrates the seven native reader steps and four final route validators without taking over their domain rules; its direct imports make the real dependency graph visible."
+      "reason": "one decision table judged through one entry function: there is no composing function to split into steps, and halving the table makes two models replay the same function with no new information",
+      "expires": "v4.1.1"
     }
   ],
   "import_roots": [

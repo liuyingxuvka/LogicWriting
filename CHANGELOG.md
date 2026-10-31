@@ -6,6 +6,10 @@ releases, tags, package publications, installations, or predecessor deletions.
 The format follows the main ideas of Keep a Changelog, and the source version
 line follows semantic versioning.
 
+## Unreleased
+
+- Maintenance runs on FlowGuard 0.71.0: the project rules name req add and every exit of target check, CLAUDE.md imports AGENTS.md, and the accepted debt carries an expiry.
+
 ## v4.0.17 - 2026-10-28 - Plan readback from every chain file and declared replays
 
 - Size caps on skill text and example files are replaced by checks for repeated paragraphs, dead links and unknown names; totals are printed, not limited.
