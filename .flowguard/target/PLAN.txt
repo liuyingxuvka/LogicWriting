@@ -1,0 +1,18 @@
+touch: skills/logic-writing/scripts/_common.py:fill_fingerprint
+touch: skills/logic-writing/scripts/_common.py:require_exact_fingerprint
+touch: skills/logic-writing/scripts/reader_checks.py:build_reader_audit_from_current
+touch: skills/logic-writing/scripts/reader_checks.py:reader_judgment_from_current
+touch: skills/logic-writing/scripts/reader_fill.py:fill_closure_fingerprints
+touch: skills/logic-writing/scripts/select_route.py:validate_request
+touch: skills/logic-writing/scripts/run_chain.py:run_chain
+touch: skills/logic-writing/scripts/run_chain.py:main
+touch: skills/logic-writing/scripts/derive_closure.py:derive_closure
+touch: skills/logic-writing/scripts/derive_closure.py:main
+# Exclude only each record's own top-level execution metadata: audited_at, judged_at, recorded_at, decided_at, reviewed_at. Preserve domain evidence dates/times and raw file digests.
+# Stamping is explicit after completed review; default run/closure neither writes judgment nor creates/refreshes its references.
+# Locator decision: retain existing actual file-location/reference identity. Explicitly stamp each copied fixture once in its final directory BEFORE mutations. Same-directory default reruns preserve the saved judgment; migration requires explicit rebinding. No portable hash scheme or default restamp. Original package seed script remains unchanged; private acceptance preparation is separately recorded.
+# Explicit stamp validates the completed native content/evidence/review first; failed audit or invalid review leaves closure-input.json bytes unchanged.
+# Model organization correction: original reader_artifact_model retains its exact 4 rules/6 bads/9 inputs/three-step Explorer. New sibling reader_review_model owns one independent single-step review norm and bad under existing reader-artifact; no fake model parent or new component. Actual total is17 component models (+system counted separately). Original8736-sequence/WARN receipt retained.
+# A complete, valid ReaderJudgment may report repair: explicit stamp preserves that repair/defects and closure stays needs_repair. Failed-input/no-write controls do not forbid valid repair and add no workflow around upstream early stopping.
+touch: skills/logic-writing/scripts/run_chain.py:_stamp_review
+# Bind the new review aspect to actual stamp business logic and default judgment preservation; the CLI main is a read-only USES wrapper. A valid repair may return rc1 after writing a real stamp if the existing full chain reports needs_repair; no forced green exit or extra workflow.
