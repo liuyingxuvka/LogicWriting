@@ -44,15 +44,22 @@ TESTED_BY = {
         "tests/unit/test_researchguard_status.py:test_report_from_another_folder_fails_the_provider_check"
     ],
     "world_report_belongs_to_the_contract": [
-        "tests/unit/test_closure_claim_model.py:test_world_report_for_another_contract_fails_closure"
+        "tests/unit/test_closure_claim_model.py:test_world_report_for_another_contract_fails_closure",
+        "tests/unit/test_world_mesh.py:test_tree_report_binds_like_a_contract",
+        "tests/unit/test_world_mesh.py:test_old_tree_report_is_refused_with_the_regenerate_command",
     ],
     "research_report_is_current": [
         "tests/unit/test_closure_claim_model.py:test_stale_research_report_fails_the_provider_check",
         "tests/unit/test_closure_claim_model.py:test_report_missing_a_models_digest_is_stale",
     ],
     "world_report_is_current": [
-        "tests/unit/test_closure_claim_model.py:test_stale_world_report_fails_closure"
+        "tests/unit/test_closure_claim_model.py:test_stale_world_report_fails_closure",
+        "tests/unit/test_world_mesh.py:test_changed_node_file_makes_the_tree_report_stale",
+        "tests/unit/test_world_mesh.py:test_embedded_node_bytes_make_the_tree_report_stale",
+        "tests/unit/test_world_mesh.py:test_missing_node_digest_is_stale",
     ],
+    "world_scope_limits_are_preserved": [
+        "tests/unit/test_world_mesh.py:test_world_scope_limits_remain_nonblocking_and_visible"],
     "wording_within_license": [
         "tests/unit/test_evidence_rules.py:test_withheld_root_claim_needs_a_limit",
         "tests/unit/test_evidence_rules.py:test_limit_anchor_satisfies_the_license",
@@ -69,6 +76,12 @@ LICENSE_EXPECTED = {'source_only': 'passed', 'assert': 'passed',
                     'withhold': 'wording_exceeds_license', 'qualify': 'wording_exceeds_license',
                     'withhold_limit': 'passed+risk', 'qualify_limitation': 'passed+risk',
                     'counter': 'passed+risk', 'unrelated': 'passed+risk', 'optional': 'passed+risk'}
+WORLD_EXPECTED = {'mesh_bound': 'passed', 'contract_scope': 'passed',
+                  'mesh_foreign': 'world_report_mismatch:mesh_id',
+                  'mesh_old': 'world_report_unbound:world_mesh+regenerate',
+                  'mesh_node_stale': 'world_report_stale:ch2_fixed.yaml',
+                  'mesh_embedded_stale': 'world_report_stale:mesh_fixed.yaml',
+                  'mesh_digest_omitted': 'world_report_stale:ch2_fixed.yaml'}
 
 
 @dataclass(frozen=True)
@@ -84,6 +97,9 @@ class State:
     research_risks: tuple[str, ...] = ()
     license_case: str = ''
     license_result: str = ''
+    world_case: str = ''
+    world_result: str = ''
+    world_scope_preserved: bool = False
 
 
 @dataclass(frozen=True)
@@ -230,13 +246,18 @@ def report_input(owner, case):
 class Step:
     name = 'Step'
     reads = ('owner', 'independent', 'report')
-    writes = ('report', 'closed', 'copied', 'broad', 'named', 'travel_claim_level', 'research_risks', 'license_case', 'license_result')
+    writes = ('report', 'closed', 'copied', 'broad', 'named', 'travel_claim_level', 'research_risks', 'license_case', 'license_result', 'world_case', 'world_result', 'world_scope_preserved')
     ignore, rewrite, omit = False, False, False
 
     def license_result(self, case):
         return LICENSE_EXPECTED[case]
 
     def apply(self, event, state):
+        if event.kind == 'world':
+            result = WORLD_EXPECTED[event.status]
+            return (FunctionResult(result, replace(state, world_case=event.status, world_result=result,
+                                                   world_scope_preserved=event.status in {'mesh_bound', 'contract_scope'}),
+                                   label='world_' + event.status),)
         if event.kind == 'license':
             result = self.license_result(event.status)
             return (FunctionResult(result, replace(state, license_case=event.status, license_result=result),
@@ -359,6 +380,8 @@ def research_report_belongs_to_the_folder(state, trace):
 
 
 def world_report_belongs_to_the_contract(state, trace):
+    if state.world_case in {'mesh_bound', 'contract_scope', 'mesh_foreign', 'mesh_old'} and state.world_result != WORLD_EXPECTED[state.world_case]:
+        return InvariantResult.fail('a tree report must bind by mesh_id; an old report needs the native regeneration command')
     if state.closed and provider(state) == 'worldguard' and state.report == 'world_foreign' and (state.copied != 'failed' or not state.named):
         return InvariantResult.fail('a world report of another contract was counted for this world')
     return InvariantResult.pass_()
@@ -375,6 +398,8 @@ def research_report_is_current(state, trace):
     return InvariantResult.pass_()
 
 def world_report_is_current(state,trace):
+    if state.world_case in {'mesh_node_stale', 'mesh_embedded_stale', 'mesh_digest_omitted'} and state.world_result != WORLD_EXPECTED[state.world_case]:
+        return InvariantResult.fail('tree bytes and every file node must be covered by current raw input digests')
     if state.closed and provider(state)=='worldguard' and state.report=='world_stale' and (state.copied!='failed' or state.broad or not state.named):
         return InvariantResult.fail('stale world report licensed closure')
     return InvariantResult.pass_()
@@ -404,7 +429,22 @@ class WithheldClaimStatedPlainly(Step):
         return 'passed+risk' if case == 'withhold' else super().license_result(case)
 
 
+def world_scope_limits_are_preserved(state, trace):
+    if state.world_case in {'mesh_bound', 'contract_scope'} and not state.world_scope_preserved:
+        return InvariantResult.fail('actual WorldGuard scope limits must remain visible, with owner and report path, without blocking PASS')
+    return InvariantResult.pass_()
+
+
+class DropsWorldScope(Step):
+    def apply(self, event, state):
+        rows = super().apply(event, state)
+        if event.kind == 'world':
+            return tuple(replace(row, new_state=replace(row.new_state, world_scope_preserved=False)) for row in rows)
+        return rows
+
+
 INVARIANTS = (
+    Invariant('world_scope_limits_are_preserved', 'actual provider scope limits remain nonblocking, attributed risks and a summary count', world_scope_limits_are_preserved),
     Invariant('research_report_is_current','research inputs match the saved report',research_report_is_current),
     Invariant('world_report_is_current','world inputs match the saved report',world_report_is_current),
     Invariant('research_report_belongs_to_the_folder', 'a research report counts only for its own research folder', research_report_belongs_to_the_folder),
@@ -419,13 +459,14 @@ INVARIANTS = (
               wording_within_license),
 )
 EVENTS = (tuple(Event('report', status) for status in (*sorted(RESEARCH_PASS | RESEARCH_FAIL), 'research_foreign', 'PASS', 'FAIL', 'world_foreign', 'unreadable', 'research_stale', 'research_digest_omitted', 'world_stale')) + (Event('close'),)
-          + tuple(Event('license', case) for case in LICENSE_EXPECTED))
+          + tuple(Event('license', case) for case in LICENSE_EXPECTED)
+          + tuple(Event('world', case) for case in WORLD_EXPECTED))
 
 
 def terminal(event, state, trace):
-    if state.license_case:
+    if state.license_case or state.world_case:
         return True
-    return (event.kind == 'license' and
+    return (event.kind in {'license', 'world'} and
             (state.owner != 'investigation' or state.independent or state.report != 'not_run' or state.closed))
 
 
@@ -442,7 +483,8 @@ def build_explorer():
 
 
 def broken_variants():
-    return {'stale_research_report_passes':explorer(StaleResearchReportPasses()),
+    return {'world_scope_limits_disappear': explorer(DropsWorldScope()),
+            'stale_research_report_passes':explorer(StaleResearchReportPasses()),
             'stale_world_report_passes':explorer(StaleWorldReportPasses()),
             'drops_research_risks': explorer(DropsResearchRisks()),
             'closure_reads_member_reports': explorer(ReadsMemberReports()),
@@ -457,6 +499,47 @@ def broken_variants():
 
 class Native:
     """Replay current closure and trip validators; reuse immutable protocol fixtures."""
+    def _world_probe(self, case):
+        from derive_closure import provider_checks
+        from show_plan import _summary
+        with tempfile.TemporaryDirectory(prefix='lw-world-mesh-model-') as temporary:
+            folder = Path(temporary)
+            if case == 'contract_scope':
+                path = EXAMPLES / 'fiction/worldguard-check.json'
+                route = {'world_contract': str(EXAMPLES / 'fiction/world.yaml'), 'world_check_required': True}
+                document = json.loads(path.read_text())
+            else:
+                source = ROOT / 'tests/fixtures/consumers/worldguard_tree'
+                for name in ('mesh_fixed.yaml', 'ch1_fixed.yaml', 'ch2_fixed.yaml'):
+                    shutil.copyfile(source / name, folder / name)
+                path = folder / 'mesh-report.json'
+                document = json.loads((source / 'mesh-report.json').read_text())
+                route = {'world_mesh': str(folder / 'mesh_fixed.yaml'), 'world_check_required': True}
+                if case == 'mesh_foreign':
+                    document['mesh_id'] = 'another-tree'
+                elif case == 'mesh_old':
+                    document.pop('mesh_id')
+                elif case == 'mesh_digest_omitted':
+                    document['input_digests'] = [row for row in document['input_digests'] if row['path'] != 'ch2_fixed.yaml']
+                elif case in {'mesh_node_stale', 'mesh_embedded_stale'}:
+                    changed = folder / ('ch2_fixed.yaml' if case == 'mesh_node_stale' else 'mesh_fixed.yaml')
+                    raw = changed.read_bytes()
+                    changed.write_bytes(raw + b'\n' if case == 'mesh_node_stale' else raw.replace(b'door_unlocked', b'door_locked', 1))
+                path.write_text(json.dumps(document))
+            rows, risks, passed = provider_checks('fiction-writing', {}, route, [{'provider': 'worldguard', 'path': str(path)}])
+            reason = rows[0]['reason']
+            result = 'passed' if passed and rows[0]['passed'] and rows[0]['status'] == 'PASS' else reason.split(' (', 1)[0]
+            if case == 'mesh_old' and result == 'world_report_unbound:world_mesh' and 'worldguard mesh-check --mesh' in reason:
+                result += '+regenerate'
+            scope_rows = [row for row in risks if row['defect_id'].startswith('world:scope_limit:')]
+            scopes = document.get('scope_limits', [])
+            preserved = (passed and len(scope_rows) == len(scopes) and bool(scopes)
+                         and all(row['owner'] == 'fiction-writing' and row['reason'] == f'WorldGuard report {path}: {scope}'
+                                 for row, scope in zip(scope_rows, scopes)))
+            summary = _summary({'planned_units': []}, {'audit': {'status': 'passed'}, 'review': {'status': 'passed'},
+                                                     'closure': {'status': 'passed', 'residual_risk': risks}})
+            return result, preserved and f'WorldGuard scope limits: {len(scopes)}' in summary
+
     def _license_probe(self, case):
         from run_chain import run_chain
         with tempfile.TemporaryDirectory(prefix='lw-license-model-') as temporary:
@@ -549,6 +632,11 @@ class Native:
 
     def apply_step(self, step):
         event, state = step.function_input, self.state
+        if event.kind == 'world':
+            result, preserved = self._world_probe(event.status)
+            self.state = replace(state, world_case=event.status, world_result=result,
+                                 world_scope_preserved=preserved if event.status in {'mesh_bound', 'contract_scope'} else False)
+            return ReplayObservation(function_name=step.function_name, observed_output=result, observed_state=self.state)
         if event.kind == 'license':
             result = self._license_probe(event.status)
             state = replace(state, license_case=event.status, license_result=result)
@@ -592,9 +680,9 @@ def conformance():
     result, adapter = None, Native()
     try:
         traces = build_explorer().explore().traces
-        old = [trace for trace in traces if not any(event.kind == 'license' for event in trace.external_inputs)]
+        old = [trace for trace in traces if not any(event.kind in {'license', 'world'} for event in trace.external_inputs)]
         probes = [trace for trace in traces if len(trace.external_inputs) == len(trace.steps) == 1
-                  and trace.steps[0].function_input.kind == 'license']
+                  and trace.steps[0].function_input.kind in {'license', 'world'}]
         for trace in (*select_covering_traces(old), *probes):
             result = replay_trace(trace=trace, adapter=adapter, invariants=INVARIANTS,
                                   rules=(projected_state_matches(), projected_output_matches()))
@@ -608,6 +696,7 @@ def conformance():
         adapter.close()
 
 USES = {
+    'WorldScopeSummary': 'skills/logic-writing/scripts/show_plan.py:_summary',
     'LicenseProbe': 'skills/logic-writing/scripts/run_chain.py:run_chain',
     'Close': 'skills/logic-writing/scripts/derive_closure.py:derive_closure',
     'WorldIdentity': 'skills/logic-writing/scripts/_common.py:worldguard_report_identity_problems',

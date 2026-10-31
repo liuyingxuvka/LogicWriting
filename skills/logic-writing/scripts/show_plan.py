@@ -266,9 +266,13 @@ def _summary(view, results):
     units = view['planned_units']
     bound = sum(1 for unit in units if unit['bound'])
     closure = results['closure']
+    scope = ''
     if isinstance(closure, dict):
         uncaught = sum(1 for row in closure.get('residual_risk', []) if str(row.get('defect_id', '')).startswith('toothless:'))
         known_bad = f'{uncaught} uncaught'
+        count = sum(1 for row in closure.get('residual_risk', []) if str(row.get('defect_id', '')).startswith('world:scope_limit:'))
+        if count:
+            scope = f'; WorldGuard scope limits: {count}'
     else:
         known_bad = _status(closure)
     unbound=', '.join(unit['planned_unit_id']+(' new' if unit.get('new') else '') for unit in units if not unit['bound'])
@@ -277,7 +281,7 @@ def _summary(view, results):
     binding=("shared_writing: blocked ("+'; '.join(str(row) for row in blocked.get('errors',[]))+'); ') if isinstance(blocked,dict) else ''
     return (f"units: {len(units)} ({bound} bound, {len(units) - bound} unbound{details}); {binding}"
             f"audit: {_status(results['audit'], True)}; review: {_status(results['review'])}; "
-            f"closure: {_status(closure)}; known-bad: {known_bad}")
+            f"closure: {_status(closure)}; known-bad: {known_bad}{scope}")
 
 
 def _tree_order(rows):

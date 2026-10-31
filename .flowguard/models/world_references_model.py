@@ -27,7 +27,9 @@ IMPLEMENTED_BY = {
 }
 TESTED_BY = {
     "world_refs_name_contract_ids": [
-        "tests/unit/test_world_refs.py:test_world_refs_validate_literal_ids_and_composition_relative_paths"],
+        "tests/unit/test_world_refs.py:test_world_refs_validate_literal_ids_and_composition_relative_paths",
+        "tests/unit/test_world_mesh.py:test_world_refs_resolve_in_mesh_nodes",
+        "tests/unit/test_world_mesh.py:test_world_contract_and_mesh_are_exclusive"],
     "unquoted_world_ref_is_a_risk_not_a_pass": [
         "tests/unit/test_world_refs.py:test_unquoted_world_reference_is_risk_and_only_actual_bound_text_counts"],
     "world_claim_row_is_a_planned_unit": [
@@ -44,6 +46,10 @@ CASES = {
     "unquoted_ref": "world_ref_unquoted",
     "claim_on_planned_unit": "accepted",
     "claim_outside_plan": "unit_not_in_plan",
+    "mesh_file_ref": "accepted",
+    "mesh_embedded_ref": "accepted",
+    "mesh_unknown_ref": "unknown_world_ref",
+    "mesh_exclusive": "rejected",
 }
 
 
@@ -95,6 +101,8 @@ class AcceptsClaimOutsidePlan(Check):
 
 
 def world_refs_name_contract_ids(state: State, trace) -> InvariantResult:
+    if state.case.startswith('mesh_') and state.result != CASES[state.case]:
+        return InvariantResult.fail('mesh references must resolve file and embedded ids and reject unknown or ambiguous inputs')
     if state.case in {"undeclared_ref", "no_contract"} and state.result == "accepted":
         return InvariantResult.fail("a world reference was accepted without a declared contract id")
     return InvariantResult.pass_()
@@ -157,6 +165,19 @@ class _RealWorldRefs:
         plan = {"planned_units": [{"planned_unit_id": "scene", "world_refs": ["e_unlock"]},
                                   {"planned_unit_id": "ordinary"}]}
         try:
+            if case.startswith('mesh_'):
+                import shutil
+                folder = self.folder / 'tree'
+                shutil.copytree(ROOT / 'tests/fixtures/consumers/worldguard_tree', folder)
+                reference = ('door_opened_after_handover' if case == 'mesh_embedded_ref'
+                             else 'never_declared' if case == 'mesh_unknown_ref' else 'e_unlock')
+                plan['planned_units'][0]['world_refs'] = [reference]
+                composition = {'world_mesh': 'tree/mesh_fixed.yaml'}
+                if case == 'mesh_exclusive':
+                    composition['world_contract'] = 'world.yaml'
+                    plan['planned_units'][0]['world_refs'] = ['e_unlock']
+                self.refs.validate_world_refs(plan, composition, self.folder)
+                return 'accepted'
             if case in {"declared_ref", "undeclared_ref", "no_contract"}:
                 if case == "undeclared_ref":
                     plan["planned_units"][0]["world_refs"] = ["never_declared"]
@@ -174,6 +195,8 @@ class _RealWorldRefs:
                 {"worldguard_claims": [{"id": "claim", "source_row_id": source}]}, plan)
             return problems[0].split(":", 1)[0] if problems else "accepted"
         except self.error as exc:
+            if case == 'mesh_exclusive':
+                return 'rejected'
             return str(exc).split(":", 1)[0]
 
     def apply_step(self, step) -> ReplayObservation:

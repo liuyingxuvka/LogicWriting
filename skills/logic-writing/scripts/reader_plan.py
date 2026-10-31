@@ -129,10 +129,11 @@ def build_reader_brief(
             report = check.get("worldguard_report") if isinstance(check, dict) else None
             if isinstance(report, str) and report:
                 problems = worldguard_report_identity_problems(Path(trip_path).parent / report,
-                                                               route_composition.get("world_contract"))
+                                                               route_composition.get("world_contract"),
+                                                               world_mesh=route_composition.get("world_mesh"))
                 if problems:
                     issues.append({"code": "travel_composition.world_report.mismatch",
-                                   "message": f"{report} does not belong to the composition's world_contract: {'; '.join(problems)}"})
+                                   "message": f"{report} does not belong to the composition's {'world_mesh' if route_composition.get('world_mesh') else 'world_contract'}: {'; '.join(problems)}"})
         if issues:
             raise ValidationError("travel composition input is invalid: " + "; ".join(row["code"] + ": " + row["message"] for row in issues))
     route = validate_route_composition(

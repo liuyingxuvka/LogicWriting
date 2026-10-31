@@ -318,7 +318,7 @@ def load_request(path: str | Path | None, *, defaults: dict | None = None) -> An
                         loaded = objects[0]
             value[key] = loaded
         if key == "route_composition" and isinstance(value[key], dict):
-            for field in ("longform_project", "world_contract", "trip_plan"):
+            for field in ("longform_project", "world_contract", "world_mesh", "trip_plan"):
                 reference = value[key].get(field)
                 if isinstance(reference, str) and reference:
                     value[key][field] = str((record_base / Path(reference).expanduser()).resolve())
@@ -412,11 +412,45 @@ def read_worldguard_report(path: str | Path) -> str:
     return status if isinstance(status, str) and status in {"PASS", "FAIL", "GAP", "BOUNDARY_EXCEEDED"} else "unreadable"
 
 
-def worldguard_report_identity_problems(report_path: str | Path, world_contract: str | Path | None) -> list[str]:
-    """Problem codes when a saved WorldGuard report does not name the brief's world contract.
+def worldguard_report_identity_problems(report_path: str | Path, world_contract: str | Path | None = None,
+                                        *, world_mesh: str | Path | None = None) -> list[str]:
+    """Bind a saved WorldGuard report to its contract or mutually exclusive mesh.
 
-    The expected id follows WorldGuard: the contract's ``contract_id``, else ``claim.claim_id``.
+    Contracts retain their contract_id/claim_id identity; meshes use mesh_id and
+    raw digests of the mesh plus each file node (embedded nodes live in the mesh).
     """
+    if world_mesh is not None:
+        if world_contract is not None:
+            return ['world_report_unbound:world_mesh (world_contract and world_mesh are mutually exclusive)']
+        try:
+            import yaml
+            from os.path import relpath
+            mesh_path = Path(world_mesh).expanduser()
+            mesh = yaml.safe_load(mesh_path.read_text(encoding='utf-8'))
+        except (ImportError, OSError, UnicodeError, ValueError, TypeError):
+            return ['world_report_unbound:world_mesh']
+        except yaml.YAMLError:
+            return ['world_report_unbound:world_mesh']
+        if not isinstance(mesh, Mapping) or not isinstance(mesh.get('mesh_id'), str) or not mesh['mesh_id']:
+            return ['world_report_unbound:world_mesh']
+        nodes = mesh.get('nodes')
+        if not isinstance(nodes, list) or any(not isinstance(row, Mapping) for row in nodes):
+            return ['world_report_unbound:world_mesh']
+        try:
+            report = json.loads(Path(report_path).read_text(encoding='utf-8'))
+        except (OSError, UnicodeError, ValueError, TypeError):
+            report = None
+        if not isinstance(report, Mapping) or not isinstance(report.get('mesh_id'), str) or not report['mesh_id']:
+            return [f'world_report_unbound:world_mesh (the saved report has no mesh_id; regenerate it with worldguard mesh-check --mesh {mesh_path}, or run run_chain.py with --refresh-providers)']
+        problems = [] if report['mesh_id'] == mesh['mesh_id'] else ['world_report_mismatch:mesh_id']
+        problems += input_digest_problems(report, mesh_path.parent, mesh_path.name, 'world_report_stale')
+        declared = {row.get('path') for row in report.get('input_digests', []) if isinstance(row, Mapping) and isinstance(row.get('path'), str)} if isinstance(report.get('input_digests'), list) else set()
+        for node in nodes:
+            if isinstance(node.get('contract'), str):
+                name = Path(relpath(mesh_path.parent / node['contract'], mesh_path.parent)).as_posix()
+                if name not in declared:
+                    problems.append('world_report_stale:' + name)
+        return list(dict.fromkeys(problems))
     if not isinstance(world_contract, (str, Path)) or not str(world_contract):
         return ["world_report_unbound:world_contract"]
     try:

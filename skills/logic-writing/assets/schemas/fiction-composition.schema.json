@@ -154,6 +154,10 @@
     "world_contract": {
       "type": "string",
       "minLength": 1
+    },
+    "world_mesh": {
+      "type": "string",
+      "minLength": 1
     }
   },
   "allOf": [
@@ -184,6 +188,14 @@
             ]
           }
         }
+      }
+    },
+    {
+      "not": {
+        "required": [
+          "world_contract",
+          "world_mesh"
+        ]
       }
     }
   ],

@@ -1,0 +1,120 @@
+{
+  "kind": "change",
+  "goal": "LW-610: a WorldGuard tree report binds like one contract",
+  "requests": [
+    {
+      "id": "R1",
+      "part": true
+    }
+  ],
+  "base": "05f99d1865e57db849a616f805ee784d22304374",
+  "tree": "9e6dbab6aa4a1b3cbd82ed3c8e7871bb02a3501530144748c05069be32395e9c",
+  "promoted": "2026-10-31T14:49:19.125591+00:00",
+  "plan": [
+    {
+      "line": "touch: skills/logic-writing/scripts/_common.py:worldguard_report_identity_problems",
+      "added_after_code": null,
+      "cleared": []
+    },
+    {
+      "line": "touch: skills/logic-writing/scripts/_common.py:load_request",
+      "added_after_code": null,
+      "cleared": []
+    },
+    {
+      "line": "touch: skills/logic-writing/scripts/derive_closure.py:provider_checks",
+      "added_after_code": null,
+      "cleared": []
+    },
+    {
+      "line": "touch: skills/logic-writing/scripts/reader_plan.py:build_reader_brief",
+      "added_after_code": null,
+      "cleared": []
+    },
+    {
+      "line": "touch: skills/logic-writing/scripts/run_chain.py:_refresh",
+      "added_after_code": null,
+      "cleared": []
+    },
+    {
+      "line": "touch: skills/logic-writing/scripts/world_refs.py:validate_world_refs",
+      "added_after_code": null,
+      "cleared": []
+    },
+    {
+      "line": "touch: skills/logic-writing/scripts/show_plan.py:_summary",
+      "added_after_code": null,
+      "cleared": []
+    },
+    {
+      "line": "changes: closure_claim_model.world_report_belongs_to_the_contract by R1 \"已有规则 `world_report_belongs_to_the_contract` 对树也成立，同一个规则管两种报告。\"",
+      "added_after_code": null,
+      "cleared": []
+    },
+    {
+      "line": "changes: closure_claim_model.world_report_is_current by R1 \"已有规则 `world_report_is_current` 对树报告的每个节点文件都成立。\"",
+      "added_after_code": null,
+      "cleared": []
+    },
+    {
+      "line": "changes: world_references.world_refs_name_contract_ids by R1 \"已有规则 `world_refs_name_contract_ids` 对树也成立。\"",
+      "added_after_code": null,
+      "cleared": []
+    }
+  ],
+  "rules": [
+    {
+      "id": "closure_claim_model.world_report_belongs_to_the_contract",
+      "old": "fp:e3fac8b1e3170c93dac430f474c6a8569868339cf4ded111da524e6f669b5b21",
+      "new": "fp:2f9c85ab27d3e16fc9dc6561f7df8dfa8eed59218bd2942d55741b44d5fe6681",
+      "provenance": "owner R1"
+    },
+    {
+      "id": "closure_claim_model.world_report_is_current",
+      "old": "fp:6d8068d93f5b33bd591cc99736bdf5ddc42ba2413f1c3359cfb6f106bf5c5b47",
+      "new": "fp:7fa8a0b33b6d0641262d63abea45fa23f97c2d05e5fca4527b9055446b83c12d",
+      "provenance": "owner R1"
+    },
+    {
+      "id": "closure_claim_model.world_scope_limits_are_preserved",
+      "old": null,
+      "new": "fp:cd42cbcc4e3f0b1448f58401b96d35cf64cb45f86c053d06fe07664e67326a97",
+      "provenance": "unjudged: no checked PLAN changes line"
+    },
+    {
+      "id": "world_references.world_refs_name_contract_ids",
+      "old": "fp:cccae23ec1b34b6eead4dc7a83e8260da4084e5eb4d42c0221be49fbafff063c",
+      "new": "fp:073d8644f046d71c63e76ffd69677b7329a96f01847629f6e6950714a9711926",
+      "provenance": "owner R1"
+    }
+  ],
+  "acceptances": [],
+  "existing_cleared": [],
+  "implemented_by": [
+    "skills/logic-writing/scripts/_common.py:load_request",
+    "skills/logic-writing/scripts/_common.py:worldguard_report_identity_problems",
+    "skills/logic-writing/scripts/derive_closure.py:provider_checks",
+    "skills/logic-writing/scripts/reader_plan.py:build_reader_brief",
+    "skills/logic-writing/scripts/run_chain.py:_refresh",
+    "skills/logic-writing/scripts/show_plan.py:_summary",
+    "skills/logic-writing/scripts/world_refs.py:validate_world_refs",
+    "tests/unit/test_world_mesh.py:_tree_provider_row",
+    "tests/unit/test_world_mesh.py:test_changed_node_file_makes_the_tree_report_stale",
+    "tests/unit/test_world_mesh.py:test_embedded_node_bytes_make_the_tree_report_stale",
+    "tests/unit/test_world_mesh.py:test_fiction_closure_binds_a_world_mesh",
+    "tests/unit/test_world_mesh.py:test_foreign_tree_id_is_refused",
+    "tests/unit/test_world_mesh.py:test_missing_node_digest_is_stale",
+    "tests/unit/test_world_mesh.py:test_old_tree_report_is_refused_with_the_regenerate_command",
+    "tests/unit/test_world_mesh.py:test_refresh_uses_the_native_mesh_command_and_requires_its_identity",
+    "tests/unit/test_world_mesh.py:test_refresh_uses_the_native_mesh_command_and_requires_its_identity.saved_response",
+    "tests/unit/test_world_mesh.py:test_travel_brief_binds_its_saved_tree_report",
+    "tests/unit/test_world_mesh.py:test_tree_report_binds_like_a_contract",
+    "tests/unit/test_world_mesh.py:test_world_contract_and_mesh_are_exclusive",
+    "tests/unit/test_world_mesh.py:test_world_mesh_loads_relative_to_the_composition_file",
+    "tests/unit/test_world_mesh.py:test_world_refs_resolve_in_mesh_nodes",
+    "tests/unit/test_world_mesh.py:test_world_scope_limits_remain_nonblocking_and_visible"
+  ],
+  "new_actions": [],
+  "corrections": [],
+  "checked": "This promotion ran one fresh target check with bound tests and the remaining function-selected tests; 3 warning(s) remained. The tree identifies the checked post-promotion content, before later component confirmation. Implementation provenance lists changed Python function definitions from the Git diff. Available static rule identities and checked PLAN lines are recorded. PLAN edit ordering, per-item clearance, acceptances, existing-item clearance and new-action judgments are not assessed; unknown order is null and unsupported lists are empty."
+}

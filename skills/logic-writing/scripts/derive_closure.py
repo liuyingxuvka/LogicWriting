@@ -119,7 +119,7 @@ def provider_checks(owner, brief, route_composition, reports):
             passed = status == "PASS"
             reason = f"{provider} report {path}: {status}"
             problems = worldguard_report_identity_problems(
-                path, route_composition.get("world_contract")
+                path, route_composition.get("world_contract"), world_mesh=route_composition.get("world_mesh")
             )
         if problems and status != "unreadable":  # an unreadable report already fails
             status, passed, reason = "failed", False, "; ".join(problems)
@@ -135,6 +135,12 @@ def provider_checks(owner, brief, route_composition, reports):
         )
         if not passed:
             risks.append(dict(defect_id=f"provider:{provider}", owner=owner, reason=reason))
+        if provider == 'worldguard' and status != 'unreadable':
+            limits = load_json(path).get('scope_limits', [])
+            for limit in limits if isinstance(limits, list) else []:
+                if isinstance(limit, str) and limit.strip():
+                    risks.append(dict(defect_id=f'world:scope_limit:{len(risks) + 1}', owner=owner,
+                                      reason=f'WorldGuard report {path}: {limit}'))
     supplied = {row["provider"] for row in checks}
     for provider in sorted(required - supplied):
         reason = f"{provider} report is missing: not_run"

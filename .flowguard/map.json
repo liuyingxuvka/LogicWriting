@@ -509,7 +509,7 @@
         "Keep same-key records available from partial result envelopes; reject failed envelopes without the requested record with their first error before sole-object fallback.",
         "Resolve revision source paths against their containing request/record files and describe source-file provenance in the current schema.",
         "Resolve research_folder and composition-owned input paths without executing native providers; preserve optional new-writing provenance and opaque native locators.",
-        "A saved world report must name the world contract's id."
+        "A saved world report must bind by contract id or mesh id, with raw digests covering the mesh and every file node."
       ],
       "files": [
         "skills/logic-writing/scripts/_common.py",
@@ -534,7 +534,7 @@
         ".flowguard/models/shared_contracts_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:b5aa8c25b165880e11c8f2e5ac149bb9fe9d7dbfa2b200055bf4b23eebef7930"
+      "fingerprint": "sha256:80219b5d50eb58d664247475cf3763a6258b2f6cb28378b627d95972d766a4e7"
     },
     {
       "id": "researchguard-handoff",
@@ -573,7 +573,8 @@
       "summary": "Validate reader intent, canonical composition, writer projection and optional revision provenance.",
       "responsibilities": [
         "Validate reader intent, canonical composition, writer projection and optional revision provenance.",
-        "The brief records the saved research status report it was built from."
+        "The brief records the saved research status report it was built from.",
+        "Fiction and travel select one world_contract or world_mesh; travel binds each saved world report to it."
       ],
       "files": [
         "skills/logic-writing/assets/schemas/academic-composition.schema.json",
@@ -619,7 +620,7 @@
       "models": [],
       "parent": "reader-artifact",
       "status": "confirmed",
-      "fingerprint": "sha256:980c14bd2d35dfd62e221813bd9071d1668fbcf167fd4701ccfb609955371a01"
+      "fingerprint": "sha256:27a23fa8d9b197b08e96bc35f682042ca32ef672193aa59664fabd63057fbd1c"
     },
     {
       "id": "reader-binding",
@@ -745,7 +746,8 @@
         "Derive quality closure from the real reader chain, saved native verdicts and in-process domain checks.",
         "Known-bad edits are caught or listed as toothless closure risks.",
         "Saved provider reports count only when they belong to the brief.",
-        "Known-bad edits also swap sibling units, remove world or alternative sentences, insert unsupported alternatives and strip required-unit anchors."
+        "Known-bad edits also swap sibling units, remove world or alternative sentences, insert unsupported alternatives and strip required-unit anchors.",
+        "Preserve actual WorldGuard scope limits as owner-attributed, nonblocking risks with the saved report path."
       ],
       "files": [
         "skills/logic-writing/assets/schemas/closure.schema.json",
@@ -783,7 +785,8 @@
         "tests/e2e/test_worked_examples.py",
         "tests/unit/test_freshness_closure.py",
         "tests/unit/test_known_bad.py",
-        "tests/unit/test_closure_claim_model.py"
+        "tests/unit/test_closure_claim_model.py",
+        "tests/unit/test_world_mesh.py"
       ],
       "models": [
         ".flowguard/models/closure_claim_model.py",
@@ -791,7 +794,7 @@
       ],
       "parent": "reader-artifact",
       "status": "confirmed",
-      "fingerprint": "sha256:0f3f33403bc93b406b910ff1a04425be82fc542644b422e1d7b8448cefe2f047"
+      "fingerprint": "sha256:6325eee14bb70102c7b27ca8f34438419889cb35fbc991b67e94f92821a6e88c"
     },
     {
       "id": "reader-commands",
@@ -799,7 +802,8 @@
       "summary": "Expose read-only plan views and reader-chain command entrypoints, selecting the existing route in memory when a draft has no saved decision.",
       "responsibilities": [
         "Expose the reader-chain commands and readable plan view without generating prose.",
-        "The plan readback shows each unit's findings, anchors and world references. Bindings and findings read back identically from every chain file, including an interrupted binding step."
+        "The plan readback shows each unit's findings, anchors and world references. Bindings and findings read back identically from every chain file, including an interrupted binding step.",
+        "Refresh WorldGuard tree reports only on request; readback shows a count of actual saved report scope limits."
       ],
       "files": [
         "skills/logic-writing/scripts/audit_reader_output.py",
@@ -844,7 +848,7 @@
         ".flowguard/models/plan_readback_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:dbe5ee103aa9634d3bed47af88dd08444f82f55bd7c68f5b24ffa03c2b83f9a1"
+      "fingerprint": "sha256:c6bb52e077d31fd69250355392ae54f21303aa3cd72f5bd1b6ab92d0d79e1dbe"
     },
     {
       "id": "world-references",
@@ -852,7 +856,7 @@
       "summary": "Check declared native world ids and same-unit quotations without running WorldGuard.",
       "responsibilities": [
         "Check declared native world ids and same-unit quotations without running WorldGuard.",
-        "World references name contract ids and unquoted ones become risks."
+        "World references name ids in a contract or its mesh file/embedded nodes, and unquoted ones remain risks."
       ],
       "files": [
         "skills/logic-writing/references/adapters/worldguard.md",
@@ -867,13 +871,14 @@
         "shared-contracts"
       ],
       "tests": [
-        "tests/unit/test_world_refs.py"
+        "tests/unit/test_world_refs.py",
+        "tests/unit/test_world_mesh.py"
       ],
       "models": [
         ".flowguard/models/world_references_model.py"
       ],
       "status": "confirmed",
-      "fingerprint": "sha256:7ae2bbc0a38b47523b4c6092e7fb725cceca51b8ad6e4b0b689823a3b1425075"
+      "fingerprint": "sha256:36fbe5f6e986db1d3de372d247a42c87ac88b5bf51b5eef38f916f833c006b5f"
     },
     {
       "id": "fiction-model",
@@ -1024,7 +1029,7 @@
   ],
   "model_digests": {
     ".flowguard/models/anchor_import_model.py": "6e3bf80d1b6d6c3bd78b75c83b3be1893c2f929549ff774d85e34a2a0b259a77",
-    ".flowguard/models/closure_claim_model.py": "664edf2e993200950ebad036aa15f1f7d7b963f747e1413cb776cc678ab3f880",
+    ".flowguard/models/closure_claim_model.py": "768f8facb9a32bbebdf14649167d168d57049871559687f3b6facc60ea6f394d",
     ".flowguard/models/fiction_tree_model.py": "0ddabded08324082ba916fdc10f9b75f915085f21d6a08b910126b130d509f9c",
     ".flowguard/models/known_bad_generator_model.py": "89323017bef560bb8dbc1b836ffb16e016cd35b36c698ece7a6404c532be7d8a",
     ".flowguard/models/plan_order_model.py": "7a32290b4c7c769f30df00b78f74b9cd868790da3ff4ff2b9034034b42aa2da5",
@@ -1038,7 +1043,7 @@
     ".flowguard/models/shared_writing_binding_model.py": "d9de324480f51192c1fefc50f4a80b79be0d51651b0ec93c079d3f9fbab294c5",
     ".flowguard/models/skill_install_model.py": "4764f9a030f1f7d6f180ea55f3cad1f920f69a266e1970fc97f2485d4d8705b7",
     ".flowguard/models/trip_feasibility_model.py": "111fae914f1cedb8d9c40932a0bbf2d4b6ebc8decd592daf9d8ad05b5d29a990",
-    ".flowguard/models/world_references_model.py": "723c38108da2224cdb4445ac2ada6916e50503de7ec92d9ada286bc1c5812816"
+    ".flowguard/models/world_references_model.py": "948d3426fd9ced33e2e64e38707094e66d87f15d8b8b71b5c7aca1eacb5502d5"
   },
   "fingerprint_format": 2
 }

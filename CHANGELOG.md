@@ -8,6 +8,9 @@ line follows semantic versioning.
 
 ## Unreleased
 
+- A fiction or travel composition can name a WorldGuard tree as world_mesh; closure binds its mesh-check report by mesh_id and input_digests, and refuses an old tree report without mesh_id with the command that regenerates it.
+- WorldGuard reports retain their actual scope limits as nonblocking closure risks; readback shows their count.
+
 - Maintenance runs on FlowGuard 0.71.0: the project rules name req add and every exit of target check, CLAUDE.md imports AGENTS.md, and the accepted debt carries an expiry.
 
 - The skill validator no longer fails on the number of lines in SKILL.md or the length of the description; it checks that the description names both routes.

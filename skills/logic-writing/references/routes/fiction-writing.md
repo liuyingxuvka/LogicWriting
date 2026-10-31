@@ -164,6 +164,10 @@ quoted checks remain visible as closure risk. World claims point through
 `source_row_id` to these planned units; a planned/not-run adapter is not a native
 WorldGuard pass. Keep the native report status unchanged.
 
+For a tree of chapters, name the WorldGuard mesh file as world_mesh; closure binds its mesh-check report by mesh_id and input_digests.
+Use either `world_mesh` or `world_contract`. File-node references resolve from the
+mesh directory; embedded nodes are covered by the mesh file's own raw bytes.
+
 ## Independent actual-text review
 
 One context independent of the writer may assess this route's semantic

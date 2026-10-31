@@ -80,10 +80,23 @@ Closure counts a saved report only while its declared raw input bytes match the 
   `world_feasibility` reports are checked the same way when the brief is built
   (`travel_composition.world_report.mismatch`).
 
+- A fiction or travel composition can instead name `world_mesh`. Its saved
+  `mesh-check` report binds by `mesh_id` and raw `input_digests` for the mesh
+  and every file node; embedded contracts are covered by the mesh bytes.
+  Missing `mesh_id` is `world_report_unbound:world_mesh`, with the
+  `worldguard mesh-check --mesh` command to regenerate the report (WorldGuard
+  0.8.0 or newer), or `run_chain.py --refresh-providers`. A different id is
+  `world_report_mismatch:mesh_id`; changed or omitted inputs are
+  `world_report_stale:<path>`. `world_contract` and `world_mesh` are exclusive.
+
 Such a provider check is `failed`, its reason starts with the codes, the
 provider is named in `residual_risk`, and closure is `needs_repair`. The repair is
 to save the report again from the right folder or contract. An unreadable report
 stays `unreadable`.
+
+Only the report's actual WorldGuard `scope_limits` are retained as nonblocking
+residual risks, with the final owner and saved report path. The readback adds a
+count; the risk entries carry the details. A PASS with limits remains a PASS.
 
 ## Other current model boundaries
 

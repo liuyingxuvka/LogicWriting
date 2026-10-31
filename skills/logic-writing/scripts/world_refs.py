@@ -26,36 +26,53 @@ def planned_world_refs(plan):
 
 def validate_world_refs(plan, composition, base_dir=None):
     """Resolve a composition-relative YAML/JSON contract and check literal ids."""
+    if 'world_contract' in composition and 'world_mesh' in composition:
+        raise ValidationError('world_contract and world_mesh are mutually exclusive')
     refs = planned_world_refs(plan)
     if not refs:
         return refs
-    location = composition.get("world_contract")
+    mesh = composition.get('world_mesh')
+    kind = 'world_mesh' if mesh is not None else 'world_contract'
+    location = mesh if mesh is not None else composition.get("world_contract")
     if not isinstance(location, str) or not location:
-        raise ValidationError("world_contract_missing: planned units name world_refs")
+        raise ValidationError(f"{kind}_missing: planned units name world_refs")
     path = Path(location).expanduser()
     if not path.is_absolute():
         path = Path(base_dir or Path.cwd()) / path
     try:
         import yaml
         world = yaml.safe_load(path.read_text(encoding="utf-8"))
+        worlds = [world]
+        if mesh is not None:
+            nodes = world.get('nodes') if isinstance(world, Mapping) else None
+            if not isinstance(nodes, list) or any(not isinstance(node, Mapping) for node in nodes):
+                raise ValidationError('world_mesh_unreadable: expected mesh nodes')
+            worlds = []
+            for node in nodes:
+                contract = node.get('contract')
+                if isinstance(contract, str):
+                    contract = yaml.safe_load((path.parent / contract).read_text(encoding='utf-8'))
+                worlds.append(contract)
     except (OSError, UnicodeError, ValueError) as exc:
-        raise ValidationError(f"world_contract_unreadable: {path}: {exc}") from exc
+        raise ValidationError(f"{kind}_unreadable: {path}: {exc}") from exc
     except ImportError as exc:
-        raise ValidationError("world_contract_unreadable: PyYAML is required") from exc
+        raise ValidationError(f"{kind}_unreadable: PyYAML is required") from exc
     except yaml.YAMLError as exc:
-        raise ValidationError(f"world_contract_unreadable: {path}: {exc}") from exc
-    if not isinstance(world, Mapping):
-        raise ValidationError(f"world_contract_unreadable: {path}: expected a mapping")
-    claim = world.get("claim", {})
-    inputs = world.get("inputs", {})
-    if not isinstance(claim, Mapping) or not isinstance(inputs, Mapping):
-        raise ValidationError(f"world_contract_unreadable: {path}: invalid claim/inputs")
-    events = inputs.get("events", [])
-    if not isinstance(events, list) or any(not isinstance(event, Mapping) for event in events):
-        raise ValidationError(f"world_contract_unreadable: {path}: invalid events")
-    available = {event.get("event_id") for event in events if isinstance(event.get("event_id"), str)}
-    if isinstance(claim.get("claim_id"), str):
-        available.add(claim["claim_id"])
+        raise ValidationError(f"{kind}_unreadable: {path}: {exc}") from exc
+    available = set()
+    for world in worlds:
+        if not isinstance(world, Mapping):
+            raise ValidationError(f"{kind}_unreadable: {path}: expected a mapping")
+        claim = world.get("claim", {})
+        inputs = world.get("inputs", {})
+        if not isinstance(claim, Mapping) or not isinstance(inputs, Mapping):
+            raise ValidationError(f"{kind}_unreadable: {path}: invalid claim/inputs")
+        events = inputs.get("events", [])
+        if not isinstance(events, list) or any(not isinstance(event, Mapping) for event in events):
+            raise ValidationError(f"{kind}_unreadable: {path}: invalid events")
+        available.update(event.get("event_id") for event in events if isinstance(event.get("event_id"), str))
+        if isinstance(claim.get("claim_id"), str):
+            available.add(claim["claim_id"])
     for unit_id, ids in refs.items():
         for ref in ids:
             if ref not in available:

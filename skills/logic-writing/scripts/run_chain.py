@@ -51,12 +51,18 @@ def _refresh(request,folder):
             target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(output.read_bytes())
         request['research_status']=str(target)
     route=request.get('route_composition') or {}
-    world=route.get('world_contract')
+    mesh=route.get('world_mesh')
+    if mesh is not None and route.get('world_contract') is not None:
+        raise ValidationError('world_contract and world_mesh are mutually exclusive')
+    world=mesh or route.get('world_contract')
     if world:
         command=provider_command('worldguard')
-        result=subprocess.run([*command,'check','--contract',str(world)],capture_output=True,text=True)
+        arguments=['mesh-check','--mesh'] if mesh else ['check','--contract']
+        result=subprocess.run([*command,*arguments,str(world)],capture_output=True,text=True)
         if result.returncode not in (0,1,2):raise ValidationError('WorldGuard refresh failed: '+result.stderr.strip())
         document=json.loads(result.stdout)
+        if mesh and (not isinstance(document,dict) or not document.get('mesh_id') or 'input_digests' not in document):
+            raise ValidationError('Install WorldGuard >= 0.8.0 beside Logic Writing to refresh tree reports')
         if not isinstance(document,dict) or 'input_digests' not in document:
             raise ValidationError('Install WorldGuard >= 0.7.23 beside Logic Writing to refresh input digests')
         (folder/'worldguard-check.json').write_text(result.stdout,encoding='utf-8')
