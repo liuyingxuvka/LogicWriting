@@ -7,6 +7,16 @@
     "code": "workflow_leak",
     "step": "audit"
   },
+  "noanchor-content_framework.json": {
+    "code": "content_unit_unsupported",
+    "error": "content_unit_unsupported:content:framework (a required unit needs an evidence anchor that is not only counter, or an unsupported_reason)",
+    "step": "brief"
+  },
+  "noanchor-content_scope.json": {
+    "code": "content_unit_unsupported",
+    "error": "content_unit_unsupported:content:scope (a required unit needs an evidence anchor that is not only counter, or an unsupported_reason)",
+    "step": "brief"
+  },
   "nocite.md": {
     "code": "citation_missing",
     "step": "audit"

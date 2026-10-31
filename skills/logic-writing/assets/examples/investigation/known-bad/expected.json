@@ -7,6 +7,31 @@
     "code": "workflow_leak",
     "step": "audit"
   },
+  "noanchor-cu-313-experimental.json": {
+    "code": "content_unit_unsupported",
+    "error": "content_unit_unsupported:cu-313-experimental (a required unit needs an evidence anchor that is not only counter, or an unsupported_reason)",
+    "step": "brief"
+  },
+  "noanchor-cu-not-default.json": {
+    "code": "content_unit_unsupported",
+    "error": "content_unit_unsupported:cu-not-default (a required unit needs an evidence anchor that is not only counter, or an unsupported_reason)",
+    "step": "brief"
+  },
+  "noanchor-cu-perf.json": {
+    "code": "content_unit_unsupported",
+    "error": "content_unit_unsupported:cu-perf (a required unit needs an evidence anchor that is not only counter, or an unsupported_reason)",
+    "step": "brief"
+  },
+  "noanchor-cu-recommend.json": {
+    "code": "content_unit_unsupported",
+    "error": "content_unit_unsupported:cu-recommend (a required unit needs an evidence anchor that is not only counter, or an unsupported_reason)",
+    "step": "brief"
+  },
+  "noanchor-cu-status-314.json": {
+    "code": "content_unit_unsupported",
+    "error": "content_unit_unsupported:cu-status-314 (a required unit needs an evidence anchor that is not only counter, or an unsupported_reason)",
+    "step": "brief"
+  },
   "nocite.md": {
     "code": "citation_missing",
     "step": "audit"
@@ -33,6 +58,10 @@
   },
   "token.md": {
     "code": "must_preserve_missing",
+    "step": "audit"
+  },
+  "unsupported-alt-default-soon.md": {
+    "code": "overclaim_pattern",
     "step": "audit"
   }
 }

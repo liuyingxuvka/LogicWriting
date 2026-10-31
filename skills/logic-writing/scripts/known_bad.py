@@ -13,6 +13,7 @@ from artifact_map import build_artifact_map_from_text, validate_artifact_map
 from reader_fill import fill_check_fingerprints
 from reader_binding import shared_writing_from_current
 from reader_checks import build_reader_audit_from_current, route_review_from_current
+from reader_plan import validate_evidence_boundaries
 
 
 # First named term in _common.contains_internal_language's existing glossary.
@@ -129,6 +130,11 @@ def text_variants(text, *, reader_brief, artifact_map, shared_writing, route_rev
         overclaim = overclaims[0]
         cases.append(dict(kind='overclaim', name='overclaim', unit=overclaim['overclaim_id'],
                           text=text[:end] + ' ' + overclaim['forbidden_meaning'] + text[end:]))
+    for alternative in boundaries.get('alternatives', []):
+        if alternative['status'] == 'unsupported':
+            identity = alternative['alternative_id']
+            cases.append(dict(kind='unsupported', name='unsupported-' + _safe(identity), unit=identity,
+                              text=text[:end] + ' ' + alternative['safe_meaning'] + text[end:]))
     applicable_limits = {row['limitation_id'] for row in reader_brief['composition_plan'].get(
         'limitation_dispositions', []) if row['disposition'] in {'body', 'note'}}
     for limitation in route_review.get('limitation_checks', []):
@@ -225,15 +231,18 @@ def _write_catalog(directory, cases, reports):
     directory.mkdir(parents=True, exist_ok=True)
     expected = {}
     for case, report in zip(cases, reports):
-        filename = case['name'] + '.md'
-        (directory / filename).write_bytes(case['text'].encode('utf-8'))
+        filename = case['name'] + ('.json' if 'plan' in case else '.md')
+        if 'plan' in case:
+            (directory / filename).write_text(json.dumps(case['plan'], ensure_ascii=False, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+        else:
+            (directory / filename).write_bytes(case['text'].encode('utf-8'))
         expected[filename] = ({key: report[key] for key in ('step', 'code', 'error') if key in report}
                               if report['caught'] else dict(step='uncaught', error='uncaught'))
     previous = directory / 'expected.json'
     if previous.exists():
         old = json.loads(previous.read_text(encoding='utf-8'))
         for name in old.keys() - expected.keys():
-            if Path(name).name != name or not name.endswith('.md'):
+            if Path(name).name != name or not name.endswith(('.md', '.json')):
                 raise ValidationError('catalog contains an unsafe old filename')
             (directory / name).unlink(missing_ok=True)
     previous.write_text(json.dumps(expected, ensure_ascii=False, indent=2, sort_keys=True) + '\n', encoding='utf-8')
@@ -252,6 +261,26 @@ def check_known_bad(value, *, write_catalog=None, _baseline_result=None):
         shared_writing=request['shared_writing'], route_review=request['route_review'])
     reports = [dict(kind=case['kind'], name=case['name'], unit=case['unit'],
                     **_first_rejection(case['text'], request)) for case in cases]
+    brief = request['reader_brief']
+    if brief['final_owner'] in ('investigation', 'academic-writing') or 'research_folder' in brief:
+        for unit in brief['content_boundaries']['content_units']:
+            if not unit['required'] or not unit['evidence_anchor_ids']:
+                continue
+            identity = unit['content_unit_id']
+            delta = dict(content_unit_id=identity, evidence_anchor_ids=[])
+            changed = deepcopy(brief)
+            next(row for row in changed['content_boundaries']['content_units']
+                 if row['content_unit_id'] == identity)['evidence_anchor_ids'] = delta['evidence_anchor_ids']
+            try:
+                validate_evidence_boundaries(changed)
+                observed = dict(caught=False, step=None)
+            except ValidationError as exc:
+                observed = dict(caught=True, step='brief', code=str(exc).split(':', 1)[0], error=str(exc))
+            case = dict(kind='noanchor', name='noanchor-' + _safe(identity), unit=identity, plan=delta)
+            cases.append(case)
+            reports.append(dict(kind=case['kind'], name=case['name'], unit=identity, **observed))
+    if len({case['name'] for case in cases}) != len(cases):
+        raise ValidationError('known-bad variant filenames must be unique')
     if write_catalog is not None:
         _write_catalog(write_catalog, cases, reports)
     return dict(status='passed' if all(row['caught'] for row in reports) else 'needs_repair',

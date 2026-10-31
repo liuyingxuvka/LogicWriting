@@ -29,12 +29,20 @@ plan or internal-term glossary; it calls no language model. Besides the text edi
 it also breaks the plan's relations: `swap` moves two adjacent sibling units past
 each other (caught by `plan_order_mismatch`), `noworld-<unit>` removes the sentence
 holding a unit's quoted world reference, and `noalt-<alternative>` removes the
-sentence binding a live alternative. Each variant reruns mapping,
+sentence binding a live alternative. Each text variant reruns mapping,
 SharedWriting, audit and the saved route review, reporting the first rejection.
 An uncaught variant exits 1; closure retains it as nonblocking `toothless` risk.
 The shipped `known-bad/` catalogs come from this generator, not hand-written edits.
-`known-bad/expected.json` names the first step and code or error for each bad piece.
-Replace `piece.md` in a copy with one bad piece and rerun through that step.
+`unsupported-<alternative>.md` inserts the unsupported alternative's existing
+plan sentence. The investigation example catches its complete, unquoted
+declaration at a sentence start with an existing literal declaration pattern;
+this is not a general semantic check. On researched routes, `noanchor-<unit>.json` records the unit id
+and an empty `evidence_anchor_ids` list; apply that delta to a copy of the brief
+request and rerun the brief step. It changes no prose. Optional units and
+nonresearch fiction or travel do not get this anchor-strip variant; a lawful
+explicit unsupported reason may leave one uncaught and visible as `toothless`.
+`known-bad/expected.json` names the first step and code or error for each variant.
+For a text variant, replace `piece.md` in a copy and rerun through that step.
 Never copy a passing judgment to changed prose: reread it and update its quotations.
 The academic citation is Kevin Lynch, *The Image of the City* (MIT Press, 1960), chapter 3.
 The travel destination is illustrative; recheck real opening hours and access.

@@ -24,6 +24,8 @@ line follows semantic versioning.
 
 - The brief stores the user's request once, as received; each required unit names its source (request, research or ai), a request unit's quote must occur verbatim in the request, and closure lists the units the writer added.
 
+- Known-bad variants also insert each unsupported alternative and strip a required unit of its anchors; an uncaught one is a toothless residual risk.
+
 ## v4.0.17 - 2026-10-28 - Plan readback from every chain file and declared replays
 
 - Size caps on skill text and example files are replaced by checks for repeated paragraphs, dead links and unknown names; totals are printed, not limited.

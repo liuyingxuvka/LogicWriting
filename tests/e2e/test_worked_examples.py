@@ -55,10 +55,24 @@ def test_worked_example(tmp_path, route):
     assert result["closure"]["status"] == "passed", result
     assert result["closure"]["broad_claim_allowed"] is False  # honest self-review
     expected = json.loads((folder / "known-bad/expected.json").read_text())
+    original_piece = (folder / 'piece.md').read_bytes()
+    original_brief = (folder / 'brief-request.json').read_bytes()
     for filename, expectation in expected.items():
-        shutil.copyfile(source / "known-bad" / filename, folder / "piece.md")
+        (folder / 'piece.md').write_bytes(original_piece)
+        (folder / 'brief-request.json').write_bytes(original_brief)
+        if filename.endswith('.json'):
+            delta = json.loads((source / 'known-bad' / filename).read_text())
+            brief = json.loads(original_brief)
+            next(unit for unit in brief['content_boundaries']['content_units']
+                 if unit['content_unit_id'] == delta['content_unit_id'])['evidence_anchor_ids'] = delta['evidence_anchor_ids']
+            (folder / 'brief-request.json').write_text(json.dumps(brief))
+        else:
+            shutil.copyfile(source / "known-bad" / filename, folder / "piece.md")
         code, result = run_chain(folder, route, expectation["step"])
-        if "code" in expectation:
+        if expectation['step'] == 'brief':
+            assert code != 0, (filename, result)
+            assert result['errors'][0].startswith(expectation['code'] + ':'), (filename, result)
+        elif "code" in expectation:
             assert expectation["code"] in {r["code"] for r in result["reader_audit"]["findings"]}, (
                 filename,
                 result,
