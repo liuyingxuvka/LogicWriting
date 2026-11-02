@@ -208,7 +208,8 @@ def test_an_edit_that_crosses_two_units_needs_both_quoted_again():
 
     def judgment(*quotes):
         rows = [dict(evidence=dict(artifact_unit_id=unit, excerpt=excerpt)) for unit, excerpt in quotes]
-        return dict(judgment_id='j', artifact_fingerprint=before['artifact_fingerprint'], reverse_outline=rows)
+        return dict(judgment_id='j', artifact_fingerprint=before['artifact_fingerprint'], reverse_outline=rows,
+                    defects=[], strengths=[])
 
     with pytest.raises(ValueError) as refused:
         review_record(saved, judgment(('artifact:paragraph:0002', 'omega')), after, first_review=False)

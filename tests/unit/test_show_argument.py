@@ -192,7 +192,8 @@ def _large_brief(sections, per_section):
                               content_unit_ids=['c-' + identity], limitation_ids=[]))
             content.append(dict(content_unit_id='c-' + identity, safe_meaning=f'Claim {identity}.', required=True,
                                 evidence_anchor_ids=[], alternative_ids=[], limitation_ids=[]))
-    return dict(final_owner='fiction-writing', composition_plan=dict(plan_id='large', planned_units=units),
+    return dict(final_owner='fiction-writing', composition_plan=dict(plan_id='large', central_question='Does a large plan fold?', planned_units=units,
+                                                                    content_dispositions=[]),
                 content_boundaries=dict(content_units=content, evidence_anchors=[], alternatives=[], limitations=[]))
 
 

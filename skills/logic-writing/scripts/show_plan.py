@@ -41,60 +41,58 @@ def _find_record(value, marker, wrappers):
     return None
 
 
+def _blocked_binding(folder):
+    """The folder's binding result when that step blocked, else None."""
+    result_path = folder / "shared-writing-result.json"
+    if not result_path.is_file():
+        return None
+    result = json.loads(result_path.read_text(encoding="utf-8"))
+    return result if isinstance(result, dict) and result.get("status") == "blocked" else None
+
+
 def _read_view_input(path):
-    """Read an interrupted chain without writing or claiming that its binding passed."""
+    """Read an interrupted chain without writing or claiming that its binding passed.
+
+    One route per input state, chosen from the files before anything is read; a read error of the
+    chosen route reaches the caller:
+    - shared-writing-result.json: a blocked result shows its request (shared-writing.json) with the
+      block; a passed result shows its shared_writing.
+    - brief-request.json whose route_decision names a file not written yet (the chain stopped before
+      the route step): the route is decided from route-request.json.
+    - a file that names a blocked shared-writing-result.json: the binding request with the block.
+    - any other file: as it is.
+    """
     path = Path(path).resolve()
-    try:
+    blocked = _blocked_binding(path.parent)
+    if path.name == "shared-writing-result.json":
         value = load_request(path)
-        if (
-            path.name == "shared-writing-result.json"
-            and isinstance(value, dict)
-            and value.get("status") == "blocked"
-        ):
+        if blocked is not None:
             request = load_request(path.parent / "shared-writing.json")
-            request["_binding_blocked"] = value
+            request["_binding_blocked"] = blocked
             return request
-        if (
-            path.name == "shared-writing-result.json"
-            and isinstance(value, dict)
-            and isinstance(value.get("shared_writing"), dict)
-        ):
+        if isinstance(value, dict) and isinstance(value.get("shared_writing"), dict):
             return {"shared_writing": value["shared_writing"]}
         return value
-    except (OSError, ValueError) as error:
-        raw = json.loads(path.read_text(encoding="utf-8"))
-        if not isinstance(raw, dict):
-            raise error
-        route = raw.get("route_decision")
-        if (
-            path.name == "brief-request.json"
-            and isinstance(route, str)
-            and not (path.parent / route).exists()
-        ):
-            from select_route import validate_request
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(raw, dict):
+        return load_request(path)
+    route = raw.get("route_decision")
+    if path.name == "brief-request.json" and isinstance(route, str) and not (path.parent / route).exists():
+        from select_route import validate_request
 
-            decision = validate_request(load_request(path.parent / "route-request.json"))[
-                "route_decision"
-            ]
-            request = deepcopy(raw)
-            request["route_decision"] = decision
-            for key in ("composition_plan", "content_boundaries", "route_composition"):
-                reference = request.get(key)
-                if isinstance(reference, str) and reference.endswith(".json"):
-                    record = load_request(path.parent / reference)
-                    request[key] = record.get(key, record) if isinstance(record, dict) else record
-            return request
-        blocked_path = path.parent / "shared-writing-result.json"
-        if not blocked_path.is_file():
-            raise error
-        blocked = json.loads(blocked_path.read_text(encoding="utf-8"))
-        if not isinstance(blocked, dict) or blocked.get("status") != "blocked":
-            raise error
+        request = deepcopy(raw)
+        request["route_decision"] = validate_request(load_request(path.parent / "route-request.json"))["route_decision"]
+        for key in ("composition_plan", "content_boundaries", "route_composition"):
+            reference = request.get(key)
+            if isinstance(reference, str) and reference.endswith(".json"):
+                record = load_request(path.parent / reference)
+                request[key] = record.get(key, record) if isinstance(record, dict) else record
+        return request
+    if blocked is not None and "shared-writing-result.json" in raw.values():
         request = load_request(path.parent / "shared-writing.json")
-        if not isinstance(request, dict):
-            raise error
         request["_binding_blocked"] = blocked
         return request
+    return load_request(path)
 
 
 def _load_view_input(path):

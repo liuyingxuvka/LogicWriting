@@ -707,6 +707,19 @@ _RUNTIME = _Draft202012Runtime(_REGISTRY)
 _VALIDATION_MEMO: dict[tuple[str, str], tuple[SchemaValidationIssue, ...]] = {}
 
 
+def _plain_json(value: Any) -> bool:
+    """Whether json.dumps(allow_nan=False) can write this value: dicts with text keys, lists, text, finite numbers."""
+    if value is None or isinstance(value, (bool, str, int)):
+        return True
+    if isinstance(value, float):
+        return math.isfinite(value)
+    if isinstance(value, list):
+        return all(_plain_json(item) for item in value)
+    if isinstance(value, dict):
+        return all(isinstance(key, str) and _plain_json(item) for key, item in value.items())
+    return False
+
+
 def validate_schema(
     schema_name: str,
     artifact: Any,
@@ -719,14 +732,12 @@ def validate_schema(
 
     resource = _REGISTRY.require(schema_name)
     key = None
-    try:
+    if _plain_json(artifact):  # only plain JSON values have a canonical text to remember results by
         canonical = json.dumps(
             artifact, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False
         )
         if json.loads(canonical) == artifact:
             key = (schema_name, hashlib.sha256(canonical.encode("utf-8")).hexdigest())
-    except (TypeError, ValueError):
-        pass
     if key is not None and key in _VALIDATION_MEMO:
         return _VALIDATION_MEMO[key]
     issues = _RUNTIME.validate(artifact, resource.document, resource)

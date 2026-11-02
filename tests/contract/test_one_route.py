@@ -84,3 +84,45 @@ def test_a_skipped_test_fails_the_run(tmp_path):
                           str(probe)], cwd=REPO, capture_output=True, text=True, timeout=120)
     assert run.returncode == 1, run.stdout + run.stderr
     assert '1 failed' in run.stdout and 'this suite allows no skips' in run.stdout
+
+
+@pytest.mark.parametrize('body', [
+    'import pytest\npytest.importorskip("a_module_that_is_not_installed")\n\ndef test_hidden():\n    pass\n',
+    'import pytest\npytest.skip("the whole module is off", allow_module_level=True)\n\ndef test_hidden():\n    pass\n',
+])
+def test_a_module_skipped_at_collection_fails_the_run(tmp_path, body):
+    """Review gap: a module-level skip is a collection report, not a test report; it must fail too."""
+    probe = tmp_path / 'test_probe.py'
+    probe.write_text(body, encoding='utf-8')
+    run = subprocess.run([sys.executable, '-m', 'pytest', '-q', '-p', 'no:cacheprovider', '-p', 'tests.no_skips',
+                          str(probe)], cwd=REPO, capture_output=True, text=True, timeout=120)
+    assert run.returncode != 0, run.stdout + run.stderr
+    assert 'this suite allows no skips' in run.stdout + run.stderr
+
+
+def test_a_fresh_example_reads_back_with_the_route_decided_from_its_request(tmp_path):
+    """show_plan's view input takes one route per input state; before the route step it decides the route."""
+    from show_plan import _read_view_input
+    folder = _copy(tmp_path)
+    assert not (folder / 'route-decision.json').exists()
+    request = _read_view_input(folder / 'brief-request.json')
+    assert request['route_decision']['final_owner'] == 'investigation'
+    (folder / 'route-request.json').unlink()
+    with pytest.raises(FileNotFoundError):  # the chosen route's read error reaches the caller
+        _read_view_input(folder / 'brief-request.json')
+
+
+def test_a_blocked_binding_reads_back_with_its_block_and_other_errors_reach_the_caller(tmp_path):
+    from run_chain import run_chain
+    from show_plan import _read_view_input
+    folder = _copy(tmp_path)
+    path = folder / 'shared-writing.json'
+    shared = json.loads(path.read_text())
+    shared['contract']['unit_bindings'][0]['anchor_excerpts'] = ['A QUOTE THAT IS NOT IN THE TEXT']
+    path.write_text(json.dumps(shared))
+    assert run_chain(folder)['first_failure']['step'] == 'binding'
+    for name in ('route-review.json', 'shared-writing-result.json'):
+        assert _read_view_input(folder / name)['_binding_blocked']['status'] == 'blocked'
+    (folder / 'route-review.json').write_text('{"review": "missing-file.json"}')
+    with pytest.raises(FileNotFoundError):
+        _read_view_input(folder / 'route-review.json')

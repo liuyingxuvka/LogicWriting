@@ -70,21 +70,21 @@ class _Plan:
         boundaries = brief['content_boundaries']
         self.units = {row['planned_unit_id']: row for row in self.plan['planned_units']}
         self.order = _canonical_plan_order(self.plan['planned_units'])
-        self.children = {}
+        self.children = {None: [], **{identity: [] for identity in self.order}}  # a parent the plan lacks is a KeyError
         for identity in self.order:
-            self.children.setdefault(self.units[identity].get('parent_unit_id'), []).append(identity)
-        self.roots = list(self.children.get(None, []))
+            self.children[self.units[identity]['parent_unit_id']].append(identity)
+        self.roots = list(self.children[None])
         self.numbers = {}
         for index, root in enumerate(self.roots):
             self._number(root, str(index + 1))
-        self.leaves = [identity for identity in self.order if identity not in self.children]
-        self.content = {row['content_unit_id']: row for row in boundaries.get('content_units', [])}
-        self.anchors = {row['anchor_id']: row for row in boundaries.get('evidence_anchors', [])}
-        self.limitations = {row['limitation_id']: row for row in boundaries.get('limitations', [])}
-        self.alternatives = list(boundaries.get('alternatives', []))
+        self.leaves = [identity for identity in self.order if not self.children[identity]]
+        self.content = {row['content_unit_id']: row for row in boundaries['content_units']}
+        self.anchors = {row['anchor_id']: row for row in boundaries['evidence_anchors']}
+        self.limitations = {row['limitation_id']: row for row in boundaries['limitations']}
+        self.alternatives = list(boundaries['alternatives'])
         links = []
         for identity in self.order:
-            for target in self.units[identity].get('downstream_unit_ids', []):
+            for target in self.units[identity]['downstream_unit_ids']:
                 pair = (self._edge_leaf(identity, -1), self._edge_leaf(target, 0))
                 if pair[0] != pair[1]:
                     links.append(pair)
@@ -92,37 +92,37 @@ class _Plan:
         self.answered_in = {}
         for alternative in self.alternatives:
             identity = alternative['alternative_id']
-            concerned = set(alternative.get('content_unit_ids', []))
+            concerned = set(alternative['content_unit_ids'])
             self.answered_in[identity] = [
                 unit for unit in self.order
-                if any(cu in concerned or identity in self.content.get(cu, {}).get('alternative_ids', [])
-                       for cu in self.units[unit].get('content_unit_ids', []))]
+                if any(cu in concerned or identity in self.content[cu]['alternative_ids']
+                       for cu in self.units[unit]['content_unit_ids'])]
 
     def _number(self, identity, number):
         self.numbers[identity] = number
-        for index, child in enumerate(self.children.get(identity, [])):
+        for index, child in enumerate(self.children[identity]):
             self._number(child, f'{number}.{index + 1}')
 
     def _edge_leaf(self, identity, end):
         """A link from a part leaves at its last unit; a link into a part enters at its first."""
-        while identity in self.children:
+        while self.children[identity]:
             identity = self.children[identity][end]
         return identity
 
     def leaves_under(self, identity):
-        if identity not in self.children:
+        if not self.children[identity]:
             return [identity]
         return [leaf for child in self.children[identity] for leaf in self.leaves_under(child)]
 
     def label(self, identity):
-        return f"{self.numbers[identity]}. {self.units[identity].get('title', identity)}"
+        return f"{self.numbers[identity]}. {self.units[identity]['title']}"
 
     def claims(self, identity):
-        return [self.content[cu]['safe_meaning'] for cu in self.units[identity].get('content_unit_ids', [])
+        return [self.content[cu]['safe_meaning'] for cu in self.units[identity]['content_unit_ids']
                 if cu in self.content]
 
     def first_unit_with(self, content_unit_id):
-        return next((unit for unit in self.order if content_unit_id in self.units[unit].get('content_unit_ids', [])), None)
+        return next((unit for unit in self.order if content_unit_id in self.units[unit]['content_unit_ids']), None)
 
 
 def _problem(code, unit, message, alternative=None):
@@ -133,7 +133,7 @@ def _graph_problems(plan):
     if not plan.links or not plan.leaves:
         return []
     start = plan.leaves[0]
-    conclusions = [identity for identity in plan.order if plan.units[identity].get('unit_kind') == 'conclusion']
+    conclusions = [identity for identity in plan.order if plan.units[identity]['unit_kind'] == 'conclusion']
     end = plan._edge_leaf(conclusions[-1], -1) if conclusions else plan.leaves[-1]
     outgoing = {source for source, _ in plan.links}
     incoming = {target for _, target in plan.links}
@@ -180,20 +180,20 @@ def _alternative_problems(plan):
                      f"no planned unit answers this {row['status']} alternative: {_short(row['safe_meaning'], 80)}",
                      alternative=row['alternative_id'])
             for row in plan.alternatives
-            if row.get('status') in ANSWERED_STATUSES and not plan.answered_in[row['alternative_id']]]
+            if row['status'] in ANSWERED_STATUSES and not plan.answered_in[row['alternative_id']]]
 
 
 def _state_problems(plan, state, document):
-    problems = [_problem(f"audit:{row['code']}", None, row.get('message', '')) for row in document]
+    problems = [_problem(f"audit:{row['code']}", None, row['message']) for row in document]
     if not state:
         return problems
     for identity in plan.order:
-        for row in state.get(identity, {}).get('findings', []):
-            problems.append(_problem(f"{row.get('source', 'check')}:{row['code']}", identity, row.get('message', '')))
-    if any(row.get('bound') for row in state.values()):
+        for row in state[identity]['findings']:
+            problems.append(_problem(f"{row['source']}:{row['code']}", identity, row['message']))
+    if any(row['bound'] for row in state.values()):
         problems += [_problem('not_in_text:' + leaf, leaf, 'no passage of the current text is bound to this unit')
                      for leaf in plan.leaves
-                     if plan.units[leaf].get('content_unit_ids') and not state.get(leaf, {}).get('bound')]
+                     if plan.units[leaf]['content_unit_ids'] and not state[leaf]['bound']]
     return problems
 
 
@@ -234,8 +234,8 @@ def draw(brief, state=None, *, focus=None, summary='', document=()):
     problems = (_graph_problems(plan) + _support_problems(plan) + _alternative_problems(plan)
                 + _state_problems(plan, state, document))
     level, drawn, represent, centre, views = _choose(plan, focus)
-    title = f"Argument of {plan.plan.get('plan_id', 'the plan')}" + (f" around {focus} ({plan.label(focus)})" if focus else '')
-    picture = dict(title=title, question=plan.plan.get('central_question', ''), summary=summary, level=level,
+    title = f"Argument of {plan.plan['plan_id']}" + (f" around {focus} ({plan.label(focus)})" if focus else '')
+    picture = dict(title=title, question=plan.plan['central_question'], summary=summary, level=level,
                    mermaid='', boxes=0, arrows=0, drawn_units=drawn, drawn_anchors=[], drawn_limitations=[],
                    drawn_alternatives=[], edges=[], problems=problems, not_drawn=[], not_computed=[], views=[])
     if not plan.links:
@@ -247,7 +247,7 @@ def draw(brief, state=None, *, focus=None, summary='', document=()):
     if state is None:
         picture['not_computed'].append('text bindings and audit or review findings: not read')
     if level == 'too_large':
-        picture['views'] = [f"--focus {identity} ({plan.units[identity].get('title', identity)}, "
+        picture['views'] = [f"--focus {identity} ({plan.units[identity]['title']}, "
                             f"{_plural(len(plan.leaves_under(identity)), 'unit')})" for identity in views]
         for row in problems:
             row['drawn'] = False
@@ -258,11 +258,11 @@ def draw(brief, state=None, *, focus=None, summary='', document=()):
     if level == 'focus':
         alternatives = [row['alternative_id'] for row in plan.alternatives
                         if set(plan.answered_in[row['alternative_id']]) & centre_set]
-        anchors = list(dict.fromkeys(anchor for unit in centre for cu in plan.units[unit].get('content_unit_ids', [])
-                                     for anchor in plan.content.get(cu, {}).get('evidence_anchor_ids', [])
+        anchors = list(dict.fromkeys(anchor for unit in centre for cu in plan.units[unit]['content_unit_ids']
+                                     for anchor in plan.content[cu]['evidence_anchor_ids']
                                      if anchor in plan.anchors))
         limitations = list(dict.fromkeys(limitation for unit in centre
-                                         for limitation in plan.units[unit].get('limitation_ids', [])
+                                         for limitation in plan.units[unit]['limitation_ids']
                                          if limitation in plan.limitations))
     else:
         alternatives = [row['alternative_id'] for row in plan.alternatives]
@@ -286,7 +286,7 @@ def draw(brief, state=None, *, focus=None, summary='', document=()):
                   if level != 'focus' or plan.leaves.index(later) == plan.leaves.index(earlier) + 1]
     for earlier, later in neighbours:
         edges.append(dict(source=earlier, target=later, kind='builds_on' if (earlier, later) in builds else 'order',
-                          label=plan.units[later].get('relation_to_previous', '')))
+                          label=plan.units[later]['relation_to_previous']))
     edges += [dict(source=source, target=target, kind='builds_on', label='')
               for source, target in builds if (source, target) not in neighbours]
     for identity in picture['drawn_alternatives']:
@@ -295,14 +295,14 @@ def draw(brief, state=None, *, focus=None, summary='', document=()):
             edges.append(dict(source=identity, target=unit, kind='answers', label='answered in'))
     drawn_anchors = set(picture['drawn_anchors'])
     for unit in centre:
-        content_units = plan.units[unit].get('content_unit_ids', [])
+        content_units = plan.units[unit]['content_unit_ids']
         for cu in content_units:
-            for anchor in plan.content.get(cu, {}).get('evidence_anchor_ids', []):
+            for anchor in plan.content[cu]['evidence_anchor_ids']:
                 if anchor in drawn_anchors:
-                    relation = plan.anchors[anchor].get('relation', '')
+                    relation = plan.anchors[anchor]['relation']
                     edges.append(dict(source=anchor, target=unit, kind=relation,
                                       label=relation + (f' · {cu}' if len(content_units) > 1 else '')))
-        for limitation in plan.units[unit].get('limitation_ids', []):
+        for limitation in plan.units[unit]['limitation_ids']:
             if limitation in picture['drawn_limitations']:
                 edges.append(dict(source=limitation, target=unit, kind='limits', label='limits'))
     picture['edges'] = edges
@@ -318,7 +318,7 @@ def draw(brief, state=None, *, focus=None, summary='', document=()):
     node.update({identity: names[('l', identity)] for identity in picture['drawn_limitations']})
 
     def unit_box(identity):
-        if level == 'parts' and identity in plan.children:
+        if level == 'parts' and plan.children[identity]:
             return f'{node[identity]}["{_lines(plan.label(identity), _plural(len(plan.leaves_under(identity)), "unit"))}"]'
         claims = plan.claims(identity)
         if identity in centre_set:
@@ -329,16 +329,16 @@ def draw(brief, state=None, *, focus=None, summary='', document=()):
         return f'{node[identity]}["{text}"]'
 
     lines = ['flowchart TD',
-             f"  %% argument flow of {plan.plan.get('plan_id', 'the plan')}"
+             f"  %% argument flow of {plan.plan['plan_id']}"
              f"{' around ' + focus if focus else ''}, computed from reader-brief.json: planned units, "
              'downstream_unit_ids, relation_to_previous, content units, anchors, limitations, alternatives']
     group_names = {}
 
     def emit(parent, indent):
-        for child in plan.children.get(parent, []):
+        for child in plan.children[parent]:
             if child in drawn:
                 lines.append(indent + unit_box(child))
-            elif child in plan.children and any(leaf in drawn for leaf in plan.leaves_under(child)):
+            elif plan.children[child] and any(leaf in drawn for leaf in plan.leaves_under(child)):
                 group_names[child] = f'g{len(group_names)}'
                 lines.append(f'{indent}subgraph {group_names[child]}["{_lines(plan.label(child))}"]')
                 emit(child, indent + '  ')
@@ -352,11 +352,11 @@ def draw(brief, state=None, *, focus=None, summary='', document=()):
         lines.append(f"  {node[identity]}{{{{\"{_lines(identity + ' · ' + row['status'], _short(row['safe_meaning']))}\"}}}}")
     for identity in picture['drawn_anchors']:
         row = plan.anchors[identity]
-        lines.append(f"  {node[identity]}[/\"{_lines(identity + ' · ' + row.get('relation', ''), *_wrap(row.get('observed_summary', ''), 2))}\"/]")
+        lines.append(f"  {node[identity]}[/\"{_lines(identity + ' · ' + row['relation'], *_wrap(row['observed_summary'], 2))}\"/]")
     for identity in picture['drawn_limitations']:
-        lines.append(f"  {node[identity]}>\"{_lines(identity, *_wrap(plan.limitations[identity].get('safe_meaning', ''), 2))}\"]")
+        lines.append(f"  {node[identity]}>\"{_lines(identity, *_wrap(plan.limitations[identity]['safe_meaning'], 2))}\"]")
     for row in edges:
-        arrow = _ARROWS.get(row['kind'], '-->')
+        arrow = _ARROWS[row['kind']]
         label = f'|"{_escape(row["label"])}"|' if row['label'] else ''
         lines.append(f"  {node[row['source']]} {arrow}{label} {node[row['target']]}")
 
@@ -373,8 +373,8 @@ def draw(brief, state=None, *, focus=None, summary='', document=()):
     if level == 'focus':
         cited = {}
         for unit in plan.order:
-            for cu in plan.units[unit].get('content_unit_ids', []):
-                for anchor in plan.content.get(cu, {}).get('evidence_anchor_ids', []):
+            for cu in plan.units[unit]['content_unit_ids']:
+                for anchor in plan.content[cu]['evidence_anchor_ids']:
                     cited.setdefault(anchor, unit)
         left = [identity for identity in plan.anchors if identity not in drawn_anchors]
         if left:
@@ -383,7 +383,7 @@ def draw(brief, state=None, *, focus=None, summary='', document=()):
             counts.append(_plural(len(left), 'anchor'))
         placed = {}
         for unit in plan.order:
-            for limitation in plan.units[unit].get('limitation_ids', []):
+            for limitation in plan.units[unit]['limitation_ids']:
                 placed.setdefault(limitation, unit)
         left = [identity for identity in plan.limitations if identity not in picture['drawn_limitations']]
         if left:
@@ -402,11 +402,11 @@ def draw(brief, state=None, *, focus=None, summary='', document=()):
         not_drawn.append('alternatives: ' + ', '.join(
             f"{identity} (answered in {', '.join(plan.answered_in[identity]) or 'no unit'})" for identity in left))
         counts.append(_plural(len(left), 'alternative'))
-    placed_content = {cu for unit in plan.order for cu in plan.units[unit].get('content_unit_ids', [])}
-    kept_out = [row for row in plan.plan.get('content_dispositions', []) if row.get('content_unit_id') not in placed_content]
+    placed_content = {cu for unit in plan.order for cu in plan.units[unit]['content_unit_ids']}
+    kept_out = [row for row in plan.plan['content_dispositions'] if row['content_unit_id'] not in placed_content]
     if kept_out:
         not_drawn.append('content kept out of the text: ' + ', '.join(
-            f"{row['content_unit_id']} ({row.get('disposition', 'no disposition')})" for row in kept_out))
+            f"{row['content_unit_id']} ({row['disposition']})" for row in kept_out))
         counts.append(_plural(len(kept_out), 'content unit') + ' kept out')
     if counts:
         lines.append(f'  n_omitted["{_escape("not drawn: " + ", ".join(counts))}"]')

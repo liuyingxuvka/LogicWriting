@@ -114,17 +114,15 @@ def _touches(quote: tuple[int, int], change: tuple[int, int, str], unit: Mapping
 
 
 def _quotes(judgment: Mapping[str, Any], amap: Mapping[str, Any]) -> dict[str, list[tuple[int, int]]]:
-    """Where the review's evidence (reverse outline, defects, strengths) quotes each unit of the current text."""
+    """Where the review's evidence (reverse outline, defects, strengths) quotes each unit of the current text.
+
+    The judgment has passed the stamp's validation, so every evidence row names a current unit and quotes it.
+    """
     units = {row["artifact_unit_id"]: row for row in amap["units"]}
     quotes: dict[str, list[tuple[int, int]]] = {}
     for kind in ("reverse_outline", "defects", "strengths"):
-        for row in judgment.get(kind) or []:
-            evidence = row.get("evidence") if isinstance(row, Mapping) else None
-            if not isinstance(evidence, Mapping):
-                continue
-            unit, excerpt = units.get(evidence.get("artifact_unit_id")), evidence.get("excerpt")
-            if unit is None or not isinstance(excerpt, str) or not excerpt:
-                continue
+        for row in judgment[kind]:
+            unit, excerpt = units[row["evidence"]["artifact_unit_id"]], row["evidence"]["excerpt"]
             found = unit["text"].find(excerpt)
             while found >= 0:
                 quotes.setdefault(unit["artifact_unit_id"], []).append((unit["start"] + found, unit["start"] + found + len(excerpt)))
@@ -145,7 +143,7 @@ def review_record(saved: Any, judgment: Mapping[str, Any], amap: Mapping[str, An
     unit must be quoted again at a changed passage. Without one nothing can be compared: only a declared
     first review may be stamped, and the record says so.
     """
-    identity = judgment.get("judgment_id", "unknown")
+    identity = judgment["judgment_id"]
     if saved is None:
         if first_review:
             return snapshot(amap, basis="first_review", changed_units=[])

@@ -12,4 +12,4 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 # A test that ends skipped fails the run (tests/no_skips.py).
-from tests.no_skips import pytest_runtest_makereport  # noqa: E402,F401
+from tests.no_skips import pytest_make_collect_report, pytest_runtest_makereport  # noqa: E402,F401

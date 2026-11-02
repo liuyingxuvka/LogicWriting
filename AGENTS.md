@@ -15,7 +15,7 @@
 - Never put private investigations, machine-specific paths, credentials, or internal coordination records in public release files.
 - A task or release status is derived from current evidence; caller-authored `pass` or `complete` values are not proof.
 - Preserve four final owners, reader/writer execution isolation, exact artifact bytes, freshness, repair stopping, and native specialist authority.
-- One route per function: when a step fails, the error reaches the caller or is reported with its text; never a quiet default or a second path. An exception handler that does not re-raise is listed with its reason in `tests/contract/test_error_handlers.py`, and a test may never end skipped (`tests/no_skips.py` turns a skip into a failure).
+- One route per function: when a step fails, the error reaches the caller or is reported with its text; never a quiet default or a second path. `tests/contract/test_error_handlers.py` lists every exception handler (and `contextlib.suppress`) that can end without raising, per function with its count, its reason and the written rule it serves; `tests/contract/default_reads.py` inventories the `.get(key, default)` reads (not yet reviewed one by one); new code reads required fields directly. A test or a test module may never end skipped (`tests/no_skips.py` turns either into a failure).
 
 ## Validation
 
