@@ -14,6 +14,9 @@ from review_snapshot import changed_spans, review_record, snapshot_problems
 
 EXAMPLES = Path(__file__).resolve().parents[2] / 'skills/logic-writing/assets/examples'
 COST_UNIT = 'artifact:paragraph:0006'
+# The whole sentence of the cost paragraph that holds the edited word, as it reads after _edit_one_word.
+EDITED_SENTENCE = ("The 3.14 release notes put the slowdown for multi-threaded code at roughly 5-10%, "
+                   "depending on the platform and C compiler [What's New 3.14]")
 
 
 def _copy(tmp_path, route='investigation'):
@@ -70,7 +73,7 @@ def test_quoting_the_new_wording_lets_the_review_be_stamped_again(tmp_path):
     _edit_one_word(folder)
     _requote(folder, COST_UNIT, 'roughly 5-10%')  # an unchanged part of the unit is not a reread
     assert _stamp_review(folder)['first_failure']['code'] == 'review_not_reread'
-    _requote(folder, COST_UNIT, 'the slowdown for multi-threaded code')
+    _requote(folder, COST_UNIT, EDITED_SENTENCE)
     result = _stamp_review(folder)
     assert result['exit_code'] == 0, result['first_failure']
     assert result['review_basis'] == {'basis': 'compared', 'changed_units': [COST_UNIT]}
@@ -99,11 +102,10 @@ def test_a_stamp_without_a_saved_text_cannot_certify_changed_text(tmp_path):
     saved = json.loads(path.read_text())
     saved.pop('reviewed_text')
     path.write_text(json.dumps(saved))
-    # Even on unchanged text the judgment's own fingerprint is no proof (it is a field anyone can edit):
-    # without a saved copy only a declared first review starts the record.
-    assert _stamp_review(folder)['first_failure']['code'] == 'review_text_unknown'
-    assert _stamp_review(folder, first_review=True)['exit_code'] == 0
-    assert json.loads(path.read_text())['reviewed_text']['basis'] == 'first_review'
+    # On unchanged text the sealed stamp names exactly these bytes, so the copy is saved again; it is not a first review.
+    assert _stamp_review(folder, first_review=True)['first_failure']['code'] == 'review_not_first'
+    assert _stamp_review(folder)['exit_code'] == 0
+    assert json.loads(path.read_text())['reviewed_text']['basis'] == 'restored'
     saved = json.loads(path.read_text());saved.pop('reviewed_text');path.write_text(json.dumps(saved))
     _edit_one_word(folder)
     result = _stamp_review(folder)
@@ -137,7 +139,9 @@ def test_a_deletion_needs_a_quote_reaching_the_place(tmp_path):
     assert removed in text
     piece.write_text(text.replace(removed, '', 1), encoding='utf-8')
     assert _stamp_review(folder)['first_failure']['code'] == 'review_not_reread'
-    _requote(folder, COST_UNIT, 'roughly 5-10% [What')
+    _requote(folder, COST_UNIT, 'roughly 5-10% [What')  # the place, but not the sentence it now reads as
+    assert _stamp_review(folder)['first_failure']['code'] == 'review_not_reread'
+    _requote(folder, COST_UNIT, "The 3.14 release notes put the slowdown for single-threaded code at roughly 5-10% [What's New 3.14]")
     assert _stamp_review(folder)['exit_code'] == 0
 
 
@@ -212,10 +216,10 @@ def test_an_edit_that_crosses_two_units_needs_both_quoted_again():
                     defects=[], strengths=[])
 
     with pytest.raises(ValueError) as refused:
-        review_record(saved, judgment(('artifact:paragraph:0002', 'omega')), after, first_review=False)
+        review_record(saved, judgment(('artifact:paragraph:0002', 'Alpha beta omega')), after, first_review=False)
     assert 'review_not_reread:artifact:paragraph:0003 (' in str(refused.value)
-    record = review_record(saved, judgment(('artifact:paragraph:0002', 'omega'), ('artifact:paragraph:0003', 'Zeta')),
-                           after, first_review=False)
+    record = review_record(saved, judgment(('artifact:paragraph:0002', 'Alpha beta omega'),
+                                           ('artifact:paragraph:0003', 'Zeta epsilon')), after, first_review=False)
     assert record['basis'] == 'compared' and record['changed_units'] == ['artifact:paragraph:0002', 'artifact:paragraph:0003']
 
 
@@ -256,7 +260,9 @@ def test_a_review_stamped_without_a_saved_copy_is_not_told_to_remove_its_stamp(t
     result = _stamp_review(folder)
     assert result['exit_code'] == 1 and result['first_failure']['code'] == 'review_text_unknown'
     message = result['first_failure']['message']
-    assert '_fingerprint' not in message and 'remove' not in message and '--first-review' in message
+    # Neither removing the stamp nor declaring a first review is offered: only bringing back what the stamp read.
+    assert '_fingerprint' not in message and 'remove' not in message and '--first-review' not in message
+    assert 'reviewed_text' in message and 'put back the text' in message
 
 
 def test_a_saved_copy_rewritten_to_the_new_text_is_refused(tmp_path):
@@ -286,4 +292,98 @@ def test_closure_needs_the_saved_copy_of_a_stamped_review(tmp_path):
     _strip(folder, stamp=False)
     result = run_chain(folder)
     assert result['exit_code'] == 1 and result['first_failure']['code'] == 'reviewed_text_missing'
-    assert '--first-review' in result['first_failure']['message']
+    # Closure reaches this check only when the stamp is current for this text, so the plain stamp restores the copy.
+    message = result['first_failure']['message']
+    assert '--stamp-review' in message and '--first-review' not in message
+    assert _stamp_review(folder)['review_basis'] == {'basis': 'restored', 'changed_units': []}
+    assert run_chain(folder)['exit_code'] == 0
+
+
+# Round-2 review gaps: a stamped review re-declared as a first review, a one-word quote taken as a reread,
+# and a closure line that does not say how the review was stamped.
+
+def test_a_review_stamped_before_cannot_be_declared_a_first_review(tmp_path, capsys):
+    """Gap (1): drop reviewed_text (one field) and stamp edited text with --stamp-review --first-review (one flag)."""
+    folder = _copy(tmp_path)
+    _edit_one_word(folder)
+    _strip(folder, stamp=False)
+    before = (folder / 'closure-input.json').read_bytes()
+    with patch.object(sys, 'argv', ['run_chain.py', str(folder), '--stamp-review', '--first-review']):
+        code = main()
+    output = capsys.readouterr().out
+    assert code == 1 and 'first failure: review: review_not_first:j-ft-1 (' in output and 'stamped: ' not in output
+    assert '--first-review' not in output.split('review_not_first:', 1)[1]
+    assert (folder / 'closure-input.json').read_bytes() == before
+    assert run_chain(folder)['first_failure']['code'] == 'judgment_stale'
+
+
+def test_a_lost_copy_is_saved_again_only_on_the_text_its_sealed_stamp_names(tmp_path, capsys):
+    """The way back for a lost copy: put back the stamped text, stamp it, then edit and reread as usual."""
+    folder = _copy(tmp_path)
+    piece = folder / 'piece.md'
+    stamped_text = piece.read_text(encoding='utf-8')
+    _edit_one_word(folder)
+    _strip(folder, stamp=False)
+    assert _stamp_review(folder)['first_failure']['code'] == 'review_text_unknown'
+    piece.write_text(stamped_text, encoding='utf-8')
+    with patch.object(sys, 'argv', ['run_chain.py', str(folder), '--stamp-review']):
+        assert main() == 0
+    assert 'on the text its earlier stamp named' in capsys.readouterr().out
+    saved = json.loads((folder / 'closure-input.json').read_text())
+    assert saved['reviewed_text']['basis'] == 'restored' and saved['reviewed_text']['text'] == stamped_text
+    closed = run_chain(folder)
+    assert closed['exit_code'] == 0
+    assert closed['results']['closure']['closure']['review_basis'] == {'basis': 'restored', 'changed_units': []}
+    assert 'closure: passed (review re-stamped on the text its earlier stamp named)' in closed['summary']
+    _edit_one_word(folder)
+    assert _stamp_review(folder)['first_failure']['code'] == 'review_not_reread'
+    _requote(folder, COST_UNIT, EDITED_SENTENCE)
+    assert _stamp_review(folder)['review_basis'] == {'basis': 'compared', 'changed_units': [COST_UNIT]}
+
+
+def test_a_lost_copy_is_not_saved_again_from_an_edited_stamp(tmp_path):
+    """Pointing the stamp at the edited text by hand breaks the review's own seal, so the copy is not rebuilt from it."""
+    folder = _copy(tmp_path)
+    _edit_one_word(folder)
+    _strip(folder, stamp=False)
+    path = folder / 'closure-input.json'
+    saved = json.loads(path.read_text())
+    text = (folder / 'piece.md').read_bytes()
+    saved['judgment']['artifact_fingerprint'] = 'sha256:' + hashlib.sha256(text).hexdigest()
+    path.write_text(json.dumps(saved))
+    before = path.read_bytes()
+    for first_review, code in ((False, 'review_text_unknown'), (True, 'review_not_first')):
+        result = _stamp_review(folder, first_review=first_review)
+        assert result['exit_code'] == 1 and result['first_failure']['code'] == code
+        assert 'changed after that stamp' in result['first_failure']['message']
+    assert path.read_bytes() == before
+
+
+@pytest.mark.parametrize('excerpt', ['multi', 'the slowdown for multi-threaded code'])
+def test_a_quote_of_the_changed_word_alone_is_not_a_reread(tmp_path, excerpt):
+    """Gap (3): a one-token excerpt such as 'multi' was accepted; the whole sentence that changed must be quoted."""
+    folder = _copy(tmp_path)
+    _edit_one_word(folder)
+    _requote(folder, COST_UNIT, excerpt)
+    result = _stamp_review(folder)
+    assert result['exit_code'] == 1 and result['first_failure']['code'] == 'review_not_reread'
+    text = (folder / 'piece.md').read_text(encoding='utf-8')
+    start = text.index(EDITED_SENTENCE)
+    words_end = start + len(EDITED_SENTENCE.rstrip(']'))  # from its first word to its last; the closing bracket is not a word
+    assert f'quote the whole sentence that holds the change (char:{start}-{words_end})' in result['first_failure']['message']
+    _requote(folder, COST_UNIT, EDITED_SENTENCE + '.')
+    assert _stamp_review(folder)['exit_code'] == 0
+
+
+def test_the_closure_line_says_how_the_review_was_stamped(tmp_path, capsys):
+    """Gap (4): run_chain's closure line names the review basis, not only closure.json's safe_claim."""
+    folder = _copy(tmp_path)
+    with patch.object(sys, 'argv', ['run_chain.py', str(folder)]):
+        assert main() == 0
+    assert 'closure: passed (review stamped as a first review); known-bad: 0 uncaught' in capsys.readouterr().out
+    _edit_one_word(folder)
+    _requote(folder, COST_UNIT, EDITED_SENTENCE)
+    assert _stamp_review(folder)['exit_code'] == 0
+    with patch.object(sys, 'argv', ['run_chain.py', str(folder)]):
+        assert main() == 0
+    assert f'closure: passed (review re-stamped after quoting each changed unit again: {COST_UNIT})' in capsys.readouterr().out

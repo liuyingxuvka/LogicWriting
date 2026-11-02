@@ -222,7 +222,7 @@ def derive_closure(
     )
     if "reviewed_text" not in request:
         raise ValidationError("reviewed_text_missing:closure-input.json (it keeps no copy of the text this review was stamped on; "
-                              "reread the whole piece, then stamp with --stamp-review --first-review)")
+                              "the review's stamp names this exact text, so run --stamp-review and it saves the copy again)")
     problems = snapshot_problems(request["reviewed_text"], judgment)  # the text --stamp-review saved for this judgment
     if problems:
         raise ValidationError(problems[0])
@@ -329,6 +329,8 @@ def derive_closure(
     reader_basis = "a self-review by the writer" if self_review else "independent reader judgment"
     if review_basis["basis"] == "first_review":
         reader_basis += " stamped as a first review"
+    elif review_basis["basis"] == "restored":
+        reader_basis += " re-stamped on the text its earlier stamp named"
     elif review_basis["changed_units"]:
         reader_basis += " re-stamped after quoting each changed unit again"
     if status == "passed":

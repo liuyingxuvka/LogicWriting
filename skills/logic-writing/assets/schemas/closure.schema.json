@@ -89,7 +89,8 @@
         "basis": {
           "enum": [
             "first_review",
-            "compared"
+            "compared",
+            "restored"
           ]
         },
         "changed_units": {

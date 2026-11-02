@@ -128,6 +128,30 @@ class _RealReaderChain:
             unread = path.read_bytes()
             again = invoke('--stamp-review')
             return 'review_not_reread' if again.returncode == 1 and 'review_not_reread:artifact:heading:' in again.stdout and path.read_bytes() == unread else 'heading_restamped_unread'
+        if case in ('one_word_reread', 'stamped_declared_first', 'copy_restored'):
+            # one_word_reread: quote only the changed word. stamped_declared_first: drop the saved copy of a
+            # stamped review and declare the edited text a first review. copy_restored: drop the copy on unchanged text.
+            piece = folder / 'piece.md'
+            if case != 'copy_restored':
+                piece.write_text(piece.read_text().replace('single-threaded', 'multi-threaded', 1))
+            edited = json.loads(path.read_text())
+            if case == 'one_word_reread':
+                row = next(row for row in edited['judgment']['reverse_outline'] if row['evidence']['excerpt'] == 'roughly 5-10%')
+                row['evidence']['excerpt'] = 'multi'
+            else:
+                edited.pop('reviewed_text')
+            path.write_text(json.dumps(edited))
+            unread = path.read_bytes()
+            again = invoke('--stamp-review', *(('--first-review',) if case == 'stamped_declared_first' else ()))
+            if case != 'copy_restored':
+                if again.returncode != 1 or path.read_bytes() != unread or 'first failure: review: ' not in again.stdout:
+                    return 'restamped_without_reread'
+                return again.stdout.split('first failure: review: ', 1)[1].split(':', 1)[0]
+            if again.returncode or "on the text its earlier stamp named" not in again.stdout:
+                return 'copy_not_restored'
+            if json.loads(path.read_text())['reviewed_text']['basis'] != 'restored':
+                return 'restored_copy_names_another_basis'
+            stamped = path.read_bytes()
         if case in ('record_removed', 'record_forged'):
             # Edit one word, then remove the saved copy and the stamp, or rewrite the copy to the new text.
             piece = folder / 'piece.md'
@@ -154,9 +178,11 @@ class _RealReaderChain:
             text = piece.read_text();assert 'single-threaded' in text
             piece.write_text(text.replace('single-threaded', 'multi-threaded', 1))
             if case == 'restamp_reread':
+                # The reread quotes the whole sentence that now holds the changed word.
                 edited = json.loads(path.read_text())
                 row = next(row for row in edited['judgment']['reverse_outline'] if row['evidence']['excerpt'] == 'roughly 5-10%')
-                row['evidence']['excerpt'] = 'the slowdown for multi-threaded code'
+                row['evidence']['excerpt'] = ("The 3.14 release notes put the slowdown for multi-threaded code at roughly "
+                                              "5-10%, depending on the platform and C compiler [What's New 3.14]")
                 path.write_text(json.dumps(edited))
             unread = path.read_bytes()
             again = invoke('--stamp-review')

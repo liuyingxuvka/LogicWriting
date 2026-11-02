@@ -574,10 +574,11 @@ def complete_chain(
         "closure_id": f"closure:{owner}",
     })
     from run_chain import _stamp_judgment
-    from review_snapshot import review_record
+    from review_snapshot import snapshot
     chain['judgment'] = _stamp_judgment(closure_input(chain, reviewed=False))
-    # The protocol chain is a first review of its text; the stamp keeps the copy it read.
-    chain['reviewed_text'] = review_record(None, chain['judgment'], chain['artifact_map'], first_review=True)
+    # The protocol chain is built with its judgment already bound to its text, so it is the first review of
+    # that text; the record is the copy a first-review stamp keeps.
+    chain['reviewed_text'] = snapshot(chain['artifact_map'], basis='first_review', changed_units=[])
     return chain
 
 

@@ -351,7 +351,7 @@ def test_show_plan_reads_back_the_same_from_every_chain_file(tmp_path, monkeypat
     from show_plan import main
 
     expected = {
-        "ok": "units: 5 (5 bound, 0 unbound); audit: passed (0 findings); review: passed; closure: passed; known-bad: 0 uncaught",
+        "ok": "units: 5 (5 bound, 0 unbound); audit: passed (0 findings); review: passed; closure: passed (review stamped as a first review); known-bad: 0 uncaught",
         "inv": "units: 6 (5 bound, 1 unbound: u-libs new); shared_writing: blocked (required planned units are unbound: ['u-libs']); audit: not_run; review: not_run; closure: not_run; known-bad: not_run",
     }
     for name in ("ok", "inv"):

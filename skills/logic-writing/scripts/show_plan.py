@@ -14,6 +14,7 @@ from reader_fill import fill_check_fingerprints
 from reader_binding import shared_writing_from_current, quote_binding_units
 from world_refs import planned_world_refs
 from reader_plan import writer_added_units
+from review_snapshot import basis_words
 
 CHAIN_FILES = frozenset((
     'brief-request.json', 'reader-brief.json', 'closure-input.json',
@@ -299,9 +300,14 @@ def _summary(view, results):
     details=': '+unbound if unbound else ''
     blocked=results.get('binding')
     binding=("shared_writing: blocked ("+'; '.join(str(row) for row in blocked.get('errors',[]))+'); ') if isinstance(blocked,dict) else ''
+    # A closure names how its review was stamped (closure.json review_basis), so a first review is visible here too.
+    review_basis = ''
+    if isinstance(closure, dict):
+        review_basis = (f" (review {basis_words(closure['review_basis'])})" if 'review_basis' in closure
+                        else ' (review basis not recorded: a closure made before LogicWriting 4.2)')
     return (f"units: {len(units)} ({bound} bound, {len(units) - bound} unbound{details}); {binding}"
             f"audit: {_status(results['audit'], True)}; review: {_status(results['review'])}; "
-            f"closure: {_status(closure)}; known-bad: {known_bad}{scope}")
+            f"closure: {_status(closure)}{review_basis}; known-bad: {known_bad}{scope}")
 
 
 def _tree_order(rows):

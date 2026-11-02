@@ -181,8 +181,9 @@ def _stamp_judgment(request, *, review_folder=None):
 def _stamp_review(folder, *, refresh_providers=False, first_review=False):
     """Finish native review before writing only its validated judgment binding and the text it read.
 
-    A stamp on text that changed since the saved copy needs the review to quote each changed unit again
-    at a changed passage; without a saved copy only a declared first review may be stamped
+    A stamp on text that changed since the saved copy needs the review to quote, in each changed unit, the
+    whole sentence that holds the change; without a saved copy a review never stamped may be stamped only as
+    a declared first review, and one stamped before only on the text its sealed stamp names
     (review_snapshot.review_record). Otherwise nothing is written."""
     folder = Path(folder).expanduser().resolve()
     result = run_chain(folder, until='review', refresh_providers=refresh_providers)
@@ -230,7 +231,9 @@ def main():
     if result.get('stamped_review'):
         basis = result.get('review_basis')
         how = ('' if basis is None else ' as a first review (no earlier copy of the text to compare)'
-               if basis['basis'] == 'first_review' else f" after rereading the changed units: {', '.join(basis['changed_units'])}")
+               if basis['basis'] == 'first_review' else
+               " on the text its earlier stamp named (that stamp's saved copy was missing and is saved again)"
+               if basis['basis'] == 'restored' else f" after rereading the changed units: {', '.join(basis['changed_units'])}")
         print(f"stamped: closure-input.json judgment {result['stamped_review']}{how}")
     if result["first_failure"]:
         row = result["first_failure"]

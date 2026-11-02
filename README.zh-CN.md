@@ -86,7 +86,7 @@ units: 5 (5 bound, 0 unbound); audit: passed (0 findings); review: passed; closu
 added by the writer: cu-recommend: A team can test its service on the free-threaded build now, but should not plan on it becoming the default on any known date; recheck when a phase III decision is announced.
 stamped: closure-input.json judgment j-ft-1
 $ python skills/logic-writing/scripts/run_chain.py ../ft-example
-units: 5 (5 bound, 0 unbound); audit: passed (0 findings); review: passed; closure: passed; known-bad: 0 uncaught
+units: 5 (5 bound, 0 unbound); audit: passed (0 findings); review: passed; closure: passed (review stamped as a first review); known-bad: 0 uncaught
 added by the writer: cu-recommend: A team can test its service on the free-threaded build now, but should not plan on it becoming the default on any known date; recheck when a phase III decision is announced.
 ```
 
@@ -112,7 +112,7 @@ $ python skills/logic-writing/scripts/show_argument.py ../ft-argument --focus u-
 
 Q: Should we plan for free-threaded Python now, and is it about to become the default?
 
-units: 5 (5 bound, 0 unbound); audit: passed (0 findings); review: passed; closure: passed; known-bad: 0 uncaught
+units: 5 (5 bound, 0 unbound); audit: passed (0 findings); review: passed; closure: passed (review stamped as a first review); known-bad: 0 uncaught
 
 ```mermaid
 flowchart TD
@@ -222,7 +222,7 @@ flowchart LR
 - **计划要对上你的要求。** 用户的原话原样存一次。每个必需单元都写明出处：来自要求（附一段一字不差的原话）、来自研究，还是 AI 自己加的；
   收尾时把作者自己加的单元列出来，让用户看得见。
 - **正文要对上计划。** 原文引句把正文绑到计划单元上；确定性的审读检查绑好的正文；路线评审引用它评过的原文片段。评审盖章在它读过的正文上，
-  之后再改正文，评审就过时了，收尾会提示检查受影响部分并显式重新盖章。盖章时会保存它读过的正文（带自身指纹）；正文改过之后再盖章，评审必须重新引用每处改动的文字（标题和总标题也算），否则拒绝。没有这份副本就无从比较，盖章必须声明是第一次评审（`--first-review`），收尾会写明这一点。默认运行不会修补评审章。
+  之后再改正文，评审就过时了，收尾会提示检查受影响部分并显式重新盖章。盖章时会保存它读过的正文（带自身指纹）；正文改过之后再盖章，评审必须为每处改动重新引用改动所在的整句（标题和总标题也算），否则拒绝。没有这份副本就无从比较：从未盖过章的评审必须声明是第一次评审（`--first-review`）；盖过章的评审不算第一次评审，只能在它的章所指的那份正文上重新盖章。收尾那一行会写明是哪一种。默认运行不会修补评审章。
 - **已知坏的副本。** `known_bad.py` 生成几份小小的坏副本（删一处引用、去掉一个限制、塞进一个不被支持的说法、拿掉一个单元的锚点），
   每份都跑一遍检查；没被抓住的那份不会消失，作为 `toothless` 风险留在收尾里。
 - **收尾是算出来的。** 它只读存下的结果和报告，自己从不去调用提供方，也绝不把缺失、过时或没跑的检查算成通过。自我评审会标明是自我评审，

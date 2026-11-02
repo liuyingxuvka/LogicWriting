@@ -93,7 +93,7 @@ units: 5 (5 bound, 0 unbound); audit: passed (0 findings); review: passed; closu
 added by the writer: cu-recommend: A team can test its service on the free-threaded build now, but should not plan on it becoming the default on any known date; recheck when a phase III decision is announced.
 stamped: closure-input.json judgment j-ft-1
 $ python skills/logic-writing/scripts/run_chain.py ../ft-example
-units: 5 (5 bound, 0 unbound); audit: passed (0 findings); review: passed; closure: passed; known-bad: 0 uncaught
+units: 5 (5 bound, 0 unbound); audit: passed (0 findings); review: passed; closure: passed (review stamped as a first review); known-bad: 0 uncaught
 added by the writer: cu-recommend: A team can test its service on the free-threaded build now, but should not plan on it becoming the default on any known date; recheck when a phase III decision is announced.
 ```
 
@@ -124,7 +124,7 @@ $ python skills/logic-writing/scripts/show_argument.py ../ft-argument --focus u-
 
 Q: Should we plan for free-threaded Python now, and is it about to become the default?
 
-units: 5 (5 bound, 0 unbound); audit: passed (0 findings); review: passed; closure: passed; known-bad: 0 uncaught
+units: 5 (5 bound, 0 unbound); audit: passed (0 findings); review: passed; closure: passed (review stamped as a first review); known-bad: 0 uncaught
 
 ```mermaid
 flowchart TD
@@ -246,9 +246,10 @@ flowchart LR
 - **The text meets the plan.** Exact quotes bind the text to the planned units; a deterministic audit checks the bound
   text; the route's review quotes the spans it judged. A review is stamped on the text it read, so an edit afterwards
   makes it stale, and closure says to reread and explicitly stamp again. The stamp keeps a sealed copy of the text it read; a
-  new stamp on edited text is refused until the review quotes each changed passage again, headings and the title
-  included. Without that copy nothing can be compared, so the stamp must be declared a first review
-  (`--first-review`) and closure says so. Default runs never repair the stamp.
+  new stamp on edited text is refused until the review quotes, for each change, the whole sentence that holds it,
+  headings and the title included. Without that copy nothing can be compared: a review never stamped must be declared a
+  first review (`--first-review`), and a review stamped before is never a first review; it is stamped again only on
+  the text its stamp names. The closure line says which. Default runs never repair the stamp.
 - **Known-bad copies.** `known_bad.py` makes small bad copies of the piece (a citation removed, a limit dropped, an
   unsupported alternative inserted, a unit's anchors stripped) and runs the checks on each; one that is not caught stays
   visible as a `toothless` risk.

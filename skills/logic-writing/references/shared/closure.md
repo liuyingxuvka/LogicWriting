@@ -61,29 +61,43 @@ basis of that stamp. A later stamp on changed text compares the two word by word
 every unit whose words changed (paragraphs, lists, tables, quotes, scenes,
 headings and the title; a change across two units belongs to both) needs review
 evidence for that unit (its reverse_outline row, or a defect or strength; a
-heading or the title may get its own row) whose excerpt quotes it at a changed
-passage, or spans the place where words were removed. Otherwise the stamp fails
-with `review_not_reread:<unit>`, names the changed place and the old wording, and
-writes nothing; removing the judgment's fingerprints does not skip this.
+heading or the title may get its own row) whose excerpt quotes the whole sentence
+that holds the change, from its first word to its last (for a removal, the
+sentence where the words were removed). A sentence ends at `.`, `!` or `?` before
+a space, at a CJK full stop, or at a line end; one word or part of the sentence is
+not a reread. Otherwise the stamp fails with `review_not_reread:<unit>`, names the
+changed place, the old wording and the span to quote, and writes nothing;
+removing the judgment's fingerprints does not skip this.
 Whitespace-only changes need no reread, and a plan or evidence change on
 unchanged text needs no new quotes and keeps the saved record.
 
-Without a saved copy nothing can be compared, so a plain `--stamp-review` is
-refused: `review_first_undeclared:<id>` for a review never stamped, and
-`review_text_unknown:<id>` for one stamped by LogicWriting 4.1 or earlier or whose
-copy was deleted. The reviewer then reads the whole piece and stamps with
-`--stamp-review --first-review`; `--first-review` is refused while a saved copy
-exists (`review_copy_exists`). Closure needs the saved copy of a stamped review
-(`reviewed_text_missing`), refuses one that was edited or is not the text the
-judgment was stamped on (`reviewed_text_invalid`, `reviewed_text_stale`), and
-reports `review_basis`: `first_review`, or `compared` with the units quoted
-again; a first review is also named in `safe_claim`.
+Without a saved copy nothing can be compared. A review never stamped (its
+judgment carries no stamp fingerprints) is refused with
+`review_first_undeclared:<id>` until the reviewer reads the whole piece and
+stamps with `--stamp-review --first-review`. A review stamped before is never a
+first review: `--first-review` on it fails with `review_not_first:<id>`. Its copy
+is saved again only when the judgment's own sealed stamp names exactly the
+current text (basis `restored`); when the text changed since, or the judgment
+was edited after that stamp, the stamp fails with `review_text_unknown:<id>`,
+which names the text that stamp read. The way back is to restore the
+`reviewed_text` that stamp wrote (for example from version control), or to put
+that text back, stamp it, and make the edits again. `--first-review` is also
+refused while a saved copy exists (`review_copy_exists`). Closure needs the saved
+copy of a stamped review (`reviewed_text_missing`), refuses one that was edited
+or is not the text the judgment was stamped on (`reviewed_text_invalid`,
+`reviewed_text_stale`), and reports `review_basis`: `first_review`, `compared`
+with the units quoted again, or `restored`. `safe_claim` names a first review and
+a restored copy, and the summary line of `run_chain.py` and `show_plan.py` names
+the basis after `closure:`.
 
-Limits. The tool checks that changed words are quoted again, not that they were
-understood. A first review is the reviewer's declaration, and the tool cannot
-tell a real one from a saved copy deleted on purpose; it only makes the
-declaration explicit and visible in closure. The seal stops a copy edited by hand,
-not one rebuilt by code that recomputes the tool's own fingerprints.
+Limits. The tool checks that the changed sentence is quoted again, not that it
+was understood. A first review is the reviewer's declaration: the tool refuses it
+while any stamp fingerprint remains in the judgment, but it cannot tell a real
+first review from a review whose saved copy and stamp fingerprints were all
+deleted on purpose. The seals (`reviewed_text_fingerprint`, `judgment_fingerprint`)
+are checksums, not signatures: they stop a copy or a stamp edited by hand, not one
+rewritten by code that recomputes them with the tool's own fingerprint functions;
+the folder holds no secret to sign with.
 
 Default runs and closure never fill or refresh a judgment stamp. An unstamped
 review fails with `judgment_unstamped:<id>`; changed content, plan or file
