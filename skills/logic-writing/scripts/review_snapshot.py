@@ -8,7 +8,8 @@ and which sentence holds them; the reviewer does not declare it.
 
 Without a saved copy there is nothing to compare. A review that was never
 stamped is then declared a first review (`--first-review`). A review stamped
-before is never a first review: its copy is saved again only when its own
+before (a stamp field, or an evidence excerpt fingerprint a stamp computed, is
+still in it) is never a first review: its copy is saved again only when its own
 sealed stamp names exactly the current text (basis `restored`); otherwise the
 copy must be brought back. The record and the closure say which basis applies.
 """
@@ -19,7 +20,7 @@ import hashlib
 import re
 from typing import Any, Mapping
 
-from _common import ValidationError, own_fingerprint
+from _common import ValidationError, fingerprint_text, own_fingerprint
 
 RECORD_FIELDS = frozenset({"artifact_fingerprint", "text", "basis", "changed_units", "reviewed_text_fingerprint"})
 BASES = ("first_review", "compared", "restored")
@@ -172,7 +173,13 @@ def _short(text: str) -> str:
 
 
 def _earlier_stamp(judgment: Mapping[str, Any]) -> bool:
-    return any(judgment.get(field) for field in STAMP_FIELDS)
+    """Whether a stamp has bound this review before: a stamp field, or an evidence excerpt fingerprint that matches its
+    excerpt (a stamp computes it; nobody types a sha256), is still in the judgment."""
+    if any(judgment.get(field) for field in STAMP_FIELDS):
+        return True
+    # The stamp has validated this review's evidence, so every row has its evidence and excerpt.
+    rows = [row["evidence"] for kind in ("reverse_outline", "defects", "strengths") for row in judgment[kind]]
+    return any(row.get("excerpt_fingerprint") == fingerprint_text(row["excerpt"]) for row in rows)
 
 
 def _without_copy(judgment: Mapping[str, Any], amap: Mapping[str, Any], *, first_review: bool) -> dict[str, Any]:

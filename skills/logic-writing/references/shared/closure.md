@@ -72,7 +72,8 @@ Whitespace-only changes need no reread, and a plan or evidence change on
 unchanged text needs no new quotes and keeps the saved record.
 
 Without a saved copy nothing can be compared. A review never stamped (its
-judgment carries no stamp fingerprints) is refused with
+judgment carries no stamp fingerprints, and no evidence excerpt fingerprint that
+matches its excerpt, which only a stamp computes) is refused with
 `review_first_undeclared:<id>` until the reviewer reads the whole piece and
 stamps with `--stamp-review --first-review`. A review stamped before is never a
 first review: `--first-review` on it fails with `review_not_first:<id>`. Its copy
@@ -92,9 +93,9 @@ the basis after `closure:`.
 
 Limits. The tool checks that the changed sentence is quoted again, not that it
 was understood. A first review is the reviewer's declaration: the tool refuses it
-while any stamp fingerprint remains in the judgment, but it cannot tell a real
-first review from a review whose saved copy and stamp fingerprints were all
-deleted on purpose. The seals (`reviewed_text_fingerprint`, `judgment_fingerprint`)
+while any fingerprint a stamp wrote remains in the judgment or its evidence, but it
+cannot tell a real first review from a review whose saved copy and every such
+fingerprint were deleted on purpose. The seals (`reviewed_text_fingerprint`, `judgment_fingerprint`)
 are checksums, not signatures: they stop a copy or a stamp edited by hand, not one
 rewritten by code that recomputes them with the tool's own fingerprint functions;
 the folder holds no secret to sign with.

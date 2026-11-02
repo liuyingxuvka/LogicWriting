@@ -233,11 +233,37 @@ def _strip(folder, record=True, stamp=True):
     path.write_text(json.dumps(saved))
 
 
-def test_removing_the_saved_copy_and_the_stamp_needs_a_declared_first_review(tmp_path, capsys):
-    """Review gap (a): drop reviewed_text and every judgment fingerprint, then stamp without rereading."""
+def test_removing_the_saved_copy_and_the_stamp_is_not_a_first_review(tmp_path):
+    """Review gap (a), round 2: drop reviewed_text and every judgment fingerprint, then stamp, plain or as a first review.
+
+    The evidence rows still carry the excerpt fingerprints the earlier stamp computed, so the review was stamped
+    before: neither stamp certifies the edit.
+    """
     folder = _copy(tmp_path)
     _edit_one_word(folder)
     _strip(folder)
+    before = (folder / 'closure-input.json').read_bytes()
+    for first_review, code in ((False, 'review_text_unknown'), (True, 'review_not_first')):
+        result = _stamp_review(folder, first_review=first_review)
+        assert result['exit_code'] == 1 and result['first_failure']['code'] == code
+        assert '--first-review' not in result['first_failure']['message'].split('(', 1)[1]
+    assert (folder / 'closure-input.json').read_bytes() == before
+
+
+def _unstamped_review(folder):
+    """A review never stamped: no saved copy, no stamp fingerprints and no evidence fingerprints or locators."""
+    _strip(folder)
+    path = folder / 'closure-input.json'
+    saved = json.loads(path.read_text())
+    for kind in ('reverse_outline', 'defects', 'strengths'):
+        for row in saved['judgment'][kind]:
+            row['evidence'] = {key: row['evidence'][key] for key in ('artifact_unit_id', 'excerpt')}
+    path.write_text(json.dumps(saved))
+
+
+def test_a_review_never_stamped_needs_a_declared_first_review(tmp_path, capsys):
+    folder = _copy(tmp_path)
+    _unstamped_review(folder)
     before = (folder / 'closure-input.json').read_bytes()
     result = _stamp_review(folder)
     assert result['exit_code'] == 1 and result['first_failure']['code'] == 'review_first_undeclared'
@@ -251,6 +277,7 @@ def test_removing_the_saved_copy_and_the_stamp_needs_a_declared_first_review(tmp
     closure = closed['results']['closure']['closure']
     assert closure['review_basis'] == {'basis': 'first_review', 'changed_units': []}
     assert 'stamped as a first review' in closure['safe_claim']
+    assert 'closure: passed (review stamped as a first review)' in closed['summary']
 
 
 def test_a_review_stamped_without_a_saved_copy_is_not_told_to_remove_its_stamp(tmp_path):

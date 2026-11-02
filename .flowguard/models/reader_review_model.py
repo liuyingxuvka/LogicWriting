@@ -38,7 +38,8 @@ TESTED_BY = {'review_belongs_to_text': [
     'tests/unit/test_review_reread.py:test_quoting_the_new_wording_lets_the_review_be_stamped_again',
     'tests/unit/test_review_reread.py:test_removing_the_stamp_does_not_skip_the_reread',
     'tests/unit/test_review_reread.py:test_a_changed_heading_or_title_must_be_quoted_again',
-    'tests/unit/test_review_reread.py:test_removing_the_saved_copy_and_the_stamp_needs_a_declared_first_review',
+    'tests/unit/test_review_reread.py:test_removing_the_saved_copy_and_the_stamp_is_not_a_first_review',
+    'tests/unit/test_review_reread.py:test_a_review_never_stamped_needs_a_declared_first_review',
     'tests/unit/test_review_reread.py:test_a_saved_copy_rewritten_to_the_new_text_is_refused',
     'tests/unit/test_review_reread.py:test_a_review_stamped_before_cannot_be_declared_a_first_review',
     'tests/unit/test_review_reread.py:test_a_lost_copy_is_saved_again_only_on_the_text_its_sealed_stamp_names',
@@ -49,7 +50,7 @@ CASES = {'unstamped': 'judgment_unstamped', 'stamped': 'passed', 'edited': 'judg
          'failed_stamp': 'failed+unchanged', 'invalid_review': 'failed+unchanged',
          'repeat_stamp': 'stamped+unchanged', 'time_fields': 'stable', 'moved': 'passed',
          'valid_repair': 'stamped+needs_repair', 'restamp_unread': 'review_not_reread', 'restamp_reread': 'passed',
-         'restamp_heading': 'review_not_reread', 'record_removed': 'review_first_undeclared',
+         'restamp_heading': 'review_not_reread', 'record_removed': 'review_text_unknown',
          'record_forged': 'reviewed_text_invalid', 'one_word_reread': 'review_not_reread',
          'stamped_declared_first': 'review_not_first', 'copy_restored': 'passed'}
 
@@ -98,7 +99,10 @@ class RestampSkipsHeadings(Review):
 
 
 class RemovedRecordStartsOver(Review):
-    """Round-1 review gap: with the saved copy and the stamp removed, a plain stamp certified the edit unread."""
+    """Round-1 review gap: with the saved copy and the stamp removed, a plain stamp certified the edit unread.
+
+    Since round 2 the evidence fingerprints the earlier stamp computed still show it was stamped, so the
+    expected answer is review_text_unknown, not a call for a first review."""
     def result_for(self, case):
         return 'passed' if case in ('record_removed', 'record_forged') else super().result_for(case)
 
