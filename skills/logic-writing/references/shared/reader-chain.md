@@ -18,8 +18,8 @@ the same verified portable WorldGuard launcher as provider_preflight for a
 world_contract, or mesh-check for world_mesh. Install ResearchGuard >= 0.6.0 and WorldGuard >= 0.7.23 beside
 this skill before refreshing; tree reports require WorldGuard >= 0.8.0. Closure itself only reads saved native reports.
 
-Once a review is complete, `--stamp-review` explicitly binds it in its current
-folder. Check affected text, plans or evidence and update any necessary review
+Once a review is complete, `--stamp-review` explicitly binds it to the current
+text, plan and evidence (not to the folder). Check affected text, plans or evidence and update any necessary review
 before re-stamping; default runs never renew the stamp. A complete repair
 judgment may be stamped while closure remains needs_repair.
 

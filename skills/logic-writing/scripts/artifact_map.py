@@ -5,7 +5,7 @@ import re
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 
-from _common import (ValidationError, fingerprint, fingerprint_text,
+from _common import (ValidationError, fingerprint_text, own_fingerprint,
                      require_mapping, require_schema, require_exact_fingerprint, unique_ids)
 
 
@@ -198,7 +198,7 @@ def build_artifact_map_from_text(text: str, *, artifact_path: str | Path,
         "units": units,
         "unmapped_ranges": _unmapped_ranges_for_units(text, units),
     }
-    artifact_map["map_fingerprint"] = fingerprint(artifact_map)
+    artifact_map["map_fingerprint"] = own_fingerprint(artifact_map, "map_fingerprint")
     require_schema("artifact-map.schema.json", artifact_map, label="ArtifactMap")
     validate_artifact_map_from_text(artifact_map, text)
     return artifact_map

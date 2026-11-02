@@ -132,17 +132,43 @@ def test_stamp_failure_keeps_the_review_bytes(tmp_path, capsys, invalid):
     assert path.read_bytes() == before
 
 
-def test_moving_a_stamped_fixture_requires_explicit_rebinding(tmp_path, capsys):
+def test_moving_a_stamped_folder_keeps_its_review(tmp_path, capsys):
+    """A review binds bytes, plan and evidence, not the folder they sit in: a moved copy closes unstamped."""
     folder = _copy(tmp_path)
     assert _stamp(folder, capsys)[0] == 0
-    moved = tmp_path / 'moved';shutil.copytree(folder, moved)
+    moved = tmp_path / 'elsewhere' / 'deeper' / 'moved';shutil.copytree(folder, moved)
     assert (moved / 'piece.md').read_bytes() == (folder / 'piece.md').read_bytes()
     before = (moved / 'closure-input.json').read_bytes()
     result = run_chain(moved)
-    assert result['exit_code'] == 1 and result['first_failure']['code'] == 'judgment_stale'
+    assert result['exit_code'] == 0, result['first_failure']
+    assert result['results']['closure']['closure']['status'] == 'passed'
     assert (moved / 'closure-input.json').read_bytes() == before
-    assert _stamp(moved, capsys)[0] == 0
-    assert run_chain(moved)['exit_code'] == 0
+    # The moved copy still binds its text: an edit there makes the moved review stale.
+    piece = moved / 'piece.md'
+    piece.write_text(piece.read_text().replace('single-threaded', 'multi-threaded', 1))
+    result = run_chain(moved)
+    assert result['exit_code'] == 1 and result['first_failure']['code'] == 'judgment_stale'
+
+
+def test_reader_brief_names_its_files_relative_to_its_folder(tmp_path):
+    """reader-brief.json holds no machine path: research and world files are named beside it."""
+    for route in ('investigation', 'fiction', 'travel'):
+        folder = tmp_path / route
+        shutil.copytree(EXAMPLES / route, folder)
+        assert run_chain(folder, until='brief')['exit_code'] == 0
+        text = (folder / 'reader-brief.json').read_text(encoding='utf-8')
+        assert str(tmp_path) not in text, route
+        saved = json.loads(text)
+        brief, composition = saved['reader_brief'], saved['route_composition']
+        located = [brief.get(key) for key in ('research_folder', 'research_status')]
+        located += [composition.get(key) for key in ('world_contract', 'world_mesh', 'trip_plan', 'longform_project')]
+        for value in filter(None, located):
+            assert not Path(value).is_absolute() and (folder / value).exists(), (route, value)
+        # Read back through the chain, every relative name resolves beside reader-brief.json.
+        loaded = load_request(folder / 'reader-brief.json')
+        for key in ('research_folder', 'research_status'):
+            if key in loaded['reader_brief']:
+                assert Path(loaded['reader_brief'][key]) == (folder / brief[key]).resolve()
 
 
 def test_complete_repair_review_can_be_stamped(tmp_path, capsys):

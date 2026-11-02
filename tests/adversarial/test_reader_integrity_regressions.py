@@ -4,7 +4,7 @@ import copy
 
 import pytest
 
-from _common import ValidationError, fingerprint
+from _common import ValidationError, fingerprint, own_fingerprint
 from reader_checks import _measure_extent, build_reader_audit, validate_reader_audit_current
 from artifact_map import build_artifact_map, validate_artifact_map
 from reader_plan_core import validate_reader_intent
@@ -30,7 +30,7 @@ def test_artifact_map_cannot_hide_unmapped_non_whitespace_bytes(tmp_path):
     body = [row for row in forged["units"] if row["unit_kind"] == "paragraph"]
     assert len(body) >= 2
     forged["units"].remove(body[-1])
-    forged["map_fingerprint"] = fingerprint({k: v for k, v in forged.items() if k != "map_fingerprint"})
+    forged["map_fingerprint"] = own_fingerprint(forged, "map_fingerprint")
     with pytest.raises(ValidationError, match="unmapped|partition"):
         validate_artifact_map(forged)
 
@@ -41,7 +41,7 @@ def test_artifact_map_rejects_a_claimed_unmapped_prose_range(tmp_path):
     body = [row for row in forged["units"] if row["unit_kind"] == "paragraph"]
     gap = {"start": body[-1]["start"], "end": body[-1]["end"]}
     forged["unmapped_ranges"] = [gap]
-    forged["map_fingerprint"] = fingerprint({k: v for k, v in forged.items() if k != "map_fingerprint"})
+    forged["map_fingerprint"] = own_fingerprint(forged, "map_fingerprint")
     with pytest.raises(ValidationError, match="partition|whitespace"):
         validate_artifact_map(forged)
 
@@ -58,11 +58,11 @@ def test_reader_audit_uses_declared_word_extent_and_detects_language(tmp_path):
     brief = copy.deepcopy(chain["reader_brief"])
     brief["reader_intent"] = intent
     brief["reader_intent_fingerprint"] = intent["intent_fingerprint"]
-    brief["brief_fingerprint"] = fingerprint({k: v for k, v in brief.items() if k != "brief_fingerprint"})
+    brief["brief_fingerprint"] = own_fingerprint(brief, "brief_fingerprint")
     shared = copy.deepcopy(chain["shared_writing"])
     shared["reader_intent_fingerprint"] = intent["intent_fingerprint"]
     shared["reader_brief_fingerprint"] = brief["brief_fingerprint"]
-    shared["contract_fingerprint"] = fingerprint({k: v for k, v in shared.items() if k != "contract_fingerprint"})
+    shared["contract_fingerprint"] = own_fingerprint(shared, "contract_fingerprint")
     audit = build_reader_audit(
         audit_id="audit:words", artifact_map=chain["artifact_map"],
         reader_brief=brief, shared_writing=shared,

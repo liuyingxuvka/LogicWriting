@@ -23,11 +23,11 @@ class _RealReaderChain:
         for path in (ROOT, ROOT / "skills" / "logic-writing" / "scripts"):
             if str(path) not in sys.path:
                 sys.path.insert(0, str(path))
-        from _common import ValidationError, fingerprint, fill_fingerprint
+        from _common import ValidationError, fingerprint, fill_fingerprint, own_fingerprint
         from derive_closure import derive_closure
         from tests.v2_support import closure_input, complete_chain
         self.validation_error, self.fingerprint = ValidationError, fingerprint
-        self.fill_fingerprint = fill_fingerprint
+        self.fill_fingerprint, self.own_fingerprint = fill_fingerprint, own_fingerprint
         self.derive_closure, self.closure_input, self.complete_chain = derive_closure, closure_input, complete_chain
         self.root = Path(tempfile.mkdtemp(prefix="lw-reader-model-"))
         self.count = 0
@@ -109,7 +109,7 @@ class _RealReaderChain:
             return 'stamp_changed_other_inputs'
         stamped = path.read_bytes()
         if case == 'moved':
-            # The article bytes stay the same; file location/reference identity changes.
+            # The article bytes, plan and evidence stay the same; only the folder changes.
             moved = self._workdir()
             shutil.copytree(folder, moved)
             folder, path = moved, moved / 'closure-input.json'
@@ -483,7 +483,7 @@ class _RealReaderChain:
                     'status': 'unsupported', 'content_unit_ids': [unit['content_unit_id']],
                 })
             brief.pop('brief_fingerprint')
-            brief['brief_fingerprint'] = self.fingerprint(brief)
+            brief['brief_fingerprint'] = self.own_fingerprint(brief, 'brief_fingerprint')
             shared = request['shared_writing']
             shared.pop('reader_brief_fingerprint', None)
             shared.pop('contract_fingerprint', None)

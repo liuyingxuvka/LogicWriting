@@ -545,8 +545,6 @@ class Native:
         with tempfile.TemporaryDirectory(prefix='lw-license-model-') as temporary:
             folder = Path(temporary) / 'investigation'
             shutil.copytree(EXAMPLES / 'investigation', folder)
-            if case in ('withhold', 'qualify'):
-                assert _stamp_review(folder)['exit_code'] == 0
             report_path = folder / 'research-status.json'
             report = json.loads(report_path.read_text())
             if case != 'source_only':

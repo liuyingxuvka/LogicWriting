@@ -80,7 +80,7 @@ first failure: brief: research_report_stale:source.yaml (saved report is from ot
 $ python skills/logic-writing/scripts/run_chain.py ../ft-example --refresh-providers
 units: 5 (5 bound, 0 unbound); audit: passed (0 findings); review: passed; closure: not_run; known-bad: not_run
 added by the writer: cu-recommend: A team can test its service on the free-threaded build now, but should not plan on it becoming the default on any known date; recheck when a phase III decision is announced.
-first failure: closure: judgment_stale:reader_brief_fingerprint (the text, plan or file references changed after the review was stamped; reread the text, then run python skills/logic-writing/scripts/run_chain.py <ft-example> --stamp-review)
+first failure: closure: judgment_stale:reader_brief_fingerprint (the text, plan or evidence changed after the review was stamped; reread the text, then run python skills/logic-writing/scripts/run_chain.py <ft-example> --stamp-review)
 $ python skills/logic-writing/scripts/run_chain.py ../ft-example --stamp-review
 units: 5 (5 bound, 0 unbound); audit: passed (0 findings); review: passed; closure: not_run; known-bad: not_run
 added by the writer: cu-recommend: A team can test its service on the free-threaded build now, but should not plan on it becoming the default on any known date; recheck when a phase III decision is announced.
@@ -124,11 +124,10 @@ python -m pip install "git+https://github.com/liuyingxuvka/WorldGuard.git@v0.8.0
 ```bash
 cp -r skills/logic-writing/assets/examples/investigation ../ft-example
 python skills/logic-writing/scripts/show_plan.py --input ../ft-example/brief-request.json
-python skills/logic-writing/scripts/run_chain.py ../ft-example --stamp-review
 python skills/logic-writing/scripts/run_chain.py ../ft-example
 ```
 
-仓库例子的评审已经完成。复制会改变文件引用身份，因此首次收尾前要在最终目录显式 `--stamp-review` 绑定一次。自己的文章应先
+仓库例子的评审已经完成并盖过章。评审章绑定的是正文、计划和依据，不是它们所在的文件夹，所以复制出来的副本原地就能收尾。自己的文章应先
 检查变更涉及的文本、计划或依据，更新必要评审，确认完成后再显式盖章。完整且发现缺陷的 repair 评审也可绑定，收尾仍为
 `needs_repair`。以后的默认运行不会重盖。
 

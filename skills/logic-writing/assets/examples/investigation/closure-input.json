@@ -2,19 +2,19 @@
   "closure_id": "close-ft-1",
   "judgment": {
     "artifact_fingerprint": "sha256:a01675bb6b4ce07ba1db5695655cef7aaa1b87646d1d7dc60579d4ba388c40e9",
-    "artifact_map_fingerprint": "sha256:b47cdbcc19966fae6dccfccd2e87caea9faccc07665b60ca645ccf2aeb19deaa",
+    "artifact_map_fingerprint": "sha256:83c4d3178071c25cdeb34262183c0d58ddea87c6ea5f875b2ef570944d923266",
     "composition_plan_fingerprint": "sha256:6729ae5ee20cdf0e6f4660172b44a20dfb636a4af651451b4826bdedd2016886",
     "defects": [],
-    "deterministic_audit_fingerprint": "sha256:b24f9ecb1587b79714d6d8e1bbc65a266b3f24d923bb17e19322bf6e78413f08",
+    "deterministic_audit_fingerprint": "sha256:716d05f03749ed63f0d6d5e8aad06514d6ffdcd2eb20d18ffe8c713040aacb2b",
     "evaluation_profile_fingerprint": "sha256:c5f11adcaffc62149296d803394f59f9ad4b9d86b06786b5dea521a0e9178542",
     "final_owner": "investigation",
     "judge_id": "self-review-second-pass",
     "judge_kind": "self_review",
     "judged_at": "2026-10-21T11:20:00Z",
-    "judgment_fingerprint": "sha256:172db0fe6d87ebbae957f3462f368bddef66693f75a714868b3f09331f6feacc",
+    "judgment_fingerprint": "sha256:a0d21a0826ef669403717278ffccac149f9054fffb120297754e3501d63e970d",
     "judgment_id": "j-ft-1",
     "producer_id": "writer-main",
-    "reader_brief_fingerprint": "sha256:585d22832c4b2b03a5af6eef13af2856f8263e9e01f885da357d872c43c9d868",
+    "reader_brief_fingerprint": "sha256:108561ce4abb244f49c7ed1aa6ac61d4b762ad6642310b3305f754fc5efb0e25",
     "reader_intent_fingerprint": "sha256:6d8732010b3fba6675ac11b15da0d555fb0f1af758973252458ecd8bdf2c7d53",
     "required_repairs": [],
     "reverse_outline": [
@@ -132,7 +132,7 @@
         "support_or_action": "limits on library readiness"
       }
     ],
-    "route_audit_fingerprint": "sha256:6eb647527329d4ae35a71c407a4e9c3285e0cda2f9b283d3a8ec4e51acab13ba",
+    "route_audit_fingerprint": "sha256:b0d32cca999c42cfe2fc8eb43747294dab9e60d3c2c21991cce0db7e0f9898d1",
     "schema_version": "2.0",
     "scores": {
       "clarity": 4,
@@ -144,7 +144,7 @@
       "reader_fit": 4,
       "structure_fidelity": 4
     },
-    "shared_writing_contract_fingerprint": "sha256:a3a37fb9d9bb0ba35febf9f1e880c6ee21e145c2c7eba9daff9c8306dbb75071",
+    "shared_writing_contract_fingerprint": "sha256:f2adc0c427049836048b83b88a2acd0a65340caab8fcf823938e6e8e3cdca430",
     "status": "passed",
     "strengths": []
   },

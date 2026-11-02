@@ -2,19 +2,19 @@
   "closure_id": "closure:travel",
   "judgment": {
     "artifact_fingerprint": "sha256:ff3fb8884da2d0c87eb0213d9ebd0eb8155818f69dae616258165186715cf699",
-    "artifact_map_fingerprint": "sha256:b858aee3db248fe23b2cd073de073b853effc9b2261da58ba409c0cc15f19e3f",
+    "artifact_map_fingerprint": "sha256:61943006f052d446c66ed1039014929ae001a8baa63865b349665532db29beb1",
     "composition_plan_fingerprint": "sha256:93124f5dd90f945a25e3578f0df28fc589cf56b66e7743b520835c1780069bd8",
     "defects": [],
-    "deterministic_audit_fingerprint": "sha256:f3cb356c668044665cca1721d22a3787178619cb116717f72ea554ebaedc00ff",
+    "deterministic_audit_fingerprint": "sha256:12aa3f3fd0b1fb4ec263b936276bea06a2d56d203b857a7ecfa4ff71a5bd7283",
     "evaluation_profile_fingerprint": "sha256:a4b888beb2b514bdf8b14e8984e1eb3749397ff21dbca053c762ff2f8ead8a8a",
     "final_owner": "travel-guide",
     "judge_id": "author-second-read",
     "judge_kind": "self_review",
     "judged_at": "2026-07-29T12:00:00Z",
-    "judgment_fingerprint": "sha256:c22c4a0ce43e91ade50ccaee89e9cfff33c12929c95fcbf4a53276c489057c7e",
+    "judgment_fingerprint": "sha256:51c00c8e0831dae1676304534f017e3674c140fbecbad9f04d2a28230b1f67c1",
     "judgment_id": "judgment:travel-guide",
     "producer_id": "producer:writer",
-    "reader_brief_fingerprint": "sha256:e36e842ee4c050ebfa521eae9725c8b0600d9162d6f31bc54718ae4379e536a6",
+    "reader_brief_fingerprint": "sha256:a1e38635860a33ff818ec7c8bde0f945e8c9eb858b28a03653dd635eaf20aaff",
     "reader_intent_fingerprint": "sha256:fee58fb088f7fc8f756bef7eb90ae41713f653abe8c6fb810be487c11d198b3c",
     "required_repairs": [],
     "reverse_outline": [
@@ -61,7 +61,7 @@
         "support_or_action": "Reasons and scope in the current paragraph"
       }
     ],
-    "route_audit_fingerprint": "sha256:de61d706e78a9c19747c3305acb26004f8a3d9996cd2e10045ece216e3123b64",
+    "route_audit_fingerprint": "sha256:ca5d24e012ce08080ad9fceb6df9b93bcdace9e685914c0a29dde4f7d3b41ac1",
     "schema_version": "2.0",
     "scores": {
       "clarity": 5,
@@ -73,7 +73,7 @@
       "reader_fit": 5,
       "structure_fidelity": 5
     },
-    "shared_writing_contract_fingerprint": "sha256:291320829c45e2b621c8cf43d7c0d2e8c20f9ea40470b4aa5e3c807405fb29c6",
+    "shared_writing_contract_fingerprint": "sha256:5b00f7b5606d88dd2a73522790c95946137f3fc28ce8cdf0a9108868115a5dd6",
     "status": "passed",
     "strengths": []
   },

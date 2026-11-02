@@ -4,7 +4,7 @@ import copy
 
 import pytest
 
-from _common import ValidationError, fingerprint, fingerprint_text
+from _common import ValidationError, fingerprint, fingerprint_text, own_fingerprint
 from artifact_map import build_artifact_map
 from reader_checks import build_reader_audit, validate_reader_judgment
 from tests.v2_support import complete_chain, make_reader_chain
@@ -41,7 +41,7 @@ def test_deterministic_audit_catches_reader_facing_failures(tmp_path, text, expe
         "locator": paragraph["locator"],
         "content_fingerprint": paragraph["content_fingerprint"],
     }]
-    contract["contract_fingerprint"] = fingerprint({k: v for k, v in contract.items() if k != "contract_fingerprint"})
+    contract["contract_fingerprint"] = own_fingerprint(contract, "contract_fingerprint")
     audit = build_reader_audit(
         audit_id="audit:bad", artifact_map=amap,
         reader_brief=chain["reader_brief"], shared_writing=contract,

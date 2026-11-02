@@ -6,7 +6,6 @@ import subprocess
 import sys
 
 import pytest
-from run_chain import _stamp_review
 
 SKILL = Path(__file__).resolve().parents[2] / 'skills/logic-writing'
 EXAMPLES = SKILL / 'assets/examples'
@@ -52,7 +51,7 @@ def test_worked_example(tmp_path, route):
     )
     folder = tmp_path / route
     shutil.copytree(source, folder)
-    assert _stamp_review(folder)['exit_code'] == 0
+    # The shipped review closes in any folder: copying must never need a new stamp.
     code, result = run_chain(folder, route)
     assert code == 0, result
     assert result["closure"]["status"] == "passed", result
@@ -84,6 +83,18 @@ def test_worked_example(tmp_path, route):
         else:
             assert code != 0, (filename, result)
             assert expectation["error"] in result["errors"], (filename, result)
+
+
+@pytest.mark.parametrize("route", ["investigation", "academic", "fiction", "travel"])
+def test_shipped_example_closes_in_any_folder_without_a_new_stamp(tmp_path, route):
+    from run_chain import run_chain as run_full_chain
+    for place in (tmp_path / 'a' / route, tmp_path / 'b' / 'deeper' / 'still' / route):
+        shutil.copytree(EXAMPLES / route, place)
+        before = (place / 'closure-input.json').read_bytes()
+        result = run_full_chain(place)
+        assert result['exit_code'] == 0, result['first_failure']
+        assert result['results']['closure']['closure']['status'] == 'passed'
+        assert (place / 'closure-input.json').read_bytes() == before
 
 
 @pytest.mark.parametrize('route', ['investigation', 'academic', 'fiction', 'travel'])
@@ -247,7 +258,6 @@ def test_show_plan_shows_findings_on_the_failing_unit(tmp_path):
     from tests.v2_support import run_example_steps
     folder = tmp_path / 'investigation'
     shutil.copytree(EXAMPLES / 'investigation', folder)
-    assert _stamp_review(folder)['exit_code'] == 0
     code, _closure = run_chain(folder, 'investigation')
     assert code == 0
     view = plan_view(load_request(folder / 'closure-input.json', defaults=__import__('derive_closure').CLOSURE_INPUT_FILES), input_path=folder / 'closure-input.json')
@@ -331,8 +341,6 @@ def test_show_plan_reads_back_the_same_from_every_chain_file(tmp_path, monkeypat
     for name in ("ok", "inv"):
         folder = tmp_path / name
         shutil.copytree(EXAMPLES / "investigation", folder)
-        if name == 'ok':
-            assert _stamp_review(folder)['exit_code'] == 0
         if name == "inv":
             path = folder / "brief-request.json"
             request = json.loads(path.read_text())

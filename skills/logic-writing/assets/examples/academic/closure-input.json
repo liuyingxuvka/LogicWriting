@@ -2,16 +2,16 @@
   "closure_id": "closure:academic",
   "judgment": {
     "artifact_fingerprint": "sha256:e59ab7960a4cf8ee915845c73e19e691c209fd57ada582b3e99f5c40742a20a5",
-    "artifact_map_fingerprint": "sha256:2ed28c7580deb0ff85889fdb03fbb2b0fbf491982c8632aa590fd5bbafbba98d",
+    "artifact_map_fingerprint": "sha256:714f51921aa9e2f526eca2fdf9007bbeaaafc872abb61ae5b152d7a0226528b0",
     "composition_plan_fingerprint": "sha256:d7c270318df784866ca4e8a02d4b78b3c19c26212afbfc109cc9f350f783895f",
     "defects": [],
-    "deterministic_audit_fingerprint": "sha256:6597c458c54143feb1697f624a5db9542a33e6ddd83287931330cd30302bd056",
+    "deterministic_audit_fingerprint": "sha256:c91daf0459fae4c4207cefc1679e6aa7c1d6792c29d504afbae7dde85ac486b2",
     "evaluation_profile_fingerprint": "sha256:9bcaa4e3fb4e14cf63129bca8a55bebcba857433cd445fd353faca5b13af9d8e",
     "final_owner": "academic-writing",
     "judge_id": "author-second-read",
     "judge_kind": "self_review",
     "judged_at": "2026-07-29T12:00:00Z",
-    "judgment_fingerprint": "sha256:1a1519a4aadd86e6aaebc008bfe1216c4d818748a14a78baff701080cc44e375",
+    "judgment_fingerprint": "sha256:b6d9c242df9cb9355986e0b28c3954d2e5dd3aa03c7017dab835b46852607086",
     "judgment_id": "judgment:academic-writing",
     "producer_id": "producer:writer",
     "reader_brief_fingerprint": "sha256:0f0c56a9d00c23aee573665950b88837be6a0b7da737f151c09ba16cae7caee6",
@@ -61,7 +61,7 @@
         "support_or_action": "Reasons and scope in the current paragraph"
       }
     ],
-    "route_audit_fingerprint": "sha256:f1e35f7f2cef9270d75d4e9a54207a5abd12a2d78480e94cc5c6fa36c9e76f1f",
+    "route_audit_fingerprint": "sha256:a9d9152bb785d916c076c7b76ec7abe125d622ae32956551620672b7cffeb73d",
     "schema_version": "2.0",
     "scores": {
       "clarity": 5,
@@ -73,7 +73,7 @@
       "reader_fit": 5,
       "structure_fidelity": 5
     },
-    "shared_writing_contract_fingerprint": "sha256:828f07e66d0c947531476b3c52c7405be7474415d40c3ecaa9b0fa59f82644bd",
+    "shared_writing_contract_fingerprint": "sha256:4a70af5750669f7cd5cdbc7b4f838899b23832bb91a1031e70c6fee7e1460f79",
     "status": "passed",
     "strengths": []
   },

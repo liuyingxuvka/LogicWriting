@@ -215,7 +215,6 @@ def _root_license(folder, wording, limit=None):
 @pytest.mark.parametrize('wording', ['withhold', 'qualify'])
 def test_withheld_root_claim_needs_a_limit(tmp_path, wording):
     folder = _example(tmp_path)
-    assert _stamp_review(folder)['exit_code'] == 0
     _root_license(folder, wording)
     result = run_chain(folder)
     assert result['exit_code'] == 1, result

@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from _common import ValidationError, fingerprint, fingerprint_without
+from _common import ROUTE_FILE_FIELDS, ValidationError, fingerprint, own_fingerprint
 
 
 def _input_bytes(path: Path, label: str) -> bytes:
@@ -19,7 +19,7 @@ def _input_bytes(path: Path, label: str) -> bytes:
 def route_extension_fingerprint(composition: dict[str, Any], base_dir: str | Path | None = None) -> str:
     """Preserve ordinary route identity; travel also binds its trip and saved reports."""
     if composition.get("final_owner") != "travel-guide":
-        return fingerprint_without(composition, "extension_fingerprint")
+        return own_fingerprint(composition, "extension_fingerprint")
     reference = composition.get("trip_plan")
     if not isinstance(reference, str) or not reference.strip():
         raise ValidationError("travel composition requires a nonempty trip_plan path")
@@ -52,7 +52,8 @@ def route_extension_fingerprint(composition: dict[str, Any], base_dir: str | Pat
             contents[report_path] = hashlib.sha256(_input_bytes(report_path, "saved WorldGuard report")).hexdigest()
         reports.append({"reference": report_ref, "bytes_sha256": contents[report_path]})
     return fingerprint({
-        "composition": {key: value for key, value in composition.items() if key != "extension_fingerprint"},
+        "composition": {key: value for key, value in composition.items()
+                        if key != "extension_fingerprint" and key not in ROUTE_FILE_FIELDS},
         "trip_plan_bytes_sha256": hashlib.sha256(trip_bytes).hexdigest(),
         "worldguard_report_bytes": reports,
     })

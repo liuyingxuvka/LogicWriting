@@ -96,7 +96,7 @@ def test_limitation_excerpt_must_be_in_its_planned_unit(tmp_path):
 
 
 def test_limitation_adjacency_uses_offsets_not_map_array_order(tmp_path):
-    from _common import fingerprint_without
+    from _common import own_fingerprint
     from reader_checks import _review_boundary_checks
     from artifact_map import build_artifact_map, validate_artifact_map
 
@@ -115,7 +115,7 @@ def test_limitation_adjacency_uses_offsets_not_map_array_order(tmp_path):
     # The map remains valid when callers reorder its rows without changing offsets or bytes.
     positions = [amap['units'].index(u) for u in body]
     amap['units'][positions[1]], amap['units'][positions[2]] = body[2], body[1]
-    amap['map_fingerprint'] = fingerprint_without(amap, 'map_fingerprint')
+    amap['map_fingerprint'] = own_fingerprint(amap, 'map_fingerprint')
     validate_artifact_map(amap)
     for unit, adjacent in [(body[2], False), (body[1], True)]:
         review['limitation_checks'][0]['evidence'] = [dict(

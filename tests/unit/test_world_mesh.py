@@ -12,7 +12,7 @@ from _common import ValidationError, load_request, worldguard_report_identity_pr
 from derive_closure import provider_checks
 from reader_plan import build_reader_brief, validate_route_composition
 from route_inputs import route_extension_fingerprint
-from run_chain import _refresh, run_chain, _stamp_review
+from run_chain import _refresh, run_chain
 from show_plan import _summary
 from tests.v2_support import make_reader_chain
 from world_refs import validate_world_refs
@@ -157,7 +157,6 @@ def test_world_scope_limits_remain_nonblocking_and_visible(tmp_path, kind):
     if kind == 'contract':
         work = tmp_path / 'fiction'
         shutil.copytree(folder, work)
-        assert _stamp_review(work)['exit_code'] == 0
         result = run_chain(work)
         assert result['exit_code'] == 0 and result['results']['closure']['closure']['status'] == 'passed'
         assert any(row['defect_id'].startswith('world:scope_limit:') for row in result['results']['closure']['closure']['residual_risk'])

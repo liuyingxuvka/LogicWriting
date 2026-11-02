@@ -87,7 +87,7 @@ first failure: brief: research_report_stale:source.yaml (saved report is from ot
 $ python skills/logic-writing/scripts/run_chain.py ../ft-example --refresh-providers
 units: 5 (5 bound, 0 unbound); audit: passed (0 findings); review: passed; closure: not_run; known-bad: not_run
 added by the writer: cu-recommend: A team can test its service on the free-threaded build now, but should not plan on it becoming the default on any known date; recheck when a phase III decision is announced.
-first failure: closure: judgment_stale:reader_brief_fingerprint (the text, plan or file references changed after the review was stamped; reread the text, then run python skills/logic-writing/scripts/run_chain.py <ft-example> --stamp-review)
+first failure: closure: judgment_stale:reader_brief_fingerprint (the text, plan or evidence changed after the review was stamped; reread the text, then run python skills/logic-writing/scripts/run_chain.py <ft-example> --stamp-review)
 $ python skills/logic-writing/scripts/run_chain.py ../ft-example --stamp-review
 units: 5 (5 bound, 0 unbound); audit: passed (0 findings); review: passed; closure: not_run; known-bad: not_run
 added by the writer: cu-recommend: A team can test its service on the free-threaded build now, but should not plan on it becoming the default on any known date; recheck when a phase III decision is announced.
@@ -135,12 +135,11 @@ python -m pip install "git+https://github.com/liuyingxuvka/WorldGuard.git@v0.8.0
 ```bash
 cp -r skills/logic-writing/assets/examples/investigation ../ft-example
 python skills/logic-writing/scripts/show_plan.py --input ../ft-example/brief-request.json
-python skills/logic-writing/scripts/run_chain.py ../ft-example --stamp-review
 python skills/logic-writing/scripts/run_chain.py ../ft-example
 ```
 
-The shipped review is already completed. Copying it changes file-reference identity, so bind it once in its final
-folder with `--stamp-review` before the first closure. For your own work, check the affected text, plan or evidence,
+The shipped review is already completed and stamped. A stamp binds the text, the plan and the evidence, not the folder
+they sit in, so the copy closes where it is. For your own work, check the affected text, plan or evidence,
 update the necessary review, then explicitly stamp it when complete;
 a complete repair review may be stamped while its closure remains `needs_repair`. Later default runs never re-stamp.
 

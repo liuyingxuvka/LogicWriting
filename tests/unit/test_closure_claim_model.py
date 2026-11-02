@@ -31,8 +31,8 @@ def test_stale_research_report_fails_the_provider_check(tmp_path):
 def test_stale_world_report_fails_closure(tmp_path):
     folder=tmp_path/'fiction'
     shutil.copytree(EXAMPLES/'fiction',folder)
-    from run_chain import _stamp_review
-    assert _stamp_review(folder)['exit_code'] == 0
+    from run_chain import run_chain
+    assert run_chain(folder, until='review')['exit_code'] == 0  # writes the chain's result files; no stamp
     request=fill_closure_fingerprints(load_request(folder/'closure-input.json', defaults=__import__('derive_closure').CLOSURE_INPUT_FILES))
     assert derive_closure(request)['closure']['status']=='passed'
     world=folder/'world.yaml'

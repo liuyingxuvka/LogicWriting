@@ -4,7 +4,7 @@ import copy
 
 import pytest
 
-from _common import ValidationError, fingerprint_without
+from _common import ValidationError, own_fingerprint
 from reader_binding import validate_shared_writing
 from tests.v2_support import make_reader_chain
 
@@ -34,7 +34,7 @@ def test_required_plan_unit_must_bind_actual_span(tmp_path):
     chain = make_reader_chain(tmp_path)
     contract = copy.deepcopy(chain["shared_writing"])
     contract["unit_bindings"] = []
-    contract["contract_fingerprint"] = fingerprint_without(contract, "contract_fingerprint")
+    contract["contract_fingerprint"] = own_fingerprint(contract, "contract_fingerprint")
     with pytest.raises(ValidationError):
         validate_shared_writing(
             contract,
@@ -47,7 +47,7 @@ def test_sibling_route_contract_is_rejected(tmp_path):
     chain = make_reader_chain(tmp_path, "travel-guide")
     contract = copy.deepcopy(chain["shared_writing"])
     contract["final_owner"] = "fiction-writing"
-    contract["contract_fingerprint"] = fingerprint_without(contract, "contract_fingerprint")
+    contract["contract_fingerprint"] = own_fingerprint(contract, "contract_fingerprint")
     with pytest.raises(ValidationError, match="final_owner"):
         validate_shared_writing(
             contract,
@@ -224,6 +224,6 @@ def test_library_rechecks_the_quote_on_a_completed_contract(tmp_path):
     request = fill_check_fingerprints(_quote_request(chain))
     contract = request['contract']
     contract['unit_bindings'][0]['anchor_excerpts'] = ['A now missing quote in an otherwise current contract.']
-    contract['contract_fingerprint'] = fingerprint_without(contract, 'contract_fingerprint')
+    contract['contract_fingerprint'] = own_fingerprint(contract, 'contract_fingerprint')
     with pytest.raises(ValidationError, match='is not in the current text'):
         validate_shared_writing(contract, artifact_map=chain['artifact_map'], reader_brief=chain['reader_brief'])

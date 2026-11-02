@@ -10,6 +10,8 @@ line follows semantic versioning.
 
 - Maintenance runs on FlowGuard 0.72.0: AGENTS.md carries its four plain rules (status first, store only the owner's own words, find code with `where` and run the tests, one commit in your own words) instead of the target and map-confirm steps, and states the version rule: new features raise the second number, small fixes the third, and no number is skipped.
 - The stored round-11 action list is retired as not the owner's words, so `flowguard status` no longer shows it as an open owner request.
+- A stamped review no longer depends on where its folder sits: fingerprints bind the text, the plan and the evidence, not file paths, so the four shipped examples (and any copied or moved folder) close without a new `--stamp-review`. An edit to the text or plan still makes the review stale.
+- `reader-brief.json` names its research folder, research report and world or trip files relative to its own folder instead of storing machine paths; they are resolved beside the file when it is read.
 
 ## v4.1.0 - 2026-10-31 - Claims held to their evidence, the request and a stamped review
 

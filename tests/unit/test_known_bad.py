@@ -73,7 +73,9 @@ def _evidence_request(tmp_path, *, unhardened=False):
         review['review']['overclaim_checks'] = [row for row in review['review']['overclaim_checks']
                                                 if row['overclaim_id'] != 'oc-unsupported-default-soon']
         path.write_text(json.dumps(review))
-    assert _stamp_review(folder)['exit_code'] == 0
+        assert _stamp_review(folder)['exit_code'] == 0  # the plan and review changed: bind the edited review
+    else:
+        assert run_chain(folder, until='review')['exit_code'] == 0  # writes the chain's result files; no stamp
     return fill_closure_fingerprints(load_request(folder / 'closure-input.json', defaults=CLOSURE_INPUT_FILES))
 
 

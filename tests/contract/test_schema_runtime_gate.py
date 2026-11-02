@@ -179,8 +179,6 @@ def test_each_distinct_schema_object_is_validated_once(tmp_path, monkeypatch):
     )
     folder = tmp_path / "investigation"
     shutil.copytree(source, folder)
-    from run_chain import _stamp_review
-    assert _stamp_review(folder)['exit_code'] == 0
 
     monkeypatch.setattr(schema_validation, "_VALIDATION_MEMO", {}, raising=False)
     original_runtime = schema_validation._RUNTIME.validate

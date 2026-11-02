@@ -2,19 +2,19 @@
   "closure_id": "close-tide",
   "judgment": {
     "artifact_fingerprint": "sha256:f84a2189803974d81e8f343979302cca1fbc6e7e5f1081f7f0bc861c073209b7",
-    "artifact_map_fingerprint": "sha256:67f3e6e7d4f44aecbaff4004110ed95e6fd1e4cafd1d42acd378f2854e61d62f",
+    "artifact_map_fingerprint": "sha256:e49add29c7dc190ccac2809faf392a92e47952ff8c85b5292f4816068c74ee21",
     "composition_plan_fingerprint": "sha256:9e9680a96bf7eb38bfa92aceb56bc46346b38f76a6ffdd09b8cd120a5c5fdb6b",
     "defects": [],
-    "deterministic_audit_fingerprint": "sha256:ba5d7d968c56f54aa6441d340cc7d93f5cfb8910504704826d5b5fe4dd24b1c9",
+    "deterministic_audit_fingerprint": "sha256:57aca721d73168630faab0ced9d93ced407d5697e06246a3bd80101f6b4b43d8",
     "evaluation_profile_fingerprint": "sha256:e999a14c36ec35a4984b4f475f7802bb171e95ba9bd22028ce113fadc65e0516",
     "final_owner": "fiction-writing",
     "judge_id": "self-review",
     "judge_kind": "self_review",
     "judged_at": "2026-10-21T13:00:00Z",
-    "judgment_fingerprint": "sha256:85dda4d957f38630f286cfe860794d49c2fbce147a3da04fa503e1bea959a87c",
+    "judgment_fingerprint": "sha256:ca60931eab488612c29697b149d8341be3ed42c33a30fa273abafaf0998a953c",
     "judgment_id": "j-tide",
     "producer_id": "writer",
-    "reader_brief_fingerprint": "sha256:d7fb314c92c185c4f62adc84febbb4a017fd8b59491fba617984b7dd15721262",
+    "reader_brief_fingerprint": "sha256:7812744fe916030828f66cf0b90b072f1f3d06f2c502133183e1171603f82f5d",
     "reader_intent_fingerprint": "sha256:067eb0c9d77318224749ebb6e6dd7f282c6e3437b3856e12ddd2261bc80e43b3",
     "required_repairs": [],
     "reverse_outline": [
@@ -110,7 +110,7 @@
         "support_or_action": "mate takes papers"
       }
     ],
-    "route_audit_fingerprint": "sha256:7f68a4d5548cad2266296c85bc70276a66ba44a556d40ccb3cad3c28c949b1ef",
+    "route_audit_fingerprint": "sha256:744a1a7b7447825bea556b446a2e977cb87eef53f63751794eb556762d64f5e3",
     "schema_version": "2.0",
     "scores": {
       "clarity": 4,
@@ -122,7 +122,7 @@
       "reader_fit": 4,
       "structure_fidelity": 4
     },
-    "shared_writing_contract_fingerprint": "sha256:f72bfcd715071dbe1351541219cabbab12ab51abac71455371343dc304220804",
+    "shared_writing_contract_fingerprint": "sha256:74f13e74bedbde5609b57a5ef577820794e07151eb42240897f7b6b48196c0f4",
     "status": "passed",
     "strengths": []
   },

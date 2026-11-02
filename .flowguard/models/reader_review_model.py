@@ -1,9 +1,9 @@
-"""Explicit review stamps bind current content, evidence, plan and file references.
+"""Explicit review stamps bind current content, evidence and plan, not the folder they sit in.
 
 Independent single-input cases reuse the native reader helper. The original
 reader_artifact_model keeps its three-step review/edit/close protocol unchanged.
-Copied fixtures are explicitly stamped in their final directory before edits;
-moving a saved stamp changes file-reference identity, not the article bytes.
+A stamp binds bytes, plan and evidence, never the folder they sit in: a stamped
+folder moved elsewhere closes without a new stamp, and an edit there is still stale.
 """
 from dataclasses import dataclass, replace
 
@@ -32,13 +32,13 @@ TESTED_BY = {'review_belongs_to_text': [
     'tests/unit/test_review_stamp.py:test_required_unit_missing_from_the_review_fails',
     'tests/unit/test_review_stamp.py:test_fingerprints_ignore_time_fields',
     'tests/unit/test_review_stamp.py:test_stamp_failure_keeps_the_review_bytes',
-    'tests/unit/test_review_stamp.py:test_moving_a_stamped_fixture_requires_explicit_rebinding',
+    'tests/unit/test_review_stamp.py:test_moving_a_stamped_folder_keeps_its_review',
     'tests/unit/test_review_stamp.py:test_complete_repair_review_can_be_stamped',
 ]}
 CASES = {'unstamped': 'judgment_unstamped', 'stamped': 'passed', 'edited': 'judgment_stale',
          'unreviewed': 'judgment_content_unit_unreviewed:cu-perf',
          'failed_stamp': 'failed+unchanged', 'invalid_review': 'failed+unchanged',
-         'repeat_stamp': 'stamped+unchanged', 'time_fields': 'stable', 'moved': 'judgment_stale',
+         'repeat_stamp': 'stamped+unchanged', 'time_fields': 'stable', 'moved': 'passed',
          'valid_repair': 'stamped+needs_repair'}
 
 
@@ -73,6 +73,12 @@ class EditedTextKeepsOldReview(Review):
         return 'passed' if case == 'edited' else super().result_for(case)
 
 
+class MovedFolderStalesReview(Review):
+    """The 4.1.0 defect: absolute paths in fingerprints made a moved copy look edited."""
+    def result_for(self, case):
+        return 'judgment_stale' if case == 'moved' else super().result_for(case)
+
+
 def review_belongs_to_text(state, trace):
     if state.review_case and state.review_result != CASES[state.review_case]:
         return InvariantResult.fail('only an explicitly stamped current review covering every required unit may close; default runs never create or refresh its stamp')
@@ -94,7 +100,8 @@ def build_explorer():
 
 
 def broken_variants():
-    return {'edited_text_keeps_the_old_review': explorer(EditedTextKeepsOldReview())}
+    return {'edited_text_keeps_the_old_review': explorer(EditedTextKeepsOldReview()),
+            'moved_folder_stales_the_review': explorer(MovedFolderStalesReview())}
 
 
 def conformance():

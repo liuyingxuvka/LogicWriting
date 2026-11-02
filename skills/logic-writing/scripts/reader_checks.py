@@ -504,7 +504,7 @@ def reader_judgment_from_current(value, *, amap, brief, contract, audit, route_r
     }
     for key, expected_value in expected.items():
         if judgment[key] != expected_value:
-            raise ValidationError(f'judgment_stale:{key} (the text, plan or file references changed after the review was stamped; reread the text, then run {command})')
+            raise ValidationError(f'judgment_stale:{key} (the text, plan or evidence changed after the review was stamped; reread the text, then run {command})')
     units = {row["artifact_unit_id"]: row for row in amap["units"]}
     for row in judgment["reverse_outline"]:
         _verify_span_evidence(row["evidence"], units)

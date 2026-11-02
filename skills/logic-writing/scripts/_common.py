@@ -113,10 +113,26 @@ _FINGERPRINT_METADATA = {
 }
 
 
+# Files a record names by path. A path says where a file sits, not what it holds: the tool binds the
+# bytes where it reads them (artifact_fingerprint, provider input digests, trip-plan bytes), so moving
+# a folder never changes a fingerprint, while changed bytes still do.
+ROUTE_FILE_FIELDS = ("longform_project", "world_contract", "world_mesh", "trip_plan")
+BRIEF_FILE_FIELDS = ("research_folder", "research_status")
+_FINGERPRINT_LOCATORS = {
+    'map_fingerprint': ('artifact_path',), 'contract_fingerprint': ('artifact_path',),
+    'brief_fingerprint': BRIEF_FILE_FIELDS, 'extension_fingerprint': ROUTE_FILE_FIELDS,
+}
+
+
+def own_fingerprint(record: dict[str, Any], field: str) -> str:
+    """A record's own fingerprint: everything except the field itself, its execution time and its file locators."""
+    return fingerprint_without(record, field, *_FINGERPRINT_METADATA.get(field, ()), *_FINGERPRINT_LOCATORS.get(field, ()))
+
+
 def fill_fingerprint(record: Any, field: str) -> None:
     """Compute a record's own fingerprint when the caller left it out; a given value is kept and checked."""
     if isinstance(record, dict) and record.get(field) is None:
-        record[field] = fingerprint_without(record, field, *_FINGERPRINT_METADATA.get(field, ()))
+        record[field] = own_fingerprint(record, field)
 
 
 def fill_missing(record: Any, field: str, value: Any) -> None:
@@ -325,11 +341,12 @@ def load_request(path: str | Path | None, *, defaults: dict | None = None) -> An
                     if len(objects) == 1:
                         loaded = objects[0]
             value[key] = loaded
-        if key == "route_composition" and isinstance(value[key], dict):
-            for field in ("longform_project", "world_contract", "world_mesh", "trip_plan"):
-                reference = value[key].get(field)
-                if isinstance(reference, str) and reference:
-                    value[key][field] = str((record_base / Path(reference).expanduser()).resolve())
+        for record_key, fields in (("route_composition", ROUTE_FILE_FIELDS), ("reader_brief", BRIEF_FILE_FIELDS)):
+            if key == record_key and isinstance(value[key], dict):
+                for field in fields:
+                    reference = value[key].get(field)
+                    if isinstance(reference, str) and reference:
+                        value[key][field] = str((record_base / Path(reference).expanduser()).resolve())
         if file_request and key in {"contract", "shared_writing"} and isinstance(value[key], dict):
             _absolute_artifact_path(value[key], record_base)
         if file_request and key in {"revision_provenance", "provenance"} and isinstance(value[key], dict):
@@ -351,7 +368,33 @@ def load_request(path: str | Path | None, *, defaults: dict | None = None) -> An
     return value
 
 
+def _named_beside(value: Any, folder: Path) -> Any:
+    """Copy of a result whose brief and route files inside `folder` are named relative to it.
+
+    load_request resolves these names beside the file again, so a saved result holds no machine path.
+    A file outside the folder keeps the path the request gave it.
+    """
+    if isinstance(value, list):
+        return [_named_beside(item, folder) for item in value]
+    if not isinstance(value, dict):
+        return value
+    copied = {key: _named_beside(item, folder) for key, item in value.items()}
+    for record_key, fields in (("route_composition", ROUTE_FILE_FIELDS), ("reader_brief", BRIEF_FILE_FIELDS)):
+        record = copied.get(record_key)
+        if not isinstance(record, dict):
+            continue
+        for field in fields:
+            located = record.get(field)
+            if isinstance(located, str) and located and Path(located).is_absolute():
+                resolved = Path(located).resolve()
+                if resolved.is_relative_to(folder):
+                    record[field] = resolved.relative_to(folder).as_posix() or "."
+    return copied
+
+
 def dump_json(value: Any, path: str | Path | None = None) -> None:
+    if path not in {None, "-"}:
+        value = _named_beside(value, Path(path).resolve().parent)
     text = json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
     if path in {None, "-"}:
         sys.stdout.write(text)
@@ -399,7 +442,7 @@ def utc_now() -> str:
 
 
 def require_exact_fingerprint(value: Mapping[str, Any], field: str) -> None:
-    if value.get(field) != fingerprint_without(dict(value), field, *_FINGERPRINT_METADATA.get(field, ())):
+    if value.get(field) != own_fingerprint(dict(value), field):
         raise ValidationError(f"{field} does not bind the exact current object")
 
 

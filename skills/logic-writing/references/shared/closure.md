@@ -43,9 +43,10 @@ closure stays `needs_repair`.
 Default runs and closure never fill or refresh a judgment stamp. An unstamped
 review fails with `judgment_unstamped:<id>`; changed content, plan or file
 references fail with `judgment_stale:<field>`. Both name the explicit command:
-reread changed work before stamping again. A copied fixture needs one explicit
-binding in its final directory; copying preserves article bytes but changes
-file location/reference identity. A required unit missing from the review is
+reread changed work before stamping again. Fingerprints bind bytes, plan and
+evidence, never the folder: a copied or moved folder keeps its stamp, and
+`reader-brief.json` names its research and world files relative to its own
+folder. A required unit missing from the review is
 `judgment_content_unit_unreviewed:<id>`.
 
 The five records keep their own execution timestamps as metadata while excluding

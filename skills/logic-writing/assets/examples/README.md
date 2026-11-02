@@ -1,8 +1,7 @@
 # Worked reader chains
 
-Copy the folder of your route. Bind its existing review once in the final
-directory with `run_chain.py --stamp-review` before first closure. The article
-bytes may be identical after a copy, but file location/reference identity changed.
+Copy the folder of your route. Its stamped review closes in the copy as it is:
+a stamp binds the text, the plan and the evidence, not the folder.
 After a real edit, reread the piece and update the review before explicitly stamping again.
 Run from the skill root; set `route` to investigation, academic, fiction or travel.
 These compact examples use honest author self-reviews, not independent quality evidence.
@@ -18,7 +17,6 @@ python scripts/build_artifact_map.py --input "$example/map-request.json" --outpu
 python scripts/validate_shared_writing.py --input "$example/shared-writing.json" --output "$example/shared-writing-result.json"
 python scripts/audit_reader_output.py --input "$example/audit-request.json" --output "$example/audit.json"
 python routes/$route/scripts/validate_${route}_artifact.py --input "$example/route-review.json" --output "$example/route-review-result.json"
-python scripts/run_chain.py "$example" --stamp-review
 python scripts/derive_closure.py --input "$example/closure-input.json" --output "$example/closure.json"
 ```
 

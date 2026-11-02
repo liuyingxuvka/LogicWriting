@@ -1,7 +1,7 @@
 """Reader plan: current reader-chain responsibilities."""
 from __future__ import annotations
 
-from _common import ValidationError, unique_ids, require_exact_fingerprint, fill_fingerprint, fill_missing, fingerprint, fingerprint_without, require_mapping, require_schema, utc_now
+from _common import ValidationError, unique_ids, require_exact_fingerprint, fill_fingerprint, fill_missing, fingerprint, fingerprint_without, own_fingerprint, require_mapping, require_schema, utc_now
 from artifact_map import validate_artifact_map
 from copy import deepcopy
 from reader_plan_core import _canonical_plan_order, open_material_choices, validate_composition_plan, validate_reader_intent, validate_route_composition
@@ -180,7 +180,7 @@ def build_reader_brief(
         if not isinstance(research_status, str) or not research_status.strip() or research_folder is None:
             raise ValidationError("research_status needs research_folder")
         brief["research_status"] = research_status
-    brief["brief_fingerprint"] = fingerprint(brief)
+    brief["brief_fingerprint"] = own_fingerprint(brief, "brief_fingerprint")
     validate_writer_input(writer_input, composition_plan=plan)
     require_schema("reader-brief.schema.json", brief, label="ReaderBrief")
     validate_evidence_boundaries(brief)
