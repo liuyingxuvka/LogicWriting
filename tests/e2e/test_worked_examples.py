@@ -285,6 +285,22 @@ def test_show_plan_shows_findings_on_the_failing_unit(tmp_path):
     assert 'findings: workflow_leak' in render_plan(view)
 
 
+def test_show_plan_reads_each_quoted_check_by_its_own_pass_rule():
+    """A present overclaim is a finding and a quoted world reference a passed check, not the other way round."""
+    from show_plan import _unit_findings
+    span = dict(artifact_unit_id='artifact:paragraph:0002', excerpt='Start at Old Market at nine')
+    review = dict(findings=[],
+                  limitation_checks=[dict(limitation_id='lim-a', status='present', evidence=[span]),
+                                     dict(limitation_id='lim-b', status='missing', evidence=[span])],
+                  overclaim_checks=[dict(overclaim_id='oc-a', status='absent', evidence=[span]),
+                                    dict(overclaim_id='oc-b', status='present', evidence=[span])],
+                  world_ref_checks=[dict(planned_unit_id='u', world_ref='market', evidence=[span])])
+    rows = _unit_findings({'artifact:paragraph:0002'}, dict(audit=None, review=review))
+    passed = {row['code']: row['passed'] for row in rows}
+    assert passed == {'limitation lim-a': True, 'limitation lim-b': False, 'overclaim oc-a': True,
+                      'overclaim oc-b': False, 'world_ref market': True}
+
+
 def test_show_plan_reads_back_while_the_plan_is_ahead(tmp_path,monkeypatch,capsys):
     import copy,hashlib
     from _common import cli_validate

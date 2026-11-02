@@ -245,13 +245,17 @@ def _unit_findings(ids, results):
             if evidence.get('artifact_unit_id') in ids:
                 rows.append(dict(code=row.get('dimension_id', ''), message=row.get('observation', ''),
                                  excerpt=_excerpt(evidence.get('excerpt', '')), source='review'))
-        for key, identity in (('limitation_checks', 'limitation_id'), ('overclaim_checks', 'overclaim_id'),
-                              ('world_ref_checks', 'world_ref')):
+        # Each kind has its own pass rule: a limitation passes when present, an overclaim when absent, and a
+        # world reference row exists only with quoted evidence, which is its pass.
+        for key, identity, passing in (('limitation_checks', 'limitation_id', 'present'),
+                                       ('overclaim_checks', 'overclaim_id', 'absent'),
+                                       ('world_ref_checks', 'world_ref', 'quoted')):
             for row in review.get(key, []):
+                status = row.get('status', 'quoted') if key != 'world_ref_checks' else 'quoted'
                 for evidence in row.get('evidence', []):
                     if evidence.get('artifact_unit_id') in ids:
-                        rows.append(dict(code=f"{key[:-7]} {row.get(identity, '')}", message=row.get('status', 'quoted'),
-                                         excerpt=_excerpt(evidence.get('excerpt', '')), source='review', passed=row.get('status') in {'present','absent','passed'}))
+                        rows.append(dict(code=f"{key[:-7]} {row.get(identity, '')}", message=status,
+                                         excerpt=_excerpt(evidence.get('excerpt', '')), source='review', passed=status == passing))
     return rows
 
 

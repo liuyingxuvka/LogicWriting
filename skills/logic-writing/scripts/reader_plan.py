@@ -20,9 +20,14 @@ def _content_words(text):
     return set(words) - _CONTENT_STOP_WORDS
 
 
+def is_researched(brief):
+    """Investigation and academic pieces, and any brief naming a research folder, hold claims to evidence anchors."""
+    return brief['final_owner'] in ('investigation', 'academic-writing') or 'research_folder' in brief
+
+
 def validate_evidence_boundaries(brief):
     """Validate researched required units and return their explicitly retained evidence gaps."""
-    if brief['final_owner'] not in ('investigation', 'academic-writing') and 'research_folder' not in brief:
+    if not is_researched(brief):
         return []
     boundaries = brief['content_boundaries']
     relations = {row['anchor_id']: row['relation'] for row in boundaries['evidence_anchors']}
@@ -87,7 +92,7 @@ def claim_anchor_gaps(brief):
     "supported but optional" anchor cited for "move production this year", or a reworded unsupported
     alternative); it is a warning and a nonblocking residual risk, not a refusal, since words are not meaning.
     """
-    if brief['final_owner'] not in ('investigation', 'academic-writing') and 'research_folder' not in brief:
+    if not is_researched(brief):
         return []
     boundaries = brief['content_boundaries']
     anchors = {row['anchor_id']: row for row in boundaries['evidence_anchors']}

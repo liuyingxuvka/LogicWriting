@@ -40,4 +40,5 @@ cover frozen intent, specialist ownership, reader/writer separation, actual-text
 review and derived closure. The [entrypoint scope](reader-chain-routing.md) describes
 route acceptance and bounded handoffs. These rules remain required for the steps
 they govern. `show_plan.py --input <chain file>` reads the plan without writing;
+`show_argument.py <folder> [--focus UNIT]` draws its argument as a Mermaid picture;
 `known_bad.py --input closure-input.json` checks finite edits of a copy.

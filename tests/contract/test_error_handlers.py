@@ -103,6 +103,7 @@ NON_RAISING_HANDLERS = {
     S + 'schema_validation.py:_valid_date_time:ValueError': PARSE,
     S + 'schema_validation.py:validate_schema:(TypeError, ValueError)':
         'an artifact that does not round-trip through canonical JSON is validated without the memo; only caching is skipped',
+    S + 'show_argument.py:main:(OSError, ValueError, TypeError, KeyError)': REPORTED,
     S + 'show_plan.py:_partial_shared:ValidationError': 'a quote that does not resolve leaves that binding unbound, shown as UNBOUND in the readback',
     S + 'show_plan.py:_results:(OSError, UnicodeError, ValueError)': "a broken result file reads back as 'unreadable', never as not run",
     S + 'show_plan.py:main:(OSError, ValueError, TypeError, KeyError)': REPORTED,

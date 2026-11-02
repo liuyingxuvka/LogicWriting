@@ -102,6 +102,78 @@ review stale. Here the added passage changes none of the existing judgments: che
 update any affected review, then explicitly bind the completed review with `--stamp-review`. The default run passes. Refresh and default runs
 never create or replace a review stamp.
 
+### Discuss the argument with a picture
+
+When you and the AI talk about how a piece argues, ask for the picture of its plan. `show_argument.py` draws it from
+the folder's `reader-brief.json`, the plan the chain checked, not from the AI's memory of the outline: a solid arrow
+means the later unit builds on the earlier one (`downstream_unit_ids`), a dotted arrow only that it comes next. What
+the tool computes as a problem is red: a unit nothing later builds on, a conclusion no chain of links reaches, a live
+alternative no unit answers, a researched claim with no supporting anchor or one that shares no word with its
+anchors, and the audit and review findings. With `--focus` it draws one unit with its neighbours and what the unit
+rests on, and it lists what it left out. The owner asks: *"Why does it tell teams to test now but not to plan on a
+default date?"*
+
+```console
+$ cp -r skills/logic-writing/assets/examples/investigation ../ft-argument
+$ python skills/logic-writing/scripts/run_chain.py ../ft-argument
+$ python skills/logic-writing/scripts/show_argument.py ../ft-argument --focus u-recommend
+```
+
+<!-- BEGIN COMPUTED PICTURE: show_argument.py ../ft-argument --focus u-recommend -->
+**Argument of plan-ft-1 around u-recommend (5. What to do)**
+
+Q: Should we plan for free-threaded Python now, and is it about to become the default?
+
+units: 5 (5 bound, 0 unbound); audit: passed (0 findings); review: passed; closure: passed; known-bad: 0 uncaught
+
+```mermaid
+flowchart TD
+  %% argument flow of plan-ft-1 around u-recommend, computed from reader-brief.json: planned units, downstream_unit_ids, relation_to_previous, content units, anchors, limitations, alternatives
+  n0["3. What it costs<br/>The 3.14 release notes put the single-threaded performanc..."]
+  n1["4. Will it become the default?<br/>Making free-threading the default or only build (phase II..."]
+  n2["5. What to do<br/>A team can test its service on the free-threaded build<br/>now, but should not plan on it becoming the default on<br/>any known date; recheck when a phase III decision is..."]
+  a0[/"anc-314-supported · support<br/>Supported, no longer experimental; start of phase II;<br/>still optional."/]
+  a1[/"anc-314-phase3-undecided · limit<br/>Phase III (default or sole build) is undecided."/]
+  l0>"lim-scope<br/>These sources cover CPython's official position, not<br/>whether the libraries a given service depends on are..."]
+  n0 -.->|"answers the obvious follow-up"| n1
+  n1 -->|"turns status into action"| n2
+  n0 --> n2
+  a0 -->|"support"| n2
+  a1 -.->|"limit"| n2
+  l0 -.->|"limits"| n2
+  n_omitted["not drawn: 2 units, 3 anchors, 1 limitation, 1 alternative"]
+  classDef omitted stroke-dasharray: 4 3,fill:none
+  class n_omitted omitted
+  classDef focus stroke-width:3px
+  class n2 focus
+```
+
+Drawn: 6 boxes and 6 arrows (readable size 12 boxes, 20 arrows), computed from reader-brief.json.
+Solid arrow: the later unit builds on the earlier one (downstream_unit_ids); dotted: it only comes next in reading order; the label is the later unit's relation_to_previous. Anchors point at the unit that cites them (dotted for limit or context, crossed for counter). Red: a problem below.
+
+**Problems**
+
+- none found
+
+**Not drawn**
+
+- units: u-answer (1. Short answer), u-history (2. From experimental to supported)
+- anchors: anc-314-perf (u-cost), anc-313-experimental (u-history), anc-779-phase3-different (u-next)
+- limitations: lim-perf (u-cost)
+- alternatives: alt-default-soon (answered in u-next)
+<!-- END COMPUTED PICTURE -->
+
+Reply: *The recommendation builds on two steps: what free-threading costs (a 5-10% single-thread penalty a team must
+measure) and whether it will become the default (phase III is undecided). Its own claim rests on two anchors: the
+3.14 notes say the build is supported but still optional (support) and that phase III is undecided (limit). It also
+carries one limitation: these sources say nothing about whether a service's libraries are ready. So "test now" comes
+from the support status and "do not plan on a date" from the undecided default. The picture leaves out the opening and
+history units, three anchors cited elsewhere, the cost unit's own limitation, and the "default soon" alternative,
+which the outlook unit answers.*
+
+Without `--focus` the tool draws every unit while that stays readable (12 boxes), the plan's top-level parts beyond
+that, and otherwise lists the parts to draw one at a time. `--json` gives the same picture as data.
+
 ## Quick start
 
 **1. Install the skill, from the release tag.**

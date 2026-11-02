@@ -93,6 +93,73 @@ added by the writer: cu-recommend: A team can test its service on the free-threa
 刷新让 ResearchGuard 生成当前报告，再检查已有正文。报告变化会让旧评审章失效。这里新增摘录没有改变已有判断；检查变更涉及的
 文本、计划或依据，更新必要评审，确认完成后显式 `--stamp-review` 绑定，再默认运行就能通过。刷新和默认运行都不会补盖或替换评审章。
 
+### 讨论论证时用图
+
+和 AI 讨论一篇文章怎么论证时，让它给出计划的图。`show_argument.py` 从文件夹里的 `reader-brief.json`（链条检查过的计划）
+算出这张图，而不是凭 AI 对提纲的记忆：实线箭头表示后一个单元建立在前一个之上（`downstream_unit_ids`），虚线箭头只表示
+它排在后面。工具算出的问题标成红色：后面没有单元用到的单元、没有一条链接能到达的结论、没有单元回应的现存替代说法、
+没有支持锚点的研究性论断或与锚点没有一个共同词的论断，以及审读和复核的发现。加 `--focus` 时，它只画一个单元、它的
+相邻单元和它所依据的内容，并列出省略了什么。主人问：*"为什么文章让团队现在就测试，却不要按某个日期计划默认版本？"*
+
+```console
+$ cp -r skills/logic-writing/assets/examples/investigation ../ft-argument
+$ python skills/logic-writing/scripts/run_chain.py ../ft-argument
+$ python skills/logic-writing/scripts/show_argument.py ../ft-argument --focus u-recommend
+```
+
+<!-- BEGIN COMPUTED PICTURE: show_argument.py ../ft-argument --focus u-recommend -->
+**Argument of plan-ft-1 around u-recommend (5. What to do)**
+
+Q: Should we plan for free-threaded Python now, and is it about to become the default?
+
+units: 5 (5 bound, 0 unbound); audit: passed (0 findings); review: passed; closure: passed; known-bad: 0 uncaught
+
+```mermaid
+flowchart TD
+  %% argument flow of plan-ft-1 around u-recommend, computed from reader-brief.json: planned units, downstream_unit_ids, relation_to_previous, content units, anchors, limitations, alternatives
+  n0["3. What it costs<br/>The 3.14 release notes put the single-threaded performanc..."]
+  n1["4. Will it become the default?<br/>Making free-threading the default or only build (phase II..."]
+  n2["5. What to do<br/>A team can test its service on the free-threaded build<br/>now, but should not plan on it becoming the default on<br/>any known date; recheck when a phase III decision is..."]
+  a0[/"anc-314-supported · support<br/>Supported, no longer experimental; start of phase II;<br/>still optional."/]
+  a1[/"anc-314-phase3-undecided · limit<br/>Phase III (default or sole build) is undecided."/]
+  l0>"lim-scope<br/>These sources cover CPython's official position, not<br/>whether the libraries a given service depends on are..."]
+  n0 -.->|"answers the obvious follow-up"| n1
+  n1 -->|"turns status into action"| n2
+  n0 --> n2
+  a0 -->|"support"| n2
+  a1 -.->|"limit"| n2
+  l0 -.->|"limits"| n2
+  n_omitted["not drawn: 2 units, 3 anchors, 1 limitation, 1 alternative"]
+  classDef omitted stroke-dasharray: 4 3,fill:none
+  class n_omitted omitted
+  classDef focus stroke-width:3px
+  class n2 focus
+```
+
+Drawn: 6 boxes and 6 arrows (readable size 12 boxes, 20 arrows), computed from reader-brief.json.
+Solid arrow: the later unit builds on the earlier one (downstream_unit_ids); dotted: it only comes next in reading order; the label is the later unit's relation_to_previous. Anchors point at the unit that cites them (dotted for limit or context, crossed for counter). Red: a problem below.
+
+**Problems**
+
+- none found
+
+**Not drawn**
+
+- units: u-answer (1. Short answer), u-history (2. From experimental to supported)
+- anchors: anc-314-perf (u-cost), anc-313-experimental (u-history), anc-779-phase3-different (u-next)
+- limitations: lim-perf (u-cost)
+- alternatives: alt-default-soon (answered in u-next)
+<!-- END COMPUTED PICTURE -->
+
+回复：*建议这一步建立在两步之上：自由线程的代价（单线程慢 5-10%，需要团队自己测量），以及它会不会成为默认版本
+（第三阶段尚未决定）。它自己的论断依据两个锚点：3.14 的说明写明这个版本受支持但仍是可选的（support），以及第三阶段
+尚未决定（limit）。它还带着一条局限：这些来源没有说明某个服务依赖的库是否已经就绪。所以"现在测试"来自受支持的状态，
+"不要按日期计划"来自尚未决定的默认版本。图里省略了开头和历史两个单元、在别处引用的三个锚点、代价单元自己的局限，
+以及由前景单元回应的"很快成为默认"这一替代说法。*
+
+不加 `--focus` 时，单元数在可读范围内（12 个框）就全部画出，超出时画计划的顶层部分，再超出就列出可以逐个画的部分。
+`--json` 以数据形式给出同一张图。
+
 ## 快速上手
 
 **1. 从发布的 tag 安装技能。**
