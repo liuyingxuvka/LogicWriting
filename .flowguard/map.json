@@ -792,11 +792,14 @@
         "tests/unit/test_freshness_closure.py",
         "tests/unit/test_known_bad.py",
         "tests/unit/test_closure_claim_model.py",
-        "tests/unit/test_world_mesh.py"
+        "tests/unit/test_world_mesh.py",
+        "tests/unit/test_world_report_model.py"
       ],
       "models": [
         ".flowguard/models/closure_claim_model.py",
-        ".flowguard/models/known_bad_generator_model.py"
+        ".flowguard/models/known_bad_generator_model.py",
+        ".flowguard/models/wording_license_model.py",
+        ".flowguard/models/world_report_model.py"
       ],
       "parent": "reader-artifact",
       "status": "confirmed",
@@ -1020,14 +1023,7 @@
       "model": ".flowguard/models/provider_preflight_model.py"
     }
   ],
-  "accepted_debts": [
-    {
-      "code": "large_model",
-      "component": "closure_claim_model",
-      "reason": "one decision table judged through one entry function: there is no composing function to split into steps, and halving the table makes two models replay the same function with no new information",
-      "expires": "v4.1.1"
-    }
-  ],
+  "accepted_debts": [],
   "import_roots": [
     "skills/logic-writing/scripts",
     "skills/logic-writing/routes/fiction/scripts",
