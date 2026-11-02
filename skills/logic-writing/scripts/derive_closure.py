@@ -220,10 +220,13 @@ def derive_closure(
         route_review=route_review,
         review_folder=review_folder,
     )
-    if "reviewed_text" in request:  # the text --stamp-review saved must be the text this judgment was stamped on
-        problems = snapshot_problems(request["reviewed_text"], judgment)
-        if problems:
-            raise ValidationError(problems[0])
+    if "reviewed_text" not in request:
+        raise ValidationError("reviewed_text_missing:closure-input.json (it keeps no copy of the text this review was stamped on; "
+                              "reread the whole piece, then stamp with --stamp-review --first-review)")
+    problems = snapshot_problems(request["reviewed_text"], judgment)  # the text --stamp-review saved for this judgment
+    if problems:
+        raise ValidationError(problems[0])
+    review_basis = {key: request["reviewed_text"][key] for key in ("basis", "changed_units")}
     provenance = validate_revision_provenance(
         request.get("revision_provenance"),
         target_artifact_fingerprint=amap["artifact_fingerprint"],
@@ -324,6 +327,10 @@ def derive_closure(
         # Foreign or stale provider evidence is a defect of this closure's inputs.
         status = "needs_repair"
     reader_basis = "a self-review by the writer" if self_review else "independent reader judgment"
+    if review_basis["basis"] == "first_review":
+        reader_basis += " stamped as a first review"
+    elif review_basis["changed_units"]:
+        reader_basis += " re-stamped after quoting each changed unit again"
     if status == "passed":
         safe_claim = (
             "The exact current artifact passed composition coverage, deterministic checks, "
@@ -362,6 +369,7 @@ def derive_closure(
         "deterministic_audit_fingerprint": audit["audit_fingerprint"],
         "route_audit_fingerprint": route_review["review_fingerprint"],
         "judgment_fingerprint": judgment["judgment_fingerprint"],
+        "review_basis": review_basis,
         "revision_provenance_fingerprint": provenance["provenance_fingerprint"],
         "status": status,
         "residual_risk": residual,

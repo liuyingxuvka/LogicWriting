@@ -79,6 +79,9 @@
   },
   "reviewed_text": {
     "artifact_fingerprint": "sha256:e59ab7960a4cf8ee915845c73e19e691c209fd57ada582b3e99f5c40742a20a5",
+    "basis": "first_review",
+    "changed_units": [],
+    "reviewed_text_fingerprint": "sha256:c2e472aea1d6010a2de97a39e378663f77c88cea9283886750425412575f6b1a",
     "text": "# Reading a map before choosing a route\n\nA pedestrian map compresses a city into a set of choices, but the shortest line on the page is not always the easiest journey. A street crossing can demand more attention than a longer stretch of pavement, and a familiar landmark can make a detour easier to remember. Lynch's account of paths, edges and landmarks offers a useful vocabulary for describing these differences [Lynch, 1960]. We ask whether a route description organized around decisions, rather than distances alone, can help a newcomer explain why a particular walk suits them. The proposed contribution is a small comparison framework: identify the decision, describe its visible cue, and state the cost of taking the alternative.\n\nThis introduction proposes a conceptual framework, not a demonstrated improvement in navigation. It reports no participant study, and its examples cannot establish an effect on travel time or error rates. A subsequent study could compare two descriptions of the same walk and ask readers to reconstruct the decisions they expect to face. That would distinguish remembering a sequence of turns from understanding the tradeoffs behind it, while keeping the claim close to what the resulting evidence could actually show.\n"
   },
   "revision_provenance": {

@@ -574,16 +574,19 @@ def complete_chain(
         "closure_id": f"closure:{owner}",
     })
     from run_chain import _stamp_judgment
-    chain['judgment'] = _stamp_judgment(closure_input(chain))
+    from review_snapshot import review_record
+    chain['judgment'] = _stamp_judgment(closure_input(chain, reviewed=False))
+    # The protocol chain is a first review of its text; the stamp keeps the copy it read.
+    chain['reviewed_text'] = review_record(None, chain['judgment'], chain['artifact_map'], first_review=True)
     return chain
 
 
-def closure_input(chain: dict) -> dict:
+def closure_input(chain: dict, *, reviewed: bool = True) -> dict:
     return {
         key: chain[key] for key in (
             "closure_id", "route_decision", "reader_brief", "route_composition",
             "artifact_map", "shared_writing", "deterministic_audit", "route_review",
-            "judgment", "revision_provenance", "provider_reports",
+            "judgment", "revision_provenance", "provider_reports", *(("reviewed_text",) if reviewed else ()),
         )
     }
 

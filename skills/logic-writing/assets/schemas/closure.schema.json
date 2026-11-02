@@ -18,6 +18,7 @@
     "deterministic_audit_fingerprint",
     "route_audit_fingerprint",
     "judgment_fingerprint",
+    "review_basis",
     "revision_provenance_fingerprint",
     "status",
     "residual_risk",
@@ -76,6 +77,28 @@
     },
     "judgment_fingerprint": {
       "$ref": "#/$defs/fp"
+    },
+    "review_basis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "basis",
+        "changed_units"
+      ],
+      "properties": {
+        "basis": {
+          "enum": [
+            "first_review",
+            "compared"
+          ]
+        },
+        "changed_units": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/id"
+          }
+        }
+      }
     },
     "revision_provenance_fingerprint": {
       "$ref": "#/$defs/fp"

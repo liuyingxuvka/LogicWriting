@@ -48,16 +48,34 @@ residual risk. This is a lexical signal, not entailment: one shared word clears
 it, and a warned claim may still be right; check that the anchor supports it.
 
 The stamp also saves the exact text it read as `reviewed_text` in
-`closure-input.json`. A later stamp on changed text compares the two word by word:
-every body unit whose words changed needs a reverse_outline row whose evidence
-excerpt quotes the unit at a changed passage (or spans the place where words were
-removed). Otherwise the stamp fails with `review_not_reread:<unit>`, names the
-changed place and the old wording, and writes nothing; removing the judgment's
-fingerprints does not skip this. Whitespace-only changes need no reread, and a
-plan or evidence change on unchanged text needs no new quotes. A review stamped
-before this copy existed cannot certify changed text (`review_text_unknown`).
-Closure refuses a saved text that is not the text the judgment was stamped on
-(`reviewed_text_invalid`, `reviewed_text_stale`).
+`closure-input.json`, sealed with its own `reviewed_text_fingerprint` and with the
+basis of that stamp. A later stamp on changed text compares the two word by word:
+every unit whose words changed (paragraphs, lists, tables, quotes, scenes,
+headings and the title; a change across two units belongs to both) needs review
+evidence for that unit (its reverse_outline row, or a defect or strength; a
+heading or the title may get its own row) whose excerpt quotes it at a changed
+passage, or spans the place where words were removed. Otherwise the stamp fails
+with `review_not_reread:<unit>`, names the changed place and the old wording, and
+writes nothing; removing the judgment's fingerprints does not skip this.
+Whitespace-only changes need no reread, and a plan or evidence change on
+unchanged text needs no new quotes and keeps the saved record.
+
+Without a saved copy nothing can be compared, so a plain `--stamp-review` is
+refused: `review_first_undeclared:<id>` for a review never stamped, and
+`review_text_unknown:<id>` for one stamped by LogicWriting 4.1 or earlier or whose
+copy was deleted. The reviewer then reads the whole piece and stamps with
+`--stamp-review --first-review`; `--first-review` is refused while a saved copy
+exists (`review_copy_exists`). Closure needs the saved copy of a stamped review
+(`reviewed_text_missing`), refuses one that was edited or is not the text the
+judgment was stamped on (`reviewed_text_invalid`, `reviewed_text_stale`), and
+reports `review_basis`: `first_review`, or `compared` with the units quoted
+again; a first review is also named in `safe_claim`.
+
+Limits. The tool checks that changed words are quoted again, not that they were
+understood. A first review is the reviewer's declaration, and the tool cannot
+tell a real one from a saved copy deleted on purpose; it only makes the
+declaration explicit and visible in closure. The seal stops a copy edited by hand,
+not one rebuilt by code that recomputes the tool's own fingerprints.
 
 Default runs and closure never fill or refresh a judgment stamp. An unstamped
 review fails with `judgment_unstamped:<id>`; changed content, plan or file

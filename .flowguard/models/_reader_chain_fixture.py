@@ -120,6 +120,34 @@ class _RealReaderChain:
             piece = folder / 'piece.md'
             text = piece.read_text();assert 'single-threaded' in text
             piece.write_text(text.replace('single-threaded', 'multi-threaded', 1))
+        if case == 'restamp_heading':
+            # A heading is read too: changing it and stamping again without quoting it is refused.
+            piece = folder / 'piece.md'
+            text = piece.read_text();assert '## What it costs' in text
+            piece.write_text(text.replace('## What it costs', '## Why it costs nothing', 1))
+            unread = path.read_bytes()
+            again = invoke('--stamp-review')
+            return 'review_not_reread' if again.returncode == 1 and 'review_not_reread:artifact:heading:' in again.stdout and path.read_bytes() == unread else 'heading_restamped_unread'
+        if case in ('record_removed', 'record_forged'):
+            # Edit one word, then remove the saved copy and the stamp, or rewrite the copy to the new text.
+            piece = folder / 'piece.md'
+            text = piece.read_text().replace('single-threaded', 'multi-threaded', 1)
+            piece.write_text(text)
+            edited = json.loads(path.read_text())
+            if case == 'record_removed':
+                edited.pop('reviewed_text')
+                edited['judgment'] = {key: value for key, value in edited['judgment'].items() if not key.endswith('_fingerprint')}
+            else:
+                import hashlib
+                forged = 'sha256:' + hashlib.sha256(text.encode('utf-8')).hexdigest()
+                edited['reviewed_text'].update(text=text, artifact_fingerprint=forged)
+                edited['judgment']['artifact_fingerprint'] = forged
+            path.write_text(json.dumps(edited))
+            unread = path.read_bytes()
+            again = invoke('--stamp-review')
+            if again.returncode != 1 or path.read_bytes() != unread or 'first failure: review: ' not in again.stdout:
+                return 'restamped_without_record'
+            return again.stdout.split('first failure: review: ', 1)[1].split(':', 1)[0]
         if case in ('restamp_unread', 'restamp_reread'):
             # Edit one reviewed word, then stamp again: only a review quoting the new wording may be stamped.
             piece = folder / 'piece.md'

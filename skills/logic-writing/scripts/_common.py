@@ -283,7 +283,7 @@ _REQUEST_CONTAINER_FIELDS = frozenset({
     "route_decision", "content_boundaries", "composition_plan", "route_composition",
     "artifact_map",
     "reader_brief", "contract", "shared_writing", "review", "route_review",
-    "deterministic_audit", "judgment", "revision_provenance", "provenance",
+    "deterministic_audit", "judgment", "reviewed_text", "revision_provenance", "provenance",
 })
 
 

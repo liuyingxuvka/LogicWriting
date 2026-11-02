@@ -18,7 +18,7 @@ from derive_closure import CLOSURE_INPUT_FILES, derive_closure
 from reader_fill import fill_check_fingerprints, fill_closure_fingerprints
 from provider_preflight import provider_command
 from show_plan import plan_view
-from review_snapshot import require_reread, snapshot
+from review_snapshot import review_record
 
 SKILL_ROOT=Path(__file__).resolve().parents[1]
 for route_directory in ('academic','fiction','investigation','travel'):
@@ -178,11 +178,12 @@ def _stamp_judgment(request, *, review_folder=None):
         route_review=prepared['route_review'], review_obligations=prepared.get('review_obligations'), review_folder=review_folder)
 
 
-def _stamp_review(folder, *, refresh_providers=False):
+def _stamp_review(folder, *, refresh_providers=False, first_review=False):
     """Finish native review before writing only its validated judgment binding and the text it read.
 
-    A stamp on text that changed since the saved copy needs the review to quote each changed body unit
-    again at a changed passage (review_snapshot.require_reread); otherwise nothing is written."""
+    A stamp on text that changed since the saved copy needs the review to quote each changed unit again
+    at a changed passage; without a saved copy only a declared first review may be stamped
+    (review_snapshot.review_record). Otherwise nothing is written."""
     folder = Path(folder).expanduser().resolve()
     result = run_chain(folder, until='review', refresh_providers=refresh_providers)
     if result['exit_code']:
@@ -194,15 +195,17 @@ def _stamp_review(folder, *, refresh_providers=False):
         request = load_request(path, defaults=CLOSURE_INPUT_FILES)
         earlier = request.get('judgment') if isinstance(request.get('judgment'), dict) else {}
         judgment = _stamp_judgment(request, review_folder=folder)
-        require_reread(original.get('reviewed_text'), earlier, request['artifact_map'],
-                       stamped=bool(earlier.get('artifact_fingerprint')))
+        record = review_record(original.get('reviewed_text'), earlier, request['artifact_map'], first_review=first_review)
+        renewed = record != original.get('reviewed_text')
         original['judgment'] = judgment
-        original['reviewed_text'] = snapshot(request['artifact_map'])
+        original['reviewed_text'] = record
         dump_json(original, path)
     except (OSError, ValueError, KeyError, TypeError) as exc:
         result.update(status='failed', exit_code=1, first_failure={'step': 'review', 'code': str(exc).split(':', 1)[0], 'message': str(exc)})
         return result
     result['stamped_review'] = judgment['judgment_id']
+    if renewed:  # unchanged text keeps the record of how that text was reviewed
+        result['review_basis'] = {key: record[key] for key in ('basis', 'changed_units')}
     return result
 
 
@@ -212,16 +215,23 @@ def main():
     parser.add_argument("--until", choices=STEPS, default="closure")
     parser.add_argument("--refresh-providers", action="store_true")
     parser.add_argument('--stamp-review', action='store_true')
+    parser.add_argument('--first-review', action='store_true',
+                        help='with --stamp-review: no earlier stamp of this text is saved; you read the whole piece')
     args = parser.parse_args()
-    result = (_stamp_review(args.folder, refresh_providers=args.refresh_providers) if args.stamp_review else
-              run_chain(args.folder, until=args.until, refresh_providers=args.refresh_providers))
+    if args.first_review and not args.stamp_review:
+        parser.error('--first-review belongs to --stamp-review')
+    result = (_stamp_review(args.folder, refresh_providers=args.refresh_providers, first_review=args.first_review)
+              if args.stamp_review else run_chain(args.folder, until=args.until, refresh_providers=args.refresh_providers))
     print(result["summary"])
     for row in result['added_by_writer']:
         print(f"added by the writer: {row['content_unit_id']}: {row['text']}")
     for warning in result['results'].get('brief', {}).get('warnings', []):
         print(f"warning: {warning}")
     if result.get('stamped_review'):
-        print(f"stamped: closure-input.json judgment {result['stamped_review']}")
+        basis = result.get('review_basis')
+        how = ('' if basis is None else ' as a first review (no earlier copy of the text to compare)'
+               if basis['basis'] == 'first_review' else f" after rereading the changed units: {', '.join(basis['changed_units'])}")
+        print(f"stamped: closure-input.json judgment {result['stamped_review']}{how}")
     if result["first_failure"]:
         row = result["first_failure"]
         message = row["message"]

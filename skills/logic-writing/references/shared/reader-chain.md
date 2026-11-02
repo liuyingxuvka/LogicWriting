@@ -20,7 +20,7 @@ this skill before refreshing; tree reports require WorldGuard >= 0.8.0. Closure 
 
 Once a review is complete, `--stamp-review` explicitly binds it to the current
 text, plan and evidence (not to the folder). Check affected text, plans or evidence and update any necessary review
-before re-stamping: a stamp on edited text needs each changed unit quoted again at its changed words; default runs never renew the stamp. A complete repair
+before re-stamping: a stamp on edited text needs each changed unit (headings and the title too) quoted again at its changed words; with no saved copy of an earlier stamp only `--stamp-review --first-review` stamps, and closure reports a first review; default runs never renew the stamp. A complete repair
 judgment may be stamped while closure remains needs_repair.
 
 ## Expert single steps

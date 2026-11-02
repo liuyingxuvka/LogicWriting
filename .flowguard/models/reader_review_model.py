@@ -37,12 +37,17 @@ TESTED_BY = {'review_belongs_to_text': [
     'tests/unit/test_review_reread.py:test_restamping_an_edit_without_rereading_it_is_refused',
     'tests/unit/test_review_reread.py:test_quoting_the_new_wording_lets_the_review_be_stamped_again',
     'tests/unit/test_review_reread.py:test_removing_the_stamp_does_not_skip_the_reread',
+    'tests/unit/test_review_reread.py:test_a_changed_heading_or_title_must_be_quoted_again',
+    'tests/unit/test_review_reread.py:test_removing_the_saved_copy_and_the_stamp_needs_a_declared_first_review',
+    'tests/unit/test_review_reread.py:test_a_saved_copy_rewritten_to_the_new_text_is_refused',
 ]}
 CASES = {'unstamped': 'judgment_unstamped', 'stamped': 'passed', 'edited': 'judgment_stale',
          'unreviewed': 'judgment_content_unit_unreviewed:cu-perf',
          'failed_stamp': 'failed+unchanged', 'invalid_review': 'failed+unchanged',
          'repeat_stamp': 'stamped+unchanged', 'time_fields': 'stable', 'moved': 'passed',
-         'valid_repair': 'stamped+needs_repair', 'restamp_unread': 'review_not_reread', 'restamp_reread': 'passed'}
+         'valid_repair': 'stamped+needs_repair', 'restamp_unread': 'review_not_reread', 'restamp_reread': 'passed',
+         'restamp_heading': 'review_not_reread', 'record_removed': 'review_first_undeclared',
+         'record_forged': 'reviewed_text_invalid'}
 
 
 @dataclass(frozen=True)
@@ -82,6 +87,18 @@ class RestampCertifiesUnreadText(Review):
         return 'passed' if case == 'restamp_unread' else super().result_for(case)
 
 
+class RestampSkipsHeadings(Review):
+    """Round-1 review gap: only body units were compared, so a changed heading or title was re-certified unread."""
+    def result_for(self, case):
+        return 'passed' if case == 'restamp_heading' else super().result_for(case)
+
+
+class RemovedRecordStartsOver(Review):
+    """Round-1 review gap: with the saved copy and the stamp removed, a plain stamp certified the edit unread."""
+    def result_for(self, case):
+        return 'passed' if case in ('record_removed', 'record_forged') else super().result_for(case)
+
+
 class MovedFolderStalesReview(Review):
     """The 4.1.0 defect: absolute paths in fingerprints made a moved copy look edited."""
     def result_for(self, case):
@@ -95,7 +112,7 @@ def review_belongs_to_text(state, trace):
 
 
 INVARIANTS = (Invariant('review_belongs_to_text',
-    'a review closes only the text and plan it was stamped on, covers every required unit, and is re-stamped on edited text only after quoting the changed passages', review_belongs_to_text),)
+    'a review closes only the text and plan it was stamped on, covers every required unit, and is re-stamped on edited text only after quoting the changed passages, headings and title included; without its saved copy only a declared first review is stamped', review_belongs_to_text),)
 
 
 def explorer(step):
@@ -111,7 +128,9 @@ def build_explorer():
 def broken_variants():
     return {'edited_text_keeps_the_old_review': explorer(EditedTextKeepsOldReview()),
             'moved_folder_stales_the_review': explorer(MovedFolderStalesReview()),
-            'restamp_certifies_unread_text': explorer(RestampCertifiesUnreadText())}
+            'restamp_certifies_unread_text': explorer(RestampCertifiesUnreadText()),
+            'restamp_skips_headings': explorer(RestampSkipsHeadings()),
+            'removed_record_starts_over': explorer(RemovedRecordStartsOver())}
 
 
 def conformance():
