@@ -76,7 +76,8 @@
         "tests/e2e/test_reader_v2_benchmark.py",
         "tests/contract/test_route_text.py",
         "tests/unit/test_reader_artifact_model.py",
-        "tests/unit/test_review_stamp.py"
+        "tests/unit/test_review_stamp.py",
+        "tests/unit/test_review_reread.py"
       ],
       "models": [
         ".flowguard/models/reader_artifact_model.py",
