@@ -33,7 +33,9 @@ and different producer/judge ids. A self-review is allowed but stays explicit:
 quality passes. Id labels alone do not authenticate who performed a read.
 
 After completing the review, explicitly bind it with
-`python skills/logic-writing/scripts/run_chain.py <folder> --stamp-review`.
+`python skills/logic-writing/scripts/run_chain.py <folder> --stamp-review`
+(the first review of a piece, with no saved copy of an earlier stamp, adds
+`--first-review`; see below).
 It runs the existing reader steps through route review, validates the judgment's
 dimensions, evidence and required-unit coverage, then writes only the judgment
 in `closure-input.json`. Failed input validation leaves that file unchanged.

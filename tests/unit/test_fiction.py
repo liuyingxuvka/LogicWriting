@@ -242,3 +242,11 @@ def test_ledger_arcs_do_not_require_a_status(monkeypatch):
     reporter = Reporter()
     validate_arcs_threads({"arcs": [dict(arc, status="blocked")], "threads": []}, reporter)
     assert "blocking_arc_status" in {row["code"] for row in reporter.issues}
+
+
+def test_the_longform_reader_chain_regression_stamps_its_first_review(monkeypatch):
+    """CI's fiction regression stamps the longform fixture's never-stamped review in a fresh copy: a first review."""
+    monkeypatch.syspath_prepend(str(ROUTE / "scripts"))
+    from run_longform_regression import reader_chain_result
+    result = reader_chain_result(ROOT)
+    assert result["passed"], json.dumps(result)[:2000]

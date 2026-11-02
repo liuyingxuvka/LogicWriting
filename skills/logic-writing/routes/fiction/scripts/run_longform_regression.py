@@ -63,7 +63,8 @@ def reader_chain_result(repo_root: Path) -> dict[str, Any]:
         target = Path(tmp)/"project"
         shutil.copytree(Path(fixture(repo_root,"longform_novel_project")), target)
         common = repo_root/"skills/logic-writing/scripts"
-        prepared = subprocess.run([sys.executable, str(common/"run_chain.py"), str(target), "--stamp-review"],
+        # The fixture's review was never stamped and this copy is fresh: each run stamps it as a first review.
+        prepared = subprocess.run([sys.executable, str(common/"run_chain.py"), str(target), "--stamp-review", "--first-review"],
                                   cwd=target, text=True, capture_output=True)
         if prepared.returncode:
             return dict(id="positive.standard_reader_chain", passed=False,
