@@ -1,7 +1,7 @@
 # Logic Writing
 
 <p align="center">
-  <img src="https://img.shields.io/badge/source-4.1.0-6f42c1" alt="Source version 4.1.0" />
+  <img src="https://img.shields.io/badge/source-4.2.0-6f42c1" alt="Source version 4.2.0" />
   <img src="https://img.shields.io/badge/skill-logic--writing-334155" alt="Skill logic-writing" />
   <img src="https://img.shields.io/badge/routes-4-0a7f5a" alt="Four final-owner routes" />
   <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT license" />
@@ -178,11 +178,11 @@ that, and otherwise lists the parts to draw one at a time. `--json` gives the sa
 
 **1. Install the skill, from the release tag.**
 
-The badge names v4.1.0. The clone command requires its published tag. An unpublished candidate can use the same
+The badge names v4.2.0. The clone command requires its published tag. An unpublished candidate can use the same
 installer from its checkout; a successful installation byte check confirms that copy, not tag publication.
 
 ```bash
-git clone --depth 1 --branch v4.1.0 https://github.com/liuyingxuvka/LogicWriting.git
+git clone --depth 1 --branch v4.2.0 https://github.com/liuyingxuvka/LogicWriting.git
 cd LogicWriting
 SKILLS_DIR=~/.claude/skills  # or ~/.codex/skills, or "$CODEX_HOME/skills"
 python scripts/install_skill.py --target "$SKILLS_DIR"
