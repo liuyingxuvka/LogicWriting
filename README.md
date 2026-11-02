@@ -173,7 +173,9 @@ flowchart LR
   added, so the user sees them.
 - **The text meets the plan.** Exact quotes bind the text to the planned units; a deterministic audit checks the bound
   text; the route's review quotes the spans it judged. A review is stamped on the text it read, so an edit afterwards
-  makes it stale, and closure says to reread and explicitly stamp again. Default runs never repair the stamp.
+  makes it stale, and closure says to reread and explicitly stamp again. The stamp keeps a copy of the text it read; a
+  new stamp on edited text is refused until the review quotes each changed passage again. Default runs never repair
+  the stamp.
 - **Known-bad copies.** `known_bad.py` makes small bad copies of the piece (a citation removed, a limit dropped, an
   unsupported alternative inserted, a unit's anchors stripped) and runs the checks on each; one that is not caught stays
   visible as a `toothless` risk.

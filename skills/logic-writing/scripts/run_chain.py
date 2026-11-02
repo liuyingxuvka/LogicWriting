@@ -18,6 +18,7 @@ from derive_closure import CLOSURE_INPUT_FILES, derive_closure
 from reader_fill import fill_check_fingerprints, fill_closure_fingerprints
 from provider_preflight import provider_command
 from show_plan import plan_view
+from review_snapshot import require_reread, snapshot
 
 SKILL_ROOT=Path(__file__).resolve().parents[1]
 for route_directory in ('academic','fiction','investigation','travel'):
@@ -177,7 +178,10 @@ def _stamp_judgment(request, *, review_folder=None):
 
 
 def _stamp_review(folder, *, refresh_providers=False):
-    """Finish native review before writing only its validated judgment binding."""
+    """Finish native review before writing only its validated judgment binding and the text it read.
+
+    A stamp on text that changed since the saved copy needs the review to quote each changed body unit
+    again at a changed passage (review_snapshot.require_reread); otherwise nothing is written."""
     folder = Path(folder).expanduser().resolve()
     result = run_chain(folder, until='review', refresh_providers=refresh_providers)
     if result['exit_code']:
@@ -187,8 +191,12 @@ def _stamp_review(folder, *, refresh_providers=False):
         path = folder / 'closure-input.json'
         original = load_json(path)
         request = load_request(path, defaults=CLOSURE_INPUT_FILES)
+        earlier = request.get('judgment') if isinstance(request.get('judgment'), dict) else {}
         judgment = _stamp_judgment(request, review_folder=folder)
+        require_reread(original.get('reviewed_text'), earlier, request['artifact_map'],
+                       stamped=bool(earlier.get('artifact_fingerprint')))
         original['judgment'] = judgment
+        original['reviewed_text'] = snapshot(request['artifact_map'])
         dump_json(original, path)
     except (OSError, ValueError, KeyError, TypeError) as exc:
         result.update(status='failed', exit_code=1, first_failure={'step': 'review', 'code': str(exc).split(':', 1)[0], 'message': str(exc)})

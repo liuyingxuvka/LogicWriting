@@ -95,7 +95,9 @@ def test_unsupported_reason_is_a_residual_risk(tmp_path):
     _add_unit(folder, reason=reason)
     path = folder / 'closure-input.json'
     saved = json.loads(path.read_text())
-    next(row for row in saved['judgment']['reverse_outline'] if 'cu-recommend' in row['content_unit_ids'])['content_unit_ids'].append('cu-migrate')
+    row = next(row for row in saved['judgment']['reverse_outline'] if 'cu-recommend' in row['content_unit_ids'])
+    row['content_unit_ids'].append('cu-migrate')
+    row['evidence']['excerpt'] = MIGRATE  # the reviewer reread the paragraph and quotes the added sentence
     path.write_text(json.dumps(saved))
     assert _stamp_review(folder)['exit_code'] == 0
     result = run_chain(folder)

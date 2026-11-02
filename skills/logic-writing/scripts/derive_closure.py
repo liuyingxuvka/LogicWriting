@@ -30,6 +30,7 @@ from reader_fill import fill_closure_fingerprints
 from reader_plan import validate_evidence_boundaries, validate_request_sources, validate_revision_provenance, writer_added_units
 from reader_plan_core import validate_route_composition
 from reader_binding import shared_writing_from_current
+from review_snapshot import snapshot_problems
 
 
 REQUIRED_DIMENSIONS = {
@@ -219,6 +220,10 @@ def derive_closure(
         route_review=route_review,
         review_folder=review_folder,
     )
+    if "reviewed_text" in request:  # the text --stamp-review saved must be the text this judgment was stamped on
+        problems = snapshot_problems(request["reviewed_text"], judgment)
+        if problems:
+            raise ValidationError(problems[0])
     provenance = validate_revision_provenance(
         request.get("revision_provenance"),
         target_artifact_fingerprint=amap["artifact_fingerprint"],

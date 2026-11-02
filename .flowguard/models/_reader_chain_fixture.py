@@ -120,6 +120,21 @@ class _RealReaderChain:
             piece = folder / 'piece.md'
             text = piece.read_text();assert 'single-threaded' in text
             piece.write_text(text.replace('single-threaded', 'multi-threaded', 1))
+        if case in ('restamp_unread', 'restamp_reread'):
+            # Edit one reviewed word, then stamp again: only a review quoting the new wording may be stamped.
+            piece = folder / 'piece.md'
+            text = piece.read_text();assert 'single-threaded' in text
+            piece.write_text(text.replace('single-threaded', 'multi-threaded', 1))
+            if case == 'restamp_reread':
+                edited = json.loads(path.read_text())
+                row = next(row for row in edited['judgment']['reverse_outline'] if row['evidence']['excerpt'] == 'roughly 5-10%')
+                row['evidence']['excerpt'] = 'the slowdown for multi-threaded code'
+                path.write_text(json.dumps(edited))
+            unread = path.read_bytes()
+            again = invoke('--stamp-review')
+            if again.returncode:
+                return 'review_not_reread' if 'review_not_reread:' in again.stdout and path.read_bytes() == unread else 'stamp_unavailable'
+            stamped = path.read_bytes()
         result = run_chain(folder)
         if path.read_bytes() != stamped:return 'default_replaced_the_stamp'
         if case == 'valid_repair':
@@ -548,7 +563,9 @@ class _RealReaderChain:
             from run_chain import _stamp_review
             judgment_path = folder / 'closure-input.json'
             saved = json.loads(judgment_path.read_text())
-            next(row for row in saved['judgment']['reverse_outline'] if 'cu-recommend' in row['content_unit_ids'])['content_unit_ids'].append('cu-migrate')
+            row = next(row for row in saved['judgment']['reverse_outline'] if 'cu-recommend' in row['content_unit_ids'])
+            row['content_unit_ids'].append('cu-migrate')
+            row['evidence']['excerpt'] = meaning  # the reviewer reread the paragraph and quotes the added sentence
             judgment_path.write_text(json.dumps(saved))
             assert _stamp_review(folder)['exit_code'] == 0
         result = run_chain(folder, until='closure' if case == 'reason' else 'brief')

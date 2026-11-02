@@ -2,7 +2,9 @@
 
 Copy the folder of your route. Its stamped review closes in the copy as it is:
 a stamp binds the text, the plan and the evidence, not the folder.
-After a real edit, reread the piece and update the review before explicitly stamping again.
+After a real edit, reread the piece and update the review before explicitly stamping again: the stamp
+compares the text with the copy it saved and refuses (`review_not_reread`) until each changed unit's
+reverse_outline excerpt quotes its new wording.
 Run from the skill root; set `route` to investigation, academic, fiction or travel.
 These compact examples use honest author self-reviews, not independent quality evidence.
 The commands below display the supplied piece at the writing step:

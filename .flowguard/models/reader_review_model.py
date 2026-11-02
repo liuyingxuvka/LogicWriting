@@ -34,12 +34,15 @@ TESTED_BY = {'review_belongs_to_text': [
     'tests/unit/test_review_stamp.py:test_stamp_failure_keeps_the_review_bytes',
     'tests/unit/test_review_stamp.py:test_moving_a_stamped_folder_keeps_its_review',
     'tests/unit/test_review_stamp.py:test_complete_repair_review_can_be_stamped',
+    'tests/unit/test_review_reread.py:test_restamping_an_edit_without_rereading_it_is_refused',
+    'tests/unit/test_review_reread.py:test_quoting_the_new_wording_lets_the_review_be_stamped_again',
+    'tests/unit/test_review_reread.py:test_removing_the_stamp_does_not_skip_the_reread',
 ]}
 CASES = {'unstamped': 'judgment_unstamped', 'stamped': 'passed', 'edited': 'judgment_stale',
          'unreviewed': 'judgment_content_unit_unreviewed:cu-perf',
          'failed_stamp': 'failed+unchanged', 'invalid_review': 'failed+unchanged',
          'repeat_stamp': 'stamped+unchanged', 'time_fields': 'stable', 'moved': 'passed',
-         'valid_repair': 'stamped+needs_repair'}
+         'valid_repair': 'stamped+needs_repair', 'restamp_unread': 'review_not_reread', 'restamp_reread': 'passed'}
 
 
 @dataclass(frozen=True)
@@ -73,6 +76,12 @@ class EditedTextKeepsOldReview(Review):
         return 'passed' if case == 'edited' else super().result_for(case)
 
 
+class RestampCertifiesUnreadText(Review):
+    """The 4.1.0 defect: --stamp-review re-certified edited text without any reread."""
+    def result_for(self, case):
+        return 'passed' if case == 'restamp_unread' else super().result_for(case)
+
+
 class MovedFolderStalesReview(Review):
     """The 4.1.0 defect: absolute paths in fingerprints made a moved copy look edited."""
     def result_for(self, case):
@@ -86,7 +95,7 @@ def review_belongs_to_text(state, trace):
 
 
 INVARIANTS = (Invariant('review_belongs_to_text',
-    'a review closes only the text and plan it was stamped on, and covers every required unit', review_belongs_to_text),)
+    'a review closes only the text and plan it was stamped on, covers every required unit, and is re-stamped on edited text only after quoting the changed passages', review_belongs_to_text),)
 
 
 def explorer(step):
@@ -101,7 +110,8 @@ def build_explorer():
 
 def broken_variants():
     return {'edited_text_keeps_the_old_review': explorer(EditedTextKeepsOldReview()),
-            'moved_folder_stales_the_review': explorer(MovedFolderStalesReview())}
+            'moved_folder_stales_the_review': explorer(MovedFolderStalesReview()),
+            'restamp_certifies_unread_text': explorer(RestampCertifiesUnreadText())}
 
 
 def conformance():

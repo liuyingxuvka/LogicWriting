@@ -12,6 +12,7 @@ line follows semantic versioning.
 - The stored round-11 action list is retired as not the owner's words, so `flowguard status` no longer shows it as an open owner request.
 - A stamped review no longer depends on where its folder sits: fingerprints bind the text, the plan and the evidence, not file paths, so the four shipped examples (and any copied or moved folder) close without a new `--stamp-review`. An edit to the text or plan still makes the review stale.
 - `reader-brief.json` names its research folder, research report and world or trip files relative to its own folder instead of storing machine paths; they are resolved beside the file when it is read.
+- `--stamp-review` now saves the exact text it stamped (`reviewed_text` in `closure-input.json`). Stamping again after an edit compares the two word by word and is refused with `review_not_reread:<unit>` until the review quotes each changed unit at its changed words; re-certifying edited text in one step without rereading it no longer works, and removing the old stamp does not skip the check. Closure refuses a saved text that is not the one the review was stamped on.
 
 ## v4.1.0 - 2026-10-31 - Claims held to their evidence, the request and a stamped review
 

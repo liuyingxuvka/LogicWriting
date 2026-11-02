@@ -40,6 +40,18 @@ in `closure-input.json`. Failed input validation leaves that file unchanged.
 A valid completed `repair` judgment may be stamped; its defects remain and normal
 closure stays `needs_repair`.
 
+The stamp also saves the exact text it read as `reviewed_text` in
+`closure-input.json`. A later stamp on changed text compares the two word by word:
+every body unit whose words changed needs a reverse_outline row whose evidence
+excerpt quotes the unit at a changed passage (or spans the place where words were
+removed). Otherwise the stamp fails with `review_not_reread:<unit>`, names the
+changed place and the old wording, and writes nothing; removing the judgment's
+fingerprints does not skip this. Whitespace-only changes need no reread, and a
+plan or evidence change on unchanged text needs no new quotes. A review stamped
+before this copy existed cannot certify changed text (`review_text_unknown`).
+Closure refuses a saved text that is not the text the judgment was stamped on
+(`reviewed_text_invalid`, `reviewed_text_stale`).
+
 Default runs and closure never fill or refresh a judgment stamp. An unstamped
 review fails with `judgment_unstamped:<id>`; changed content, plan or file
 references fail with `judgment_stale:<field>`. Both name the explicit command:
