@@ -165,8 +165,13 @@ def _support_problems(plan):
         problems.append(_problem(row['defect_id'], plan.first_unit_with(content_unit),
                                  f"no anchor supports this claim: {row['reason']}"))
     for row in claim_anchor_gaps(plan.brief):
-        content_unit = row['defect_id'].split(':', 1)[1]
-        problems.append(_problem(row['defect_id'], plan.first_unit_with(content_unit), row['reason']))
+        kind, target = row['defect_id'].split(':', 1)
+        if kind == 'anchor_summary_not_report':  # shown on the first planned unit that cites the anchor
+            citing = [identity for identity, unit in plan.content.items() if target in unit['evidence_anchor_ids']]
+            unit = next((plan.first_unit_with(identity) for identity in citing if plan.first_unit_with(identity)), None)
+        else:
+            unit = plan.first_unit_with(target)
+        problems.append(_problem(row['defect_id'], unit, row['reason']))
     return problems
 
 

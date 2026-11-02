@@ -8,7 +8,7 @@ from reader_plan_core import _canonical_plan_order, open_material_choices, valid
 from reader_rules import FINAL_OWNERS, ROUTE_PROFILE_FIELD, ROUTE_SCHEMA
 from typing import Any, Iterable, Mapping
 from writer_projection import build_writer_input, validate_writer_input
-from researchguard_status import validate_anchor_authority
+from researchguard_status import research_anchor_records, validate_anchor_authority
 
 
 _CONTENT_STOP_WORDS = frozenset('the a an in of to is and or it be will so'.split())
@@ -85,31 +85,47 @@ def _claim_words(text):
 
 
 def claim_anchor_gaps(brief):
-    """Required claims that share no content word with what their own anchors say.
+    """Required claims that share no content word with what one of their own anchors says.
 
-    Each researched required unit is compared with the observed_summary and boundary of every anchor it cites
-    that is not only counter. A claim with no word in common is not visibly about what its anchors say (a
-    "supported but optional" anchor cited for "move production this year", or a reworded unsupported
-    alternative); it is a warning and a nonblocking residual risk, not a refusal, since words are not meaning.
+    Each researched required unit is compared with every anchor it cites that is not only counter, one anchor
+    at a time, so an extra anchor cannot lend its words to another. What an anchor says is the saved
+    ResearchGuard report's summary and boundary when the report holds the anchor (the tool's record, not the
+    brief's copy); only an anchor outside the research is read from the brief. A claim sharing no word with an
+    anchor is not visibly about what that anchor says (a "supported but optional" anchor cited for "move
+    production this year", or a reworded unsupported alternative). A brief whose copy of a report anchor's
+    summary differs from the report is reported too. Both are warnings and nonblocking residual risks, not
+    refusals: this is a lexical signal, and one shared word clears an anchor.
     """
     if not is_researched(brief):
         return []
     boundaries = brief['content_boundaries']
     anchors = {row['anchor_id']: row for row in boundaries['evidence_anchors']}
+    report = research_anchor_records(brief)
     gaps = []
+    for anchor_id, row in anchors.items():
+        record = report.get(anchor_id)
+        if record is not None and row['observed_summary'] != record['summary']:
+            gaps.append(dict(defect_id='anchor_summary_not_report:' + anchor_id,
+                             reason=f"the brief's observed_summary differs from what the saved research report says "
+                                    f"({record['summary']!r}); the claim check reads the report"))
     for unit in boundaries['content_units']:
         if not unit['required']:
             continue
+        claim = _claim_words(unit['safe_meaning'])
         cited = [anchors[identity] for identity in unit['evidence_anchor_ids']
                  if identity in anchors and anchors[identity]['relation'] != 'counter']
-        claim = _claim_words(unit['safe_meaning'])
-        if not cited or not claim:
+        if not claim:
             continue
-        said = set().union(*(_claim_words(f"{row.get('observed_summary', '')} {row.get('boundary', '')}") for row in cited))
-        if not claim & said:
-            names = ', '.join(row['anchor_id'] for row in cited)
+        silent = []
+        for row in cited:
+            record = report.get(row['anchor_id'])
+            said = (f"{record['summary']} {record['boundary']}" if record is not None
+                    else f"{row['observed_summary']} {row['boundary']}")
+            if not claim & _claim_words(said):
+                silent.append(row['anchor_id'] + (' in the saved research report' if record is not None else " in the brief (outside the research)"))
+        if silent:
             gaps.append(dict(defect_id='claim_outruns_anchor:' + unit['content_unit_id'],
-                             reason=f"the claim shares no word with what {names} says (summary and boundary); "
+                             reason=f"the claim shares no word with what {', '.join(silent)} says (summary and boundary); "
                                     "check that the anchor supports this claim, cite one that does, or narrow the claim"))
     return gaps
 

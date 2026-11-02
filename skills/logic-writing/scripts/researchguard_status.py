@@ -159,6 +159,36 @@ def research_directions(report_path: Any, research_folder: Any, *, document=None
             for row in document.get("evidence", []) if isinstance(row, Mapping) and isinstance(row.get("anchor"), str)}
 
 
+def research_anchor_records(request: Mapping[str, Any], *, document=None) -> dict[str, dict[str, str]]:
+    """What the saved ResearchGuard report itself says for each of its anchors: {anchor_id: summary, boundary}.
+
+    Empty without a research folder. A report row without a text summary or boundary is an unreadable report.
+    """
+    if 'research_folder' not in request:
+        return {}
+    if document is None:
+        import json
+        status = request.get('research_status')
+        if not status:
+            raise ValidationError('research_folder needs research_status: run researchguard status <folder> --json --output research-status.json')
+        try:
+            document = json.loads(Path(status).read_text(encoding='utf-8'))
+        except (OSError, UnicodeError, ValueError, TypeError) as exc:
+            raise ValidationError(f'cannot read research_status {status}: {exc}') from exc
+    evidence = document.get('evidence') if isinstance(document, Mapping) else None
+    if not isinstance(evidence, list):
+        raise ValidationError('ResearchGuard report evidence must be a list')
+    records = {}
+    for row in evidence:
+        row = require_mapping(row, 'ResearchGuard report evidence')
+        if not isinstance(row.get('anchor'), str):
+            raise ValidationError('ResearchGuard report anchor needs anchor')
+        if not isinstance(row.get('summary'), str) or not isinstance(row.get('boundary'), str):
+            raise ValidationError(f"ResearchGuard report anchor {row['anchor']} needs a text summary and boundary")
+        records[row['anchor']] = {'summary': row['summary'], 'boundary': row['boundary']}
+    return records
+
+
 def validate_anchor_authority(request: Mapping[str, Any], *, document=None) -> list[dict[str, str]]:
     """Check report membership and retain explicitly declared outside-research gaps."""
     if 'research_folder' not in request:

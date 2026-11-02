@@ -40,12 +40,18 @@ in `closure-input.json`. Failed input validation leaves that file unchanged.
 A valid completed `repair` judgment may be stamped; its defects remain and normal
 closure stays `needs_repair`.
 
-A researched required unit is also compared with what its own anchors say: when
-its claim shares no content word with the observed_summary or boundary of any
-anchor it cites (counter anchors aside), the brief step prints
-`warning: claim_outruns_anchor:<unit>` and closure keeps it as a nonblocking
-residual risk. This is a lexical signal, not entailment: one shared word clears
-it, and a warned claim may still be right; check that the anchor supports it.
+A researched required unit is also compared with what each of its own anchors
+says, one anchor at a time (counter anchors aside), so a second anchor cannot
+lend its words to the first. What an anchor says is the summary and boundary the
+saved ResearchGuard report holds for it; only an anchor outside the research is
+read from the brief. When the claim shares no content word with one of its
+anchors, the brief step prints `warning: claim_outruns_anchor:<unit>` naming that
+anchor, and closure keeps it as a nonblocking residual risk. A brief whose copy of
+a report anchor's observed_summary differs from the report prints
+`warning: anchor_summary_not_report:<anchor>` and is kept the same way. This is a
+lexical signal, not entailment: one shared word with each anchor clears it, so a
+claim reworded to reuse one anchor word is not warned, and a warned claim may
+still be right; check that the anchor supports it.
 
 The stamp also saves the exact text it read as `reviewed_text` in
 `closure-input.json`, sealed with its own `reviewed_text_fingerprint` and with the
