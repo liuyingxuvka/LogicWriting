@@ -27,7 +27,7 @@ from known_bad import check_known_bad
 from artifact_map import validate_artifact_map
 from reader_checks import compare_reader_audit, build_reader_audit_from_current, reader_judgment_from_current, route_review_from_current
 from reader_fill import fill_closure_fingerprints
-from reader_plan import validate_evidence_boundaries, validate_request_sources, validate_revision_provenance, writer_added_units
+from reader_plan import claim_anchor_gaps, validate_evidence_boundaries, validate_request_sources, validate_revision_provenance, writer_added_units
 from reader_plan_core import validate_route_composition
 from reader_binding import shared_writing_from_current
 from review_snapshot import snapshot_problems
@@ -319,6 +319,7 @@ def derive_closure(
                 raise ValidationError(f"wording_exceeds_license:{unit['content_unit_id']}:{root_id} (the saved research report licenses {root_id} only as {wording}; cite a limit anchor or a limitation in this unit)")
     residual.extend(provider_risks)
     residual.extend(dict(row, owner=owner) for row in authority_risks)
+    residual.extend(dict(row, owner=owner) for row in claim_anchor_gaps(brief))
     if any(row["reason"].startswith(IDENTITY_PROBLEMS) for row in checks):
         # Foreign or stale provider evidence is a defect of this closure's inputs.
         status = "needs_repair"

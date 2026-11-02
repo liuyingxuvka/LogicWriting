@@ -48,6 +48,67 @@ def validate_evidence_boundaries(brief):
     return risks
 
 
+# Words that carry no claim of their own; the comparison below looks only at the rest.
+_CLAIM_STOP_WORDS = frozenset("""the a an in of to is are was were and or it its be been will would so as at by for from on
+with that this these those but not no can could should may might must than then there their they them we you your our
+which who what when where how if into over under about after before also just only very more most such each any all some
+own same both other""".split())
+
+
+def _cjk(char):
+    return '\u3400' <= char <= '\u9fff' or '\uf900' <= char <= '\ufaff' or '\u3040' <= char <= '\u30ff' or '\uac00' <= char <= '\ud7af'
+
+
+def _claim_words(text):
+    """Content words, with a light ending fold (supported/support, services/service); a lexical signal only.
+
+    Text written without spaces (Chinese, Japanese, Korean) is compared by pairs of adjacent characters.
+    """
+    words = set()
+    for word in ''.join(char if char.isalnum() else ' ' for char in text.casefold()).split():
+        if any(_cjk(char) for char in word):
+            words.update(word[index:index + 2] for index in range(max(len(word) - 1, 1)))
+            continue
+        if word in _CLAIM_STOP_WORDS:
+            continue
+        for ending in ('ing', 'ed', 's', 'ly'):
+            if len(word) > 4 and word.endswith(ending):
+                word = word[:-len(ending)]
+                break
+        words.add(word)
+    return words
+
+
+def claim_anchor_gaps(brief):
+    """Required claims that share no content word with what their own anchors say.
+
+    Each researched required unit is compared with the observed_summary and boundary of every anchor it cites
+    that is not only counter. A claim with no word in common is not visibly about what its anchors say (a
+    "supported but optional" anchor cited for "move production this year", or a reworded unsupported
+    alternative); it is a warning and a nonblocking residual risk, not a refusal, since words are not meaning.
+    """
+    if brief['final_owner'] not in ('investigation', 'academic-writing') and 'research_folder' not in brief:
+        return []
+    boundaries = brief['content_boundaries']
+    anchors = {row['anchor_id']: row for row in boundaries['evidence_anchors']}
+    gaps = []
+    for unit in boundaries['content_units']:
+        if not unit['required']:
+            continue
+        cited = [anchors[identity] for identity in unit['evidence_anchor_ids']
+                 if identity in anchors and anchors[identity]['relation'] != 'counter']
+        claim = _claim_words(unit['safe_meaning'])
+        if not cited or not claim:
+            continue
+        said = set().union(*(_claim_words(f"{row.get('observed_summary', '')} {row.get('boundary', '')}") for row in cited))
+        if not claim & said:
+            names = ', '.join(row['anchor_id'] for row in cited)
+            gaps.append(dict(defect_id='claim_outruns_anchor:' + unit['content_unit_id'],
+                             reason=f"the claim shares no word with what {names} says (summary and boundary); "
+                                    "check that the anchor supports this claim, cite one that does, or narrow the claim"))
+    return gaps
+
+
 def validate_request_sources(request, boundaries):
     if not isinstance(request, str) or not request.strip():
         raise ValidationError("brief_request_missing (store the user's request, as received, in request)")

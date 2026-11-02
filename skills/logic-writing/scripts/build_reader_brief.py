@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from _common import cli_validate, require_mapping, validation_result
-from reader_plan import build_reader_brief as _build_reader_brief
+from reader_plan import build_reader_brief as _build_reader_brief, claim_anchor_gaps
 from reader_fill import fill_brief_fingerprints
 
 
@@ -44,6 +44,7 @@ def validate_request(value):
     )
     return validation_result(
         status="current_pass",
+        warnings=[f"{row['defect_id']} ({row['reason']})" for row in claim_anchor_gaps(brief)],
         reader_brief=brief,
         reader_brief_fingerprint=brief["brief_fingerprint"],
         composition_plan=request["composition_plan"],

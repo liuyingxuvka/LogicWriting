@@ -217,6 +217,8 @@ def main():
     print(result["summary"])
     for row in result['added_by_writer']:
         print(f"added by the writer: {row['content_unit_id']}: {row['text']}")
+    for warning in result['results'].get('brief', {}).get('warnings', []):
+        print(f"warning: {warning}")
     if result.get('stamped_review'):
         print(f"stamped: closure-input.json judgment {result['stamped_review']}")
     if result["first_failure"]:

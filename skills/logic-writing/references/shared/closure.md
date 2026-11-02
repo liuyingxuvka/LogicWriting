@@ -40,6 +40,13 @@ in `closure-input.json`. Failed input validation leaves that file unchanged.
 A valid completed `repair` judgment may be stamped; its defects remain and normal
 closure stays `needs_repair`.
 
+A researched required unit is also compared with what its own anchors say: when
+its claim shares no content word with the observed_summary or boundary of any
+anchor it cites (counter anchors aside), the brief step prints
+`warning: claim_outruns_anchor:<unit>` and closure keeps it as a nonblocking
+residual risk. This is a lexical signal, not entailment: one shared word clears
+it, and a warned claim may still be right; check that the anchor supports it.
+
 The stamp also saves the exact text it read as `reviewed_text` in
 `closure-input.json`. A later stamp on changed text compares the two word by word:
 every body unit whose words changed needs a reverse_outline row whose evidence
