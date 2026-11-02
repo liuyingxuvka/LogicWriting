@@ -48,6 +48,9 @@ REQUIREMENTS = {
     'known-bad': (S[:-8] + 'SKILL.md', 'each one must be caught, and closure lists uncaught ones'),
     'readback-unbound': (S[:-8] + 'references/shared/reader-chain-inputs.md',
                          'shows the plan tree even before drafting, with `UNBOUND` units'),
+    'brief-stale': (S[:-8] + 'references/shared/reader-chain.md',
+                    'the summary line starts with `brief: stale (...)` and names why (the brief was built from an older '
+                    'request, or the request no longer builds, with its error)'),
 }
 
 
@@ -156,6 +159,8 @@ NON_RAISING_HANDLERS = {
     S + 'show_argument.py:main:(OSError, ValueError, TypeError, KeyError)': H('exit-codes', REPORTED),
     S + 'show_plan.py:_partial_shared:ValidationError': H('readback-unbound',
         'a quote that does not resolve leaves that binding unbound, shown as UNBOUND in the readback'),
+    S + 'show_plan.py:_brief_state:(OSError, ValueError, KeyError, TypeError)': H('brief-stale',
+        'a request that no longer builds is the stale answer: its error text starts the summary and the picture problems'),
     S + 'show_plan.py:_results:(OSError, UnicodeError, ValueError)': H('report-unreadable',
         "a broken result file reads back as 'unreadable', never as not run"),
     S + 'show_plan.py:main:(OSError, ValueError, TypeError, KeyError)': H('exit-codes', REPORTED),

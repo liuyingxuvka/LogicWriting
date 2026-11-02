@@ -57,7 +57,9 @@ still undergo normal freshness checks. Old ID-only requests remain supported.
 
 `python scripts/show_plan.py --input show-request.json` first prints one summary
 line (`units: <n> (<b> bound, <u> unbound); audit: ...; review: ...; closure: ...;
-known-bad: <m> uncaught`), then the question, throughline, every planned unit's
+known-bad: <m> uncaught`; a passed or failed closure names how its review was stamped,
+and a `reader-brief.json` that is not the brief its `brief-request.json` builds now
+starts the line with `brief: stale (...)`, naming why), then the question, throughline, every planned unit's
 job and reader states, content and limitations, and the first sentence of its
 bound text. Under each unit it lists the audit and review findings that land on
 its bound text (`findings:`, with the quoted span), its evidence `anchors:` with

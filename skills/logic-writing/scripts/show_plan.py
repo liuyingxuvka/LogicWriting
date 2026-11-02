@@ -219,6 +219,30 @@ def _records(request, input_path=None):
     return brief, plan, shared or {}, amap or {}
 
 
+def _brief_state(brief, input_path):
+    """Why the built brief shown is not the one brief-request.json beside the input builds now, else None.
+
+    The tool rebuilds the brief from the request and compares fingerprints; it does not trust file times. A
+    brief that is not built (the request's own plan) and a folder without brief-request.json have nothing to
+    compare.
+    """
+    if input_path is None or 'brief_fingerprint' not in brief:
+        return None
+    folder = Path(input_path).resolve().parent
+    request_path = folder / 'brief-request.json'
+    if not request_path.is_file():
+        return None
+    from build_reader_brief import validate_request
+    command = f'run python skills/logic-writing/scripts/run_chain.py {folder} to build it and the later steps again'
+    try:
+        current = validate_request(_read_view_input(request_path))['reader_brief']['brief_fingerprint']
+    except (OSError, ValueError, KeyError, TypeError) as exc:  # the comparison is the answer: name why it cannot build
+        return f"brief-request.json no longer builds: {' '.join(str(exc).split())}; fix it, then {command}"
+    if current != brief['brief_fingerprint']:
+        return f'reader-brief.json was not built from the current brief-request.json; {command}'
+    return None
+
+
 def _results(request, input_path, amap, plan=None):
     """The chain's audit, review and closure records; `stale` when not made from the current bytes."""
     found = {}
@@ -334,8 +358,10 @@ def _tree_order(rows):
     return ordered
 
 
-def plan_view(request, *, input_path=None):
+def plan_view(request, *, input_path=None, brief_built_now=False):
+    """The plan readback. `brief_built_now` is for run_chain, which built the brief from the request in this run."""
     brief, plan, shared, amap = _records(request, input_path)
+    brief_stale = None if brief_built_now else _brief_state(brief, input_path)
     partial = request.get("_binding_blocked") or request.get("_binding_partial")
     declared = {
         row.get("planned_unit_id")
@@ -464,7 +490,8 @@ def plan_view(request, *, input_path=None):
         if isinstance(audit, dict)
         else []
     )
-    result["summary"] = _summary(result, results)
+    result["brief_stale"] = brief_stale
+    result["summary"] = (f"brief: stale ({brief_stale}); " if brief_stale else '') + _summary(result, results)
     return result
 
 

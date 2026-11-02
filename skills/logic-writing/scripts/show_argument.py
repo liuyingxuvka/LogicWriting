@@ -6,7 +6,8 @@ Boxes are the planned units of reader-brief.json. A solid arrow means the later 
 between neighbours is labelled with the later unit's relation_to_previous. Problems the tool computes are red:
 a unit nothing later builds on, a unit that builds on nothing earlier, a conclusion no chain of links reaches,
 a live or qualified alternative no unit answers, a researched claim with no supporting anchor or one that shares
-no word with what its anchors say, and the audit or review findings on a unit.
+no word with what its anchors say, and the audit or review findings on a unit. A reader-brief.json that is not the
+brief its brief-request.json builds now is named first (brief_stale), and the summary line starts with it.
 
 The tool chooses the density: every unit while the picture stays at the readable size (12 boxes), the plan's
 top-level parts beyond that, and otherwise a list of the parts to draw one at a time. With --focus a unit is
@@ -224,15 +225,17 @@ def _choose(plan, focus):
     return 'too_large', [], {}, [], plan.roots
 
 
-def draw(brief, state=None, *, focus=None, summary='', document=()):
+def draw(brief, state=None, *, focus=None, summary='', document=(), brief_stale=None):
     """The picture as data: Mermaid text, what it draws, the computed problems and what it leaves out.
 
     `state` maps planned unit ids to show_plan's readback rows (bound text and findings); `document` holds the
-    audit findings on the whole piece.
+    audit findings on the whole piece; `brief_stale` says why reader-brief.json is not the brief its request
+    builds now (show_plan computes it), and is listed first.
     """
     plan = _Plan(brief)
-    problems = (_graph_problems(plan) + _support_problems(plan) + _alternative_problems(plan)
-                + _state_problems(plan, state, document))
+    problems = ([_problem('brief_stale', None, brief_stale)] if brief_stale else []) + (
+        _graph_problems(plan) + _support_problems(plan) + _alternative_problems(plan)
+        + _state_problems(plan, state, document))
     level, drawn, represent, centre, views = _choose(plan, focus)
     title = f"Argument of {plan.plan['plan_id']}" + (f" around {focus} ({plan.label(focus)})" if focus else '')
     picture = dict(title=title, question=plan.plan['central_question'], summary=summary, level=level,
@@ -473,7 +476,8 @@ def picture_for(path, *, focus=None):
     view = plan_view(request, input_path=source)
     brief = _records(request, source)[0]
     state = {row['planned_unit_id']: row for row in view['planned_units']}
-    return draw(brief, state, focus=focus, summary=view['summary'], document=view['document'])
+    return draw(brief, state, focus=focus, summary=view['summary'], document=view['document'],
+                brief_stale=view['brief_stale'])
 
 
 def main():

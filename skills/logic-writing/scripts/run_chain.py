@@ -87,7 +87,7 @@ def _finish(folder,results,first,code):
         if binding.get('shared_writing'):request['shared_writing']=binding['shared_writing']
         elif binding:
             request.update(load_request(folder/'shared-writing.json'));request['_binding_blocked']=binding
-        view=plan_view(request,input_path=folder/'closure-input.json')
+        view=plan_view(request,input_path=folder/'closure-input.json',brief_built_now=bool(brief))
         summary=view['summary'];added=view['added_by_writer']
     except (OSError,ValueError,KeyError,TypeError) as exc:  # the readback is a view: name its error, keep the chain's real state
         state='passed' if first is None and code==0 else 'not_run' if first is None else first['step']+' blocked'

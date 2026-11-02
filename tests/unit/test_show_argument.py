@@ -231,3 +231,50 @@ def test_a_plan_whose_brief_step_failed_is_named_not_called_missing(tmp_path):
     assert run.returncode == 2
     assert 'reader-brief.json is a failed result (status blocked)' in run.stdout
     assert "'reader_job' is missing" in run.stdout and 'no composition plan' not in run.stdout
+
+
+def _edit_request_only(folder):
+    """Change the plan in brief-request.json after the chain ran, without building the brief again."""
+    path = folder / 'brief-request.json'
+    request = json.loads(path.read_text())
+    request['composition_plan']['planned_units'][1]['title'] = 'How it became supported'
+    path.write_text(json.dumps(request))
+
+
+def test_a_brief_older_than_its_request_is_named_not_shown_as_current(tmp_path):
+    """Review gap: reader-brief.json built before brief-request.json changed was drawn with 'Problems: none found'."""
+    folder = _example(tmp_path)
+    _edit_request_only(folder)
+    run = _draw(folder)
+    assert run.returncode == 0, run.stdout + run.stderr
+    assert '- none found' not in run.stdout
+    assert 'brief_stale (reader-brief.json was not built from the current brief-request.json' in run.stdout
+    assert f'run_chain.py {folder} to build it and the later steps again' in run.stdout
+    picture = _picture(folder)
+    assert picture['summary'].startswith('brief: stale (')
+    assert [row['code'] for row in picture['problems']] == ['brief_stale']
+    run_chain(folder)  # the brief is built again (the edited title makes the stamped review stale, a later step)
+    assert 'brief_stale' not in [row['code'] for row in _picture(folder)['problems']]
+    assert not _picture(folder)['summary'].startswith('brief: stale')
+
+
+def test_show_plan_names_a_brief_older_than_its_request(tmp_path):
+    folder = _example(tmp_path)
+    _edit_request_only(folder)
+    for name in ('reader-brief.json', 'closure-input.json', 'brief-request.json'):
+        run = subprocess.run([sys.executable, str(REPO / 'skills/logic-writing/scripts/show_plan.py'), '--input',
+                              str(folder / name)], capture_output=True, text=True, timeout=120)
+        assert run.returncode == 0, run.stdout + run.stderr
+        assert run.stdout.startswith('brief: stale (reader-brief.json was not built from the current brief-request.json'), name
+
+
+def test_a_request_that_no_longer_builds_is_named_with_its_error(tmp_path):
+    folder = _example(tmp_path)
+    path = folder / 'brief-request.json'
+    request = json.loads(path.read_text())
+    del request['composition_plan']['planned_units'][2]['reader_job']
+    path.write_text(json.dumps(request))
+    picture = _picture(folder)
+    assert picture['summary'].startswith('brief: stale (brief-request.json no longer builds: ')
+    assert "'reader_job' is missing" in picture['summary']
+    assert [row['code'] for row in picture['problems']] == ['brief_stale']
