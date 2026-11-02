@@ -216,3 +216,18 @@ def test_unreadable_input_is_reported_with_its_reason(tmp_path):
     done = _example(tmp_path / 'done')
     run = _draw(done, '--focus', 'u-missing')
     assert run.returncode == 2 and 'unknown planned unit u-missing' in run.stdout
+
+
+def test_a_plan_whose_brief_step_failed_is_named_not_called_missing(tmp_path):
+    """Review probe G4: a plan the brief step refused leaves a failed reader-brief.json; the picture names that error."""
+    folder = tmp_path / 'investigation'
+    shutil.copytree(EXAMPLES / 'investigation', folder)
+    path = folder / 'brief-request.json'
+    request = json.loads(path.read_text())
+    del request['composition_plan']['planned_units'][2]['reader_job']
+    path.write_text(json.dumps(request))
+    assert run_chain(folder, until='brief')['first_failure']['step'] == 'brief'
+    run = _draw(folder)
+    assert run.returncode == 2
+    assert 'reader-brief.json is a failed result (status blocked)' in run.stdout
+    assert "'reader_job' is missing" in run.stdout and 'no composition plan' not in run.stdout

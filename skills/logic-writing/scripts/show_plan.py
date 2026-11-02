@@ -169,13 +169,29 @@ def _partial_shared(shared, amap):
     return dict(shared,unit_bindings=rows)
 
 
+def _failure(value):
+    """The first error of a chain step's failed result file, else None (the same test load_request applies)."""
+    if isinstance(value, dict) and {"status", "errors", "warnings"} <= set(value) and (value["errors"] or value["status"] == "blocked"):
+        errors = value["errors"]
+        return " ".join(str(errors[0] if isinstance(errors, list) and errors else errors or "no error detail").split())
+    return None
+
+
 def _records(request, input_path=None):
     brief = _find_record(request, "composition_plan", ("reader_brief",))
+    tried = [(Path(input_path).name if input_path is not None else "the input", request)]
     if brief is None and input_path is not None:
         sibling = Path(input_path).resolve().parent / "reader-brief.json"
         if sibling.is_file() and sibling != Path(input_path).resolve():
-            brief = _find_record(load_request(sibling), "composition_plan", ("reader_brief",))
+            loaded = load_request(sibling)
+            tried.append((sibling.name, loaded))
+            brief = _find_record(loaded, "composition_plan", ("reader_brief",))
     if brief is None:
+        for name, value in tried:  # a step that failed left its error, not a plan: name that error
+            failure = _failure(value)
+            if failure is not None:
+                raise ValueError(f"{name} is a failed result (status {value['status']}): {failure}; "
+                                 "fix the input it names and run run_chain.py <folder> --until brief again")
         raise ValueError(
             "no composition plan; supply a brief request/result or a chain file beside reader-brief.json"
         )
