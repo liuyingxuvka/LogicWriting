@@ -101,16 +101,16 @@ def provider_checks(owner, brief, route_composition, reports):
             raise ValidationError("provider report needs a known provider and a nonempty path")
         if provider == "researchguard":
             try:
-                document = load_json(path)
-            except (OSError, ValueError, UnicodeError):
-                document = {}
+                document, read_error = load_json(path), None
+            except (OSError, ValueError, UnicodeError) as exc:  # an unreadable report never passes; say why
+                document, read_error = {}, exc
             assessment = assess_research_verdict(
                 document, brief.get("content_boundaries", {}).get("alternatives", [])
             )
             status, passed, reason = (
                 assessment["status"],
                 assessment["passed"],
-                assessment["reason"],
+                assessment["reason"] if read_error is None else f"researchguard report {path} cannot be read: {read_error}",
             )
             risks.extend(dict(row, owner=owner) for row in assessment["residual_risk"])
             # The report counts only for the research folder the brief names.

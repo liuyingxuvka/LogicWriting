@@ -214,9 +214,11 @@ def _results(request, input_path, amap, plan=None):
             if sibling.is_file() and sibling != Path(input_path).resolve():
                 try:
                     record = _find_record(json.loads(sibling.read_text(encoding='utf-8')), marker, wrappers)
-                except (OSError, UnicodeError, ValueError):
-                    record = None
-        if record is None or not amap:
+                except (OSError, UnicodeError, ValueError):  # a broken result file is shown as unreadable, never as not run
+                    record = 'unreadable'
+        if record == 'unreadable':
+            found[name] = 'unreadable'
+        elif record is None or not amap:
             found[name] = None
         elif record.get('artifact_fingerprint') != amap.get('artifact_fingerprint') or (plan and record.get('composition_plan_fingerprint') and record['composition_plan_fingerprint']!=plan.get('plan_fingerprint')):
             found[name] = 'stale'
@@ -256,8 +258,8 @@ def _unit_findings(ids, results):
 def _status(record, findings=None):
     if record is None:
         return 'not_run'
-    if record == 'stale':
-        return 'stale'
+    if record in ('stale', 'unreadable'):
+        return record
     status = record.get('status', 'unknown')
     return f"{status} ({len(record.get('findings', []))} findings)" if findings else status
 

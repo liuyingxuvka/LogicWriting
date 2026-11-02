@@ -89,8 +89,9 @@ def _finish(folder,results,first,code):
             request.update(load_request(folder/'shared-writing.json'));request['_binding_blocked']=binding
         view=plan_view(request,input_path=folder/'closure-input.json')
         summary=view['summary'];added=view['added_by_writer']
-    except (OSError,ValueError,KeyError,TypeError):
-        summary='units: unavailable; chain: '+('not_run' if first is None else first['step']+' blocked')
+    except (OSError,ValueError,KeyError,TypeError) as exc:  # the readback is a view: name its error, keep the chain's real state
+        state='passed' if first is None and code==0 else 'not_run' if first is None else first['step']+' blocked'
+        summary=f'units: unavailable ({type(exc).__name__}: {exc}); chain: {state}'
     return {'status':'passed' if code==0 else 'failed','exit_code':code,'results':results,'first_failure':first,'summary':summary,'added_by_writer':added}
 
 
