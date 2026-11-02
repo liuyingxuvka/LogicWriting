@@ -76,11 +76,13 @@ def test_an_unreadable_result_file_reads_back_as_unreadable(tmp_path):
     assert 'audit: unreadable' in first and 'audit: not_run' not in first
 
 
+# The probes load the suite's own tests/conftest.py as their plugin, so they fail when that file stops loading the
+# guard (tests/no_skips.py), not only when the guard itself breaks.
 def test_a_skipped_test_fails_the_run(tmp_path):
     probe = tmp_path / 'test_probe.py'
     probe.write_text('import pytest\n\ndef test_hidden():\n    pytest.skip("a handler swallowed the error")\n',
                      encoding='utf-8')
-    run = subprocess.run([sys.executable, '-m', 'pytest', '-q', '-p', 'no:cacheprovider', '-p', 'tests.no_skips',
+    run = subprocess.run([sys.executable, '-m', 'pytest', '-q', '-p', 'no:cacheprovider', '-p', 'tests.conftest',
                           str(probe)], cwd=REPO, capture_output=True, text=True, timeout=120)
     assert run.returncode == 1, run.stdout + run.stderr
     assert '1 failed' in run.stdout and 'this suite allows no skips' in run.stdout
@@ -94,10 +96,19 @@ def test_a_module_skipped_at_collection_fails_the_run(tmp_path, body):
     """Review gap: a module-level skip is a collection report, not a test report; it must fail too."""
     probe = tmp_path / 'test_probe.py'
     probe.write_text(body, encoding='utf-8')
-    run = subprocess.run([sys.executable, '-m', 'pytest', '-q', '-p', 'no:cacheprovider', '-p', 'tests.no_skips',
+    run = subprocess.run([sys.executable, '-m', 'pytest', '-q', '-p', 'no:cacheprovider', '-p', 'tests.conftest',
                           str(probe)], cwd=REPO, capture_output=True, text=True, timeout=120)
     assert run.returncode != 0, run.stdout + run.stderr
     assert 'this suite allows no skips' in run.stdout + run.stderr
+
+
+def test_this_run_has_the_skip_guard(request):
+    """Review gap: removing the no_skips import from tests/conftest.py silently disabled the guard for the whole suite."""
+    from tests import no_skips
+    hooks = request.config.pluginmanager.hook
+    for name in ('pytest_runtest_makereport', 'pytest_make_collect_report'):
+        assert any(row.function is getattr(no_skips, name) for row in getattr(hooks, name).get_hookimpls()), \
+            f'{name} from tests/no_skips.py is not registered in this run: tests/conftest.py must import it'
 
 
 def test_a_fresh_example_reads_back_with_the_route_decided_from_its_request(tmp_path):

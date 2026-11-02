@@ -1,4 +1,5 @@
-"""Every `.get(key, default)` read in shipped code, by function, with how many.
+"""Every default read in shipped code, by function, with how many: `.get(key, default)`, `.get(key) or default`
+and `getattr(obj, name, default)`.
 
 Such a read turns a missing key into the default without a word. Where the key is optional by its schema the
 default is the meaning (absent means "none"); where the key is required, or the value came from a step that
@@ -134,4 +135,32 @@ DEFAULT_READS = {
     'skills/logic-writing/scripts/writer_projection.py:_writer_route_projection': 40,
     'skills/logic-writing/scripts/writer_projection.py:build_writer_input': 16,
     'skills/logic-writing/scripts/writer_projection.py:validate_writer_input': 11,
+}
+
+
+# `.get(key) or default`: an absent key, or a present empty or false value, becomes what follows the `or`.
+OR_DEFAULT_READS = {
+    'skills/logic-writing/routes/fiction/scripts/fiction_plan.py:PlanContext.unit_view': 1,
+    'skills/logic-writing/routes/fiction/scripts/promise_payoff_check.py:check_deferred_handling': 1,
+    'skills/logic-writing/routes/fiction/scripts/scene_contract_check.py:check_outcome_gates': 2,
+    'skills/logic-writing/routes/travel/scripts/travel_contract.py:validate_trip_context': 1,
+    'skills/logic-writing/scripts/derive_closure.py:derive_closure': 1,
+    'skills/logic-writing/scripts/known_bad.py:_relation_variants': 1,
+    'skills/logic-writing/scripts/known_bad.py:main': 1,
+    'skills/logic-writing/scripts/reader_fill.py:fill_check_fingerprints': 10,
+    'skills/logic-writing/scripts/reader_fill.py:fill_closure_fingerprints': 1,
+    'skills/logic-writing/scripts/researchguard_status.py:fill_anchors_from_research': 1,
+    'skills/logic-writing/scripts/run_chain.py:_failure': 3,
+    'skills/logic-writing/scripts/run_chain.py:_refresh': 2,
+    'skills/logic-writing/scripts/run_chain.py:_stamp_judgment': 3,
+    'skills/logic-writing/scripts/show_argument.py:draw': 1,
+    'skills/logic-writing/scripts/show_plan.py:_unit_findings': 1,
+    'skills/logic-writing/scripts/show_plan.py:plan_view': 4,
+    'skills/logic-writing/scripts/validate_revision_provenance.py:validate_revision_provenance': 1,
+    'skills/logic-writing/scripts/writer_projection.py:build_writer_input': 1,
+}
+
+# getattr(obj, name, default): a missing attribute becomes the default.
+GETATTR_DEFAULTS = {
+    'skills/logic-writing/scripts/provider_preflight.py:preflight': 1,
 }

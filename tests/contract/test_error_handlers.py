@@ -3,14 +3,21 @@
 The scan below is computed from the source (shipped skill scripts, route scripts and repository scripts):
 - a handler counts as re-raising only when every path through its body raises, so a `raise` inside one
   branch does not hide the other branches;
-- `contextlib.suppress(...)` is a handler too, and a `return`, `break` or `continue` inside `finally` (which
-  drops the error in flight) is forbidden;
+- `contextlib.suppress(...)` is a handler too, however it is reached (imported under another name, read from
+  an alias of the module, assigned to a new name or fetched with getattr), and so is a class whose `__exit__`
+  can return something other than None or False (it swallows the error of its `with` block);
+- a `return`, `break` or `continue` inside `finally` (which drops the error in flight) is forbidden;
 - each key is listed with the number of such handlers in that function, so a second quiet handler of the
   same kind fails the test;
 - each entry names the requirement it comes from as a sentence that must be present in that file.
 A new handler that swallows an error fails this test until someone lets the error through or states why the
 handler is the one route. Behaviour tests for the cases that used to hide an error live in
-tests/contract/test_one_route.py; the `.get(key, default)` reads are inventoried in tests/contract/default_reads.py.
+tests/contract/test_one_route.py; the default reads (`.get(key, default)`, `.get(key) or default`,
+`getattr(obj, name, default)`) are inventoried in tests/contract/default_reads.py.
+
+What the scan cannot see: a handler reached only through code it does not parse (exec, a string import), a context
+manager made elsewhere (contextlib.ExitStack callbacks, a library class), and other quiet defaults such as
+`next(iterator, default)` or `dict.setdefault`; those are not inventoried.
 """
 from __future__ import annotations
 
@@ -18,7 +25,7 @@ import ast
 from pathlib import Path
 from typing import NamedTuple
 
-from tests.contract.default_reads import DEFAULT_READS
+from tests.contract.default_reads import DEFAULT_READS, GETATTR_DEFAULTS, OR_DEFAULT_READS
 
 ROOT = Path(__file__).resolve().parents[2]
 F = 'skills/logic-writing/routes/fiction/scripts/'
@@ -216,19 +223,95 @@ def _call_name(node) -> str:
     return node.func.attr if isinstance(node.func, ast.Attribute) else node.func.id if isinstance(node.func, ast.Name) else ''
 
 
-def _non_raising_handlers() -> dict[str, int]:
+def _suppress_names(tree) -> tuple[set[str], set[str]]:
+    """Names in this module that stand for contextlib.suppress, and names bound to the contextlib module."""
+    functions, modules = set(), set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ImportFrom) and node.module == 'contextlib':
+            # `from contextlib import *` binds suppress under its own name.
+            functions.update('suppress' if alias.name == '*' else alias.asname or alias.name
+                             for alias in node.names if alias.name in ('suppress', '*'))
+        elif isinstance(node, ast.Import):
+            modules.update(alias.asname or alias.name for alias in node.names if alias.name == 'contextlib')
+
+    def refers(value) -> bool:
+        if isinstance(value, ast.Name):
+            return value.id in functions
+        if isinstance(value, ast.Attribute):
+            return value.attr == 'suppress'
+        return (isinstance(value, ast.Call) and isinstance(value.func, ast.Name) and value.func.id == 'getattr'
+                and len(value.args) >= 2 and isinstance(value.args[1], ast.Constant) and value.args[1].value == 'suppress')
+    changed = True
+    while changed:  # `hush = contextlib.suppress`, `also = hush`: every name assigned a suppress is one too
+        changed = False
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Assign) and refers(node.value):
+                for target in node.targets:
+                    if isinstance(target, ast.Name) and target.id not in functions:
+                        functions.add(target.id)
+                        changed = True
+    return functions, modules
+
+
+def _is_suppress_call(node, functions) -> bool:
+    func = node.func
+    if isinstance(func, ast.Name):
+        return func.id in functions
+    if isinstance(func, ast.Attribute):
+        return func.attr == 'suppress'
+    return (isinstance(func, ast.Call) and isinstance(func.func, ast.Name) and func.func.id == 'getattr'
+            and len(func.args) >= 2 and isinstance(func.args[1], ast.Constant) and func.args[1].value == 'suppress')
+
+
+def _may_return_true(function) -> bool:
+    """An __exit__ that can return anything but None or False swallows the error of its with block."""
+    if isinstance(function, ast.Lambda):
+        return not (isinstance(function.body, ast.Constant) and function.body.value in (None, False))
+    stack = list(function.body)
+    while stack:
+        node = stack.pop()
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda)):
+            continue
+        if isinstance(node, ast.Return) and node.value is not None and not (
+                isinstance(node.value, ast.Constant) and node.value.value in (None, False)):
+            return True
+        stack.extend(ast.iter_child_nodes(node))
+    return False
+
+
+def _handlers_in(relative: str, tree) -> dict[str, int]:
+    """Every place in one module where an error can end without being raised, by function, with how many."""
+    found: dict[str, int] = {}
+    functions, _ = _suppress_names(tree)
+    for node, names in _walk(tree):
+        where = f"{relative}:{'.'.join(names) or '<module>'}"
+        if isinstance(node, ast.ExceptHandler) and _block(node.body) != RAISE:
+            key = f"{where}:{ast.unparse(node.type) if node.type else 'BARE'}"
+        elif isinstance(node, ast.Call) and _is_suppress_call(node, functions):
+            key = f"{where}:suppress({', '.join(ast.unparse(argument) for argument in node.args)})"
+        elif (isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name in ('__exit__', '__aexit__')
+              and len(names) >= 2 and _may_return_true(node)):
+            key = f"{where}:may return true"
+        elif (isinstance(node, ast.Assign) and any(isinstance(target, ast.Name) and target.id in ('__exit__', '__aexit__')
+                                                    for target in node.targets)
+              and isinstance(node.value, ast.Lambda) and _may_return_true(node.value)):
+            key = f"{where}:__exit__ may return true"
+        else:
+            continue
+        found[key] = found.get(key, 0) + 1
+    return found
+
+
+def _merged(scan) -> dict[str, int]:
     found: dict[str, int] = {}
     for relative, tree in _sources():
-        for node, names in _walk(tree):
-            where = f"{relative}:{'.'.join(names) or '<module>'}"
-            if isinstance(node, ast.ExceptHandler) and _block(node.body) != RAISE:
-                key = f"{where}:{ast.unparse(node.type) if node.type else 'BARE'}"
-            elif isinstance(node, ast.Call) and _call_name(node) == 'suppress':
-                key = f"{where}:suppress({', '.join(ast.unparse(argument) for argument in node.args)})"
-            else:
-                continue
-            found[key] = found.get(key, 0) + 1
+        for key, count in scan(relative, tree).items():
+            found[key] = found.get(key, 0) + count
     return found
+
+
+def _non_raising_handlers() -> dict[str, int]:
+    return _merged(_handlers_in)
 
 
 def _finally_exits() -> list[str]:
@@ -236,15 +319,41 @@ def _finally_exits() -> list[str]:
             if isinstance(node, ast.Try) and _block(node.finalbody) == EXIT]
 
 
-def _default_reads() -> dict[str, int]:
+def _default_reads_in(relative: str, tree) -> dict[str, int]:
     """`.get(key, default)` calls, by function: a missing key quietly becomes the default."""
     found: dict[str, int] = {}
-    for relative, tree in _sources():
-        for node, names in _walk(tree):
-            if isinstance(node, ast.Call) and _call_name(node) == 'get' and isinstance(node.func, ast.Attribute) and len(node.args) == 2:
-                key = f"{relative}:{'.'.join(names) or '<module>'}"
-                found[key] = found.get(key, 0) + 1
+    for node, names in _walk(tree):
+        if isinstance(node, ast.Call) and _call_name(node) == 'get' and isinstance(node.func, ast.Attribute) and len(node.args) == 2:
+            key = f"{relative}:{'.'.join(names) or '<module>'}"
+            found[key] = found.get(key, 0) + 1
     return found
+
+
+def _or_default_reads_in(relative: str, tree) -> dict[str, int]:
+    """`.get(key) or default`, by function: a missing (or empty) value quietly becomes what follows the `or`."""
+    found: dict[str, int] = {}
+    for node, names in _walk(tree):
+        if isinstance(node, ast.BoolOp) and isinstance(node.op, ast.Or):
+            count = sum(1 for value in node.values[:-1] if isinstance(value, ast.Call) and isinstance(value.func, ast.Attribute)
+                        and value.func.attr == 'get' and len(value.args) == 1 and not value.keywords)
+            if count:
+                key = f"{relative}:{'.'.join(names) or '<module>'}"
+                found[key] = found.get(key, 0) + count
+    return found
+
+
+def _getattr_defaults_in(relative: str, tree) -> dict[str, int]:
+    """`getattr(obj, name, default)`, by function: a missing attribute quietly becomes the default."""
+    found: dict[str, int] = {}
+    for node, names in _walk(tree):
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == 'getattr' and len(node.args) == 3:
+            key = f"{relative}:{'.'.join(names) or '<module>'}"
+            found[key] = found.get(key, 0) + 1
+    return found
+
+
+def _default_reads() -> dict[str, int]:
+    return _merged(_default_reads_in)
 
 
 def test_every_non_raising_handler_is_listed_with_its_count_reason_and_requirement():
@@ -300,3 +409,59 @@ def f(x):
     handlers = [node for node in ast.walk(tree) if isinstance(node, ast.ExceptHandler)]
     assert [_block(row.body) for row in handlers] == [EXIT, FALL, RAISE]
     assert [_call_name(node) for node in ast.walk(tree) if isinstance(node, ast.Call) and _call_name(node) == 'suppress'] == ['suppress']
+
+
+def test_the_scan_sees_aliased_suppress_and_context_managers_that_swallow():
+    """Review gap: an aliased contextlib.suppress and a context manager whose __exit__ returns True were not counted."""
+    code = '''
+import contextlib as cl
+from contextlib import suppress as quiet
+hush = cl.suppress
+also = getattr(cl, 'suppress')
+class Swallow:
+    def __enter__(self):
+        return self
+    def __exit__(self, *details):
+        return True
+class Passes:
+    def __exit__(self, *details):
+        return None
+class Lambda:
+    __exit__ = lambda self, *details: True
+def f():
+    with quiet(OSError):
+        g()
+    with cl.suppress(KeyError):
+        g()
+    with hush(ValueError):
+        g()
+    with also(TypeError):
+        g()
+'''
+    found = _handlers_in('probe.py', ast.parse(code))
+    assert found == {'probe.py:f:suppress(OSError)': 1, 'probe.py:f:suppress(KeyError)': 1,
+                     'probe.py:f:suppress(ValueError)': 1, 'probe.py:f:suppress(TypeError)': 1,
+                     'probe.py:Swallow.__exit__:may return true': 1, 'probe.py:Lambda:__exit__ may return true': 1}
+
+
+def test_the_scan_sees_or_defaults_and_getattr_defaults():
+    """Review gap: `.get(k) or default` and `getattr(o, n, default)` turned a missing value into a default unseen."""
+    code = '''
+def f(row, obj):
+    a = row.get('a') or []
+    b = row.get('b') or row.get('c') or 'none'
+    c = row.get('d', 0)
+    d = getattr(obj, 'version', '')
+    e = getattr(obj, 'version')
+    return row.get('e') and a
+'''
+    tree = ast.parse(code)
+    assert _or_default_reads_in('probe.py', tree) == {'probe.py:f': 3}
+    assert _getattr_defaults_in('probe.py', tree) == {'probe.py:f': 1}
+
+
+def test_every_or_default_and_getattr_default_is_in_the_inventory():
+    assert _merged(_or_default_reads_in) == OR_DEFAULT_READS, \
+        'a `.get(key) or default` read was added or removed: update tests/contract/default_reads.py'
+    assert _merged(_getattr_defaults_in) == GETATTR_DEFAULTS, \
+        'a getattr(obj, name, default) read was added or removed: update tests/contract/default_reads.py'
