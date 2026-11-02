@@ -6,6 +6,11 @@ releases, tags, package publications, installations, or predecessor deletions.
 The format follows the main ideas of Keep a Changelog, and the source version
 line follows semantic versioning.
 
+## Unreleased
+
+- Maintenance runs on FlowGuard 0.72.0: AGENTS.md carries its four plain rules (status first, store only the owner's own words, find code with `where` and run the tests, one commit in your own words) instead of the target and map-confirm steps, and states the version rule: new features raise the second number, small fixes the third, and no number is skipped.
+- The stored round-11 action list is retired as not the owner's words, so `flowguard status` no longer shows it as an open owner request.
+
 ## v4.1.0 - 2026-10-31 - Claims held to their evidence, the request and a stamped review
 
 - README and README.zh-CN rewritten: the problem it solves for an AI user, a before/after example, a quick start from the git tag, and the badge shows the source version.

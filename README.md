@@ -252,7 +252,7 @@ python scripts/run_travel_regression.py --repository-root .
 
 CI runs the full test suite, the fiction and travel regressions, the installed-skill byte check, and FlowGuard's map
 and release checks: Logic Writing uses FlowGuard to maintain itself. The workflow installs FlowGuard only from its git
-tag (`git+https://github.com/liuyingxuvka/FlowGuard.git@v0.71.0`), because the package with that name on PyPI is a
+tag (`git+https://github.com/liuyingxuvka/FlowGuard.git@v0.72.0`), because the package with that name on PyPI is a
 different project. A second CI job checks the minimum ResearchGuard version Logic Writing supports. These checks cover
 the scripts and their contracts, not the quality of a particular piece of writing. AI contributors start from
 [`AGENTS.md`](./AGENTS.md); `CLAUDE.md` points Claude Code to the same file.
