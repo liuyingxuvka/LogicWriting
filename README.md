@@ -108,8 +108,8 @@ When you and the AI talk about how a piece argues, ask for the picture of its pl
 the folder's `reader-brief.json`, the plan the chain checked, not from the AI's memory of the outline: a solid arrow
 means the later unit builds on the earlier one (`downstream_unit_ids`), a dotted arrow only that it comes next. What
 the tool computes as a problem is red: a unit nothing later builds on, a conclusion no chain of links reaches, a live
-alternative no unit answers, a researched claim with no supporting anchor or one that shares no word with its
-anchors, and the audit and review findings. With `--focus` it draws one unit with its neighbours and what the unit
+alternative no unit answers, a researched claim with no supporting anchor or one that shares no word with one of
+its anchors, and the audit and review findings. With `--focus` it draws one unit with its neighbours and what the unit
 rests on, and it lists what it left out. The owner asks: *"Why does it tell teams to test now but not to plan on a
 default date?"*
 
