@@ -43,6 +43,7 @@
     {
       "anchor": "anc-314-supported",
       "source": "src-whatsnew-314",
+      "unverifiable_source": true,
       "lineage": "",
       "locator": "Doc/whatsnew/3.14.rst, 'Free-threaded Python is officially supported'",
       "summary": "Supported, no longer experimental; start of phase II; still optional.",
@@ -53,6 +54,7 @@
     {
       "anchor": "anc-314-phase3-undecided",
       "source": "src-whatsnew-314",
+      "unverifiable_source": true,
       "lineage": "",
       "locator": "Doc/whatsnew/3.14.rst, same section, last paragraph",
       "summary": "Phase III (default or sole build) is undecided.",
@@ -63,6 +65,7 @@
     {
       "anchor": "anc-314-perf",
       "source": "src-whatsnew-314",
+      "unverifiable_source": true,
       "lineage": "",
       "locator": "Doc/whatsnew/3.14.rst, 'Free-threaded mode improvements'",
       "summary": "Single-thread penalty roughly 5-10% depending on platform and compiler.",
@@ -73,6 +76,7 @@
     {
       "anchor": "anc-313-experimental",
       "source": "src-whatsnew-313",
+      "unverifiable_source": true,
       "lineage": "",
       "locator": "Doc/whatsnew/3.13.rst, free-threaded CPython section",
       "summary": "Experimental and not enabled by default in 3.13.",
@@ -83,6 +87,7 @@
     {
       "anchor": "anc-779-phase3-different",
       "source": "src-pep-779",
+      "unverifiable_source": true,
       "lineage": "",
       "locator": "PEP 779, Requirements section note",
       "summary": "PEP 779 criteria apply to entering phase II only; the default decision is separate.",
@@ -92,10 +97,27 @@
     }
   ],
   "open_gaps": [],
+  "sources": [
+    {
+      "id": "src-whatsnew-314",
+      "identity": "title \"What's New 3.14\"; no link; no date"
+    },
+    {
+      "id": "src-whatsnew-313",
+      "identity": "title \"What's New 3.13\"; no link; no date"
+    },
+    {
+      "id": "src-pep-779",
+      "identity": "title \"PEP 779\"; no link; no date"
+    }
+  ],
   "next": [],
   "errors": [],
   "warnings": [
-    "hypothesis_unused:h-main-answer"
+    "hypothesis_unused:h-main-answer",
+    "unverifiable_source:src-pep-779 (no link, DOI, ISBN or arXiv id; nothing outside this folder to check it against)",
+    "unverifiable_source:src-whatsnew-313 (no link, DOI, ISBN or arXiv id; nothing outside this folder to check it against)",
+    "unverifiable_source:src-whatsnew-314 (no link, DOI, ISBN or arXiv id; nothing outside this folder to check it against)"
   ],
   "info": []
 }

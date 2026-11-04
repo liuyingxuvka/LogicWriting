@@ -6,6 +6,10 @@ releases, tags, package publications, installations, or predecessor deletions.
 The format follows the main ideas of Keep a Changelog, and the source version
 line follows semantic versioning.
 
+## Unreleased
+
+- ResearchGuard 0.7.0 is now the minimum: the shipped investigation report uses its source-verifiability fields and warnings, so the provider checks, saved output and refresh instructions require that version together.
+
 ## v4.2.0 - 2026-11-02 - Reviews bound to their text, claims held to each anchor, and pictures of the argument
 
 - Maintenance runs on FlowGuard 0.72.0: AGENTS.md carries its four plain rules (status first, store only the owner's own words, find code with `where` and run the tests, one commit in your own words) instead of the target and map-confirm steps, and states the version rule: new features raise the second number, small fixes the third, and no number is skipped.

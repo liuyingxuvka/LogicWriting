@@ -109,7 +109,7 @@ the folder's `reader-brief.json`, the plan the chain checked, not from the AI's 
 means the later unit builds on the earlier one (`downstream_unit_ids`), a dotted arrow only that it comes next. What
 the tool computes as a problem is red: a unit nothing later builds on, a conclusion no chain of links reaches, a live
 alternative no unit answers, a researched claim with no supporting anchor or one that shares no word with one of
-its anchors, and the audit and review findings. With `--focus` it draws one unit with its neighbours and what the unit
+its anchors, and the audit and review findings. This comparison checks words: a claim with one shared word is not warned. With `--focus` it draws one unit with its neighbours and what the unit
 rests on, and it lists what it left out. The owner asks: *"Why does it tell teams to test now but not to plan on a
 default date?"*
 
@@ -194,11 +194,11 @@ fixtures and regression runners that only this repository's tests use. `pip inst
 skill. The scripts need Python 3.10 or newer, and PyYAML when a piece uses a research folder or a world file.
 
 **2. For research and story worlds, install the providers**, each from its own tag. Logic Writing reads their saved
-reports; it needs the commands only to refresh them. ResearchGuard requires 0.6.0. WorldGuard 0.8.0 supplies tree
+reports; it needs the commands only to refresh them. ResearchGuard requires 0.7.0. WorldGuard 0.8.0 supplies tree
 reports; the existing single-contract path still supports 0.7.23:
 
 ```bash
-python -m pip install "git+https://github.com/liuyingxuvka/ResearchGuard.git@v0.6.0"
+python -m pip install "git+https://github.com/liuyingxuvka/ResearchGuard.git@v0.7.0"
 python -m pip install "git+https://github.com/liuyingxuvka/WorldGuard.git@v0.8.0"
 ```
 

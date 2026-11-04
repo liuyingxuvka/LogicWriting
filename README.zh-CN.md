@@ -98,7 +98,7 @@ added by the writer: cu-recommend: A team can test its service on the free-threa
 和 AI 讨论一篇文章怎么论证时，让它给出计划的图。`show_argument.py` 从文件夹里的 `reader-brief.json`（链条检查过的计划）
 算出这张图，而不是凭 AI 对提纲的记忆：实线箭头表示后一个单元建立在前一个之上（`downstream_unit_ids`），虚线箭头只表示
 它排在后面。工具算出的问题标成红色：后面没有单元用到的单元、没有一条链接能到达的结论、没有单元回应的现存替代说法、
-没有支持锚点的研究性论断或与所引某个锚点没有一个共同词的论断，以及审读和复核的发现。加 `--focus` 时，它只画一个单元、它的
+没有支持锚点的研究性论断或与所引某个锚点没有一个共同词的论断，以及审读和复核的发现。这是按词比较；只要与该锚点有一个共同词，这个警告就不会出现。加 `--focus` 时，它只画一个单元、它的
 相邻单元和它所依据的内容，并列出省略了什么。主人问：*"为什么文章让团队现在就测试，却不要按某个日期计划默认版本？"*
 
 ```console
@@ -179,10 +179,10 @@ python scripts/install_skill.py --target "$SKILLS_DIR" --check
 `pip install` 装不了这个技能。脚本需要 Python 3.10 或更新；文章用到研究文件夹或世界文件时，还需要 PyYAML。
 
 **2. 涉及研究或故事世界时，装上两个提供方**，各自从自己的 tag 安装。Logic Writing 读的是它们存下的报告，只有刷新报告时才需要它们的命令。
-ResearchGuard 最低为 0.6.0；WorldGuard 0.8.0 提供树报告，原有单 contract 路径仍支持 0.7.23：
+ResearchGuard 最低为 0.7.0；WorldGuard 0.8.0 提供树报告，原有单 contract 路径仍支持 0.7.23：
 
 ```bash
-python -m pip install "git+https://github.com/liuyingxuvka/ResearchGuard.git@v0.6.0"
+python -m pip install "git+https://github.com/liuyingxuvka/ResearchGuard.git@v0.7.0"
 python -m pip install "git+https://github.com/liuyingxuvka/WorldGuard.git@v0.8.0"
 ```
 
