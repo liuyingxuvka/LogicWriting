@@ -283,8 +283,8 @@ python scripts/run_fiction_regression.py --repository-root .
 python scripts/run_travel_regression.py --repository-root .
 ```
 
-CI 会跑全部测试、小说和旅行的回归、装好的技能逐字节检查，以及 FlowGuard 的地图检查和发布检查：Logic Writing 用 FlowGuard 维护自己。
-工作流只从 git tag 安装 FlowGuard（`git+https://github.com/liuyingxuvka/FlowGuard.git@v0.72.0`），因为 PyPI 上同名的包是另一个项目。
+CI 会跑全部测试、小说和旅行的回归、装好的技能逐字节检查，以及 FlowGuard 的原生发布检查。函数约定直接调用生产脚本；有限的指纹流程放在 `.flowguard/flow/`。
+工作流只从 git tag 安装 FlowGuard（`git+https://github.com/liuyingxuvka/FlowGuard.git@v1.0.0`），因为 PyPI 上同名的包是另一个项目。
 另一个 CI 作业检查 Logic Writing 支持的 ResearchGuard 最低版本。这些检查覆盖的是脚本和它们的约定，不是某一篇文章的质量。
 参与开发的 AI 从 [`AGENTS.md`](./AGENTS.md) 读起；`CLAUDE.md` 让 Claude Code 读同一个文件。
 

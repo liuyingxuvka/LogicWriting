@@ -19,7 +19,7 @@
 
 ## Validation
 
-- Run the affected tests while developing. CI (`.github/workflows/ci.yml`) runs the full pytest suite, fiction and travel regressions, `python -m flowguard map check`, `python -m flowguard release`, and an installed skill byte check on every push and pull request. Its second job runs tests and the three member preflights with ResearchGuard at `RESEARCHGUARD_MIN_VERSION` (`skills/logic-writing/scripts/_common.py`). Publishing waits for successful CI on the same source commit.
+- Run the affected tests while developing. CI (`.github/workflows/ci.yml`) runs the full pytest suite, fiction and travel regressions, `python -m flowguard release`, and an installed skill byte check on every push and pull request. Its second job runs tests and the member preflights with ResearchGuard at `RESEARCHGUARD_MIN_VERSION` (`skills/logic-writing/scripts/_common.py`). Publishing waits for successful CI on the same source commit.
 
 A release has exactly one commit titled "Release LogicWriting v<version>", made after the last change of that release; it changes only the version files and CHANGELOG.md.
 Version numbers: a release that adds features raises the second number (4.1.0 -> 4.2.0); a release with only small fixes raises the third (4.2.0 -> 4.2.1); never skip a number.
@@ -31,5 +31,7 @@ Raise that version, or `RESEARCHGUARD_MIN_VERSION` in `skills/logic-writing/scri
 
 1. At the start of a session and after any loss of context, run `python -m flowguard status` before anything else.
 2. When the owner asks for something, store the owner's own words once, as received: `python -m flowguard req add <file|-> --id <id>`. It stores only words the owner wrote, byte for byte: never a plan, a list or text an AI wrote. When a new owner message replaces an earlier one, add `--supersedes <old id>`; never edit `.flowguard/requests/`.
-3. Find code with `python -m flowguard where NAME`; change code and its tests together; run the project's own test command (for example `python -m pytest -q`) and report exactly what you ran and the result.
-4. Commit code and tests together in one commit with a message in your own words; add a line `Request: R<n>` when the change answers a stored owner request. The legacy map, `.flowguard/models/` and the target commands need no upkeep.
+3. Find code with `python -m flowguard where NAME`. Before changing state values, actions, conditions, settings or endings, update the affected `.flowguard/flow/` model first and run `python -m flowguard check`; use `show` pictures when discussing a flow. Keep purely functional contracts in direct production tests.
+4. Change code and its tests together; run `python -m pytest -q` and `python -m flowguard release` for the final source, and report exactly what ran and its result. Commit them together with a message in your own words; add `Request: R<n>` when answering a stored owner request.
+
+Repair dead ends and unreachable behavior in code; reconcile model/code drift. A provisional decision applies only to eligible contradictory requested obligations. If conflicts remain in a reply, end with “需要你决定” and the relevant question and stored owner words. This migrated workflow needs FlowGuard v1.0.0.

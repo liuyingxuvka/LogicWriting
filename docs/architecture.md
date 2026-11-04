@@ -96,20 +96,22 @@ Provider absence, access gaps, partial
 results, stale identities, failed rendering, or human-review boundaries remain
 typed non-pass states.
 
-## FlowGuard models
+## Maintenance contracts
 
 This repository is maintained with FlowGuard; user writing tasks do not use it.
-`.flowguard/models/` holds executable route, current-artifact, closure-provider and
-unique-quote binding models. `route_selection_model` checks that one
-current request gets exactly one final owner and material open choices stop
-routing before planning. `provider_preflight_model` checks that ResearchGuard
-members run only through the `researchguard` console. `reader_artifact_model` checks, for each of
-the four final owners, that closure follows a quality review of the current
-bytes and that broad claims require an independent context. A passing self-review
-keeps an explicit risk and no broad claim. Each model explores its states, keeps known-bad variants that
-must fail, and replays its traces on the real scripts (`select_route`,
-`provider_preflight`, the reader chain and `derive_closure`).
-`python -m flowguard map models` runs them.
+`tests/flow_migration/` preserves the independent expected functions, 61 rules,
+69 expanded bad observations and 112 production-test links from the 19 former
+models. Direct functional contracts exercise routing, provider preflight, current
+artifact review, closure, unique quotes, and the domain checks on actual scripts.
+The four former generated-system routes retain static source ownership checks;
+the reader chain also tests the actual audit-to-closure handoff.
+
+`.flowguard/flow/record_identity.py` binds a finite edit/restore/check flow to the
+real exact-object fingerprint validator. `python -m flowguard check --full` checks
+that native boundary; `python -m pytest -q` checks all functional contracts.
+The transfer inventory is `tests/flow_migration/coverage.json`. Old conflict IDs
+are not carried into a different conflict kind; new native evidence supplies its
+own IDs. Original request bytes and historical change records are retained.
 
 Shared kernel state is limited to route decision, artifact identity, reader
 projection identity, and freshness. Fiction and travel own disjoint domain
@@ -119,7 +121,7 @@ state and side effects.
 
 OpenSpec records product obligations and acceptance checks. The release
 workflow (`.github/workflows/publish-release.yml`) runs pytest, the fiction and
-travel regressions, the models and the map check on the exact source commit
+travel regressions and the native release check on the exact source commit
 before it publishes. `python scripts/install_skill.py --target <dir> --check`
 compares an installed copy with the source by file set and bytes.
 

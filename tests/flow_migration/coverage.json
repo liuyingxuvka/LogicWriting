@@ -1,0 +1,1797 @@
+{
+  "schema": "logic-writing.flow-contract-transfer.v1",
+  "source_revision": "ab8dcece53ff691ee819a87ae18663788e897b4c",
+  "models": [
+    {
+      "topic": "anchor_import",
+      "source": ".flowguard/models/anchor_import_model.py",
+      "source_sha256": "6e3bf80d1b6d6c3bd78b75c83b3be1893c2f929549ff774d85e34a2a0b259a77",
+      "rules": [
+        {
+          "id": "imported_anchor_matches_the_report_row",
+          "description": "import fields come from the report row",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[anchor_import:imported_anchor_matches_the_report_row]",
+          "production_tests": [
+            "tests/unit/test_researchguard_status.py:test_imported_anchor_matches_the_report_row"
+          ]
+        },
+        {
+          "id": "imported_anchor_keeps_research_direction",
+          "description": "an imported anchor takes its relation from the research direction",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[anchor_import:imported_anchor_keeps_research_direction]",
+          "production_tests": [
+            "tests/unit/test_researchguard_status.py:test_imported_anchor_takes_the_research_direction"
+          ]
+        },
+        {
+          "id": "anchors_come_from_research",
+          "description": "with a research folder, every brief anchor is a row of the saved report or carries outside_research",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[anchor_import:anchors_come_from_research]",
+          "production_tests": [
+            "tests/unit/test_evidence_rules.py:test_anchor_outside_the_research_report_fails",
+            "tests/unit/test_evidence_rules.py:test_outside_research_reason_is_a_residual_risk"
+          ]
+        }
+      ],
+      "bad_variants": [
+        {
+          "id": "imported_anchor_ignores_the_report_locator",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[anchor_import:imported_anchor_ignores_the_report_locator]",
+          "rejected_by": [
+            "imported_anchor_matches_the_report_row"
+          ]
+        },
+        {
+          "id": "imported_counter_anchor_marked_support",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[anchor_import:imported_counter_anchor_marked_support]",
+          "rejected_by": [
+            "imported_anchor_keeps_research_direction"
+          ]
+        },
+        {
+          "id": "invented_anchor_is_imported",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[anchor_import:invented_anchor_is_imported]",
+          "rejected_by": [
+            "anchors_come_from_research"
+          ]
+        }
+      ],
+      "production_bindings": [
+        {
+          "symbol": "ImportAnchors",
+          "target": "skills/logic-writing/scripts/reader_fill.py:fill_brief_fingerprints",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[anchor_import]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        }
+      ],
+      "uses": {
+        "Fill": "skills/logic-writing/scripts/researchguard_status.py:fill_anchors_from_research",
+        "BuildBriefRequest": "skills/logic-writing/scripts/build_reader_brief.py:validate_request",
+        "RunChain": "skills/logic-writing/scripts/run_chain.py:run_chain",
+        "DeriveClosure": "skills/logic-writing/scripts/derive_closure.py:derive_closure"
+      },
+      "not_modeled": {},
+      "handoff": {},
+      "functional_destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[anchor_import]"
+    },
+    {
+      "topic": "closure_claim",
+      "source": ".flowguard/models/closure_claim_model.py",
+      "source_sha256": "755418d6f2d1b807da469d1d230b80903caec7ab196c4ba8104bd5597699ee72",
+      "rules": [
+        {
+          "id": "research_report_is_current",
+          "description": "research inputs match the saved report",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[closure_claim:research_report_is_current]",
+          "production_tests": [
+            "tests/unit/test_closure_claim_model.py:test_stale_research_report_fails_the_provider_check",
+            "tests/unit/test_closure_claim_model.py:test_report_missing_a_models_digest_is_stale"
+          ]
+        },
+        {
+          "id": "research_report_belongs_to_the_folder",
+          "description": "a research report counts only for its own research folder",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[closure_claim:research_report_belongs_to_the_folder]",
+          "production_tests": [
+            "tests/unit/test_researchguard_status.py:test_report_from_another_folder_fails_the_provider_check"
+          ]
+        },
+        {
+          "id": "research_verdict_risks_are_preserved",
+          "description": "disagreement and wording boundaries remain honest",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[closure_claim:research_verdict_risks_are_preserved]",
+          "production_tests": [
+            "tests/unit/test_closure_claim_model.py:test_provider_status_is_copied_from_the_report_file"
+          ]
+        },
+        {
+          "id": "broad_claim_needs_every_required_provider",
+          "description": "every required report passes",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[closure_claim:broad_claim_needs_every_required_provider]",
+          "production_tests": [
+            "tests/unit/test_closure_claim_model.py:test_missing_required_provider_report_blocks_the_broad_claim"
+          ]
+        },
+        {
+          "id": "provider_status_is_copied_unchanged",
+          "description": "native status remains unchanged",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[closure_claim:provider_status_is_copied_unchanged]",
+          "production_tests": [
+            "tests/unit/test_closure_claim_model.py:test_provider_status_is_copied_from_the_report_file"
+          ]
+        },
+        {
+          "id": "missing_or_failed_provider_is_named",
+          "description": "all missing or failing providers are named",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[closure_claim:missing_or_failed_provider_is_named]",
+          "production_tests": [
+            "tests/unit/test_closure_claim_model.py:test_unreadable_report_is_not_a_pass"
+          ]
+        }
+      ],
+      "bad_variants": [
+        {
+          "id": "stale_research_report_passes",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[closure_claim:stale_research_report_passes]",
+          "rejected_by": [
+            "research_report_is_current",
+            "broad_claim_needs_every_required_provider",
+            "provider_status_is_copied_unchanged",
+            "missing_or_failed_provider_is_named"
+          ]
+        },
+        {
+          "id": "drops_research_risks",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[closure_claim:drops_research_risks]",
+          "rejected_by": [
+            "research_verdict_risks_are_preserved"
+          ]
+        },
+        {
+          "id": "closure_reads_member_reports",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[closure_claim:closure_reads_member_reports]",
+          "rejected_by": [
+            "broad_claim_needs_every_required_provider",
+            "provider_status_is_copied_unchanged",
+            "missing_or_failed_provider_is_named"
+          ]
+        },
+        {
+          "id": "closure_ignores_provider_reports",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[closure_claim:closure_ignores_provider_reports]",
+          "rejected_by": [
+            "broad_claim_needs_every_required_provider"
+          ]
+        },
+        {
+          "id": "failed_report_read_as_pass",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[closure_claim:failed_report_read_as_pass]",
+          "rejected_by": [
+            "provider_status_is_copied_unchanged"
+          ]
+        },
+        {
+          "id": "missing_provider_not_named",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[closure_claim:missing_provider_not_named]",
+          "rejected_by": [
+            "missing_or_failed_provider_is_named"
+          ]
+        },
+        {
+          "id": "foreign_research_report_passes",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[closure_claim:foreign_research_report_passes]",
+          "rejected_by": [
+            "research_report_belongs_to_the_folder",
+            "broad_claim_needs_every_required_provider",
+            "provider_status_is_copied_unchanged",
+            "missing_or_failed_provider_is_named"
+          ]
+        }
+      ],
+      "production_bindings": [
+        {
+          "symbol": "Reports",
+          "target": "skills/logic-writing/scripts/derive_closure.py:provider_checks",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[closure_claim]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        },
+        {
+          "symbol": "ResearchVerdict",
+          "target": "skills/logic-writing/scripts/researchguard_status.py:assess_research_verdict",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[closure_claim]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        },
+        {
+          "symbol": "ResearchIdentity",
+          "target": "skills/logic-writing/scripts/researchguard_status.py:research_report_identity_problems",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[closure_claim]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        }
+      ],
+      "uses": {
+        "Close": "skills/logic-writing/scripts/derive_closure.py:derive_closure",
+        "WorldIdentity": "skills/logic-writing/scripts/_common.py:worldguard_report_identity_problems",
+        "InputDigests": "skills/logic-writing/scripts/_common.py:input_digest_problems"
+      },
+      "not_modeled": {
+        "skills/logic-writing/scripts/derive_closure.py:main": "Command wrapper: reads the closure request file, calls derive_closure (bound as Close in USES) and writes the closure JSON."
+      },
+      "handoff": {},
+      "functional_destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[closure_claim]"
+    },
+    {
+      "topic": "fiction_tree",
+      "source": ".flowguard/models/fiction_tree_model.py",
+      "source_sha256": "0ddabded08324082ba916fdc10f9b75f915085f21d6a08b910126b130d509f9c",
+      "rules": [
+        {
+          "id": "ledger_units_are_planned_units",
+          "description": "every ledger unit is a planned unit of the composition plan",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[fiction_tree:ledger_units_are_planned_units]",
+          "production_tests": [
+            "tests/unit/test_fiction.py:test_ledger_unit_must_be_a_planned_unit"
+          ]
+        },
+        {
+          "id": "unit_fields_live_only_in_the_plan",
+          "description": "unit identity and order live only in the composition plan",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[fiction_tree:unit_fields_live_only_in_the_plan]",
+          "production_tests": [
+            "tests/unit/test_fiction.py:test_unit_fields_live_only_in_the_plan"
+          ]
+        },
+        {
+          "id": "world_status_comes_from_native_reports",
+          "description": "a world status is read only from a saved WorldGuard report",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[fiction_tree:world_status_comes_from_native_reports]",
+          "production_tests": [
+            "tests/unit/test_fiction.py:test_worldguard_status_comes_from_native_reports"
+          ]
+        },
+        {
+          "id": "emptied_ledger_fails_longform_closure",
+          "description": "long-form closure fails when a declared surface is empty",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[fiction_tree:emptied_ledger_fails_longform_closure]",
+          "production_tests": [
+            "tests/unit/test_fiction.py:test_emptied_ledger_fails_longform_closure"
+          ]
+        }
+      ],
+      "bad_variants": [
+        {
+          "id": "unplanned_ledger_unit_accepted",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[fiction_tree:unplanned_ledger_unit_accepted]",
+          "rejected_by": [
+            "ledger_units_are_planned_units"
+          ]
+        },
+        {
+          "id": "ledger_repeats_plan_fields",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[fiction_tree:ledger_repeats_plan_fields]",
+          "rejected_by": [
+            "unit_fields_live_only_in_the_plan"
+          ]
+        },
+        {
+          "id": "handwritten_world_status_passes",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[fiction_tree:handwritten_world_status_passes]",
+          "rejected_by": [
+            "world_status_comes_from_native_reports"
+          ]
+        },
+        {
+          "id": "empty_ledger_passes",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[fiction_tree:empty_ledger_passes]",
+          "rejected_by": [
+            "emptied_ledger_fails_longform_closure"
+          ]
+        }
+      ],
+      "production_bindings": [
+        {
+          "symbol": "LongformClosure",
+          "target": "skills/logic-writing/routes/fiction/scripts/longform_closure_check.py:validate",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[fiction_tree]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        },
+        {
+          "symbol": "StoryLedger",
+          "target": "skills/logic-writing/routes/fiction/scripts/story_ledger_check.py:validate_ledger",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[fiction_tree]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        },
+        {
+          "symbol": "WorldStatus",
+          "target": "skills/logic-writing/routes/fiction/scripts/story_ledger_check.py:read_worldguard_status",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[fiction_tree]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        },
+        {
+          "symbol": "ArcsThreads",
+          "target": "skills/logic-writing/routes/fiction/scripts/novel_ledger_check.py:validate_arcs_threads",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[fiction_tree]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        },
+        {
+          "symbol": "ProjectSurface",
+          "target": "skills/logic-writing/routes/fiction/scripts/fiction_plan.py:project_surface",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[fiction_tree]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        }
+      ],
+      "uses": {},
+      "not_modeled": {
+        "skills/logic-writing/routes/fiction/scripts/chapter_interface_check.py:Reporter.error": "Collects findings in memory for the report this check prints; the pass or fail decision is made in its validate function.",
+        "skills/logic-writing/routes/fiction/scripts/longform_closure_check.py:Reporter.error": "Collects findings in memory for the report this check prints; the pass or fail decision is made in its validate function.",
+        "skills/logic-writing/routes/fiction/scripts/novel_ledger_check.py:Reporter.issue": "Collects findings in memory for the report this check prints; the pass or fail decision is made in its validate function.",
+        "skills/logic-writing/routes/fiction/scripts/promise_payoff_check.py:Reporter.issue": "Collects findings in memory for the report this check prints; the pass or fail decision is made in its validate function.",
+        "skills/logic-writing/routes/fiction/scripts/scene_contract_check.py:Reporter.issue": "Collects findings in memory for the report this check prints; the pass or fail decision is made in its validate function.",
+        "skills/logic-writing/routes/fiction/scripts/story_contribution_check.py:Reporter.error": "Collects findings in memory for the report this check prints; the pass or fail decision is made in its validate function.",
+        "skills/logic-writing/routes/fiction/scripts/story_contribution_check.py:Reporter.warning": "Collects findings in memory for the report this check prints; the pass or fail decision is made in its validate function.",
+        "skills/logic-writing/routes/fiction/scripts/story_ledger_check.py:Reporter.issue": "Collects findings in memory for the report this check prints; the pass or fail decision is made in its validate function.",
+        "skills/logic-writing/routes/fiction/scripts/storyline_project_mesh_check.py:Reporter.error": "Collects findings in memory for the report this check prints; the pass or fail decision is made in its validate function.",
+        "skills/logic-writing/routes/fiction/scripts/turning_point_check.py:Reporter.issue": "Collects findings in memory for the report this check prints; the pass or fail decision is made in its validate function.",
+        "skills/logic-writing/routes/fiction/scripts/voice_style_continuity_check.py:Reporter.error": "Collects findings in memory for the report this check prints; the pass or fail decision is made in its validate function.",
+        "skills/logic-writing/routes/fiction/scripts/chapter_interface_check.py:main": "Command wrapper that reads one JSON file, calls this script's validate function and prints its report.",
+        "skills/logic-writing/routes/fiction/scripts/longform_closure_check.py:main": "Command wrapper that reads one JSON file, calls this script's validate function and prints its report.",
+        "skills/logic-writing/routes/fiction/scripts/novel_ledger_check.py:main": "Command wrapper that reads one JSON file, calls this script's validate function and prints its report.",
+        "skills/logic-writing/routes/fiction/scripts/promise_payoff_check.py:main": "Command wrapper that reads one JSON file, calls this script's validate function and prints its report.",
+        "skills/logic-writing/routes/fiction/scripts/scene_contract_check.py:main": "Command wrapper that reads one JSON file, calls this script's validate function and prints its report.",
+        "skills/logic-writing/routes/fiction/scripts/story_contribution_check.py:main": "Command wrapper that reads one JSON file, calls this script's validate function and prints its report.",
+        "skills/logic-writing/routes/fiction/scripts/story_ledger_check.py:main": "Command wrapper that reads one JSON file, calls this script's validate function and prints its report.",
+        "skills/logic-writing/routes/fiction/scripts/storyline_project_mesh_check.py:main": "Developer command that runs the declared native fiction validators as subprocesses and prints one project report.",
+        "skills/logic-writing/routes/fiction/scripts/storyline_route_check.py:main": "Command wrapper that reads one JSON file, calls this script's validate function and prints its report.",
+        "skills/logic-writing/routes/fiction/scripts/turning_point_check.py:main": "Command wrapper that reads one JSON file, calls this script's validate function and prints its report.",
+        "skills/logic-writing/routes/fiction/scripts/voice_style_continuity_check.py:main": "Command wrapper that reads one JSON file, calls this script's validate function and prints its report.",
+        "skills/logic-writing/routes/fiction/scripts/storyline_route_check.py:compile_route_decision": "Compiles a storyline route decision record for the fiction regression cases; it decides no closure and the fiction regression replays it.",
+        "skills/logic-writing/routes/fiction/scripts/story_contribution_check.py:validate": "Native surface validator called by longform_closure_check.validate and its finite surface regressions; fiction_tree models shared plan identity and aggregate closure, while this specialized surface keeps its existing domain checks.",
+        "skills/logic-writing/routes/fiction/scripts/voice_style_continuity_check.py:validate": "Native surface validator called by longform_closure_check.validate and its finite surface regressions; fiction_tree models shared plan identity and aggregate closure, while this specialized surface keeps its existing domain checks."
+      },
+      "handoff": {},
+      "functional_destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[fiction_tree]"
+    },
+    {
+      "topic": "known_bad_generator",
+      "source": ".flowguard/models/known_bad_generator_model.py",
+      "source_sha256": "53ed1c985e403fcacca6948489a1c67b0f7a5460aafe0386534b5cf0290bb530",
+      "rules": [
+        {
+          "id": "plan_relation_variants_are_caught",
+          "description": "variants that break plan order and world references are generated and caught",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[known_bad_generator:plan_relation_variants_are_caught]",
+          "production_tests": [
+            "tests/unit/test_reader.py:test_relation_variants_are_generated_and_caught"
+          ]
+        },
+        {
+          "id": "every_variant_is_caught_or_toothless",
+          "description": "each variant is caught or listed as a toothless risk",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[known_bad_generator:every_variant_is_caught_or_toothless]",
+          "production_tests": [
+            "tests/unit/test_known_bad.py:test_uncaught_variant_is_a_toothless_risk"
+          ]
+        },
+        {
+          "id": "variants_only_delete_or_insert_plan_phrases",
+          "description": "variants only delete, truncate or insert plan phrases",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[known_bad_generator:variants_only_delete_or_insert_plan_phrases]",
+          "production_tests": [
+            "tests/unit/test_known_bad.py:test_variants_use_only_existing_words_and_keep_the_original"
+          ]
+        },
+        {
+          "id": "original_text_is_never_changed",
+          "description": "the original piece is never changed",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[known_bad_generator:original_text_is_never_changed]",
+          "production_tests": [
+            "tests/unit/test_known_bad.py:test_variants_use_only_existing_words_and_keep_the_original"
+          ]
+        },
+        {
+          "id": "evidence_variants_are_caught_or_toothless",
+          "description": "every unsupported alternative gets an insert variant and every anchored required unit a strip variant, each caught or reported toothless",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[known_bad_generator:evidence_variants_are_caught_or_toothless]",
+          "production_tests": [
+            "tests/unit/test_known_bad.py:test_unsupported_alternative_variant_is_generated",
+            "tests/unit/test_known_bad.py:test_uncaught_unsupported_variant_is_toothless",
+            "tests/unit/test_known_bad.py:test_noanchor_variant_is_caught_by_the_brief"
+          ]
+        }
+      ],
+      "bad_variants": [
+        {
+          "id": "uncaught_variant_hidden",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[known_bad_generator:uncaught_variant_hidden]",
+          "rejected_by": [
+            "every_variant_is_caught_or_toothless"
+          ]
+        },
+        {
+          "id": "variant_writes_new_words",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[known_bad_generator:variant_writes_new_words]",
+          "rejected_by": [
+            "variants_only_delete_or_insert_plan_phrases"
+          ]
+        },
+        {
+          "id": "variant_edits_the_original",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[known_bad_generator:variant_edits_the_original]",
+          "rejected_by": [
+            "original_text_is_never_changed"
+          ]
+        },
+        {
+          "id": "swapped_units_not_generated",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[known_bad_generator:swapped_units_not_generated]",
+          "rejected_by": [
+            "plan_relation_variants_are_caught"
+          ]
+        },
+        {
+          "id": "unsupported_variant_never_generated",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[known_bad_generator:unsupported_variant_never_generated]",
+          "rejected_by": [
+            "evidence_variants_are_caught_or_toothless"
+          ]
+        }
+      ],
+      "production_bindings": [
+        {
+          "symbol": "CheckKnownBad",
+          "target": "skills/logic-writing/scripts/known_bad.py:check_known_bad",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[known_bad_generator]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        },
+        {
+          "symbol": "TextVariants",
+          "target": "skills/logic-writing/scripts/known_bad.py:text_variants",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[known_bad_generator]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        }
+      ],
+      "uses": {
+        "LoadRequest": "skills/logic-writing/scripts/_common.py:load_request",
+        "DeriveClosure": "skills/logic-writing/scripts/derive_closure.py:derive_closure",
+        "RunChain": "skills/logic-writing/scripts/run_chain.py:run_chain"
+      },
+      "not_modeled": {
+        "skills/logic-writing/scripts/known_bad.py:main": "Command wrapper that prints check_known_bad results or writes the catalog; the catalog bytes are compared with the shipped known-bad folders."
+      },
+      "handoff": {},
+      "functional_destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[known_bad_generator]"
+    },
+    {
+      "topic": "plan_order",
+      "source": ".flowguard/models/plan_order_model.py",
+      "source_sha256": "7a32290b4c7c769f30df00b78f74b9cd868790da3ff4ff2b9034034b42aa2da5",
+      "rules": [
+        {
+          "id": "text_follows_plan_order",
+          "description": "sibling planned units appear in the text in plan order",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[plan_order:text_follows_plan_order]",
+          "production_tests": [
+            "tests/unit/test_reader.py:test_audit_finds_text_out_of_plan_order"
+          ]
+        }
+      ],
+      "bad_variants": [
+        {
+          "id": "swapped_sections_pass",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[plan_order:swapped_sections_pass]",
+          "rejected_by": [
+            "text_follows_plan_order"
+          ]
+        }
+      ],
+      "production_bindings": [
+        {
+          "symbol": "ReaderAudit",
+          "target": "skills/logic-writing/scripts/reader_checks.py:build_reader_audit",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[plan_order]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        }
+      ],
+      "uses": {
+        "RunChain": "skills/logic-writing/scripts/run_chain.py:run_chain"
+      },
+      "not_modeled": {},
+      "handoff": {},
+      "functional_destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[plan_order]"
+    },
+    {
+      "topic": "plan_readback",
+      "source": ".flowguard/models/plan_readback_model.py",
+      "source_sha256": "74df83b1afdd374d44c7f00d44870c3eaaae09f8c2c6b1792d85085f882d5c45",
+      "rules": [
+        {
+          "id": "writer_added_units_are_listed",
+          "description": "every unit whose source is ai is listed as added by the writer",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[plan_readback:writer_added_units_are_listed]",
+          "production_tests": [
+            "tests/unit/test_request_record.py:test_ai_unit_is_listed_as_added_by_the_writer"
+          ]
+        },
+        {
+          "id": "says_line_shows_its_anchors",
+          "description": "each says line names its own anchors, and a unit without one shows [no anchor]",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[plan_readback:says_line_shows_its_anchors]",
+          "production_tests": [
+            "tests/e2e/test_worked_examples.py:test_show_plan_names_anchors_per_says_line"
+          ]
+        },
+        {
+          "id": "readback_is_the_same_from_every_chain_file",
+          "description": "every chain file reads back the same bound units and findings as the binding result",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[plan_readback:readback_is_the_same_from_every_chain_file]",
+          "production_tests": [
+            "tests/e2e/test_worked_examples.py:test_show_plan_reads_back_the_same_from_every_chain_file"
+          ]
+        },
+        {
+          "id": "readback_shows_the_plan_ahead_of_the_text",
+          "description": "planned new units remain readable while binding is blocked",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[plan_readback:readback_shows_the_plan_ahead_of_the_text]",
+          "production_tests": [
+            "tests/e2e/test_worked_examples.py:test_show_plan_reads_back_while_the_plan_is_ahead"
+          ]
+        },
+        {
+          "id": "readback_shows_failing_units",
+          "description": "each failure on a unit is visible under that unit in the readback",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[plan_readback:readback_shows_failing_units]",
+          "production_tests": [
+            "tests/e2e/test_worked_examples.py:test_show_plan_shows_findings_on_the_failing_unit"
+          ]
+        }
+      ],
+      "bad_variants": [
+        {
+          "id": "writer_unit_left_unlisted",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[plan_readback:writer_unit_left_unlisted]",
+          "rejected_by": [
+            "writer_added_units_are_listed",
+            "readback_is_the_same_from_every_chain_file"
+          ]
+        },
+        {
+          "id": "plan_file_reads_back_no_binding",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[plan_readback:plan_file_reads_back_no_binding]",
+          "rejected_by": [
+            "readback_is_the_same_from_every_chain_file"
+          ]
+        },
+        {
+          "id": "blocked_chain_hides_the_plan",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[plan_readback:blocked_chain_hides_the_plan]",
+          "rejected_by": [
+            "readback_is_the_same_from_every_chain_file",
+            "readback_shows_the_plan_ahead_of_the_text"
+          ]
+        },
+        {
+          "id": "readback_hides_findings",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[plan_readback:readback_hides_findings]",
+          "rejected_by": [
+            "readback_is_the_same_from_every_chain_file",
+            "readback_shows_failing_units"
+          ]
+        },
+        {
+          "id": "says_line_hides_a_missing_anchor",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[plan_readback:says_line_hides_a_missing_anchor]",
+          "rejected_by": [
+            "says_line_shows_its_anchors",
+            "readback_is_the_same_from_every_chain_file"
+          ]
+        }
+      ],
+      "production_bindings": [
+        {
+          "symbol": "ShowPlan",
+          "target": "skills/logic-writing/scripts/show_plan.py:main",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[plan_readback]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        },
+        {
+          "symbol": "PlanView",
+          "target": "skills/logic-writing/scripts/show_plan.py:plan_view",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[plan_readback]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        },
+        {
+          "symbol": "RenderPlan",
+          "target": "skills/logic-writing/scripts/show_plan.py:render_plan",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[plan_readback]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        }
+      ],
+      "uses": {
+        "CliValidate": "skills/logic-writing/scripts/_common.py:cli_validate",
+        "ValidateSharedWriting": "skills/logic-writing/scripts/validate_shared_writing.py:validate_shared_writing",
+        "RunChain": "skills/logic-writing/scripts/run_chain.py:run_chain",
+        "RunChainCli": "skills/logic-writing/scripts/run_chain.py:main"
+      },
+      "not_modeled": {},
+      "handoff": {},
+      "functional_destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[plan_readback]"
+    },
+    {
+      "topic": "provider_preflight",
+      "source": ".flowguard/models/provider_preflight_model.py",
+      "source_sha256": "d78fe03165665eda9c3ce0a954f661a4e187e20c9c9b99a7d073b2d50ed415b2",
+      "rules": [
+        {
+          "id": "researchguard_status_is_primary",
+          "description": "ResearchGuard question status uses its own primary console command",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[provider_preflight:researchguard_status_is_primary]",
+          "production_tests": [
+            "tests/unit/test_researchguard_provider_topology.py:test_researchguard_status_uses_one_console"
+          ]
+        },
+        {
+          "id": "members_use_one_console",
+          "description": "ResearchGuard status and three semantic members use one console",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[provider_preflight:members_use_one_console]",
+          "production_tests": [
+            "tests/unit/test_researchguard_provider_topology.py:test_each_member_uses_one_researchguard_console",
+            "tests/unit/test_researchguard_provider_topology.py:test_researchguard_status_uses_one_console",
+            "tests/unit/test_researchguard_provider_topology.py:test_console_on_path_is_used_when_researchguard_is_in_another_python"
+          ]
+        },
+        {
+          "id": "no_alternate_provider_path",
+          "description": "no provider-root override and no out-of-scope provider runs",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[provider_preflight:no_alternate_provider_path]",
+          "production_tests": [
+            "tests/unit/test_researchguard_provider_topology.py:test_member_provider_root_is_rejected_before_console_execution",
+            "tests/unit/test_researchguard_provider_topology.py:test_scope_out_provider_runs_no_console"
+          ]
+        },
+        {
+          "id": "path_console_is_used",
+          "description": "ResearchGuard installed in another Python is used through PATH",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[provider_preflight:path_console_is_used]",
+          "production_tests": [
+            "tests/unit/test_researchguard_provider_topology.py:test_console_on_path_is_used_when_researchguard_is_in_another_python"
+          ]
+        },
+        {
+          "id": "path_console_meets_minimum",
+          "description": "a missing or too-old console on PATH blocks and names the install command",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[provider_preflight:path_console_meets_minimum]",
+          "production_tests": [
+            "tests/unit/test_researchguard_provider_topology.py:test_too_old_console_on_path_blocks_with_the_install_message",
+            "tests/unit/test_researchguard_provider_topology.py:test_missing_console_blocks_without_old_module_import"
+          ]
+        }
+      ],
+      "bad_variants": [
+        {
+          "id": "researchguard_status_uses_logic",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[provider_preflight:researchguard_status_uses_logic]",
+          "rejected_by": [
+            "researchguard_status_is_primary"
+          ]
+        },
+        {
+          "id": "provider_root_accepted",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[provider_preflight:provider_root_accepted]",
+          "rejected_by": [
+            "members_use_one_console",
+            "no_alternate_provider_path"
+          ]
+        },
+        {
+          "id": "path_console_ignored",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[provider_preflight:path_console_ignored]",
+          "rejected_by": [
+            "path_console_is_used"
+          ]
+        },
+        {
+          "id": "old_path_console_accepted",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[provider_preflight:old_path_console_accepted]",
+          "rejected_by": [
+            "path_console_meets_minimum"
+          ]
+        }
+      ],
+      "production_bindings": [
+        {
+          "symbol": "ProviderPreflight",
+          "target": "skills/logic-writing/scripts/provider_preflight.py:preflight",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[provider_preflight]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        }
+      ],
+      "uses": {},
+      "not_modeled": {
+        "skills/logic-writing/scripts/provider_preflight.py:main": "Command wrapper: reads the provider name from the command line, calls preflight (anchored as ProviderPreflight) and prints its JSON result."
+      },
+      "handoff": {},
+      "functional_destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[provider_preflight]"
+    },
+    {
+      "topic": "reader_artifact",
+      "source": ".flowguard/models/reader_artifact_model.py",
+      "source_sha256": "4861a104114cc29c29fd9adc78f646306a5588c9153c0689c14cb89ed1fe56a9",
+      "rules": [
+        {
+          "id": "closure_requires_current_artifact",
+          "description": "closure passes only on a review of the current bytes",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[reader_artifact:closure_requires_current_artifact]",
+          "production_tests": [
+            "tests/unit/test_reader_artifact_model.py:test_complete_current_chain_closes",
+            "tests/e2e/test_reader_v2_benchmark.py:test_each_route_exposes_repair_and_stale_edit",
+            "tests/unit/test_academic.py:test_academic_closure_binds_revision_and_actual_artifact_chain"
+          ]
+        },
+        {
+          "id": "independent_reader_required",
+          "description": "a broad claim requires an independent reader context",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[reader_artifact:independent_reader_required]",
+          "production_tests": [
+            "tests/unit/test_reader.py:test_judge_must_be_independent",
+            "tests/unit/test_reader_artifact_model.py:test_self_review_closes_without_a_broad_claim",
+            "tests/adversarial/test_boundaries.py:test_same_agent_cannot_self_judge"
+          ]
+        },
+        {
+          "id": "needs_repair_never_passes",
+          "description": "a review that asks for repair never closes as passed",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[reader_artifact:needs_repair_never_passes]",
+          "production_tests": [
+            "tests/unit/test_reader_artifact_model.py:test_quality_failure_needs_repair",
+            "tests/e2e/test_routes.py:test_route_quality_repair_cannot_be_overwritten_by_shared_kernel",
+            "tests/unit/test_academic.py:test_academic_route_review_failure_blocks_final_claim"
+          ]
+        },
+        {
+          "id": "closure_belongs_to_the_final_owner",
+          "description": "only the final owner that wrote the artifact closes it",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[reader_artifact:closure_belongs_to_the_final_owner]",
+          "production_tests": [
+            "tests/e2e/test_routes.py:test_each_final_owner_delivers_one_complete_current_artifact"
+          ]
+        }
+      ],
+      "bad_variants": [
+        {
+          "id": "close_ignores_edits",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[reader_artifact:close_ignores_edits]",
+          "rejected_by": [
+            "closure_requires_current_artifact"
+          ]
+        },
+        {
+          "id": "close_accepts_self_review",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[reader_artifact:close_accepts_self_review]",
+          "rejected_by": [
+            "independent_reader_required"
+          ]
+        },
+        {
+          "id": "repair_reported_as_pass",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[reader_artifact:repair_reported_as_pass]",
+          "rejected_by": [
+            "needs_repair_never_passes"
+          ]
+        },
+        {
+          "id": "closure_for_sibling_owner",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[reader_artifact:closure_for_sibling_owner]",
+          "rejected_by": [
+            "closure_belongs_to_the_final_owner"
+          ]
+        },
+        {
+          "id": "order_mismatch_passes",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[reader_artifact:order_mismatch_passes]",
+          "rejected_by": [
+            "needs_repair_never_passes"
+          ]
+        },
+        {
+          "id": "chain_ignores_failed_step",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[reader_artifact:chain_ignores_failed_step]",
+          "rejected_by": [
+            "needs_repair_never_passes"
+          ]
+        }
+      ],
+      "production_bindings": [
+        {
+          "symbol": "BuildReaderBrief",
+          "target": "skills/logic-writing/scripts/reader_plan.py:build_reader_brief",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[reader_artifact]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        },
+        {
+          "symbol": "BuildArtifactMap",
+          "target": "skills/logic-writing/scripts/artifact_map.py:build_artifact_map",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[reader_artifact]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        },
+        {
+          "symbol": "RouteReview",
+          "target": "skills/logic-writing/scripts/reader_checks.py:route_review_from_current",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[reader_artifact]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        },
+        {
+          "symbol": "ReaderJudgment",
+          "target": "skills/logic-writing/scripts/reader_checks.py:reader_judgment_from_current",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[reader_artifact]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        },
+        {
+          "symbol": "DeriveClosure",
+          "target": "skills/logic-writing/scripts/derive_closure.py:derive_closure",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[reader_artifact]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        },
+        {
+          "symbol": "RunChain",
+          "target": "skills/logic-writing/scripts/run_chain.py:run_chain",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[reader_artifact]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        }
+      ],
+      "uses": {
+        "ReaderAudit": "skills/logic-writing/scripts/reader_checks.py:build_reader_audit"
+      },
+      "not_modeled": {
+        "skills/logic-writing/scripts/reader_checks.py:validate_route_artifact_review": "Public review entry of the four route commands: it validates the map, route and binding, then returns route_review_from_current, which this model replays as RouteReview.",
+        "skills/logic-writing/scripts/build_source_unit_manifest.py:main": "Command that writes the source-unit manifest of an existing text for a revision; validate_revision_provenance checks its result."
+      },
+      "handoff": {
+        "plan_order_model": {
+          "order_audit": [
+            "order_audit",
+            {
+              "passed": "passed",
+              "plan_order_mismatch": "repair"
+            }
+          ]
+        }
+      },
+      "functional_destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[reader_artifact]"
+    },
+    {
+      "topic": "reader_evidence",
+      "source": ".flowguard/models/reader_evidence_model.py",
+      "source_sha256": "0fcb7be6cc5fb672b3a0c62f9062b71456baea6040de6b978a3bef674cdfdbaa",
+      "rules": [
+        {
+          "id": "closure_requires_support",
+          "description": "a required unit closes only with an evidence anchor that is not only counter, or a stated unsupported_reason",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[reader_evidence:closure_requires_support]",
+          "production_tests": [
+            "tests/unit/test_evidence_rules.py:test_unit_without_anchor_is_unsupported",
+            "tests/unit/test_evidence_rules.py:test_unsupported_reason_is_a_residual_risk",
+            "tests/unit/test_evidence_rules.py:test_shipped_examples_meet_the_evidence_rules",
+            "tests/unit/test_evidence_rules.py:test_evidence_scope_boundaries"
+          ]
+        },
+        {
+          "id": "closure_refuses_unsupported_restatement",
+          "description": "a required unit that restates an unsupported alternative does not close unless it answers it",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[reader_evidence:closure_refuses_unsupported_restatement]",
+          "production_tests": [
+            "tests/unit/test_evidence_rules.py:test_unit_restating_an_unsupported_alternative_fails",
+            "tests/unit/test_evidence_rules.py:test_answered_unsupported_alternative_is_allowed"
+          ]
+        },
+        {
+          "id": "request_quote_is_verbatim",
+          "description": "a request unit's quote occurs verbatim in the stored request",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[reader_evidence:request_quote_is_verbatim]",
+          "production_tests": [
+            "tests/unit/test_request_record.py:test_quote_not_in_request_fails",
+            "tests/unit/test_request_record.py:test_brief_without_request_is_refused_with_the_fix"
+          ]
+        }
+      ],
+      "bad_variants": [
+        {
+          "id": "unit_without_anchor_closes",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[reader_evidence:unit_without_anchor_closes]",
+          "rejected_by": [
+            "closure_requires_support"
+          ]
+        },
+        {
+          "id": "unsupported_restatement_closes",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[reader_evidence:unsupported_restatement_closes]",
+          "rejected_by": [
+            "closure_refuses_unsupported_restatement"
+          ]
+        },
+        {
+          "id": "paraphrased_request_quote_passes",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[reader_evidence:paraphrased_request_quote_passes]",
+          "rejected_by": [
+            "request_quote_is_verbatim"
+          ]
+        }
+      ],
+      "production_bindings": [
+        {
+          "symbol": "BuildBriefRequest",
+          "target": "skills/logic-writing/scripts/build_reader_brief.py:validate_request",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[reader_evidence]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        }
+      ],
+      "uses": {
+        "BuildReaderBrief": "skills/logic-writing/scripts/reader_plan.py:build_reader_brief",
+        "DeriveClosure": "skills/logic-writing/scripts/derive_closure.py:derive_closure",
+        "RunChain": "skills/logic-writing/scripts/run_chain.py:run_chain",
+        "CurrentReaderAudit": "skills/logic-writing/scripts/reader_checks.py:build_reader_audit_from_current",
+        "FillCheckFingerprints": "skills/logic-writing/scripts/reader_fill.py:fill_check_fingerprints",
+        "FillClosureFingerprints": "skills/logic-writing/scripts/reader_fill.py:fill_closure_fingerprints"
+      },
+      "not_modeled": {},
+      "handoff": {},
+      "functional_destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[reader_evidence]"
+    },
+    {
+      "topic": "reader_review",
+      "source": ".flowguard/models/reader_review_model.py",
+      "source_sha256": "f65772a07322ddb87eb079f25a7f42b80f04e137bdc2a6dbabdf60f1f60ce107",
+      "rules": [
+        {
+          "id": "review_belongs_to_text",
+          "description": "a review closes only the text and plan it was stamped on, covers every required unit, and is re-stamped on edited text only after quoting the whole sentence of each change, headings and title included; without its saved copy a review never stamped is stamped only as a declared first review, and one stamped before only on the text its sealed stamp names",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[reader_review:review_belongs_to_text]",
+          "production_tests": [
+            "tests/unit/test_review_stamp.py:test_stamp_review_writes_the_fingerprints",
+            "tests/unit/test_review_stamp.py:test_edited_text_makes_the_stamped_review_stale",
+            "tests/unit/test_review_stamp.py:test_unstamped_review_is_refused_with_the_command",
+            "tests/unit/test_review_stamp.py:test_required_unit_missing_from_the_review_fails",
+            "tests/unit/test_review_stamp.py:test_fingerprints_ignore_time_fields",
+            "tests/unit/test_review_stamp.py:test_stamp_failure_keeps_the_review_bytes",
+            "tests/unit/test_review_stamp.py:test_moving_a_stamped_folder_keeps_its_review",
+            "tests/unit/test_review_stamp.py:test_complete_repair_review_can_be_stamped",
+            "tests/unit/test_review_reread.py:test_restamping_an_edit_without_rereading_it_is_refused",
+            "tests/unit/test_review_reread.py:test_quoting_the_new_wording_lets_the_review_be_stamped_again",
+            "tests/unit/test_review_reread.py:test_removing_the_stamp_does_not_skip_the_reread",
+            "tests/unit/test_review_reread.py:test_a_changed_heading_or_title_must_be_quoted_again",
+            "tests/unit/test_review_reread.py:test_removing_the_saved_copy_and_the_stamp_is_not_a_first_review",
+            "tests/unit/test_review_reread.py:test_a_review_never_stamped_needs_a_declared_first_review",
+            "tests/unit/test_review_reread.py:test_a_saved_copy_rewritten_to_the_new_text_is_refused",
+            "tests/unit/test_review_reread.py:test_a_review_stamped_before_cannot_be_declared_a_first_review",
+            "tests/unit/test_review_reread.py:test_a_lost_copy_is_saved_again_only_on_the_text_its_sealed_stamp_names",
+            "tests/unit/test_review_reread.py:test_a_quote_of_the_changed_word_alone_is_not_a_reread"
+          ]
+        }
+      ],
+      "bad_variants": [
+        {
+          "id": "edited_text_keeps_the_old_review",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[reader_review:edited_text_keeps_the_old_review]",
+          "rejected_by": [
+            "review_belongs_to_text"
+          ]
+        },
+        {
+          "id": "moved_folder_stales_the_review",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[reader_review:moved_folder_stales_the_review]",
+          "rejected_by": [
+            "review_belongs_to_text"
+          ]
+        },
+        {
+          "id": "restamp_certifies_unread_text",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[reader_review:restamp_certifies_unread_text]",
+          "rejected_by": [
+            "review_belongs_to_text"
+          ]
+        },
+        {
+          "id": "restamp_skips_headings",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[reader_review:restamp_skips_headings]",
+          "rejected_by": [
+            "review_belongs_to_text"
+          ]
+        },
+        {
+          "id": "removed_record_starts_over",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[reader_review:removed_record_starts_over]",
+          "rejected_by": [
+            "review_belongs_to_text"
+          ]
+        },
+        {
+          "id": "one_word_quote_rereads",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[reader_review:one_word_quote_rereads]",
+          "rejected_by": [
+            "review_belongs_to_text"
+          ]
+        },
+        {
+          "id": "stamped_review_redeclared_first",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[reader_review:stamped_review_redeclared_first]",
+          "rejected_by": [
+            "review_belongs_to_text"
+          ]
+        }
+      ],
+      "production_bindings": [
+        {
+          "symbol": "StampReview",
+          "target": "skills/logic-writing/scripts/run_chain.py:_stamp_review",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[reader_review]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        },
+        {
+          "symbol": "PreserveJudgment",
+          "target": "skills/logic-writing/scripts/reader_fill.py:fill_closure_fingerprints",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[reader_review]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        }
+      ],
+      "uses": {
+        "StampCommand": "skills/logic-writing/scripts/run_chain.py:main",
+        "ReaderJudgment": "skills/logic-writing/scripts/reader_checks.py:reader_judgment_from_current",
+        "RunChain": "skills/logic-writing/scripts/run_chain.py:run_chain",
+        "Close": "skills/logic-writing/scripts/derive_closure.py:derive_closure"
+      },
+      "not_modeled": {},
+      "handoff": {},
+      "functional_destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[reader_review]"
+    },
+    {
+      "topic": "route_review",
+      "source": ".flowguard/models/route_review_model.py",
+      "source_sha256": "a24f47fdc46d89c4b03f323784ca3275ffecc5d7807ebf5cccbf24254bb395d5",
+      "rules": [
+        {
+          "id": "route_command_reviews_for_its_own_owner",
+          "description": "a sibling route brief is refused",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[route_review:route_command_reviews_for_its_own_owner]",
+          "production_tests": [
+            "tests/unit/test_route_review.py:test_route_command_reviews_for_its_own_owner"
+          ]
+        },
+        {
+          "id": "failed_review_is_partial",
+          "description": "only a passed review is current_pass",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[route_review:failed_review_is_partial]",
+          "production_tests": [
+            "tests/unit/test_route_review.py:test_failed_route_review_is_partial"
+          ]
+        }
+      ],
+      "bad_variants": [
+        {
+          "id": "route_command_uses_another_owner",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[route_review:route_command_uses_another_owner]",
+          "rejected_by": [
+            "route_command_reviews_for_its_own_owner"
+          ]
+        },
+        {
+          "id": "failed_review_reported_current",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[route_review:failed_review_reported_current]",
+          "rejected_by": [
+            "failed_review_is_partial"
+          ]
+        }
+      ],
+      "production_bindings": [
+        {
+          "symbol": "ReviewAcademic",
+          "target": "skills/logic-writing/routes/academic/scripts/validate_academic_artifact.py:validate_academic_artifact",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[route_review]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        },
+        {
+          "symbol": "ReviewFiction",
+          "target": "skills/logic-writing/routes/fiction/scripts/validate_fiction_artifact.py:validate_fiction_artifact",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[route_review]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        },
+        {
+          "symbol": "ReviewInvestigation",
+          "target": "skills/logic-writing/routes/investigation/scripts/validate_investigation_artifact.py:validate_investigation_artifact",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[route_review]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        },
+        {
+          "symbol": "ReviewTravel",
+          "target": "skills/logic-writing/routes/travel/scripts/validate_travel_artifact.py:validate_travel_artifact",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[route_review]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        }
+      ],
+      "uses": {
+        "Review": "skills/logic-writing/scripts/reader_checks.py:validate_route_artifact_review"
+      },
+      "not_modeled": {
+        "skills/logic-writing/routes/fiction/scripts/run_native_regression.py:main": "Fiction regression driver that runs the native fiction validators on their example cases; covered by scripts/run_fiction_regression.py in CI.",
+        "skills/logic-writing/routes/fiction/scripts/run_route_regression.py:main": "Fiction regression driver that runs the route cases and compares their expected codes; covered by scripts/run_fiction_regression.py in CI.",
+        "skills/logic-writing/routes/travel/scripts/validate_failure_cases.py:main": "Travel regression command that applies each failure case to the base trip and compares its expected issue codes.",
+        "skills/logic-writing/routes/travel/scripts/validate_positive_cases.py:main": "Travel regression command that applies each positive case to the base trip and expects no issue.",
+        "skills/logic-writing/routes/travel/scripts/validate_travel_plan.py:main": "Command wrapper that prints the issues of travel_contract.review_plan for one plan file.",
+        "skills/logic-writing/routes/travel/scripts/validate_travel_text_outputs.py:main": "Travel text regression command for saved guide texts; tests/unit/test_travel.py runs it on a good and a bullet-only guide.",
+        "skills/logic-writing/routes/fiction/scripts/run_longform_regression.py:main": "The finite regression driver executes native domain validators; its subprocess/output wrapper is tested by the fiction regression contract, while the domain validators own writing semantics.",
+        "skills/logic-writing/routes/fiction/scripts/run_story_model_mesh_regression.py:main": "Finite developer regression orchestration writes only requested report files and is covered by native fiction regression checks, not a separate writing-state machine."
+      },
+      "handoff": {},
+      "functional_destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[route_review]"
+    },
+    {
+      "topic": "route_selection",
+      "source": ".flowguard/models/route_selection_model.py",
+      "source_sha256": "2f75c31bd5c5b3c040d2d34f6677ceed9f9c15921421c9a222640a7a93c97e00",
+      "rules": [
+        {
+          "id": "open_material_choice_blocks",
+          "description": "a material choice stops routing until the user answers",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[route_selection:open_material_choice_blocks]",
+          "production_tests": [
+            "tests/unit/test_routing.py:test_open_material_choice_asks_the_user_first"
+          ]
+        },
+        {
+          "id": "exactly_one_final_owner",
+          "description": "one request has exactly one final owner, or none",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[route_selection:exactly_one_final_owner]",
+          "production_tests": [
+            "tests/unit/test_routing.py:test_terminal_deliverable_selects_exactly_one_owner",
+            "tests/unit/test_routing.py:test_ambiguous_deliverable_blocks_without_guessing_owner"
+          ]
+        },
+        {
+          "id": "owner_follows_the_terminal_deliverable",
+          "description": "the owner comes from the terminal deliverable",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[route_selection:owner_follows_the_terminal_deliverable]",
+          "production_tests": [
+            "tests/unit/test_routing.py:test_terminal_deliverable_selects_exactly_one_owner",
+            "tests/unit/test_routing.py:test_material_reader_intent_conflict_blocks_drafting"
+          ]
+        },
+        {
+          "id": "bounded_research_is_a_child",
+          "description": "research is a bounded investigation child",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[route_selection:bounded_research_is_a_child]",
+          "production_tests": [
+            "tests/unit/test_routing.py:test_bounded_research_is_child_not_final_owner"
+          ]
+        }
+      ],
+      "bad_variants": [
+        {
+          "id": "open_choice_ignored",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[route_selection:open_choice_ignored]",
+          "rejected_by": [
+            "open_material_choice_blocks"
+          ]
+        },
+        {
+          "id": "research_child_takes_ownership",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[route_selection:research_child_takes_ownership]",
+          "rejected_by": [
+            "owner_follows_the_terminal_deliverable"
+          ]
+        },
+        {
+          "id": "owner_also_a_child",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[route_selection:owner_also_a_child]",
+          "rejected_by": [
+            "exactly_one_final_owner",
+            "bounded_research_is_a_child"
+          ]
+        },
+        {
+          "id": "research_child_not_bounded",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[route_selection:research_child_not_bounded]",
+          "rejected_by": [
+            "bounded_research_is_a_child"
+          ]
+        }
+      ],
+      "production_bindings": [
+        {
+          "symbol": "SelectRoute",
+          "target": "skills/logic-writing/scripts/select_route.py:select_route",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[route_selection]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        }
+      ],
+      "uses": {
+        "CompleteRequest": "skills/logic-writing/scripts/select_route.py:complete_request"
+      },
+      "not_modeled": {},
+      "handoff": {},
+      "functional_destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[route_selection]"
+    },
+    {
+      "topic": "shared_contracts",
+      "source": ".flowguard/models/shared_contracts_model.py",
+      "source_sha256": "f3a093e25d0322ab3fc1d7473ce6451f2e9e69a033959f70e93aeeba1e1ea2ef",
+      "rules": [
+        {
+          "id": "schema_violation_raises_one_error_type",
+          "description": "invalid records raise one detailed typed error; valid input is unchanged",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[shared_contracts:schema_violation_raises_one_error_type]",
+          "production_tests": [
+            "tests/contract/test_schema_runtime_gate.py:test_assertion_raises_one_contract_error_vocabulary"
+          ]
+        }
+      ],
+      "bad_variants": [
+        {
+          "id": "invalid_record_passes_schema",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[shared_contracts:invalid_record_passes_schema]",
+          "rejected_by": [
+            "schema_violation_raises_one_error_type"
+          ]
+        }
+      ],
+      "production_bindings": [
+        {
+          "symbol": "Validate",
+          "target": "skills/logic-writing/scripts/schema_validation.py:assert_schema_valid",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[shared_contracts]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        }
+      ],
+      "uses": {},
+      "not_modeled": {},
+      "handoff": {},
+      "functional_destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[shared_contracts]"
+    },
+    {
+      "topic": "shared_writing_binding",
+      "source": ".flowguard/models/shared_writing_binding_model.py",
+      "source_sha256": "d9de324480f51192c1fefc50f4a80b79be0d51651b0ec93c079d3f9fbab294c5",
+      "rules": [
+        {
+          "id": "quote_is_unique_and_at_least_12_chars",
+          "description": "quotations must be unique current passages of at least twelve characters",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[shared_writing_binding:quote_is_unique_and_at_least_12_chars]",
+          "production_tests": [
+            "tests/unit/test_shared_writing.py:test_current_plan_to_byte_binding_passes",
+            "tests/unit/test_shared_writing.py:test_required_plan_unit_must_bind_actual_span",
+            "tests/unit/test_shared_writing.py:test_missing_quote_fails_the_binding",
+            "tests/unit/test_shared_writing.py:test_ambiguous_quote_asks_for_a_longer_one",
+            "tests/unit/test_shared_writing.py:test_quote_and_unit_id_must_agree",
+            "tests/unit/test_shared_writing.py:test_library_rechecks_the_quote_on_a_completed_contract"
+          ]
+        },
+        {
+          "id": "vanished_unit_is_named_before_fingerprints",
+          "description": "a vanished artifact unit is named before filling identity fingerprints",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[shared_writing_binding:vanished_unit_is_named_before_fingerprints]",
+          "production_tests": [
+            "tests/unit/test_shared_writing.py:test_binding_to_a_vanished_unit_names_the_unit_before_any_fill"
+          ]
+        },
+        {
+          "id": "stale_artifact_is_rejected",
+          "description": "a material byte change invalidates the earlier binding",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[shared_writing_binding:stale_artifact_is_rejected]",
+          "production_tests": [
+            "tests/unit/test_shared_writing.py:test_material_byte_change_stales_artifact_map"
+          ]
+        }
+      ],
+      "bad_variants": [
+        {
+          "id": "accept_short_quote",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[shared_writing_binding:accept_short_quote]",
+          "rejected_by": [
+            "quote_is_unique_and_at_least_12_chars"
+          ]
+        },
+        {
+          "id": "accept_ambiguous_quote",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[shared_writing_binding:accept_ambiguous_quote]",
+          "rejected_by": [
+            "quote_is_unique_and_at_least_12_chars"
+          ]
+        },
+        {
+          "id": "accept_stale_artifact",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[shared_writing_binding:accept_stale_artifact]",
+          "rejected_by": [
+            "vanished_unit_is_named_before_fingerprints"
+          ]
+        }
+      ],
+      "production_bindings": [
+        {
+          "symbol": "ValidateBinding",
+          "target": "skills/logic-writing/scripts/reader_binding.py:validate_shared_writing",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[shared_writing_binding]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        },
+        {
+          "symbol": "ResolveQuote",
+          "target": "skills/logic-writing/scripts/reader_binding.py:_resolve_quote",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[shared_writing_binding]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        },
+        {
+          "symbol": "QuoteUnits",
+          "target": "skills/logic-writing/scripts/reader_binding.py:quote_binding_units",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[shared_writing_binding]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        }
+      ],
+      "uses": {
+        "BuildArtifactMap": "skills/logic-writing/scripts/artifact_map.py:build_artifact_map",
+        "FillCheckFingerprints": "skills/logic-writing/scripts/reader_fill.py:fill_check_fingerprints"
+      },
+      "not_modeled": {},
+      "handoff": {},
+      "functional_destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[shared_writing_binding]"
+    },
+    {
+      "topic": "skill_install",
+      "source": ".flowguard/models/skill_install_model.py",
+      "source_sha256": "4764f9a030f1f7d6f180ea55f3cad1f920f69a266e1970fc97f2485d4d8705b7",
+      "rules": [
+        {
+          "id": "check_fails_on_a_changed_copy",
+          "description": "one changed installed byte fails check",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[skill_install:check_fails_on_a_changed_copy]",
+          "production_tests": [
+            "tests/contract/test_install_skill.py:test_check_fails_on_a_changed_copy_in_process"
+          ]
+        }
+      ],
+      "bad_variants": [
+        {
+          "id": "check_ignores_a_changed_copy",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[skill_install:check_ignores_a_changed_copy]",
+          "rejected_by": [
+            "check_fails_on_a_changed_copy"
+          ]
+        }
+      ],
+      "production_bindings": [
+        {
+          "symbol": "Install",
+          "target": "scripts/install_skill.py:main",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[skill_install]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        }
+      ],
+      "uses": {},
+      "not_modeled": {
+        "scripts/check_privacy.py:main": "Release maintenance command covered by tests/contract/test_privacy_scan.py.",
+        "scripts/check_public_docs.py:main": "Release maintenance command covered by tests/contract/test_release_wrappers.py.",
+        "scripts/run_fiction_regression.py:main": "Release maintenance command that runs the fiction regressions in CI; covered by tests/unit/test_fiction.py.",
+        "scripts/run_travel_regression.py:main": "Release maintenance command that runs the travel regressions in CI.",
+        "scripts/validate_skill.py:main": "Release maintenance command covered by tests/contract/test_install_skill.py."
+      },
+      "handoff": {},
+      "functional_destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[skill_install]"
+    },
+    {
+      "topic": "trip_feasibility",
+      "source": ".flowguard/models/trip_feasibility_model.py",
+      "source_sha256": "111fae914f1cedb8d9c40932a0bbf2d4b6ebc8decd592daf9d8ad05b5d29a990",
+      "rules": [
+        {
+          "id": "handwritten_world_status_is_rejected",
+          "description": "world status comes only from saved WorldGuard reports",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[trip_feasibility:handwritten_world_status_is_rejected]",
+          "production_tests": [
+            "tests/unit/test_travel.py:test_handwritten_world_status_is_rejected"
+          ]
+        },
+        {
+          "id": "claim_level_never_exceeds_saved_evidence",
+          "description": "a requested claim above the derived level is an issue",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[trip_feasibility:claim_level_never_exceeds_saved_evidence]",
+          "production_tests": [
+            "tests/unit/test_travel.py:test_requested_claim_level_cannot_exceed_saved_evidence"
+          ]
+        },
+        {
+          "id": "failing_world_report_limits_the_claim",
+          "description": "a failing saved world report allows only initial planning",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[trip_feasibility:failing_world_report_limits_the_claim]",
+          "production_tests": [
+            "tests/unit/test_travel.py:test_failing_world_report_limits_the_claim_level"
+          ]
+        },
+        {
+          "id": "composition_refs_resolve_in_the_trip_plan",
+          "description": "composition refs name routes and nodes of the trip plan",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[trip_feasibility:composition_refs_resolve_in_the_trip_plan]",
+          "production_tests": [
+            "tests/unit/test_travel.py:test_composition_refs_resolve_in_the_trip_plan"
+          ]
+        },
+        {
+          "id": "fallbacks_are_reachable",
+          "description": "every fallback is reachable from a route node",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[trip_feasibility:fallbacks_are_reachable]",
+          "production_tests": [
+            "tests/unit/test_travel.py:test_native_travel_plan_preserves_fallback_reachability"
+          ]
+        }
+      ],
+      "bad_variants": [
+        {
+          "id": "handwritten_pass_accepted",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[trip_feasibility:handwritten_pass_accepted]",
+          "rejected_by": [
+            "handwritten_world_status_is_rejected"
+          ]
+        },
+        {
+          "id": "claim_level_raised_without_evidence",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[trip_feasibility:claim_level_raised_without_evidence]",
+          "rejected_by": [
+            "claim_level_never_exceeds_saved_evidence"
+          ]
+        },
+        {
+          "id": "failing_world_report_ignored",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[trip_feasibility:failing_world_report_ignored]",
+          "rejected_by": [
+            "failing_world_report_limits_the_claim"
+          ]
+        },
+        {
+          "id": "unknown_composition_ref_accepted",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[trip_feasibility:unknown_composition_ref_accepted]",
+          "rejected_by": [
+            "composition_refs_resolve_in_the_trip_plan"
+          ]
+        },
+        {
+          "id": "unreachable_fallback_accepted",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[trip_feasibility:unreachable_fallback_accepted]",
+          "rejected_by": [
+            "fallbacks_are_reachable"
+          ]
+        }
+      ],
+      "production_bindings": [
+        {
+          "symbol": "ReviewPlan",
+          "target": "skills/logic-writing/routes/travel/scripts/travel_contract.py:review_plan",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[trip_feasibility]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        },
+        {
+          "symbol": "ClaimLevel",
+          "target": "skills/logic-writing/routes/travel/scripts/travel_contract.py:derive_allowed_claim_level",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[trip_feasibility]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        },
+        {
+          "symbol": "CompositionRefs",
+          "target": "skills/logic-writing/routes/travel/scripts/travel_contract.py:validate_composition_refs",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[trip_feasibility]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        }
+      ],
+      "uses": {
+        "ApplyMutations": "skills/logic-writing/routes/travel/scripts/fixture_mutation.py:apply_mutations"
+      },
+      "not_modeled": {
+        "skills/logic-writing/routes/travel/scripts/travel_contract.py:validate_plan_file": "Reads one plan file and returns the issues of review_plan, which this model replays; file-read errors become plan.file issues."
+      },
+      "handoff": {},
+      "functional_destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[trip_feasibility]"
+    },
+    {
+      "topic": "wording_license",
+      "source": ".flowguard/models/wording_license_model.py",
+      "source_sha256": "0ec2d4f0e7b8019c9bd6bd33d2ba5623e4e28979998d5ef92e0e3e29d1acef06",
+      "rules": [
+        {
+          "id": "wording_within_license",
+          "description": "when the saved report withholds or qualifies the root claim, a required unit citing an anchor that supports it also carries a limit",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[wording_license:wording_within_license]",
+          "production_tests": [
+            "tests/unit/test_evidence_rules.py:test_withheld_root_claim_needs_a_limit",
+            "tests/unit/test_evidence_rules.py:test_limit_anchor_satisfies_the_license"
+          ]
+        }
+      ],
+      "bad_variants": [
+        {
+          "id": "withheld_claim_stated_plainly",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[wording_license:withheld_claim_stated_plainly]",
+          "rejected_by": [
+            "wording_within_license"
+          ]
+        }
+      ],
+      "production_bindings": [
+        {
+          "symbol": "WordingBoundary",
+          "target": "skills/logic-writing/scripts/researchguard_status.py:research_wording_boundary",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[wording_license]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        }
+      ],
+      "uses": {
+        "LicenseProbe": "skills/logic-writing/scripts/run_chain.py:run_chain",
+        "StampReview": "skills/logic-writing/scripts/run_chain.py:_stamp_review",
+        "Close": "skills/logic-writing/scripts/derive_closure.py:derive_closure"
+      },
+      "not_modeled": {},
+      "handoff": {},
+      "functional_destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[wording_license]"
+    },
+    {
+      "topic": "world_references",
+      "source": ".flowguard/models/world_references_model.py",
+      "source_sha256": "948d3426fd9ced33e2e64e38707094e66d87f15d8b8b71b5c7aca1eacb5502d5",
+      "rules": [
+        {
+          "id": "world_refs_name_contract_ids",
+          "description": "world_refs name ids declared by the world contract",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[world_references:world_refs_name_contract_ids]",
+          "production_tests": [
+            "tests/unit/test_world_refs.py:test_world_refs_validate_literal_ids_and_composition_relative_paths",
+            "tests/unit/test_world_mesh.py:test_world_refs_resolve_in_mesh_nodes",
+            "tests/unit/test_world_mesh.py:test_world_contract_and_mesh_are_exclusive"
+          ]
+        },
+        {
+          "id": "unquoted_world_ref_is_a_risk_not_a_pass",
+          "description": "an unquoted world reference is a residual risk",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[world_references:unquoted_world_ref_is_a_risk_not_a_pass]",
+          "production_tests": [
+            "tests/unit/test_world_refs.py:test_unquoted_world_reference_is_risk_and_only_actual_bound_text_counts"
+          ]
+        },
+        {
+          "id": "world_claim_row_is_a_planned_unit",
+          "description": "a ledger world claim points at a planned unit with world_refs",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[world_references:world_claim_row_is_a_planned_unit]",
+          "production_tests": [
+            "tests/unit/test_world_refs.py:test_world_claim_source_row_is_a_plan_unit_with_world_references"
+          ]
+        }
+      ],
+      "bad_variants": [
+        {
+          "id": "unknown_world_ref_accepted",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[world_references:unknown_world_ref_accepted]",
+          "rejected_by": [
+            "world_refs_name_contract_ids"
+          ]
+        },
+        {
+          "id": "unquoted_world_ref_dropped",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[world_references:unquoted_world_ref_dropped]",
+          "rejected_by": [
+            "unquoted_world_ref_is_a_risk_not_a_pass"
+          ]
+        },
+        {
+          "id": "world_claim_outside_plan_accepted",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[world_references:world_claim_outside_plan_accepted]",
+          "rejected_by": [
+            "world_claim_row_is_a_planned_unit"
+          ]
+        }
+      ],
+      "production_bindings": [
+        {
+          "symbol": "ResolveRefs",
+          "target": "skills/logic-writing/scripts/world_refs.py:validate_world_refs",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[world_references]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        },
+        {
+          "symbol": "QuoteRisks",
+          "target": "skills/logic-writing/scripts/world_refs.py:world_ref_unquoted",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[world_references]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        },
+        {
+          "symbol": "ClaimUnits",
+          "target": "skills/logic-writing/scripts/world_refs.py:validate_world_claim_units",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[world_references]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        }
+      ],
+      "uses": {},
+      "not_modeled": {},
+      "handoff": {},
+      "functional_destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[world_references]"
+    },
+    {
+      "topic": "world_report",
+      "source": ".flowguard/models/world_report_model.py",
+      "source_sha256": "6114edaba4734ed00eaa25c779fb1b6566e0a782b9a2082c9416d953bc287deb",
+      "rules": [
+        {
+          "id": "world_scope_limits_are_preserved",
+          "description": "actual provider scope limits remain nonblocking, attributed risks and a summary count",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[world_report:world_scope_limits_are_preserved]",
+          "production_tests": [
+            "tests/unit/test_world_mesh.py:test_world_scope_limits_remain_nonblocking_and_visible"
+          ]
+        },
+        {
+          "id": "world_report_is_current",
+          "description": "world inputs match the saved report",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[world_report:world_report_is_current]",
+          "production_tests": [
+            "tests/unit/test_world_report_model.py:test_stale_world_report_fails_closure",
+            "tests/unit/test_world_mesh.py:test_changed_node_file_makes_the_tree_report_stale",
+            "tests/unit/test_world_mesh.py:test_embedded_node_bytes_make_the_tree_report_stale",
+            "tests/unit/test_world_mesh.py:test_missing_node_digest_is_stale"
+          ]
+        },
+        {
+          "id": "world_report_belongs_to_the_contract",
+          "description": "a world report counts only for its own world contract",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[world_report:world_report_belongs_to_the_contract]",
+          "production_tests": [
+            "tests/unit/test_world_report_model.py:test_world_report_for_another_contract_fails_closure",
+            "tests/unit/test_world_mesh.py:test_tree_report_binds_like_a_contract",
+            "tests/unit/test_world_mesh.py:test_old_tree_report_is_refused_with_the_regenerate_command"
+          ]
+        },
+        {
+          "id": "travel_world_failure_limits_claim",
+          "description": "travel reads saved world status",
+          "destination": "tests/flow_migration/test_contracts.py::test_independent_rule[world_report:travel_world_failure_limits_claim]",
+          "production_tests": [
+            "tests/unit/test_world_report_model.py:test_failing_world_report_limits_the_travel_closure"
+          ]
+        }
+      ],
+      "bad_variants": [
+        {
+          "id": "world_scope_limits_disappear",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[world_report:world_scope_limits_disappear]",
+          "rejected_by": [
+            "world_scope_limits_are_preserved"
+          ]
+        },
+        {
+          "id": "stale_world_report_passes",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[world_report:stale_world_report_passes]",
+          "rejected_by": [
+            "world_report_is_current"
+          ]
+        },
+        {
+          "id": "travel_reads_handwritten_world_status",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[world_report:travel_reads_handwritten_world_status]",
+          "rejected_by": [
+            "travel_world_failure_limits_claim"
+          ]
+        },
+        {
+          "id": "foreign_world_report_passes",
+          "destination": "tests/flow_migration/test_contracts.py::test_rejects_original_bad_observation[world_report:foreign_world_report_passes]",
+          "rejected_by": [
+            "world_report_belongs_to_the_contract",
+            "travel_world_failure_limits_claim"
+          ]
+        }
+      ],
+      "production_bindings": [
+        {
+          "symbol": "WorldIdentity",
+          "target": "skills/logic-writing/scripts/_common.py:worldguard_report_identity_problems",
+          "destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[world_report]",
+          "anchor_test": "tests/flow_migration/test_inventory.py::test_original_contract_destinations_and_production_links"
+        }
+      ],
+      "uses": {
+        "Reports": "skills/logic-writing/scripts/derive_closure.py:provider_checks",
+        "Close": "skills/logic-writing/scripts/derive_closure.py:derive_closure",
+        "WorldScopeSummary": "skills/logic-writing/scripts/show_plan.py:_summary",
+        "InputDigests": "skills/logic-writing/scripts/_common.py:input_digest_problems",
+        "TravelClaims": "skills/logic-writing/routes/travel/scripts/travel_contract.py:review_plan",
+        "ApplyMutations": "skills/logic-writing/routes/travel/scripts/fixture_mutation.py:apply_mutations"
+      },
+      "not_modeled": {},
+      "handoff": {},
+      "functional_destination": "tests/flow_migration/test_contracts.py::test_actual_functional_contract[world_report]"
+    }
+  ],
+  "system_routes": [
+    {
+      "id": "reader-chain",
+      "summary": "Plan, bind, review and close the exact current writing; each command reads the file the step before it wrote.",
+      "steps": [
+        "routing:select_route",
+        "reader-plan:build_reader_brief reads route-decision.json",
+        "reader-binding:build_artifact_map reads piece.md",
+        "reader-binding:validate_shared_writing reads artifact-map.json",
+        "reader-checks:build_reader_audit reads shared-writing-result.json",
+        "reader-checks:validate_route_artifact_review reads shared-writing-result.json",
+        "reader-closure:derive_closure reads route-review-result.json"
+      ],
+      "destination": "tests/flow_migration/test_inventory.py::test_system_route_anchors[reader-chain]",
+      "original_model": ".flowguard/models/reader_artifact_model.py",
+      "source_anchors": [
+        "skills/logic-writing/scripts/select_route.py:select_route",
+        "skills/logic-writing/scripts/reader_plan.py:build_reader_brief",
+        "skills/logic-writing/scripts/artifact_map.py:build_artifact_map",
+        "skills/logic-writing/scripts/reader_binding.py:validate_shared_writing",
+        "skills/logic-writing/scripts/reader_checks.py:build_reader_audit",
+        "skills/logic-writing/scripts/reader_checks.py:validate_route_artifact_review",
+        "skills/logic-writing/scripts/derive_closure.py:derive_closure"
+      ],
+      "actual_contract_topics": [
+        "reader_artifact",
+        "plan_order",
+        "plan_readback",
+        "reader_review",
+        "shared_writing_binding"
+      ],
+      "boundary": "Static source ownership/existence is retained here. Actual function behavior and reader handoffs are asserted in the listed functional contracts and unchanged production tests; no runtime graph ordering is inferred from a static map."
+    },
+    {
+      "id": "closure-providers",
+      "summary": "Read saved native verdicts and run in-process declared domain checks and mutations.",
+      "steps": [
+        "reader-closure:derive_closure",
+        "researchguard-handoff:assess_research_verdict",
+        "shared-contracts:read_worldguard_report",
+        "fiction-model:validate",
+        "reader-closure:check_known_bad"
+      ],
+      "destination": "tests/flow_migration/test_inventory.py::test_system_route_anchors[closure-providers]",
+      "original_model": ".flowguard/models/closure_claim_model.py",
+      "source_anchors": [
+        "skills/logic-writing/scripts/derive_closure.py:derive_closure",
+        "skills/logic-writing/scripts/researchguard_status.py:assess_research_verdict",
+        "skills/logic-writing/scripts/_common.py:read_worldguard_report",
+        "skills/logic-writing/routes/fiction/scripts/longform_closure_check.py:validate",
+        "skills/logic-writing/scripts/known_bad.py:check_known_bad"
+      ],
+      "actual_contract_topics": [
+        "closure_claim",
+        "world_report",
+        "fiction_tree",
+        "known_bad_generator"
+      ],
+      "boundary": "Static source ownership/existence is retained here. Actual function behavior and reader handoffs are asserted in the listed functional contracts and unchanged production tests; no runtime graph ordering is inferred from a static map."
+    },
+    {
+      "id": "route-selection",
+      "summary": "Choose one final owner and a bounded investigation child.",
+      "steps": [
+        "routing:select_route"
+      ],
+      "destination": "tests/flow_migration/test_inventory.py::test_system_route_anchors[route-selection]",
+      "original_model": ".flowguard/models/route_selection_model.py",
+      "source_anchors": [
+        "skills/logic-writing/scripts/select_route.py:select_route"
+      ],
+      "actual_contract_topics": [
+        "route_selection"
+      ],
+      "boundary": "Static source ownership/existence is retained here. Actual function behavior and reader handoffs are asserted in the listed functional contracts and unchanged production tests; no runtime graph ordering is inferred from a static map."
+    },
+    {
+      "id": "provider-preflight",
+      "summary": "Inspect the one native provider a caller names.",
+      "steps": [
+        "providers:preflight"
+      ],
+      "destination": "tests/flow_migration/test_inventory.py::test_system_route_anchors[provider-preflight]",
+      "original_model": ".flowguard/models/provider_preflight_model.py",
+      "source_anchors": [
+        "skills/logic-writing/scripts/provider_preflight.py:preflight"
+      ],
+      "actual_contract_topics": [
+        "provider_preflight"
+      ],
+      "boundary": "Static source ownership/existence is retained here. Actual function behavior and reader handoffs are asserted in the listed functional contracts and unchanged production tests; no runtime graph ordering is inferred from a static map."
+    }
+  ],
+  "accepted_debts": [],
+  "boundary": "19 original independent functional specifications, 61 predicates, 69 expanded known-bad abstract observations, 112 unchanged production-test bindings and four generated-system source-ownership routes. Bad observations are not production mutations. The exact-record identity native flow is an additional bounded production boundary, not a replacement engine or a model of every writing workflow."
+}

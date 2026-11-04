@@ -11,6 +11,8 @@ build/
 
 # Run outputs are reproducible and are not source.
 .flowguard/**/__pycache__/
+.flowguard/cache/
+.flowguard/conflicts.json
 run-artifacts/
 run_artifacts/
 
