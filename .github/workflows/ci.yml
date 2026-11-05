@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 env:
-  FLOWGUARD_REF: v1.0.0
+  FLOWGUARD_REF: 1f7ce7b579308f4701c60117296fb24a3bfd9c8e
 
 jobs:
   checks:
