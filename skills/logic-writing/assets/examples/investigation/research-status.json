@@ -1,4 +1,41 @@
 {
+  "source_readings": [
+    {
+      "id": "anc-314-supported",
+      "source_id": "src-whatsnew-314",
+      "colour": "grey",
+      "reason": "anchor has no captured original",
+      "source_digest": ""
+    },
+    {
+      "id": "anc-314-phase3-undecided",
+      "source_id": "src-whatsnew-314",
+      "colour": "grey",
+      "reason": "anchor has no captured original",
+      "source_digest": ""
+    },
+    {
+      "id": "anc-314-perf",
+      "source_id": "src-whatsnew-314",
+      "colour": "grey",
+      "reason": "anchor has no captured original",
+      "source_digest": ""
+    },
+    {
+      "id": "anc-313-experimental",
+      "source_id": "src-whatsnew-313",
+      "colour": "grey",
+      "reason": "anchor has no captured original",
+      "source_digest": ""
+    },
+    {
+      "id": "anc-779-phase3-different",
+      "source_id": "src-pep-779",
+      "colour": "grey",
+      "reason": "anchor has no captured original",
+      "source_digest": ""
+    }
+  ],
   "input_digests": [
     {
       "path": "research.yaml",
@@ -46,6 +83,7 @@
       "unverifiable_source": true,
       "lineage": "",
       "locator": "Doc/whatsnew/3.14.rst, 'Free-threaded Python is officially supported'",
+      "quote": "",
       "summary": "Supported, no longer experimental; start of phase II; still optional.",
       "boundary": "Official status only; says nothing about third-party package readiness.; No date or criteria for phase III.; Project-reported range, not an independent benchmark.",
       "used_by": [],
@@ -57,6 +95,7 @@
       "unverifiable_source": true,
       "lineage": "",
       "locator": "Doc/whatsnew/3.14.rst, same section, last paragraph",
+      "quote": "",
       "summary": "Phase III (default or sole build) is undecided.",
       "boundary": "Official status only; says nothing about third-party package readiness.; No date or criteria for phase III.; Project-reported range, not an independent benchmark.",
       "used_by": [],
@@ -68,6 +107,7 @@
       "unverifiable_source": true,
       "lineage": "",
       "locator": "Doc/whatsnew/3.14.rst, 'Free-threaded mode improvements'",
+      "quote": "",
       "summary": "Single-thread penalty roughly 5-10% depending on platform and compiler.",
       "boundary": "Official status only; says nothing about third-party package readiness.; No date or criteria for phase III.; Project-reported range, not an independent benchmark.",
       "used_by": [],
@@ -79,6 +119,7 @@
       "unverifiable_source": true,
       "lineage": "",
       "locator": "Doc/whatsnew/3.13.rst, free-threaded CPython section",
+      "quote": "",
       "summary": "Experimental and not enabled by default in 3.13.",
       "boundary": "3.13 only.",
       "used_by": [],
@@ -90,6 +131,7 @@
       "unverifiable_source": true,
       "lineage": "",
       "locator": "PEP 779, Requirements section note",
+      "quote": "",
       "summary": "PEP 779 criteria apply to entering phase II only; the default decision is separate.",
       "boundary": "Does not state phase III criteria.",
       "used_by": [],
@@ -119,5 +161,11 @@
     "unverifiable_source:src-whatsnew-313 (no link, DOI, ISBN or arXiv id; nothing outside this folder to check it against)",
     "unverifiable_source:src-whatsnew-314 (no link, DOI, ISBN or arXiv id; nothing outside this folder to check it against)"
   ],
-  "info": []
+  "info": [
+    "anchor_uncaptured:anc-314-supported",
+    "anchor_uncaptured:anc-314-phase3-undecided",
+    "anchor_uncaptured:anc-314-perf",
+    "anchor_uncaptured:anc-313-experimental",
+    "anchor_uncaptured:anc-779-phase3-different"
+  ]
 }

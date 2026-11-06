@@ -66,6 +66,7 @@ def _exact(value: Mapping[str, Any], field: str, label: str) -> str:
 PROVIDER_STATUS_FIELDS = {
     "researchguard": ("verdict", "passed"),
     "worldguard": ("status", "PASS"),
+    "physicsguard": ("audit_pass", True),
 }
 
 
@@ -115,6 +116,14 @@ def provider_checks(owner, brief, route_composition, reports):
             risks.extend(dict(row, owner=owner) for row in assessment["residual_risk"])
             # The report counts only for the research folder the brief names.
             problems = research_report_identity_problems(document, brief.get("research_folder"))
+        elif provider == 'physicsguard':
+            from claim_readings import provider_sensors
+            _, problems_rows = provider_sensors([report], brief['request'])
+            document = load_json(path)
+            passed = document['audit_pass'] is True and not any(row['colour'] == 'red' for row in problems_rows)
+            status = 'passed' if passed else 'failed'
+            reason = '; '.join(row['reason'] for row in problems_rows) if problems_rows else f'physicsguard audit_pass={passed}'
+            problems = []
         else:
             status = read_worldguard_report(path)
             passed = status == "PASS"
@@ -124,6 +133,15 @@ def provider_checks(owner, brief, route_composition, reports):
             )
         if problems and status != "unreadable":  # an unreadable report already fails
             status, passed, reason = "failed", False, "; ".join(problems)
+        if not problems and provider != 'physicsguard' and status != 'unreadable':
+            from claim_readings import provider_sensors
+            _, source_issues = provider_sensors([report], '', route_composition,
+                research_folder=brief['research_folder'] if 'research_folder' in brief else None)
+            stale = [row['reason'] for row in source_issues if row['colour'] == 'red']
+            if stale:
+                status, passed, reason = 'failed', False, '; '.join(stale)
+            risks.extend(dict(defect_id='provider_reading:' + provider + ':' + row['id'],
+                              owner=owner, reason=row['reason']) for row in source_issues if row['colour'] == 'grey')
         checks.append(
             dict(
                 provider=provider,
@@ -136,6 +154,8 @@ def provider_checks(owner, brief, route_composition, reports):
         )
         if not passed:
             risks.append(dict(defect_id=f"provider:{provider}", owner=owner, reason=reason))
+        if provider == 'researchguard' and 'warnings' in document:
+            risks.extend(dict(defect_id='provider_warning:researchguard', owner=owner, reason=str(warning)) for warning in document['warnings'])
         if provider == 'worldguard' and status != 'unreadable':
             limits = load_json(path).get('scope_limits', [])
             for limit in limits if isinstance(limits, list) else []:
@@ -263,6 +283,8 @@ def derive_closure(
     if status == "passed":
         residual = []
     residual.extend(dict(row, owner=owner) for row in evidence_risks)
+    from claim_readings import plan_readings, reading_risks
+    residual.extend(dict(row, owner=owner) for row in reading_risks(plan_readings(brief)))
     # In-process domain closure contributes real failed surfaces to the same quality gate.
     if owner == "fiction-writing" and route.get("longform_project"):
         import sys

@@ -1,0 +1,3 @@
+An engine cooling loop pumps 30 L/min of coolant (density 1.05 kg/L, cp 3600 J/kg/K)
+through the engine block, where it warms from 75 C to 90 C. How much heat does the coolant
+carry away from the block, and what is its mass flow?

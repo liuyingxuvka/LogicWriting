@@ -1,0 +1,26 @@
+observation_name: pg_answer_from_question
+sources:
+  question: question.txt
+properties:
+  coolant_density:
+    value: 1.05
+    unit: kg/L
+    quote: {from: question, text: 'density 1.05 kg/L'}
+claims:
+- quote: {from: question, text: 'How much heat does the coolant'}
+  variable: heater.Q_dot_W
+- quote: {from: question, text: 'what is its mass flow?'}
+  variable: heater.m_dot_kg_s
+variables:
+  heater.m_dot_kg_s:
+    value: 0.525
+    unit: kg/s
+    quote: {from: question, text: 'pumps 30 L/min'}
+  heater.T_in_K:
+    value: 348.15
+    unit: K
+    quote: {from: question, text: from 75 C}
+  heater.T_out_K:
+    value: 363.15
+    unit: K
+    quote: {from: question, text: to 90 C}

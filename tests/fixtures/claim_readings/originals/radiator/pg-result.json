@@ -1,0 +1,73 @@
+{
+ "audit": "audit.yaml",
+ "audit_pass": true,
+ "claims": [
+  {
+   "quote": {
+    "from": "question",
+    "text": "How much heat does the coolant"
+   },
+   "variable": "heater.Q_dot_W"
+  },
+  {
+   "quote": {
+    "from": "question",
+    "text": "what is its mass flow?"
+   },
+   "variable": "heater.m_dot_kg_s"
+  }
+ ],
+ "input_digests": [
+  {
+   "path": "audit.yaml",
+   "sha256": "453b474f97098d0930c36446a62e66de5746b6bf485d66293bfc1071b3d149e0"
+  },
+  {
+   "path": "q_inputs.yaml",
+   "sha256": "d98bf446c1a0e0ffb2331e52886fbcedcbd113944364ebad9620c65258ecbc0d"
+  },
+  {
+   "path": "question.txt",
+   "sha256": "bdedb08f2f65ba95406b876c57c1ddd1ba26b83de6f9165623e110509397b6f6"
+  }
+ ],
+ "provider": "physicsguard",
+ "values": {
+  "heater.Q_dot_W": {
+   "dependencies": [
+    "heater.T_in_K",
+    "heater.T_out_K",
+    "heater.m_dot_kg_s"
+   ],
+   "relation": "heater.coolant_heat_balance",
+   "source": "equation",
+   "sourced": true,
+   "unit": "W",
+   "value": 28350.0
+  },
+  "heater.T_in_K": {
+   "how": "75 C by unit table",
+   "quote": "from 75 C",
+   "source": "question",
+   "sourced": true,
+   "unit": "K",
+   "value": 348.15
+  },
+  "heater.T_out_K": {
+   "how": "90 C by unit table",
+   "quote": "to 90 C",
+   "source": "question",
+   "sourced": true,
+   "unit": "K",
+   "value": 363.15
+  },
+  "heater.m_dot_kg_s": {
+   "how": "30 L/min via coolant_density",
+   "quote": "pumps 30 L/min",
+   "source": "question",
+   "sourced": true,
+   "unit": "kg/s",
+   "value": 0.525
+  }
+ }
+}

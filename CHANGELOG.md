@@ -8,7 +8,10 @@ line follows semantic versioning.
 
 ## Unreleased
 
-- ResearchGuard 0.7.0 is now the minimum: the shipped investigation report uses its source-verifiability fields and warnings, so the provider checks, saved output and refresh instructions require that version together.
+- Plan and current-text readings check linked ResearchGuard captures, exact owner requests and PhysicsGuard result rows, including signed numbers, units, dates, times, table cells, quoted words and speakers. Plain decimal spellings compare by value; named software versions retain their exact parts. A sourced contradiction refuses the plan or adds an audit finding; missing originals remain visible as grey risks.
+- Reuse ResearchGuard 0.8.0 for captured text and table context. Physical units use PhysicsGuard 0.18.0's table through an optional entrypoint; a plain brief does not require PhysicsGuard.
+- Saved specialist rows are checked against their original source digests without rerunning the providers. Changed inputs remain stale, and ResearchGuard warnings stay in closure risks.
+- Plan readback shows each reading and its evidence. The finite known-bad catalog includes a changed sourced number. Reading matches are bounded evidence, with explicit known limits for identical values in different roles, swapped years and names outside quotations.
 
 ## v4.2.0 - 2026-11-02 - Reviews bound to their text, claims held to each anchor, and pictures of the argument
 

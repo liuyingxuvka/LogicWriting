@@ -7,7 +7,7 @@ description: "Use for a finished piece for real readers: a source-backed investi
 
 ## Start from the model
 
-Store the user's request once, as received, in the brief's request; each required unit names its source (request with a verbatim quote, research, or ai), and closure lists the ai units for the user.
+Store the user's request once, as received, in the brief's request. Required units name their source: request (verbatim quote), research, or ai; closure lists ai additions. Every number you write must occur in a saved document, the request, or a linked tool result. Link originals; do not type source summaries.
 
 The plan (CompositionPlan) is the model of the piece. Read it back before choosing a route or a command:
 
@@ -35,10 +35,10 @@ Read [references/router.md](references/router.md) for routing details.
 
 - Node: a planned unit of the CompositionPlan; a failing unit shows its counterexample: the quoted span with the audit or review finding.
 - Parent: `parent_unit_id` (book > volume > chapter > scene; guide > day > section).
-- Known-bad: `scripts/known_bad.py` edits of the current text (no citation, dropped token, leak, overclaim, removed limitation, truncation, swapped sibling units, removed world reference, removed live alternative, inserted unsupported alternative, stripped unit anchors); each one must be caught, and closure lists uncaught ones.
-- Real binding: exact unique quotes in the current text (SharedWriting `anchor_excerpts`), `world_refs` into the WorldGuard contract, and anchors from one ResearchGuard research folder whose saved report must belong to it. Each required unit of a researched piece cites an anchor that is not only counter, or states unsupported_reason; a claim that shares no word with what one of its anchors says (the saved report's summary and boundary, one anchor at a time) is warned as `claim_outruns_anchor`, a brief copy of an anchor summary that differs from the report as `anchor_summary_not_report`; both stay as residual risks.
+- Known-bad: `scripts/known_bad.py` edits of the current text (no citation, dropped token, leak, overclaim, removed limitation, truncation, swapped sibling units, removed world reference, removed live alternative, inserted unsupported alternative, stripped unit anchors, changed sourced number); each one must be caught, and closure lists uncaught ones.
+- Real binding: unique verbatim `anchor_excerpts`, `world_refs`, and anchors in the named ResearchGuard folder. Required researched units cite support, limit or context anchors, or state unsupported_reason. Numbers, dates, times and quoted words are checked against RG captures, the request or bound PG rows; missing originals stay grey. Anchor-summary and lexical gaps remain residual risks; see [evidence boundaries](references/shared/reader-chain.md).
 - Test binding: the deterministic audit, the route review with quoted spans, and an independent reader for broad claims. A review is stamped on the text it read (run_chain.py --stamp-review), which keeps a sealed copy of that text; an edit after the stamp makes it stale, and a new stamp needs, in each changed unit (headings and the title too), the whole sentence that holds the change quoted again. With no saved copy, a review never stamped must be declared a first review (--first-review); a review stamped before is never a first review and is stamped again only on the text its stamp names. Closure and the run_chain closure line say which.
-- Readback: `scripts/show_plan.py` (a summary line, then the plan tree beside its bound text with each unit's findings).
+- Readback: `scripts/show_plan.py` shows the plan, bound text, findings and each reading in green/red/grey; red exits 1, unreadable exits 2.
 - Discussion: when you analyse or discuss the argument with the user (how a conclusion is reached, a weak step, an objection, a change to the plan), put the picture from `python scripts/show_argument.py <folder>` (one unit: `--focus UNIT`) in your reply as its Mermaid block and say what its Not drawn list leaves out; it is computed from `reader-brief.json` and marks the computed problems red. Never draw the argument from memory; routine edits need no picture.
 - Current vs target: the text, and for a revision its source-unit manifest, is the current model; the plan is the target, and the revised text replaces the current one when closure passes.
 

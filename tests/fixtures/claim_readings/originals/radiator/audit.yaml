@@ -1,0 +1,20 @@
+# PhysicsGuard hierarchical audit model (acceptance seed, not shipped)
+# Purpose: heat carried away by an engine cooling loop.
+# Boundary: Low-fidelity SI-unit residual audit only.
+audit_name: engine_coolant
+system:
+  system_name: engine_coolant
+  components:
+    - id: heater
+      type: CoolantHeatBalanceModule
+      parameters: {cp_J_kgK: 3600.0, residual_scale_W: 100.0}
+    - id: boil_margin
+      type: RangeCheckModule
+      parameters: {variable: heater.T_out_K, upper_bound: 383.15, residual_scale: 1.0}
+  connections: []
+  boundaries: []
+  assumptions: []
+hierarchy:
+  blocks:
+    - {id: loop, name: Cooling loop, level: 0, components: []}
+    - {id: block, name: Engine block, level: 1, parent_id: loop, components: [heater, boil_margin]}

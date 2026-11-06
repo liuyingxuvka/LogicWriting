@@ -108,7 +108,7 @@ def _relation_variants(text, *, planned, boundaries, artifact_map, shared_writin
 
 
 def text_variants(text, *, reader_brief, artifact_map, shared_writing, route_review):
-    """Only delete, move or truncate text, or insert phrases already in its plan/glossary."""
+    """Perturb structure or one sourced number; keep originals and model rows unchanged."""
     boundaries = reader_brief['content_boundaries']
     end = _first_body_end(artifact_map)
     cases = [dict(kind='empty', name='empty', unit=None, text=''),
@@ -158,6 +158,17 @@ def text_variants(text, *, reader_brief, artifact_map, shared_writing, route_rev
         cutoff = max((row['end'] for row in artifact_map['units']
                       if row['artifact_unit_id'] in ids), default=end)
         cases.append(dict(kind='short', name='short', unit=first_id, text=text[:cutoff]))
+    from claim_readings import text_readings
+    sourced = text_readings(reader_brief, artifact_map, shared_writing)
+    for row in sourced:
+        if row['colour'] != 'green' or 'raw' not in row:
+            continue
+        number = re.search(r'\d+(?:[,.]\d+)*', row['raw'])
+        if number and row['raw'] in text:
+            changed_reading = row['raw'][:number.start()] + '987654321' + row['raw'][number.end():]
+            cases.append(dict(kind='number-drift', name='number-drift', unit=row['artifact_unit_id'],
+                              text=text.replace(row['raw'], changed_reading, 1)))
+            break
     names = [case['name'] for case in cases]
     if len(names) != len(set(names)):
         raise ValidationError('known-bad variant filenames must be unique')

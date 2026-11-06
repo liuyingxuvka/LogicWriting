@@ -29,7 +29,7 @@ jobs:
       - name: Clone ResearchGuard
         run: git clone --depth 1 https://github.com/liuyingxuvka/ResearchGuard.git "$RUNNER_TEMP/ResearchGuard"
       - name: Install test dependencies
-        run: python -m pip install pytest PyYAML "$RUNNER_TEMP/ResearchGuard" "flowguard @ git+https://github.com/liuyingxuvka/FlowGuard.git@$FLOWGUARD_REF"
+        run: python -m pip install pytest PyYAML "physicsguard @ git+https://github.com/liuyingxuvka/PhysicsGuard.git@v0.18.0" "$RUNNER_TEMP/ResearchGuard" "flowguard @ git+https://github.com/liuyingxuvka/FlowGuard.git@$FLOWGUARD_REF"
       - name: Run tests
         timeout-minutes: 20
         env:
@@ -68,7 +68,7 @@ jobs:
       - name: Install ResearchGuard at the declared minimum
         run: |
           minimum="$(cd skills/logic-writing/scripts && python -c 'from _common import RESEARCHGUARD_MIN_VERSION as v; print(".".join(map(str, v)))')"
-          python -m pip install pytest PyYAML "git+https://github.com/liuyingxuvka/ResearchGuard.git@v$minimum" "flowguard @ git+https://github.com/liuyingxuvka/FlowGuard.git@$FLOWGUARD_REF"
+          python -m pip install pytest PyYAML "physicsguard @ git+https://github.com/liuyingxuvka/PhysicsGuard.git@v0.18.0" "git+https://github.com/liuyingxuvka/ResearchGuard.git@v$minimum" "flowguard @ git+https://github.com/liuyingxuvka/FlowGuard.git@$FLOWGUARD_REF"
 
       - name: Run tests and member preflights on the minimum
         run: |

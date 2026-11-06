@@ -295,6 +295,19 @@ def _absolute_artifact_path(record: dict[str, Any], base: Path) -> None:
             record["artifact_path"] = str((base / artifact_path).resolve())
 
 
+def resolve_brief_paths(record, base):
+    """Resolve the brief's source references against the file that contains it."""
+    if 'provider_reports' in record:
+        for report in record['provider_reports']:
+            report['path'] = str((base / Path(report['path']).expanduser()).resolve())
+    for field in ('research_folder', 'research_status'):
+        if field in record:
+            value = record[field]
+            if not isinstance(value, str) or not value.strip():
+                raise ValidationError(field + ' must be a nonempty path')
+            record[field] = str((base / Path(value).expanduser()).resolve())
+
+
 def load_request(path: str | Path | None, *, defaults: dict | None = None) -> Any:
     """Load a request whose top-level object fields may name JSON files instead.
 
@@ -317,9 +330,7 @@ def load_request(path: str | Path | None, *, defaults: dict | None = None) -> An
     base = Path(path).resolve().parent if file_request else Path.cwd()
     if file_request:
         _absolute_artifact_path(value, base)
-    for report in value.get("provider_reports", []) if isinstance(value.get("provider_reports", []), list) else []:
-        if isinstance(report, dict) and isinstance(report.get("path"), str):
-            report["path"] = str((base / Path(report["path"]).expanduser()).resolve())
+    resolve_brief_paths(value, base)
     for key, item in list(value.items()):
         record_base = base
         if key in _REQUEST_CONTAINER_FIELDS and isinstance(item, str) and item.endswith(".json"):
@@ -347,6 +358,8 @@ def load_request(path: str | Path | None, *, defaults: dict | None = None) -> An
                     reference = value[key].get(field)
                     if isinstance(reference, str) and reference:
                         value[key][field] = str((record_base / Path(reference).expanduser()).resolve())
+        if key == 'reader_brief' and isinstance(value[key], dict):
+            resolve_brief_paths(value[key], record_base)
         if file_request and key in {"contract", "shared_writing"} and isinstance(value[key], dict):
             _absolute_artifact_path(value[key], record_base)
         if file_request and key in {"revision_provenance", "provenance"} and isinstance(value[key], dict):
@@ -355,16 +368,6 @@ def load_request(path: str | Path | None, *, defaults: dict | None = None) -> An
                 value[key]["source_artifact_path"] = str((record_base / Path(source).expanduser()).resolve())
     if file_request and isinstance(value.get("source_artifact_path"), str):
         value["source_artifact_path"] = str((base / Path(value["source_artifact_path"]).expanduser()).resolve())
-    if "research_folder" in value:
-        folder = value["research_folder"]
-        if not isinstance(folder, str) or not folder.strip():
-            raise ValidationError("research_folder must be a nonempty ResearchGuard research folder path")
-        value["research_folder"] = str((base / Path(folder).expanduser()).resolve())
-    if "research_status" in value:
-        status = value["research_status"]
-        if not isinstance(status, str) or not status.strip():
-            raise ValidationError("research_status must be a nonempty path to a saved researchguard status --json report")
-        value["research_status"] = str((base / Path(status).expanduser()).resolve())
     return value
 
 
@@ -379,6 +382,11 @@ def _named_beside(value: Any, folder: Path) -> Any:
     if not isinstance(value, dict):
         return value
     copied = {key: _named_beside(item, folder) for key, item in value.items()}
+    if 'provider_reports' in copied:
+        for report in copied['provider_reports']:
+            located = Path(report['path'])
+            if located.is_absolute() and located.resolve().is_relative_to(folder):
+                report['path'] = located.resolve().relative_to(folder).as_posix()
     for record_key, fields in (("route_composition", ROUTE_FILE_FIELDS), ("reader_brief", BRIEF_FILE_FIELDS)):
         record = copied.get(record_key)
         if not isinstance(record, dict):
@@ -425,7 +433,7 @@ def cli_validate(validate_fn, description: str) -> int:
         return 1
 
 
-RESEARCHGUARD_MIN_VERSION = (0, 7, 0)
+RESEARCHGUARD_MIN_VERSION = (0, 8, 0)
 RESEARCHGUARD_INSTALL_HINT = 'python -m pip install "git+https://github.com/liuyingxuvka/ResearchGuard.git"'
 
 

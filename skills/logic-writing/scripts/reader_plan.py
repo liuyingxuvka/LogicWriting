@@ -163,6 +163,7 @@ def build_reader_brief(
     request: str | None = None,
     research_folder: str | None = None,
     research_status: str | None = None,
+    provider_reports: list | None = None,
 ) -> dict[str, Any]:
     decision = require_mapping(route_decision, "RouteDecision")
     raw_intent = require_mapping(decision.get("reader_intent"), "ReaderIntent")
@@ -262,11 +263,15 @@ def build_reader_brief(
         if not isinstance(research_status, str) or not research_status.strip() or research_folder is None:
             raise ValidationError("research_status needs research_folder")
         brief["research_status"] = research_status
+    if provider_reports is not None:
+        brief["provider_reports"] = provider_reports
     brief["brief_fingerprint"] = own_fingerprint(brief, "brief_fingerprint")
     validate_writer_input(writer_input, composition_plan=plan)
     require_schema("reader-brief.schema.json", brief, label="ReaderBrief")
     validate_evidence_boundaries(brief)
     validate_anchor_authority(brief)
+    from claim_readings import validate_plan_readings
+    validate_plan_readings(brief)
     return brief
 
 

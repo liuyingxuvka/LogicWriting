@@ -15,7 +15,7 @@ result files. The seven chain-file fields in closure-input.json may be omitted;
 explicit fields retain their meaning and resolve beside that input file.
 `--refresh-providers` refreshes researchguard status for research_folder and runs
 the same verified portable WorldGuard launcher as provider_preflight for a
-world_contract, or mesh-check for world_mesh. Install ResearchGuard >= 0.7.0 and WorldGuard >= 0.7.23 beside
+world_contract, or mesh-check for world_mesh. Install ResearchGuard >= 0.8.0 and WorldGuard >= 0.7.23 beside
 this skill before refreshing; tree reports require WorldGuard >= 0.8.0. Closure itself only reads saved native reports.
 
 Once a review is complete, `--stamp-review` explicitly binds it to the current
@@ -46,3 +46,9 @@ Both rebuild the brief from the `brief-request.json` beside the input and compar
 and names why (the brief was built from an older request, or the request no longer builds,
 with its error), and the picture lists `brief_stale` first among its problems;
 `known_bad.py --input closure-input.json` checks finite edits of a copy.
+
+## Original-bound readings
+
+ResearchGuard >= 0.8.0 supplies saved captures and table/quote context; PhysicsGuard >= 0.18.0 optionally supplies the only unit vocabulary. A plain brief needs no PhysicsGuard; unit checks without it stay grey and name the missing provider. Save native results and put `{"provider":"physicsguard","path":"pg-result.json"}` in the brief's `provider_reports`; bind its `pg:<row-id>` in content-unit `model_row_ids`. The PG `question.txt` digest must match the exact stored request. Closure accepts the same saved report in its own `provider_reports`. PG, WG and RG state rows are read and rehashed, never recalculated by closure.
+
+Brief results expose `source_readings` and their grey `residual_risk` separately from lexical anchor warnings; closure preserves those risks and the screen prints every reading. The brief refuses `claim_value_not_in_source:<content-unit>` when a bound original contradicts a reading; the current-artifact audit reports `text_value_not_in_source`. Grey readings are residual risks, including source-silent sentences. Quote ellipses that omit negation are red. Matching numbers establish presence within a linked section, not semantic truth: swapped years, unrelated identical numbers, number words without units and names outside quotes remain limits. Unlinked derived arithmetic is not an original.

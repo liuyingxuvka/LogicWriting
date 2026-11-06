@@ -8,7 +8,7 @@ import json
 from pathlib import Path
 import re
 
-from _common import load_request, ValidationError
+from _common import load_request, resolve_brief_paths, ValidationError
 from artifact_map import validate_artifact_map
 from reader_fill import fill_check_fingerprints
 from reader_binding import shared_writing_from_current, quote_binding_units
@@ -490,6 +490,15 @@ def plan_view(request, *, input_path=None, brief_built_now=False):
         if isinstance(audit, dict)
         else []
     )
+    from claim_readings import build_sensors, plan_readings, text_readings
+    sensor_brief = deepcopy(brief)
+    if input_path is not None:
+        resolve_brief_paths(sensor_brief, Path(input_path).resolve().parent)
+    sensors = build_sensors(sensor_brief)
+    source_rows = plan_readings(brief, sensors=sensors)
+    if amap and shared:
+        source_rows += text_readings(brief, amap, shared, sensors=sensors)
+    result['source_readings'] = source_rows
     result["brief_stale"] = brief_stale
     result["summary"] = (f"brief: stale ({brief_stale}); " if brief_stale else '') + _summary(result, results)
     return result
@@ -521,6 +530,10 @@ def render_plan(view):
             lines.append(f"{padding}   world: " + ', '.join(unit['world_refs']))
         if unit['from']:
             lines.append(f"{padding}   from: " + ', '.join(f"{row['source_unit_id']} ({row['treatment']})" for row in unit['from']))
+    for reading in view['source_readings']:
+        identity = reading['content_unit_id'] if 'content_unit_id' in reading else reading['artifact_unit_id']
+        raw = reading['raw'] if 'raw' in reading else identity
+        lines.append(f"{reading['colour']} {identity} {raw!r}: {reading['reason']}")
     return '\n'.join(lines)
 
 
@@ -535,7 +548,7 @@ def main():
         print(f'show_plan: {exc}')
         return 2
     print(json.dumps(view, ensure_ascii=False, indent=2) if args.json else render_plan(view))
-    return 0
+    return 1 if any(row['colour'] == 'red' for row in view['source_readings']) else 0
 
 
 if __name__ == '__main__':

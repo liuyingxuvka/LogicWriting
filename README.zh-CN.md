@@ -179,12 +179,14 @@ python scripts/install_skill.py --target "$SKILLS_DIR" --check
 `pip install` 装不了这个技能。脚本需要 Python 3.10 或更新；文章用到研究文件夹或世界文件时，还需要 PyYAML。
 
 **2. 涉及研究或故事世界时，装上两个提供方**，各自从自己的 tag 安装。Logic Writing 读的是它们存下的报告，只有刷新报告时才需要它们的命令。
-ResearchGuard 最低为 0.7.0；WorldGuard 0.8.0 提供树报告，原有单 contract 路径仍支持 0.7.23：
+ResearchGuard 最低为 0.8.0；WorldGuard 0.8.0 提供树报告，原有单 contract 路径仍支持 0.7.23：
 
 ```bash
-python -m pip install "git+https://github.com/liuyingxuvka/ResearchGuard.git@v0.7.0"
+python -m pip install "git+https://github.com/liuyingxuvka/ResearchGuard.git@v0.8.0"
 python -m pip install "git+https://github.com/liuyingxuvka/WorldGuard.git@v0.8.0"
 ```
+
+核对物理量时，可以从仓库安装 PhysicsGuard >= 0.18.0；换算只用它的单位表。没装时单位检查显示灰色，普通简报不依赖它。
 
 **3. 先跑这几条**，在克隆下来的目录里：
 
@@ -207,7 +209,7 @@ python skills/logic-writing/scripts/run_chain.py ../ft-example
 ```mermaid
 flowchart LR
   R["你的要求<br/>原样存一次"] --> B["计划<br/>每个说法一个单元<br/>带着它的证据"]
-  P["存下的报告<br/>ResearchGuard status<br/>WorldGuard check"] --> B
+  P["存下的报告<br/>ResearchGuard status<br/>WorldGuard check<br/>PhysicsGuard 读数"] --> B
   B --> W["AI 写正文"]
   W --> C["绑定、审读、评审<br/>原文引句对到计划单元"]
   C --> X["收尾<br/>通过，或第一处失败"]
@@ -230,7 +232,7 @@ flowchart LR
 
 ## 和其他 Guard 技能怎么配合
 
-Logic Writing 读的是 ResearchGuard 和 WorldGuard **存下的**报告；检查时从不调用它们。输入变了，`run_chain.py --refresh-providers`
+Logic Writing 读的是 ResearchGuard、WorldGuard 和 PhysicsGuard **存下的**报告；检查时从不调用它们。输入变了，`run_chain.py --refresh-providers`
 会重新生成报告。
 
 - **ResearchGuard → Logic Writing，逐个说法对。** 把研究文件夹的状态存下来（`researchguard status ../ft-example/research --json --output ../ft-example/research-status.json`），
@@ -241,20 +243,22 @@ Logic Writing 读的是 ResearchGuard 和 WorldGuard **存下的**报告；检�
   只有一份属于当前世界文件的 WorldGuard 报告存在，正文才能收尾。整棵章节树也能这样绑定（`world_mesh`，按 `mesh_id` 和 `input_digests`）；
   没有 `mesh_id` 的旧树报告会被拒绝，并给出重新生成它的命令。报告实际的 `scope_limits` 保留为不阻断的风险，provider PASS 不抹掉这些边界。
 
+**PhysicsGuard → Logic Writing。** 简报的 `provider_reports` 指向存下的 JSON 结果，内容单元的 `model_row_ids` 绑定 `pg:<行编号>`。单位换算只用 PG 的表；请求或来源的摘要变了，旧结果显示 stale，不重跑审计。
+
 只检查一个说法、一个来源或一条因果时间线、不写成品，是 ResearchGuard 的事。
 
 <!-- BEGIN GUARD FAMILY TABLE -->
 ## Guard 技能家族
 
-五个技能，同一个思路：让 AI 的答案去对照一份不是它顺手写下的记录；AI 容易出错的那一步，交给工具来做，而不是让 AI 自己做。每个技能都可以单独用。技能之间唯一的数据交接，是 LogicWriting 读取 ResearchGuard 和 WorldGuard 存下的报告。
+五个技能，同一个思路：让 AI 的答案去对照一份不是它顺手写下的记录；AI 容易出错的那一步，交给工具来做，而不是让 AI 自己做。每个技能都可以单独用。LogicWriting 读取 ResearchGuard、WorldGuard 和 PhysicsGuard 存下的结果；物理单位换算只用 PhysicsGuard 的一张表。
 
 | 技能 | 它弥补 AI 的哪个弱点 | 什么时候用 | 和其他技能怎么配合 |
 |---|---|---|---|
 | [FlowGuard](https://github.com/liuyingxuvka/FlowGuard) | 改了软件的一处，看不到别处因此坏了；把已经有的东西再写一遍，或者把新代码放错地方 | 修改、扩展、重构或审查软件代码，包括仿真程序本身的代码 | 计算结果交给 PhysicsGuard，因果结论交给 ResearchGuard，故事或计划的前后一致交给 WorldGuard，长文交给 LogicWriting。另外四个 Guard 自己也是用 FlowGuard 开发的 |
-| [PhysicsGuard](https://github.com/liuyingxuvka/PhysicsGuard) | 在脑子里算物理，单位、正负号、守恒算错了还说得很肯定 | 数字来自物理：仿真结果、试验数据，或者 AI 自己算的一道题 | 仿真程序的代码交给 FlowGuard。没有别的技能读它的报告 |
+| [PhysicsGuard](https://github.com/liuyingxuvka/PhysicsGuard) | 在脑子里算物理，单位、正负号、守恒算错了还说得很肯定 | 数字来自物理：仿真结果、试验数据，或者 AI 自己算的一道题 | 仿真程序的代码交给 FlowGuard。LogicWriting 读取它存下的有来源结果行；RG、WG 和 LW 复用它的单位表 |
 | [ResearchGuard](https://github.com/liuyingxuvka/ResearchGuard) | 讲出一个很有把握的因果故事，资料其实撑不住 | 说出一个因果或证据上的结论之前：论点、来源、时间线、几种互相竞争的解释 | LogicWriting 读取它存下的状态报告。把结论写成完整的报告，交给 LogicWriting |
 | [WorldGuard](https://github.com/liuyingxuvka/WorldGuard) | 跨章节、跨天、跨步骤时，忘了谁手里有什么、谁在哪里，写出不可能发生的事 | 一个故事、行程、计划或流程，要每一步都前后一致 | LogicWriting 读取它存下的检查报告。软件代码交给 FlowGuard |
-| [LogicWriting](https://github.com/liuyingxuvka/LogicWriting) | 长文写着写着，偏离了自己的提纲和证据 | 要一篇给真实读者看的成品：调查报告、论文、小说或故事提纲、旅行攻略 | 读取 ResearchGuard 和 WorldGuard 存下的报告。只检查论点、不写成文，交给 ResearchGuard |
+| [LogicWriting](https://github.com/liuyingxuvka/LogicWriting) | 长文写着写着，偏离了自己的提纲和证据 | 要一篇给真实读者看的成品：调查报告、论文、小说或故事提纲、旅行攻略 | 读取 ResearchGuard、WorldGuard 和 PhysicsGuard 存下的报告。只检查论点、不写成文，交给 ResearchGuard |
 <!-- END GUARD FAMILY TABLE -->
 
 ## 实话实说：它的局限
@@ -264,7 +268,7 @@ Logic Writing 读的是 ResearchGuard 和 WorldGuard **存下的**报告；检�
 - 它不管随手的文案、只改语法、快速查询、作为通用路线的诗歌，以及简短的景点清单。
 
 **它仍可能漏掉的。**
-- 检查把一个说法绑到一个锚点上，但不会去读原始资料，看这个锚点是否真的支持那句话。那是 ResearchGuard 的事，也只能做到它的记录那么好。
+- 保存的原件会核对所链接段落里的明确数值和引语，但相同数字不证明含义相同：别处的同值、调换年份、引号外的人名仍可能漏过。
 - 判断“换个说法重复不被支持的说法”，比较的是实词。换一套词的转述可以绕过它；剩下的防线是计划里写明的禁用说法和评审。
 - 路线评审和读者判断是 AI 写的。由写文章的同一个 AI 做的评审会标成自我评审，绝不能支撑整体质量的结论，但它终究是 AI 在评价自己。
 

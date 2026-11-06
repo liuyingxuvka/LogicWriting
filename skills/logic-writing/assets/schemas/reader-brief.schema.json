@@ -76,6 +76,30 @@
     "request": {
       "type": "string",
       "minLength": 1
+    },
+    "provider_reports": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "provider",
+          "path"
+        ],
+        "properties": {
+          "provider": {
+            "enum": [
+              "physicsguard",
+              "researchguard",
+              "worldguard"
+            ]
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
     }
   },
   "$defs": {

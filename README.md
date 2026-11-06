@@ -194,13 +194,15 @@ fixtures and regression runners that only this repository's tests use. `pip inst
 skill. The scripts need Python 3.10 or newer, and PyYAML when a piece uses a research folder or a world file.
 
 **2. For research and story worlds, install the providers**, each from its own tag. Logic Writing reads their saved
-reports; it needs the commands only to refresh them. ResearchGuard requires 0.7.0. WorldGuard 0.8.0 supplies tree
+reports; it needs the commands only to refresh them. ResearchGuard requires 0.8.0. WorldGuard 0.8.0 supplies tree
 reports; the existing single-contract path still supports 0.7.23:
 
 ```bash
-python -m pip install "git+https://github.com/liuyingxuvka/ResearchGuard.git@v0.7.0"
+python -m pip install "git+https://github.com/liuyingxuvka/ResearchGuard.git@v0.8.0"
 python -m pip install "git+https://github.com/liuyingxuvka/WorldGuard.git@v0.8.0"
 ```
+
+For physical quantities, optionally install PhysicsGuard >= 0.18.0 from its repository. Its unit table is the only conversion owner; without it unit checks stay grey. A plain brief needs no PhysicsGuard.
 
 **3. The first commands**, in the cloned folder:
 
@@ -226,7 +228,7 @@ makes it load Logic Writing for a finished report, paper, story or guide (in Cod
 ```mermaid
 flowchart LR
   R["Your request<br/>stored once, as given"] --> B["Plan<br/>every claim a unit<br/>with its evidence"]
-  P["Saved reports<br/>ResearchGuard status<br/>WorldGuard check"] --> B
+  P["Saved reports<br/>ResearchGuard status<br/>WorldGuard check<br/>PhysicsGuard readings"] --> B
   B --> W["The AI writes the text"]
   W --> C["Bind, audit, review<br/>exact quotes to plan units"]
   C --> X["Closure<br/>passed, or the first failure"]
@@ -258,7 +260,7 @@ flowchart LR
 
 ## How it works with the other Guard skills
 
-Logic Writing reads the **saved** reports of ResearchGuard and WorldGuard; it never calls them while it checks, and
+Logic Writing reads the **saved** reports of ResearchGuard, WorldGuard and PhysicsGuard; it never calls them while it checks, and
 `run_chain.py --refresh-providers` regenerates the reports when the inputs changed.
 
 - **ResearchGuard → Logic Writing, per claim.** Save the research folder's status
@@ -274,20 +276,22 @@ Logic Writing reads the **saved** reports of ResearchGuard and WorldGuard; it ne
   tree report without `mesh_id` is refused with the command that regenerates it. Actual report `scope_limits` remain
   visible as nonblocking risks; a provider PASS keeps those limits.
 
+**PhysicsGuard → Logic Writing.** A brief's `provider_reports` names the saved JSON result; content-unit `model_row_ids` bind `pg:<row-id>`. The PG unit table converts quantities; changed request or source digests make saved rows stale, without rerunning the audit.
+
 Checking a claim, a source or a causal timeline on its own, without writing a finished piece, is ResearchGuard's job.
 
 <!-- BEGIN GUARD FAMILY TABLE -->
 ## The Guard family
 
-Five skills, one idea: each one makes the AI's answer meet a second record that the AI did not write in the same breath, and lets a tool, not the AI, do the step where the AI tends to slip. Each skill works on its own. The only data hand-over is LogicWriting reading the saved reports of ResearchGuard and WorldGuard.
+Five skills, one idea: each one makes the AI's answer meet a second record that the AI did not write in the same breath, and lets a tool, not the AI, do the step where the AI tends to slip. Each skill works on its own. LogicWriting reads saved ResearchGuard, WorldGuard and PhysicsGuard results. Physical unit conversion has one owner, PhysicsGuard's unit table.
 
 | Skill | The AI weakness it makes up for | Use it when | Works with the others |
 |---|---|---|---|
 | [FlowGuard](https://github.com/liuyingxuvka/FlowGuard) | It changes one part of the software and does not see what that broke elsewhere; it rebuilds what already exists, or puts new code in the wrong place | you change, extend, refactor or audit software code, including the code of a simulation | Sends calculation results to PhysicsGuard, causal claims to ResearchGuard, story or plan consistency to WorldGuard, long texts to LogicWriting. The other four Guards are developed with FlowGuard |
-| [PhysicsGuard](https://github.com/liuyingxuvka/PhysicsGuard) | It does physics in its head and is confidently wrong about units, signs and balances | a number comes from physics: a simulation result, test data, or a calculation the AI made itself | Sends the simulation's code to FlowGuard. No other Guard reads its reports |
+| [PhysicsGuard](https://github.com/liuyingxuvka/PhysicsGuard) | It does physics in its head and is confidently wrong about units, signs and balances | a number comes from physics: a simulation result, test data, or a calculation the AI made itself | Sends the simulation's code to FlowGuard. LogicWriting reads its saved source-backed result rows; RG, WG and LW reuse its unit table |
 | [ResearchGuard](https://github.com/liuyingxuvka/ResearchGuard) | It tells a confident causal story that its sources do not support | before a causal or evidential conclusion is stated: claims, sources, timelines, competing explanations | LogicWriting reads its saved status report. Sends the writing of the finished report to LogicWriting |
 | [WorldGuard](https://github.com/liuyingxuvka/WorldGuard) | Across chapters, days or steps it forgets who holds what and who is where, and writes events that cannot happen | a story, trip, plan or process must stay consistent from step to step | LogicWriting reads its saved check report. Sends software code to FlowGuard |
-| [LogicWriting](https://github.com/liuyingxuvka/LogicWriting) | In a long text it drifts away from its own plan and evidence | you need a finished piece for real readers: an investigation report, a paper, fiction or a story plan, a travel guide | Reads the saved reports of ResearchGuard and WorldGuard. Sends the checking of claims on their own to ResearchGuard |
+| [LogicWriting](https://github.com/liuyingxuvka/LogicWriting) | In a long text it drifts away from its own plan and evidence | you need a finished piece for real readers: an investigation report, a paper, fiction or a story plan, a travel guide | Reads the saved reports of ResearchGuard, WorldGuard and PhysicsGuard. Sends the checking of claims on their own to ResearchGuard |
 <!-- END GUARD FAMILY TABLE -->
 
 ## Honest limits
@@ -299,8 +303,8 @@ Five skills, one idea: each one makes the AI's answer meet a second record that 
   lists.
 
 **Where it can still miss.**
-- The checks hold a claim to an anchor; they do not read the source to see whether the anchor really supports that
-  sentence. That is ResearchGuard's job, and only as good as its records.
+- Saved captures check explicit values and quoted words in linked source sections. Equal numbers do not prove
+  semantic support: unrelated identical values, swapped years and names outside quotes can still escape.
 - The test for a claim that restates an unsupported alternative compares content words. A paraphrase with different
   words passes it; the plan's prohibited overclaims and the review are the remaining defences.
 - The route review and the reader judgment are written by an AI. A review by the same AI that wrote the piece is

@@ -70,7 +70,6 @@ DEFAULT_READS = {
     'skills/logic-writing/routes/travel/scripts/validate_travel_plan.py:main': 3,
     'skills/logic-writing/routes/travel/scripts/validate_travel_text_outputs.py:validate_failure_dir': 9,
     'skills/logic-writing/routes/travel/scripts/validate_travel_text_outputs.py:validate_good_dir': 1,
-    'skills/logic-writing/scripts/_common.py:load_request': 2,
     'skills/logic-writing/scripts/_common.py:own_fingerprint': 2,
     'skills/logic-writing/scripts/_common.py:unique_ids': 1,
     'skills/logic-writing/scripts/_common.py:worldguard_report_identity_problems': 1,

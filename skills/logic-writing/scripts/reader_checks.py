@@ -85,6 +85,11 @@ def build_reader_audit_from_current(*, audit_id, amap, brief, contract, audited_
     def add(code: str, unit_id: str, message: str, boundary: str = "preserve current content boundaries") -> None:
         findings.append(_audit_finding(code=code, unit_id=unit_id, message=message, owner=brief["final_owner"], boundary=boundary, index=len(findings) + 1))
 
+    from claim_readings import text_readings
+    for reading in text_readings(brief, amap, contract):
+        if reading['colour'] == 'red':
+            add('text_value_not_in_source', reading['artifact_unit_id'], reading['reason'])
+
     for row in units:
         if row["unit_kind"] == "document":
             continue

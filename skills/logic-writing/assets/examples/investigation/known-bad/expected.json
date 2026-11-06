@@ -44,6 +44,10 @@
     "error": "limitation_quote_missing:lim-scope",
     "step": "review"
   },
+  "number-drift.md": {
+    "error": "binding b-u-answer: quote \"Short answer: as of Python 3.14\" is not in the current text",
+    "step": "shared_writing"
+  },
   "overclaim.md": {
     "code": "overclaim_pattern",
     "step": "audit"

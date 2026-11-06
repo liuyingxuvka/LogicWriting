@@ -17,6 +17,7 @@ def build_reader_brief(
     request=None,
     research_folder=None,
     research_status=None,
+    provider_reports=None,
 ):
     return _build_reader_brief(
         route_decision=route_decision,
@@ -27,6 +28,7 @@ def build_reader_brief(
         request=request,
         research_folder=research_folder,
         research_status=research_status,
+        provider_reports=provider_reports,
     )
 
 
@@ -41,10 +43,15 @@ def validate_request(value):
         request=request.get('request'),
         research_folder=request.get("research_folder"),
         research_status=request.get("research_status"),
+        provider_reports=request.get("provider_reports"),
     )
+    from claim_readings import plan_readings, reading_risks
+    readings = plan_readings(brief)
     return validation_result(
         status="current_pass",
         warnings=[f"{row['defect_id']} ({row['reason']})" for row in claim_anchor_gaps(brief)],
+        source_readings=readings,
+        residual_risk=reading_risks(readings),
         reader_brief=brief,
         reader_brief_fingerprint=brief["brief_fingerprint"],
         composition_plan=request["composition_plan"],
