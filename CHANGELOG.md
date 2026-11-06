@@ -8,6 +8,8 @@ line follows semantic versioning.
 
 ## Unreleased
 
+## v4.3.0 - 2026-11-06 - Read claims against saved originals
+
 - Plan and current-text readings check linked ResearchGuard captures, exact owner requests and PhysicsGuard result rows, including signed numbers, units, dates, times, table cells, quoted words and speakers. Plain decimal spellings compare by value; named software versions retain their exact parts. A sourced contradiction refuses the plan or adds an audit finding; missing originals remain visible as grey risks.
 - Reuse ResearchGuard 0.8.0 for captured text and table context. Physical units use PhysicsGuard 0.18.0's table through an optional entrypoint; a plain brief does not require PhysicsGuard.
 - Saved specialist rows are checked against their original source digests without rerunning the providers. Changed inputs remain stale, and ResearchGuard warnings stay in closure risks.
