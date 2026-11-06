@@ -8,6 +8,12 @@ line follows semantic versioning.
 
 ## Unreleased
 
+## v4.3.2 - 2026-11-06 - Keep source and native-result scope
+
+- Fix explicit from/to year-column matching, cited-source identity and assumption versus observed-result readings, preserving the original public inputs and documenting the finite unsupported meanings.
+- Keep PhysicsGuard inlet values bound to their supplied source entities and compare current quoted WorldGuard event times/dates and known participants with the referenced native event. Symbolic or ambiguous bindings remain visible risks; conditional models remain usable.
+- Preserve caller-declared experiment observation limits from ResearchGuard reports. No new route, input schema, solver or provider execution was added.
+
 ## v4.3.1 - 2026-11-06 - Share existing validation plumbing
 
 - Scene and promise checks share their JSON command wrapper, report printing and duplicate-ID check, preserving input forms, diagnostic labels, reports and exit codes. Their domain rules and collection readers stay separate.
