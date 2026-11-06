@@ -8,6 +8,13 @@ line follows semantic versioning.
 
 ## Unreleased
 
+## v4.4.0 - 2026-11-06 - Bind physical readings to their report and case
+
+- Add the optional `pg-report://<percent-encoded report path>#<percent-encoded row id>` reference in the existing model row list. The old `pg:<row-id>` stays valid for an unambiguous single report. Multiple reports no longer silently overwrite a matching row; an ambiguous reference remains unverified.
+- Preserve the chosen report through path save/load and evidence checks. Inlet groups must come from one report and case; equal values or source digests do not merge different cases. Changed source files still invalidate the result.
+- Carry native conditional scope into reader and closure risks. A matched scenario value is not an independent observation. Allow PhysicsGuard in the existing closure provider enum so the already-supported provider can complete the actual closure command.
+- This is a backward-compatible feature release: the qualified reference is optional and no required input field was added. Retain old single-report examples and document the genuine historical saved-input boundary in MIGRATION.md. Maintenance checks use the demonstrated external-dependency correctness fix in FlowGuard 2.1.1.
+
 ## v4.3.2 - 2026-11-06 - Keep source and native-result scope
 
 - Fix explicit from/to year-column matching, cited-source identity and assumption versus observed-result readings, preserving the original public inputs and documenting the finite unsupported meanings.

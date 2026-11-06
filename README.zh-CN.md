@@ -1,7 +1,7 @@
 # Logic Writing
 
 <p align="center">
-  <img src="https://img.shields.io/badge/source-4.3.2-6f42c1" alt="源码版本 4.3.2" />
+  <img src="https://img.shields.io/badge/source-4.4.0-6f42c1" alt="源码版本 4.4.0" />
   <img src="https://img.shields.io/badge/skill-logic--writing-334155" alt="技能 logic-writing" />
   <img src="https://img.shields.io/badge/routes-4-0a7f5a" alt="四条最终路线" />
   <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT 许可证" />
@@ -164,11 +164,11 @@ Solid arrow: the later unit builds on the earlier one (downstream_unit_ids); dot
 
 **1. 从发布的 tag 安装技能。**
 
-徽章写的是 v4.3.2；下面的 clone 命令要求这个 tag 已正式发布。未发布的候选版本可以在其检出目录里用同一个安装器；
+徽章写的是 v4.4.0；下面的 clone 命令要求这个 tag 已正式发布。未发布的候选版本可以在其检出目录里用同一个安装器；
 安装逐字节检查成功，只证明副本一致，不代表 tag 已发布。
 
 ```bash
-git clone --depth 1 --branch v4.3.2 https://github.com/liuyingxuvka/LogicWriting.git
+git clone --depth 1 --branch v4.4.0 https://github.com/liuyingxuvka/LogicWriting.git
 cd LogicWriting
 SKILLS_DIR=~/.claude/skills  # or ~/.codex/skills, or "$CODEX_HOME/skills"
 python scripts/install_skill.py --target "$SKILLS_DIR"
