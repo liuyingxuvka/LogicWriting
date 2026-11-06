@@ -18,7 +18,7 @@ TOPICS = (
 
 
 def contract(topic):
-    return import_module(f"tests.flow_migration.{topic}")
+    return import_module(f"tests.native_contracts.{topic}")
 
 
 def cases(topic, *, functional=False):

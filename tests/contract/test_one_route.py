@@ -76,14 +76,19 @@ def test_an_unreadable_result_file_reads_back_as_unreadable(tmp_path):
     assert 'audit: unreadable' in first and 'audit: not_run' not in first
 
 
-# The probes load the suite's own tests/conftest.py as their plugin, so they fail when that file stops loading the
-# guard (tests/no_skips.py), not only when the guard itself breaks.
-def test_a_skipped_test_fails_the_run(tmp_path):
+# Probe the suite's actual conftest and declared policy in a complete temporary project.
+def _skip_probe(tmp_path, body):
+    (tmp_path / 'conftest.py').write_text((REPO / 'tests/conftest.py').read_text(encoding='utf-8'), encoding='utf-8')
+    (tmp_path / 'pyproject.toml').write_text('[tool.flowguard]\nskip_policy = "no_skip"\n', encoding='utf-8')
     probe = tmp_path / 'test_probe.py'
-    probe.write_text('import pytest\n\ndef test_hidden():\n    pytest.skip("a handler swallowed the error")\n',
-                     encoding='utf-8')
-    run = subprocess.run([sys.executable, '-m', 'pytest', '-q', '-p', 'no:cacheprovider', '-p', 'tests.conftest',
-                          str(probe)], cwd=REPO, capture_output=True, text=True, timeout=120)
+    probe.write_text(body, encoding='utf-8')
+    return subprocess.run([sys.executable, '-m', 'pytest', '-q', '-p', 'no:cacheprovider',
+                           '-p', 'flowguard.intent.plugin', str(probe)],
+                          cwd=tmp_path, capture_output=True, text=True, timeout=120)
+
+
+def test_a_skipped_test_fails_the_run(tmp_path):
+    run = _skip_probe(tmp_path, 'import pytest\n\ndef test_hidden():\n    pytest.skip("a handler swallowed the error")\n')
     assert run.returncode == 1, run.stdout + run.stderr
     assert '1 failed' in run.stdout and 'this suite allows no skips' in run.stdout
 
@@ -94,21 +99,31 @@ def test_a_skipped_test_fails_the_run(tmp_path):
 ])
 def test_a_module_skipped_at_collection_fails_the_run(tmp_path, body):
     """Review gap: a module-level skip is a collection report, not a test report; it must fail too."""
-    probe = tmp_path / 'test_probe.py'
-    probe.write_text(body, encoding='utf-8')
-    run = subprocess.run([sys.executable, '-m', 'pytest', '-q', '-p', 'no:cacheprovider', '-p', 'tests.conftest',
-                          str(probe)], cwd=REPO, capture_output=True, text=True, timeout=120)
+    run = _skip_probe(tmp_path, body)
     assert run.returncode != 0, run.stdout + run.stderr
     assert 'this suite allows no skips' in run.stdout + run.stderr
 
 
+@pytest.mark.parametrize('body', [
+    'import pytest\n@pytest.mark.xfail(reason="allowed old boundary")\ndef test_pass():\n    pass\n',
+    'import pytest\ndef test_exit():\n    pytest.exit("allowed old boundary", returncode=0)\n',
+])
+def test_the_existing_skip_policy_does_not_add_xpass_or_exit_constraints(tmp_path, body):
+    run = _skip_probe(tmp_path, body)
+    assert run.returncode == 0, run.stdout + run.stderr
+
+
 def test_this_run_has_the_skip_guard(request):
-    """Review gap: removing the no_skips import from tests/conftest.py silently disabled the guard for the whole suite."""
-    from tests import no_skips
+    """Removing the shared plugin or its no_skip setting must not silently disable the guard."""
+    from flowguard.intent import plugin
+    from flowguard.intent.config import load_config
+    assert load_config(REPO).skip_policy == 'no_skip'
+    assert request.config.pluginmanager.hasplugin('flowguard.intent.plugin')
+    assert 'flowguard.intent.plugin' in __import__('tests.conftest', fromlist=['pytest_plugins']).pytest_plugins
     hooks = request.config.pluginmanager.hook
     for name in ('pytest_runtest_makereport', 'pytest_make_collect_report'):
-        assert any(row.function is getattr(no_skips, name) for row in getattr(hooks, name).get_hookimpls()), \
-            f'{name} from tests/no_skips.py is not registered in this run: tests/conftest.py must import it'
+        assert any(row.function is getattr(plugin, name) for row in getattr(hooks, name).get_hookimpls()), \
+            f'{name} from flowguard.intent.plugin is not registered in this run'
 
 
 def test_a_fresh_example_reads_back_with_the_route_decided_from_its_request(tmp_path):

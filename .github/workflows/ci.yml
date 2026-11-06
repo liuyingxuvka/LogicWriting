@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 env:
-  FLOWGUARD_REF: v1.0.0
+  FLOWGUARD_REF: v2.0.0
 
 jobs:
   checks:
@@ -22,6 +22,8 @@ jobs:
     steps:
       - name: Check out the current source
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
@@ -34,13 +36,11 @@ jobs:
         timeout-minutes: 20
         env:
           RESEARCHGUARD_SOURCE_ROOT: ${{ runner.temp }}/ResearchGuard
-        run: python -m pytest -q
+        run: python -m flowguard check --all
       - name: Run fiction regression
         run: python scripts/run_fiction_regression.py --repository-root . --json
       - name: Run travel regression
         run: python scripts/run_travel_regression.py --repository-root . --json
-      - name: Verify the release contracts
-        run: python -m flowguard release
       - name: Install and check the skill bytes
         run: |
           python scripts/install_skill.py --target "$RUNNER_TEMP/skills"
@@ -57,6 +57,7 @@ jobs:
       - name: Check out the selected source
         uses: actions/checkout@v5
         with:
+          fetch-depth: 0
           ref: ${{ inputs.source_sha || github.sha }}
           persist-credentials: false
 
@@ -72,6 +73,6 @@ jobs:
 
       - name: Run tests and member preflights on the minimum
         run: |
-          python -m pytest -q
+          python -m flowguard check --all
           for member in researchguard logicguard sourceguard traceguard; do python skills/logic-writing/scripts/provider_preflight.py "$member"; done
 

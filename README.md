@@ -323,19 +323,21 @@ Five skills, one idea: each one makes the AI's answer meet a second record that 
 ## Developing Logic Writing
 
 ```bash
-python -m pytest -q
+python -m flowguard check --all
 python scripts/check_public_docs.py
 python scripts/run_fiction_regression.py --repository-root .
 python scripts/run_travel_regression.py --repository-root .
 ```
 
-CI runs the full test suite, the fiction and travel regressions, the installed-skill byte check, and FlowGuard's native
-release check. Logic Writing's functional contracts call the production scripts directly; its finite fingerprint flow
-lives in `.flowguard/flow/`. The workflow installs FlowGuard only from its git
-tag (`git+https://github.com/liuyingxuvka/FlowGuard.git@v1.0.0`), because the package with that name on PyPI is a
-different project. A second CI job checks the minimum ResearchGuard version Logic Writing supports. These checks cover
-the scripts and their contracts, not the quality of a particular piece of writing. AI contributors start from
-[`AGENTS.md`](./AGENTS.md); `CLAUDE.md` points Claude Code to the same file.
+CI runs all intent and native pytest tests, the fiction and travel regressions,
+and the installed-skill byte check. The native contracts preserve the original
+independent predicates and real script sequences. One intent rule guards the
+exact-object fingerprint; shared Map queries guard error routes and default
+reads. CI installs FlowGuard from the git tag pinned in its workflow, because
+the PyPI package with that name is a different project. A second job checks the
+minimum supported ResearchGuard. These checks cover scripts and contracts,
+not the quality of a particular piece of writing. AI contributors start from
+[`AGENTS.md`](./AGENTS.md); `CLAUDE.md` points to the same file.
 
 ## Links
 

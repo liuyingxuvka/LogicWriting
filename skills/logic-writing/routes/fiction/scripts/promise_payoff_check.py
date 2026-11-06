@@ -7,11 +7,11 @@ does not judge prose style or narrative quality.
 
 from __future__ import annotations
 
-import argparse
-import json
 import sys
 from pathlib import Path
 from typing import Any
+from _fiction_common import (check_duplicate_ids, json_check_cli,
+    load_json as _load_json, print_text_report as _print_text_report)
 from _fiction_common import (PLACEHOLDER_VALUES, type_name, normalize_text, is_blank_or_placeholder, check_type as _check_type, check_enum as _check_enum)
 
 
@@ -329,21 +329,7 @@ def extract_promise_rows(payload: Any, reporter: Reporter) -> tuple[list[tuple[s
 
 
 def check_duplicate_promise_ids(rows: list[tuple[str, dict[str, Any]]], reporter: Reporter) -> None:
-    observed: dict[str, str] = {}
-    for path, row in rows:
-        promise_id = row.get("id")
-        if not isinstance(promise_id, str) or is_blank_or_placeholder(promise_id):
-            continue
-        if promise_id in observed:
-            reporter.error(
-                "duplicate_promise_id",
-                path_join(path, "id"),
-                f"Promise id {promise_id!r} duplicates {observed[promise_id]}.",
-                promise_id,
-                "id",
-            )
-        else:
-            observed[promise_id] = path
+    check_duplicate_ids(rows, reporter, "promise")
 
 
 def check_top_level_enums(row: dict[str, Any], path: str, reporter: Reporter) -> None:
@@ -768,8 +754,7 @@ def validate_promises(payload: Any, source_path: str) -> dict[str, Any]:
 
 
 def load_json(path: Path) -> Any:
-    with path.open("r", encoding="utf-8") as handle:
-        return json.load(handle)
+    return _load_json(path)
 
 
 def error_report(source_path: str, code: str, message: str) -> dict[str, Any]:
@@ -797,41 +782,13 @@ def error_report(source_path: str, code: str, message: str) -> dict[str, Any]:
 
 
 def print_text_report(report: dict[str, Any]) -> None:
-    print(f"Promise payoff check: {'passed' if report['passed'] else 'failed'}")
-    print(f"Source: {report['source_path']}")
-    print(f"Collection: {report['collection_path']}")
-    print(
-        "Issues: "
-        f"{report['summary']['error_count']} error(s), "
-        f"{report['summary']['warning_count']} warning(s)"
-    )
-    for issue in report["issues"]:
-        promise_suffix = f" promise={issue['promise_id']}" if "promise_id" in issue else ""
-        field_suffix = f" field={issue['field']}" if "field" in issue else ""
-        print(f"- [{issue['severity']}] {issue['code']} at {issue['path']}{promise_suffix}{field_suffix}: {issue['message']}")
+    _print_text_report(report, "Promise payoff check", "promise")
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Validate StorylineDesign promise/payoff rows.")
-    parser.add_argument("input", help="Path to a promise/payoff JSON file or StorylineDesign ledger JSON file.")
-    parser.add_argument("--json", action="store_true", help="Emit machine-readable JSON report.")
-    args = parser.parse_args(argv)
-
-    path = Path(args.input)
-    try:
-        payload = load_json(path)
-    except OSError as exc:
-        report = error_report(str(path), "read_error", str(exc))
-    except json.JSONDecodeError as exc:
-        report = error_report(str(path), "json_decode_error", f"{exc.msg} at line {exc.lineno}, column {exc.colno}")
-    else:
-        report = validate_promises(payload, str(path))
-
-    if args.json:
-        print(json.dumps(report, indent=2, sort_keys=True))
-    else:
-        print_text_report(report)
-    return 0 if report["passed"] else 1
+    return json_check_cli(argv, description='Validate StorylineDesign promise/payoff rows.', input_help='Path to a promise/payoff JSON file or StorylineDesign ledger JSON file.',
+                          load=load_json, validate=validate_promises, error_report=error_report,
+                          print_report=print_text_report)
 
 
 if __name__ == "__main__":

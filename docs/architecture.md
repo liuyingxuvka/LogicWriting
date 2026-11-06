@@ -98,20 +98,23 @@ typed non-pass states.
 
 ## Maintenance contracts
 
-This repository is maintained with FlowGuard; user writing tasks do not use it.
-`tests/flow_migration/` preserves the independent expected functions, 61 rules,
-69 expanded bad observations and 112 production-test links from the 19 former
-models. Direct functional contracts exercise routing, provider preflight, current
-artifact review, closure, unique quotes, and the domain checks on actual scripts.
-The four former generated-system routes retain static source ownership checks;
-the reader chain also tests the actual audit-to-closure handoff.
+This repository is maintained with FlowGuard 2; user writing tasks do not use it.
+`tests/native_contracts/` retains 61 independent predicates, 69 bad observations,
+418 real native sequences and 112 production-test links across 19 topics.
+Those functional contracts call the actual scripts; the bad observations test
+the independent predicates rather than mutating production code. Shared Map
+queries check the original four system routes and the unused handoff boundary.
 
-`.flowguard/flow/record_identity.py` binds a finite edit/restore/check flow to the
-real exact-object fingerprint validator. `python -m flowguard check --full` checks
-that native boundary; `python -m pytest -q` checks all functional contracts.
-The transfer inventory is `tests/flow_migration/coverage.json`. Old conflict IDs
-are not carried into a different conflict kind; new native evidence supplies its
-own IDs. Original request bytes and historical change records are retained.
+A record fingerprint binds the exact current object; changing the object must
+be refused until its original bytes are restored. `LW_RECORD_IDENTITY` binds
+that decision to the single production validator. Its direct test retains the
+edit/refuse/restore/check sequence. The shared Map also checks documented error
+routes and all three existing default-read inventories. The transfer inventory
+is `tests/native_contracts/coverage.json`; original source revisions and hashes
+are historical provenance, not current live paths. Original request bytes are
+retained. LogicWriting reads saved PG/WG/RG status rows and verifies their
+source digests; migration does not re-run their models or fabricate lower rules.
+`python -m flowguard check --all` runs all intent and native pytest tests.
 
 Shared kernel state is limited to route decision, artifact identity, reader
 projection identity, and freshness. Fiction and travel own disjoint domain
@@ -120,9 +123,9 @@ state and side effects.
 ## Validation ownership
 
 OpenSpec records product obligations and acceptance checks. The release
-workflow (`.github/workflows/publish-release.yml`) runs pytest, the fiction and
-travel regressions and the native release check on the exact source commit
-before it publishes. `python scripts/install_skill.py --target <dir> --check`
+workflow (`.github/workflows/publish-release.yml`) waits for complete CI on
+the exact source commit, including all intent/native tests, fiction and travel
+regressions, before it publishes. `python scripts/install_skill.py --target <dir> --check`
 compares an installed copy with the source by file set and bytes.
 
 ## Reader-chain components

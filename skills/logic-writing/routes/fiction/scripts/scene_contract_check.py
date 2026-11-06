@@ -7,13 +7,13 @@ or replace WorldGuard review of the linked world claims.
 
 from __future__ import annotations
 
-import argparse
-import json
 import sys
 from pathlib import Path
 from fiction_plan import project_surface
 
 from typing import Any
+from _fiction_common import (check_duplicate_ids, json_check_cli,
+    load_json as _load_json, print_text_report as _print_text_report)
 from _fiction_common import (PLACEHOLDER_VALUES, type_name, normalize_text, is_blank_or_placeholder, check_type as _check_type, check_enum as _check_enum)
 
 from story_ledger_check import read_worldguard_status
@@ -738,21 +738,7 @@ def check_outcome_gates(row: dict[str, Any], path: str, reporter: Reporter) -> N
 
 
 def check_duplicate_scene_ids(rows: list[tuple[str, dict[str, Any]]], reporter: Reporter) -> None:
-    observed: dict[str, str] = {}
-    for path, row in rows:
-        scene_id = row.get("id")
-        if not isinstance(scene_id, str) or is_blank_or_placeholder(scene_id):
-            continue
-        if scene_id in observed:
-            reporter.error(
-                "duplicate_scene_id",
-                path_join(path, "id"),
-                f"Scene id {scene_id!r} duplicates {observed[scene_id]}.",
-                scene_id,
-                "id",
-            )
-        else:
-            observed[scene_id] = path
+    check_duplicate_ids(rows, reporter, "scene")
 
 
 def validate_scene_contracts(payload: Any, source_path: str) -> dict[str, Any]:
@@ -802,8 +788,7 @@ def validate_scene_contracts(payload: Any, source_path: str) -> dict[str, Any]:
 
 
 def load_json(path: Path) -> Any:
-    with path.open("r", encoding="utf-8") as handle:
-        return json.load(handle)
+    return _load_json(path)
 
 
 def error_report(source_path: str, code: str, message: str) -> dict[str, Any]:
@@ -831,41 +816,13 @@ def error_report(source_path: str, code: str, message: str) -> dict[str, Any]:
 
 
 def print_text_report(report: dict[str, Any]) -> None:
-    print(f"Scene contract check: {'passed' if report['passed'] else 'failed'}")
-    print(f"Source: {report['source_path']}")
-    print(f"Collection: {report['collection_path']}")
-    print(
-        "Issues: "
-        f"{report['summary']['error_count']} error(s), "
-        f"{report['summary']['warning_count']} warning(s)"
-    )
-    for issue in report["issues"]:
-        scene_suffix = f" scene={issue['scene_id']}" if "scene_id" in issue else ""
-        field_suffix = f" field={issue['field']}" if "field" in issue else ""
-        print(f"- [{issue['severity']}] {issue['code']} at {issue['path']}{scene_suffix}{field_suffix}: {issue['message']}")
+    _print_text_report(report, "Scene contract check", "scene")
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Validate StorylineDesign scene contract rows.")
-    parser.add_argument("input", help="Path to a scene-contract JSON file or StorylineDesign ledger JSON file.")
-    parser.add_argument("--json", action="store_true", help="Emit machine-readable JSON report.")
-    args = parser.parse_args(argv)
-
-    path = Path(args.input)
-    try:
-        payload = load_json(path)
-    except OSError as exc:
-        report = error_report(str(path), "read_error", str(exc))
-    except json.JSONDecodeError as exc:
-        report = error_report(str(path), "json_decode_error", f"{exc.msg} at line {exc.lineno}, column {exc.colno}")
-    else:
-        report = validate_scene_contracts(payload, str(path))
-
-    if args.json:
-        print(json.dumps(report, indent=2, sort_keys=True))
-    else:
-        print_text_report(report)
-    return 0 if report["passed"] else 1
+    return json_check_cli(argv, description='Validate StorylineDesign scene contract rows.', input_help='Path to a scene-contract JSON file or StorylineDesign ledger JSON file.',
+                          load=load_json, validate=validate_scene_contracts, error_report=error_report,
+                          print_report=print_text_report)
 
 
 if __name__ == "__main__":

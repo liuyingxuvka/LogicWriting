@@ -9,31 +9,16 @@ from pathlib import Path
 SCRIPTS = Path(__file__).resolve().parents[3] / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 
-from _common import cli_validate, require_mapping, validation_result
+from _common import cli_validate
 from derive_closure import REQUIRED_DIMENSIONS
-from reader_fill import fill_check_fingerprints
-from reader_checks import validate_route_artifact_review
+from reader_checks import validate_artifact_review_request
 
 OWNER = "investigation"
 
 
 def validate_investigation_artifact(value):
-    request = fill_check_fingerprints(require_mapping(value, "investigation artifact review request"))
-    review = validate_route_artifact_review(
-        request["review"],
-        owner=OWNER,
-        route_composition=request["route_composition"],
-        artifact_map=request["artifact_map"],
-        required_dimensions=REQUIRED_DIMENSIONS[OWNER],
-        reader_brief=request.get("reader_brief"),
-        shared_writing=request.get("shared_writing"),
-    )
-    return validation_result(
-        status="current_pass" if review["status"] == "passed" else "partial",
-        route_review=review,
-        findings=review["findings"],
-        artifact_fingerprint=review["artifact_fingerprint"],
-    )
+    return validate_artifact_review_request(value, owner=OWNER,
+        label="investigation artifact review request", required_dimensions=REQUIRED_DIMENSIONS[OWNER])
 
 
 if __name__ == "__main__":

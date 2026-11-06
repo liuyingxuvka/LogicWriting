@@ -281,14 +281,14 @@ Logic Writing 读的是 ResearchGuard、WorldGuard 和 PhysicsGuard **存下的*
 ## 开发 Logic Writing
 
 ```bash
-python -m pytest -q
+python -m flowguard check --all
 python scripts/check_public_docs.py
 python scripts/run_fiction_regression.py --repository-root .
 python scripts/run_travel_regression.py --repository-root .
 ```
 
-CI 会跑全部测试、小说和旅行的回归、装好的技能逐字节检查，以及 FlowGuard 的原生发布检查。函数约定直接调用生产脚本；有限的指纹流程放在 `.flowguard/flow/`。
-工作流只从 git tag 安装 FlowGuard（`git+https://github.com/liuyingxuvka/FlowGuard.git@v1.0.0`），因为 PyPI 上同名的包是另一个项目。
+CI 会跑全部意图和原生 pytest 测试、小说和旅行回归，以及技能逐字节检查。原生约定保留独立谓词和真实脚本序列；一条意图规则检查对象指纹，共享 Map 检查错误路径和默认读取清单。
+工作流从其钉住的 git tag 安装 FlowGuard，因为 PyPI 上同名的包是另一个项目。
 另一个 CI 作业检查 Logic Writing 支持的 ResearchGuard 最低版本。这些检查覆盖的是脚本和它们的约定，不是某一篇文章的质量。
 参与开发的 AI 从 [`AGENTS.md`](./AGENTS.md) 读起；`CLAUDE.md` 让 Claude Code 读同一个文件。
 

@@ -18,7 +18,7 @@ Repository = "https://github.com/liuyingxuvka/LogicWriting"
 Issues = "https://github.com/liuyingxuvka/LogicWriting/issues"
 
 [tool.pytest.ini_options]
-addopts = "-ra"
+addopts = "-ra -p flowguard.intent.plugin"
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 
@@ -28,3 +28,8 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
 packages = []
+
+[tool.flowguard]
+roots = ["skills/logic-writing/scripts"]
+authority_docs = ["AGENTS.md", "docs/architecture.md"]
+skip_policy = "no_skip"

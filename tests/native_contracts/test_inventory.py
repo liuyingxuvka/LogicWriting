@@ -1,5 +1,6 @@
 """Transfer inventory and the original generated system's static ownership links."""
-import ast
+from contextlib import closing
+from flowguard.structure import build
 import json
 from pathlib import Path
 
@@ -11,15 +12,20 @@ ROOT = Path(__file__).resolve().parents[2]
 COVERAGE = json.loads(Path(__file__).with_name("coverage.json").read_text())
 
 
-def defined(anchor):
+@pytest.fixture(scope="module")
+def graph():
+    with closing(build(ROOT)) as result:
+        yield result
+
+
+def defined(graph, anchor):
     path, _, symbol = anchor.partition(":")
-    tree = ast.parse((ROOT / path).read_text(encoding="utf-8"))
-    names = {node.name for node in ast.walk(tree)
-             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))}
-    assert symbol.split(".")[-1] in names, anchor
+    names = {node["qual"] for node in graph.nodes(file=path)
+             if node["kind"] in {"function", "class", "test", "method"}}
+    assert symbol in names, anchor
 
 
-def test_original_contract_destinations_and_production_links():
+def test_original_contract_destinations_and_production_links(graph):
     rows = COVERAGE["models"]
     assert {row["topic"] for row in rows} == set(TOPICS)
     assert len(rows) == 19
@@ -32,31 +38,29 @@ def test_original_contract_destinations_and_production_links():
         assert [bad["id"] for bad in row["bad_variants"]] == list(module.BAD_EXPECTATIONS)
         for rule in row["rules"]:
             for binding in rule["production_tests"]:
-                defined(binding)
+                defined(graph, binding)
         for binding in row["production_bindings"]:
-            defined(binding["target"])
+            defined(graph, binding["target"])
         for anchor in row["uses"].values():
-            defined(anchor)
+            defined(graph, anchor)
 
 
 @pytest.mark.parametrize("route", COVERAGE["system_routes"], ids=lambda row: row["id"])
-def test_system_route_anchors(route):
+def test_system_route_anchors(route, graph):
     # The old generated system checked map-declared existence and ownership.
     # Runtime reader order is exercised by the actual reader-chain contracts.
     assert route["source_anchors"]
     for anchor in route["source_anchors"]:
-        defined(anchor)
+        defined(graph, anchor)
 
 
-def test_unused_researchguard_handoff_has_no_production_caller():
+def test_unused_researchguard_handoff_has_no_production_caller(graph):
     """Retain the old closure contract's one static unreferenced assertion."""
     target = "build_researchguard_handoff"
-    for folder in (ROOT / "skills/logic-writing/scripts", ROOT / "skills/logic-writing/routes"):
-        for path in folder.rglob("*.py"):
-            tree = ast.parse(path.read_text(encoding="utf-8"))
-            for node in ast.walk(tree):
-                if isinstance(node, ast.Call):
-                    name = node.func.id if isinstance(node.func, ast.Name) else node.func.attr if isinstance(node.func, ast.Attribute) else ""
-                    assert name != target, str(path)
-                if isinstance(node, ast.ImportFrom):
-                    assert target not in {alias.name for alias in node.names}, str(path)
+    folders = ("skills/logic-writing/scripts/", "skills/logic-writing/routes/")
+    for node in graph.calls():
+        if node["file"].startswith(folders):
+            assert node["text"].rsplit(".", 1)[-1] != target, node["file"]
+    for node in graph.imports(declarations=True):
+        if node["file"].startswith(folders):
+            assert node["name"] != target, node["file"]

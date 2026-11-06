@@ -3,8 +3,9 @@ from __future__ import annotations
 from pathlib import Path
 
 from world_refs import world_ref_unquoted
+from reader_fill import fill_check_fingerprints
 
-from _common import ValidationError, require_exact_fingerprint, fingerprint, fingerprint_text, require_mapping, require_schema, utc_now
+from _common import ValidationError, require_exact_fingerprint, fingerprint, fingerprint_text, require_mapping, require_schema, utc_now, validation_result
 from artifact_map import validate_artifact_map
 import re
 from reader_binding import shared_writing_from_current
@@ -353,6 +354,19 @@ def validate_route_artifact_review(
     return route_review_from_current(value, owner=owner, route=route, amap=amap,
                                       required_dimensions=required_dimensions, review_obligations=review_obligations,
                                       brief=reader_brief, shared=shared)
+
+
+def validate_artifact_review_request(value, *, owner, label, required_dimensions):
+    """Prepare one public route request; the caller keeps its owner and dimensions."""
+    request = fill_check_fingerprints(require_mapping(value, label))
+    review = validate_route_artifact_review(
+        request["review"], owner=owner,
+        route_composition=request["route_composition"], artifact_map=request["artifact_map"],
+        required_dimensions=required_dimensions,
+        reader_brief=request.get("reader_brief"), shared_writing=request.get("shared_writing"))
+    return validation_result(
+        status="current_pass" if review["status"] == "passed" else "partial",
+        route_review=review, findings=review["findings"], artifact_fingerprint=review["artifact_fingerprint"])
 
 
 def _review_boundary_checks(review, *, brief, shared, amap):
