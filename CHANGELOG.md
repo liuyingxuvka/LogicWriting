@@ -8,6 +8,12 @@ line follows semantic versioning.
 
 ## Unreleased
 
+## v4.3.1 - 2026-11-06 - Share existing validation plumbing
+
+- Scene and promise checks share their JSON command wrapper, report printing and duplicate-ID check, preserving input forms, diagnostic labels, reports and exit codes. Their domain rules and collection readers stay separate.
+- The four route artifact commands share request preparation beside the existing review validator; each keeps its own owner and required dimensions.
+- Maintenance uses FlowGuard 2 intent and shared source queries, retaining the original native contracts and no-skips policy.
+
 ## v4.3.0 - 2026-11-06 - Read claims against saved originals
 
 - Plan and current-text readings check linked ResearchGuard captures, exact owner requests and PhysicsGuard result rows, including signed numbers, units, dates, times, table cells, quoted words and speakers. Plain decimal spellings compare by value; named software versions retain their exact parts. A sourced contradiction refuses the plan or adds an audit finding; missing originals remain visible as grey risks.
