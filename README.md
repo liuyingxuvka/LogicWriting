@@ -198,11 +198,11 @@ reports; it needs the commands only to refresh them. ResearchGuard requires 0.8.
 reports; the existing single-contract path still supports 0.7.23:
 
 ```bash
-python -m pip install "git+https://github.com/liuyingxuvka/ResearchGuard.git@v0.8.0"
+python -m pip install "git+https://github.com/liuyingxuvka/ResearchGuard.git@v0.8.1"
 python -m pip install "git+https://github.com/liuyingxuvka/WorldGuard.git@v0.8.0"
 ```
 
-For physical quantities, optionally install PhysicsGuard >= 0.18.0 from its repository. Its unit table is the only conversion owner; without it unit checks stay grey. A plain brief needs no PhysicsGuard.
+For physical quantities, optionally install PhysicsGuard v0.18.1 from its repository. Its unit table is the only conversion owner; without it unit checks stay grey. A plain brief needs no PhysicsGuard. The minimum unit API remains 0.18.0; inlet-role binding uses `source_entity` only when a newer native report supplies it. Older scalar reports do not verify entity roles.
 
 **3. The first commands**, in the cloned folder:
 
@@ -278,6 +278,18 @@ Logic Writing reads the **saved** reports of ResearchGuard, WorldGuard and Physi
 
 **PhysicsGuard → Logic Writing.** A brief's `provider_reports` names the saved JSON result; content-unit `model_row_ids` bind `pg:<row-id>`. The PG unit table converts quantities; changed request or source digests make saved rows stale, without rerunning the audit.
 
+Native identity fields, when supplied, also bound what a green result can support:
+source-backed inlet values retain their `source_entity` and `input_group`;
+world-event quotations retain their named participant and literal time/date.
+A compatible-unit matching number from another entity, year column or explicit assumption is
+not an observed result for this claim. Ambiguous scope stays grey. These are
+finite literal checks, not general natural-language understanding; conditional
+models, caller-declared experiment observations and unverified world scopes
+keep their stated uses and limits.
+Property-dependent conversions between different dimensions remain unverified;
+an entity-bound mass-flow row cannot borrow a requested volume-flow value.
+Scalar entity rows also do not verify interval endpoints, unitless values or unread units.
+
 Checking a claim, a source or a causal timeline on its own, without writing a finished piece, is ResearchGuard's job.
 
 <!-- BEGIN GUARD FAMILY TABLE -->
@@ -304,7 +316,8 @@ Five skills, one idea: each one makes the AI's answer meet a second record that 
 
 **Where it can still miss.**
 - Saved captures check explicit values and quoted words in linked source sections. Equal numbers do not prove
-  semantic support: unrelated identical values, swapped years and names outside quotes can still escape.
+  semantic support: meanings outside explicit year columns, native inlet entities and assumption/measurement
+  cues, as well as names outside quotes, can still escape.
 - The test for a claim that restates an unsupported alternative compares content words. A paraphrase with different
   words passes it; the plan's prohibited overclaims and the review are the remaining defences.
 - The route review and the reader judgment are written by an AI. A review by the same AI that wrote the piece is

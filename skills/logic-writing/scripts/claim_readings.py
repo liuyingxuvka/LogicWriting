@@ -71,7 +71,7 @@ DATES = [
 ]
 SENTENCE = re.compile(r"(?<=[.!?])[ ]+(?=[A-Z(\[\"“])")
 CLAUSE = re.compile(r",\s|;\s|:\s|\s\(|\)\s|\s(?:and|but|while|whereas|after|before|than|compared with|up from|"
-                    r"down from|versus|vs\.?)\s")
+                    r"down from|from|to|versus|vs\.?)\s")
 UNDERLINE = re.compile(r"^([=\-~^*#\"+])\1{3,}\s*$")
 ABSENCE = re.compile(r"(?i)\b(?:does|do|did|will|can)\s?(?:not|n't)\s+(?:say|state|show|give|report|mention|cover|"
                      r"list|include|tell|cite|specify)\b|\bsays nothing\b|\bnothing (?:about|on)\b|"
@@ -387,11 +387,25 @@ def cell_agrees(ctx, sentence, pos):
 DIRECTIONAL = (">", ">=", "<", "<=", ">~", "<~")
 
 
+def reading_scope(sentence, position, end=None):
+    """An explicit nearest scope cue, never a natural-language entailment test."""
+    declared = r'assum(?:e|es|ed|ing|ption)|target(?:s)?|expect(?:ed|s)?|forecast(?:s)?|projected|propos(?:e|ed|es)'
+    observed = r'measured|observed|recorded|actual(?:ly)?|currently'
+    cues = list(re.finditer(r'\b(' + declared + '|' + observed + r')\b', sentence[:position], re.I))
+    if cues:
+        return 'declared' if re.fullmatch(declared, cues[-1].group(), re.I) else 'observed'
+    after = sentence[end if end is not None else position:]
+    if re.match(r'\s*(?:(?:is|was|as|a|the)\s+){0,3}(?:target|forecast)\b', after, re.I):
+        return 'declared'
+    return None
+
+
 def find(reading, rows, sentence):
     """('G', ctx, row) if a sensor row holds the value, ('cell', ctx, row) if only a table cell in another row or
     column does, else None. Cells must agree with the row and columns the sentence names before they count;
     a comparator ("more than 4%") is checked against the nearest value among those that count."""
-    fits, conflicts = [], []
+    fits, conflicts, scope_conflicts = [], [], []
+    wanted_scope = reading_scope(sentence, reading["start"], reading["end"])
     for r, ctx in rows:
         if not compatible(reading, r):
             continue
@@ -399,7 +413,12 @@ def find(reading, rows, sentence):
             ok, why = cell_agrees(ctx, sentence, reading["start"])
             (fits if ok else conflicts).append((r, dict(ctx, why=why)))
         else:
-            fits.append((r, ctx))
+            source_scope = reading_scope(ctx['sentence'], r['start'], r['end']) if ctx['source'] is not None else None
+            if (reading['kind'] in ('number', 'quantity', 'percent', 'range')
+                    and source_scope == 'declared' and wanted_scope != 'declared'):
+                scope_conflicts.append((r, dict(ctx, why='the source states an assumption, prediction or target; not an observed result')))
+            else:
+                fits.append((r, ctx))
     x = magnitude(reading)
     pool = sorted(fits, key=lambda t: abs(magnitude(t[0]) - x))[:1] if reading.get("cmp") in DIRECTIONAL else fits
     for r, ctx in pool:
@@ -408,6 +427,9 @@ def find(reading, rows, sentence):
     for r, ctx in conflicts:
         if agrees(reading, r):
             return "cell", ctx, r
+    for r, ctx in scope_conflicts:
+        if agrees(reading, r):
+            return ('scope' if wanted_scope == 'observed' else 'scope-unknown'), ctx, r
     return None
 
 
@@ -429,8 +451,9 @@ def passage_readings(text):
         for reading in readings(cell['text']):
             rows.append((reading, context))
     prose = '\n'.join(line for line in text.splitlines() if not line.lstrip().startswith('|'))
-    for sentence in sentences(prose):
-        rows.extend((reading, dict(sentence=sentence)) for reading in readings(sentence))
+    for paragraph in re.split(r'\n\s*\n', prose):
+        for sentence in sentences(paragraph):
+            rows.extend((reading, dict(sentence=sentence)) for reading in readings(sentence))
     return rows
 
 
@@ -454,9 +477,14 @@ def build_sensors(brief):
                                    source_digest=saved['source_digest']))
                 continue
             raw = passage['raw_text']
+            measured = passage_readings(passage['title'] + '\n' + raw)
+            # A document's own explicit identifier is metadata, not a numeric
+            # measurement that must occur inside the anchor's section.
+            for line in saved['text'].splitlines():
+                if re.fullmatch(r'(?i)PEP:\s*\d+\s*', line):
+                    measured.extend((row, dict(sentence=line)) for row in readings(line))
             passages[identity] = dict(file=Path(saved['path']).name, section=passage['section'],
-                                      readings=passage_readings(passage['title'] + '\n' + raw),
-                                      digest=saved['source_digest'])
+                                      readings=measured, digest=saved['source_digest'], quote=saved['quote'])
             documents[identity] = saved
     request = [(row, dict(sentence=sentence)) for sentence in sentences(brief['request']) for row in readings(sentence)]
     providers = brief['provider_reports'] if 'provider_reports' in brief else []
@@ -578,13 +606,60 @@ def check_reading(reading, sentence, anchor_ids, row_ids, sensors):
         return 'grey', 'unit checking unavailable: install PhysicsGuard >= 0.18.0 to read ' + reading['raw']
     used = [(identity, sensors['passages'][identity]) for identity in anchor_ids if identity in sensors['passages']]
     source_rows = [(row, dict(context, source=passage)) for _, passage in used for row, context in passage['readings']]
-    source_rows += [(row, dict(context, source=None)) for row, context in sensors['request']]
+    if not any(compatible(reading, row) for row, _ in source_rows):
+        source_rows += [(row, dict(context, source=None)) for row, context in sensors['request']]
+    bound = [sensors['pg_rows'][identity] for identity in row_ids if identity in sensors['pg_rows']]
+    native_roles = [row for row in bound if 'source_entity' in row]
+    if native_roles and reading['kind'] in ('range', 'number', 'percent', 'refused'):
+        return 'grey', 'PhysicsGuard scalar entity rows do not verify this interval, unitless value or unread unit; role/value agreement was not checked'
     if reading['kind'] == 'refused':
         if any(reading['raw'] == row['raw'] for row, _ in source_rows):
             return 'green', 'unknown unit; identical words occur in the bound original'
         return 'red', f"refused: unit {reading['unit']!r} is not in PhysicsGuard's unit table"
-    bound = [sensors['pg_rows'][identity] for identity in row_ids if identity in sensors['pg_rows']]
     physical = [row for row in bound if reading['kind'] == 'quantity' and row['dim'] == reading['dim']]
+    role_rows = [row for row in physical if 'source_entity' in row]
+    if reading['kind'] == 'quantity' and native_roles and not role_rows:
+        return 'grey', 'PhysicsGuard entity rows have no compatible quantity; property-dependent conversion and role/value agreement were not checked'
+    if role_rows:
+        known = {row['source_entity'] for row in sensors['pg_rows'].values() if 'source_entity' in row}
+        clause = clause_of(sentence, reading['start'])
+        entity = '(?:' + '|'.join(re.escape(name) for name in sorted(known, key=len, reverse=True)) + ')'
+        group = entity + r'(?:\s*(?:,|and|&)\s*' + entity + r')+'
+        copula = r'\s+(?:are|were|is|was)\s+'
+        collective = re.search(
+            r'(?<!\w)(?:' + group + copula + r'(?:(?:both|each|all)\s+)?|'
+            + r'(?:Both|Each of|All of)\s+' + group + copula + r')'
+            + r'(?:(?:at|exactly|about|around)\s+)?$', sentence[:reading['start']], re.I)
+        scope = collective.group() if collective else clause
+        named = {entity for entity in known if re.search(r'(?<!\w)' + re.escape(entity) + r'(?!\w)', scope, re.I)}
+        if re.search(r'\b(?:Each inlet (?:is|was)|(?:Both|All) inlets (?:are|were))\s+(?:at\s+)?$',
+                     sentence[:reading['start']], re.I):
+            inlets = [row for row in sensors['pg_rows'].values() if 'source_entity' in row
+                      and 'input_group' in row and re.fullmatch(r'.+\.inlet_[12]', row['input_group'])]
+            groups = {row['input_group'] for row in inlets}
+            parents = {group.rsplit('.', 1)[0] for group in groups}
+            if len(parents) != 1 or len(groups) != 2:
+                return 'grey', 'PhysicsGuard each-inlet statement has no unique complete native inlet pair'
+            named = {row['source_entity'] for row in inlets}
+            collective = True
+        if not named:
+            return 'grey', 'PhysicsGuard value is bound, but this sentence does not identify its captured source entity'
+        if len(named) > 1 and not collective:
+            return 'grey', 'PhysicsGuard value names several source entities without a unique literal role'
+        unchecked = []
+        for entity in sorted(named):
+            candidates = [row for row in role_rows if row['source_entity'] == entity]
+            if not candidates:
+                if any(row['source_entity'] == entity for row in native_roles):
+                    unchecked.append(entity)
+                    continue
+                return 'red', f'PhysicsGuard role binding names {entity!r}, but the selected result rows belong to another source entity'
+            if not any(within(reading, row['si']) for row in candidates):
+                return 'red', f'PhysicsGuard {entity}: the claimed value {reading["raw"]} disagrees with this entity result'
+        if unchecked:
+            return 'grey', 'PhysicsGuard selected entity rows have no compatible quantity for ' + ', '.join(unchecked)
+        selected = [row for row in role_rows if row['source_entity'] in named and within(reading, row['si'])]
+        return ('green' if all(row['sourced'] for row in selected) else 'grey'), 'PhysicsGuard value and captured source entity agree: ' + ', '.join(sorted(named))
     for row in physical:
         if within(reading, row['si']):
             return ('green' if row['sourced'] else 'grey'), f"PhysicsGuard {row['value']:g} {row['unit']}" + ('' if row['sourced'] else ' rests on AI values')
@@ -598,6 +673,8 @@ def check_reading(reading, sentence, anchor_ids, row_ids, sensors):
         difference = f"x{reading['si'] / row['si']:.3g}" if row['si'] else 'different from zero'
         return 'red', f"PhysicsGuard {row['value']:g} {row['unit']}; claim {reading['raw']} ({difference})"
     if got:
+        if got[0] in ('scope', 'scope-unknown'):
+            return ('red' if got[0] == 'scope' else 'grey'), got[1]['why']
         return 'red', 'value occurs only in another table ' + got[1]['why']
     if bound and reading['kind'] == 'quantity' and not physical:
         return 'red', 'the bound PhysicsGuard rows have no compatible quantity for ' + reading['raw']
@@ -676,8 +753,9 @@ def reading_source_digest(anchor_ids, row_ids, sensors):
     A digest records the evidence boundary; it does not license an unrelated
     equal number as a semantically correct claim.
     """
-    originals = {identity: sensors['passages'][identity]['digest'] for identity in anchor_ids
-                 if identity in sensors['passages'] and 'digest' in sensors['passages'][identity]}
+    originals = {identity: dict(digest=sensors['passages'][identity]['digest'],
+                                quote=sensors['passages'][identity]['quote'] if 'quote' in sensors['passages'][identity] else '')
+                 for identity in anchor_ids if identity in sensors['passages'] and 'digest' in sensors['passages'][identity]}
     results = {identity: sensors['pg_rows'][identity] for identity in row_ids if identity in sensors['pg_rows']}
     request = sensors['request']
     if not originals and not results and not request:
@@ -713,11 +791,13 @@ def text_readings(brief, artifact_map, shared_writing, *, sensors=None):
             text = artifacts[identity]['text']
             for sentence in sentences(text):
                 cited = set(anchors)
+                named_sources = {duty['source_id'] for duty in boundaries['citation_duties'] if duty['marker'] in sentence}
+                if named_sources:
+                    cited = {identity for source in named_sources if source in by_source for identity in by_source[source]}
                 for duty in boundaries['citation_duties']:
-                    if duty['marker'] in sentence and duty['source_id'] in by_source:
-                        cited.update(by_source[duty['source_id']])
                     sentence = sentence.replace(duty['marker'], ' ')
-                rows.extend(dict(row, artifact_unit_id=identity) for row in check_text(sentence, sorted(cited), sorted(model_rows), sensors))
+                scoped = dict(sensors, request=[]) if named_sources else sensors
+                rows.extend(dict(row, artifact_unit_id=identity) for row in check_text(sentence, sorted(cited), sorted(model_rows), scoped))
     return [dict(row, id=f"{row['artifact_unit_id']}:reading:{index}") for index, row in enumerate(rows)]
 
 

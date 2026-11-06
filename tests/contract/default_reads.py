@@ -129,7 +129,7 @@ DEFAULT_READS = {
     'skills/logic-writing/scripts/validate_shared_writing.py:validate_shared_writing': 1,
     'skills/logic-writing/scripts/world_refs.py:planned_world_refs': 2,
     'skills/logic-writing/scripts/world_refs.py:validate_world_claim_units': 2,
-    'skills/logic-writing/scripts/world_refs.py:validate_world_refs': 3,
+    'skills/logic-writing/scripts/world_refs.py:_world_symbols': 3,
     'skills/logic-writing/scripts/world_refs.py:world_ref_unquoted': 4,
     'skills/logic-writing/scripts/writer_projection.py:_writer_route_projection': 40,
     'skills/logic-writing/scripts/writer_projection.py:build_writer_input': 16,

@@ -68,7 +68,7 @@ def test_public_corpus_keeps_all_eight_original_and_twenty_nine_later_cases():
     assert sum(case['category'] == 'first-eight' for case in CASES) == 8
     assert sum(case['category'] == 'later-public' for case in CASES) == 29
     assert {case['name'] for case in CASES if 'known_limit' in case} == {
-        's4_range_from_other_source', 'lib_swap_years', 'bus_person_noquote', 'bus_half',
+        's4_range_from_other_source', 'bus_person_noquote', 'bus_half',
     }
 
 

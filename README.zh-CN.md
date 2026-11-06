@@ -182,11 +182,11 @@ python scripts/install_skill.py --target "$SKILLS_DIR" --check
 ResearchGuard 最低为 0.8.0；WorldGuard 0.8.0 提供树报告，原有单 contract 路径仍支持 0.7.23：
 
 ```bash
-python -m pip install "git+https://github.com/liuyingxuvka/ResearchGuard.git@v0.8.0"
+python -m pip install "git+https://github.com/liuyingxuvka/ResearchGuard.git@v0.8.1"
 python -m pip install "git+https://github.com/liuyingxuvka/WorldGuard.git@v0.8.0"
 ```
 
-核对物理量时，可以从仓库安装 PhysicsGuard >= 0.18.0；换算只用它的单位表。没装时单位检查显示灰色，普通简报不依赖它。
+核对物理量时，建议从仓库安装 PhysicsGuard v0.18.1；换算只用它的单位表。没装时单位检查显示灰色，普通简报不依赖它。单位接口最低仍兼容 0.18.0；只有新原生报告给出 `source_entity` 时才做入口对象绑定，旧标量报告不证明对象角色。
 
 **3. 先跑这几条**，在克隆下来的目录里：
 
@@ -245,6 +245,14 @@ Logic Writing 读的是 ResearchGuard、WorldGuard 和 PhysicsGuard **存下的*
 
 **PhysicsGuard → Logic Writing。** 简报的 `provider_reports` 指向存下的 JSON 结果，内容单元的 `model_row_ids` 绑定 `pg:<行编号>`。单位换算只用 PG 的表；请求或来源的摘要变了，旧结果显示 stale，不重跑审计。
 
+原生报告给出对象字段时，它们也限定绿色结果能支持什么：有来源的入口数值保留
+`source_entity` 和 `input_group`，世界事件引文保留明确的参与者和字面时刻/日期。
+兼容量纲下，另一个对象、年份列或明确假设里的同值，不能借来当作本句的实测结果；
+范围不明就保持灰色。这些是有限的字面检查，不是任意自然语言理解。
+条件模型、调用者声明的实验观察、世界模型未核实的范围，仍保留原有用途和边界。
+依赖物性的异量纲换算仍未核实；绑定对象的质量流量行不能借请求里的体积流量给绿。
+标量对象行也不证明区间端点、无单位数值或无法识别的单位。
+
 只检查一个说法、一个来源或一条因果时间线、不写成品，是 ResearchGuard 的事。
 
 <!-- BEGIN GUARD FAMILY TABLE -->
@@ -268,7 +276,7 @@ Logic Writing 读的是 ResearchGuard、WorldGuard 和 PhysicsGuard **存下的*
 - 它不管随手的文案、只改语法、快速查询、作为通用路线的诗歌，以及简短的景点清单。
 
 **它仍可能漏掉的。**
-- 保存的原件会核对所链接段落里的明确数值和引语，但相同数字不证明含义相同：别处的同值、调换年份、引号外的人名仍可能漏过。
+- 保存的原件会核对所链接段落里的明确数值和引语，但相同数字不证明含义相同：明确年份列、原生入口对象及假设/实测提示词之外的含义错接、引号外的人名仍可能漏过。
 - 判断“换个说法重复不被支持的说法”，比较的是实词。换一套词的转述可以绕过它；剩下的防线是计划里写明的禁用说法和评审。
 - 路线评审和读者判断是 AI 写的。由写文章的同一个 AI 做的评审会标成自我评审，绝不能支撑整体质量的结论，但它终究是 AI 在评价自己。
 

@@ -143,6 +143,11 @@ alternatives or an explicit `research_folder`. `contested` adds
 `qualify`/`withhold` limits remain visible. Missing required reports are `not_run`;
 unreadable JSON or an invalid/missing verdict is `unreadable`.
 
+When a native ResearchGuard report supplies `experiment_observation_checks`,
+grey `caller_declared` mappings remain visible as conditional-observation risks.
+They do not invalidate a finite experiment-selection model, and they do not
+become independent measurements merely because that model closes.
+
 ## Each saved report belongs to the brief
 
 When the saved report withholds or qualifies the root claim, every required unit that cites an anchor supporting it also cites a limit anchor or a limitation.
@@ -189,6 +194,14 @@ Travel needs a saved WorldGuard report; fiction needs it when
 status. Required `world_contract` and `world_refs` must resolve:
 `world_contract_missing` and `unknown_world_ref` are errors; an unquoted reference
 stays `world_ref_unquoted:...` risk rather than invented observed evidence.
+
+For a quoted `world_refs` event, the existing native event remains the owner of
+`actor`, participants and `at`. One explicit literal time/date or a single known
+participant in the current excerpt cannot borrow another event's value. A
+contradiction is `world_ref_value_disagrees`; symbolic times, multiple times or
+non-unique roles stay explicit `world_ref_*_unverified` risks. The check does not
+solve the world again or interpret arbitrary names, prose roles or real-world
+observation independence. Correct conditional worlds remain usable.
 
 A `longform_project` must point to the same CompositionPlan; its ledger uses
 planned-unit ids. Closure derives long-form findings from the actual project

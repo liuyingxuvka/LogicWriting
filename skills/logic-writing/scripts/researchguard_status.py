@@ -42,6 +42,13 @@ def assess_research_verdict(document: Any, alternatives=()) -> dict[str, Any]:
     hypotheses = document.get("hypotheses", [])
     if not isinstance(hypotheses, list) or any(not isinstance(row, Mapping) or not isinstance(row.get("id"), str) for row in hypotheses):
         return unreadable
+    if 'experiment_observation_checks' in document:
+        observations = document['experiment_observation_checks']
+        if (not isinstance(observations, list) or any(
+                not isinstance(row, Mapping) or any(key not in row or not isinstance(row[key], str)
+                                                    for key in ('id', 'colour', 'basis', 'reason'))
+                or row['colour'] not in ('green', 'red', 'grey') for row in observations)):
+            return dict(unreadable, reason='ResearchGuard report has invalid experiment_observation_checks')
     alternative_ids = {row.get("alternative_id") for row in rows if isinstance(row, Mapping)}
     root_id = root["id"] if root else None
     # A source-only question with one live primary hypothesis does not imply an
@@ -64,6 +71,11 @@ def assess_research_verdict(document: Any, alternatives=()) -> dict[str, Any]:
                 reasons.append(f"alternative_status_conflict:{row['alternative_id']}")
     if verdict["contested"]:
         risks.append({"defect_id": "research:contested", "reason": "ResearchGuard routes disagree; preserve that disagreement as a residual research risk."})
+    if 'experiment_observation_checks' in document:
+        for observation in document['experiment_observation_checks']:
+            if observation['colour'] == 'grey' and observation['basis'] == 'caller_declared':
+                risks.append({'defect_id': 'research:observation_declared:' + observation['id'],
+                              'reason': 'The experiment result remains conditional on caller-declared observations: ' + observation['reason']})
     if root is None:
         risks.append({"defect_id": "research:root_claim_not_run", "reason": "No native root-claim wording license was produced; search sufficiency does not license assert wording."})
     elif root["wording_license"] != "assert":

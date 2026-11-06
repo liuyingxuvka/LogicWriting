@@ -304,8 +304,9 @@ def derive_closure(
             if not residual:
                 residual.append(dict(defect_id="longform:project:invalid", owner=owner, reason="The current longform project has not passed."))
     units = {row["artifact_unit_id"]: row for row in amap["units"]}
-    for code in world_ref_unquoted(brief["composition_plan"], route_review, shared, lambda span: None):
-        residual.append(dict(defect_id=code, owner=owner, reason="A planned world reference lacks a quotation in its bound current text."))
+    for code in world_ref_unquoted(brief["composition_plan"], route_review, shared, lambda span: None,
+                                    composition=route):
+        residual.append(dict(defect_id=code, owner=owner, reason="A planned world reference lacks a current quotation or a unique literal participant/time binding."))
     try:
         bad = check_known_bad(request, _baseline_result=dict(caught=status != "passed", step="baseline", error="The current quality chain needs repair."))
     except ValidationError:

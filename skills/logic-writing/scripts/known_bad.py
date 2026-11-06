@@ -223,11 +223,11 @@ def _first_rejection(text, request):
             return dict(caught=True, step=step, code=finding['code'])
         step = 'review'
         envelope = fill_check_fingerprints(dict(artifact_map=amap, reader_brief=brief,
-            shared_writing=shared, route_composition=brief['route_extension'], review=review))
+            shared_writing=shared, route_composition=request['route_composition'], review=review))
         # Constant lookup only: never call closure or any provider recursively.
         from derive_closure import REQUIRED_DIMENSIONS
         checked = route_review_from_current(envelope['review'], owner=brief['final_owner'],
-            route=brief['route_extension'], amap=amap,
+            route=request['route_composition'], amap=amap,
             required_dimensions=REQUIRED_DIMENSIONS[brief['final_owner']],
             review_obligations=request.get('review_obligations'), brief=brief, shared=shared)
         if checked['status'] != 'passed':

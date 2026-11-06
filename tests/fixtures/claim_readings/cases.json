@@ -286,9 +286,9 @@
     ],
     "expected_red": false,
     "expected_counts": {
-      "green": 6,
+      "green": 3,
       "red": 0,
-      "grey": 6
+      "grey": 9
     },
     "expected_exit": 0
   },
@@ -1772,11 +1772,11 @@
       "family": "python",
       "manifest": "# Prototype-only (the ResearchGuard side of the join, see ResearchGuard.md section 7): each anchor of the\n# shipped investigation example tied to a verbatim span of a saved source document. The documents were\n# fetched once from raw.githubusercontent.com (cpython 3.14 / 3.13 branches, python/peps main) on\n# 2026-11-05 and are hashed below; the tool re-hashes them and finds each quote itself.\nfiles:\n  whatsnew-3.14.rst: {source_id: src-whatsnew-314, sha256: 6b366ff476b577674703fc05d35a916345b1c76bc563d380433af118af6409c3}\n  whatsnew-3.13.rst: {source_id: src-whatsnew-313, sha256: 9875a17490242b287d0da4aafe917b79d3d9fc95fbb77c69db3d6dee40f7e7c4}\n  pep-0779.rst: {source_id: src-pep-779, sha256: 8f63872c90074ae8a73ae75ad1954ac5a5ba9cbd4e1bd4f1b7733fce73faf513}\nanchors:\n  anc-314-supported: {file: whatsnew-3.14.rst, quote: \"free-threaded Python is officially supported but still optional\"}\n  anc-314-phase3-undecided: {file: whatsnew-3.14.rst, quote: \"with free-threading as the default or sole build of Python is still undecided\"}\n  anc-314-perf: {file: whatsnew-3.14.rst, quote: \"The performance penalty on single-threaded code in free-threaded mode is now roughly 5-10%\"}\n  anc-313-experimental: {file: whatsnew-3.13.rst, quote: \"This is an experimental feature and therefore is not enabled by default.\"}\n  anc-779-phase3-different: {file: pep-0779.rst, quote: \"(Note that these are requirements for entering phase II *only*.\"}\n"
     },
-    "known_limit": "The cited PEP section contains the same range for a different fact.",
+    "known_limit": "The same range remains semantically ambiguous; explicit expected-target scope now stays grey rather than an observed-result green.",
     "expected_counts": {
-      "green": 12,
+      "green": 10,
       "red": 0,
-      "grey": 0
+      "grey": 2
     },
     "expected_exit": 0
   },
@@ -2994,18 +2994,18 @@
         ]
       }
     ],
-    "expected_red": false,
+    "expected_red": true,
     "capture": {
       "family": "fresh",
       "manifest": "files:\n  harbour-libraries-2025.md:\n    source_id: lib-board\n    sha256: a43be57c7aa273ab19bbd3145c73e4f4a55ea1c9b25adc793dc27f91bf466efc\nanchors:\n  evidence:visits:\n    file: harbour-libraries-2025.md\n    quote: Total visits rose from 108,800 to 112,750\n  evidence:hours:\n    file: harbour-libraries-2025.md\n    quote: From 3 March 2026 all three branches will stay open until 20:00\n"
     },
-    "known_limit": "Equal numbers occur in the section but are attached to swapped years.",
     "expected_counts": {
-      "green": 25,
-      "red": 0,
+      "green": 23,
+      "red": 2,
       "grey": 0
     },
-    "expected_exit": 0
+    "expected_exit": 1,
+    "resolved_limit": "Explicit from/to clauses bind each value to its own named table year; swapping those values is rejected."
   },
   {
     "name": "ferry_ok",

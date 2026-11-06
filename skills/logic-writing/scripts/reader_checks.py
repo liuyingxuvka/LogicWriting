@@ -451,7 +451,8 @@ def route_review_from_current(value, *, owner, route, amap, required_dimensions=
     for finding in review["findings"]:
         _verify_span_evidence(finding["evidence"], units)
     if brief is not None:
-        world_ref_unquoted(brief["composition_plan"], review, shared, lambda span: _verify_span_evidence(span, units))
+        world_ref_unquoted(brief["composition_plan"], review, shared, lambda span: _verify_span_evidence(span, units),
+                           composition=route)
     elif review.get("world_ref_checks"):
         raise ValidationError("world_ref_checks requires the current ReaderBrief and SharedWriting")
     boundary_repair = (any(row['status'] == 'missing' for row in review.get('limitation_checks', [])) or
