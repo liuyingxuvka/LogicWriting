@@ -1,0 +1,4 @@
+A buffer tank has two inlets. Inlet A brings 5 L/min of water at 70 °C.
+Inlet B brings 6 L/min of water at 10–12 °C (it varies over the day);
+evaluate both endpoint cases. Will the mixed water leaving the tank stay below
+37 °C? (water: 1 kg/L)

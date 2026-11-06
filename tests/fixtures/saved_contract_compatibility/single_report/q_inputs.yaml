@@ -1,0 +1,56 @@
+observation_name: pg_answer_from_question
+sources:
+  question: question.txt
+properties:
+  water_density:
+    value: 1.0
+    unit: kg/L
+    quote:
+      from: question
+      text: 'water: 1 kg/L'
+parameters:
+  heater.cp_J_kgK:
+    unit: J/kg/K
+    quote:
+      from: question
+      text: cp 4186 J/kg/K
+claims:
+- quote:
+    from: question
+    text: What heater power is needed
+  variable: heater.Q_dot_W
+- quote:
+    from: question
+    text: what is the mixed outlet temperature?
+  variable: mix.T_out_K
+variables:
+  heater.m_dot_kg_s:
+    value: 0.1
+    unit: kg/s
+    quote:
+      from: question
+      text: 'Hot branch: 6 L/min'
+  heater.T_in_K:
+    value: 288.15
+    unit: K
+    quote:
+      from: question
+      text: from 15 C
+  heater.T_out_K:
+    value: 333.15
+    unit: K
+    quote:
+      from: question
+      text: to 60 C
+  mix.m_dot_2_kg_s:
+    value: 0.15
+    unit: kg/s
+    quote:
+      from: question
+      text: 'Cold branch: 9 L/min'
+  mix.T_2_K:
+    value: 288.15
+    unit: K
+    quote:
+      from: question
+      text: at 15 C

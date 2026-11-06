@@ -1,0 +1,14 @@
+audit_name: buffer_mix
+system:
+  system_name: buffer_mix
+  components:
+    - id: mix
+      type: FlowMergeTemperatureModule
+      parameters: {mass_residual_scale_kg_s: 0.001, energy_residual_scale_kgK_s: 0.05}
+  connections: []
+  boundaries: []
+  assumptions: []
+hierarchy:
+  blocks:
+    - {id: buffer, name: Buffer tank, level: 0, components: []}
+    - {id: merge, name: Inlet merge, level: 1, parent_id: buffer, components: [mix]}

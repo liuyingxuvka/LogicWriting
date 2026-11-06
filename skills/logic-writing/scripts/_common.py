@@ -297,9 +297,12 @@ def _absolute_artifact_path(record: dict[str, Any], base: Path) -> None:
 
 def resolve_brief_paths(record, base):
     """Resolve the brief's source references against the file that contains it."""
+    from provider_refs import rewrite_model_row_paths
+    absolute = lambda path: str((base / Path(path).expanduser()).resolve())
     if 'provider_reports' in record:
         for report in record['provider_reports']:
-            report['path'] = str((base / Path(report['path']).expanduser()).resolve())
+            report['path'] = absolute(report['path'])
+    rewrite_model_row_paths(record, absolute)
     for field in ('research_folder', 'research_status'):
         if field in record:
             value = record[field]
@@ -362,6 +365,8 @@ def load_request(path: str | Path | None, *, defaults: dict | None = None) -> An
             resolve_brief_paths(value[key], record_base)
         if file_request and key in {"contract", "shared_writing"} and isinstance(value[key], dict):
             _absolute_artifact_path(value[key], record_base)
+            from provider_refs import rewrite_model_row_paths
+            rewrite_model_row_paths(value[key], lambda path: str((record_base / Path(path).expanduser()).resolve()))
         if file_request and key in {"revision_provenance", "provenance"} and isinstance(value[key], dict):
             source = value[key].get("source_artifact_path")
             if isinstance(source, str) and source:
@@ -382,11 +387,15 @@ def _named_beside(value: Any, folder: Path) -> Any:
     if not isinstance(value, dict):
         return value
     copied = {key: _named_beside(item, folder) for key, item in value.items()}
+    def relative(path):
+        located = Path(path)
+        return located.resolve().relative_to(folder).as_posix() if located.is_absolute() and located.resolve().is_relative_to(folder) else path
     if 'provider_reports' in copied:
         for report in copied['provider_reports']:
-            located = Path(report['path'])
-            if located.is_absolute() and located.resolve().is_relative_to(folder):
-                report['path'] = located.resolve().relative_to(folder).as_posix()
+            report['path'] = relative(report['path'])
+    if 'model_row_ids' in copied:
+        from provider_refs import rewrite_row_ref
+        copied['model_row_ids'] = [rewrite_row_ref(identity, relative) for identity in copied['model_row_ids']]
     for record_key, fields in (("route_composition", ROUTE_FILE_FIELDS), ("reader_brief", BRIEF_FILE_FIELDS)):
         record = copied.get(record_key)
         if not isinstance(record, dict):

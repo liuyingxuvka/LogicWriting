@@ -20,7 +20,7 @@ not a new gate. A source-only stop is not a root-claim assert license.
 
 ## Current maintenance
 
-Find the current runtime/schema/test owner in `.flowguard/map.json`. Reader work
+Find the current runtime/schema/test owner in `docs/development/flow-contracts.md` and the current scripts/tests. Reader work
 is grouped by planning, binding, checking and closure. Supported reader-chain
 request wrappers keep their names and input/output flags. ResearchGuard supplies
 fresh saved reports and source anchors; CompositionPlan is the sole writing plan.
@@ -45,6 +45,53 @@ Use `scripts/show_plan.py` to inspect current plan/text bindings and
 current piece. They do not generate new prose. Normal development uses affected
 checks; final CI runs the complete suite and native gates on the publication
 source. Installation, Git tag and hosted Release identities remain separate.
+
+## Saved material and version history
+
+The public compatibility surface is the documented skill/CLI entrypoints and
+input formats, including saved models or reports that a command explicitly
+accepts. Original requests, manuscripts, research captures and source references
+remain user material. Generated maps, trace caches and installation scratch files
+can be rebuilt; they are not evidence that a new read or model execution occurred.
+A documented saved input does not become disposable merely because a tool wrote it.
+
+The 4.3.1 and 4.3.2 single-PhysicsGuard-report form and its `pg:<row-id>` bindings
+remain accepted. Their scalar values retain their original scope: an old row
+without an entity binding does not gain one, and a saved `sourced` or `passed`
+flag does not verify a new source, model execution or writing judgment. Original
+input digests and request identity must still match. Changed input bytes require
+fresh native evidence rather than editing the old report's digests or flags.
+
+Some historical generated formats need rebuilding. A ReaderBrief produced by
+3.0.2 lacks `writer_input` and `writer_input_fingerprint`, added in source commit
+`53606976d847e46d512cbcbae07fe682a327d909`; later current contracts also require
+an actual `request`. Both old and new schemas used the text `schema_version: 2.0`,
+so that text alone cannot establish compatibility. The current schema rejects
+such an old brief instead of manufacturing these fields or retaining its verdict.
+Preserve the old file for reference, recover its real request/plan/source material,
+and build a fresh brief with the existing command:
+
+```text
+python skills/logic-writing/scripts/build_reader_brief.py --input brief-request.json --output reader-brief.json
+```
+
+Use the current request example and normal artifact binding, audit, route review
+and judgment steps for the recovered material. Re-read changed sources and use
+actual native reports where needed. If the original request or evidence cannot
+be recovered, keep the result unverified; do not fill a missing field with an
+empty/default value or copy an old `verified`/`passed` conclusion into new output.
+No legacy reader or automatic converter is introduced.
+
+Historical numbering stays intact. 2.0 removed the separate predecessor runtime
+entrypoints; 3.0 changed the reader/closure contracts. Source 4.0.0 added required
+ReaderBrief fields, although its then-current MIGRATION and CHANGELOG incorrectly
+called it a patch. At the 2026-11-06 history check, the GitHub tag and Release endpoints for `v4.0.0` were
+absent; the source version is not evidence that this version was published.
+Published 4.x history includes `v4.0.1`. Later 4.x releases also changed generated
+required fields while retaining schema version 2.0. These facts explain why the
+current format and a small historical example, rather than the major number or
+schema text alone, determine whether saved material can be used. They do not
+rename or rewrite any historical commit, tag or Release.
 
 ## Installation
 

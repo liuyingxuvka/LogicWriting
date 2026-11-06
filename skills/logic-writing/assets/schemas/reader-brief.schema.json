@@ -103,6 +103,12 @@
     }
   },
   "$defs": {
+    "modelRowReference": {
+      "anyOf": [
+        { "$ref": "#/$defs/identifier" },
+        { "type": "string", "pattern": "^pg-report://(?:[A-Za-z0-9._~-]|%[0-9A-Fa-f]{2})+#(?:[A-Za-z0-9._~-]|%[0-9A-Fa-f]{2})+$" }
+      ]
+    },
     "identifier": {
       "type": "string",
       "minLength": 2,
@@ -233,7 +239,7 @@
         "model_row_ids": {
           "type": "array",
           "items": {
-            "$ref": "#/$defs/identifier"
+            "$ref": "#/$defs/modelRowReference"
           },
           "uniqueItems": true
         },

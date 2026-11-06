@@ -1,0 +1,58 @@
+{
+  "fixtures": [
+    {
+      "path": "single_report/audit.yaml",
+      "sha256": "519dbf9c6551d1f12148254aed51a03efe6f4f724701c7c0d87feb6199dbe05a",
+      "original_path": "tests/fixtures/claim_readings/originals/heater/audit.yaml",
+      "unchanged_at": [
+        "ada2fd96490ec1bc2c82bce67b7ff9cac846713b",
+        "97c0738fd4a4b6871cef3bb1fbd31670736197b5"
+      ]
+    },
+    {
+      "path": "single_report/q_inputs.yaml",
+      "sha256": "75b61f653ae7d99d2f029b90f95e3539b48bbf25f1bcc2098d3ce5ba652e8496",
+      "original_path": "tests/fixtures/claim_readings/originals/heater/q_inputs.yaml",
+      "unchanged_at": [
+        "ada2fd96490ec1bc2c82bce67b7ff9cac846713b",
+        "97c0738fd4a4b6871cef3bb1fbd31670736197b5"
+      ]
+    },
+    {
+      "path": "single_report/question.txt",
+      "sha256": "a79dc9eed30ebb6cc667abd6f3f70bdb30fcf618b161fe4ebcbe7bf43d0e7d3d",
+      "original_path": "tests/fixtures/claim_readings/originals/heater/question.txt",
+      "unchanged_at": [
+        "ada2fd96490ec1bc2c82bce67b7ff9cac846713b",
+        "97c0738fd4a4b6871cef3bb1fbd31670736197b5"
+      ]
+    },
+    {
+      "path": "single_report/pg-result.json",
+      "sha256": "a806b3167ace813607693384dcc0c4ad91f43a6083c177e12b22e99a2dbd4da3",
+      "original_path": "tests/fixtures/claim_readings/originals/heater/pg-result.json",
+      "unchanged_at": [
+        "ada2fd96490ec1bc2c82bce67b7ff9cac846713b",
+        "97c0738fd4a4b6871cef3bb1fbd31670736197b5"
+      ]
+    },
+    {
+      "path": "v3.0.2-reader-brief.json",
+      "sha256": "abfac264ba4589f7fa6c01237f540223b0b148db9c46650fb5cdec54d3a0104d",
+      "source_commit": "bd634b796823f4e8de5c2569f9cb71f95c62d5b6",
+      "builder": "tests/v2_support.py:make_reader_chain",
+      "production_builder": "skills/logic-writing/scripts/reader_pipeline.py",
+      "schema": "skills/logic-writing/assets/schemas/reader-brief.schema.json",
+      "claim_boundary": "Generated now using exact released v3.0.2 code and its synthetic protocol fixture; historical format validity only, no real writing-quality or native verification claim."
+    },
+    {
+      "path": "v4.3.2-reader-brief.json",
+      "sha256": "7d2909c737b9177a0a3b2b8b72394e301202deb02a81f355d0c9954d7b86f822",
+      "source_commit": "97c0738fd4a4b6871cef3bb1fbd31670736197b5",
+      "builder": "tests/v2_support.py:make_reader_chain",
+      "production_builder": "skills/logic-writing/scripts/reader_plan.py",
+      "schema": "skills/logic-writing/assets/schemas/reader-brief.schema.json",
+      "claim_boundary": "Generated now using exact released v4.3.2 production code and its protocol fixture. Format compatibility only; not an independently verified writing outcome."
+    }
+  ]
+}

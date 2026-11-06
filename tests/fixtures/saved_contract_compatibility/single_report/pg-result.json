@@ -1,0 +1,134 @@
+{
+ "audit": "audit.yaml",
+ "audit_pass": true,
+ "claims": [
+  {
+   "quote": {
+    "from": "question",
+    "text": "What heater power is needed"
+   },
+   "variable": "heater.Q_dot_W"
+  },
+  {
+   "quote": {
+    "from": "question",
+    "text": "what is the mixed outlet temperature?"
+   },
+   "variable": "mix.T_out_K"
+  }
+ ],
+ "input_digests": [
+  {
+   "path": "audit.yaml",
+   "sha256": "519dbf9c6551d1f12148254aed51a03efe6f4f724701c7c0d87feb6199dbe05a"
+  },
+  {
+   "path": "q_inputs.yaml",
+   "sha256": "75b61f653ae7d99d2f029b90f95e3539b48bbf25f1bcc2098d3ce5ba652e8496"
+  },
+  {
+   "path": "question.txt",
+   "sha256": "a79dc9eed30ebb6cc667abd6f3f70bdb30fcf618b161fe4ebcbe7bf43d0e7d3d"
+  }
+ ],
+ "provider": "physicsguard",
+ "values": {
+  "heater.Q_dot_W": {
+   "dependencies": [
+    "heater.T_in_K",
+    "heater.T_out_K",
+    "heater.m_dot_kg_s"
+   ],
+   "relation": "heater.coolant_heat_balance",
+   "source": "equation",
+   "sourced": true,
+   "unit": "W",
+   "value": 18837.0
+  },
+  "heater.T_in_K": {
+   "how": "15 C by unit table",
+   "quote": "from 15 C",
+   "source": "question",
+   "sourced": true,
+   "unit": "K",
+   "value": 288.15
+  },
+  "heater.T_out_K": {
+   "how": "60 C by unit table",
+   "quote": "to 60 C",
+   "source": "question",
+   "sourced": true,
+   "unit": "K",
+   "value": 333.15
+  },
+  "heater.m_dot_kg_s": {
+   "how": "6 L/min via water_density",
+   "quote": "Hot branch: 6 L/min",
+   "source": "question",
+   "sourced": true,
+   "unit": "kg/s",
+   "value": 0.1
+  },
+  "mix.T_1_K": {
+   "dependencies": [
+    "heater.T_out_K"
+   ],
+   "relation": "connection:heater.T_out_K=mix.T_1_K",
+   "source": "connection",
+   "sourced": true,
+   "unit": "K",
+   "value": 333.15
+  },
+  "mix.T_2_K": {
+   "how": "15 C by unit table",
+   "quote": "at 15 C",
+   "source": "question",
+   "sourced": true,
+   "unit": "K",
+   "value": 288.15
+  },
+  "mix.T_out_K": {
+   "dependencies": [
+    "mix.T_1_K",
+    "mix.T_2_K",
+    "mix.m_dot_1_kg_s",
+    "mix.m_dot_2_kg_s",
+    "mix.m_dot_out_kg_s"
+   ],
+   "relation": "mix.flow_merge_temperature_balance",
+   "source": "equation",
+   "sourced": true,
+   "unit": "K",
+   "value": 306.15
+  },
+  "mix.m_dot_1_kg_s": {
+   "dependencies": [
+    "heater.m_dot_kg_s"
+   ],
+   "relation": "connection:heater.m_dot_kg_s=mix.m_dot_1_kg_s",
+   "source": "connection",
+   "sourced": true,
+   "unit": "kg/s",
+   "value": 0.1
+  },
+  "mix.m_dot_2_kg_s": {
+   "how": "9 L/min via water_density",
+   "quote": "Cold branch: 9 L/min",
+   "source": "question",
+   "sourced": true,
+   "unit": "kg/s",
+   "value": 0.15
+  },
+  "mix.m_dot_out_kg_s": {
+   "dependencies": [
+    "mix.m_dot_1_kg_s",
+    "mix.m_dot_2_kg_s"
+   ],
+   "relation": "mix.flow_merge_mass_balance",
+   "source": "equation",
+   "sourced": true,
+   "unit": "kg/s",
+   "value": 0.25
+  }
+ }
+}

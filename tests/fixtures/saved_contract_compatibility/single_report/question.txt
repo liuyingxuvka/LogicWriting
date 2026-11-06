@@ -1,0 +1,3 @@
+A shower supply mixes two streams. Hot branch: 6 L/min of water heated
+by an inline electric heater from 15 C to 60 C. Cold branch: 9 L/min at 15 C. What heater power
+is needed and what is the mixed outlet temperature? (water: 1 kg/L, cp 4186 J/kg/K)

@@ -1,0 +1,13 @@
+observation_name: mix_answer
+sources: {question: question_mix.txt}
+properties:
+  water_density: {value: 1.0, unit: kg/L, quote: {from: question, text: "water: 1 kg/L"}}
+claims:
+  - {quote: {from: question, text: "Will the mixed water leaving the tank stay below 37 °C?"}, variable: mix.T_out_K}
+variables:
+  mix.m_dot_1_kg_s: {raw_value: 5.0, raw_unit: L/min, unit: kg/s, conversion_property: water_density, external_signal: "5.0 L/min", quote: {from: question, text: "Inlet A brings 5 L/min"}}
+  mix.T_1_K: {raw_value: 70.0, raw_unit: degC, unit: K, external_signal: "70 °C", quote: {from: question, text: "at 70 °C"}}
+  mix.m_dot_2_kg_s: {raw_value: 6.0, raw_unit: L/min, unit: kg/s, conversion_property: water_density, external_signal: "6.0 L/min", quote: {from: question, text: "Inlet B brings 6 L/min"}}
+  mix.T_2_K: {raw_value: 10.0, raw_unit: degC, unit: K, external_signal: "coldest case 10 °C", quote: {from: question, text: "at 10–12 °C"}}
+  mix.m_dot_out_kg_s: {value: 0.18333, unit: kg/s, external_signal: "AI outlet flow"}
+  mix.T_out_K: {value: 310.423, unit: K, external_signal: "AI outlet temperature"}

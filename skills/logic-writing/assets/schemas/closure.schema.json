@@ -276,7 +276,8 @@
         "provider": {
           "enum": [
             "researchguard",
-            "worldguard"
+            "worldguard",
+            "physicsguard"
           ]
         },
         "path": {

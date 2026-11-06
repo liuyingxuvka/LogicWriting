@@ -1,0 +1,303 @@
+{
+  "schema_version": "2.0",
+  "brief_id": "brief:investigation",
+  "request": "请写一篇完整、连贯的成品，说明中心问题、支撑、边界和收束。",
+  "route_decision_fingerprint": "sha256:4b94d1c1ccc7753d8182be630ad39a0fc58f6a42b3de5c3c515d7a4f4961fcee",
+  "reader_intent_fingerprint": "sha256:a407a8a78cce340e6c7c5c7d69a5527cb120e6b0b0213efec0d50a4a6522d0e3",
+  "final_owner": "investigation",
+  "terminal_deliverable": {
+    "kind": "research_report",
+    "description": "一篇完整、连贯、可直接阅读的成品",
+    "acceptance_criteria": [
+      "结构完整",
+      "正文连贯",
+      "边界明确"
+    ],
+    "fingerprint": "sha256:73163ba85f2147d231de300dfc62e5b38ae2a1e7fb724d876372e5bc8ce937c4"
+  },
+  "reader_intent": {
+    "schema_version": "2.0",
+    "artifact_mode": "create_new",
+    "language": "zh-CN",
+    "audience": "需要一篇连贯成品的普通读者",
+    "purpose": "给出完整、自然、有证据边界的成品",
+    "structure": {
+      "mode": "partially_fixed",
+      "requested_outline": [
+        {
+          "outline_id": "outline:answer",
+          "parent_outline_id": null,
+          "order": 1,
+          "label": "完整回答",
+          "required": true,
+          "title_locked": true,
+          "source": "user"
+        }
+      ]
+    },
+    "heading_policy": "preserve_requested",
+    "list_policy": "prose_default",
+    "style": {
+      "voice": "自然、清楚、像人在解释",
+      "formality": "neutral",
+      "required_traits": [
+        "连贯",
+        "具体"
+      ],
+      "forbidden_traits": [
+        "卡片式碎片",
+        "工作流术语"
+      ]
+    },
+    "extent": {
+      "unit": "characters",
+      "minimum": 80,
+      "target": 240,
+      "maximum": 600
+    },
+    "artifact_format": "markdown",
+    "citation_policy": "none",
+    "table_policy": "allowed",
+    "required_content": [
+      "完整回答"
+    ],
+    "forbidden_content": [
+      "内部工作流"
+    ],
+    "reference_examples": [],
+    "unresolved_choices": [],
+    "intent_fingerprint": "sha256:a407a8a78cce340e6c7c5c7d69a5527cb120e6b0b0213efec0d50a4a6522d0e3"
+  },
+  "content_boundaries": {
+    "content_units": [
+      {
+        "content_unit_id": "content:answer",
+        "safe_meaning": "成品必须把中心问题、支撑、边界和收束写成连续正文。",
+        "required": true,
+        "evidence_anchor_ids": [
+          "evidence:one"
+        ],
+        "source": "ai",
+        "alternative_ids": [],
+        "limitation_ids": [],
+        "model_row_ids": [
+          "model:throughline"
+        ]
+      }
+    ],
+    "evidence_anchors": [
+      {
+        "anchor_id": "evidence:one",
+        "source_id": "source:synthetic",
+        "locator": "synthetic:one",
+        "relation": "support",
+        "observed_summary": "合成测试材料支持结构性论证。",
+        "boundary": "仅用于协议测试，不代表真实学术证据。"
+      }
+    ],
+    "alternatives": [],
+    "limitations": [],
+    "citation_duties": [],
+    "must_preserve_tokens": [],
+    "verbatim_obligations": [],
+    "prohibited_overclaims": []
+  },
+  "composition_plan": {
+    "schema_version": "2.0",
+    "plan_id": "plan:investigation",
+    "reader_intent_fingerprint": "sha256:a407a8a78cce340e6c7c5c7d69a5527cb120e6b0b0213efec0d50a4a6522d0e3",
+    "final_owner": "investigation",
+    "central_question": "怎样把证据或故事材料组织成一篇完整成品？",
+    "central_throughline": "从读者问题出发，经过必要支撑，抵达有边界的结论或变化。",
+    "artifact_form": "完整读者成品",
+    "structure_authority": "user_partial",
+    "opening_job": "让读者知道真正的问题和阅读方向。",
+    "conclusion_job": "收束前文并明确边界或后续行动。",
+    "planned_units": [
+      {
+        "planned_unit_id": "unit:answer",
+        "parent_unit_id": null,
+        "unit_kind": "section",
+        "order": 1,
+        "required": true,
+        "title": "完整回答",
+        "source_outline_ids": [
+          "outline:answer"
+        ],
+        "reader_job": "把核心材料组织成前后相接的解释。",
+        "content_unit_ids": [
+          "content:answer"
+        ],
+        "limitation_ids": [],
+        "relation_to_previous": "这是开篇主单元。",
+        "incoming_reader_state": "知道问题但不知道答案为何成立。",
+        "outgoing_reader_state": "理解答案、支撑、边界以及下一步。",
+        "downstream_unit_ids": [],
+        "presentation_mode": "prose",
+        "target_extent": 200
+      }
+    ],
+    "allowed_list_zones": [],
+    "content_dispositions": [
+      {
+        "content_unit_id": "content:answer",
+        "disposition": "consumed",
+        "planned_unit_ids": [
+          "unit:answer"
+        ],
+        "reason": "这是成品必须实现的核心内容。"
+      }
+    ],
+    "unresolved_conflicts": [],
+    "plan_fingerprint": "sha256:1a654b43edad529ae2e3b0ea5875ff3bc6258dbba05140dc9b34ba037f295927"
+  },
+  "route_extension": {
+    "owner": "investigation",
+    "profile": "explanatory_report",
+    "schema_name": "investigation-composition.schema.json",
+    "extension_fingerprint": "sha256:968e91b2d6023c5019c239f772221704aa7e599f318bf77b87503a8238391858"
+  },
+  "writer_input": {
+    "schema_version": "1.1",
+    "reader_intent": {
+      "schema_version": "2.0",
+      "artifact_mode": "create_new",
+      "language": "zh-CN",
+      "audience": "需要一篇连贯成品的普通读者",
+      "purpose": "给出完整、自然、有证据边界的成品",
+      "structure": {
+        "mode": "partially_fixed",
+        "requested_outline": [
+          {
+            "outline_id": "outline:answer",
+            "parent_outline_id": null,
+            "order": 1,
+            "label": "完整回答",
+            "required": true,
+            "title_locked": true,
+            "source": "user"
+          }
+        ]
+      },
+      "heading_policy": "preserve_requested",
+      "list_policy": "prose_default",
+      "style": {
+        "voice": "自然、清楚、像人在解释",
+        "formality": "neutral",
+        "required_traits": [
+          "连贯",
+          "具体"
+        ],
+        "forbidden_traits": [
+          "卡片式碎片",
+          "工作流术语"
+        ]
+      },
+      "extent": {
+        "unit": "characters",
+        "minimum": 80,
+        "target": 240,
+        "maximum": 600
+      },
+      "artifact_format": "markdown",
+      "citation_policy": "none",
+      "table_policy": "allowed",
+      "required_content": [
+        "完整回答"
+      ],
+      "forbidden_content": [
+        "内部工作流"
+      ],
+      "reference_examples": [],
+      "unresolved_choices": [],
+      "intent_fingerprint": "sha256:a407a8a78cce340e6c7c5c7d69a5527cb120e6b0b0213efec0d50a4a6522d0e3"
+    },
+    "selected_content": [
+      {
+        "content_unit_id": "content:answer",
+        "meaning": "成品必须把中心问题、支撑、边界和收束写成连续正文。",
+        "required": true,
+        "disposition": "consumed",
+        "planned_unit_ids": [
+          "unit:answer"
+        ],
+        "evidence_anchor_ids": [
+          "evidence:one"
+        ],
+        "alternative_ids": [],
+        "limitation_ids": []
+      }
+    ],
+    "composition": {
+      "central_question": "怎样把证据或故事材料组织成一篇完整成品？",
+      "central_throughline": "从读者问题出发，经过必要支撑，抵达有边界的结论或变化。",
+      "artifact_form": "完整读者成品",
+      "opening_job": "让读者知道真正的问题和阅读方向。",
+      "conclusion_job": "收束前文并明确边界或后续行动。",
+      "body_unit_order": [
+        "unit:answer"
+      ],
+      "units": [
+        {
+          "planned_unit_id": "unit:answer",
+          "parent_unit_id": null,
+          "order": 1,
+          "title": "完整回答",
+          "reader_job": "把核心材料组织成前后相接的解释。",
+          "content_unit_ids": [
+            "content:answer"
+          ],
+          "limitation_ids": [],
+          "relation_to_previous": "这是开篇主单元。",
+          "incoming_reader_state": "知道问题但不知道答案为何成立。",
+          "outgoing_reader_state": "理解答案、支撑、边界以及下一步。",
+          "downstream_unit_ids": [],
+          "presentation_mode": "prose",
+          "target_extent": 200
+        }
+      ]
+    },
+    "limitations": [],
+    "citations": [],
+    "evidence": [
+      {
+        "content_unit_id": "content:answer",
+        "anchor_id": "evidence:one",
+        "source_id": "source:synthetic",
+        "locator": "synthetic:one",
+        "relation": "support",
+        "observed_summary": "合成测试材料支持结构性论证。",
+        "boundary": "仅用于协议测试，不代表真实学术证据。"
+      }
+    ],
+    "exact_obligations": {
+      "must_preserve": [],
+      "verbatim": []
+    },
+    "forbidden_claims": [],
+    "route_semantics": {
+      "answer": [
+        "成品必须把中心问题、支撑、边界和收束写成连续正文。"
+      ],
+      "evidence_strength": [
+        {
+          "content_unit_id": "content:answer",
+          "strength": "moderate",
+          "reason": "当前材料支持有边界的解释。"
+        }
+      ],
+      "alternatives": [],
+      "recheck_conditions": [
+        {
+          "action_id": "action:recheck",
+          "condition": "事实状态发生变化",
+          "action": "重新核验来源后再更新结论",
+          "planned_unit_id": "unit:answer"
+        }
+      ]
+    },
+    "gaps": []
+  },
+  "writer_input_fingerprint": "sha256:d570a0d1258a38796d74f43db2aadb8c04e2cb0b48a41c6c3e8d9b2fa0c5e503",
+  "brief_fingerprint": "sha256:27870e36c2f87bd42075e68c490fb707f8b972ba53420635c1d02c379acb40b2"
+}

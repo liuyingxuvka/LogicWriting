@@ -13,6 +13,7 @@ from functools import lru_cache
 from pathlib import Path
 
 from _common import ValidationError
+from provider_refs import PREFIX as REPORT_ROW_PREFIX, report_row_ref, split_report_row_ref
 
 
 @lru_cache(maxsize=1)
@@ -492,9 +493,10 @@ def build_sensors(brief):
     research_folder = brief['research_folder'] if 'research_folder' in brief else None
     pg_rows, provider_issues = provider_sensors(providers, brief['request'], route, research_folder=research_folder)
     bound_rows = {identity for unit in brief['content_boundaries']['content_units'] for identity in unit['model_row_ids']}
-    provider_issues = [row for row in provider_issues if not (
-        row['colour'] == 'grey' and row['id'].startswith('physicsguard:')
-        and 'pg:' + row['id'].removeprefix('physicsguard:') not in bound_rows)]
+    provider_issues = [row for row in provider_issues if row['colour'] != 'grey'
+        or ('row_refs' in row and bound_rows.intersection(row['row_refs']))
+        or ('row_refs' not in row and (not row['id'].startswith('physicsguard:')
+            or 'pg:' + row['id'].removeprefix('physicsguard:') in bound_rows))]
     return dict(anchors=anchors, passages=passages, documents=documents, issues=issues + provider_issues,
                 request=request, pg_rows=pg_rows)
 
@@ -503,12 +505,30 @@ def _digest(value):
     return value.removeprefix('sha256:')
 
 
-def provider_sensors(reports, request, route_composition=None, *, research_folder=None):
-    """Read saved rows; compare bytes, never execute a specialist to repair an old report."""
-    rows, issues = {}, []
+def _provider_reports(reports):
+    """Read one physical PG report once; equal bytes in different files remain different cases."""
+    other, physical = [], {}
     for report in reports:
+        if report['provider'] != 'physicsguard':
+            other.append(dict(report, report_refs=[report['path']]))
+            continue
+        path = Path(report['path']).resolve()
+        # Relative source paths belong to this resolved report location. Hardlinks
+        # in another directory therefore keep their own validation context.
+        saved = physical.setdefault(path, dict(paths=set(), refs=set()))
+        saved['paths'].add(str(path))
+        saved['refs'].update((report['path'], str(path)))
+    return other + [dict(provider='physicsguard', path=min(saved['paths']), report_refs=sorted(saved['refs']))
+                    for saved in sorted(physical.values(), key=lambda row: min(row['paths']))]
+
+
+def provider_sensors(reports, request, route_composition=None, *, research_folder=None):
+    """Read saved rows; retain their report identity rather than merging cases by row ID."""
+    rows, issues, candidates = {}, [], {}
+    for report in _provider_reports(reports):
         path = Path(report['path'])
-        document = json.loads(path.read_text(encoding='utf-8'))
+        raw = path.read_bytes()
+        document = json.loads(raw.decode('utf-8'))
         source_data = provider_source_data(document)
         provider = report['provider']
         if provider not in ('physicsguard', 'researchguard', 'worldguard'):
@@ -536,22 +556,59 @@ def provider_sensors(reports, request, route_composition=None, *, research_folde
             issues.append(dict(id=provider, colour='red', reason='stale:' + ','.join(stale), source_digest=''))
             continue
         native_rows = source_data['source_readings'] if 'source_readings' in source_data else (document['checked']['source_statuses'] if 'checked' in document and 'source_statuses' in document['checked'] else [])
+        native_ids = set()
         for row in native_rows:
             for key in ('id', 'colour', 'reason', 'source_digest'):
                 if key not in row:
                     raise ValidationError(f'{provider} source row missing {key}')
+            if provider == 'physicsguard' and row['id'] in native_ids:
+                raise ValidationError('duplicate PhysicsGuard row id in one report: ' + row['id'])
+            native_ids.add(row['id'])
+            refs = [report_row_ref(alias, row['id']) for alias in report['report_refs']]
             problems = source_row_problems(row, document, base)
             if problems:
                 issues.append(dict(row, id=provider + ':' + row['id'], colour='red', reason='stale:' + ','.join(problems)))
                 continue
             if row['colour'] != 'green':
-                issues.append(dict(row, id=provider + ':' + row['id']))
+                issue = dict(row, id=provider + ':' + row['id'])
+                if provider == 'physicsguard':
+                    issue['row_refs'] = refs
+                issues.append(issue)
             if provider == 'physicsguard' and 'value' in row and 'unit' in row:
-                rows['pg:' + row['id']] = _physical_row(row, row['colour'] == 'green')
-        # Saved prototype reports predate source_readings; provenance is their input bytes plus request identity.
+                value = dict(_physical_row(row, row['colour'] == 'green'), row_id=row['id'], report_path=str(path),
+                             report_digest='sha256:' + sha(raw))
+                candidates.setdefault(row['id'], []).append((value, refs))
+        # Prototype values remain supported; a native row with the same ID owns its evidence.
         if provider == 'physicsguard' and 'values' in document:
             for identity, row in document['values'].items():
-                rows['pg:' + identity] = _physical_row(row, row['sourced'])
+                if identity not in native_ids:
+                    value = dict(_physical_row(row, row['sourced']), row_id=identity, report_path=str(path),
+                                 report_digest='sha256:' + sha(raw))
+                    refs = [report_row_ref(alias, identity) for alias in report['report_refs']]
+                    candidates.setdefault(identity, []).append((value, refs))
+    for identity, entries in sorted(candidates.items()):
+        legacy = 'pg:' + identity
+        for row, refs in entries:
+            for ref in refs:
+                rows[ref] = row
+            aliases = refs + ([legacy] if len(entries) == 1 else [])
+            for issue in issues:
+                if 'row_refs' in issue and set(refs).intersection(issue['row_refs']):
+                    issue['row_refs'] = aliases
+            if 'lower' in row and 'upper' in row and row['lower'] != row['upper']:
+                scope_id = sha(report_row_ref(row['report_path'], identity).encode('utf-8'))
+                issues.append(dict(id='physicsguard:case_point:' + scope_id, colour='grey',
+                    scope='case_selected_point', row_refs=aliases, source_digest=row['report_digest'],
+                    reason='PhysicsGuard report ' + row['report_path'] + ' checks a selected point within a source range; '
+                           'this is conditional on that case, not an independent measurement.'))
+        if len(entries) == 1:
+            rows[legacy] = entries[0][0]
+        else:
+            refs = sorted(report_row_ref(row['report_path'], identity) for row, _ in entries)
+            rows[legacy] = dict(ambiguous_report_refs=refs)
+            issues.append(dict(id='physicsguard:ambiguous:' + sha(identity.encode('utf-8')), colour='grey',
+                row_refs=[legacy], source_digest='',
+                reason='PhysicsGuard row ' + legacy + ' is ambiguous across reports; select one of ' + ', '.join(refs)))
     return rows, issues
 
 
@@ -598,17 +655,38 @@ def _physical_row(row, sourced):
     return dict(row, sourced=sourced, dim=unit.exponents, si=row['value'] * unit.factor + unit.offset)
 
 
+def _distinct_physical_rows(rows):
+    seen, result = set(), []
+    for row in rows:
+        identity = (row['report_path'], row['row_id']) if 'report_path' in row and 'row_id' in row else id(row)
+        if identity not in seen:
+            seen.add(identity)
+            result.append(row)
+    return result
+
+
 def check_reading(reading, sentence, anchor_ids, row_ids, sensors):
     """Return one colour and the actual original or bound tool row used for comparison."""
     if ABSENCE.search(sentence):
         return 'grey', 'the sentence says the source does not give this; not checked'
     if reading['kind'] == 'unavailable':
         return 'grey', 'unit checking unavailable: install PhysicsGuard >= 0.18.0 to read ' + reading['raw']
+    for identity in row_ids:
+        if identity.startswith(REPORT_ROW_PREFIX):
+            split_report_row_ref(identity)
+    requested = [identity for identity in row_ids if identity.startswith('pg:') or identity.startswith(REPORT_ROW_PREFIX)]
+    missing = [identity for identity in requested if identity not in sensors['pg_rows']]
+    if missing:
+        return 'grey', 'selected PhysicsGuard report row is unavailable: ' + ', '.join(sorted(missing))
+    bound = _distinct_physical_rows(sensors['pg_rows'][identity] for identity in row_ids if identity in sensors['pg_rows'])
+    ambiguous = [row for row in bound if 'ambiguous_report_refs' in row]
+    if ambiguous:
+        refs = sorted({ref for row in ambiguous for ref in row['ambiguous_report_refs']})
+        return 'grey', 'PhysicsGuard row is ambiguous across reports; select one of ' + ', '.join(refs)
     used = [(identity, sensors['passages'][identity]) for identity in anchor_ids if identity in sensors['passages']]
     source_rows = [(row, dict(context, source=passage)) for _, passage in used for row, context in passage['readings']]
     if not any(compatible(reading, row) for row, _ in source_rows):
         source_rows += [(row, dict(context, source=None)) for row, context in sensors['request']]
-    bound = [sensors['pg_rows'][identity] for identity in row_ids if identity in sensors['pg_rows']]
     native_roles = [row for row in bound if 'source_entity' in row]
     if native_roles and reading['kind'] in ('range', 'number', 'percent', 'refused'):
         return 'grey', 'PhysicsGuard scalar entity rows do not verify this interval, unitless value or unread unit; role/value agreement was not checked'
@@ -634,8 +712,12 @@ def check_reading(reading, sentence, anchor_ids, row_ids, sensors):
         named = {entity for entity in known if re.search(r'(?<!\w)' + re.escape(entity) + r'(?!\w)', scope, re.I)}
         if re.search(r'\b(?:Each inlet (?:is|was)|(?:Both|All) inlets (?:are|were))\s+(?:at\s+)?$',
                      sentence[:reading['start']], re.I):
-            inlets = [row for row in sensors['pg_rows'].values() if 'source_entity' in row
-                      and 'input_group' in row and re.fullmatch(r'.+\.inlet_[12]', row['input_group'])]
+            reports = {row['report_path'] for row in native_roles if 'report_path' in row}
+            if len(reports) > 1:
+                return 'grey', 'PhysicsGuard each-inlet statement combines different report cases'
+            inlets = [row for row in _distinct_physical_rows(sensors['pg_rows'].values()) if 'source_entity' in row
+                      and 'input_group' in row and re.fullmatch(r'.+\.inlet_[12]', row['input_group'])
+                      and (not reports or 'report_path' in row and row['report_path'] in reports)]
             groups = {row['input_group'] for row in inlets}
             parents = {group.rsplit('.', 1)[0] for group in groups}
             if len(parents) != 1 or len(groups) != 2:
@@ -654,6 +736,9 @@ def check_reading(reading, sentence, anchor_ids, row_ids, sensors):
                     unchecked.append(entity)
                     continue
                 return 'red', f'PhysicsGuard role binding names {entity!r}, but the selected result rows belong to another source entity'
+            reports = {row['report_path'] for row in candidates if 'report_path' in row}
+            if len(reports) > 1:
+                return 'grey', 'PhysicsGuard source entity ' + entity + ' has multiple selected report cases'
             if not any(within(reading, row['si']) for row in candidates):
                 return 'red', f'PhysicsGuard {entity}: the claimed value {reading["raw"]} disagrees with this entity result'
         if unchecked:
@@ -756,7 +841,12 @@ def reading_source_digest(anchor_ids, row_ids, sensors):
     originals = {identity: dict(digest=sensors['passages'][identity]['digest'],
                                 quote=sensors['passages'][identity]['quote'] if 'quote' in sensors['passages'][identity] else '')
                  for identity in anchor_ids if identity in sensors['passages'] and 'digest' in sensors['passages'][identity]}
-    results = {identity: sensors['pg_rows'][identity] for identity in row_ids if identity in sensors['pg_rows']}
+    results = {}
+    for identity in row_ids:
+        if identity in sensors['pg_rows']:
+            row = sensors['pg_rows'][identity]
+            key = report_row_ref(row['report_path'], row['row_id']) if 'report_path' in row and 'row_id' in row else identity
+            results[key] = row
     request = sensors['request']
     if not originals and not results and not request:
         return ''

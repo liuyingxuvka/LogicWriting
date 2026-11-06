@@ -186,7 +186,7 @@ python -m pip install "git+https://github.com/liuyingxuvka/ResearchGuard.git@v0.
 python -m pip install "git+https://github.com/liuyingxuvka/WorldGuard.git@v0.8.0"
 ```
 
-核对物理量时，建议从仓库安装 PhysicsGuard v0.18.1；换算只用它的单位表。没装时单位检查显示灰色，普通简报不依赖它。单位接口最低仍兼容 0.18.0；只有新原生报告给出 `source_entity` 时才做入口对象绑定，旧标量报告不证明对象角色。
+核对物理量时，建议从仓库安装 PhysicsGuard v0.18.1；换算只用它的单位表。没装时单位检查显示灰色，普通简报不依赖它。单位接口最低仍兼容 0.18.0；只有新原生报告给出 `source_entity` 时才做入口对象绑定，旧标量报告不证明对象角色。 多份 PhysicsGuard 报告复用同一行 id 时，可在 `model_row_ids` 用 `pg-report://<百分号编码的报告路径>#<百分号编码的行 id>` 选择；未限定的歧义保持灰色。单报告的 `pg:row-id` 不用改，匹配的条件场景值仍保留原生范围风险。
 
 **3. 先跑这几条**，在克隆下来的目录里：
 

@@ -51,4 +51,24 @@ with its error), and the picture lists `brief_stale` first among its problems;
 
 ResearchGuard >= 0.8.0 supplies saved captures and table/quote context; PhysicsGuard >= 0.18.0 optionally supplies the only unit vocabulary. A plain brief needs no PhysicsGuard; unit checks without it stay grey and name the missing provider. Save native results and put `{"provider":"physicsguard","path":"pg-result.json"}` in the brief's `provider_reports`; bind its `pg:<row-id>` in content-unit `model_row_ids`. The PG `question.txt` digest must match the exact stored request. Closure accepts the same saved report in its own `provider_reports`. PG, WG and RG state rows are read and rehashed, never recalculated by closure.
 
+When multiple saved PG reports contain the same row ID, `pg:<row-id>` is
+ambiguous and stays grey. Select the existing report path in `model_row_ids`:
+`pg-report://case-a.json#mix.T_2_K`. The `pg-report://` scheme denotes the new
+report reference and requires both a path and a row separated by `#`; an older ordinary ID such as `pg-report:label` remains an ordinary
+model label and does not assert that a PG report was read. Percent-encode the path and row ID separately
+(`provider_refs.report_row_ref(path, row_id)`), so a literal `#`, `%`, space,
+Unicode name or Windows separator cannot become a delimiter. Brief/contract
+loading and saving resolve these paths alongside the same request files; no
+report registry or extra required field is needed. A repeated resolved report
+reference is one case; equal values or source digests in different report
+locations are not. Report bytes are included in the reading evidence identity.
+
+Bind a statement to one case when the same entity has several results. An
+`Each inlet` pair must come from the same selected report, never one inlet from
+each of two cases. A numeric match can be green within a selected case while
+its scope remains conditional: PG points chosen inside an original interval
+are not independent measurements. That limit is retained in reader residual
+risks and closure provider risks. A missing or ambiguous explicit row reference
+does not fall back to a matching number in the request.
+
 Brief results expose `source_readings` and their grey `residual_risk` separately from lexical anchor warnings; closure preserves those risks and the screen prints every reading. The brief refuses `claim_value_not_in_source:<content-unit>` when a bound original contradicts a reading; the current-artifact audit reports `text_value_not_in_source`. Grey readings are residual risks, including source-silent sentences. Quote ellipses that omit negation are red. Matching numbers establish presence within a linked section, not semantic truth: swapped years, unrelated identical numbers, number words without units and names outside quotes remain limits. Unlinked derived arithmetic is not an original.

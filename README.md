@@ -202,7 +202,7 @@ python -m pip install "git+https://github.com/liuyingxuvka/ResearchGuard.git@v0.
 python -m pip install "git+https://github.com/liuyingxuvka/WorldGuard.git@v0.8.0"
 ```
 
-For physical quantities, optionally install PhysicsGuard v0.18.1 from its repository. Its unit table is the only conversion owner; without it unit checks stay grey. A plain brief needs no PhysicsGuard. The minimum unit API remains 0.18.0; inlet-role binding uses `source_entity` only when a newer native report supplies it. Older scalar reports do not verify entity roles.
+For physical quantities, optionally install PhysicsGuard v0.18.1 from its repository. Its unit table is the only conversion owner; without it unit checks stay grey. A plain brief needs no PhysicsGuard. The minimum unit API remains 0.18.0; inlet-role binding uses `source_entity` only when a newer native report supplies it. Older scalar reports do not verify entity roles. When several PhysicsGuard reports reuse a row id, select one with the optional `pg-report://<percent-encoded report path>#<percent-encoded row id>` in `model_row_ids`; an unqualified ambiguous row stays grey. A single-report `pg:row-id` needs no change. Matched conditional scenario values retain their native scope risks.
 
 **3. The first commands**, in the cloned folder:
 

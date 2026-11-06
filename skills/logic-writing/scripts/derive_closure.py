@@ -124,6 +124,8 @@ def provider_checks(owner, brief, route_composition, reports):
             status = 'passed' if passed else 'failed'
             reason = '; '.join(row['reason'] for row in problems_rows) if problems_rows else f'physicsguard audit_pass={passed}'
             problems = []
+            risks.extend(dict(defect_id=row['id'], owner=owner, reason=row['reason'])
+                         for row in problems_rows if 'scope' in row and row['scope'] == 'case_selected_point')
         else:
             status = read_worldguard_report(path)
             passed = status == "PASS"
